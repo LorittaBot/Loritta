@@ -56,14 +56,19 @@ import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroupEntries
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.tables.AuditLog
-import net.perfectdreams.loritta.tables.BackgroundPayments
-import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.BannedIps
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
@@ -77,10 +82,8 @@ import net.perfectdreams.loritta.tables.DailyShopItems
 import net.perfectdreams.loritta.tables.DailyShops
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.Payments
-import net.perfectdreams.loritta.tables.ProfileDesigns
 import net.perfectdreams.loritta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
-import net.perfectdreams.loritta.tables.Sets
 import net.perfectdreams.loritta.tables.SonhosBundles
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.tables.SpicyStacktraces
@@ -111,6 +114,7 @@ import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.Sponsor
+import net.perfectdreams.loritta.utils.TrinketsStuff
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -396,6 +400,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				CachedYouTubeChannelIds,
 				SonhosBundles,
 				Backgrounds,
+				BackgroundVariations,
 				Sets,
 				DailyShops,
 				DailyShopItems,
@@ -420,11 +425,15 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				BannedUsers,
 				ProfileDesigns,
 				ProfileDesignsPayments,
+				ProfileDesignGroups,
+				ProfileDesignGroupEntries,
 				DailyProfileShopItems,
 				CachedDiscordWebhooks,
 				CustomBackgroundSettings
 			)
 		}
+
+		TrinketsStuff.updateTrinkets(pudding)
 	}
 
 	fun startWebServer() {

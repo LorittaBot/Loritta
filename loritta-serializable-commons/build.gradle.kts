@@ -3,6 +3,10 @@ plugins {
     kotlin("plugin.serialization") version Versions.KOTLIN
 }
 
+repositories {
+    mavenLocal()
+}
+
 kotlin {
     jvm {
         compilations.all {
@@ -21,6 +25,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation(project(":common-legacy"))
+                api("net.perfectdreams.loritta.cinnamon.pudding:data:0.0.1-SNAPSHOT")
             }
         }
 

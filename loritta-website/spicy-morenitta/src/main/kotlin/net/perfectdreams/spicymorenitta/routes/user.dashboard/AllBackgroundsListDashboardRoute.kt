@@ -11,15 +11,16 @@ import kotlinx.html.h1
 import kotlinx.html.id
 import kotlinx.html.style
 import kotlinx.serialization.decodeFromString
+import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.serializable.BackgroundListResponse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
+import net.perfectdreams.spicymorenitta.utils.LockerUtils
 import net.perfectdreams.spicymorenitta.utils.awaitLoad
 import net.perfectdreams.spicymorenitta.utils.select
-import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.Image
@@ -51,17 +52,17 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                 div {
                     style = "justify-content: space-between; display: flex; flex-wrap: wrap;"
                 }
-                for (background in backgroundListRequest.backgrounds) {
+                for ((background, variations) in backgroundListRequest.backgroundsWithVariations) {
                     div {
                         h1 {
-                            + (background.internalName)
+                            + (background.id)
                         }
 
                         div {
                             style = "perspective: 500px;"
 
                             canvas("canvas-background-preview") {
-                                id = "canvas-preview-${background.internalName}"
+                                id = "canvas-preview-${background.id}"
                                 width = "800"
                                 height = "600"
                                 style = "width: 400px; height: 300px; transform: rotateY(-10deg);\n" +
@@ -76,14 +77,14 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                             b {
                                 + "Nome: "
                             }
-                            + locale["backgrounds.${background.internalName}.title"]
+                            + locale["backgrounds.${background.id}.title"]
                         }
 
                         div {
                             b {
                                 + "Descrição: "
                             }
-                            + locale["backgrounds.${background.internalName}.description"]
+                            + locale["backgrounds.${background.id}.description"]
                         }
 
                         div {
@@ -103,28 +104,23 @@ class AllBackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                 }
             }
 
-            for (background in backgroundListRequest.backgrounds) {
+            for ((background, variations) in backgroundListRequest.backgroundsWithVariations) {
+                for (variation in variations) {
+
+                }
                 m.launch {
-                    val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.internalName}")
+                    val validVariation = variations.firstOrNull { it is DefaultBackgroundVariation }
+                    if (validVariation != null) {
+                        val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.id}")
 
-                    val backgroundImg = Image()
-                    backgroundImg.awaitLoad(backgroundListRequest.dreamStorageServiceUrl + "/" + backgroundListRequest.namespace + "/" + background.file)
-
-                    val canvasPreviewContext = (canvasPreview.getContext("2d")!! as CanvasRenderingContext2D)
-                    canvasPreviewContext
-                            .drawImage(
-                                    backgroundImg,
-                                    (background.crop?.offsetX ?: 0).toDouble(),
-                                    (background.crop?.offsetY ?: 0).toDouble(),
-                                    (background.crop?.width ?: backgroundImg.width).toDouble(),
-                                    (background.crop?.height ?: backgroundImg.height).toDouble(),
-                                    0.0,
-                                    0.0,
-                                    800.0,
-                                    600.0
-                            )
-
-                    canvasPreviewContext.drawImage(profileWrapper, 0.0, 0.0)
+                        LockerUtils.prepareBackgroundCanvasPreview(
+                            m,
+                            backgroundListRequest.dreamStorageServiceUrl,
+                            backgroundListRequest.namespace,
+                            validVariation,
+                            canvasPreview
+                        )
+                    }
                 }
             }
 

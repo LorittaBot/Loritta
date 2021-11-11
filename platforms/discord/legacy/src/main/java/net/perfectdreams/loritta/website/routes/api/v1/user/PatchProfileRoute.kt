@@ -7,7 +7,6 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.ProfileDesign
 import com.mrpowergamerbr.loritta.dao.ShipEffect
 import com.mrpowergamerbr.loritta.utils.Constants
@@ -24,12 +23,14 @@ import kotlinx.coroutines.withContext
 import net.perfectdreams.dreamstorageservice.data.CreateImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.DeleteImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.UploadImageRequest
+import net.perfectdreams.loritta.cinnamon.pudding.data.Background
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.CustomBackgroundSettings
-import net.perfectdreams.loritta.tables.ProfileDesigns
 import net.perfectdreams.loritta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -40,6 +41,7 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import pw.forst.exposed.insertOrUpdate
@@ -197,7 +199,7 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 			}
 
 			loritta.newSuspendedTransaction {
-				profileSettings.activeBackground = Background.findById(internalName)
+				profileSettings.activeBackgroundInternalName = EntityID(internalName, Backgrounds)
 				oldPath = CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profileSettings.id }.firstOrNull()?.get(CustomBackgroundSettings.file)
 
 				if (newPath != null && preferredMediaType != null) {

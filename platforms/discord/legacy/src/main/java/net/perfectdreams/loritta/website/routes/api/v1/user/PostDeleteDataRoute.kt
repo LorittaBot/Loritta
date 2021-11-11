@@ -14,8 +14,8 @@ import com.mrpowergamerbr.loritta.utils.Constants
 import io.ktor.application.*
 import io.ktor.sessions.*
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.tables.BackgroundPayments
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.tables.BotVotes

@@ -4,8 +4,7 @@ import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
 
 @Serializable
-data class BackgroundListResponse(
-    val dreamStorageServiceUrl: String,
-    val namespace: String,
-    val backgroundsWithVariations: List<BackgroundWithVariations>
+data class DailyShopBackgroundEntry(
+    val backgroundWithVariations: BackgroundWithVariations,
+    val tag: String? = null
 )

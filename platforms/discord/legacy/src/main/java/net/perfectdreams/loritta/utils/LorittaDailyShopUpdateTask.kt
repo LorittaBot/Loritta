@@ -2,6 +2,8 @@ package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.network.Databases
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.tables.*
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*

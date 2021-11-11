@@ -50,6 +50,7 @@ dependencies {
     api("org.jetbrains.exposed:exposed-dao:${Versions.EXPOSED}")
     api("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
     api("pw.forst:exposed-upsert:1.1.0")
+    api("net.perfectdreams.loritta.cinnamon.pudding:client:0.0.1-SNAPSHOT")
 
     // DreamStorageService
     api("net.perfectdreams.dreamstorageservice:client:0.0.1-SNAPSHOT")

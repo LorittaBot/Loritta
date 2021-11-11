@@ -22,11 +22,13 @@ import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
 import kotlinx.html.p
 import kotlinx.html.style
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.api.utils.Rarity
-import net.perfectdreams.loritta.serializable.Background
+import net.perfectdreams.loritta.cinnamon.common.utils.Rarity
+import net.perfectdreams.loritta.cinnamon.pudding.data.Background
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
+import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
+import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -83,7 +85,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                 }
 
                 debug("Retrieved profiles & background info!")
-                val result = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(UserInfoResult.serializer(), payload)
+                val result = JSON.nonstrict.decodeFromString(ProfileSectionsResponse.serializer(), payload)
                 return@async result
             }
 
@@ -97,10 +99,15 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
             }
 
             val result = userBackgroundsJob.await()
+            // Those should always be present due to our URL query, but who knows, right?
+            // I tried using the "error" method to throw an IllegalArgumentException in a nice way... but the "Logger" class also has a "error" method, smh
+            val backgroundsWrapper = result.backgrounds ?: throw IllegalArgumentException("Background Wrapper is not present! Bug?")
+            val settingsWrapper = result.settings ?: throw IllegalArgumentException("Settings Wrapper is not present! Bug?")
+            val donationsWrapper = result.donations ?: throw IllegalArgumentException("Donations Wrapper is not present! Bug?")
             val profileWrapper = profileWrapperJob.await()
 
             val fanArtArtistsJob = m.async {
-                val allArtists = result.backgrounds.mapNotNull { it.createdBy }.flatten().distinct()
+                val allArtists = backgroundsWrapper.backgrounds.flatMap { it.background.createdBy }.distinct()
 
                 if (allArtists.isEmpty())
                     return@async listOf<FanArtArtist>()
@@ -116,33 +123,43 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
 
             val entriesDiv = document.select<HTMLDivElement>("#bundles-content")
 
-            val backgrounds = result.backgrounds.sortedByDescending { it.rarity.getBackgroundPrice() }
+            val backgrounds = backgroundsWrapper.backgrounds.sortedByDescending { it.background.rarity.getBackgroundPrice() }
                 .toMutableList()
                 .apply {
                     this.add(
-                        Background(
-                            "random",
-                            "random",
-                            "image/png",
-                            true,
-                            Rarity.COMMON,
-                            listOf(),
-                            null,
-                            null,
-                            null
+                        BackgroundWithVariations(
+                            Background(
+                                "random",
+                                true,
+                                Rarity.COMMON,
+                                listOf(),
+                                null
+                            ),
+                            listOf(
+                                DefaultBackgroundVariation(
+                                    "random",
+                                    "image/png",
+                                    null,
+                                )
+                            )
                         )
                     )
                     this.add(
-                        Background(
-                            "custom",
-                            "custom",
-                            "image/png",
-                            true,
-                            Rarity.COMMON,
-                            listOf(),
-                            null,
-                            null,
-                            null
+                        BackgroundWithVariations(
+                            Background(
+                                "custom",
+                                true,
+                                Rarity.COMMON,
+                                listOf(),
+                                null
+                            ),
+                            listOf(
+                                DefaultBackgroundVariation(
+                                    "custom",
+                                    "image/png",
+                                    null,
+                                )
+                            )
                         )
                     )
                 }
@@ -150,8 +167,8 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
             entriesDiv.append {
                 div("loritta-items-list") {
                     div(classes = "loritta-items-wrapper") {
-                        for (background in backgrounds) {
-                            div(classes = "shop-item-entry rarity-${background.rarity.name.toLowerCase()}") {
+                        for ((background, variations) in backgrounds) {
+                            div(classes = "shop-item-entry rarity-${background.rarity.name.lowercase()}") {
                                 div {
                                     style = "position: relative;"
 
@@ -159,7 +176,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                         style = "overflow: hidden; line-height: 0;"
 
                                         canvas("canvas-background-preview") {
-                                            id = "canvas-preview-${background.internalName}"
+                                            id = "canvas-preview-${background.id}"
                                             width = "800"
                                             height = "600"
                                             style = "width: 100px; height: auto;"
@@ -202,7 +219,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                 id = "select-active-background-file-input"
 
                                 onClickFunction = {
-                                    val plan = UserPremiumPlans.getPlanFromValue(result.donations.value)
+                                    val plan = UserPremiumPlans.getPlanFromValue(donationsWrapper.value)
 
                                     if (!plan.customBackground) {
                                         it.preventDefault()
@@ -238,8 +255,8 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                 onClickFunction = {
                                     if (!activateBackgroundButtonElement.hasClass("button-discord-disabled")) {
                                         activeBackground?.let { activeBackground ->
-                                            if (activeBackground.internalName == "custom") {
-                                                val plan = UserPremiumPlans.getPlanFromValue(result.donations.value)
+                                            if (activeBackground.id == "custom") {
+                                                val plan = UserPremiumPlans.getPlanFromValue(donationsWrapper.value)
 
                                                 if (!plan.customBackground) {
                                                     Stuff.showPremiumFeatureModal {
@@ -262,7 +279,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                                     reader.onload = {
                                                         val imageAsBase64 = reader.result
                                                         SaveUtils.prepareSave("profile_design", endpoint = "${loriUrl}api/v1/users/self-profile", extras = {
-                                                            it["setActiveBackground"] = activeBackground.internalName
+                                                            it["setActiveBackground"] = activeBackground.id
                                                             it["data"] = (imageAsBase64 as? String)
                                                         }, onFinish = {
                                                             if (it.statusCode in 200..299) {
@@ -279,7 +296,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                                             }
 
                                             SaveUtils.prepareSave("profile_design", endpoint = "${loriUrl}api/v1/users/self-profile", extras = {
-                                                it["setActiveBackground"] = activeBackground.internalName
+                                                it["setActiveBackground"] = activeBackground.id
                                             }, onFinish = {
                                                 if (it.statusCode in 200..299) {
                                                     activateBackgroundButtonElement.addClass("button-discord-disabled")
@@ -296,19 +313,20 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                     }
                 }
 
-                for (background in backgrounds) {
-                    val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.internalName}")
+                for ((background, variations) in backgrounds) {
+                    val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.id}")
 
                     m.launch {
-                        val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, result.dreamStorageServiceUrl, result.dreamStorageServiceBackgroundsNamespace, background, canvasPreview)
+                        val backgroundVariation = variations.filterIsInstance<DefaultBackgroundVariation>().first()
+                        val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, backgroundsWrapper.dreamStorageServiceUrl, backgroundsWrapper.dreamStorageServiceNamespace, backgroundVariation, canvasPreview)
 
                         canvasPreview.parentElement!!.parentElement!!.onClick {
-                            updateActiveBackground(profileWrapper, background, image, fanArtArtists)
+                            updateActiveBackground(profileWrapper, background, backgroundVariation, image, fanArtArtists)
                         }
 
-                        if (background.internalName == (result.settings.activeBackground ?: "defaultBlue")) {
+                        if (background.id == (settingsWrapper.activeBackground ?: "defaultBlue")) {
                             enabledBackground = background
-                            updateActiveBackground(profileWrapper, background, image, fanArtArtists)
+                            updateActiveBackground(profileWrapper, background, backgroundVariation, image, fanArtArtists)
                         }
                     }
                 }
@@ -317,7 +335,13 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
         }
     }
 
-    fun updateActiveBackground(profileWrapper: Image, background: Background, backgroundImg: Image, fanArtArtists: List<FanArtArtist>) {
+    fun updateActiveBackground(
+        profileWrapper: Image,
+        background: Background,
+        backgroundVariation: DefaultBackgroundVariation,
+        backgroundImg: Image,
+        fanArtArtists: List<FanArtArtist>
+    ) {
         this.activeBackground = background
 
         if (enabledBackground == background) {
@@ -328,7 +352,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
             activateBackgroundButtonElement.addClass("button-discord-success")
         }
 
-        if (background.internalName == "custom") {
+        if (background.id == "custom") {
             document.select<HTMLDivElement>("#select-active-background-file")
                 .style.display = ""
         } else {
@@ -345,10 +369,10 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
         canvasPreviewContext
             .drawImage(
                 backgroundImg,
-                (background.crop?.offsetX ?: 0).toDouble(),
-                (background.crop?.offsetY ?: 0).toDouble(),
-                (background.crop?.width ?: backgroundImg.width).toDouble(),
-                (background.crop?.height ?: backgroundImg.height).toDouble(),
+                (backgroundVariation.crop?.x ?: 0).toDouble(),
+                (backgroundVariation.crop?.y ?: 0).toDouble(),
+                (backgroundVariation.crop?.width ?: backgroundImg.width).toDouble(),
+                (backgroundVariation.crop?.height ?: backgroundImg.height).toDouble(),
                 0.0,
                 0.0,
                 800.0,
@@ -357,10 +381,10 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
         canvasPreviewOnlyBgContext
             .drawImage(
                 backgroundImg,
-                (background.crop?.offsetX ?: 0).toDouble(),
-                (background.crop?.offsetY ?: 0).toDouble(),
-                (background.crop?.width ?: backgroundImg.width).toDouble(),
-                (background.crop?.height ?: backgroundImg.height).toDouble(),
+                (backgroundVariation.crop?.x ?: 0).toDouble(),
+                (backgroundVariation.crop?.y ?: 0).toDouble(),
+                (backgroundVariation.crop?.width ?: backgroundImg.width).toDouble(),
+                (backgroundVariation.crop?.height ?: backgroundImg.height).toDouble(),
                 0.0,
                 0.0,
                 800.0,
@@ -369,21 +393,19 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
 
         canvasPreviewContext.drawImage(profileWrapper, 0.0, 0.0)
 
-        activeBackgroundTitleElement.textContent = locale["backgrounds.${background.internalName}.title"]
-        activeBackgroundDescriptionElement.textContent = locale["backgrounds.${background.internalName}.description"]
+        activeBackgroundTitleElement.textContent = locale["backgrounds.${background.id}.title"]
+        activeBackgroundDescriptionElement.textContent = locale["backgrounds.${background.id}.description"]
 
-        if (background.createdBy != null) {
-            val artists = fanArtArtists.filter { it.id in background.createdBy!! }
-            if (artists.isNotEmpty()) {
-                activeBackgroundDescriptionElement.append {
-                    artists.forEach {
-                        div {
-                            val name = (it.info.override?.name ?: it.user?.name ?: it.info.name ?: it.id)
+        val artists = fanArtArtists.filter { it.id in background.createdBy }
+        if (artists.isNotEmpty()) {
+            activeBackgroundDescriptionElement.append {
+                artists.forEach {
+                    div {
+                        val name = (it.info.override?.name ?: it.user?.name ?: it.info.name ?: it.id)
 
-                            +"Criado por "
-                            a(href = "/fanarts/${it.id}") {
-                                +name
-                            }
+                        +"Criado por "
+                        a(href = "/fanarts/${it.id}") {
+                            +name
                         }
                     }
                 }
@@ -396,7 +418,7 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
                 it.clear()
                 it.append {
                     i {
-                        + "Parte do conjunto "
+                        +"Parte do conjunto "
 
                         b {
                             +(locale["sets.${background.set}"])
@@ -406,24 +428,4 @@ class BackgroundsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePos
             }
         }
     }
-
-    @Serializable
-    class UserInfoResult(
-        val settings: Settings,
-        val dreamStorageServiceUrl: String,
-        val dreamStorageServiceBackgroundsNamespace: String,
-        var backgrounds: MutableList<Background>,
-        val donations: DonationValues
-    )
-
-    @Serializable
-    class Settings(
-        val activeBackground: String? = null,
-        val activeProfileDesign: String? = null
-    )
-
-    @Serializable
-    class DonationValues(
-        val value: Double
-    )
 }

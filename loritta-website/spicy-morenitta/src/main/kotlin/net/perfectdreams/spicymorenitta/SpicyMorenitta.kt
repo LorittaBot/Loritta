@@ -362,13 +362,16 @@ class SpicyMorenitta : Logging {
 		debug("New user is $newUser")
 		val loginButton = document.select<Element?>("#login-button")
 		if (loginButton != null) {
+			debug("Login button is not null! Updating it...")
 			val cloned = loginButton.cloneNode(true) // Nós precisamos remover os event listeners (onClick)
 			cloned as Element
 
+			debug("Replacing login button with cloned element...")
 			loginButton.replaceWith(cloned)
 			cloned.clear()
 			cloned.setAttribute("href", "/$websiteLocaleId/dashboard")
 
+			debug("Appending the user's effective avatar URL")
 			cloned.append {
 				val avatarUrl = newUser.effectiveAvatarUrl
 
@@ -398,6 +401,9 @@ class SpicyMorenitta : Logging {
 					+newUser.username
 				}
 			}
+			debug("Successfully updated the login button!")
+		} else {
+			debug("Login Button is not present, so we aren't going to update it...")
 		}
 
 		// Update the navbar entries because the name + avatar may cause the navbar to overflow

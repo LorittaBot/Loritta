@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.tables
 
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object ProfileDesignsPayments : LongIdTable() {

@@ -1,51 +1,10 @@
 package net.perfectdreams.spicymorenitta.routes
 
-import LoriDashboard
-import io.ktor.client.request.*
-import kotlinx.browser.document
-import kotlinx.browser.window
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
-import kotlinx.dom.clear
-import kotlinx.html.canvas
-import kotlinx.html.div
-import kotlinx.html.dom.append
-import kotlinx.html.h1
-import kotlinx.html.hr
-import kotlinx.html.i
-import kotlinx.html.id
-import kotlinx.html.img
-import kotlinx.html.js.onClickFunction
-import kotlinx.html.span
-import kotlinx.html.style
-import kotlinx.serialization.decodeFromString
-import net.perfectdreams.loritta.serializable.Background
-import net.perfectdreams.loritta.serializable.BackgroundListResponse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
-import net.perfectdreams.spicymorenitta.application.ApplicationCall
-import net.perfectdreams.spicymorenitta.http
-import net.perfectdreams.spicymorenitta.utils.GoogleAdSense
-import net.perfectdreams.spicymorenitta.utils.LockerUtils
 import net.perfectdreams.spicymorenitta.utils.Logging
-import net.perfectdreams.spicymorenitta.utils.awaitLoad
-import net.perfectdreams.spicymorenitta.utils.generateAd
-import net.perfectdreams.spicymorenitta.utils.select
-import net.perfectdreams.spicymorenitta.utils.selectAll
-import net.perfectdreams.spicymorenitta.utils.width
-import org.w3c.dom.Audio
-import org.w3c.dom.CanvasRenderingContext2D
-import org.w3c.dom.HTMLCanvasElement
-import org.w3c.dom.HTMLDivElement
-import org.w3c.dom.HTMLImageElement
-import org.w3c.dom.Image
-import org.w3c.dom.url.URLSearchParams
-import kotlin.collections.set
-import kotlin.coroutines.resume
-import kotlin.coroutines.resumeWithException
-import kotlin.js.Json
 
 class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/birthday-2020"), Logging {
+	/*
 	companion object {
 		val pantufaRewards = listOf(
 				BackgroundReward(100, "birthday2020TeamPantufa"),
@@ -813,4 +772,5 @@ class Birthday2020Route(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/bi
 	class BackgroundReward(requiredPoints: Int, val internalName: String) : Reward(requiredPoints)
 	class SonhosReward(requiredPoints: Int, val sonhosReward: Int) : Reward(requiredPoints)
 	class PremiumKeyReward(requiredPoints: Int) : Reward(requiredPoints)
+	*/
 }

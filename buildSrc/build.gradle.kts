@@ -3,5 +3,9 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    implementation("commons-codec:commons-codec:1.15")
 }

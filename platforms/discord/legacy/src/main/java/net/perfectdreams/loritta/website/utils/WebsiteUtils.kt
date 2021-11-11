@@ -5,7 +5,6 @@ import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
-import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.ProfileDesign
 import com.mrpowergamerbr.loritta.dao.ServerConfig
@@ -228,8 +227,6 @@ object WebsiteUtils {
 		variables["asset_hash_app"] = WebsiteAssetsHashes.getAssetHash("assets/js/app.js")
 	}
 
-	fun toSerializable(background: Background) = transaction(Databases.loritta) { fromBackgroundToSerializable(background.readValues) }
-	fun fromBackgroundToSerializable(background: ResultRow) = transaction(Databases.loritta) { Background.wrapRow(background).toSerializable() }
 	fun toSerializable(profileDesign: ProfileDesign) = transaction(Databases.loritta) { fromProfileDesignToSerializable(profileDesign.readValues) }
 	fun fromProfileDesignToSerializable(profileDesign: ResultRow) = transaction(Databases.loritta) { ProfileDesign.wrapRow(profileDesign).toSerializable() }
 

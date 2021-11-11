@@ -2,13 +2,17 @@ package net.perfectdreams.loritta.website.routes.api.v1.economy
 
 import io.ktor.application.*
 import kotlinx.serialization.json.Json
+import net.perfectdreams.loritta.cinnamon.pudding.data.Background
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
+import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.serializable.DailyShopBackgroundEntry
 import net.perfectdreams.loritta.serializable.DailyShopResult
-import net.perfectdreams.loritta.tables.Backgrounds
 import net.perfectdreams.loritta.tables.DailyProfileShopItems
 import net.perfectdreams.loritta.tables.DailyShopItems
 import net.perfectdreams.loritta.tables.DailyShops
-import net.perfectdreams.loritta.tables.ProfileDesigns
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -26,17 +30,22 @@ class GetDailyShopRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/econom
 
 		generatedAt = shop[DailyShops.generatedAt]
 
-		val backgroundsInShop = loritta.newSuspendedTransaction {
+		val backgroundsInShopResults = loritta.newSuspendedTransaction {
 			(DailyShopItems innerJoin Backgrounds)
 				.select {
 					DailyShopItems.shop eq shop[DailyShops.id]
 				}
-				.map {
-					WebsiteUtils.fromBackgroundToSerializable(it).also { background ->
-						background.tag = it[DailyShopItems.tag]
-					}
-				}
 				.toList()
+		}
+
+		val backgroundsInShop = backgroundsInShopResults.map {
+			DailyShopBackgroundEntry(
+				BackgroundWithVariations(
+					Background.fromRow(it),
+					loritta.pudding.backgrounds.getBackgroundVariations(it[Backgrounds.internalName])
+				),
+				it[DailyShopItems.tag]
+			)
 		}
 
 		val profileDesignsInShop = loritta.newSuspendedTransaction {

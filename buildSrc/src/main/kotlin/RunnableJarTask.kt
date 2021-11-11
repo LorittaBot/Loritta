@@ -1,3 +1,5 @@
+
+import org.apache.commons.codec.binary.Hex
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.artifacts.Configuration
@@ -6,6 +8,7 @@ import org.gradle.api.file.DuplicatesStrategy
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.kotlin.dsl.task
 import java.io.File
+import java.security.MessageDigest
 
 val DEFAULT_SHADED_WITHIN_JAR_LIBRARIES = arrayOf(
     "common-",
@@ -39,6 +42,13 @@ fun Project.runnableJarTask(
         // Fixes a "is a duplicate but no duplicate handling strategy has been set" error
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
+        val changedFileNames = mutableMapOf<File, String>()
+
+        for (file in runtimeClasspath) {
+            val checksum = calculateChecksum(file.readBytes())
+            changedFileNames[file] = "${file.nameWithoutExtension}-${Hex.encodeHexString(checksum).substring(0, 4)}.${file.extension}"
+        }
+
         doFirst {
             archiveBaseName.set("${project.name}-runnable")
 
@@ -59,7 +69,7 @@ fun Project.runnableJarTask(
                     .filterNot { addToFinalJarSourceProjectsPrefixes.any { sourceName -> it.name.startsWith(sourceName) } }
                     .filter { it.extension == "jar" }
                     .distinctBy { it.name }
-                    .joinToString(" ", transform = { "libs/" + it.name })
+                    .joinToString(" ", transform = { "libs/" + changedFileNames[it] })
                 attributes.putAll(customAttributes)
             }
 
@@ -85,7 +95,7 @@ fun Project.runnableJarTask(
             // And the rest we will store outside of the JAR
             from(runtimeClasspath.mapNotNull {
                 if (!addToFinalJarSourceProjectsPrefixes.any { sourceName -> it.name.startsWith(sourceName) }) {
-                    val output = File(libs, it.name)
+                    val output = File(libs, changedFileNames[it])
 
                     if (it.exists() && !output.exists() && it.extension == "jar")
                         it.copyTo(output, true)
@@ -97,3 +107,5 @@ fun Project.runnableJarTask(
         with(taskProvider as CopySpec)
     }
 }
+
+fun calculateChecksum(array: ByteArray) = MessageDigest.getInstance("SHA-256").digest(array)

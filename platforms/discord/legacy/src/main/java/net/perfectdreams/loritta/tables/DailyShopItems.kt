@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.tables
 
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object DailyShopItems : LongIdTable() {

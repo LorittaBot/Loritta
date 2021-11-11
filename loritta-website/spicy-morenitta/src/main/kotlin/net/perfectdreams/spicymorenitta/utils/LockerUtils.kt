@@ -1,9 +1,9 @@
 package net.perfectdreams.spicymorenitta.utils
 
 import kotlinx.browser.window
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
-import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.loritta.serializable.ProfileDesign
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import org.w3c.dom.CanvasRenderingContext2D
@@ -11,33 +11,33 @@ import org.w3c.dom.HTMLCanvasElement
 import org.w3c.dom.Image
 
 object LockerUtils : Logging {
-	fun getBackgroundUrl(dreamStorageServiceUrl: String, namespace: String, background: Background): String {
-		val extension = MediaTypeUtils.convertContentTypeToExtension(background.preferredMediaType)
-		return "$dreamStorageServiceUrl/$namespace/${StoragePaths.Background(background.file).join()}.$extension"
+	fun getBackgroundUrl(dreamStorageServiceUrl: String, namespace: String, backgroundVariation: BackgroundVariation): String {
+		val extension = MediaTypeUtils.convertContentTypeToExtension(backgroundVariation.preferredMediaType)
+		return "$dreamStorageServiceUrl/$namespace/${StoragePaths.Background(backgroundVariation.file).join()}.$extension"
 	}
 
-	fun getBackgroundUrlWithCropParameters(dreamStorageServiceUrl: String, namespace: String, background: Background): String {
-		var url = getBackgroundUrl(dreamStorageServiceUrl, namespace, background)
-		val crop = background.crop
+	fun getBackgroundUrlWithCropParameters(dreamStorageServiceUrl: String, namespace: String, backgroundVariation: BackgroundVariation): String {
+		var url = getBackgroundUrl(dreamStorageServiceUrl, namespace, backgroundVariation)
+		val crop = backgroundVariation.crop
 		if (crop != null)
-			url += "?crop_x=${crop.offsetX}&crop_y=${crop.offsetY}&crop_width=${crop.width}&crop_height=${crop.height}"
+			url += "?crop_x=${crop.x}&crop_y=${crop.y}&crop_width=${crop.width}&crop_height=${crop.height}"
 		return url
 	}
 
-	suspend fun prepareBackgroundCanvasPreview(m: SpicyMorenitta, dreamStorageServiceUrl: String, namespace: String, background: Background, canvasPreview: HTMLCanvasElement): CanvasPreviewDownload {
+	suspend fun prepareBackgroundCanvasPreview(m: SpicyMorenitta, dreamStorageServiceUrl: String, namespace: String, backgroundVariation: BackgroundVariation, canvasPreview: HTMLCanvasElement): CanvasPreviewDownload {
 		val job = m.async {
 			// Normal BG
 			val backgroundImg = Image()
-			backgroundImg.awaitLoad(getBackgroundUrl(dreamStorageServiceUrl, namespace, background))
+			backgroundImg.awaitLoad(getBackgroundUrl(dreamStorageServiceUrl, namespace, backgroundVariation))
 			val canvasPreviewContext = (canvasPreview.getContext("2d")!! as CanvasRenderingContext2D)
 
 			canvasPreviewContext
 					.drawImage(
 							backgroundImg,
-							(background.crop?.offsetX ?: 0).toDouble(),
-							(background.crop?.offsetY ?: 0).toDouble(),
-							(background.crop?.width ?: backgroundImg.width).toDouble(),
-							(background.crop?.height ?: backgroundImg.height).toDouble(),
+							(backgroundVariation.crop?.x ?: 0).toDouble(),
+							(backgroundVariation.crop?.y ?: 0).toDouble(),
+							(backgroundVariation.crop?.width ?: backgroundImg.width).toDouble(),
+							(backgroundVariation.crop?.height ?: backgroundImg.height).toDouble(),
 							0.0,
 							0.0,
 							800.0,

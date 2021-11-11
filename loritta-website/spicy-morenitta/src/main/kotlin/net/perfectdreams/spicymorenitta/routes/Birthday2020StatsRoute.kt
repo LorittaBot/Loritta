@@ -1,24 +1,10 @@
 package net.perfectdreams.spicymorenitta.routes
 
-import LoriDashboard
-import io.ktor.client.request.*
-import kotlinx.browser.document
-import kotlinx.browser.window
-import kotlinx.coroutines.delay
-import kotlinx.html.*
-import kotlinx.html.dom.append
-import kotlinx.html.dom.prepend
-import kotlinx.serialization.builtins.ListSerializer
-import net.perfectdreams.loritta.serializable.Background
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
-import net.perfectdreams.spicymorenitta.application.ApplicationCall
-import net.perfectdreams.spicymorenitta.http
-import net.perfectdreams.spicymorenitta.utils.*
-import org.w3c.dom.*
-import kotlin.js.Json
+import net.perfectdreams.spicymorenitta.utils.Logging
 
 class Birthday2020StatsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/birthday-2020/stats"), Logging {
-	val totalPrizeCount: HTMLElement
+	/* val totalPrizeCount: HTMLElement
 		get() = document.select<HTMLDivElement>("#total-prize-count")
 
 	var currentPoints = 0
@@ -294,5 +280,5 @@ class Birthday2020StatsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender
 				currentPoints = total
 			}
 		}, false)
-	}
+	} */
 }

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.website.routes.api.v1.user
 
-import com.mrpowergamerbr.loritta.dao.Background
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import io.ktor.application.*
 import io.ktor.http.*
@@ -19,14 +18,6 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 		val settings = loritta.newSuspendedTransaction {
 			profile.settings
 		}
-
-		val withBackground = call.parameters["withBackground"]
-
-		val background = if (withBackground == "userSettings") {
-			com.mrpowergamerbr.loritta.utils.loritta.getUserProfileBackground(profile)
-		} else if (withBackground != null) {
-			loritta.getUserProfileBackground(loritta.newSuspendedTransaction { Background.findById(withBackground) })
-		} else null
 
 		val internalTypeName = call.parameters["type"] ?: "defaultDark"
 
@@ -71,7 +62,7 @@ class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				null,
 				listOf(),
 				locale,
-				background ?: BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB),
+				BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background
 				settings.aboutMe ?: "???"
         )
 

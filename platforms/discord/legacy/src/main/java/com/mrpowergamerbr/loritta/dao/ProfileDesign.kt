@@ -1,6 +1,6 @@
 package com.mrpowergamerbr.loritta.dao
 
-import net.perfectdreams.loritta.tables.ProfileDesigns
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID

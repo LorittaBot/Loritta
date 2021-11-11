@@ -7,23 +7,45 @@ import kotlinx.dom.addClass
 import kotlinx.dom.clear
 import kotlinx.dom.hasClass
 import kotlinx.dom.removeClass
-import kotlinx.html.*
+import kotlinx.html.InputType
+import kotlinx.html.a
+import kotlinx.html.b
+import kotlinx.html.button
+import kotlinx.html.canvas
+import kotlinx.html.div
 import kotlinx.html.dom.append
+import kotlinx.html.h2
+import kotlinx.html.i
+import kotlinx.html.id
+import kotlinx.html.input
 import kotlinx.html.js.onChangeFunction
 import kotlinx.html.js.onClickFunction
-import kotlinx.serialization.Serializable
+import kotlinx.html.p
+import kotlinx.html.style
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.serializable.ProfileDesign
+import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
 import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
-import net.perfectdreams.spicymorenitta.utils.*
+import net.perfectdreams.spicymorenitta.utils.FanArtArtist
+import net.perfectdreams.spicymorenitta.utils.LockerUtils
+import net.perfectdreams.spicymorenitta.utils.SaveUtils
+import net.perfectdreams.spicymorenitta.utils.awaitLoad
+import net.perfectdreams.spicymorenitta.utils.loriUrl
+import net.perfectdreams.spicymorenitta.utils.onClick
+import net.perfectdreams.spicymorenitta.utils.select
 import net.perfectdreams.spicymorenitta.views.dashboard.Stuff
-import org.w3c.dom.*
+import org.w3c.dom.CanvasRenderingContext2D
+import org.w3c.dom.Element
+import org.w3c.dom.HTMLButtonElement
+import org.w3c.dom.HTMLCanvasElement
+import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.Image
 import kotlin.js.Date
 
 class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/user/@me/dashboard/profiles") {
@@ -58,7 +80,7 @@ class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                 }
 
                 debug("Retrieved profiles & background info!")
-                val result = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(UserInfoResult.serializer(), payload)
+                val result = JSON.nonstrict.decodeFromString(ProfileSectionsResponse.serializer(), payload)
                 return@async result
             }
 
@@ -72,10 +94,15 @@ class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
             }
 
             val result = userBackgroundsJob.await()
+            // Those should always be present due to our URL query, but who knows, right?
+            // I tried using the "error" method to throw an IllegalArgumentException in a nice way... but the "Logger" class also has a "error" method, smh
+            val profileDesigns = result.profileDesigns ?: throw IllegalArgumentException("Profile Designs is not present! Bug?")
+            val settingsWrapper = result.settings ?: throw IllegalArgumentException("Settings Wrapper is not present! Bug?")
+            val donationsWrapper = result.donations ?: throw IllegalArgumentException("Donations Wrapper is not present! Bug?")
             val profileWrapper = profileWrapperJob.await()
 
             val fanArtArtistsJob = m.async {
-                val allArtists = result.profileDesigns.mapNotNull { it.createdBy }.flatten().distinct()
+                val allArtists = profileDesigns.mapNotNull { it.createdBy }.flatten().distinct()
 
                 if (allArtists.isEmpty())
                     return@async listOf<FanArtArtist>()
@@ -91,7 +118,7 @@ class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
 
             val entriesDiv = document.select<HTMLDivElement>("#bundles-content")
 
-            val backgrounds = result.profileDesigns.sortedByDescending { it.rarity.getBackgroundPrice() }
+            val backgrounds = profileDesigns.sortedByDescending { it.rarity.getBackgroundPrice() }
                     .toMutableList()
                     /* .apply {
                         this.add(
@@ -161,7 +188,7 @@ class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                                 id = "select-active-background-file-input"
 
                                 onClickFunction = {
-                                    val plan = UserPremiumPlans.getPlanFromValue(result.donations.value)
+                                    val plan = UserPremiumPlans.getPlanFromValue(donationsWrapper.value)
 
                                     if (!plan.customBackground) {
                                         it.preventDefault()
@@ -225,7 +252,7 @@ class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
                             updateActiveProfileDesign(background, image, fanArtArtists)
                         }
 
-                        if (background.internalName == (result.settings.activeProfileDesign ?: "defaultDark")) {
+                        if (background.internalName == (settingsWrapper.activeProfileDesign ?: "defaultDark")) {
                             enabledProfileDesign = background
                             updateActiveProfileDesign(background, image, fanArtArtists)
                         }
@@ -328,22 +355,4 @@ class ProfileDesignsListDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSize
             }
         }
     }
-
-    @Serializable
-    class UserInfoResult(
-            val settings: Settings,
-            var profileDesigns: MutableList<ProfileDesign>,
-            val donations: DonationValues
-    )
-
-    @Serializable
-    class Settings(
-            val activeBackground: String? = null,
-            val activeProfileDesign: String? = null
-    )
-
-    @Serializable
-    class DonationValues(
-            val value: Double
-    )
 }

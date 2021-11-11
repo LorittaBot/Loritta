@@ -20,13 +20,15 @@ import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.span
 import kotlinx.html.style
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.api.utils.Rarity
-import net.perfectdreams.loritta.serializable.Background
+import net.perfectdreams.loritta.cinnamon.common.utils.Rarity
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
+import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
+import net.perfectdreams.loritta.serializable.DailyShopBackgroundEntry
 import net.perfectdreams.loritta.serializable.DailyShopResult
 import net.perfectdreams.loritta.serializable.ProfileDesign
+import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http
@@ -116,12 +118,25 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
     suspend fun regen(keepRechecking: Boolean) {
         // ===[ DAILY SHOP ]===
         val dailyJob = m.async {
+            val payload = http.get<String> {
+                url("${window.location.origin}/api/v1/economy/daily-shop")
+            }
+
+            val result = JSON.nonstrict.decodeFromString(DailyShopResult.serializer(), payload)
+
+            info("Shop was successfully updated! generatedAt = ${result.generatedAt}")
+            generatedAt = result.generatedAt
+
+            return@async result
+        }
+        // TODO: Fix this! I don't know why it is like that
+        /* val dailyJob = m.async {
             while (true) {
                 val payload = http.get<String> {
                     url("${window.location.origin}/api/v1/economy/daily-shop")
                 }
 
-                val result = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(DailyShopResult.serializer(), payload)
+                val result = JSON.nonstrict.decodeFromString(DailyShopResult.serializer(), payload)
 
                 if (keepRechecking && generatedAt == result.generatedAt) {
                     info("Waiting for 5_000ms until we recheck the shop again, looks like it wasn't fully updated yet...")
@@ -135,17 +150,17 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                 return@async result
             }
             throw RuntimeException("Should never happen!")
-        }
+        } */
 
-        // ===[ USER BACKGROUNDS ]===
-        val userBackgroundsJob = m.async {
+        // ===[ USERS SHENANIGANS ]===
+        val usersShenanigansJob = m.async {
             debug("Retrieving profiles & background info...")
             val payload = http.get<String> {
                 url("${window.location.origin}/api/v1/users/@me/profiles,backgrounds,profileDesigns")
             }
 
             debug("Retrieved profiles & background info!")
-            val result = kotlinx.serialization.json.JSON.nonstrict.decodeFromString(UserInfoResult.serializer(), payload)
+            val result = JSON.nonstrict.decodeFromString(ProfileSectionsResponse.serializer(), payload)
             return@async result
         }
 
@@ -161,14 +176,20 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         debug("await #1")
         val dailyShop = dailyJob.await()
         debug("await #2")
-        val userBackgrounds = userBackgroundsJob.await()
+        val userBackgrounds = usersShenanigansJob.await()
         debug("await #3")
         val profileWrapper = profileWrapperJob.await()
         debug("await #4")
 
-        val allArtists = (dailyShop.backgrounds.mapNotNull { it.createdBy } + dailyShop.profileDesigns.mapNotNull { it.createdBy })
-                .flatten()
-                .distinct()
+        // Those should always be present due to our URL query, but who knows, right?
+        // I tried using the "error" method to throw an IllegalArgumentException in a nice way... but the "Logger" class also has a "error" method, smh
+        val backgroundsWrapper = userBackgrounds.backgrounds ?: throw IllegalArgumentException("Background Wrapper is not present! Bug?")
+        val profileDataWrapper = userBackgrounds.profile ?: throw IllegalArgumentException("Profile Data Wrapper is not present! Bug?")
+        val profileDesigns = userBackgrounds.profileDesigns ?: throw IllegalArgumentException("Profile Designs is not present! Bug?")
+
+        val allArtists = (dailyShop.backgrounds.map { it.backgroundWithVariations.background.createdBy } + dailyShop.profileDesigns.mapNotNull { it.createdBy })
+            .flatten()
+            .distinct()
 
         val fanArtArtistsJob = m.async {
             if (allArtists.isEmpty())
@@ -185,7 +206,14 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
 
         debug("Everything is retrieved! Let's go!")
 
-        generateShop(dailyShop, userBackgrounds, profileWrapper, fanArtArtists)
+        generateShop(
+            dailyShop,
+            profileDataWrapper,
+            backgroundsWrapper,
+            profileDesigns,
+            profileWrapper,
+            fanArtArtists
+        )
     }
 
     fun getTimeUntilUTCMidnight(): Long {
@@ -196,7 +224,14 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         return diff
     }
 
-    fun generateShop(dailyShop: DailyShopResult, userInfoResult: UserInfoResult, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
+    fun generateShop(
+        dailyShop: DailyShopResult,
+        profileDataWrapper: ProfileSectionsResponse.ProfileDataWrapper,
+        backgroundsWrapper: ProfileSectionsResponse.BackgroundsWrapper,
+        profileDesigns: List<ProfileDesign>,
+        profileWrapper: Image,
+        fanArtArtists: List<FanArtArtist>
+    ) {
         info("Generating Shop...")
         val entriesDiv = document.select<HTMLDivElement>("#bundles-content")
         entriesDiv.clear()
@@ -246,12 +281,15 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                 div(classes = "loritta-items-wrapper") {
                     // A list containing all of the items in the shop
                     // We are now going to sort it by rarity
-                    val allItemsInTheShop = (dailyShop.profileDesigns.map { ProfileDesignItemWrapper(it) } + dailyShop.backgrounds.map { BackgroundItemWrapper(it) })
+                    val allItemsInTheShop = dailyShop.profileDesigns.map { ProfileDesignItemWrapper(it) } + dailyShop.backgrounds.map { BackgroundItemWrapper(it) }
 
                     val sortedByRarityAllItemsInTheShop = allItemsInTheShop.sortedByDescending { it.rarity }
 
                     for (shopItem in sortedByRarityAllItemsInTheShop) {
-                        val bought = shopItem.hasBought(userInfoResult)
+                        val bought = when (shopItem) {
+                            is BackgroundItemWrapper -> shopItem.hasBought(backgroundsWrapper)
+                            is ProfileDesignItemWrapper -> shopItem.hasBought(profileDesigns)
+                        }
 
                         div(classes = "shop-item-entry rarity-${shopItem.rarity.name.toLowerCase()}") {
                             div {
@@ -306,115 +344,121 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
 
         // Setup the images for the item entires in the daily shop
         for (profileDesign in dailyShop.profileDesigns) {
-            val bought = profileDesign.internalName in userInfoResult.profileDesigns.map { it.internalName }
+            val bought = profileDesign.internalName in profileDesigns.map { it.internalName }
             val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${profileDesign.internalName}")
 
             m.launch {
                 val (image) = LockerUtils.prepareProfileDesignsCanvasPreview(m, profileDesign, canvasPreview)
 
                 canvasPreview.parentElement!!.parentElement!!.onClick {
-                    openProfileDesignInformation(userInfoResult, profileDesign, bought, image, fanArtArtists)
+                    openProfileDesignInformation(profileDataWrapper, profileDesign, bought, image, fanArtArtists)
                 }
             }
         }
 
-        for (background in dailyShop.backgrounds) {
-            val bought = background.internalName in userInfoResult.backgrounds.map { it.internalName }
-            val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.internalName}")
+        for (backgroundEntry in dailyShop.backgrounds) {
+            val backgroundWithVariations = backgroundEntry.backgroundWithVariations
+            val (background, variations) = backgroundWithVariations
+            val bought = backgroundsWrapper.backgrounds.any { background.id == it.background.id }
+            val canvasPreview = document.select<HTMLCanvasElement>("#canvas-preview-${background.id}")
 
             m.launch {
-                val (image) = LockerUtils.prepareBackgroundCanvasPreview(m, dailyShop.dreamStorageServiceUrl, dailyShop.namespace, background, canvasPreview)
+                val variation = backgroundWithVariations.variations.firstOrNull { it is DefaultBackgroundVariation }
+                if (variation != null) {
+                    val (image) = LockerUtils.prepareBackgroundCanvasPreview(
+                        m,
+                        dailyShop.dreamStorageServiceUrl,
+                        dailyShop.namespace,
+                        variation,
+                        canvasPreview
+                    )
 
-                canvasPreview.parentElement!!.parentElement!!.onClick {
-                    openBackgroundInformation(userInfoResult, background, bought, StaticBackgroundImage(image), profileWrapper, fanArtArtists)
+                    canvasPreview.parentElement!!.parentElement!!.onClick {
+                        openBackgroundInformation(
+                            profileDataWrapper,
+                            backgroundWithVariations,
+                            bought,
+                            StaticBackgroundImage(image),
+                            profileWrapper,
+                            fanArtArtists
+                        )
+                    }
                 }
             }
         }
     }
 
-    @Serializable
-    class UserInfoResult(
-            val profile: Profile,
-            var backgrounds: MutableList<Background>,
-            var profileDesigns: MutableList<ProfileDesign>
-    )
-
-    @Serializable
-    class Profile(
-            val money: Long
-    )
-
-    fun openProfileDesignInformation(result: UserInfoResult, background: ProfileDesign, alreadyBought: Boolean, image: Image, fanArtArtists: List<FanArtArtist>) {
+    fun openProfileDesignInformation(result: ProfileSectionsResponse.ProfileDataWrapper, background: ProfileDesign, alreadyBought: Boolean, image: Image, fanArtArtists: List<FanArtArtist>) {
         val modal = TingleModal(
-                TingleOptions(
-                        footer = true,
-                        cssClass = arrayOf("tingle-modal--overflow")
-                )
+            TingleOptions(
+                footer = true,
+                cssClass = arrayOf("tingle-modal--overflow")
+            )
         )
 
         modal.setContent(
-                document.create.div(classes = "item-shop-preview") {
+            document.create.div(classes = "item-shop-preview") {
+                div {
+                    style = "flex-grow: 1;"
+                    h1 {
+                        style = "word-break: break-word; text-align: center;"
+
+                        +(locale["profileDesigns.${background.internalName}.title"])
+                    }
                     div {
-                        style = "flex-grow: 1;"
-                        h1 {
-                            style = "word-break: break-word; text-align: center;"
+                        style = "margin-bottom: 10px;"
+                        +(locale["profileDesigns.${background.internalName}.description"])
 
-                            +(locale["profileDesigns.${background.internalName}.title"])
-                        }
-                        div {
-                            style = "margin-bottom: 10px;"
-                            +(locale["profileDesigns.${background.internalName}.description"])
+                        if (background.createdBy != null) {
+                            val artists = fanArtArtists.filter { it.id in background.createdBy!! }
+                            if (artists.isNotEmpty()) {
+                                artists.forEach {
+                                    div {
+                                        val name = (it.info.override?.name ?: it.user?.name ?: it.info.name ?: it.id)
 
-                            if (background.createdBy != null) {
-                                val artists = fanArtArtists.filter { it.id in background.createdBy!! }
-                                if (artists.isNotEmpty()) {
-                                    artists.forEach {
-                                        div {
-                                            val name = (it.info.override?.name ?: it.user?.name ?: it.info.name ?: it.id)
-
-                                            +"Criado por "
-                                            a(href = "/fanarts/${it.id}") {
-                                                +name
-                                            }
+                                        +"Criado por "
+                                        a(href = "/fanarts/${it.id}") {
+                                            +name
                                         }
                                     }
                                 }
                             }
                         }
-                        if (background.set != null) {
-                            div {
-                                i {
-                                    locale.buildAsHtml(locale["website.dailyShop.partOfTheSet"], { num ->
-                                        if (num == 0) {
-                                            b {
-                                                + (locale["sets.${background.set}"])
-                                            }
+                    }
+                    if (background.set != null) {
+                        div {
+                            i {
+                                locale.buildAsHtml(locale["website.dailyShop.partOfTheSet"], { num ->
+                                    if (num == 0) {
+                                        b {
+                                            + (locale["sets.${background.set}"])
                                         }
-                                    }) { + it }
-                                }
+                                    }
+                                }) { + it }
                             }
                         }
                     }
+                }
 
-                    div(classes = "canvas-preview-wrapper") {
-                        canvas("canvas-preview-only-bg") {
-                            style = """width: 400px;"""
-                            width = "800"
-                            height = "600"
-                        }
+                div(classes = "canvas-preview-wrapper") {
+                    canvas("canvas-preview-only-bg") {
+                        style = """width: 400px;"""
+                        width = "800"
+                        height = "600"
+                    }
 
-                        canvas("canvas-preview") {
-                            style = """width: 400px;"""
-                            width = "800"
-                            height = "600"
-                        }
+                    canvas("canvas-preview") {
+                        style = """width: 400px;"""
+                        width = "800"
+                        height = "600"
                     }
                 }
+            }
         )
 
         val cash = Audio("${loriUrl}assets/snd/css1_cash.wav")
         if (!alreadyBought) {
-            val canBuy = result.profile.money >= background.rarity.getProfilePrice()
+            val canBuy = result.money >= background.rarity.getProfilePrice()
             val classes = if (canBuy) "button-discord-info" else "button-discord-disabled"
             modal.addFooterBtn("<i class=\"fas fa-gift\"></i> Comprar", "buy-button-modal button-discord $classes pure-button button-discord-modal") {
                 if (canBuy) {
@@ -427,7 +471,7 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
                         }
 
                         visibleModal.select<HTMLElement>(".buy-button-modal")
-                                .remove()
+                            .remove()
 
                         m.launch {
                             regen(false)
@@ -454,103 +498,103 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         val canvasPreviewOnlyBgContext = (canvasCheckoutOnlyBg.getContext("2d")!! as CanvasRenderingContext2D)
 
         canvasPreviewOnlyBgContext
-                .drawImage(
-                        image,
-                        0.0,
-                        0.0,
-                        image.width.toDouble(),
-                        image.height.toDouble(),
-                        0.0,
-                        0.0,
-                        800.0,
-                        600.0
-                )
+            .drawImage(
+                image,
+                0.0,
+                0.0,
+                image.width.toDouble(),
+                image.height.toDouble(),
+                0.0,
+                0.0,
+                800.0,
+                600.0
+            )
     }
 
-    fun openBackgroundInformation(result: UserInfoResult, background: Background, alreadyBought: Boolean, backgroundImg: BackgroundImage, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
+    fun openBackgroundInformation(result: ProfileSectionsResponse.ProfileDataWrapper, backgroundWithVariations: BackgroundWithVariations, alreadyBought: Boolean, backgroundImg: BackgroundImage, profileWrapper: Image, fanArtArtists: List<FanArtArtist>) {
+        val (background, variations) = backgroundWithVariations
         val modal = TingleModal(
-                TingleOptions(
-                        footer = true,
-                        cssClass = arrayOf("tingle-modal--overflow")
-                )
+            TingleOptions(
+                footer = true,
+                cssClass = arrayOf("tingle-modal--overflow")
+            )
         )
+        val defaultVariation = variations.first { it is DefaultBackgroundVariation }
 
         modal.setContent(
-                document.create.div(classes = "item-shop-preview") {
+            document.create.div(classes = "item-shop-preview") {
+                div {
+                    style = "flex-grow: 1;"
+                    h1 {
+                        style = "word-break: break-word; text-align: center;"
+
+                        +(locale["backgrounds.${background.id}.title"])
+                    }
                     div {
-                        style = "flex-grow: 1;"
-                        h1 {
-                            style = "word-break: break-word; text-align: center;"
+                        style = "margin-bottom: 10px;"
+                        +(locale["backgrounds.${background.id}.description"])
 
-                            +(locale["backgrounds.${background.internalName}.title"])
-                        }
-                        div {
-                            style = "margin-bottom: 10px;"
-                            +(locale["backgrounds.${background.internalName}.description"])
+                        val artists = fanArtArtists.filter { it.id in background.createdBy }
+                        if (artists.isNotEmpty()) {
+                            artists.forEach {
+                                div {
+                                    val name = (it.info.override?.name ?: it.user?.name ?: it.info.name ?: it.id)
 
-                            if (background.createdBy != null) {
-                                val artists = fanArtArtists.filter { it.id in background.createdBy!! }
-                                if (artists.isNotEmpty()) {
-                                    artists.forEach {
-                                        div {
-                                            val name = (it.info.override?.name ?: it.user?.name ?: it.info.name ?: it.id)
-
-                                            +"Criado por "
-                                            a(href = "/fanarts/${it.id}") {
-                                                +name
-                                            }
-                                        }
+                                    +"Criado por "
+                                    a(href = "/fanarts/${it.id}") {
+                                        +name
                                     }
                                 }
                             }
                         }
-                        if (background.set != null) {
-                            div {
-                                i {
-                                    locale.buildAsHtml(locale["website.dailyShop.partOfTheSet"], { num ->
-                                        if (num == 0) {
-                                            b {
-                                                + (locale["sets.${background.set}"])
-                                            }
+                    }
+                    if (background.set != null) {
+                        div {
+                            i {
+                                locale.buildAsHtml(locale["website.dailyShop.partOfTheSet"], { num ->
+                                    if (num == 0) {
+                                        b {
+                                            + (locale["sets.${background.set}"])
                                         }
-                                    }) { + it }
-                                }
+                                    }
+                                }) { + it }
                             }
                         }
                     }
+                }
 
-                    div(classes = "canvas-preview-wrapper") {
-                        canvas("canvas-preview-only-bg") {
-                            style = """width: 400px;"""
-                            width = "800"
-                            height = "600"
-                        }
+                div(classes = "canvas-preview-wrapper") {
+                    canvas("canvas-preview-only-bg") {
+                        style = """width: 400px;"""
+                        width = "800"
+                        height = "600"
+                    }
 
-                        canvas("canvas-preview") {
-                            style = """width: 400px;"""
-                            width = "800"
-                            height = "600"
-                        }
+                    canvas("canvas-preview") {
+                        style = """width: 400px;"""
+                        width = "800"
+                        height = "600"
                     }
                 }
+            }
         )
 
         val cash = Audio("${loriUrl}assets/snd/css1_cash.wav")
         if (!alreadyBought) {
-            val canBuy = result.profile.money >= background.rarity.getBackgroundPrice()
+            val canBuy = result.money >= background.rarity.getBackgroundPrice()
             val classes = if (canBuy) "button-discord-info" else "button-discord-disabled"
             modal.addFooterBtn("<i class=\"fas fa-gift\"></i> Comprar", "buy-button-modal button-discord $classes pure-button button-discord-modal") {
                 if (canBuy) {
                     m.launch {
                         m.showLoadingScreen()
-                        val response = sendItemPurchaseRequest("background", background.internalName)
+                        val response = sendItemPurchaseRequest("background", background.id)
 
                         if (response.status != HttpStatusCode.OK) {
 
                         }
 
                         visibleModal.select<HTMLElement>(".buy-button-modal")
-                                .remove()
+                            .remove()
 
                         m.launch {
                             regen(false)
@@ -578,29 +622,29 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
 
         if (backgroundImg is StaticBackgroundImage) {
             canvasPreviewContext
-                    .drawImage(
-                            backgroundImg.image,
-                            (background.crop?.offsetX ?: 0).toDouble(),
-                            (background.crop?.offsetY ?: 0).toDouble(),
-                            (background.crop?.width ?: backgroundImg.image.width).toDouble(),
-                            (background.crop?.height ?: backgroundImg.image.height).toDouble(),
-                            0.0,
-                            0.0,
-                            800.0,
-                            600.0
-                    )
+                .drawImage(
+                    backgroundImg.image,
+                    (defaultVariation.crop?.x ?: 0).toDouble(),
+                    (defaultVariation.crop?.y ?: 0).toDouble(),
+                    (defaultVariation.crop?.width ?: backgroundImg.image.width).toDouble(),
+                    (defaultVariation.crop?.height ?: backgroundImg.image.height).toDouble(),
+                    0.0,
+                    0.0,
+                    800.0,
+                    600.0
+                )
             canvasPreviewOnlyBgContext
-                    .drawImage(
-                            backgroundImg.image,
-                            (background.crop?.offsetX ?: 0).toDouble(),
-                            (background.crop?.offsetY ?: 0).toDouble(),
-                            (background.crop?.width ?: backgroundImg.image.width).toDouble(),
-                            (background.crop?.height ?: backgroundImg.image.height).toDouble(),
-                            0.0,
-                            0.0,
-                            800.0,
-                            600.0
-                    )
+                .drawImage(
+                    backgroundImg.image,
+                    (defaultVariation.crop?.x ?: 0).toDouble(),
+                    (defaultVariation.crop?.y ?: 0).toDouble(),
+                    (defaultVariation.crop?.width ?: backgroundImg.image.width).toDouble(),
+                    (defaultVariation.crop?.height ?: backgroundImg.image.height).toDouble(),
+                    0.0,
+                    0.0,
+                    800.0,
+                    600.0
+                )
 
             canvasPreviewContext.drawImage(profileWrapper, 0.0, 0.0)
         }
@@ -621,29 +665,28 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
 
     class StaticBackgroundImage(val image: Image) : BackgroundImage()
 
-    abstract class ShopItemWrapper {
+    sealed class ShopItemWrapper {
         abstract val internalName: String
         abstract val rarity: Rarity
         abstract val tag: String?
         abstract val localePrefix: String?
         abstract val price: Int?
+    }
+
+    class BackgroundItemWrapper(backgroundEntry: DailyShopBackgroundEntry) : ShopItemWrapper() {
+        val background = backgroundEntry.backgroundWithVariations.background
+        override val internalName = background.id
+        override val rarity = background.rarity
+        override val tag = backgroundEntry.tag
+        override val localePrefix = "backgrounds"
+        override val price = rarity.getBackgroundPrice()
 
         /**
          * Checks if the user has already bought the item or not
          *
          * @return if the user already has the item
          */
-        abstract fun hasBought(userInfoResult: UserInfoResult): Boolean
-    }
-
-    class BackgroundItemWrapper(background: Background) : ShopItemWrapper() {
-        override val internalName = background.internalName
-        override val rarity = background.rarity
-        override val tag = background.tag
-        override val localePrefix = "backgrounds"
-        override val price = rarity.getBackgroundPrice()
-
-        override fun hasBought(userInfoResult: UserInfoResult) = internalName in userInfoResult.backgrounds.map { it.internalName }
+        fun hasBought(backgroundsWrapper: ProfileSectionsResponse.BackgroundsWrapper) = backgroundsWrapper.backgrounds.any { it.background.id == internalName }
     }
 
     class ProfileDesignItemWrapper(profileDesign: ProfileDesign) : ShopItemWrapper() {
@@ -653,6 +696,11 @@ class DailyShopDashboardRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRende
         override val localePrefix = "profileDesigns"
         override val price = rarity.getProfilePrice()
 
-        override fun hasBought(userInfoResult: UserInfoResult) = internalName in userInfoResult.profileDesigns.map { it.internalName }
+        /**
+         * Checks if the user has already bought the item or not
+         *
+         * @return if the user already has the item
+         */
+        fun hasBought(profileDesigns: List<ProfileDesign>) = profileDesigns.any { it.internalName == internalName }
     }
 }

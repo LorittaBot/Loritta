@@ -1,11 +1,9 @@
 package com.mrpowergamerbr.loritta.tables
 
-import com.mrpowergamerbr.loritta.utils.exposed.array
 import com.mrpowergamerbr.loritta.utils.locale.Gender
-import net.perfectdreams.loritta.tables.Backgrounds
-import net.perfectdreams.loritta.tables.ProfileDesigns
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.TextColumnType
 
 object UserSettings : LongIdTable() {
 	val aboutMe = text("about_me").nullable()
