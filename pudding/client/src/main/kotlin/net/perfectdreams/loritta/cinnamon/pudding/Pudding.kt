@@ -8,17 +8,22 @@ import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
+import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ShipEffectsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.SonhosService
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
@@ -118,7 +123,8 @@ open class Pudding(private val database: Database) {
             return hikariConfig
         }
 
-        private fun connectToDatabase(dataSource: HikariDataSource): Database =
+        // Loritta (Legacy) uses this!
+        fun connectToDatabase(dataSource: HikariDataSource): Database =
             Database.connect(
                 HikariDataSource(dataSource),
                 databaseConfig = DatabaseConfig {
@@ -135,6 +141,8 @@ open class Pudding(private val database: Database) {
     val marriages = MarriagesService(this)
     val interactionsData = InteractionsDataService(this)
     val executedApplicationCommandsLog = ExecutedApplicationCommandsLogService(this)
+    val backgrounds = BackgroundsService(this)
+    val profileDesigns = ProfileDesignsService(this)
     val puddingTasks = PuddingTasks(this)
 
     /**
@@ -158,8 +166,11 @@ open class Pudding(private val database: Database) {
             schemas.addAll(tables.filter { shouldBeUpdated.invoke(it::class.simpleName!!) })
         insertIfValid(
             Sets,
+            ProfileDesignGroups,
             ProfileDesigns,
             Backgrounds,
+            BackgroundVariations,
+            BackgroundPayments,
             UserSettings,
             Profiles,
             ServerConfigs,

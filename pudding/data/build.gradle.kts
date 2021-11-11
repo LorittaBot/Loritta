@@ -1,7 +1,10 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
+    id("maven-publish")
 }
+
+version = Versions.PUDDING
 
 kotlin {
     jvm {
@@ -11,7 +14,7 @@ kotlin {
         withJava()
     }
 
-    js(IR) {
+    js(BOTH) { // We compile for both because Loritta Legacy also uses this module
         // Declares that we want to compile for the browser and for nodejs
         browser()
         nodejs()
