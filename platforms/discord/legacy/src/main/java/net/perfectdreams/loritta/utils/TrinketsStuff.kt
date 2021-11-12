@@ -869,8 +869,8 @@ object TrinketsStuff {
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "wumpus-buff-dark-center-top", ContentType.Image.PNG)
         }
         createBackground("wumpusBuffBlurple", true, Rarity.RARE, LocalDate.of(2021, 11, 11), createdBy = arrayOf("peterstark000"), set = "discord") {
-            addDefaultVariant("wumpus-buff-dark", ContentType.Image.PNG)
-            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "wumpus-buff-dark-center-top", ContentType.Image.PNG)
+            addDefaultVariant("wumpus-buff-blurple", ContentType.Image.PNG)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "wumpus-buff-blurple-center-top", ContentType.Image.PNG)
         }
         createBackground("wumpusMania", true, Rarity.EPIC, LocalDate.of(2021, 11, 11), set = "discord") {
             addDefaultVariant("wumpus-mania", ContentType.Image.PNG)
