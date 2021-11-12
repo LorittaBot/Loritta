@@ -24,6 +24,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptio
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import kotlin.streams.toList
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 
 /**
  * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
@@ -98,7 +100,7 @@ class SlashCommandExecutorWrapper(
             stacktrace
         )
     }
-    
+
     private suspend fun executeCommand(
         rootDeclarationClazzName: String?,
         executorClazzName: String?,
@@ -109,7 +111,7 @@ class SlashCommandExecutorWrapper(
     ): CommandExecutionResult {
         // These variables are used in the catch { ... } block, to make our lives easier
         var i18nContext: I18nContext? = null
-        var cinnamonContext: net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext? = null
+        val cinnamonContext: CinnamonApplicationCommandContext?
 
         val interaKTionsArgumentEntries = args.types.entries
 
@@ -134,7 +136,7 @@ class SlashCommandExecutorWrapper(
             // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
 
             cinnamonContext = if (context is GuildApplicationCommandContext) {
-                GuildApplicationCommandContext(
+                CinnamonGuildApplicationCommandContext(
                     loritta,
                     i18nContext,
                     context.sender,
@@ -143,7 +145,7 @@ class SlashCommandExecutorWrapper(
                     context.member
                 )
             } else {
-                ApplicationCommandContext(
+                CinnamonApplicationCommandContext(
                     loritta,
                     i18nContext,
                     context.sender,
