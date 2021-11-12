@@ -29,8 +29,8 @@ class EmojiInfoExecutor(val rest: RestClient) : CommandExecutor() {
         // TODO: Move to an constant, this is also used by the ShipDiscordMentionInputConverter class
         private val emoteRegex = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
 
-        // https://www.regextester.com/106421 adapted
-        private val unicodeEmojiRegex = Regex("(\u00a9|\u00ae|[\u2000-\u3300]|\uFFFF|[\ud000-\uFFFF]|\uFFFF[\ud000-\uFFFF]\uFFFF[\ud000-\uFFFF])")
+        // https://melvingeorge.me/blog/check-if-string-contain-emojis-javascript
+        private val unicodeEmojiRegex = Regex("\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff]")
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
