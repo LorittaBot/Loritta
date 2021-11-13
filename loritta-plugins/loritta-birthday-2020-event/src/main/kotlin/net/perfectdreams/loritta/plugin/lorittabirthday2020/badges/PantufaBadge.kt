@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class PantufaBadge : Badge("badges/birthday2020_pantufa.png", 100) {
-	override fun checkIfUserDeservesBadge(user: User, profile: Profile, mutualGuilds: List<JsonElement>): Boolean {
+	override fun checkIfUserDeservesBadge(user: User, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		val playerResult = transaction(Databases.loritta) {
 			Birthday2020Players.select { Birthday2020Players.user eq profile.id }
 					.firstOrNull()
