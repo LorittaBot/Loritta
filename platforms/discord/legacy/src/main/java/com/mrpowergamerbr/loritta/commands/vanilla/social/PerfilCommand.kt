@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
@@ -13,9 +12,9 @@ import com.mrpowergamerbr.loritta.dao.ServerConfig
 import com.mrpowergamerbr.loritta.gifs.GifSequenceWriter
 import com.mrpowergamerbr.loritta.profile.ProfileUserInfoData
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.Constants
-import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaUtils
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -54,31 +53,16 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		 *
 		 * @param user                   the user
 		 * @param profile                the user's profile
+		 * @param mutualGuilds           the user's mutual guilds IDs
 		 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
 		 * @return a list containing all the images of the user's badges
 		 */
-		suspend fun getUserBadges(user: User, profile: Profile, failIfClusterIsOffline: Boolean = false): List<BufferedImage> {
-			val mutualGuilds = try {
-				lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
-			} catch (e: ClusterOfflineException) {
-				if (failIfClusterIsOffline)
-					throw e
-				listOf<JsonObject>()
-			}
-
-			return getUserBadges(user, profile, mutualGuilds, failIfClusterIsOffline)
-		}
-
-		/**
-		 * Gets the user's badges, the user's mutual guilds will be retrieved
-		 *
-		 * @param user                   the user
-		 * @param profile                the user's profile
-		 * @param mutualGuilds           the user's mutual guilds, retrieved via [LorittaShards.queryMutualGuildsInAllLorittaClusters]
-		 * @param failIfClusterIsOffline if true, the method will throw a [ClusterOfflineException] if the queried cluster is offline
-		 * @return a list containing all the images of the user's badges
-		 */
-		suspend fun getUserBadges(user: User, profile: Profile, mutualGuilds: List<JsonObject>, failIfClusterIsOffline: Boolean = false): List<BufferedImage> {
+		suspend fun getUserBadges(
+			user: User,
+			profile: Profile,
+			mutualGuilds: Set<Long>,
+			failIfClusterIsOffline: Boolean = false
+		): List<BufferedImage> {
 			/**
 			 * Checks if the user has the role in the specified guild
 			 *
@@ -166,7 +150,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 			loritta.newSuspendedTransaction {
 				val results = (ServerConfigs innerJoin DonationConfigs)
 					.select {
-						DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds.map { it["id"].string.toLong() })
+						DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds)
 					}
 
 				val configs = ServerConfig.wrapRows(results)
@@ -240,13 +224,19 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCatego
 		}
 
 		// We need the mutual guilds to retrieve the user's guild badges.
-		// However because bots can be in a LOT of guilds (causing GC pressure), we will just return a empty array.
+		// However because bots can be in a LOT of guilds (causing GC pressure), so we will just return a empty array.
+		// Bots could also cause a lot of badges to be downloaded, because they are in a lot of guilds.
 		//
 		// After all, does it *really* matter that bots won't have any badges? ¯\_(ツ)_/¯
 		val mutualGuildsInAllClusters = if (user.isBot)
-			listOf()
+			setOf()
 		else
-			lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
+			loritta.newSuspendedTransaction {
+				GuildProfiles.slice(GuildProfiles.guildId)
+					.select { GuildProfiles.userId eq user.idLong and (GuildProfiles.isInGuild eq true) }
+					.map { it[GuildProfiles.guildId] }
+					.toSet()
+			}
 
 		val badges = getUserBadges(user, userProfile, mutualGuildsInAllClusters)
 

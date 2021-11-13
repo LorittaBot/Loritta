@@ -14,5 +14,5 @@ open class DiscordUserFlagBadge(val flag: User.UserFlag, badgeName: String) : Ba
 	class DiscordHypesquadEventsBadge : DiscordUserFlagBadge(User.UserFlag.HYPESQUAD,"badges/hypesquad_events.png")
 	class DiscordVerifiedDeveloperBadge : DiscordUserFlagBadge(User.UserFlag.VERIFIED_DEVELOPER,"badges/verified_developer.png")
 
-	override fun checkIfUserDeservesBadge(user: User, profile: Profile, mutualGuilds: List<JsonElement>) = user.flags.contains(flag)
+	override fun checkIfUserDeservesBadge(user: User, profile: Profile, mutualGuilds: Set<Long>) = user.flags.contains(flag)
 }
