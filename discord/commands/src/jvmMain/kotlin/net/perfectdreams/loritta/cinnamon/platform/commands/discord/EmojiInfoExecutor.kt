@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 
+import com.vdurmont.emoji.EmojiManager
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
@@ -28,15 +29,12 @@ class EmojiInfoExecutor(val rest: RestClient) : CommandExecutor() {
 
         // TODO: Move to an constant, this is also used by the ShipDiscordMentionInputConverter class
         private val emoteRegex = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
-
-        // https://www.regextester.com/106421 adapted
-        private val unicodeEmojiRegex = Regex("(\u00a9|\u00ae|[\u2000-\u3300]|\uFFFF|[\ud000-\uFFFF]|\uFFFF[\ud000-\uFFFF]\uFFFF[\ud000-\uFFFF])")
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         val emojiContent = args[Options.emoji]
 
-        if (unicodeEmojiRegex.find(emojiContent) != null) {
+        if (EmojiManager.isEmoji(emojiContent)) {
             context.sendMessage {
                 val codePoints = emojiContent.codePoints().toList().map {
                     String.format("\\u%04x", it).substring(2)

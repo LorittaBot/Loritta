@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import kotlin.streams.toList
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
+
 /**
  * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
  *
@@ -65,16 +66,54 @@ class SlashCommandExecutorWrapper(
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
-        // These variables are used in the catch { ... } block, to make our lives easier
-        var i18nContext: I18nContext? = null
-        var cinnamonContext: net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext? = null
-
-        var stacktrace: String? = null
-
         // Map Cinnamon Arguments to Discord InteraKTions Arguments
         val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
-        val interaKTionsArgumentEntries = args.types.entries
         val guildId = (context as? GuildApplicationCommandContext)?.guildId
+
+        val result = executeCommand(
+            rootDeclarationClazzName,
+            executorClazzName,
+            context,
+            args,
+            cinnamonArgs,
+            guildId
+        )
+
+        var stacktrace: String? = null
+        if (result is CommandExecutionFailure)
+            stacktrace = result.throwable.stackTraceToString()
+
+        val commandLatency = timer.observeDuration()
+        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
+
+        loritta.services.executedApplicationCommandsLog.insertApplicationCommandLog(
+            context.sender.id.value.toLong(),
+            guildId?.value?.toLong(),
+            context.channelId.value.toLong(),
+            Clock.System.now(),
+            ApplicationCommandType.CHAT_INPUT,
+            rootDeclarationClazzName!!,
+            executorClazzName!!,
+            buildJsonWithArguments(cinnamonArgs),
+            stacktrace == null,
+            commandLatency,
+            stacktrace
+        )
+    }
+
+    private suspend fun executeCommand(
+        rootDeclarationClazzName: String?,
+        executorClazzName: String?,
+        context: ApplicationCommandContext,
+        args: SlashCommandArguments,
+        cinnamonArgs: MutableMap<CommandOption<*>, Any?>,
+        guildId: Snowflake?
+    ): CommandExecutionResult {
+        // These variables are used in the catch { ... } block, to make our lives easier
+        var i18nContext: I18nContext? = null
+        val cinnamonContext: CinnamonApplicationCommandContext?
+
+        val interaKTionsArgumentEntries = args.types.entries
 
         try {
             val serverConfig = if (guildId != null) {
@@ -119,7 +158,7 @@ class SlashCommandExecutorWrapper(
                 /* context.sendEphemeralMessage {
                     content = ":no_entry: **|** ${locale["commands.cantUseInPrivate"]}"
                 } */
-                return
+                return CommandExecutionSuccess()
             }
 
             declarationExecutor.options.arguments.forEach {
@@ -266,22 +305,23 @@ class SlashCommandExecutorWrapper(
                 cinnamonContext,
                 CommandArguments(cinnamonArgs)
             )
+
+            return CommandExecutionSuccess()
         } catch (e: Throwable) {
             if (e is SilentCommandException)
-                return // SilentCommandExceptions should be ignored
+                return CommandExecutionSuccess() // SilentCommandExceptions should be ignored
 
             if (e is CommandException) {
                 context.sendMessage(e.builder)
-                return
+                return CommandExecutionSuccess()
             }
 
             if (e is EphemeralCommandException) {
                 context.sendEphemeralMessage(e.builder)
-                return
+                return CommandExecutionSuccess()
             }
 
             logger.warn(e) { "Something went wrong while executing $rootDeclarationClazzName $executorClazzName" }
-            stacktrace = e.stackTraceToString() // Whoops!
 
             // If the i18nContext is not present, we will default to the default language provided
             i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
@@ -304,7 +344,6 @@ class SlashCommandExecutorWrapper(
                 context.wasInitiallyDeferredEphemerally
             else true
 
-
             if (isEphemeral)
                 context.sendEphemeralMessage {
                     this.content = content
@@ -313,25 +352,14 @@ class SlashCommandExecutorWrapper(
                 context.sendMessage {
                     this.content = content
                 }
+
+            return CommandExecutionFailure(e)
         }
-
-        val commandLatency = timer.observeDuration()
-        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Took ${commandLatency * 1000}ms" }
-
-        loritta.services.executedApplicationCommandsLog.insertApplicationCommandLog(
-            context.sender.id.value.toLong(),
-            guildId?.value?.toLong(),
-            context.channelId.value.toLong(),
-            Clock.System.now(),
-            ApplicationCommandType.CHAT_INPUT,
-            rootDeclarationClazzName!!,
-            executorClazzName!!,
-            buildJsonWithArguments(cinnamonArgs),
-            stacktrace == null,
-            commandLatency,
-            stacktrace
-        )
     }
+
+    sealed class CommandExecutionResult
+    class CommandExecutionSuccess() : CommandExecutionResult()
+    class CommandExecutionFailure(val throwable: Throwable) : CommandExecutionResult()
 
     override fun signature() = rootSignature
 

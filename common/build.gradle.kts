@@ -132,6 +132,9 @@ kotlin {
 
                 // Gabriela Image Server
                 api("net.perfectdreams.gabrielaimageserver:client:2.0.2")
+
+                // Emoji Stuff
+                api("com.vdurmont:emoji-java:5.1.1")
             }
         }
 
