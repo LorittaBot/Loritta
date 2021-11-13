@@ -25,7 +25,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation(project(":common-legacy"))
-                api("net.perfectdreams.loritta.cinnamon.pudding:data:0.0.1-SNAPSHOT")
+                api("net.perfectdreams.loritta.cinnamon.pudding:data:${Versions.PUDDING}")
             }
         }
 
