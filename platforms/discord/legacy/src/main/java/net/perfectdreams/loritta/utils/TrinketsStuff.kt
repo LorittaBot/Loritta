@@ -59,7 +59,8 @@ object TrinketsStuff {
         "cowboy",
         "halloween2019",
         "christmas2019",
-        "lorittaChristmas2019"
+        "lorittaChristmas2019",
+        "undertaleBattle"
     )
 
     fun updateTrinkets(pudding: Pudding) {
