@@ -74,7 +74,7 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
         val invite = try {
             rest.invite.getInvite(inviteCode, true)
         } catch (e: KtorRequestException) {
-            context.failEphemerally {
+            context.fail {
                 styled(
                     context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.DoesntExists(
