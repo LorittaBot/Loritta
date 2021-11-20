@@ -4,7 +4,8 @@ import dev.kord.common.annotation.KordPreview
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.DefaultGateway
 import dev.kord.gateway.start
-import io.ktor.client.*
+import io.ktor.client.HttpClient
+import java.util.concurrent.TimeUnit
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
@@ -15,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandManager
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.ServicesConfig
+import net.perfectdreams.loritta.cinnamon.platform.utils.giveaway.EndGiveawayTask
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 
 @OptIn(KordPreview::class)
@@ -64,6 +66,13 @@ class LorittaCinnamonGateway(
                 Snowflake(discordConfig.applicationId),
                 rest,
                 commandManager.commandManager.interaKTionsManager
+            )
+
+            services.puddingTasks.executorService.scheduleWithFixedDelay(
+                EndGiveawayTask(this@LorittaCinnamonGateway),
+                0L,
+                5L,
+                TimeUnit.SECONDS
             )
 
             gateway.start(discordConfig.token)
