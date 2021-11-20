@@ -5,7 +5,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class PuddingTasks(private val pudding: Pudding) {
-    private val executorService = Executors.newScheduledThreadPool(1)
+    val executorService = Executors.newScheduledThreadPool(1)
 
     fun start() {
         executorService.scheduleWithFixedDelay(
