@@ -63,4 +63,12 @@ open class ComponentContext(
         requireUserToMatch(data)
         return data
     }
+
+    /**
+     * Decodes the component [data]
+     *
+     * @see ComponentDataUtils
+     */
+    inline fun <reified T> decodeViaComponentDataUtils(dataAsString: String): T =
+        ComponentDataUtils.decode<T>(dataAsString)
 }
