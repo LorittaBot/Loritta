@@ -99,6 +99,9 @@ kotlin {
                 api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
 
+                // Sequins Utils
+                api("net.perfectdreams.sequins.text:text-utils:1.0.1")
+
                 // Used for Math stuff
                 api("com.ionspin.kotlin:bignum:0.3.0")
             }
