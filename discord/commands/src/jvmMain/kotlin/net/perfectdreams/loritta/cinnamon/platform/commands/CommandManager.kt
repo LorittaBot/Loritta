@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.entity.Snowflake
+import kotlin.system.exitProcess
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -8,6 +9,9 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BemBoladaExecu
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CancelledExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.FaustaoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.GiveawayEndExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.GiveawayRerollExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.GiveawaySetupExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.HungerGamesExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.JankenponExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateHusbandoExecutor
@@ -27,6 +31,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TioDoPaveExecu
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.VieirinhaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CancelledCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.GiveawayCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
@@ -35,6 +40,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.S
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SummonCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.giveaway.JoinButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ChannelInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.EmojiInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.InviteInfoExecutor
@@ -44,13 +50,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconEx
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditRepostExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditSimpleExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendRepostExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendSimpleExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
@@ -158,7 +164,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
-import kotlin.system.exitProcess
 
 class CommandManager(
     private val loritta: LorittaCinnamon,
@@ -284,6 +289,18 @@ class CommandManager(
         commandManager.register(
             HungerGamesCommand,
             HungerGamesExecutor(rest)
+        )
+
+        commandManager.register(
+            GiveawayCommand,
+            GiveawaySetupExecutor(rest),
+            GiveawayRerollExecutor(rest),
+            GiveawayEndExecutor(rest)
+        )
+
+        commandManager.register(
+            JoinButtonClickExecutor,
+            JoinButtonClickExecutor()
         )
 
         // ===[ IMAGES ]===
