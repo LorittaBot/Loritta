@@ -99,9 +99,6 @@ kotlin {
                 api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
 
-                // Sequins Utils
-                api("net.perfectdreams.sequins.text:text-utils:1.0.1")
-
                 // Used for Math stuff
                 api("com.ionspin.kotlin:bignum:0.3.0")
             }
@@ -138,6 +135,9 @@ kotlin {
 
                 // Emoji Stuff
                 api("com.vdurmont:emoji-java:5.1.1")
+
+                // Sequins Text Utils
+                api("net.perfectdreams.sequins.text:text-utils:1.0.1")
             }
         }
 
