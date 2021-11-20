@@ -103,7 +103,7 @@ class GiveawaySetupExecutor(val rest: RestClient) : CommandExecutor() {
                 content = context.i18nContext.get(GiveawayCommand.I18N_PREFIX.Setup.MissingChannelPermisesions)
             } */
 
-        if (args[Options.numberOfWinners] !in 0..100)
+        if (args[Options.numberOfWinners] !in 1..100)
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(GiveawayCommand.I18N_PREFIX.Setup.InvalidNumberOfWinners),
