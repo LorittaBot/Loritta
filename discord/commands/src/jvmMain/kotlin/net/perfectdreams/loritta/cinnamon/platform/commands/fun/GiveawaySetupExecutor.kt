@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
 import dev.kord.common.Color
 import dev.kord.common.entity.ButtonStyle
+import dev.kord.common.entity.ChannelType
 import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.builder.message.create.embed
 import dev.kord.rest.service.RestClient
@@ -97,6 +98,14 @@ class GiveawaySetupExecutor(val rest: RestClient) : CommandExecutor() {
         ).mapNotNull { it }
 
         val hostSonhos = context.loritta.services.users.getUserProfile(context.user)?.data?.money ?: 0L
+
+        if (giveawayChannel.type != ChannelType.GuildText)
+            context.failEphemerally {
+                styled(
+                    context.i18nContext.get(GiveawayCommand.I18N_PREFIX.Setup.InvalidChannel),
+                    Emotes.Error
+                )
+            }
 
         /* if (giveawayChannel.hasPermissions(Permission.SendMessages) == null)
             context.failEphemerally {
