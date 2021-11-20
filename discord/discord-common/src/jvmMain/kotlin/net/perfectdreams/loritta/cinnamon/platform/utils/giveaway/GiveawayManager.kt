@@ -32,7 +32,7 @@ object GiveawayManager {
     ) {
         if (giveaway.users.isEmpty()) {
             sendMessageInGiveawayChannel(giveaway, rest) {
-                "${Emotes.LoriSob} " + i18nContext.get(I18N_PREFIX.WithoutWinners) + " ${Emotes.LoriTemmie}"
+                content = "${Emotes.LoriSob} " + i18nContext.get(I18N_PREFIX.WithoutWinners) + " ${Emotes.LoriTemmie}"
             }
 
             return
@@ -55,13 +55,14 @@ object GiveawayManager {
             sendMessageInGiveawayChannel(giveaway, rest) {
                 content = "${Emotes.Tada} **|** " + i18nContext.get(
                     I18N_PREFIX.CongratulationsToTheWinner(
-                        "<@${winners.first()}>"
+                        "<@${winners.first()}>",
+                        giveaway.title
                     )
                 )
             }
         } else {
             val chunkedResponse = StringUtils.chunkedLines(
-                i18nContext.get(I18N_PREFIX.CongratulationsToTheWinners)
+                i18nContext.get(I18N_PREFIX.CongratulationsToTheWinners(giveaway.title))
                         + winners.joinToString { "\n${Emotes.Star} **|** <@$it>" },
                 1_000,
                 forceSplit = true,

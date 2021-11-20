@@ -37,7 +37,7 @@ class JoinButtonClickExecutor : ButtonClickExecutor {
                 styled(
                     context.i18nContext.get(
                         GiveawayCommand.I18N_PREFIX.Button.MemberRoleNotAllowed(
-                            containsRole.joinToString { "<@${it.value}>" }
+                            containsRole.joinToString { "<@&${it.value}>" }
                         )
                     ),
                     Emotes.Error

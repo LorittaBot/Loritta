@@ -136,12 +136,13 @@ class GiveawaySetupExecutor(val rest: RestClient) : CommandExecutor() {
             )
         }
 
+        val giveawayTitle = args[Options.title].shortenAndRemoveCodeBackticks(DiscordResourceLimits.Embed.Title)
+
         val giveawayMessage = rest.channel.createMessage(
             giveawayChannel.id
         ) {
             embed {
-                title = ("${Emotes.Gift} " + args[Options.title])
-                    .shortenAndRemoveCodeBackticks(DiscordResourceLimits.Embed.Title)
+                title = "${Emotes.Gift} " + giveawayTitle
                 description = args[Options.description]?.shortenAndRemoveCodeBackticks(
                     DiscordResourceLimits.Embed.Description
                 )
@@ -153,6 +154,15 @@ class GiveawaySetupExecutor(val rest: RestClient) : CommandExecutor() {
                     value = "<t:${time / 1000}:R>"
 
                     inline = true
+                }
+
+                if (notAllowedRoles.isNotEmpty()) {
+                    field {
+                        name = "${Emotes.Error} " + context.i18nContext.get(GiveawayCommand.I18N_PREFIX.Setup.NotAllowedRoles)
+                        value = notAllowedRoles.joinToString(", ") { "<@&${it.asString}>" }
+
+                        inline = true
+                    }
                 }
 
                 if (awardRoles.isNotEmpty())
@@ -191,6 +201,7 @@ class GiveawaySetupExecutor(val rest: RestClient) : CommandExecutor() {
             giveawayMessage.id.value.toLong(),
             giveawayChannel.id.value.toLong(),
             context.guildId.value.toLong(),
+            giveawayTitle,
             numberOfWinners.toInt(),
             time,
             context.user.id.value.toLong(),
