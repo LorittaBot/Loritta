@@ -20,7 +20,8 @@ object FastBanCommand {
             "under13" to "É proibido ter uma conta de Discord caso você tenha menos de 13 anos!",
             "owo" to "Apenas um teste uwu owo",
             "terms" to "Comercialização de produtos com valores monetários reais em troca de sonhos.",
-            "bob" to "Imagine fazer spam dizendo que não é para fazer spam."
+            "bob" to "Imagine fazer spam dizendo que não é para fazer spam.",
+            "selfbot" to "Não é permitido o uso de selfbot no nosso servidor, caso continue, a conta poderá ser suspensa da plataforma e inutilizada."
     )
 
     fun create(loritta: LorittaDiscord) = discordCommand(loritta, listOf("b", "fastban"), CommandCategory.MODERATION) {
