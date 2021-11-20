@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.TextColumnType
 object Giveaways : SnowflakeTable() {
     val channelId = long("channel_id")
     val guildId = long("guild_id")
+    val title = text("title")
 
     val numberOfWinners = integer("number_of_winners")
     val users = array<String>("users", TextColumnType())

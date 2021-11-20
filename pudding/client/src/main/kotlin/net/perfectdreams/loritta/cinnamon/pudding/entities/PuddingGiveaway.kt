@@ -15,6 +15,7 @@ class PuddingGiveaway(
     val messageId by data::messageId
     val channelId by data::channelId
     val guildId by data::guildId
+    val title by data::title
 
     val users by data::users
     val numberOfWinners by data::numberOfWinners

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.pudding.data
 
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -8,6 +7,7 @@ data class Giveaway(
     val messageId: Long,
     val channelId: Long,
     val guildId: Long,
+    val title: String,
     val numberOfWinners: Int,
     val users: Array<String>,
     val finishAt: Long,

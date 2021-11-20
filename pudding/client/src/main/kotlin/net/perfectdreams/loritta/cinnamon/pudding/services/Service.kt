@@ -93,6 +93,7 @@ open class Service(private val pudding: Pudding) {
             row[Giveaways.id].value,
             row[Giveaways.channelId],
             row[Giveaways.guildId],
+            row[Giveaways.title],
             row[Giveaways.numberOfWinners],
             row[Giveaways.users],
             row[Giveaways.finishAt],

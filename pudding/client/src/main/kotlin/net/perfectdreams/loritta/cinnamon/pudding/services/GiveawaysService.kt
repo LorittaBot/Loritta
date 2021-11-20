@@ -25,6 +25,7 @@ class GiveawaysService(private val pudding: Pudding) : Service(pudding) {
         messageId: Long,
         channelId: Long,
         guildId: Long,
+        title: String,
         numberOfWinners: Int,
         finishAt: Long,
         host: Long,
@@ -35,6 +36,7 @@ class GiveawaysService(private val pudding: Pudding) : Service(pudding) {
             it[Giveaways.id] = messageId
             it[Giveaways.channelId] = channelId
             it[Giveaways.guildId] = guildId
+            it[Giveaways.title] = title
             it[Giveaways.numberOfWinners] = numberOfWinners
             it[users] = arrayOf()
             it[finished] = false
