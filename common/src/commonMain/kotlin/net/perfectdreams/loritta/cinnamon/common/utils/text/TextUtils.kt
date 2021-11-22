@@ -31,4 +31,6 @@ object TextUtils {
 
     fun String.shortenAndRemoveCodeBackticks(maxLength: Int, suffix: String = "..."): String =
         shortenWithEllipsis(maxLength, suffix).replace("`", "")
+
+    fun String.stripNewLines() = this.replace(Regex("[\\r\\n]"), "")
 }
