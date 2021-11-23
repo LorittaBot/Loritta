@@ -29,7 +29,7 @@ class AfkOnExecutor : CommandExecutor() {
         if (!profile.isAfk || profile.afkReason != reason)
             profile.enableAfk(reason)
 
-        context.sendMessage {
+        context.sendEphemeralMessage {
             styled(
                 context.i18nContext.get(
                     AfkCommand.I18N_PREFIX.On.AfkModeActivated
