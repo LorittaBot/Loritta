@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.social
 
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
@@ -31,7 +30,7 @@ class GenderExecutor : CommandExecutor() {
 
         profile.setGender(gender)
 
-        context.sendMessage {
+        context.sendEphemeralMessage {
             styled(
                 context.i18nContext.get(GenderCommand.I18N_PREFIX.SuccessfullyChanged),
                 Emotes.Tada

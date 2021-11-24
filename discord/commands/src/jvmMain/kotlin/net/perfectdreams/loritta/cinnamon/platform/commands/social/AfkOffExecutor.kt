@@ -18,7 +18,7 @@ class AfkOffExecutor : CommandExecutor() {
         if (profile?.isAfk == true)
             profile.disableAfk()
 
-        context.sendMessage {
+        context.sendEphemeralMessage {
             styled(
                 context.i18nContext.get(
                     AfkCommand.I18N_PREFIX.Off.AfkModeDeactivated
