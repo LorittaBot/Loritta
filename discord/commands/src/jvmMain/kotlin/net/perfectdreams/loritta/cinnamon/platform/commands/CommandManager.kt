@@ -124,6 +124,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McOfflineU
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.moderation.ClearExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.moderation.declarations.ClearCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.CustomTextBoxExecutor
@@ -331,6 +333,12 @@ class CommandManager(
         commandManager.register(InvertColorsCommand, InvertColorsExecutor(gabrielaImageServerClient))
         commandManager.register(MemeMakerCommand, MemeMakerExecutor(gabrielaImageServerClient))
         commandManager.register(MarkMetaCommand, MarkMetaExecutor(gabrielaImageServerClient))
+
+        // ===[ MODERATION ]===
+        commandManager.register(
+            ClearCommand,
+            ClearExecutor(rest)
+        )
 
         // ===[ VIDEOS ]===
         commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(gabrielaImageServerClient))

@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.entity.Snowflake
+import java.util.concurrent.atomic.AtomicInteger
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
@@ -23,7 +24,6 @@ import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenu
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutorWrapper
-import java.util.concurrent.atomic.AtomicInteger
 
 class CommandRegistry(
     val loritta: LorittaCinnamon,
@@ -279,14 +279,14 @@ class CommandRegistry(
             CommandCategory.ANIME -> TODO()
             CommandCategory.DISCORD -> "\uD83E\uDD19"
             CommandCategory.MISC -> "\uD83E\uDDF6"
-            CommandCategory.MODERATION -> TODO()
+            CommandCategory.MODERATION -> "\uD83D\uDC6E\u200D♀️"
             CommandCategory.UTILS -> "\uD83D\uDEE0️"
             CommandCategory.SOCIAL -> "\uD83D\uDDE3️"
             CommandCategory.ACTION -> TODO()
             CommandCategory.ECONOMY -> "\uD83D\uDCB8"
             CommandCategory.VIDEOS -> "\uD83C\uDFAC"
             CommandCategory.FORTNITE -> TODO()
-            CommandCategory.MAGIC -> TODO()
+            CommandCategory.MAGIC -> "\uD83E\uDE84"
         }
         append(emoji)
         append(" ")
