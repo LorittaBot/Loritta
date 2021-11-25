@@ -106,7 +106,7 @@ class ClearExecutor(val rest: RestClient) : CommandExecutor() {
                 if (((System.currentTimeMillis() / 1000) - lastMessageId.timestamp.epochSeconds) > 1209600)
                     break
 
-                delay(currentAmount * 1000)
+                delay(currentAmount + 900)
             }
         }
 
