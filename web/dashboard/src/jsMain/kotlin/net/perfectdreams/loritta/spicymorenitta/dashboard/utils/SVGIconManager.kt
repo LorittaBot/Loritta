@@ -69,7 +69,6 @@ object SVGIconManager {
 @JsNonModule
 external val svgTailSpin: dynamic
 
-// Needs to be top level!
 @JsModule("./icons/twemoji/2728.svg")
 @JsNonModule
 external val svgSparkles: dynamic

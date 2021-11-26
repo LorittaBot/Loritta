@@ -1,0 +1,16 @@
+<svg style="height: 100%; width: auto;" class="loritta-waving" xmlns="http://www.w3.org/2000/svg" height="1784" preserveAspectRatio="xMidYMid meet" width="1441" viewBox="0 0 1441 1784">
+    <g class="animation-group" style="transform-origin: bottom center;">
+        <foreignObject class="base" y="0" width="1602" height="3000" preserveAspectRatio="none" x="367">
+            <img xmlns="http://www.w3.org/1999/xhtml" src="lori_wave_v3_base.png" />
+        </foreignObject>
+        <foreignObject class="open-eyes" width="415" height="169" preserveAspectRatio="none" y="300" x="645">
+            <img xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%;" src="lori_wave_v3_eyes.png">
+        </foreignObject>
+        <foreignObject class="closed-eyes" width="377" height="74" preserveAspectRatio="none" y="367" x="672">
+            <img xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%;" src="lori_wave_v3_closed_eyes.png">
+        </foreignObject>
+        <foreignObject class="arm" width="428" height="1172" preserveAspectRatio="none" style="transform-origin: 79% 89%; transform-box: fill-box;" y="602" x="135">
+            <img xmlns="http://www.w3.org/1999/xhtml" style="width: 100%; height: 100%;" src="lori_wave_arm.png">
+        </foreignObject>
+    </g>
+</svg>
