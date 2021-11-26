@@ -27,3 +27,11 @@ allprojects {
         maven("https://repo.perfectdreams.net/")
     }
 }
+
+// Workaround for https://kotlinlang.slack.com/archives/C0B8L3U69/p1633590092096600
+// Remove this when Loritta updates to Kotlin 1.6.0+
+rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnPlugin> {
+    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.yarn.YarnRootExtension>().apply {
+        resolution("@webpack-cli/serve", "1.5.2")
+    }
+}
