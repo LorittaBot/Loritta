@@ -23,7 +23,6 @@ kotlin {
                 implementation(compose.web.core)
                 implementation(compose.runtime)
                 implementation(project(":web:web-api-data"))
-                implementation(npm("lottie-web", "5.8.1"))
                 implementation("io.ktor:ktor-client-js:1.6.5")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
                 implementation("com.ionspin.kotlin:bignum:0.3.3")
