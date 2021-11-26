@@ -11,3 +11,5 @@ info:
   noFeatures: "Nenhum recurso"
   inThisServer: "Sim, eu estou no servidor!"
   notOnTheServer: "Infelizmente eu não estou no servidor..."
+  options:
+    invite: "A URL de convite ou ID que você deseja conhecer suas informações"
