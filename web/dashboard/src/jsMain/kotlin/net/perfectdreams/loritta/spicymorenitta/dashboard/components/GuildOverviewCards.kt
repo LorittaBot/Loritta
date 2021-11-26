@@ -11,14 +11,12 @@ import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.css.AlignItems
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
-import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.alignItems
 import org.jetbrains.compose.web.css.color
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flexDirection
 import org.jetbrains.compose.web.css.height
-import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.css.rgb
 import org.jetbrains.compose.web.css.width
 import org.jetbrains.compose.web.dom.Div
@@ -43,7 +41,19 @@ fun GuildOverviewCards(screen: Screen.UserOverview) {
     // TODO: Add warning if the user doesn't have any guilds ("Are you logged in into the correct account?")
     // TODO: Add warning if filter doesn't match any server
     when (val state = screen.model.guilds) {
-        is State.Success -> GuildOverviewCardsGrid(state.value.filter { it.name.contains(filter, true) })
+        is State.Success -> {
+            val guilds = state.value
+            val filteredGuilds = guilds.filter { it.name.contains(filter, true) }
+            if (guilds.isNotEmpty()) {
+                if (filteredGuilds.isNotEmpty()) {
+                    GuildOverviewCardsGrid(guilds.filter { it.name.contains(filter, true) })
+                } else {
+                    Text("Nenhum servidor é compatível com o filtro que você selecionou!")
+                }
+            } else {
+                Text("Você não está em nenhum servidor! Tem certeza que você logou na conta certa?")
+            }
+        }
         is State.Loading -> {
             Div(
                 attrs = {

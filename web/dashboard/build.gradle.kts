@@ -26,6 +26,7 @@ kotlin {
                 implementation("io.ktor:ktor-client-js:1.6.5")
                 implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.1")
                 implementation("com.ionspin.kotlin:bignum:0.3.3")
+                implementation("net.perfectdreams.i18nhelper.formatters:intl-messageformat-js:0.0.2-SNAPSHOT")
             }
         }
     }

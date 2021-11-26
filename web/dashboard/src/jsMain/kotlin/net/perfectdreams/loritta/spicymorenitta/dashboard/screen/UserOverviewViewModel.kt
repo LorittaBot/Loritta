@@ -10,8 +10,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import net.perfectdreams.loritta.cinnamon.pudding.data.discord.PartialDiscordGuild
 import net.perfectdreams.loritta.spicymorenitta.dashboard.utils.State
-import net.perfectdreams.loritta.webapi.data.PartialDiscordGuild
 
 class UserOverviewViewModel(private val m: SpicyMorenitta) {
     var guilds by mutableStateOf<State<List<PartialDiscordGuild>>>(State.Loading())

@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.spicymorenitta.dashboard.components
 
 import androidx.compose.runtime.Composable
+import net.perfectdreams.loritta.cinnamon.pudding.data.discord.PartialDiscordGuild
 import net.perfectdreams.loritta.spicymorenitta.dashboard.styles.GuildCardsStylesheet
-import net.perfectdreams.loritta.webapi.data.PartialDiscordGuild
 import org.jetbrains.compose.web.dom.Div
 
 @Composable

@@ -4,7 +4,7 @@ import io.ktor.application.*
 import io.ktor.response.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.webapi.data.PartialDiscordGuild
+import net.perfectdreams.loritta.cinnamon.pudding.data.discord.PartialDiscordGuild
 import net.perfectdreams.sequins.ktor.BaseRoute
 
 class GetCurrentUserGuildsRoute : BaseRoute("/api/v1/users/@me/guilds") {
@@ -13,9 +13,9 @@ class GetCurrentUserGuildsRoute : BaseRoute("/api/v1/users/@me/guilds") {
             Json.encodeToString(
                 listOf(
                     PartialDiscordGuild(
-                        197308318119755776u,
+                        268353819409252352u,
                         "Floppa Shy",
-                        "a",
+                        "caf959735a24b4bba1d31bb412fef58e",
                         true,
                         "1",
                         listOf("VERIFIED")

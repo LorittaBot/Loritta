@@ -26,6 +26,7 @@ kotlin {
             dependencies {
                 // API = We want to allow dependencies to access those classes
                 api(kotlin("stdlib-common"))
+                api(project(":pudding:data"))
                 
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:1.3.1")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
