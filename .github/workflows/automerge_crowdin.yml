@@ -22,7 +22,8 @@ jobs:
     - name: Automatically Merge Pull Request
       uses: sudo-bot/action-pull-request-merge@v1.1.0
       with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Workaround: Using "secrets.GITHUB_TOKEN" does not propagate the event to other actions, so we are going to use a personal GitHub token to workaround this
+          github-token: ${{ secrets.GH_PERSONAL_TOKEN }}
           number: ${{ github.event.pull_request.number }}
           allowed-usernames-regex: ^MrPowerGamerBR$
           merge-method: squash
