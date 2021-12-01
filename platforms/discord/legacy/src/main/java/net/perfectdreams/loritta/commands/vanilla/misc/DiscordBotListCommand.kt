@@ -25,7 +25,7 @@ class DiscordBotListCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase
                     locale[
                             "$LOCALE_PREFIX.info",
                             context.serverConfig.commandPrefix,
-                            "https://discordbots.org/bot/loritta",
+                            "https://top.gg/bot/${loritta.discordConfig.discord.clientId}",
                             Emotes.DISCORD_BOT_LIST
                     ]
                 )

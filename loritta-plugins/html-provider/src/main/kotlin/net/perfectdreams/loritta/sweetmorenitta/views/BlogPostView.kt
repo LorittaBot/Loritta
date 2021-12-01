@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.HEAD
 import kotlinx.html.a
@@ -11,6 +10,7 @@ import kotlinx.html.meta
 import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.html.unsafe
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.website.blog.Post
 
 class BlogPostView(
@@ -166,8 +166,9 @@ data-ad-slot="9853935995"></ins>
 
                         p {
                             + "Vote em mim para ganhar recompensas incríveis! "
-                            a(href = "https://discordbots.org/bot/loritta") {
-                                + "https://discordbots.org/bot/loritta"
+                            // TODO: This shouldn't be hardcoded, but because we will move the blog stuff to somewhere else later... then whatever :P (for now!)
+                            a(href = "https://top.gg/bot/297153970613387264") {
+                                + "https://top.gg/bot/297153970613387264"
                             }
                         }
 
