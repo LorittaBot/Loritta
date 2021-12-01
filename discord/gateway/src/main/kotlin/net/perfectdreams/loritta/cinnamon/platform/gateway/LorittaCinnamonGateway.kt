@@ -49,8 +49,6 @@ class LorittaCinnamonGateway(
     )
 
     fun start() {
-        languageManager.loadLanguagesAndContexts()
-
         runBlocking {
             val tableNames = servicesConfig.pudding.tablesAllowedToBeUpdated
             services.createMissingTablesAndColumns {
