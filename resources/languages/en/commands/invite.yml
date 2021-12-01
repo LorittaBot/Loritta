@@ -1,0 +1,14 @@
+info:
+  description: "Shows information about a server invite"
+  doesntExists: "Unfortunately I wasn't able to find a invite from `{inviteArgument}`... Or maybe I'm banned from that server! Hmpf, why would someone ban me??"
+  serverMembers: "Members"
+  onlineMembersPresence: "Online: {onlineMembers}"
+  offlineMembersPresence: "Offline: {offlineMembers}"
+  invitationChannel: "Invitation Channel"
+  whoInvited: "Who Invited"
+  guildFeatures: "Server Features"
+  noFeatures: "No features"
+  inThisServer: "Yes, I'm in the server!"
+  notOnTheServer: "Sadly I'm not in the server..."
+  options:
+    invite: "The invite URL or ID that you want to know its information"
