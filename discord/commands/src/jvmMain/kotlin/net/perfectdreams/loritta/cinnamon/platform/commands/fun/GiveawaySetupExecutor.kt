@@ -109,7 +109,7 @@ class GiveawaySetupExecutor(val rest: RestClient) : CommandExecutor() {
 
         /* if (giveawayChannel.hasPermissions(Permission.SendMessages) == null)
             context.failEphemerally {
-                content = context.i18nContext.get(GiveawayCommand.I18N_PREFIX.Setup.MissingChannelPermisesions)
+                content = context.i18nContext.get(GiveawayCommand.I18N_PREFIX.Setup.MissingChannelPermission)
             } */
 
         if (args[Options.numberOfWinners] !in 1..100)
