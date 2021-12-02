@@ -43,7 +43,7 @@ If the build is successful, then congratulations 🎉! You have successfully com
 
 This section is tailored to developers, *not* for users that want to only self-host Loritta without contributing back code. Check out the [How to self-host Loritta](SELF-HOSTING.md) tutorial if you only want to self-host Loritta and not contribute back code.
 
-### 👷 Prerequisites
+### 👷 Requirements
 
 * Everything from the "Compiling Loritta" section.
 * [JetBrains IntelliJ IDEA](https://www.jetbrains.com/pt-br/idea/)! The community edition is good enough and it is free, so you don't need to be like "oh my god I need to *pay* for it". 😉
