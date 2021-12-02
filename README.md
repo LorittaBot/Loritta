@@ -1,13 +1,7 @@
 <p align="center">
-<img height="250" src="https://cdn.discordapp.com/attachments/513405772911345664/916023991473430558/loritta_wave_small_opt3.gif">
-<h1 align="center">⭐ Loritta Morenitta ⭐</h1>
+<img height="250" src="https://cdn.discordapp.com/attachments/513405772911345664/916023991473430558/loritta_wave_small_opt3.gif" align="right">
 
-<!-- top.gg widget -->
-<p align="center">
-  <a href="https://top.gg/bot/297153970613387264">
-    <img src="https://top.gg/api/widget/297153970613387264.svg">
-  </a>
-</p>
+<h1 align="center">⭐ Loritta Morenitta ⭐</h1>
 
 <!-- Badges -->
 <p align="center">
