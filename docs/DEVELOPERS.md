@@ -1,5 +1,11 @@
 # 👩‍💻 Developing Loritta
 
+Loritta is made with [Kotlin](https://kotlinlang.org/). Kotlin is a modern, concise and safe programming language made by JetBrains. If you already used Java before, Kotlin will feel familiar to you. Heck, it can even run on the JVM!
+
+Why Kotlin? Because Kotlin is my beloved. 🥺 <img src="https://cdn.discordapp.com/emojis/841285914159611914.gif" height="24" />
+
+Originally Loritta was made in Java, but in May 2017 I decided migrate to Kotlin!
+
 ## 🛠️ Compiling Loritta
 
 ### 👷 Requirements
