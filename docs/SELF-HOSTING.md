@@ -76,8 +76,6 @@ When the line "After configuring the file, run me again!" is shown in the consol
 │
 └── services
     ├── pudding
-    │   ├── type
-    │   │   * Set this to POSTGRESQL
     │   ├── database
     │   │   * Set this to the POSTGRES_USER configured in docker-compose.yml
     │   ├── address

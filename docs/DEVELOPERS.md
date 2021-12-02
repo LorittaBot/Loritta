@@ -92,8 +92,6 @@ If this is the first time running Loritta, she will create a file named `loritta
 │
 └── services
     ├── pudding
-    │   ├── type
-    │   │   * Set this to POSTGRESQL
     │   ├── database
     │   │   * Set this to your PostgreSQL database name
     │   ├── address
