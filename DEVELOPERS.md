@@ -105,7 +105,7 @@ If this is the first time running Loritta, she will create a file named `loritta
     │
     └── gabrielaImageServer
         └── url
-    │   │   * Set this to "http://YourGabrielaImageServerIp:8080/", you can set it to "https://gabriela.loritta.website/" if you aren't creating or editing new image/video generation commands
+            * Set this to "http://YourGabrielaImageServerIp:8080/", you can set it to "https://gabriela.loritta.website/" if you aren't creating or editing new image/video generation commands
 ```
 
 Then run the `LorittaCinnamonGatewayLauncher` class again! If everything goes well, Loritta will be up and running!
