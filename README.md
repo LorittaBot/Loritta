@@ -11,7 +11,7 @@
 
 <!-- Badges -->
 <p align="center">
-<a href="https://github.com/LorittaBot/Loritta/actions?query=workflow%3A%22Build+Loritta%22"><img src="https://github.com/LorittaBot/Loritta/workflows/Build%20Loritta/badge.svg?event=push"></a>
+<a href="https://github.com/LorittaBot/Loritta/actions/workflows/build.yml"><img src="https://github.com/LorittaBot/Loritta/actions/workflows/build.yml/badge.svg"></a>
 <a href="https://i18n.perfectdreams.net/loritta-morenitta-cinnamon"><img src="https://badges.crowdin.net/e/557e25200b3a46d74dc052c4ec2cc8a4/localized.svg"></a>
 <a href="https://github.com/LorittaBot/Loritta/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-lightgray.svg"></a>
 </p>
