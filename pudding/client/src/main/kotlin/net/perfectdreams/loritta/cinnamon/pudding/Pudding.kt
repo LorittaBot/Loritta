@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.cinnamon.pudding
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
-import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
@@ -66,44 +65,6 @@ open class Pudding(private val database: Database) {
             hikariConfig.password = password
 
             return Pudding(connectToDatabase(HikariDataSource(hikariConfig)))
-        }
-
-        /**
-         * Creates a Pudding instance backed by a PostgreSQL database, the database will be stored in the [path] directory
-         *
-         * @return a [Pudding] instance backed by a PostgreSQL database
-         */
-        fun createEmbeddedPostgreSQLPudding(path: String): Pudding {
-            val embeddedPostgres = EmbeddedPostgres.builder()
-                .setCleanDataDirectory(false)
-                .setDataDirectory(path)
-                .start()
-
-            val hikariConfig = createHikariConfig()
-            hikariConfig.dataSource = embeddedPostgres.postgresDatabase
-
-            return EmbeddedPSQLPudding(
-                embeddedPostgres,
-                connectToDatabase(HikariDataSource(hikariConfig))
-            )
-        }
-
-        /**
-         * Creates a Pudding instance backed by a PostgreSQL database, the database will be stored in temporary files, so it isn't persistent
-         *
-         * @return a [Pudding] instance backed by a PostgreSQL database
-         */
-        fun createMemoryPostgreSQLPudding(): Pudding {
-            val embeddedPostgres = EmbeddedPostgres.builder()
-                .start()
-
-            val hikariConfig = createHikariConfig()
-            hikariConfig.dataSource = embeddedPostgres.postgresDatabase
-
-            return EmbeddedPSQLPudding(
-                embeddedPostgres,
-                connectToDatabase(HikariDataSource(hikariConfig))
-            )
         }
 
         private fun createHikariConfig(): HikariConfig {
@@ -286,7 +247,7 @@ open class Pudding(private val database: Database) {
         throw lastException ?: RuntimeException("This should never happen")
     }
 
-    open fun shutdown() {
+    fun shutdown() {
         puddingTasks.shutdown()
     }
 }
