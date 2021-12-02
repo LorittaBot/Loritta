@@ -1,7 +1,7 @@
 <p align="center">
 <img height="250" src="https://cdn.discordapp.com/attachments/513405772911345664/916023991473430558/loritta_wave_small_opt3.gif" align="right">
 
-<h1 align="center">⭐ Loritta Morenitta ⭐</h1>
+<h1 align="center">✨ Loritta Morenitta ✨</h1>
 
 <!-- Badges -->
 <p align="center">
