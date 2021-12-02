@@ -41,7 +41,7 @@ If the build is successful, then congratulations 🎉! You have successfully com
 
 ## 💫 Running Loritta
 
-This section is tailored to developers, *not* for users that want to only self-host Loritta without contributing back code. Please read the the [How to self-host Loritta](docs/SELF-HOSTING.md) tutorial if you only want to self-host Loritta and not contribute back code.
+This section is tailored to developers, *not* for users that want to only self-host Loritta without contributing back code. Please read the the [How to self-host Loritta](SELF-HOSTING.md) tutorial if you only want to self-host Loritta and not contribute back code.
 
 ### 👷 Prerequisites
 

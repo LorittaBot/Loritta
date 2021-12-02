@@ -1,6 +1,6 @@
 # 🚀 How to self-host Loritta
 
-This section is tailored to users that only want to self-host Loritta without contributing back code, *not* for developers. Please read the the [Developing Loritta](docs/DEVELOPERS.md) tutorial if you only want to edit Loritta's code and run her.
+This section is tailored to users that only want to self-host Loritta without contributing back code, *not* for developers. Please read the the [Developing Loritta](DEVELOPERS.md) tutorial if you only want to edit Loritta's code and run her.
 
 ## 📜 Self-Hosting conditions and warnings
 
