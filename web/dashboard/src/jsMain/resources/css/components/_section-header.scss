@@ -1,0 +1,67 @@
+.section-header {
+    background-color: #29a6fe;
+
+    width: 100%;
+    height: 250px;
+    border-radius: 7px;
+    position: relative;
+    overflow: hidden;
+    contain: strict;
+
+    &:after {
+        // https://stackoverflow.com/a/29794582/7271796
+        content: '';
+        display: block;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        width: 100%;
+        box-shadow: 0px 0px 25px black inset;
+        pointer-events: none; // And pass events thru, we want the nice hover events owo
+    }
+
+    > .user-guilds-wrapper {
+        opacity: 0.7;
+        filter: brightness(0.5) grayscale(1);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .guild-icon-wrapper {
+        transition-duration: 0.5s;
+        transform-box: fill-box;
+        transform-origin: center center;
+
+        // Before this was animated (with a very slow rotate animation, but it was making the page a bit laggy
+        // So it was removed, yay!
+        // Replaced with a nice hover animation
+        &:hover {
+            transform: scale(1.05);
+        }
+    
+        > .guild-icon-priority-2 {
+            filter: brightness(0.88);
+        }
+
+        > .guild-icon-priority-3 {
+            filter: brightness(0.75);
+        }
+
+        > .guild-icon-priority-4 {
+            filter: brightness(0.63);
+        }
+
+        > .guild-icon-priority-5 {
+            filter: brightness(0.5);
+        }
+
+        > .guild-icon-priority-6 {
+            filter: brightness(0.35);
+        }
+    }
+
+    .loritta-waving {
+        filter: drop-shadow(0px 0px 4px #0000008c);
+    }
+}

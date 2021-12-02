@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="guilds-overview-stampbook.svg"
+   id="svg1410"
+   version="1.1"
+   viewBox="0 0 285.75001 52.916666"
+   height="200"
+   width="1080">
+  <defs
+     id="defs1404">
+    <clipPath
+       id="clipPath1989"
+       clipPathUnits="userSpaceOnUse">
+      <circle
+         r="67.73333"
+         cy="29.482143"
+         cx="82.398804"
+         id="circle1991"
+         style="fill:#000000;stroke-width:2.38125" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1989-0">
+      <circle
+         style="fill:#000000;stroke-width:2.38125"
+         id="circle1991-2"
+         cx="82.398804"
+         cy="29.482143"
+         r="67.73333" />
+    </clipPath>
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1989-09">
+      <circle
+         style="fill:#000000;stroke-width:2.38125"
+         id="circle1991-7"
+         cx="82.398804"
+         cy="29.482143"
+         r="67.73333" />
+    </clipPath>
+    <filter
+       id="filter2570"
+       inkscape:label="Drop Shadow"
+       style="color-interpolation-filters:sRGB;">
+      <feFlood
+         id="feFlood2560"
+         result="flood"
+         flood-color="rgb(0,0,0)"
+         flood-opacity="0.498039" />
+      <feComposite
+         id="feComposite2562"
+         result="composite1"
+         operator="in"
+         in2="SourceGraphic"
+         in="flood" />
+      <feGaussianBlur
+         id="feGaussianBlur2564"
+         result="blur"
+         stdDeviation="5"
+         in="composite1" />
+      <feOffset
+         id="feOffset2566"
+         result="offset"
+         dy="0"
+         dx="0" />
+      <feComposite
+         id="feComposite2568"
+         result="composite2"
+         operator="over"
+         in2="offset"
+         in="SourceGraphic" />
+    </filter>
+    <clipPath
+       id="clipPath2588"
+       clipPathUnits="userSpaceOnUse">
+      <path
+         d="M 91.734817,24.568449 A 67.733331,67.733331 0 0 1 24.001488,92.30178 67.733331,67.733331 0 0 1 -43.731841,24.568449 67.733331,67.733331 0 0 1 24.001488,-43.164882 67.733331,67.733331 0 0 1 91.734817,24.568449 Z"
+         style="fill:#000000;stroke-width:2.38125"
+         id="path2590" />
+    </clipPath>
+    <filter
+       id="filter2668"
+       inkscape:label="Drop Shadow"
+       style="color-interpolation-filters:sRGB;">
+      <feFlood
+         id="feFlood2658"
+         result="flood"
+         flood-color="rgb(0,0,0)"
+         flood-opacity="0.498039" />
+      <feComposite
+         id="feComposite2660"
+         result="composite1"
+         operator="in"
+         in2="SourceGraphic"
+         in="flood" />
+      <feGaussianBlur
+         id="feGaussianBlur2662"
+         result="blur"
+         stdDeviation="5"
+         in="composite1" />
+      <feOffset
+         id="feOffset2664"
+         result="offset"
+         dy="0"
+         dx="0" />
+      <feComposite
+         id="feComposite2666"
+         result="composite2"
+         operator="over"
+         in2="offset"
+         in="SourceGraphic" />
+    </filter>
+    <clipPath
+       id="clipPath2686"
+       clipPathUnits="userSpaceOnUse">
+      <circle
+         r="67.73333"
+         cy="31.372023"
+         cx="11.339287"
+         id="circle2688"
+         style="fill:#000000;stroke-width:2.38125" />
+    </clipPath>
+    <filter
+       id="filter2760"
+       inkscape:label="Drop Shadow"
+       style="color-interpolation-filters:sRGB;">
+      <feFlood
+         id="feFlood2750"
+         result="flood"
+         flood-color="rgb(0,0,0)"
+         flood-opacity="0.25098" />
+      <feComposite
+         id="feComposite2752"
+         result="composite1"
+         operator="in"
+         in2="SourceGraphic"
+         in="flood" />
+      <feGaussianBlur
+         id="feGaussianBlur2754"
+         result="blur"
+         stdDeviation="4"
+         in="composite1" />
+      <feOffset
+         id="feOffset2756"
+         result="offset"
+         dy="0"
+         dx="0" />
+      <feComposite
+         id="feComposite2758"
+         result="composite2"
+         operator="over"
+         in2="offset"
+         in="SourceGraphic" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     inkscape:window-maximized="1"
+     inkscape:window-y="-11"
+     inkscape:window-x="-11"
+     inkscape:window-height="1360"
+     inkscape:window-width="2560"
+     units="px"
+     showgrid="false"
+     inkscape:document-rotation="0"
+     inkscape:current-layer="g2700"
+     inkscape:document-units="mm"
+     inkscape:cy="-52.188465"
+     inkscape:cx="7.559616"
+     inkscape:zoom="1.979899"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
+  <metadata
+     id="metadata1407">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     sodipodi:insensitive="true"
+     transform="matrix(0.152615,-0.0255442,0.0255442,0.152615,2.2386431,-0.08267423)"
+     inkscape:label="icon-group"
+     style="filter:url(#filter2760)"
+     id="g2700">
+    <g
+       inkscape:label="Layer 1"
+       id="layer1"
+       style="display:inline;opacity:1">
+      <g
+         id="g2691"
+         style="display:inline;opacity:1;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none">
+        <image
+           sodipodi:absref="C:\Users\Leonardo\Documents\IdeaProjects\LorittaBot\LorittaCinnamon\web\dashboard\src\jsMain\resources\illustrations\caf959735a24b4bba1d31bb412fef58e.png"
+           xlink:href="caf959735a24b4bba1d31bb412fef58e.png"
+           style="stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none"
+           y="-36.361305"
+           x="-56.394043"
+           width="135.46666"
+           height="135.46666"
+           preserveAspectRatio="none"
+           id="image2680"
+           clip-path="url(#clipPath2686)" />
+      </g>
+    </g>
+  </g>
+</svg>

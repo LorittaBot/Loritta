@@ -4,17 +4,11 @@ import SpicyMorenitta
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import net.perfectdreams.loritta.spicymorenitta.dashboard.components.userdash.UserOverview
 import net.perfectdreams.loritta.spicymorenitta.dashboard.screen.Screen
 import net.perfectdreams.loritta.spicymorenitta.dashboard.screen.UserOverviewViewModel
 
 class RoutingManager(private val m: SpicyMorenitta) {
-    var screenState = mutableStateOf<Screen?>(null)
-    var delegatedScreenState by screenState
-    var loading by mutableStateOf<Boolean>(false)
+    var screenState by mutableStateOf<Screen?>(null)
 
     fun switchToUserOverview() {
         val viewModel = UserOverviewViewModel(m)
@@ -24,7 +18,11 @@ class RoutingManager(private val m: SpicyMorenitta) {
 
     fun switch(screen: Screen) {
         println("Switching to $screen")
-        delegatedScreenState = screen
-        loading = false
+        val currentScreenState = screenState
+        // Automatically dispose the current screen ViewModel if the screen has a ViewModel
+        if (currentScreenState is Screen.ScreenWithViewModel)
+            currentScreenState.model.dispose()
+        screenState = screen
+        m.appState.isSidebarOpen = false // Close sidebar if it is open
     }
 }

@@ -6,21 +6,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import http
 import io.ktor.client.request.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.pudding.data.discord.PartialDiscordGuild
 import net.perfectdreams.loritta.spicymorenitta.dashboard.utils.State
 
-class UserOverviewViewModel(private val m: SpicyMorenitta) {
+class UserOverviewViewModel(private val m: SpicyMorenitta) : ViewModel() {
     var guilds by mutableStateOf<State<List<PartialDiscordGuild>>>(State.Loading())
 
     fun loadData() {
-        GlobalScope.launch {
+        launch {
             println("Faking delay...")
+            delay(2_000)
 
-            val response = http.get<String>("http://127.0.0.1:8000/api/v1/users/@me/guilds") {}
+            val response = http.get<String>("http://192.168.15.14:8000/api/v1/users/@me/guilds") {}
             /* val guilds = listOf(
                 SpicyMorenitta.GuildData(
                     0L,

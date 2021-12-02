@@ -16,16 +16,13 @@ import org.jetbrains.compose.web.css.border
 import org.jetbrains.compose.web.css.borderRadius
 import org.jetbrains.compose.web.css.boxSizing
 import org.jetbrains.compose.web.css.color
-import org.jetbrains.compose.web.css.deg
 import org.jetbrains.compose.web.css.display
 import org.jetbrains.compose.web.css.em
 import org.jetbrains.compose.web.css.flexDirection
-import org.jetbrains.compose.web.css.flexShrink
 import org.jetbrains.compose.web.css.fontFamily
 import org.jetbrains.compose.web.css.fontSize
 import org.jetbrains.compose.web.css.fontWeight
 import org.jetbrains.compose.web.css.gap
-import org.jetbrains.compose.web.css.gridTemplateColumns
 import org.jetbrains.compose.web.css.height
 import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.css.keywords.auto
@@ -82,23 +79,6 @@ object AppStylesheet : StyleSheet() {
         flexDirection(FlexDirection.Column)
         width(72.px)
         backgroundColor(Color.red)
-    }
-
-    val leftSidebar by style {
-        display(DisplayStyle.Flex)
-        flexDirection(FlexDirection.Column)
-        width(25.percent)
-        maxWidth(300.px)
-        flexShrink(0) // Do not shink the sidebar!
-        property("box-shadow", "rgba(0, 101, 255, 0.7) 0px 0px 15px") // Shadow
-        property("z-index", 1) // Make the left sidebar be on top of the right sidebar, fixes the shadow
-        color(Color.white)
-        background("rgba(0, 0, 0, 0) linear-gradient(rgb(0, 168, 255) 0%, rgb(0, 100, 255) 100%) repeat scroll 0% 0%")
-        height(100.vh)
-        position(Position.Sticky)
-        // Required for sticky position to work
-        top(0.px)
-        left(0.px)
     }
 
     val leftSidebarEntries by style {

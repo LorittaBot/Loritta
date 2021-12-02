@@ -1,13 +1,12 @@
 package net.perfectdreams.loritta.spicymorenitta.dashboard.components
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Text
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
-import net.perfectdreams.loritta.spicymorenitta.dashboard.styles.AppStylesheet
+import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun SidebarCategory(name: String, content: @Composable () -> Unit) {
@@ -15,7 +14,7 @@ fun SidebarCategory(name: String, content: @Composable () -> Unit) {
 
     Div(
         attrs = {
-            classes(AppStylesheet.leftSidebarCategory)
+            classes("category")
 
             onClick {
                 showContent = !showContent

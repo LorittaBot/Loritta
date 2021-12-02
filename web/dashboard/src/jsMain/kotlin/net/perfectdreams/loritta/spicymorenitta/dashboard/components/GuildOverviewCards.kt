@@ -44,9 +44,10 @@ fun GuildOverviewCards(screen: Screen.UserOverview) {
         is State.Success -> {
             val guilds = state.value
             val filteredGuilds = guilds.filter { it.name.contains(filter, true) }
+                .sortedBy { it.name }
             if (guilds.isNotEmpty()) {
                 if (filteredGuilds.isNotEmpty()) {
-                    GuildOverviewCardsGrid(guilds.filter { it.name.contains(filter, true) })
+                    GuildOverviewCardsGrid(filteredGuilds)
                 } else {
                     Text("Nenhum servidor é compatível com o filtro que você selecionou!")
                 }

@@ -10,6 +10,8 @@ object SVGIconManager {
 
     val tailSpin by lazy { register("tail-spin", svgTailSpin) }
     val sparkles by lazy { register("sparkles", svgSparkles, SVGOptions.REMOVE_FILLS, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val bars by lazy { register("bars", svgBars, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val times by lazy { register("times", svgTimes, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
 
     /**
      * Loads and registers a SVG with [name] and [path]
@@ -72,3 +74,11 @@ external val svgTailSpin: dynamic
 @JsModule("./icons/twemoji/2728.svg")
 @JsNonModule
 external val svgSparkles: dynamic
+
+@JsModule("./icons/fontawesome5/bars.svg")
+@JsNonModule
+external val svgBars: dynamic
+
+@JsModule("./icons/fontawesome5/times.svg")
+@JsNonModule
+external val svgTimes: dynamic
