@@ -3,19 +3,11 @@
 
 <h1 align="center">✨ Loritta Morenitta ✨</h1>
 
-<!-- Badges -->
+<!-- Badges, about the GitHub repository itself -->
 <p align="center">
 <a href="https://github.com/LorittaBot/Loritta/actions/workflows/build.yml"><img src="https://github.com/LorittaBot/Loritta/actions/workflows/build.yml/badge.svg"></a>
 <a href="https://i18n.perfectdreams.net/loritta-morenitta-cinnamon"><img src="https://badges.crowdin.net/e/557e25200b3a46d74dc052c4ec2cc8a4/localized.svg"></a>
-<a href="https://github.com/LorittaBot/Loritta/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-lightgray.svg"></a>
-</p>
-
-<p align="center">
-<a href="https://loritta.website"><img src="https://img.shields.io/badge/website-loritta-4daff8.svg"></a>
-</a>
-<a href="https://loritta.website/donate"><img src="https://img.shields.io/badge/donate-loritta-33cf57.svg"></a>
-<a href="https://mrpowergamerbr.com/"><img src="https://img.shields.io/badge/website-mrpowergamerbr-fe4221.svg"></a>
-<a href="https://loritta.website/support"><img src="https://discordapp.com/api/guilds/297732013006389252/widget.png"></a>
+<a href="LICENSE"><img src="https://img.shields.io/badge/license-AGPL%20v3-blue.svg"></a>
 </p>
 
 All Discord servers have the same issues. Members want entertainment, moderators want automation... and you just want to rest.
