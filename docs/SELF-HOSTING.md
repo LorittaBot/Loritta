@@ -4,10 +4,10 @@ This section is tailored to users that only want to self-host Loritta without co
 
 ## 📜 Self-Hosting conditions and warnings
 
-In addition to the project's [AGPL-3.0 license](LICENSE), here are some other things that you should keep in mind...
+In addition to the project's [AGPL-3.0 license](../LICENSE), here are some other things that you should keep in mind...
 
 1. We keep the source code open so people can see, learn and be inspired by how Loritta was made and, if they want to, they can help the project with features and bug fixes.
-2. This is a community project, if you make changes to Loritta's source code you need to follow the [AGPL-3.0 license](LICENSE) and keep the changes open source! And, if you want to help Loritta, why not create a pull request? 😉
+2. This is a community project, if you make changes to Loritta's source code you need to follow the [AGPL-3.0 license](../LICENSE) and keep the changes open source! And, if you want to help Loritta, why not create a pull request? 😉
 3. We **won't** give support for self-hosted instances, you need to know how to troubleshoot the issues yourself. We tried to make the self-host process as painless as possible, but it is impossible to know all the different issues you may find.
 4. Don't lie saying that you "created Loritta". Please give credits to the creators!
 5. Loritta requires a lot of different API keys for a lot of features. While they aren't required, you may encounter issues when trying to use some of the features.
