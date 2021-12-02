@@ -36,7 +36,7 @@ To learn more about self-hosting, please read the [How to self-host Loritta](doc
 
 ## 💸 Support Us
 
-_B-but I never thought that people would be willing to *support*... **me**, with money... *loritta starts sobbing*_
+> B-but I never thought that people would be willing to *support*... **me**, with money... *loritta starts sobbing*
 
 If you want to help Loritta financially, please purchase things in Loritta's website! Anything purchased in Loritta's website help with our expenses and helps us to keep Loritta's dream of making the world a better place alive!
 
