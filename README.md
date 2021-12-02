@@ -34,13 +34,13 @@ If you want to use Loritta on your server without messing around with hosting st
 
 ## 💁 Contributing
 
-If you want to contribute code, translations... or heck, even money to the project, check out our [Contributing to Loritta](CONTRIBUTING.md) guide!
+If you want to contribute code, translations... or heck, even money to the project, check out our [Contributing to Loritta](docs/CONTRIBUTING.md) guide!
 
 ## 🚀 Self-hosting
 
 You can also host your own Loritta instance in your own machine! This is only for experienced users and for users that want to help the project by contributing code. We won't give support for people that are trying to self-host because we don't want to spend hours trying to troubleshoot other people issues that only happens on self-hosted instances, so you should at least know how to troubleshoot issues, if you find any.
 
-To learn more about self-hosting, please read the [How to self-host Loritta](SELF-HOSTING.md) tutorial!
+To learn more about self-hosting, please read the [How to self-host Loritta](docs/SELF-HOSTING.md) tutorial!
 
 ___
 

@@ -1,6 +1,6 @@
 # 🚀 How to self-host Loritta
 
-This section is tailored to users that only want to self-host Loritta without contributing back code, *not* for developers. Please read the the [Developing Loritta](DEVELOPERS.md) tutorial if you only want to edit Loritta's code and run her.
+This section is tailored to users that only want to self-host Loritta without contributing back code, *not* for developers. Please read the the [Developing Loritta](docs/DEVELOPERS.md) tutorial if you only want to edit Loritta's code and run her.
 
 ## 📜 Self-Hosting conditions and warnings
 
@@ -25,7 +25,7 @@ Seems too hard but you *really* want to use Loritta? Don't worry, you can use ou
 * * Linux: [Docker Compose](https://docs.docker.com/compose/install/)
 
 ## 🧹 Preparing the environment
-* Create a empty folder somewhere in your OS, why an empty folder? Just to keep things tidy! :3
+Create a empty folder somewhere in your OS, why an empty folder? Just to keep things tidy! :3
 
 ```yml
 version: "3.9"
