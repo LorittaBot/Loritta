@@ -2,11 +2,9 @@ package net.perfectdreams.loritta.cinnamon.pudding.entities
 
 import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import org.jetbrains.exposed.sql.update
 
 class PuddingUserProfile(
@@ -49,9 +47,7 @@ class PuddingUserProfile(
         }
     }
 
-    suspend fun setGender(gender: Gender) = pudding.transaction {
-        UserSettings.update({ UserSettings.id eq this@PuddingUserProfile.id.value.toLong() }) {
-            it[UserSettings.gender] = gender
-        }
-    }
+    suspend fun getOrCreateProfileSettings() = pudding.users.getOrCreateProfileSettings(id)
+
+    suspend fun getProfileSettings() = pudding.users.getProfileSettings(id)
 }
