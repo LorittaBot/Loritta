@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserSetting
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -63,6 +64,51 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             Profiles.select { Profiles.id eq id.value.toLong() }
                 .firstOrNull()
         }?.let { PuddingUserProfile.fromRow(it) }
+    }
+
+    /**
+     * Gets or creates a [PuddingUserSetting]
+     *
+     * @param  id the user's ID
+     * @return the user settings
+     */
+    suspend fun getOrCreateUserSetting(id: UserId) = pudding.transaction {
+        val setting = getUserSetting(id)
+        if (setting != null)
+            return@transaction setting
+
+        val insertId = UserSettings.insertAndGetId {
+            it[UserSettings.id] = id.value.toLong()
+            it[UserSettings.aboutMe] = null
+            it[UserSettings.gender] = Gender.UNKNOWN
+            it[UserSettings.activeProfileDesign] = null
+            it[UserSettings.activeBackground] = null
+            it[UserSettings.doNotSendXpNotificationsInDm] = false
+            it[UserSettings.discordAccountFlags] = 0
+            it[UserSettings.discordPremiumType] = null
+            it[UserSettings.language] = null
+        }
+
+        return@transaction UserSettings.select { UserSettings.id eq insertId }
+            .limit(1)
+            .first() // Should NEVER be null!
+            .let {
+                PuddingUserSetting
+                    .fromRow(it)
+            }
+    }
+
+    /**
+     * Gets a [PuddingUserSetting], if the profile doesn't exist, then null is returned
+     *
+     * @param id the user's ID
+     * @return the user settings or null if it doesn't exist
+     */
+    suspend fun getUserSetting(id: UserId): PuddingUserSetting? {
+        return pudding.transaction {
+            UserSettings.select { UserSettings.id eq id.value.toLong() }
+                .firstOrNull()
+        }?.let { PuddingUserSetting.fromRow(it) }
     }
 
     /**
