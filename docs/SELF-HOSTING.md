@@ -13,7 +13,7 @@ In addition to the project's [AGPL-3.0 license](../LICENSE), here are some other
 5. Loritta requires a lot of different API keys for a lot of features. While they aren't required, you may encounter issues when trying to use some of the features.
 6. To avoid problems and confusions, we **do not allow** using the name "Loritta", "Lori" or any similar names on your selfhosted versions. Call her "Nicole" if you aren't creative enough to create your own name to give to your selfhosted version. Don't like "Nicole"? Generate your own [here](https://www.behindthename.com/random/)!
 
-Seems too hard but you *really* want to use Loritta? Don't worry, you can use our free public instance by clicking here [clicking here](https://l.lori.fun/add-lori)!
+Seems too hard but you *really* want to use Loritta? Don't worry, you can use our free public instance by [clicking here](https://l.lori.fun/add-lori)!
 
 ## 👷 Requirements
 
