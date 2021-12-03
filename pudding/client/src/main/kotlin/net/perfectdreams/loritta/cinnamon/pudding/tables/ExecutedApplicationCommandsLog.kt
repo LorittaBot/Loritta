@@ -3,10 +3,9 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.jsonb
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.postgresEnumeration
-import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.javatime.timestamp
 
-object ExecutedApplicationCommandsLog : LongIdTable() {
+object ExecutedApplicationCommandsLog : LongIdTableWithoutOverriddenPrimaryKey() {
     val userId = long("user").index()
     val guildId = long("guild").nullable()
     val channelId = long("channel")
@@ -23,7 +22,5 @@ object ExecutedApplicationCommandsLog : LongIdTable() {
     // Sent At must be a primary key because it is used as a partition key
     // While this means that all partitions should have an unique ID and Sent At, the ID is always incrementing so I don't think
     // that this will cause issues
-    init {
-        index(true, id, sentAt)
-    }
+    override val primaryKey = PrimaryKey(id, sentAt)
 }
