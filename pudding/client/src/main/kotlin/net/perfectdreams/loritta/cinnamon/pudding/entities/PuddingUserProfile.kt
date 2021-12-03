@@ -46,4 +46,8 @@ class PuddingUserProfile(
             it[afkReason] = null
         }
     }
+
+    suspend fun getOrCreateProfileSettings() = pudding.users.getOrCreateProfileSettings(id)
+
+    suspend fun getProfileSettings() = pudding.users.getProfileSettings(id)
 }
