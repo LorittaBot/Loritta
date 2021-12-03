@@ -87,7 +87,7 @@ When the line "After configuring the file, run me again!" is shown in the consol
     │
     └── gabrielaImageServer
         └── url
-    │   │   * Set this to "http://gabriela-image-server:8080/", "gabriela-image-server" is Gabriela's Image Server's container name in docker-compose.yml
+            * Set this to "http://gabriela-image-server:8080/", "gabriela-image-server" is Gabriela's Image Server's container name in docker-compose.yml
 ```
 
 If everything goes well, Loritta will be up and running!
