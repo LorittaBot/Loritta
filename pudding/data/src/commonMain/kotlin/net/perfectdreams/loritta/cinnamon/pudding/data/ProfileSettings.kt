@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 
 @Serializable
-data class UserSetting(
+data class ProfileSettings(
     val id: UserId,
     val aboutMe: String?,
     val gender: Gender,

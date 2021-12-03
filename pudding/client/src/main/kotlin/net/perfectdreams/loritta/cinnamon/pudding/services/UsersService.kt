@@ -7,8 +7,8 @@ import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserSetting
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -67,13 +67,13 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     /**
-     * Gets or creates a [PuddingUserSetting]
+     * Gets or creates a [PuddingProfileSettings]
      *
      * @param  id the user's ID
      * @return the user settings
      */
-    suspend fun getOrCreateUserSetting(id: UserId) = pudding.transaction {
-        val setting = getUserSetting(id)
+    suspend fun getOrCreateProfileSettings(id: UserId) = pudding.transaction {
+        val setting = getProfileSettings(id)
         if (setting != null)
             return@transaction setting
 
@@ -93,22 +93,22 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             .limit(1)
             .first() // Should NEVER be null!
             .let {
-                PuddingUserSetting
+                PuddingProfileSettings
                     .fromRow(it)
             }
     }
 
     /**
-     * Gets a [PuddingUserSetting], if the profile doesn't exist, then null is returned
+     * Gets a [PuddingProfileSettings], if the profile doesn't exist, then null is returned
      *
      * @param id the user's ID
      * @return the user settings or null if it doesn't exist
      */
-    suspend fun getUserSetting(id: UserId): PuddingUserSetting? {
+    suspend fun getProfileSettings(id: UserId): PuddingProfileSettings? {
         return pudding.transaction {
             UserSettings.select { UserSettings.id eq id.value.toLong() }
                 .firstOrNull()
-        }?.let { PuddingUserSetting.fromRow(it) }
+        }?.let { PuddingProfileSettings.fromRow(it) }
     }
 
     /**

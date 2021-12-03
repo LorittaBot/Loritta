@@ -16,14 +16,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserSetting
+import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingMarriage
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserSetting
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
@@ -45,9 +45,9 @@ open class Service(private val pudding: Pudding) {
         )
     )
 
-    fun PuddingUserSetting.Companion.fromRow(row: ResultRow) = PuddingUserSetting(
+    fun PuddingProfileSettings.Companion.fromRow(row: ResultRow) = PuddingProfileSettings(
         pudding,
-        UserSetting(
+        ProfileSettings(
             UserId(row[UserSettings.id].value.toULong()),
             row[UserSettings.aboutMe],
             row[UserSettings.gender],

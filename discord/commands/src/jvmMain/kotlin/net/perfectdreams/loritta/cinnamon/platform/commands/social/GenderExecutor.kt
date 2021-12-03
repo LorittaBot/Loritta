@@ -25,7 +25,7 @@ class GenderExecutor : CommandExecutor() {
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
-        val userSettings = context.loritta.services.users.getOrCreateUserSetting(UserId(context.user.id.value))
+        val userSettings = context.loritta.services.users.getOrCreateProfileSettings(UserId(context.user.id.value))
         val gender = Gender.valueOf(args[Options.gender].uppercase())
 
         if (userSettings.gender != gender)
