@@ -25,10 +25,11 @@ class GenderExecutor : CommandExecutor() {
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
-        val profile = context.loritta.services.users.getOrCreateUserProfile(UserId(context.user.id.value))
+        val userSettings = context.loritta.services.users.getOrCreateUserSetting(UserId(context.user.id.value))
         val gender = Gender.valueOf(args[Options.gender].uppercase())
 
-        profile.setGender(gender)
+        if (userSettings.gender != gender)
+            userSettings.setGender(gender)
 
         context.sendEphemeralMessage {
             styled(
