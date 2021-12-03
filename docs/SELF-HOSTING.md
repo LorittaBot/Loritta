@@ -20,7 +20,7 @@ Seems too hard but you *really* want to use Loritta? Don't worry, you can use ou
 * Docker
 * * Windows or macOS: [Docker for Desktop](https://docs.docker.com/desktop/)
 * * Linux: [Docker](https://docs.docker.com/engine/install/)
-* Docker Desktop
+* Docker Compose
 * * Windows or macOS: Docker for Desktop already includes Docker Compose, yay!
 * * Linux: [Docker Compose](https://docs.docker.com/compose/install/)
 
