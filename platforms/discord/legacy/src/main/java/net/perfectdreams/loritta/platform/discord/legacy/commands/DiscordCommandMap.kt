@@ -50,7 +50,6 @@ import net.perfectdreams.loritta.commands.vanilla.roblox.RbUserCommand
 import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaStatusCommand
 import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.BomDiaECiaTopLocalCommand
-import net.perfectdreams.loritta.commands.vanilla.social.RankGlobalCommand
 import net.perfectdreams.loritta.commands.vanilla.social.RepTopCommand
 import net.perfectdreams.loritta.commands.vanilla.social.XpNotificationsCommand
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -87,7 +86,6 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
             BomDiaECiaStatusCommand(discordLoritta),
             BomDiaECiaTopCommand(discordLoritta),
 			BomDiaECiaTopLocalCommand(discordLoritta),
-			RankGlobalCommand(discordLoritta),
 			RepTopCommand(discordLoritta),
 			XpNotificationsCommand(discordLoritta),
 
