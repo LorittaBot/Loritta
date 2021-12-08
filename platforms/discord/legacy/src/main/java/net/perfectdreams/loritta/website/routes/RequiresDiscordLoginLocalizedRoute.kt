@@ -192,10 +192,10 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 											val blacklistedReason = blacklisted[BlacklistedGuilds.reason]
 
 											// Envie via DM uma mensagem falando sobre o motivo do ban
-											val message = locale["website.router.blacklistedServer", blacklistedReason]
+											val message = locale.getList("website.router.blacklistedServer", blacklistedReason)
 
 											user.openPrivateChannel().queue {
-												it.sendMessage(message).queue({
+												it.sendMessage(message.joinToString("\n")).queue({
 													guild.leave().queue()
 												}, {
 													guild.leave().queue()
