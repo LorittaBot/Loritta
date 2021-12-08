@@ -876,6 +876,22 @@ object TrinketsStuff {
         createBackground("wumpusMania", true, Rarity.EPIC, LocalDate.of(2021, 11, 11), set = "discord") {
             addDefaultVariant("wumpus-mania", ContentType.Image.PNG)
         }
+        createBackground("fridayLoriFunkin", true, Rarity.EPIC, LocalDate.of(2021, 12, 8)) {
+            addDefaultVariant("friday-lori-funkin", ContentType.Image.PNG)
+            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "friday-lori-funkin-center-top", ContentType.Image.PNG)
+        }
+        createBackground("circuitBoardGreen", true, Rarity.UNCOMMON, LocalDate.of(2021, 12, 8)) {
+            addDefaultVariant("circuit-board-green", ContentType.Image.PNG)
+        }
+        createBackground("redditRplace1", true, Rarity.EPIC, LocalDate.of(2021, 12, 8)) {
+            addDefaultVariant("reddit-rplace-1", ContentType.Image.PNG)
+        }
+        createBackground("redditRplace2", true, Rarity.EPIC, LocalDate.of(2021, 12, 8)) {
+            addDefaultVariant("reddit-rplace-2", ContentType.Image.PNG)
+        }
+        createBackground("sonicMovie2Poster", true, Rarity.EPIC, LocalDate.of(2021, 12, 8), set = "sonic") {
+            addDefaultVariant("sonic-movie-2-poster", ContentType.Image.PNG)
+        }
     }
 
     private fun createBackground(
