@@ -167,7 +167,9 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 							// Now we are going to save the server's new locale ID, based on the user's locale
 							// This fixes issues because Discord doesn't provide the voice channel server anymore
 							// (which, well, was already a huge workaround anyway)
-							serverConfig.localeId = locale.id
+							loritta.newSuspendedTransaction {
+								serverConfig.localeId = locale.id
+							}
 
 							val userId = userIdentification.id
 
