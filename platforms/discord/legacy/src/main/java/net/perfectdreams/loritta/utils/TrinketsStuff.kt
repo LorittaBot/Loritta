@@ -889,7 +889,7 @@ object TrinketsStuff {
         createBackground("redditRplace2", true, Rarity.EPIC, LocalDate.of(2021, 12, 8)) {
             addDefaultVariant("reddit-rplace-2", ContentType.Image.PNG)
         }
-        createBackground("sonicMovie2Poster", true, Rarity.EPIC, LocalDate.of(2021, 12, 8), set = "sonic") {
+        createBackground("sonicMovie2Poster", true, Rarity.EPIC, LocalDate.of(2021, 12, 8)) {
             addDefaultVariant("sonic-movie-2-poster", ContentType.Image.PNG)
         }
     }
