@@ -78,7 +78,7 @@ class PostDonationPaymentRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 		val paymentUrl = loritta.perfectPaymentsClient.createPayment(
 				loritta,
 				userIdentification.id.toLong(),
-				"Doação para a Loritta - $whoDonated",
+				"Loritta Premium - $whoDonated",
 				(realValue * 100).toLong(),
 				(storedAmount * 100).toLong(),
 				PaymentReason.DONATION,

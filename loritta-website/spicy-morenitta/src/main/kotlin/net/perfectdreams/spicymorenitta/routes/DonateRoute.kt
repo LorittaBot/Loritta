@@ -298,7 +298,7 @@ class DonateRoute(val m: SpicyMorenitta) : BaseRoute("/donate") {
                             src = "https://cdn.discordapp.com/attachments/510601125221761054/535199384535826442/FreshLori.gif"
                         }
                         p {
-                            + "Obrigada por querer doar para mim! Você não faz ideia de como cada doação me ajuda a sobreviver."
+                            + "Obrigada por querer doar para mim! Você não faz ideia de como cada compra me ajuda a sobreviver."
                         }
                         p {
                             + "Antes de doar, veja todas as recompensas que você pode ganhar doando a quantidade que você deseja!"

@@ -158,7 +158,7 @@ class DailyTaxTask : Runnable {
 
 					val dayNow = TimeUnit.MILLISECONDS.toDays((soonToBeExpiredDonation.expiresAt ?: Long.MAX_VALUE) - System.currentTimeMillis())
 
-					logger.info { "Avisando para $user que a doação $soonToBeExpiredDonation irá expirar em breve! (Falta ${dayNow} dias para expirar)" }
+					logger.info { "Avisando para $user que o premium $soonToBeExpiredDonation irá expirar em breve! (Falta ${dayNow} dias para expirar)" }
 
 					when (dayNow) {
 						2L -> {
@@ -167,7 +167,7 @@ class DailyTaxTask : Runnable {
 						}
 						1L -> {
 							embed.setThumbnail("https://i.imgur.com/oleb4HP.png")
-							embed.setDescription("Hey! Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição!\n\nEu sei que é chatinho ficar pedindo para doar novamente, mas se você puder... por favoooor doeeeee! ${Emotes.LORI_CRYING}\n\nMesmo que a sua doação seja pequena, ela sempre me ajuda a ficar mais tempo online!\n\nMas bem, se você estiver afim de doar novamente... Aqui está o [link para doar](${loritta.instanceConfig.loritta.website.url}donate)! ${Emotes.LORI_HAPPY}\n\nMas se você não puder, tudo bem... continue sendo incrível! ${Emotes.LORI_OWO}")
+							embed.setDescription("Hey! Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição!\n\nEu sei que é chatinho ficar pedindo para doar novamente, mas se você puder... por favoooor doeeeee! ${Emotes.LORI_CRYING}\n\nMesmo que a sua compra seja pequena, ela sempre me ajuda a ficar mais tempo online!\n\nMas bem, se você estiver afim de doar novamente... Aqui está o [link para doar](${loritta.instanceConfig.loritta.website.url}donate)! ${Emotes.LORI_HAPPY}\n\nMas se você não puder, tudo bem... continue sendo incrível! ${Emotes.LORI_OWO}")
 						}
 						0L -> {
 							embed.setThumbnail("https://i.imgur.com/L8oyJQ7.png")
