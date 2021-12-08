@@ -404,28 +404,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 
 	override fun onGuildJoin(event: GuildJoinEvent) {
 		logger.info { "Someone added me @ ${event.guild}! :)" }
-
-		// Vamos alterar a minha linguagem quando eu entrar em um servidor, baseando na localização dele
-		val region = event.guild.region
-		val regionName = region.getName()
-
-		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			logger.trace { "regionName = $regionName" }
-
-			// Portuguese
-			if (regionName.startsWith("Brazil")) {
-				logger.debug { "Setting localeId to default at ${event.guild}, regionName = $regionName" }
-				loritta.newSuspendedTransaction {
-					serverConfig.localeId = "default"
-				}
-			} else {
-				logger.debug { "Setting localeId to en-us at ${event.guild}, regionName = $regionName" }
-				loritta.newSuspendedTransaction {
-					serverConfig.localeId = "en-us"
-				}
-			}
-		}
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {

@@ -8,7 +8,6 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.encodeToUrl
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import io.ktor.application.*
@@ -17,6 +16,7 @@ import io.ktor.sessions.*
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BannedUsers
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
@@ -164,8 +164,10 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 
 							val serverConfig = com.mrpowergamerbr.loritta.utils.loritta.getOrCreateServerConfig(guild.idLong)
 
-							// Agora nós iremos pegar o locale do servidor
-							val locale = com.mrpowergamerbr.loritta.utils.loritta.localeManager.getLocaleById(serverConfig.localeId)
+							// Now we are going to save the server's new locale ID, based on the user's locale
+							// This fixes issues because Discord doesn't provide the voice channel server anymore
+							// (which, well, was already a huge workaround anyway)
+							serverConfig.localeId = locale.id
 
 							val userId = userIdentification.id
 
