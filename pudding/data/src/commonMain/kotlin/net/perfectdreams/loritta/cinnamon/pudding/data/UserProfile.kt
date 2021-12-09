@@ -7,5 +7,6 @@ data class UserProfile(
     val id: UserId,
     val money: Long,
     val isAfk: Boolean,
-    val afkReason: String?
+    val afkReason: String?,
+    val marriage: Long?
 )

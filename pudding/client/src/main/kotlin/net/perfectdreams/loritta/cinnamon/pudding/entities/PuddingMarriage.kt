@@ -11,6 +11,6 @@ class PuddingMarriage(
 
     val id by data::id
     val user1 by data::user1
-    val user2 by data::user1
+    val user2 by data::user2
     val marriedSince by data::marriedSince
 }
