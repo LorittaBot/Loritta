@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.entity.Snowflake
+import kotlin.system.exitProcess
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -44,13 +45,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconEx
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditRepostExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditSimpleExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendRepostExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendSimpleExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
@@ -124,13 +125,25 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McOfflineU
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.AboutMeExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.AddXpExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOffExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOnExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.DivorceExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.GenderExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.MarryExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.RemoveXpExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.SetXpExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AboutMeCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AfkCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.DivorceCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.EditXpCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.GenderCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.MarryCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.marriage.DivorceProposalButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.marriage.MarriageProposalButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.CustomTextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
@@ -163,7 +176,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
-import kotlin.system.exitProcess
 
 class CommandManager(
     private val loritta: LorittaCinnamon,
@@ -289,6 +301,38 @@ class CommandManager(
         commandManager.register(
             HungerGamesCommand,
             HungerGamesExecutor(rest)
+        )
+
+        commandManager.register(
+            EditXpCommand,
+            AddXpExecutor(),
+            RemoveXpExecutor(),
+            SetXpExecutor()
+        )
+
+        commandManager.register(
+            AboutMeCommand,
+            AboutMeExecutor()
+        )
+
+        commandManager.register(
+            DivorceCommand,
+            DivorceExecutor()
+        )
+
+        commandManager.register(
+            MarryCommand,
+            MarryExecutor()
+        )
+
+        commandManager.register(
+            DivorceProposalButtonClickExecutor,
+            DivorceProposalButtonClickExecutor(rest),
+        )
+
+        commandManager.register(
+            MarriageProposalButtonClickExecutor,
+            MarriageProposalButtonClickExecutor(),
         )
 
         // ===[ IMAGES ]===

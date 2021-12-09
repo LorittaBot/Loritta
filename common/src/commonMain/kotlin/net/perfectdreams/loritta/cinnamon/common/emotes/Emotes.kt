@@ -26,6 +26,7 @@ object Emotes {
     val LoriColored = DiscordEmote(890738873242632192L, "lori", false)
     val LoriPing = DiscordEmote(640141673531441153, "lori_yay_ping", false)
     val LoriHappy = DiscordEmote(521721811298156558, "lori_happy", true)
+    val SmolLoriPutassa = DiscordEmote(395010059157110785, "smol_lori_putassa", false)
 
     val Error = DiscordEmote(412585701054611458L, "error", false)
 
@@ -71,6 +72,8 @@ object Emotes {
     val Sob = UnicodeEmote("\uD83D\uDE2D")
     val Wink = UnicodeEmote("\uD83D\uDE09")
     val BabyChick = UnicodeEmote("\uD83D\uDC24")
+    val BrokenHeart = UnicodeEmote("\uD83D\uDC94")
+    val Dollar = UnicodeEmote("\uD83D\uDCB5")
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val Undertale = DiscordEmote(412576128340066304L, "undertale_heart", false)
     val Deltarune = DiscordEmote(889958066362155008L, "deltarune", false)
