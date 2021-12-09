@@ -21,4 +21,6 @@ class DiscordEmote(
 
     override val asMention: String
             = discordEmoteAsMention
+
+    val asUrl = "https://cdn.discordapp.com/emojis/$id" + if (animated) ".gif" else ".png"
 }
