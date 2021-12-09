@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.components.buttons
 
+import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext as CinnamonComponentContext
+import net.perfectdreams.loritta.cinnamon.platform.components.GuildComponentContext as CinnamonGuildComponentContext
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithDataExecutor
@@ -14,8 +16,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandExce
 import net.perfectdreams.loritta.cinnamon.platform.commands.SilentCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
-import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext as CinnamonComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.GuildComponentContext as CinnamonGuildComponentContext
 
 class ButtonClickExecutorWrapper(
     private val loritta: LorittaCinnamon,
@@ -47,7 +47,7 @@ class ButtonClickExecutorWrapper(
 
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
-                loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: SlashCommandExecutorWrapper.NonGuildServerConfigRoot
+                loritta.services.servers.getServerConfigRoot(guildId.value)?.data ?: SlashCommandExecutorWrapper.NonGuildServerConfigRoot
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
                 SlashCommandExecutorWrapper.NonGuildServerConfigRoot

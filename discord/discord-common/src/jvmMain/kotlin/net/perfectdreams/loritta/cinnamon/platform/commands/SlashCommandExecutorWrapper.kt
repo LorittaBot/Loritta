@@ -1,6 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 import dev.kord.common.entity.Snowflake
+import kotlin.streams.toList
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -23,9 +26,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptio
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptionType
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
-import kotlin.streams.toList
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 
 /**
  * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
@@ -118,7 +118,7 @@ class SlashCommandExecutorWrapper(
         try {
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
-                loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: NonGuildServerConfigRoot
+                loritta.services.servers.getServerConfigRoot(guildId.value)?.data ?: NonGuildServerConfigRoot
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
                 NonGuildServerConfigRoot
