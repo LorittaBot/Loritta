@@ -1,0 +1,13 @@
+description: "O amor está no ar! Case com a sua crush ou com a sua webnamorada!"
+alreadyMarried: "Você já está casado com outra pessoa! Se divorcie antes de se casar com outra pessoa!"
+alreadyMarriedOther: "já está casado!"
+cantMarryYourself: "Você não pode se casar com você mesmo, bobinho!"
+insufficientFunds: "Infelizmente casamentos são caros e necessitam de dinheiro para acontecer... Você precisa ter pelo menos **7500 Sonhos** para poder casar!"
+insufficientFundsOther: "Infelizmente casamentos são caros e necessitam de dinheiro para acontecer... {proposedUser} precisa ter pelo menos **7500 Sonhos** para poder casar!"
+marryLoritta: "Eu nem te amo para querer casar com você, e além do mais, eu nem tenho idade para casar."
+marryBot: "Robôs não tem sentimentos suficientes para se casar! Você merece algo melhor"
+prepareToMarry: "Você recebeu uma proposta de casamento de"
+marriageProposal: "Para aceitar, clique no \uD83D\uDC8D! Mas lembrando, o custo de um casamento é **15000 Sonhos** (7500 para cada usuário), e **250 Sonhos** todos os dias!"
+sucessfulMarriage: "Vocês se casaram! Felicidades para vocês dois!"
+options:
+    user: "Um usuário que você deseja casar"
