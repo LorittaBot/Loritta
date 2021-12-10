@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.giveaway
 
+import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.context.components.GuildComponentContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
@@ -9,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 
 class JoinButtonClickExecutor : ButtonClickExecutor {
     companion object : ButtonClickExecutorDeclaration(
@@ -25,7 +27,15 @@ class JoinButtonClickExecutor : ButtonClickExecutor {
                 )
             }
 
-        val (rolesNotToParticipate) = context.decodeViaComponentDataUtils<JoinButtonData>(data)
+        val (rolesNotToParticipate, expiresAt) = ComponentDataUtils.decode<JoinButtonData>(data)
+
+        if (expiresAt > Clock.System.now())
+            context.failEphemerally {
+                styled(
+                    context.i18nContext.get(GiveawayCommand.I18N_PREFIX.Button.GiveawayAlreadyFinished),
+                    Emotes.LoriSob
+                )
+            }
 
         val messageId = context.interaKTionsContext.message.id.value.toLong()
         val userId = user.id.asString
@@ -46,15 +56,12 @@ class JoinButtonClickExecutor : ButtonClickExecutor {
 
         val giveaway = context.loritta.services.giveaways.getGiveawayOrNullByMessageId(
             messageId
-        )
-
-        if (giveaway == null || giveaway.finished)
-            context.failEphemerally {
-                styled(
-                    context.i18nContext.get(GiveawayCommand.I18N_PREFIX.Button.GiveawayAlreadyFinished),
-                    Emotes.LoriSob
-                )
-            }
+        ) ?: context.failEphemerally {
+            styled(
+                context.i18nContext.get(GiveawayCommand.I18N_PREFIX.Button.GiveawayAlreadyFinished),
+                Emotes.LoriSob
+            )
+        }
 
         if (userId in giveaway.users) {
             giveaway.removeUserFromGiveaway(userId)

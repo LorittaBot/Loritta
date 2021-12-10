@@ -6,6 +6,9 @@ import dev.kord.common.entity.ChannelType
 import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.builder.message.create.embed
 import dev.kord.rest.service.RestClient
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.plus
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.TimeUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndRemoveCodeBackticks
@@ -197,7 +200,8 @@ class GiveawaySetupExecutor(val rest: RestClient) : CommandExecutor() {
                     JoinButtonClickExecutor,
                     ComponentDataUtils.encode(
                         JoinButtonData(
-                            notAllowedRoles
+                            notAllowedRoles,
+                            Clock.System.now().plus(time, DateTimeUnit.MILLISECOND)
                         )
                     )
                 ) {
