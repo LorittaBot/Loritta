@@ -8,29 +8,35 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Achievement
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
+import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.GuildProfile
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
+import net.perfectdreams.loritta.cinnamon.pudding.data.Reputation
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingDaily
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingGuildProfile
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingMarriage
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
@@ -117,6 +123,29 @@ open class Service(private val pudding: Pudding) {
             row[GuildProfiles.quickPunishment],
             // row[GuildProfiles.money],
             row[GuildProfiles.isInGuild]
+        )
+    )
+
+    fun PuddingReputation.Companion.fromRow(row: ResultRow) = PuddingReputation(
+        pudding,
+        Reputation(
+            row[Reputations.givenById],
+            row[Reputations.givenByIp],
+            row[Reputations.givenByEmail],
+            row[Reputations.receivedById],
+            row[Reputations.receivedAt],
+            row[Reputations.content]
+        )
+    )
+
+    fun PuddingDaily.Companion.fromRow(row: ResultRow) = PuddingDaily(
+        pudding,
+        Daily(
+            row[Dailies.receivedById],
+            row[Dailies.receivedAt],
+            row[Dailies.ip],
+            row[Dailies.email],
+            row[Dailies.userAgent]
         )
     )
 }

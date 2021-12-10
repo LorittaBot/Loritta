@@ -1,0 +1,6 @@
+description: "Give reputation to another user!"
+repSelf: "Você não pode dar reputação para si mesmo, bobinho!"
+wait: "You can give another reputation in {time}!"
+reputationLink: "Almost ready! To give a reputation, confirm it on {link}"
+options:
+    user: "The user you want to give the reputation"

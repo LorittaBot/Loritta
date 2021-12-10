@@ -134,6 +134,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.social.DivorceExecut
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.GenderExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.MarryExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.RemoveXpExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.RepExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.SetXpExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AboutMeCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
@@ -142,6 +143,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.EditXpCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.MarryCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.RepCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.marriage.DivorceProposalButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.marriage.MarriageProposalButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.CustomTextBoxExecutor
@@ -303,38 +305,6 @@ class CommandManager(
             HungerGamesExecutor(rest)
         )
 
-        commandManager.register(
-            EditXpCommand,
-            AddXpExecutor(),
-            RemoveXpExecutor(),
-            SetXpExecutor()
-        )
-
-        commandManager.register(
-            AboutMeCommand,
-            AboutMeExecutor()
-        )
-
-        commandManager.register(
-            DivorceCommand,
-            DivorceExecutor()
-        )
-
-        commandManager.register(
-            MarryCommand,
-            MarryExecutor()
-        )
-
-        commandManager.register(
-            DivorceProposalButtonClickExecutor,
-            DivorceProposalButtonClickExecutor(rest),
-        )
-
-        commandManager.register(
-            MarriageProposalButtonClickExecutor,
-            MarriageProposalButtonClickExecutor(),
-        )
-
         // ===[ IMAGES ]===
         commandManager.register(DrakeCommand, DrakeExecutor(gabrielaImageServerClient), BolsoDrakeExecutor(gabrielaImageServerClient), LoriDrakeExecutor(gabrielaImageServerClient))
         commandManager.register(
@@ -417,6 +387,43 @@ class CommandManager(
         commandManager.register(
             AchievementsExecutor.ChangeCategoryMenuExecutor,
             AchievementsExecutor.ChangeCategoryMenuExecutor(loritta)
+        )
+
+        commandManager.register(
+            EditXpCommand,
+            AddXpExecutor(),
+            RemoveXpExecutor(),
+            SetXpExecutor()
+        )
+
+        commandManager.register(
+            AboutMeCommand,
+            AboutMeExecutor()
+        )
+
+        commandManager.register(
+            DivorceCommand,
+            DivorceExecutor()
+        )
+
+        commandManager.register(
+            MarryCommand,
+            MarryExecutor()
+        )
+
+        commandManager.register(
+            DivorceProposalButtonClickExecutor,
+            DivorceProposalButtonClickExecutor(rest),
+        )
+
+        commandManager.register(
+            MarriageProposalButtonClickExecutor,
+            MarriageProposalButtonClickExecutor(),
+        )
+
+        commandManager.register(
+            RepCommand,
+            RepExecutor()
         )
 
         // ===[ UNDERTALE ]===
