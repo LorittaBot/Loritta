@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
+import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
@@ -19,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
@@ -28,6 +30,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
+import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
@@ -41,7 +44,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 
-open class Pudding(private val database: Database) {
+class Pudding(private val database: Database) {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
@@ -104,6 +107,7 @@ open class Pudding(private val database: Database) {
     val executedApplicationCommandsLog = ExecutedApplicationCommandsLogService(this)
     val backgrounds = BackgroundsService(this)
     val profileDesigns = ProfileDesignsService(this)
+    val bovespaBroker = BovespaBrokerService(this)
     val puddingTasks = PuddingTasks(this)
 
     /**
@@ -139,7 +143,9 @@ open class Pudding(private val database: Database) {
             Marriages,
             UserAchievements,
             InteractionsData,
-            ExecutedApplicationCommandsLog
+            ExecutedApplicationCommandsLog,
+            TickerPrices,
+            BoughtStocks
         )
 
         if (schemas.isNotEmpty())

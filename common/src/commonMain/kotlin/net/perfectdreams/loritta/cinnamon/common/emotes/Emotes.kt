@@ -26,6 +26,7 @@ object Emotes {
     val LoriColored = DiscordEmote(890738873242632192L, "lori", false)
     val LoriPing = DiscordEmote(640141673531441153, "lori_yay_ping", false)
     val LoriHappy = DiscordEmote(521721811298156558, "lori_happy", true)
+    val LoriStonks = MissingEmote // TODO: Fix this
 
     val Error = DiscordEmote(412585701054611458L, "error", false)
 
