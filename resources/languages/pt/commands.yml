@@ -7,3 +7,27 @@ commands:
   imageUrlIsUntrusted: "Desculpe, mas esse link parece um pouco sus, então eu não quero arriscar a minha segurança acessando ele... Se você realmente quer usar essa imagem, faça o download e envie-a para mim!"
   youArentTheUserGeneric: "Espere um pouquinho... Isso não é para você! Xô, xô! Sai daqui!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them
   youArentTheUserSingleUser: "Espere um pouquinho... Você não é {user}! Isso não é para você, sai daqui!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them, used when the correct user is known
+  youAreLorittaBannedPermanent:
+    - "Você está **banido(a) permanentemente**! {loriHmpf}"
+    - ""
+    - "**Motivo do Banimento:**"
+    - "> {reason}"
+    - "**Banido:** {banDate}"
+    - "**Expira:** Nunca (Permanente)"
+    - ""
+    - "Se você deseja fazer um apelo do seu ban permanente, então por favor leia a nossa [página de apelo de bans]({banAppealPageUrl})! {loriAmeno}"
+    - ""
+    - "*Será que é tarde demais para pedir desculpas?* {loriSob}"
+  youAreLorittaBannedTemporary:
+    - "Você está **temporariamente banido(a)**! {loriHmpf}"
+    - ""
+    - "**Motivo do Banimento:**"
+    - "> {reason}"
+    - "**Banido:** {banDate}"
+    - "**Expira:** {expiresDate}"
+    - ""
+    - "Por favor, evite quebrar as regras novamente ou você pode receber um ban permanente."
+    - ""
+    - "Se você deseja fazer um apelo do seu ban temporário, então por favor leia a nossa [página de apelo de bans]({banAppealPageUrl})! Entretanto nós recomendamos esperar o banimento expirar em vez de fazer apelo do seu ban temporário. {loriAmeno}"
+    - ""
+    - "*Será que é tarde demais para pedir desculpas?* {loriSob}"

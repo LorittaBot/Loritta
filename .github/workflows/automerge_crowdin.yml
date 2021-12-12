@@ -20,7 +20,7 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Automatically Merge Crowdin Pull Request
-      if: ${{ github.ref  == 'refs/heads/crowdin/cinnamon' }}
+      if: ${{ github.head_ref  == 'refs/heads/crowdin/cinnamon' }}
       uses: sudo-bot/action-pull-request-merge@v1.1.0
       with:
           # Workaround: Using "secrets.GITHUB_TOKEN" does not propagate the event to other actions, so we are going to use a personal GitHub token to workaround this

@@ -27,6 +27,8 @@ Seems too hard but you *really* want to use Loritta? Don't worry, you can use ou
 ## 🧹 Preparing the environment
 Create a empty folder somewhere in your OS, why an empty folder? Just to keep things tidy! :3
 
+Then, create a file named `docker-compose.yml` and, in it, paste this:
+
 ```yml
 version: "3.9"
 services:

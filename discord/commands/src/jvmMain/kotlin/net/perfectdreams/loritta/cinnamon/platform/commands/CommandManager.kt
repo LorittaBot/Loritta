@@ -44,13 +44,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconEx
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditRepostExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditSimpleExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendRepostExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendSimpleExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
@@ -122,6 +122,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McBodyExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McHeadExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McOfflineUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinLorittaSweatshirtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
@@ -267,7 +268,8 @@ class CommandManager(
             McHeadExecutor(mojangApi),
             McBodyExecutor(mojangApi),
             McOfflineUUIDExecutor(),
-            McUUIDExecutor(mojangApi)
+            McUUIDExecutor(mojangApi),
+            McSkinLorittaSweatshirtExecutor(gabrielaImageServerClient, mojangApi)
         )
 
         commandManager.register(

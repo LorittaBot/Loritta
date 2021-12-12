@@ -1,14 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations
 
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
+import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McBodyExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McHeadExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McOfflineUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinLorittaSweatshirtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
 object MinecraftCommand : CommandDeclaration {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Minecraft
@@ -39,6 +40,10 @@ object MinecraftCommand : CommandDeclaration {
             subcommand(listOf("offlineuuid"), I18N_PREFIX.Player.Offlineuuid.Description) {
                 executor = McOfflineUUIDExecutor
             }
+        }
+
+        subcommand(listOf("sweatshirt"), I18N_PREFIX.Sweatshirt.Description) {
+            executor = McSkinLorittaSweatshirtExecutor
         }
     }
 }
