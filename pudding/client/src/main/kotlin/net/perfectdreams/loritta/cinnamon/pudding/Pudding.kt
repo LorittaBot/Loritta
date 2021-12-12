@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
@@ -145,7 +146,8 @@ class Pudding(private val database: Database) {
             InteractionsData,
             ExecutedApplicationCommandsLog,
             TickerPrices,
-            BoughtStocks
+            BoughtStocks,
+            BannedUsers
         )
 
         if (schemas.isNotEmpty())
