@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.entity.Snowflake
+import kotlin.system.exitProcess
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -44,13 +45,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconEx
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditRepostExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditSimpleExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendRepostExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendSimpleExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
@@ -124,7 +125,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McOfflineU
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.moderation.BanInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.moderation.ClearExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.moderation.ban.UnbanButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.moderation.declarations.ClearCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOffExecutor
@@ -165,7 +169,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
-import kotlin.system.exitProcess
 
 class CommandManager(
     private val loritta: LorittaCinnamon,
@@ -343,6 +346,16 @@ class CommandManager(
         commandManager.register(
             ClearCommand,
             ClearExecutor(rest)
+        )
+
+        commandManager.register(
+            BanCommand,
+            BanInfoExecutor(rest)
+        )
+
+        commandManager.register(
+            UnbanButtonClickExecutor,
+            UnbanButtonClickExecutor(rest)
         )
 
         // ===[ VIDEOS ]===

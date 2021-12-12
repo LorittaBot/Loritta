@@ -1,0 +1,11 @@
+banInfo:
+    description: "Veja o banimento do usuário!"
+    banDoesNotExist: "Este usuário não está banido!"
+    description: "Veja o banimento do usuário!"
+    noReasonSpecified: "Nenhum motivo informado."
+    reason: "Motivo"
+    title: "Informações do Banimento"
+    user: "Usuário Banido"
+    unbanUser: "Se você deseja desbanir este usuário, aperte no {hammerEmote}!"
+    options:
+        user: "Um usuário para ver as informações do banimento dele"
