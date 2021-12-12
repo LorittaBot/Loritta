@@ -16,7 +16,7 @@ commands:
     - ""
     - "If you wish to appeal your permanent ban, please read our [ban appeal page]({banAppealPageUrl})! {loriAmeno}"
     - ""
-    - "*Is it too late now to say sorry?* {loriSob}" # Reference to Justin Bieber's Sorry
+    - "*Is it too late now to say sorry?* {loriSob}"
   youAreLorittaBannedTemporary:
     - "You are **temporarily banned**! {loriHmpf}"
     - ""
@@ -29,4 +29,4 @@ commands:
     - ""
     - "If you wish to appeal your temporary ban, please read our [ban appeal page]({banAppealPageUrl})! However we recommend waiting for the ban to expire instead of appealing your temporary ban. {loriAmeno}"
     - ""
-    - "*Is it too late now to say sorry?* {loriSob}" # Reference to Justin Bieber's Sorry
+    - "*Is it too late now to say sorry?* {loriSob}"
