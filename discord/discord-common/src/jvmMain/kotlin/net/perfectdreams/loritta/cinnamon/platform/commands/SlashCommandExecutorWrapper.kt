@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 import dev.kord.common.entity.Snowflake
 import kotlin.streams.toList
 import kotlinx.datetime.Clock

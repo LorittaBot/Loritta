@@ -21,8 +21,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
@@ -150,7 +150,7 @@ open class Pudding(private val database: Database) {
             InteractionsData,
             ExecutedApplicationCommandsLog,
             Reputations,
-            Dailies
+            Dailies,
             BannedUsers
         )
 
