@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationComm
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MarrySonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
@@ -151,7 +152,8 @@ open class Pudding(private val database: Database) {
             ExecutedApplicationCommandsLog,
             Reputations,
             Dailies,
-            BannedUsers
+            BannedUsers,
+            MarrySonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())

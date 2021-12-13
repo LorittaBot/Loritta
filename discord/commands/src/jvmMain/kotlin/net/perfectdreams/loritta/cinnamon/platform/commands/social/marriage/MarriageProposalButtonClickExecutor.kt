@@ -38,7 +38,7 @@ class MarriageProposalButtonClickExecutor : ButtonClickExecutor {
 
         val (userProfile, proposeToProfile) = MarryExecutor.canMarried(context, authorId, proposedUserId)
 
-        userProfile.marry(proposeToProfile)
+        context.loritta.services.marriages.marry(userProfile, proposeToProfile, MarryExecutor.MARRIAGE_COST)
 
         context.sendMessage {
             styled(

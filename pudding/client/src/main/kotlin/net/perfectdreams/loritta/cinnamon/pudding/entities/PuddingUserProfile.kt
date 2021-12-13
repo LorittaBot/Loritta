@@ -4,7 +4,6 @@ import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import org.jetbrains.exposed.sql.update
 
@@ -59,20 +58,6 @@ class PuddingUserProfile(
     suspend fun marriageDivorce() = pudding.transaction {
         Profiles.update({ Profiles.marriage eq data.marriage }) {
             it[marriage] = null
-        }
-    }
-
-    suspend fun marry(partnerProfile: PuddingUserProfile) = pudding.transaction {
-        val marriage = pudding.marriages.createMarriage(this@PuddingUserProfile.id, partnerProfile.id)
-
-        pudding.transaction {
-            Profiles.update({ Profiles.id eq this@PuddingUserProfile.id.value.toLong() }) {
-                it[Profiles.marriage] = marriage[Marriages.id]
-            }
-
-            Profiles.update({ Profiles.id eq partnerProfile.id.value.toLong() }) {
-                it[Profiles.marriage] = marriage[Marriages.id]
-            }
         }
     }
 

@@ -32,7 +32,7 @@ class MarryExecutor() : CommandExecutor() {
 
         override val options = Options
 
-        val MARRIAGE_COST = 7_500
+        const val MARRIAGE_COST = 7_500L
 
         suspend fun canMarried(
             context: InteractionContext,
