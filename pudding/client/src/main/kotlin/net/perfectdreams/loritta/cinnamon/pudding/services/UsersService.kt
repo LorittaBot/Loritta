@@ -5,16 +5,20 @@ import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserBannedState
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 
 class UsersService(private val pudding: Pudding) : Service(pudding) {
@@ -148,6 +152,39 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             UserAchievements.select {
                 UserAchievements.user eq id.value.toLong()
             }.map { PuddingAchievement.fromRow(it) }
+        }
+    }
+
+    /**
+     * Get the user's current banned state, if it exists and if it is valid
+     *
+     * @param id the user's ID
+     * @return the user banned state or null if it doesn't exist
+     */
+    suspend fun getUserBannedState(id: UserId) = pudding.transaction {
+        val bannedState = BannedUsers.select {
+            BannedUsers.userId eq id.value.toLong() and
+                    (BannedUsers.valid eq true) and
+                    (
+                            BannedUsers.expiresAt.isNull()
+                                    or
+                                    (
+                                            BannedUsers.expiresAt.isNotNull() and
+                                                    (BannedUsers.expiresAt greaterEq System.currentTimeMillis()))
+                            )
+
+        }
+            .orderBy(BannedUsers.bannedAt, SortOrder.DESC)
+            .firstOrNull() ?: return@transaction null
+
+        return@transaction bannedState.let {
+            UserBannedState(
+                it[BannedUsers.valid],
+                Instant.fromEpochMilliseconds(it[BannedUsers.bannedAt]),
+                it[BannedUsers.expiresAt]?.let { Instant.fromEpochMilliseconds(it) },
+                it[BannedUsers.reason],
+                it[BannedUsers.bannedBy]?.let { UserId(it.toULong()) }
+            )
         }
     }
 }

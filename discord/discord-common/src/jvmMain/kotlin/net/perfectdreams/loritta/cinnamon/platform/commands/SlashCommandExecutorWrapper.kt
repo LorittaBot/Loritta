@@ -26,6 +26,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptio
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptionType
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import kotlin.streams.toList
+import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 
 /**
  * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
@@ -133,8 +137,6 @@ class SlashCommandExecutorWrapper(
 
             i18nContext = loritta.languageManager.getI18nContextById(localeId)
 
-            // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
-
             cinnamonContext = if (context is GuildApplicationCommandContext) {
                 CinnamonGuildApplicationCommandContext(
                     loritta,
@@ -153,12 +155,16 @@ class SlashCommandExecutorWrapper(
                 )
             }
 
+            // Don't let users that are banned from using Loritta
+            if (handleIfBanned(cinnamonContext))
+                return CommandExecutionSuccess
+
             if (!rootDeclaration.allowedInPrivateChannel && guildId == null) {
                 TODO()
                 /* context.sendEphemeralMessage {
                     content = ":no_entry: **|** ${locale["commands.cantUseInPrivate"]}"
                 } */
-                return CommandExecutionSuccess()
+                return CommandExecutionSuccess
             }
 
             declarationExecutor.options.arguments.forEach {
@@ -306,19 +312,19 @@ class SlashCommandExecutorWrapper(
                 CommandArguments(cinnamonArgs)
             )
 
-            return CommandExecutionSuccess()
+            return CommandExecutionSuccess
         } catch (e: Throwable) {
             if (e is SilentCommandException)
-                return CommandExecutionSuccess() // SilentCommandExceptions should be ignored
+                return CommandExecutionSuccess // SilentCommandExceptions should be ignored
 
             if (e is CommandException) {
                 context.sendMessage(e.builder)
-                return CommandExecutionSuccess()
+                return CommandExecutionSuccess
             }
 
             if (e is EphemeralCommandException) {
                 context.sendEphemeralMessage(e.builder)
-                return CommandExecutionSuccess()
+                return CommandExecutionSuccess
             }
 
             logger.warn(e) { "Something went wrong while executing $rootDeclarationClazzName $executorClazzName" }
@@ -357,8 +363,47 @@ class SlashCommandExecutorWrapper(
         }
     }
 
+    private suspend fun handleIfBanned(context: CinnamonApplicationCommandContext): Boolean {
+        // Check if the user is banned from using Loritta
+        val userBannedState = loritta.services.users.getUserBannedState(UserId(context.user.id.value))
+
+        if (userBannedState != null) {
+            val banDateInEpochSeconds = userBannedState.bannedAt.epochSeconds
+            val expiresDateInEpochSeconds = userBannedState.expiresAt?.epochSeconds
+
+            context.sendEphemeralMessage {
+                val banAppealPageUrl = loritta.config.website + "extras/faq-loritta/loritta-ban-appeal"
+                content = context.i18nContext.get(
+                    if (expiresDateInEpochSeconds != null) {
+                        I18nKeysData.Commands.YouAreLorittaBannedTemporary(
+                            loriHmpf = Emotes.LoriHmpf,
+                            reason = userBannedState.reason,
+                            banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
+                            expiresDate = "<t:$expiresDateInEpochSeconds:R> (<t:$expiresDateInEpochSeconds:f>)",
+                            banAppealPageUrl = banAppealPageUrl,
+                            loriAmeno = Emotes.loriAmeno,
+                            loriSob = Emotes.LoriSob
+                        )
+                    } else {
+                        I18nKeysData.Commands.YouAreLorittaBannedPermanent(
+                            loriHmpf = Emotes.LoriHmpf,
+                            reason = userBannedState.reason,
+                            banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
+                            banAppealPageUrl = banAppealPageUrl,
+                            loriAmeno = Emotes.loriAmeno,
+                            loriSob = Emotes.LoriSob
+                        )
+                    }
+
+                ).joinToString("\n")
+            }
+            return true
+        }
+        return false
+    }
+
     sealed class CommandExecutionResult
-    class CommandExecutionSuccess() : CommandExecutionResult()
+    object CommandExecutionSuccess : CommandExecutionResult()
     class CommandExecutionFailure(val throwable: Throwable) : CommandExecutionResult()
 
     override fun signature() = rootSignature

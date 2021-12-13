@@ -75,4 +75,11 @@ class PuddingUserProfile(
             }
         }
     }
+
+    /**
+     * Get the user's current banned state, if it exists and if it is valid
+     *
+     * @return the user banned state or null if it doesn't exist
+     */
+    suspend fun getBannedState() = pudding.users.getUserBannedState(id)
 }
