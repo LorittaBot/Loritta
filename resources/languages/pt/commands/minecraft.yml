@@ -16,3 +16,19 @@ player:
   offlineuuid:
     description: "Mostra o ID único de um jogador offline de Minecraft: Java Edition"
     result: "**UUID online (conta crackeada/offline, sem ser autenticado pela Mojang) de `{playerName}`:** `{uniqueId}`"
+sweatshirt:
+  description: "Quer ficar aconchegante? Então por que não colocar o meu moletom fofo e aconchegante na sua skin do Minecraft?"
+  result: "A magia mágica de moletom está pronta e agora você vai ficar 200% mais confortável... perder um mundo hardcore para um bebê zumbi nunca foi tão aconchegante! Baixe sua nova skin, coloque na sua conta do Minecraft e espalhe a alegria do meu moletom super fofinho e caloroso!"
+  invalidMinecraftSkin: "Desculpe, mas isso não parece uma skin de Minecraft válida! Só consigo fazer a minha mágica de moletom com o arquivo da skin em si, e não com uma render fabulosa da sua skin posando magnificamente! Tenha em mente que as dimensões das skins do Minecraft são 32x64 ou 64x64!"
+  options:
+    skin:
+      text: "O nome da conta de um jogador no Minecraft: Java Edition ou a URL de uma skin do Minecraft"
+    sweatshirtStyle:
+      text: "Qual estilo de moletom você quer na sua skin?"
+      choice:
+        light: "Padrão (Claro)"
+        dark: "Padrão (Escuro)"
+        mixWavy: "Misto (Onda)"
+        mixWavyWithStitches: "Misto (Onda com Pontos)" #Stitches = Sewing Stitches, the sweatshirt is a light and dark sweatshirt stitched together
+        mixVertical: "Misto (Vertical)"
+        mixVerticalWithStitches: "Misto (Vertical com Pontos)" #Stitches = Sewing Stitches, the sweatshirt is a light and dark sweatshirt stitched together

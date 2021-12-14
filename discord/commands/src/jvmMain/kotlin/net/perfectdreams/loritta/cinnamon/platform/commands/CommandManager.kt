@@ -128,6 +128,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McBodyExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McHeadExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McOfflineUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinLorittaSweatshirtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
@@ -272,7 +273,8 @@ class CommandManager(
             McHeadExecutor(mojangApi),
             McBodyExecutor(mojangApi),
             McOfflineUUIDExecutor(),
-            McUUIDExecutor(mojangApi)
+            McUUIDExecutor(mojangApi),
+            McSkinLorittaSweatshirtExecutor(gabrielaImageServerClient, mojangApi)
         )
 
         commandManager.register(
