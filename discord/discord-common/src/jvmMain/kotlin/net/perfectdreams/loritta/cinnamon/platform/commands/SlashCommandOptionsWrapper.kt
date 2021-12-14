@@ -6,6 +6,8 @@ import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWit
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptionType
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ListCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedCommandChoice
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.RawCommandChoice
 
 /**
  * Bridge between Cinnamon's [CommandOptions] and Discord InteraKTions' [CommandOptions].
@@ -86,7 +88,10 @@ class SlashCommandOptionsWrapper(
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as String, i18nContext.get(it.name))
+                                when (it) {
+                                    is LocalizedCommandChoice -> option.choice(it.value as String, i18nContext.get(it.name))
+                                    is RawCommandChoice -> option.choice(it.value as String, it.name)
+                                }
                             }
                         }
 
@@ -95,7 +100,10 @@ class SlashCommandOptionsWrapper(
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as String, i18nContext.get(it.name))
+                                when (it) {
+                                    is LocalizedCommandChoice -> option.choice(it.value as String, i18nContext.get(it.name))
+                                    is RawCommandChoice -> option.choice(it.value as String, it.name)
+                                }
                             }
                         }
 
@@ -104,7 +112,10 @@ class SlashCommandOptionsWrapper(
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as Long, i18nContext.get(it.name))
+                                when (it) {
+                                    is LocalizedCommandChoice -> option.choice(it.value as Long, i18nContext.get(it.name))
+                                    is RawCommandChoice -> option.choice(it.value as Long, it.name)
+                                }
                             }
                         }
 
@@ -113,7 +124,10 @@ class SlashCommandOptionsWrapper(
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as Long, i18nContext.get(it.name))
+                                when (it) {
+                                    is LocalizedCommandChoice -> option.choice(it.value as Long, i18nContext.get(it.name))
+                                    is RawCommandChoice -> option.choice(it.value as Long, it.name)
+                                }
                             }
                         }
 
@@ -122,7 +136,10 @@ class SlashCommandOptionsWrapper(
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as Double, i18nContext.get(it.name))
+                                when (it) {
+                                    is LocalizedCommandChoice -> option.choice(it.value as Double, i18nContext.get(it.name))
+                                    is RawCommandChoice -> option.choice(it.value as Double, it.name)
+                                }
                             }
                         }
 
@@ -131,7 +148,10 @@ class SlashCommandOptionsWrapper(
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
-                                option.choice(it.value as Double?, i18nContext.get(it.name))
+                                when (it) {
+                                    is LocalizedCommandChoice -> option.choice(it.value as Double?, i18nContext.get(it.name))
+                                    is RawCommandChoice -> option.choice(it.value as Double?, it.name)
+                                }
                             }
                         }
 

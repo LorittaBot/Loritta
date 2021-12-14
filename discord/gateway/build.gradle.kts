@@ -8,12 +8,6 @@ plugins {
     id("com.google.cloud.tools.jib") version Versions.JIB
 }
 
-repositories {
-    maven("https://repo.perfectdreams.net/")
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-    mavenLocal()
-}
-
 dependencies {
     implementation(project(":common"))
     implementation(project(":discord:discord-common"))

@@ -7,10 +7,6 @@ plugins {
 
 version = Versions.PUDDING
 
-repositories {
-    mavenLocal()
-}
-
 dependencies {
     implementation(project(":common"))
     api(project(":pudding:data"))

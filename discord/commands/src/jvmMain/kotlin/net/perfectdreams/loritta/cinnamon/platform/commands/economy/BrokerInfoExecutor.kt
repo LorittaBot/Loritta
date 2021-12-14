@@ -1,12 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
-import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerInfo.brokerBaseEmbed
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
+import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerTickerInformation
 
 class BrokerInfoExecutor : CommandExecutor() {
     companion object : CommandExecutorDeclaration(BrokerInfoExecutor::class)
@@ -17,109 +18,53 @@ class BrokerInfoExecutor : CommandExecutor() {
         val stockInformations = context.loritta.services.bovespaBroker.getAllTickers()
 
         context.sendMessage {
-            brokerBaseEmbed {
+            brokerBaseEmbed(context) {
                 // TODO: Localization
-                title = "${Emotes.LoriStonks} commands.command.broker.title"
-                description = "commands.command.broker.explanation"
-                footer("commands.command.broker.footer")
+                title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.Title)}"
+                description = context.i18nContext.get(
+                    BrokerCommand.I18N_PREFIX.Info.Embed.Explanation(
+                        loriSob = Emotes.LoriSob,
+                        tickerOutOfMarket = Emotes.DoNotDisturb,
+                        openTime = LorittaBovespaBrokerUtils.TIME_OPEN_DISCORD_TIMESTAMP,
+                        closingTime = LorittaBovespaBrokerUtils.TIME_CLOSING_DISCORD_TIMESTAMP
+                    )
+                ).joinToString("\n")
 
-                for (stockInformation in stockInformations.sortedByDescending { it.ticker }) {
+                for (stockInformation in stockInformations.sortedBy(BrokerTickerInformation::ticker)) {
                     val tickerId = stockInformation.ticker
-                    val tickerName = BrokerInfo.trackedTickerCodes[tickerId]
-                    val currentPrice = BrokerInfo.convertReaisToSonhos(stockInformation.value)
-                    val buyingPrice = BrokerInfo.convertToBuyingPrice(currentPrice) // Buying price
-                    val sellingPrice = BrokerInfo.convertToSellingPrice(currentPrice) // Selling price
-
+                    val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes[tickerId]
+                    val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(stockInformation.value)
+                    val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
+                    val sellingPrice = LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price
                     val changePercentage = stockInformation.dailyPriceVariation
 
-                    // TODO: Emotes on the field title
                     val fieldTitle = "`$tickerId` ($tickerName) | ${"%.2f".format(changePercentage)}%"
 
-                    // TODO: Constant and other statuses
-                    if (stockInformation.status != "market") {
+                    if (stockInformation.status != LorittaBovespaBrokerUtils.MARKET) {
                         field {
-                            name = fieldTitle
-                            value = "**Preço antes do fechamento:** $currentPrice"
+                            name = "${Emotes.DoNotDisturb} $fieldTitle"
+                            value = context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))
+                            inline = true
+                        }
+                    } else if (LorittaBovespaBrokerUtils.checkIfTickerDataIsStale(stockInformation.lastUpdatedAt)) {
+                        field {
+                            name = "${Emotes.Idle} $fieldTitle"
+                            value = """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
+                                |${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
+                            """.trimMargin()
                             inline = true
                         }
                     } else {
                         field {
-                            name = fieldTitle
-                            value = """**Compra:** $buyingPrice
-                                |**Venda:** $sellingPrice
+                            name = "${Emotes.Online} $fieldTitle"
+                            value = """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
+                                |${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
                             """.trimMargin()
                             inline = true
                         }
                     }
-                    /* if (stockInformation["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
-                        embed.addField(
-                            "${Emotes.DO_NOT_DISTURB} `${stockInformation["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-                            locale["commands.command.broker.priceBeforeMarketClose", plugin.convertReaisToSonhos(stockInformation[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)],
-                            true
-                        )
-                    else
-                        embed.addField(
-                            "${Emotes.ONLINE} `${stockInformation["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-                            """${locale["commands.command.broker.buyPrice", buyingPrice]}
-							  |${locale["commands.command.broker.sellPrice", sellingPrice]}
-							""".trimMargin(),
-                            true
-                        ) */
                 }
             }
         }
-        /* val stocks = plugin.validStocksCodes.map {
-				plugin.tradingApi.getOrRetrieveTicker(
-						it,
-						listOf(
-								LoriBrokerPlugin.CURRENT_PRICE_FIELD,
-								"description",
-								"current_session"
-						)
-				)
-			}
-
-			val embed = plugin.getBaseEmbed()
-					.setTitle("${Emotes.LORI_STONKS} ${locale["commands.command.broker.title"]}")
-					.setDescription(
-							locale.getList(
-									"commands.command.broker.explanation",
-									locale["commands.command.broker.buyExample", serverConfig.commandPrefix],
-									locale["commands.command.broker.sellExample", serverConfig.commandPrefix],
-									locale["commands.command.broker.portfolioExample", serverConfig.commandPrefix],
-									Emotes.DO_NOT_DISTURB,
-									Emotes.LORI_CRYING
-							).joinToString("\n")
-					)
-					.setFooter(locale["commands.command.broker.footer"])
-
-			// Sorted by the ticker name
-			for (stock in stocks.sortedBy { it["short_name"]!!.jsonPrimitive.content }) {
-				val tickerId = stock["short_name"]!!.jsonPrimitive.content
-				val tickerName = plugin.trackedTickerCodes[tickerId]
-				val currentPrice = plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)
-
-				val buyingPrice = plugin.convertToBuyingPrice(currentPrice)
-				val sellingPrice = plugin.convertToSellingPrice(currentPrice)
-				val changePercentage = stock["chp"]?.jsonPrimitive?.double!!
-
-				if (stock["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
-					embed.addField(
-							"${Emotes.DO_NOT_DISTURB} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-							locale["commands.command.broker.priceBeforeMarketClose", plugin.convertReaisToSonhos(stock[LoriBrokerPlugin.CURRENT_PRICE_FIELD]?.jsonPrimitive?.double!!)],
-							true
-					)
-				else
-					embed.addField(
-							"${Emotes.ONLINE} `${stock["short_name"]?.jsonPrimitive?.content}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-							"""${locale["commands.command.broker.buyPrice", buyingPrice]}
-							  |${locale["commands.command.broker.sellPrice", sellingPrice]}
-							""".trimMargin(),
-							true
-					)
-			}
-
-			sendMessage(embed.build())
-			*/
     }
 }

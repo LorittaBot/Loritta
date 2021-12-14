@@ -1,20 +1,30 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
+import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 
 class BrokerBuyStockExecutor : CommandExecutor() {
     companion object : CommandExecutorDeclaration(BrokerBuyStockExecutor::class) {
         object Options : CommandOptions() {
             val ticker = string("ticker", TodoFixThisData)
+                .also {
+                    LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
+                        it.choice(tickerId.lowercase(), "$tickerTitle ($tickerId)")
+                    }
+                }
                 .register()
 
-            val quantity = integer("quantity", TodoFixThisData)
+            val quantity = string("quantity", TodoFixThisData)
                 .register()
         }
 
@@ -24,110 +34,62 @@ class BrokerBuyStockExecutor : CommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         context.deferChannelMessageEphemerally()
 
-        val tickerId = args[Options.ticker]
-        val quantity = args[Options.quantity]
+        val tickerId = args[Options.ticker].uppercase()
+        val quantityAsString = args[Options.quantity]
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
-        // TODO: Improve this
-        if (tickerId !in BrokerInfo.validStocksCodes)
-            context.failEphemerally("That is not a valid stock ticker!")
+        if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
+            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker))
 
-        try {
-            context.loritta.services.bovespaBroker.buyStockAsset(
+        val quantity = NumberUtils.convertShortenedNumberToLong(context.i18nContext, quantityAsString) ?: context.failEphemerally(
+            context.i18nContext.get(
+                I18nKeysData.Commands.InvalidNumber(quantityAsString)
+            )
+        )
+
+        val (_, boughtQuantity, value) = try {
+            context.loritta.services.bovespaBroker.buyStockShares(
                 context.user.id.value.toLong(),
                 tickerId,
                 quantity
             )
+        } catch (e: BovespaBrokerService.TransactionActionWithLessThanOneShareException) {
+            context.failEphemerally(
+                context.i18nContext.get(
+                    when (quantity) {
+                        0L -> BrokerCommand.I18N_PREFIX.Buy.TryingToBuyZeroShares
+                        else -> BrokerCommand.I18N_PREFIX.Buy.TryingToBuyLessThanZeroShares
+                    }
+                )
+            )
+        } catch (e: BovespaBrokerService.StaleTickerDataException) {
+            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.StaleTickerData))
         } catch (e: BovespaBrokerService.OutOfSessionException) {
-            context.failEphemerally("A corretora não está funcionando no momento!")
+            context.failEphemerally(
+                context.i18nContext.get(
+                    BrokerCommand.I18N_PREFIX.StockMarketClosed(
+                        LorittaBovespaBrokerUtils.TIME_OPEN_DISCORD_TIMESTAMP,
+                        LorittaBovespaBrokerUtils.TIME_CLOSING_DISCORD_TIMESTAMP
+                    )
+                )
+            )
         } catch (e: BovespaBrokerService.NotEnoughSonhosException) {
-            context.failEphemerally("Sonhos insuficientes!")
-        } catch (e: BovespaBrokerService.TooManyStocksException) {
-            context.failEphemerally("Você já tem muitas ações!")
+            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.YouDontHaveEnoughSonhos))
+        } catch (e: BovespaBrokerService.TooManySharesException) {
+            context.failEphemerally(
+                context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.TooManyStocks(LorittaBovespaBrokerUtils.MAX_STOCKS_PER_USER))
+            )
         }
 
-        context.sendEphemeralMessage {
-            content = "Prontinho meu chapa tá na mão"
-        }
-        /* val tickerId = this.args.getOrNull(0)
-					?.toUpperCase()
-					?: explainAndExit()
-
-			if (!plugin.validStocksCodes.any { it == this.args[0] })
-				fail(locale["commands.command.broker.invalidTickerId", locale["commands.command.brokerbuy.baseExample", serverConfig.commandPrefix]])
-
-			val ticker = plugin.tradingApi
-					.getOrRetrieveTicker(tickerId, listOf(LoriBrokerPlugin.CURRENT_PRICE_FIELD, "description"))
-
-			if (ticker["current_session"]!!.jsonPrimitive.content != LoriBrokerPlugin.MARKET)
-				fail(locale["commands.command.broker.outOfSession"])
-
-			val mutex = plugin.mutexes.getOrPut(user.idLong, { Mutex() })
-			if (mutex.isLocked)
-				fail(locale["commands.command.broker.alreadyExecutingAction"])
-
-			val quantity = this.args.getOrNull(1) ?: "1"
-
-			val number = NumberUtils.convertShortenedNumberToLong(quantity)
-					?: GenericReplies.invalidNumber(this, quantity)
-
-			if (0 >= number)
-				fail(locale["commands.command.brokerbuy.zeroValue"], Constants.ERROR)
-
-			val selfUserProfile = lorittaUser.profile
-
-			val valueOfStock = plugin.convertToBuyingPrice(
-					plugin.convertReaisToSonhos(ticker[LoriBrokerPlugin.CURRENT_PRICE_FIELD]!!.jsonPrimitive.double)
-			)
-
-			val howMuchValue = valueOfStock * number
-
-			if (howMuchValue > selfUserProfile.money)
-				fail(locale["commands.command.brokerbuy.notEnoughMoney"], Constants.ERROR)
-
-			val user = user
-			val now = System.currentTimeMillis()
-
-			mutex.withLock {
-				logger.info { "User ${this.user.idLong} is trying to buy $number $tickerId for $howMuchValue" }
-				loritta.newSuspendedTransaction {
-					val currentStockCount = BoughtStocks.select {
-						BoughtStocks.user eq user.idLong
-					}.count()
-
-					if (number + currentStockCount > LoriBrokerPlugin.MAX_STOCKS)
-						fail(locale["commands.command.brokerbuy.tooManyStocks", LoriBrokerPlugin.MAX_STOCKS])
-
-					// By using shouldReturnGeneratedValues, the database won't need to synchronize on each insert
-					// this increases insert performance A LOT and, because we don't need the IDs, it is very useful to make
-					// stocks purchases be VERY fast
-					BoughtStocks.batchInsert(0 until number, shouldReturnGeneratedValues = false) {
-						this[BoughtStocks.user] = user.idLong
-						this[BoughtStocks.ticker] = tickerId
-						this[BoughtStocks.price] = valueOfStock
-						this[BoughtStocks.boughtAt] = now
-					}
-
-					lorittaUser.profile.takeSonhosAndAddToTransactionLogNested(
-						howMuchValue,
-						SonhosPaymentReason.STOCKS
-					)
-				}
-				logger.info { "User ${this.user.idLong} bought $number $tickerId for $howMuchValue" }
-			}
-
-			reply(
-					LorittaReply(
-							locale[
-									"commands.command.brokerbuy.successfullyBought",
-									number,
-									locale["commands.command.broker.stocks.${if (number == 1L) "one" else "multiple"}"],
-									tickerId,
-									locale["commands.command.broker.portfolioExample", serverConfig.commandPrefix]
-							],
-							Emotes.LORI_RICH
-					)
-			)
-			*/
+        context.sendEphemeralReply(
+            context.i18nContext.get(
+                BrokerCommand.I18N_PREFIX.Buy.SuccessfullyBought(
+                    stockCount = boughtQuantity,
+                    ticker = tickerId,
+                    price = value
+                )
+            ),
+            Emotes.LoriRich
+        )
     }
 }

@@ -59,6 +59,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerBuySto
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerPortfolioExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerSellStockExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
@@ -364,7 +365,8 @@ class CommandManager(
             BrokerInfoExecutor(),
             BrokerBuyStockExecutor(),
             BrokerSellStockExecutor(),
-            BrokerPortfolioExecutor()
+            BrokerPortfolioExecutor(),
+            BrokerStockInfoExecutor()
         )
 
         // ===[ SOCIAL ]===

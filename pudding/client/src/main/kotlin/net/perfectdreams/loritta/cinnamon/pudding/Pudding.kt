@@ -20,8 +20,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
@@ -75,6 +76,9 @@ class Pudding(private val database: Database) {
             val hikariConfig = HikariConfig()
 
             hikariConfig.driverClassName = DRIVER_CLASS_NAME
+
+            // https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
+            hikariConfig.addDataSourceProperty("reWriteBatchedInserts", "true")
 
             // Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
             // autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
@@ -147,13 +151,15 @@ class Pudding(private val database: Database) {
             ExecutedApplicationCommandsLog,
             TickerPrices,
             BoughtStocks,
-            BannedUsers
+            BannedUsers,
+            BrokerSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())
             transaction {
                 createOrUpdatePostgreSQLEnum(AchievementType.values())
                 createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
+                createOrUpdatePostgreSQLEnum(BovespaBrokerService.BrokerSonhosTransactionsEntryAction.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(

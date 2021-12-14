@@ -8,11 +8,12 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerBuySto
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerPortfolioExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerSellStockExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockInfoExecutor
 
 object BrokerCommand : CommandDeclaration {
-    val I18N_PREFIX = I18nKeysData.Commands.Command.Sonhos
+    val I18N_PREFIX = I18nKeysData.Commands.Command.Broker
 
-    override fun declaration() = command(listOf("broker"), CommandCategory.ECONOMY, I18N_PREFIX.Description) {
+    override fun declaration() = command(listOf("broker"), CommandCategory.ECONOMY, TodoFixThisData) {
         subcommand(listOf("info"), TodoFixThisData) {
             executor = BrokerInfoExecutor
         }
@@ -22,6 +23,10 @@ object BrokerCommand : CommandDeclaration {
         }
 
         subcommandGroup(listOf("stocks"), TodoFixThisData) {
+            subcommand(listOf("info"), TodoFixThisData) {
+                executor = BrokerStockInfoExecutor
+            }
+
             subcommand(listOf("buy"), TodoFixThisData) {
                 executor = BrokerBuyStockExecutor
             }
