@@ -32,6 +32,9 @@ class BrokerPortfolioExecutor : CommandExecutor() {
                     val (tickerId, stockCount, stockSum, stockAverage) = stockAsset
                     val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes[stockAsset.ticker]
                     val tickerInformation = stockInformations.first { it.ticker == stockAsset.ticker }
+                    val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(tickerInformation.value)
+                    val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
+                    val sellingPrice = LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price
 
                     // TODO: Fix this
                     val totalGainsIfSoldNow = LorittaBovespaBrokerUtils.convertToSellingPrice(
@@ -52,18 +55,33 @@ class BrokerPortfolioExecutor : CommandExecutor() {
                     // https://percentage-change-calculator.com/
                     val profitPercentage = ((totalGainsIfSoldNow - stockSum.toDouble()) / stockSum)
 
-                    field(
-                        "$emoji `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-                        context.i18nContext.get(
-                            BrokerCommand.I18N_PREFIX.Portfolio.YouHaveSharesInThisTicker(
-                                stockCount,
-                                stockSum,
-                                totalGainsIfSoldNow,
-                                diff.let { if (it > 0) "+$it" else it.toString() },
-                                profitPercentage
-                            )
+                    val youHaveSharesInThisTickerMessage = context.i18nContext.get(
+                        BrokerCommand.I18N_PREFIX.Portfolio.YouHaveSharesInThisTicker(
+                            stockCount,
+                            stockSum,
+                            totalGainsIfSoldNow,
+                            diff.let { if (it > 0) "+$it" else it.toString() },
+                            profitPercentage
                         )
                     )
+
+                    if (tickerInformation.status != LorittaBovespaBrokerUtils.MARKET) {
+                        field(
+                            "$emoji `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
+                            """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))}
+                                |$youHaveSharesInThisTickerMessage
+                            """.trimMargin()
+                        )
+                    } else {
+                        field(
+                            "$emoji `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
+                            context.i18nContext.get(
+                                """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
+                                |${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
+                                |$youHaveSharesInThisTickerMessage""".trimMargin()
+                            )
+                        )
+                    }
                 }
             }
         }
