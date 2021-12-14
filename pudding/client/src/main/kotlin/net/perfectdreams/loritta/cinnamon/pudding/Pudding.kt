@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.cinnamon.pudding
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
-import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
@@ -20,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
@@ -68,44 +68,6 @@ open class Pudding(private val database: Database) {
             return Pudding(connectToDatabase(HikariDataSource(hikariConfig)))
         }
 
-        /**
-         * Creates a Pudding instance backed by a PostgreSQL database, the database will be stored in the [path] directory
-         *
-         * @return a [Pudding] instance backed by a PostgreSQL database
-         */
-        fun createEmbeddedPostgreSQLPudding(path: String): Pudding {
-            val embeddedPostgres = EmbeddedPostgres.builder()
-                .setCleanDataDirectory(false)
-                .setDataDirectory(path)
-                .start()
-
-            val hikariConfig = createHikariConfig()
-            hikariConfig.dataSource = embeddedPostgres.postgresDatabase
-
-            return EmbeddedPSQLPudding(
-                embeddedPostgres,
-                connectToDatabase(HikariDataSource(hikariConfig))
-            )
-        }
-
-        /**
-         * Creates a Pudding instance backed by a PostgreSQL database, the database will be stored in temporary files, so it isn't persistent
-         *
-         * @return a [Pudding] instance backed by a PostgreSQL database
-         */
-        fun createMemoryPostgreSQLPudding(): Pudding {
-            val embeddedPostgres = EmbeddedPostgres.builder()
-                .start()
-
-            val hikariConfig = createHikariConfig()
-            hikariConfig.dataSource = embeddedPostgres.postgresDatabase
-
-            return EmbeddedPSQLPudding(
-                embeddedPostgres,
-                connectToDatabase(HikariDataSource(hikariConfig))
-            )
-        }
-
         private fun createHikariConfig(): HikariConfig {
             val hikariConfig = HikariConfig()
 
@@ -118,7 +80,7 @@ open class Pudding(private val database: Database) {
 
             // Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
             hikariConfig.leakDetectionThreshold = 30L * 1000
-            hikariConfig.transactionIsolation = IsolationLevel.TRANSACTION_REPEATABLE_READ.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
+            hikariConfig.transactionIsolation = ISOLATION_LEVEL.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
 
             return hikariConfig
         }
@@ -178,7 +140,8 @@ open class Pudding(private val database: Database) {
             Marriages,
             UserAchievements,
             InteractionsData,
-            ExecutedApplicationCommandsLog
+            ExecutedApplicationCommandsLog,
+            BannedUsers
         )
 
         if (schemas.isNotEmpty())
@@ -286,7 +249,7 @@ open class Pudding(private val database: Database) {
         throw lastException ?: RuntimeException("This should never happen")
     }
 
-    open fun shutdown() {
+    fun shutdown() {
         puddingTasks.shutdown()
     }
 }
