@@ -8,6 +8,9 @@ kotlin {
 	js(LEGACY) {
 		browser {
 			dceTask {
+				// The script is throwing some "Uncaught TypeError: e.defineModule is not a function" errors for some random reason that I can't figure out why
+				// So let's just disable DCE for now
+				// dceOptions.devMode = true
 				keep("ktor-ktor-io.\$\$importsForInline\$\$.ktor-ktor-io.io.ktor.utils.io")
 			}
 		}

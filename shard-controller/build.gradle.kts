@@ -21,7 +21,7 @@ dependencies {
     api("io.ktor:ktor-websockets:${Versions.KTOR}")
     api("io.ktor:ktor-client-core:${Versions.KTOR}")
     api("io.ktor:ktor-client-cio:${Versions.KTOR}")
-    api("io.github.microutils:kotlin-logging:1.6.26")
+    api("io.github.microutils:kotlin-logging:${Versions.KOTLIN_LOGGING}")
     api("com.github.salomonbrys.kotson:kotson:2.5.0")
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")

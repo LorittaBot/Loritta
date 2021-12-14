@@ -2,12 +2,19 @@ package net.perfectdreams.spicymorenitta.utils
 
 import kotlinx.browser.document
 import kotlinx.browser.window
+import kotlinx.html.dom.append
+import kotlinx.html.js.script
 import org.w3c.dom.HTMLModElement
 import org.w3c.dom.get
+import kotlin.random.Random
 
 object NitroPay : Logging {
+	val vidoomyABTest = Random.nextBoolean()
+	var isVidoomyLoaded = false
+
 	@JsName("renderAds")
 	fun renderAds() {
+		println("Vidoomy x NitroPay Ads A/B Test: $vidoomyABTest")
 		if (window["nitroAds"] != undefined && window["nitroAds"].loaded == true) {
 			println("NitroPay is loaded!")
 			renderNitroPayAds()
@@ -25,7 +32,7 @@ object NitroPay : Logging {
 
 		println("There are ${ads.size} NitroPay ads in the page...")
 
-		ads.forEach {
+		for (it in ads) {
 			if (!it.hasAttribute("data-request-id")) {
 				try {
 					console.log(it)
@@ -39,7 +46,26 @@ object NitroPay : Logging {
 						dynamic.demo = true
 
 					if (adType == "video_player") {
-						dynamic.format = "video-ac"
+						if (vidoomyABTest) {
+							// Load Vidoomy as an A/B test
+							if (!isVidoomyLoaded) {
+								println("Loading Vidoomy's script instead of NitroPay's video ad...")
+								// <script type="text/javascript" src="https://ads.vidoomy.com/lorittawebsite_18569.js" async></script>
+								document.head?.append {
+									script(
+										type = "text/javascript",
+										src = "https://ads.vidoomy.com/lorittawebsite_18569.js"
+									) {
+										attributes["async"] = "true"
+									}
+								}
+								isVidoomyLoaded = true
+							}
+							continue
+						} else {
+							// If else, we are going to load NitroPay instead
+							dynamic.format = "video-ac"
+						}
 					} else {
 						dynamic.refreshLimit = 10
 						dynamic.refreshTime = 30

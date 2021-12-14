@@ -16,7 +16,7 @@ dependencies {
 	api("org.slf4j:slf4j-api:1.7.26")
 	api("ch.qos.logback:logback-core:1.2.3")
 	api("ch.qos.logback:logback-classic:1.2.3")
-	api("io.github.microutils:kotlin-logging:1.6.26")
+	api("io.github.microutils:kotlin-logging:${Versions.KOTLIN_LOGGING}")
 	api("com.google.code.gson:gson:2.8.6")
 	api("com.github.salomonbrys.kotson:kotson:2.5.0")
 	api("io.ktor:ktor-client-core:${Versions.KTOR}")

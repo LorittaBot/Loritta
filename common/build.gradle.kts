@@ -23,7 +23,7 @@ kotlin {
                 // API = We want to allow dependencies to access those classes
                 api(kotlin("stdlib-common"))
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.KOTLIN_COROUTINES}")
-                api("io.github.microutils:kotlin-logging:2.0.6")
+                api("io.github.microutils:kotlin-logging:${Versions.KOTLIN_LOGGING}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLIN_SERIALIZATION}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLIN_SERIALIZATION}")
                 api("io.ktor:ktor-client-core:${Versions.KTOR}")
