@@ -13,24 +13,24 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockI
 object BrokerCommand : CommandDeclaration {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Broker
 
-    override fun declaration() = command(listOf("broker"), CommandCategory.ECONOMY, TodoFixThisData) {
+    override fun declaration() = command(listOf("broker"), CommandCategory.ECONOMY, I18N_PREFIX.Description) {
         subcommand(listOf("info"), TodoFixThisData) {
             executor = BrokerInfoExecutor
         }
 
-        subcommand(listOf("portfolio"), TodoFixThisData) {
+        subcommand(listOf("portfolio"), I18N_PREFIX.Portfolio.Description) {
             executor = BrokerPortfolioExecutor
         }
 
-        subcommand(listOf("stock"), TodoFixThisData) {
+        subcommand(listOf("stock"), I18N_PREFIX.Stock.Description) {
             executor = BrokerStockInfoExecutor
         }
 
-        subcommand(listOf("buy"), TodoFixThisData) {
+        subcommand(listOf("buy"), I18N_PREFIX.Buy.Description) {
             executor = BrokerBuyStockExecutor
         }
 
-        subcommand(listOf("sell"), TodoFixThisData) {
+        subcommand(listOf("sell"), I18N_PREFIX.Sell.Description) {
             executor = BrokerSellStockExecutor
         }
     }
