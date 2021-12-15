@@ -17,7 +17,7 @@ import kotlin.math.abs
 class BrokerSellStockExecutor : CommandExecutor() {
     companion object : CommandExecutorDeclaration(BrokerSellStockExecutor::class) {
         object Options : CommandOptions() {
-            val ticker = string("ticker", TodoFixThisData)
+            val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Sell.Options.Ticker.Text)
                 .also {
                     LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
                         it.choice(tickerId.lowercase(), "$tickerTitle ($tickerId)")
@@ -25,7 +25,7 @@ class BrokerSellStockExecutor : CommandExecutor() {
                 }
                 .register()
 
-            val quantity = string("quantity", TodoFixThisData)
+            val quantity = string("quantity", BrokerCommand.I18N_PREFIX.Sell.Options.Quantity.Text)
                 .register()
         }
 

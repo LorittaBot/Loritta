@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
@@ -15,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptio
 class BrokerStockInfoExecutor : CommandExecutor() {
     companion object : CommandExecutorDeclaration(BrokerStockInfoExecutor::class) {
         object Options : CommandOptions() {
-            val ticker = string("ticker", TodoFixThisData)
+            val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Stock.Options.Ticker.Text)
                 .also {
                     LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
                         it.choice(tickerId.lowercase(), "$tickerTitle ($tickerId)")
@@ -44,7 +43,7 @@ class BrokerStockInfoExecutor : CommandExecutor() {
 
         context.sendEphemeralMessage {
             brokerBaseEmbed(context) {
-                title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.TitleSingular)}"
+                title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Stock.Embed.Title)}"
 
                 // This is just like the "/broker portfolio" command
                 // There is two alternatives however: If the user has stock, the output will be the same as the "/broker portfolio" command

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
@@ -16,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 class BrokerBuyStockExecutor : CommandExecutor() {
     companion object : CommandExecutorDeclaration(BrokerBuyStockExecutor::class) {
         object Options : CommandOptions() {
-            val ticker = string("ticker", TodoFixThisData)
+            val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Buy.Options.Ticker.Text)
                 .also {
                     LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
                         it.choice(tickerId.lowercase(), "$tickerTitle ($tickerId)")
@@ -24,7 +23,7 @@ class BrokerBuyStockExecutor : CommandExecutor() {
                 }
                 .register()
 
-            val quantity = string("quantity", TodoFixThisData)
+            val quantity = string("quantity", BrokerCommand.I18N_PREFIX.Buy.Options.Quantity.Text)
                 .register()
         }
 
