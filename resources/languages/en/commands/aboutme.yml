@@ -1,4 +1,4 @@
-description: "Altere o seu \"Sobre mim\" para que as pessoas te conheçam melhor ao verem o seu perfil"
-successfullyChanged: "Sua mensagem de perfil foi alterada para {message}"
+description: "Change your \"About me\" so people get to know you better by seeing your profile"
+successfullyChanged: "Your profile message was changed to {message}"
 options:
     text: "A sua nova mensagem do \"Sobre mim\""

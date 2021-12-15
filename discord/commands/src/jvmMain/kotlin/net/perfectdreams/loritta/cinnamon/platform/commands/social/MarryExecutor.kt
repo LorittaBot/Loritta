@@ -134,7 +134,7 @@ class MarryExecutor() : CommandExecutor() {
             )
 
             styled(
-                context.i18nContext.get(MarryCommand.I18N_PREFIX.MarriageProposal),
+                context.i18nContext.get(MarryCommand.I18N_PREFIX.MarriageProposal(Emotes.MarriageRing)),
                 Emotes.Dollar
             )
 

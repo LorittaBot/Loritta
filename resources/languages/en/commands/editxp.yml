@@ -1,17 +1,17 @@
-invalidRange: "O valor deve ser um número maior que 0"
-editedSuccessfully: "O XP de {user} foi editado com sucesso"
+invalidRange: "The value must be a number greater than 0"
+editedSuccessfully: "{user} XP has been successfully edited"
 add:
-    description: "Adiciona o xp para o usuário"
+    description: "Adds xp to the user"
     options:
-        amount: "A quantidade de xp que será adicionada"
-        user: "O usuário que receberá o xp"
+        amount: "The amount of xp that will be added"
+        user: "The user who will receive xp"
 remove:
-    description: "Remove o xp do usuário"
+    description: "Removes user xp"
     options:
-        amount: "A quantidade de xp que será removida"
-        user: "O usuário que você quer remover o xp"
+        amount: "The amount of xp that will be removed"
+        user: "The user you want to remove xp"
 set:
-    description: "Define a quantidade de xp do usuário"
+    description: "Sets the amount of user xp"
     options:
-        amount: "A quantidade de xp que será definida para o usuário"
-        user: "O usuário que você quer definir o xp"
+        amount: "The amount of xp that will be set for the user"
+        user: "The user you want to set xp"

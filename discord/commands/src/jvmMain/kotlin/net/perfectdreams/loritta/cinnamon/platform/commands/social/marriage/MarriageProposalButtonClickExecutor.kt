@@ -42,7 +42,7 @@ class MarriageProposalButtonClickExecutor : ButtonClickExecutor {
 
         context.sendMessage {
             styled(
-                context.i18nContext.get(MarryCommand.I18N_PREFIX.SucessfulMarriage),
+                context.i18nContext.get(MarryCommand.I18N_PREFIX.SuccessfulMarriage),
                 Emotes.LoriHeart
             )
         }
