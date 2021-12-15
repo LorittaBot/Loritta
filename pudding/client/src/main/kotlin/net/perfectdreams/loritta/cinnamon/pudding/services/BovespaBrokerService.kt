@@ -143,7 +143,6 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
                 this[BoughtStocks.boughtAt] = now.toEpochMilliseconds()
             }
 
-            // TODO: Update the money in another way
             Profiles.update({ Profiles.id eq userId }) {
                 with(SqlExpressionBuilder) {
                     it.update(Profiles.money, Profiles.money - howMuchValue)
@@ -218,7 +217,6 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
                 }
             }
 
-            // TODO: Update the money in another way
             Profiles.update({ Profiles.id eq userId }) {
                 with(SqlExpressionBuilder) {
                     it.update(Profiles.money, Profiles.money + howMuchWillBePaidToTheUser)
