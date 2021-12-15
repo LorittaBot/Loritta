@@ -77,14 +77,14 @@ class BrokerBuyStockExecutor : CommandExecutor() {
             context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.YouDontHaveEnoughSonhos))
         } catch (e: BovespaBrokerService.TooManySharesException) {
             context.failEphemerally(
-                context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.TooManyStocks(LorittaBovespaBrokerUtils.MAX_STOCKS_PER_USER))
+                context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.TooManyShares(LorittaBovespaBrokerUtils.MAX_STOCK_SHARES_PER_USER))
             )
         }
 
         context.sendEphemeralReply(
             context.i18nContext.get(
                 BrokerCommand.I18N_PREFIX.Buy.SuccessfullyBought(
-                    stockCount = boughtQuantity,
+                    sharesCount = boughtQuantity,
                     ticker = tickerId,
                     price = value
                 )

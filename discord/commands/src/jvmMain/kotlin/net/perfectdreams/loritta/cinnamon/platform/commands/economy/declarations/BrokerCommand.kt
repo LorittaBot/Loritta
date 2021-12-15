@@ -22,18 +22,16 @@ object BrokerCommand : CommandDeclaration {
             executor = BrokerPortfolioExecutor
         }
 
-        subcommandGroup(listOf("stocks"), TodoFixThisData) {
-            subcommand(listOf("info"), TodoFixThisData) {
-                executor = BrokerStockInfoExecutor
-            }
+        subcommand(listOf("stock"), TodoFixThisData) {
+            executor = BrokerStockInfoExecutor
+        }
 
-            subcommand(listOf("buy"), TodoFixThisData) {
-                executor = BrokerBuyStockExecutor
-            }
+        subcommand(listOf("buy"), TodoFixThisData) {
+            executor = BrokerBuyStockExecutor
+        }
 
-            subcommand(listOf("sell"), TodoFixThisData) {
-                executor = BrokerSellStockExecutor
-            }
+        subcommand(listOf("sell"), TodoFixThisData) {
+            executor = BrokerSellStockExecutor
         }
     }
 }

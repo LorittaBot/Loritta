@@ -100,7 +100,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
      * @param tickerId the ticker's ID
      * @param quantity how many assets are going to be bought
      * @throws StaleTickerDataException if the data is stale and shouldn't be relied on
-     * @throws TooManySharesException   if the amount of stocks bought plus the user's current stock count will be more than [LorittaBovespaBrokerUtils.MAX_STOCKS_PER_USER]
+     * @throws TooManySharesException   if the amount of stocks bought plus the user's current stock count will be more than [LorittaBovespaBrokerUtils.MAX_STOCK_SHARES_PER_USER]
      * @throws NotEnoughSonhosException if the user doesn't have enough sonhos to purchase the assets
      * @throws OutOfSessionException    if the ticker isn't active
      */
@@ -121,7 +121,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
                 BoughtStocks.user eq userProfile.id.value.toLong()
             }.count()
 
-            if (quantity + currentStockCount > LorittaBovespaBrokerUtils.MAX_STOCKS_PER_USER)
+            if (quantity + currentStockCount > LorittaBovespaBrokerUtils.MAX_STOCK_SHARES_PER_USER)
                 throw TooManySharesException(currentStockCount)
 
             val money = userProfile.money

@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerExecutorUtils.brokerBaseEmbed
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerTickerInformation
 
@@ -19,7 +20,6 @@ class BrokerInfoExecutor : CommandExecutor() {
 
         context.sendMessage {
             brokerBaseEmbed(context) {
-                // TODO: Localization
                 title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.Title)}"
                 description = context.i18nContext.get(
                     BrokerCommand.I18N_PREFIX.Info.Embed.Explanation(
@@ -39,16 +39,17 @@ class BrokerInfoExecutor : CommandExecutor() {
                     val changePercentage = stockInformation.dailyPriceVariation
 
                     val fieldTitle = "`$tickerId` ($tickerName) | ${"%.2f".format(changePercentage)}%"
+                    val emojiStatus = BrokerExecutorUtils.getEmojiStatusForTicker(stockInformation)
 
                     if (stockInformation.status != LorittaBovespaBrokerUtils.MARKET) {
                         field {
-                            name = "${Emotes.DoNotDisturb} $fieldTitle"
+                            name = "$emojiStatus $fieldTitle"
                             value = context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))
                             inline = true
                         }
                     } else if (LorittaBovespaBrokerUtils.checkIfTickerDataIsStale(stockInformation.lastUpdatedAt)) {
                         field {
-                            name = "${Emotes.Idle} $fieldTitle"
+                            name = "$emojiStatus $fieldTitle"
                             value = """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
                                 |${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
                             """.trimMargin()
@@ -56,7 +57,7 @@ class BrokerInfoExecutor : CommandExecutor() {
                         }
                     } else {
                         field {
-                            name = "${Emotes.Online} $fieldTitle"
+                            name = "$emojiStatus $fieldTitle"
                             value = """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
                                 |${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
                             """.trimMargin()

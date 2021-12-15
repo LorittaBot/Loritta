@@ -9,7 +9,7 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 object LorittaBovespaBrokerUtils {
-    const val MAX_STOCKS_PER_USER = 100_000
+    const val MAX_STOCK_SHARES_PER_USER = 100_000
     const val OUT_OF_SESSION = "out_of_session" // Inactive stock
     const val MARKET = "market" // Active stock, can be bought/sold
     @OptIn(ExperimentalTime::class)

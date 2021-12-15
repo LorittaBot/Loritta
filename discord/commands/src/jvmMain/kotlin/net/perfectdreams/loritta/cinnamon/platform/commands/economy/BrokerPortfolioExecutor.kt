@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerExecutorUtils.brokerBaseEmbed
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 
 class BrokerPortfolioExecutor : CommandExecutor() {
@@ -26,7 +27,7 @@ class BrokerPortfolioExecutor : CommandExecutor() {
 
         context.sendMessage {
             brokerBaseEmbed(context) {
-                title = "Seu Portfólio de Ações"
+                title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Portfolio.Title)}"
 
                 for (stockAsset in userStockAssets) {
                     val (tickerId, stockCount, stockSum, stockAverage) = stockAsset
@@ -35,8 +36,8 @@ class BrokerPortfolioExecutor : CommandExecutor() {
                     val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(tickerInformation.value)
                     val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
                     val sellingPrice = LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price
+                    val emojiStatus = BrokerExecutorUtils.getEmojiStatusForTicker(tickerInformation)
 
-                    // TODO: Fix this
                     val totalGainsIfSoldNow = LorittaBovespaBrokerUtils.convertToSellingPrice(
                         LorittaBovespaBrokerUtils.convertReaisToSonhos(
                             tickerInformation.value
@@ -44,7 +45,7 @@ class BrokerPortfolioExecutor : CommandExecutor() {
                     ) * stockCount
 
                     val diff = totalGainsIfSoldNow - stockSum
-                    val emoji = when {
+                    val emojiProfit = when {
                         diff > 0 -> "\uD83D\uDD3C"
                         0 > diff -> "\uD83D\uDD3D"
                         else -> "⏹️"
@@ -67,19 +68,17 @@ class BrokerPortfolioExecutor : CommandExecutor() {
 
                     if (tickerInformation.status != LorittaBovespaBrokerUtils.MARKET) {
                         field(
-                            "$emoji `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
+                            "$emojiStatus$emojiProfit `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
                             """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))}
                                 |$youHaveSharesInThisTickerMessage
                             """.trimMargin()
                         )
                     } else {
                         field(
-                            "$emoji `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-                            context.i18nContext.get(
-                                """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
+                            "$emojiStatus$emojiProfit `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
+                            """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
                                 |${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
                                 |$youHaveSharesInThisTickerMessage""".trimMargin()
-                            )
                         )
                     }
                 }
