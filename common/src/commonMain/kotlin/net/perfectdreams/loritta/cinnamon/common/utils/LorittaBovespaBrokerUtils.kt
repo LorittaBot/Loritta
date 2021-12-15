@@ -18,7 +18,6 @@ object LorittaBovespaBrokerUtils {
     val TIME_CLOSING = Pair(17, 55)
     val BOVESPA_TIMEZONE = TimeZone.of("America/Sao_Paulo")
 
-    // TODO: Refactor
     val trackedTickerCodes = mapOf(
         "GOLL4"  to "Gol",
         "AZUL4"  to "Azul",
