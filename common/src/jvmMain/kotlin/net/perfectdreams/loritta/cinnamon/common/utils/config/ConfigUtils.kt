@@ -96,7 +96,7 @@ object ConfigUtils {
         println("I want to make the world a better place... helping people, making them laugh... I hope I succeed!")
         println("")
         println("Before we start, you need to configure me!")
-        println("I created a file named \"loritta.conf\", there you can configure a lot of things and stuff related to me, open it on your favorite text editor and change it!")
+        println("I created a file named \"$path\", there you can configure a lot of things and stuff related to me, open it on your favorite text editor and change it!")
         println("")
         println("After configuring the file, run me again!")
 

@@ -55,7 +55,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerBuyStockExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerPortfolioExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerSellStockExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BobBurningPaperExecutor
@@ -354,6 +360,14 @@ class CommandManager(
 
         // ===[ ECONOMY ]===
         commandManager.register(SonhosCommand, SonhosExecutor())
+        commandManager.register(
+            BrokerCommand,
+            BrokerInfoExecutor(),
+            BrokerBuyStockExecutor(),
+            BrokerSellStockExecutor(),
+            BrokerPortfolioExecutor(),
+            BrokerStockInfoExecutor()
+        )
 
         // ===[ SOCIAL ]===
         commandManager.register(
