@@ -71,14 +71,16 @@ class BrokerPortfolioExecutor : CommandExecutor() {
                             "$emojiStatus$emojiProfit `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
                             """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))}
                                 |$youHaveSharesInThisTickerMessage
-                            """.trimMargin()
+                            """.trimMargin(),
+                            true
                         )
                     } else {
                         field(
                             "$emojiStatus$emojiProfit `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
                             """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
                                 |${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
-                                |$youHaveSharesInThisTickerMessage""".trimMargin()
+                                |$youHaveSharesInThisTickerMessage""".trimMargin(),
+                            true
                         )
                     }
                 }
