@@ -33,24 +33,23 @@ class MarriagesService(private val pudding: Pudding) : Service(pudding) {
         }?.let { PuddingMarriage.fromRow(it) }
     }
 
-    suspend fun deleteMarriage(id: Long) =
-        pudding.transaction {
-            Marriages.deleteWhere { Marriages.id eq id }
+    suspend fun marriageDivorceAndDelete(id: Long) = pudding.transaction {
+        Profiles.update({ Profiles.marriage eq id }) {
+            it[marriage] = null
         }
 
-    suspend fun createMarriage(user1: UserId, user2: UserId): InsertStatement<Number> {
+        Marriages.deleteWhere { Marriages.id eq id }
+    }
+
+    fun createMarriage(user1: UserId, user2: UserId): InsertStatement<Number> {
         val user1Id = user1.value.toLong()
         val user2Id = user2.value.toLong()
 
-        return pudding.transaction {
-            val insertStatement = Marriages.insert {
+        return Marriages.insert {
                 it[Marriages.user1] = user1Id
                 it[Marriages.user2] = user2Id
                 it[Marriages.marriedSince] = System.currentTimeMillis()
             }
-
-            insertStatement
-        }
     }
 
     suspend fun marry(userProfile: PuddingUserProfile, partnerProfile: PuddingUserProfile, marriageCost: Long) {
@@ -74,14 +73,14 @@ class MarriagesService(private val pudding: Pudding) : Service(pudding) {
 
             MarrySonhosTransactionsLog.insert {
                 it[MarrySonhosTransactionsLog.user] = user[Profiles.id]
-                it[MarrySonhosTransactionsLog.marriage] = marriage
+                it[MarrySonhosTransactionsLog.partner] = partner[Profiles.id]
                 it[MarrySonhosTransactionsLog.sonhos] = marriageCost
                 it[MarrySonhosTransactionsLog.timestamp] = instant
             }
 
             MarrySonhosTransactionsLog.insert {
                 it[MarrySonhosTransactionsLog.user] = partner[Profiles.id]
-                it[MarrySonhosTransactionsLog.marriage] = marriage
+                it[MarrySonhosTransactionsLog.partner] = user[Profiles.id]
                 it[MarrySonhosTransactionsLog.sonhos] = marriageCost
                 it[MarrySonhosTransactionsLog.timestamp] = instant
             }

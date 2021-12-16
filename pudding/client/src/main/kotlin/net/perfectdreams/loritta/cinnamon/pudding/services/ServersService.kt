@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 
 class ServersService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getServerConfigRoot(id: ULong): PuddingServerConfigRoot? {
@@ -45,5 +46,29 @@ class ServersService(private val pudding: Pudding) : Service(pudding) {
                 (GuildProfiles.id eq userId.value.toLong()) and (GuildProfiles.guildId eq guildId.toLong())
             }.firstOrNull()
         }?.let { PuddingGuildProfile.fromRow(it) }
+    }
+
+    suspend fun addXp(userProfile: PuddingGuildProfile, amount: Long) = pudding.transaction {
+        GuildProfiles.update({
+            (GuildProfiles.userId eq userProfile.userId) and (GuildProfiles.guildId eq userProfile.guildId)
+        }) {
+            it[xp] = userProfile.xp + amount
+        }
+    }
+
+    suspend fun setXp(userProfile: PuddingGuildProfile, amount: Long) = pudding.transaction {
+        GuildProfiles.update({
+            (GuildProfiles.userId eq userProfile.userId) and (GuildProfiles.guildId eq userProfile.guildId)
+        }) {
+            it[xp] = amount
+        }
+    }
+
+    suspend fun removeXp(userProfile: PuddingGuildProfile, amount: Long) = pudding.transaction {
+        GuildProfiles.update({
+            (GuildProfiles.userId eq userProfile.userId) and (GuildProfiles.guildId eq userProfile.guildId)
+        }) {
+            it[xp] = userProfile.xp - amount
+        }
     }
 }

@@ -33,7 +33,7 @@ class SetXpExecutor : CommandExecutor() {
         val amount = args[Options.amount]
         val user = args[Options.user] ?: context.user
 
-        if (amount < 0)
+        if (amount > 0)
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(EditXpCommand.I18N_PREFIX.InvalidRange),
@@ -46,7 +46,7 @@ class SetXpExecutor : CommandExecutor() {
             context.guildId.value
         )
 
-        userProfile.setXp(amount)
+        context.loritta.services.servers.setXp(userProfile, amount)
 
         context.sendMessage {
             styled(

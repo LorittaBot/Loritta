@@ -5,7 +5,7 @@ import org.jetbrains.exposed.sql.javatime.timestamp
 
 object MarrySonhosTransactionsLog : LongIdTable() {
     val user = reference("user", Profiles).index()
-    val marriage = reference("marriage", Marriages)
+    val partner = reference("partner", Profiles)
     val sonhos = long("sonhos")
     val timestamp = timestamp("timestamp")
 }

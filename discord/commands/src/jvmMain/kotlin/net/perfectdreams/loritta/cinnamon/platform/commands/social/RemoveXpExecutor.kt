@@ -46,7 +46,7 @@ class RemoveXpExecutor : CommandExecutor() {
             context.guildId.value
         )
 
-        userProfile.removeXp(amount)
+        context.loritta.services.servers.removeXp(userProfile, amount)
 
         context.sendMessage {
             styled(

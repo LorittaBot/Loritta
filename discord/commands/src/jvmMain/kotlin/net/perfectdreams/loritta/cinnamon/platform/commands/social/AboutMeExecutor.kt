@@ -26,7 +26,7 @@ class AboutMeExecutor : CommandExecutor() {
         val profileSettings = context.loritta.services.users.getOrCreateProfileSettings(UserId(context.user.id.value))
 
         if (profileSettings.aboutMe != text)
-            profileSettings.setAboutMe(text)
+            context.loritta.services.users.setAboutMe(profileSettings.id.value.toLong(), text)
 
         context.sendEphemeralMessage {
             styled(

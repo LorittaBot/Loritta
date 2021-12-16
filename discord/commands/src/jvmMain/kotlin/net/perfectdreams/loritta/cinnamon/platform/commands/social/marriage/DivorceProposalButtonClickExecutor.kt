@@ -45,15 +45,14 @@ class DivorceProposalButtonClickExecutor(val rest: RestClient) : ButtonClickExec
         val authorProfile = context.loritta.services.users.getUserProfile(UserId(authorId.value))
 
         if (authorProfile?.data?.marriage == null)
-            context.failEphemerally {
+            context.fail {
                 styled(
                     context.i18nContext.get(DivorceCommand.I18N_PREFIX.NotMarried),
                     Emotes.Error
                 )
             }
 
-        authorProfile.marriageDivorce()
-        authorProfile.deleteMarriage()
+        context.loritta.services.marriages.marriageDivorceAndDelete(authorProfile.data.marriage!!)
 
         val userDM = rest.user.createDM(DMCreateRequest(marriagePartnerID))
 
@@ -68,7 +67,7 @@ class DivorceProposalButtonClickExecutor(val rest: RestClient) : ButtonClickExec
                     thumbnailUrl = Emotes.LoriSob.asUrl
                 }
             }
-        } catch(e: RestRequestException) { }
+        } catch(_: RestRequestException) { }
 
         context.sendMessage {
             styled(

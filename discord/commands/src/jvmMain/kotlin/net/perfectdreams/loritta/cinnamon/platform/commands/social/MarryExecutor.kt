@@ -40,20 +40,21 @@ class MarryExecutor() : CommandExecutor() {
             proposedUserId: Snowflake
         ): Pair<PuddingUserProfile, PuddingUserProfile> {
             val userProfile = context.loritta.services.users.getUserProfile(UserId(senderId.value))
-            val proposeToProfile = context.loritta.services.users.getUserProfile(
-                UserId(proposedUserId.value)
-            )
 
             if (userProfile == null || MARRIAGE_COST > userProfile.money)
-                context.failEphemerally {
+                context.fail {
                     styled(
                         context.i18nContext.get(MarryCommand.I18N_PREFIX.InsufficientFunds),
                         Emotes.Error
                     )
                 }
 
+            val proposeToProfile = context.loritta.services.users.getUserProfile(
+                UserId(proposedUserId.value)
+            )
+
             if (proposeToProfile == null || MARRIAGE_COST > proposeToProfile.money)
-                context.failEphemerally {
+                context.fail {
                     styled(
                         context.i18nContext.get(
                             MarryCommand.I18N_PREFIX.InsufficientFundsOther("<@${proposedUserId.value}>")
@@ -66,7 +67,7 @@ class MarryExecutor() : CommandExecutor() {
             val proposedUserMarriage = proposeToProfile.getMarriageOrNull()
 
             if (senderMarriage != null)
-                context.failEphemerally {
+                context.fail {
                     styled(
                         context.i18nContext.get(MarryCommand.I18N_PREFIX.AlreadyMarried),
                         Emotes.Error
@@ -74,7 +75,7 @@ class MarryExecutor() : CommandExecutor() {
                 }
 
             if (proposedUserMarriage != null)
-                context.failEphemerally {
+                context.fail {
                     styled(
                         "<@${proposedUserId.value}> " + context.i18nContext.get(MarryCommand.I18N_PREFIX.AlreadyMarriedOther),
                         Emotes.Error

@@ -53,14 +53,6 @@ class PuddingUserProfile(
 
     suspend fun getMarriageOrNull() = data.marriage?.let { pudding.marriages.getMarriage(it) }
 
-    suspend fun deleteMarriage() = pudding.marriages.deleteMarriage(data.marriage!!)
-
-    suspend fun marriageDivorce() = pudding.transaction {
-        Profiles.update({ Profiles.marriage eq data.marriage }) {
-            it[marriage] = null
-        }
-    }
-
     /**
      * Get the user's current banned state, if it exists and if it is valid
      *

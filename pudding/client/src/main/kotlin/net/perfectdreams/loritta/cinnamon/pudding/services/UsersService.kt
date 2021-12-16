@@ -20,6 +20,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 
 class UsersService(private val pudding: Pudding) : Service(pudding) {
     /**
@@ -185,6 +186,12 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
                 it[BannedUsers.reason],
                 it[BannedUsers.bannedBy]?.let { UserId(it.toULong()) }
             )
+        }
+    }
+
+    suspend fun setAboutMe(userId: Long, text: String) = pudding.transaction {
+        UserSettings.update({ UserSettings.id eq userId }) {
+            it[UserSettings.aboutMe] = text
         }
     }
 }

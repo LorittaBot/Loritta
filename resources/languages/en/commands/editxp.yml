@@ -1,3 +1,4 @@
+description: "Edit the user's xp on your server"
 invalidRange: "The value must be a number greater than 0"
 editedSuccessfully: "{user} XP has been successfully edited"
 add:

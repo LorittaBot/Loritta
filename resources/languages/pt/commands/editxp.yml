@@ -1,3 +1,4 @@
+description: "Edita o xp do usuário no seu servidor"
 invalidRange: "O valor deve ser um número maior que 0"
 editedSuccessfully: "O XP de {user} foi editado com sucesso"
 add:

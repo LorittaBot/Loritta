@@ -47,7 +47,7 @@ class AddXpExecutor : CommandExecutor() {
             context.guildId.value
         )
 
-        userProfile.addXp(amount)
+        context.loritta.services.servers.addXp(userProfile, amount)
 
         context.sendMessage {
             styled(

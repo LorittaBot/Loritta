@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations
 
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
@@ -11,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.social.SetXpExecutor
 object EditXpCommand : CommandDeclaration {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Editxp
 
-    override fun declaration() = command(listOf("editxp"), CommandCategory.SOCIAL, TodoFixThisData) {
+    override fun declaration() = command(listOf("editxp"), CommandCategory.SOCIAL, I18N_PREFIX.Description) {
         subcommand(listOf("add"), I18N_PREFIX.Add.Description) {
             executor = AddXpExecutor
         }
