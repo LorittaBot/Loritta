@@ -14,8 +14,8 @@ info:
     explanation:
       - "Buy stock shares when they are low, sell shares when they are high! While you won't gain or lose real life money by buying shares here, the sad feeling of losing sonhos in a stock is exactly the same. {loriSob}"
       - ""
-      - "**You can buy stock shares with** `/broker stocks buy Ticker Quantity`"
-      - "**You can sell stock shares with** `/broker stocks sell Ticker Quantity`"
+      - "**You can buy stock shares with** `/broker buy Ticker Quantity`"
+      - "**You can sell stock shares with** `/broker sell Ticker Quantity`"
       - "**You can see your stock portfolio with** `/broker portfolio`"
       - ""
       - "Tickers marked with {tickerOutOfMarket} are inactive because the stock market is closed, you can only buy/sell shares when the stock market is open! The stock market is open from {openTime} to {closingTime} during weekdays."
