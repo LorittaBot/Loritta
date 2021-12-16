@@ -25,7 +25,7 @@ class BrokerSellStockExecutor : CommandExecutor() {
                 }
                 .register()
 
-            val quantity = string("quantity", BrokerCommand.I18N_PREFIX.Sell.Options.Quantity.Text)
+            val quantity = optionalString("quantity", BrokerCommand.I18N_PREFIX.Sell.Options.Quantity.Text)
                 .register()
         }
 
@@ -36,7 +36,7 @@ class BrokerSellStockExecutor : CommandExecutor() {
         context.deferChannelMessageEphemerally()
 
         val tickerId = args[Options.ticker].uppercase()
-        val quantityAsString = args[Options.quantity]
+        val quantityAsString = args[Options.quantity] ?: "1"
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
@@ -51,7 +51,7 @@ class BrokerSellStockExecutor : CommandExecutor() {
                 )
             )
         } else {
-            NumberUtils.convertShortenedNumberToLong(context.i18nContext, args[Options.quantity]) ?: context.failEphemerally(
+            NumberUtils.convertShortenedNumberToLong(context.i18nContext, quantityAsString) ?: context.failEphemerally(
                 context.i18nContext.get(
                     I18nKeysData.Commands.InvalidNumber(quantityAsString)
                 )
