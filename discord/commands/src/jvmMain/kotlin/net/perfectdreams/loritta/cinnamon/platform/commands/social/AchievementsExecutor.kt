@@ -134,9 +134,9 @@ class AchievementsExecutor : CommandExecutor() {
                             loriEmoji = Emotes.Sparkles
                         }
 
-                        insertOption(AchievementCategory.SHIP)
-                        insertOption(AchievementCategory.RATE)
-                        insertOption(AchievementCategory.MISCELLANEOUS)
+                        AchievementCategory.values().forEach {
+                            insertOption(it)
+                        }
                     }
                 }
             }

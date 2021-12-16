@@ -28,6 +28,7 @@ object Emotes {
     val LoriHappy = DiscordEmote(521721811298156558, "lori_happy", true)
     val SmolLoriPutassa = DiscordEmote(395010059157110785, "smol_lori_putassa", false)
     val loriAmeno = DiscordEmote(673868465433477126, "lori_ameno", false)
+    val LoriStonks = DiscordEmote(788434890927505448L, "lori_stonks", false)
 
     val Error = DiscordEmote(412585701054611458L, "error", false)
 
@@ -119,4 +120,8 @@ object Emotes {
     val EarlySupporter = DiscordEmote(718884313290113095L, "early_supporter", false)
     val BugHunterLevel2 = DiscordEmote(776924915055722507L, "bug_hunter_lvl_2", false)
     val VerifiedBotDeveloper = DiscordEmote(718883878378668112L, "verified_developer", false)
+
+    val Online = DiscordEmote(516265733659951104L, "online", false)
+    val Idle = DiscordEmote(516265836009357322L, "idle", false)
+    val DoNotDisturb = DiscordEmote(516265799338688533L, "do_not_disturb", false)
 }

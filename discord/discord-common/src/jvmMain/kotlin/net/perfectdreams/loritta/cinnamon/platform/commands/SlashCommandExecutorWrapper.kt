@@ -339,7 +339,7 @@ class SlashCommandExecutorWrapper(
                     stacktrace = if (!e.message.isNullOrEmpty())
                         " `${e.message}`" // TODO: Sanitize
                     else
-                        ""
+                        " `${e::class.simpleName}`"
                 )
             )
 

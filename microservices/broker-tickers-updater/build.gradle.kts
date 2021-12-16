@@ -9,23 +9,18 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":common"))
-    implementation(project(":discord:discord-common"))
-    implementation(project(":discord:commands"))
+    implementation(project(":pudding:client"))
+    implementation("net.perfectdreams.tradingviewscraper:TradingViewScraper:0.0.7-20211213.140733-2")
+    implementation("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
+    implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
+    implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
+    implementation("pw.forst", "exposed-upsert", "1.1.0")
+    implementation("io.ktor:ktor-client-cio:1.6.0")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
+    api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
 
-    // Discord InteraKTions (Web Server)
-    implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:${Versions.DISCORD_INTERAKTIONS}")
-    implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
-
-    // Sequins
-    api("net.perfectdreams.sequins.ktor:base-route:1.0.2")
-
-    // Required for tests, if this is missing then Gradle will throw
-    // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
-    implementation(kotlin("test"))
-    implementation(kotlin("test-junit"))
-    implementation("org.junit.jupiter:junit-jupiter:5.4.2")
-    implementation("org.assertj:assertj-core:3.19.0")
+    // Logback GELF, used for Graylog logging
+    implementation("de.siegmar:logback-gelf:3.0.0")
 }
 
 tasks.test {
@@ -42,7 +37,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/lorittabot/cinnamon-web-server"
+        image = "ghcr.io/lorittabot/broker-tickers-updater"
 
         auth {
             username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
@@ -57,7 +52,7 @@ jib {
 
 tasks.withType<ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaCinnamonWebServerLauncher"
+        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.microservice.brokertickersupdater.BrokerTickersUpdaterLauncher"
     }
 }
 

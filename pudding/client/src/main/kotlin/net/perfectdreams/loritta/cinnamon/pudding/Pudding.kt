@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.DailiesService
+import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
@@ -23,6 +24,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
@@ -35,6 +38,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
+import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
@@ -48,7 +52,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 
-open class Pudding(private val database: Database) {
+class Pudding(private val database: Database) {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
@@ -78,6 +82,9 @@ open class Pudding(private val database: Database) {
             val hikariConfig = HikariConfig()
 
             hikariConfig.driverClassName = DRIVER_CLASS_NAME
+
+            // https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
+            hikariConfig.addDataSourceProperty("reWriteBatchedInserts", "true")
 
             // Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
             // autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
@@ -111,6 +118,7 @@ open class Pudding(private val database: Database) {
     val executedApplicationCommandsLog = ExecutedApplicationCommandsLogService(this)
     val backgrounds = BackgroundsService(this)
     val profileDesigns = ProfileDesignsService(this)
+    val bovespaBroker = BovespaBrokerService(this)
     val puddingTasks = PuddingTasks(this)
     val reputations = ReputationsService(this)
     val dailies = DailiesService(this)
@@ -154,12 +162,17 @@ open class Pudding(private val database: Database) {
             Dailies,
             BannedUsers,
             MarrySonhosTransactionsLog
+            TickerPrices,
+            BoughtStocks,
+            BannedUsers,
+            BrokerSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())
             transaction {
                 createOrUpdatePostgreSQLEnum(AchievementType.values())
                 createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
+                createOrUpdatePostgreSQLEnum(BovespaBrokerService.BrokerSonhosTransactionsEntryAction.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(
