@@ -21,6 +21,7 @@ info:
       - "Símbolos marcados com {tickerOutOfMarket} estão inativos porque o mercado de ações está fechado, você só pode comprar/vender ações quando o mercado de ações estiver aberto! A bolsa de valores está aberta de {openTime} a {closingTime} durante dias úteis."
 portfolio:
   title: "Sua Carteira de Ações"
+  youHaveSharesInYourPortfolio: "Você tem **{sharesCount, plural, one {# ação} other {# ações}}** na sua carteira. Você gastou **{sharesValue} sonhos** em toda a sua carteira, se você vendesse todas as ações da sua carteira agora, você receberia **{earnings, plural, one {# sonho} other {# sonhos}} ({profit} | {profitPercentage, number,#.##%})**"
   youHaveSharesInThisTicker: "Você tem **{sharesCount, plural, one {# ação} other {# ações}}** neste ativo. Você gastou **{sharesValue} sonhos** neste ativo, se você vendesse todas as ações deste ativo agora, você receberia **{earnings, plural, one {# sonho} other {# sonhos}} ({profit} | {profitPercentage, number,#.##%})**"
   youDontHaveAnyShares: "Você não tem nenhuma ação! Você pode ver todos os símbolos usando `/broker info` e comprá-los com `/broker buy Símbolo Quantidade`."
   description: "Mostra seus ativos"
