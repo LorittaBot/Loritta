@@ -67,6 +67,18 @@ enum class AchievementType(
         I18nKeysData.Achievements.Achievement.Weirdo.Description
     ),
 
+    // ===[ BROKER ]===
+    STONKS(
+        AchievementCategory.BROKER,
+        I18nKeysData.Achievements.Achievement.Stonks.Title,
+        I18nKeysData.Achievements.Achievement.Stonks.Description
+    ),
+    NOT_STONKS(
+        AchievementCategory.BROKER,
+        I18nKeysData.Achievements.Achievement.NotStonks.Title,
+        I18nKeysData.Achievements.Achievement.NotStonks.Description
+    ),
+
     // ===[ MISCELLANEOUS ]===
     IS_THAT_AN_UNDERTALE_REFERENCE(
         AchievementCategory.MISCELLANEOUS,

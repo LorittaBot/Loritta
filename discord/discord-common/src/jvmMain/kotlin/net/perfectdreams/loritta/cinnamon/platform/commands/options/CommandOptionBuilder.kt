@@ -11,7 +11,18 @@ open class CommandOptionBuilder<T>(
 ) {
     fun choice(value: T, name: StringI18nData): CommandOptionBuilder<T> {
         choices.add(
-            CommandChoice(
+            LocalizedCommandChoice(
+                type,
+                name,
+                value
+            )
+        )
+        return this
+    }
+
+    fun choice(value: T, name: String): CommandOptionBuilder<T> {
+        choices.add(
+            RawCommandChoice(
                 type,
                 name,
                 value

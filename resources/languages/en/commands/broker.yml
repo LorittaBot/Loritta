@@ -1,0 +1,64 @@
+footerDataInfo: "Data from TradingView • When using Loritta's stock market simulator, we may use your stock orders for statistics and for uses in the real life stock exchange!"
+thatIsNotAnValidStockTicker: "That is not a valid stock ticker! View all valid tickers with `/broker info`."
+staleTickerData: "The ticker data is stale! To avoid duping and other issues, your stock transaction wasn't processed, sorry about that! This may happen when our system is having issues or during holidays. Try again later and, if the issue persists, then it should be considered a bug!"
+stockMarketClosed: "The stock market is closed, come back later! Because Loritta's stock market simulator uses data from Bovespa, it is only open from {openTime} to {closingTime} during weekdays!"
+description: "Buy and sell stock market shares with sonhos! Of course, you won't gain or lose real money with this, but the sad feeling after losing money is the same"
+
+info:
+  description: "Shows all available stock shares that you can buy and sell with sonhos"
+  embed:
+    title: "Stock Prices"
+    buyPrice: "**Buy:** {buyPrice,number}"
+    sellPrice: "**Sell:** {sellPrice,number}"
+    priceBeforeMarketClose: "**Closing Price:** {closingPrice,number}"
+    explanation:
+      - "Buy stock shares when they are low, sell shares when they are high! While you won't gain or lose real life money by buying shares here, the sad feeling of losing sonhos in a stock is exactly the same. {loriSob}"
+      - ""
+      - "**You can buy stock shares with** `/broker stocks buy Ticker Quantity`"
+      - "**You can sell stock shares with** `/broker stocks sell Ticker Quantity`"
+      - "**You can see your stock portfolio with** `/broker portfolio`"
+      - ""
+      - "Tickers marked with {tickerOutOfMarket} are inactive because the stock market is closed, you can only buy/sell shares when the stock market is open! The stock market is open from {openTime} to {closingTime} during weekdays."
+
+portfolio:
+  title: "Your Stock Portfolio"
+  youHaveSharesInThisTicker: "You have **{sharesCount, plural, one {# stock} other {# stocks}}** in this ticker. You spent **{sharesValue} sonhos** in this ticker, if you sold all shares of this ticker now, you would receive **{earnings, plural, one {# sonho} other {# sonhos}} ({profit} | {profitPercentage, number,#.##%})**"
+  youDontHaveAnyShares: "You don't have any shares! You can view all tickers with `/broker info` and then buy them with `/broker stocks buy Ticker Quantity`."
+  description: "Shows your stock shares"
+
+stock:
+  description: "Shows information of an stock market share"
+  embed:
+    title: "Stock Price"
+  options:
+    ticker:
+      text: "The ticker ID of the stock that you want to see its information"
+
+buy:
+  description: "Buy stock market shares in a company"
+  successfullyBought: "You bought **{sharesCount, plural, one {# share} other {# shares}}** of `{ticker}` for {price, plural, one {# sonho} other {# sonhos}}! Now just keep an eye on `/broker portfolio` to figure out if it worth selling your shares or not! Good luck!!"
+  tooManyShares: "You already have too many shares! You can have, at most, {maxShares,number} shares."
+  youDontHaveEnoughSonhos: "You don't have enough sonhos!"
+  tryingToBuyZeroShares: "Wow, awesome! You are going to buy *no* shares, amazing! I wonder how can you buy zero shares!"
+  tryingToBuyLessThanZeroShares: "Wow, outstanding! You are going to buy *negative* shares, amazing! Isn't buying negative shares the same as... just *selling* shares? I know, I know... I'm a genius."
+  options:
+    ticker:
+      text: "The ticker ID of the stock that you want to buy"
+    quantity:
+      text: "How many shares do you want to buy"
+
+sell:
+  description: "Sell stock market shares in a company"
+  successfullySold: "You sold **{sharesCount, plural, one {# share} other {# shares}}** of `{ticker}`! {sellResult}"
+  successfullySoldLoss: "With this sale, you **earned {earnings, plural, one {# sonho} other {# sonhos}} sonhos (loss of {profit, plural, one {# sonho} other {# sonhos}})**! Not every day we are victorious... Always keep an eye on your `/broker portfolio` to know if it is worth selling your shares!"
+  successfullySoldNeutral: "You didn't gain or lose with your sale."
+  successfullySoldProfit: "With this sale, you **received {earnings, plural, one {# sonho} other {# sonhos}} sonhos (profit of {profit, plural, one {# sonho} other {# sonhos}})**!"
+  youDontHaveEnoughStocks: "You don't have enough stocks to sell! You currently have **{stockCount, plural, one {# `{ticker}'s` stock} other {# `{ticker}` stocks}}**!"
+  tryingToSellZeroShares: "Wow, awesome! You are going to sell *no* shares, amazing! Are you trying to have the dopamine of selling shares without selling something?"
+  tryingToSellLessThanZeroShares: "Wow, outstanding! You are going to sell *negative* shares, amazing! Isn't selling negative shares the same as... just *buying* shares? I know, I know... I'm a genius."
+  youDontHaveAnySharesInThatTicker: "You can't sell all of your `{tickerId}`'s shares because you don't have any shares on that ticker!"
+  options:
+    ticker:
+      text: "The ticker ID of the stock that you want to sell"
+    quantity:
+      text: "How many shares do you want to sell"

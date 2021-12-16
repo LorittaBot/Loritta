@@ -6,6 +6,7 @@ commands:
   imageUrlIsUntrusted: "Sorry, but that link seems a bit sus so I don't wanna risk my security by opening it... If you really want to use that picture, please download it and send it to me!"
   youArentTheUserGeneric: "Wait a minute... This isn't for you! Shoo, shoo! Go away!" # Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them
   youArentTheUserSingleUser: "Wait a minute... you aren't {user}! This isn't for you, go away!" # Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them, used when the correct user is known
+  invalidNumber: "Sorry, but I don't think `{number}` is a valid number... Or maybe it's just me being dumb, after all, I'm wasting my time on Discord instead of paying attention to my math class."
   youAreLorittaBannedPermanent:
     - "You are **permanently banned**! {loriHmpf}"
     - ""
@@ -16,7 +17,7 @@ commands:
     - ""
     - "If you wish to appeal your permanent ban, please read our [ban appeal page]({banAppealPageUrl})! {loriAmeno}"
     - ""
-    - "*Is it too late now to say sorry?* {loriSob}" # Reference to Justin Bieber's "Sorry"
+    - "*Is it too late now to say sorry?* {loriSob}"
   youAreLorittaBannedTemporary:
     - "You are **temporarily banned**! {loriHmpf}"
     - ""
@@ -29,4 +30,4 @@ commands:
     - ""
     - "If you wish to appeal your temporary ban, please read our [ban appeal page]({banAppealPageUrl})! However we recommend waiting for the ban to expire instead of appealing your temporary ban. {loriAmeno}"
     - ""
-    - "*Is it too late now to say sorry?* {loriSob}" # Reference to Justin Bieber's "Sorry"
+    - "*Is it too late now to say sorry?* {loriSob}"

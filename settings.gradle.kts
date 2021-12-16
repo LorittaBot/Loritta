@@ -22,3 +22,6 @@ include(":discord:discord-common")
 include(":discord:commands")
 include(":discord:web-server")
 include(":discord:gateway")
+
+// ===[ MICROSERVICES ]===
+include("microservices:broker-tickers-updater")
