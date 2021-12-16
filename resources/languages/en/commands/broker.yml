@@ -52,7 +52,7 @@ sell:
   successfullySold: "You sold **{sharesCount, plural, one {# share} other {# shares}}** of `{ticker}`! {sellResult}"
   successfullySoldLoss: "With this sale, you **earned {earnings, plural, one {# sonho} other {# sonhos}} (loss of {profit, plural, one {# sonho} other {# sonhos}})**! Not every day we are victorious... Always keep an eye on your `/broker portfolio` to know if it is worth selling your shares!"
   successfullySoldNeutral: "You didn't gain or lose with your sale."
-  successfullySoldProfit: "With this sale, you **received {earnings, plural, one {# sonho} other {# sonhos}} (profit of {profit, plural, one {# sonho} other {# sonhos}})**!"
+  successfullySoldProfit: "With this sale, you **earned {earnings, plural, one {# sonho} other {# sonhos}} (profit of {profit, plural, one {# sonho} other {# sonhos}})**! Congratulations!!"
   youDontHaveEnoughStocks: "You don't have enough stocks to sell! You currently have **{stockCount, plural, one {# `{ticker}'s` stock} other {# `{ticker}` stocks}}**!"
   tryingToSellZeroShares: "Wow, awesome! You are going to sell *no* shares, amazing! Are you trying to have the dopamine of selling shares without selling something?"
   tryingToSellLessThanZeroShares: "Wow, outstanding! You are going to sell *negative* shares, amazing! Isn't selling negative shares the same as... just *buying* shares? I know, I know... I'm a genius."
