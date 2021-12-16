@@ -29,6 +29,30 @@ class BrokerPortfolioExecutor : CommandExecutor() {
             brokerBaseEmbed(context) {
                 title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Portfolio.Title)}"
 
+                val totalStockCount = userStockAssets.sumOf { it.count }
+                val totalStockSum = userStockAssets.sumOf { it.sum }
+                val totalGainsIfSoldEverythingNow = userStockAssets.sumOf { stockAsset ->
+                    val tickerInformation = stockInformations.first { it.ticker == stockAsset.ticker }
+
+                    LorittaBovespaBrokerUtils.convertToSellingPrice(
+                        LorittaBovespaBrokerUtils.convertReaisToSonhos(
+                            tickerInformation.value
+                        )
+                    ) * stockAsset.count
+                }
+                val diff = totalGainsIfSoldEverythingNow - totalStockSum
+                val totalProfitPercentage = ((totalGainsIfSoldEverythingNow - totalStockSum.toDouble()) / totalStockSum)
+
+                description = context.i18nContext.get(
+                    BrokerCommand.I18N_PREFIX.Portfolio.YouHaveSharesInYourPortfolio(
+                        totalStockCount,
+                        totalStockSum,
+                        totalGainsIfSoldEverythingNow,
+                        diff.let { if (it > 0) "+$it" else it.toString() },
+                        totalProfitPercentage
+                    )
+                )
+
                 for (stockAsset in userStockAssets) {
                     val (tickerId, stockCount, stockSum, stockAverage) = stockAsset
                     val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes[stockAsset.ticker]

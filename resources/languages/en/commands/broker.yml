@@ -22,6 +22,7 @@ info:
 
 portfolio:
   title: "Your Stock Portfolio"
+  youHaveSharesInYourPortfolio: "You have **{sharesCount, plural, one {# stock} other {# stocks}}** in your portfolio. You spent **{sharesValue} sonhos** in your portfolio, if you sold all shares of your portfolio now, you would receive **{earnings, plural, one {# sonho} other {# sonhos}} ({profit} | {profitPercentage, number,#.##%})**"
   youHaveSharesInThisTicker: "You have **{sharesCount, plural, one {# stock} other {# stocks}}** in this ticker. You spent **{sharesValue} sonhos** in this ticker, if you sold all shares of this ticker now, you would receive **{earnings, plural, one {# sonho} other {# sonhos}} ({profit} | {profitPercentage, number,#.##%})**"
   youDontHaveAnyShares: "You don't have any shares! You can view all tickers with `/broker info` and then buy them with `/broker stocks buy Ticker Quantity`."
   description: "Shows your stock shares"
