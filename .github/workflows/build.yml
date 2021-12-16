@@ -46,4 +46,4 @@ jobs:
       
     - name: Publish to Docker
       if: github.ref == 'refs/heads/cinnamon'
-      run: "./gradlew :discord:web-server:jib :discord:gateway:jib -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
+      run: "./gradlew :discord:web-server:jib :discord:gateway:jib :microservices:broker-tickers-updater:jib -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
