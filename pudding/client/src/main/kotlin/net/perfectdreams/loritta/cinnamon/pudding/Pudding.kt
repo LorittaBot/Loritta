@@ -8,8 +8,8 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.DailiesService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
+import net.perfectdreams.loritta.cinnamon.pudding.services.DailiesService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
@@ -23,9 +23,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
@@ -161,7 +161,7 @@ class Pudding(private val database: Database) {
             Reputations,
             Dailies,
             BannedUsers,
-            MarrySonhosTransactionsLog
+            MarrySonhosTransactionsLog,
             TickerPrices,
             BoughtStocks,
             BannedUsers,
