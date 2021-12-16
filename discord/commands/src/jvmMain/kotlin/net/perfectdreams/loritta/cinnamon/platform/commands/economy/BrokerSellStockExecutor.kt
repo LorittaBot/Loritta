@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
+import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -93,18 +94,22 @@ class BrokerSellStockExecutor : CommandExecutor() {
             )
         }
 
+        val isNeutralProfit = profit == 0L
+        val isPositiveProfit = profit > 0L
+        val isNegativeProfit = !isNeutralProfit && !isPositiveProfit
+
         context.sendEphemeralReply(
             context.i18nContext.get(
                 BrokerCommand.I18N_PREFIX.Sell.SuccessfullySold(
                     soldQuantity,
                     tickerId,
                     when {
-                        profit == 0L -> {
+                        isNeutralProfit -> {
                             context.i18nContext.get(
                                 BrokerCommand.I18N_PREFIX.Sell.SuccessfullySoldNeutral
                             )
                         }
-                        profit > 0L -> {
+                        isPositiveProfit -> {
                             context.i18nContext.get(
                                 BrokerCommand.I18N_PREFIX.Sell.SuccessfullySoldProfit(
                                     abs(earnings),
@@ -129,5 +134,10 @@ class BrokerSellStockExecutor : CommandExecutor() {
                 else -> Emotes.LoriSob
             }
         )
+
+        if (isPositiveProfit)
+            context.giveAchievement(AchievementType.STONKS)
+        if (isNegativeProfit)
+            context.giveAchievement(AchievementType.NOT_STONKS)
     }
 }
