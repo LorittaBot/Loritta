@@ -127,6 +127,16 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 				return
 			}
 
+			if (status == BuyRaffleTicketStatus.STALE_RAFFLE_DATA) {
+				context.reply(
+					LorittaReply(
+						"O resultado da rifa demorou tanto para sair que já começou uma nova rifa enquanto você comprava!",
+						Constants.ERROR
+					)
+				)
+				return
+			}
+
 			context.reply(
                     LorittaReply(
                             context.locale["commands.command.raffle.youBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * 250],
@@ -215,6 +225,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		SUCCESS,
 		THRESHOLD_EXCEEDED,
 		TOO_MANY_TICKETS,
-		NOT_ENOUGH_MONEY
+		NOT_ENOUGH_MONEY,
+		STALE_RAFFLE_DATA
 	}
 }

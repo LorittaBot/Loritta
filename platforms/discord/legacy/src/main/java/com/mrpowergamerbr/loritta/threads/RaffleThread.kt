@@ -20,6 +20,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.io.File
 import java.time.Instant
+import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -35,6 +36,7 @@ class RaffleThread : Thread("Raffle Thread") {
 		var userIds = CopyOnWriteArrayList<Pair<String, String>>()
 		val logger = KotlinLogging.logger {}
 		val buyingOrGivingRewardsMutex = Mutex()
+		var raffleRandomUniqueId = UUID.randomUUID()
 	}
 
 	override fun run() {
@@ -75,6 +77,9 @@ class RaffleThread : Thread("Raffle Thread") {
 
 	fun handleWin() {
 		runBlocking {
+			// Everything is done, change the Unique ID to force all pending requests to be stale
+			raffleRandomUniqueId = UUID.randomUUID()
+			
 			buyingOrGivingRewardsMutex.withLock {
 				if (userIds.isEmpty()) {
 					started = System.currentTimeMillis()
