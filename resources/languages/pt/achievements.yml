@@ -9,6 +9,9 @@ achievements:
     rate:
       title: "Avaliar"
       description: "Você precisa de validação, e recompensas, de outra pessoa para ser feliz... Conquistas relacionadas ao comando `{command}`" #This references the "/rate" description
+    broker:
+      title: "Simulador do Mercado de Ações da Loritta"
+      description: "Faça o seu sentimento triste depois de perder sonhos sumir com conquistas! Eles não trarão seus sonhos ou suas ações de volta, mas pelo menos elas são show de bola! Conquistas relacionadas ao comando `{command}`" #This references the "/broker" description
     generic:
       description: "Conquistas relacionadas ao comando `{command}`" #This is a generic description for achievements that do not have a custom description
     miscellaneous:
@@ -52,6 +55,13 @@ achievements:
     weirdo:
       title: "Você é... um esquisito?"
       description: "Avalie... ou bem, tente, avaliar uma criança"
+    #===[ BROKER ]===
+    stonks:
+      title: "Stonks!"
+      description: "Tenha um lucro positivo ao vender uma ação"
+    notStonks:
+      title: "Not Stonks"
+      description: "Tenha um lucro negativo ao vender uma ação"
     #===[ MISC ]===
     isThatAnUndertaleReference:
       title: "Isso é uma referência a Undertale???"
