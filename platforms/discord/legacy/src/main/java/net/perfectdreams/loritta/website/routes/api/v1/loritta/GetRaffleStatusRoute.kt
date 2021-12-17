@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.mrpowergamerbr.loritta.threads.RaffleThread
-import io.ktor.application.ApplicationCall
+import io.ktor.application.*
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
