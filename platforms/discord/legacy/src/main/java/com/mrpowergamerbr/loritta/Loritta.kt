@@ -1,10 +1,11 @@
 package com.mrpowergamerbr.loritta
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.salomonbrys.kotson.fromJson
+import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.nullInt
+import com.github.salomonbrys.kotson.nullLong
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.google.common.cache.CacheBuilder
@@ -336,21 +337,34 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		bomDiaECia = BomDiaECia()
 
 		if (loritta.isMaster) {
-			logger.info { "Carregando raffle..." }
+			logger.info { "Loading raffle..." }
 			val raffleFile = File(FOLDER, "raffle.json")
 
 			if (raffleFile.exists()) {
+				logger.info { "Parsing the JSON object..." }
 				val json = JsonParser.parseString(raffleFile.readText()).obj
 
+				logger.info { "Loaded raffle data! ${RaffleThread.started}; ${json["lastWinnerId"].nullString}; ${json["lastWinnerPrize"].nullInt}" }
 				RaffleThread.started = json["started"].long
-				RaffleThread.lastWinnerId = json["lastWinnerId"].nullString
+				RaffleThread.lastWinnerId = json["lastWinnerId"].nullLong
 				RaffleThread.lastWinnerPrize = json["lastWinnerPrize"].nullInt ?: 0
 				val userIdArray = json["userIds"].nullArray
 
-				if (userIdArray != null)
-					RaffleThread.userIds = GSON.fromJson(userIdArray)
+				if (userIdArray != null) {
+					logger.info { "Loading ${userIdArray.size()} raffle user entries..." }
+					if (userIdArray.first().asJsonObject.has("second")) {
+						// Old code
+						logger.info { "Loading directly from the JSON array, using the \"first\" property value..." }
+						val data = userIdArray.map { it["first"].long }
+						RaffleThread.userIds.addAll(data)
+					} else {
+						logger.info { "Loading directly from the JSON array..." }
+						RaffleThread.userIds.addAll(userIdArray.map { it.long })
+					}
+				}
 			}
 
+			RaffleThread.isReady = true
 			raffleThread = RaffleThread()
 			raffleThread.start()
 		}

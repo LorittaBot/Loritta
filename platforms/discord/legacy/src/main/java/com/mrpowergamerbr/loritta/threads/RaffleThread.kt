@@ -28,12 +28,11 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 class RaffleThread : Thread("Raffle Thread") {
 	companion object {
-		var lastWinnerId: String? = null
+		var lastWinnerId: Long? = null
 		var lastWinnerPrize = 0
 		var started: Long = System.currentTimeMillis()
-		// user ID + locale ID
-		// TODO: Alterar userId para um long (para usar menos memória)
-		var userIds = CopyOnWriteArrayList<Pair<String, String>>()
+		var isReady = false
+		var userIds = CopyOnWriteArrayList<Long>()
 		val logger = KotlinLogging.logger {}
 		val buyingOrGivingRewardsMutex = Mutex()
 		var raffleRandomUniqueId = UUID.randomUUID()
@@ -85,12 +84,12 @@ class RaffleThread : Thread("Raffle Thread") {
 					started = System.currentTimeMillis()
 					save()
 				} else {
-					var winner: Pair<String, String>? = null
+					var winner: Long? = null
 
 					if (winner == null)
 						winner = getRandomWinner()
 
-					val winnerId = winner.first
+					val winnerId = winner
 					lastWinnerId = winnerId
 
 					val currentActiveDonations = loritta.getActiveMoneyFromDonations(winnerId.toLong())
@@ -110,13 +109,14 @@ class RaffleThread : Thread("Raffle Thread") {
 						)
 					}
 
-					val totalTicketsBoughtByTheUser = userIds.count { it.first == winnerId }
+					val totalTicketsBoughtByTheUser = userIds.count { it == winnerId }
 					val totalTickets = userIds.size
-					val totalUsersInTheRaffle = userIds.map { it.first }.distinct().size
+					val totalUsersInTheRaffle = userIds.map { it }.distinct().size
 
 					userIds.clear()
 
-					val locale = loritta.localeManager.getLocaleById(winner.second)
+					// TODO: Locales, maybe get the preferred user locale ID?
+					val locale = loritta.localeManager.getLocaleById("default")
 					val user = runBlocking { lorittaShards.retrieveUserById(lastWinnerId!!) }
 
 					if (user != null && !user.isBot) {
@@ -158,7 +158,7 @@ class RaffleThread : Thread("Raffle Thread") {
 	/**
 	 * Selects a random ticket for the raffle winner.
 	 */
-	private fun getRandomWinner(): Pair<String, String> {
+	private fun getRandomWinner(): Long {
 		logger.info { "Using normal random ticket selection for the raffle" }
 		return userIds[RANDOM.nextInt(userIds.size)]
 	}

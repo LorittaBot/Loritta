@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.website.routes.api.v1.loritta
 
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
@@ -26,13 +27,13 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
-		val userId = json["userId"].string
+		val userId = json["userId"].long
 		val quantity = json["quantity"].int
 		val localeId = json["localeId"].string
 		val currentUniqueId = RaffleThread.raffleRandomUniqueId
 
 		RaffleThread.buyingOrGivingRewardsMutex.withLock {
-			if (currentUniqueId != RaffleThread.raffleRandomUniqueId) {
+			if (currentUniqueId != RaffleThread.raffleRandomUniqueId || !RaffleThread.isReady) {
 				call.respondJson(
 					jsonObject(
 						"status" to LoraffleCommand.BuyRaffleTicketStatus.STALE_RAFFLE_DATA.toString()
@@ -41,7 +42,7 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 				return@withLock
 			}
 
-			val currentUserTicketQuantity = RaffleThread.userIds.count { it.first == userId }
+			val currentUserTicketQuantity = RaffleThread.userIds.count { it == userId }
 
 			if (currentUserTicketQuantity + quantity > LoraffleCommand.MAX_TICKETS_BY_USER_PER_ROUND) {
 				if (currentUserTicketQuantity == LoraffleCommand.MAX_TICKETS_BY_USER_PER_ROUND) {
@@ -75,7 +76,7 @@ class PostRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthentication
 				}
 
 				for (i in 0 until quantity) {
-					RaffleThread.userIds.add(Pair(userId, localeId))
+					RaffleThread.userIds.add(userId)
 				}
 
 				RaffleThread.logger.info("${userId} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.money + requiredCount}) sonhos!")

@@ -13,7 +13,7 @@ class GetRaffleStatusRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationR
 				"lastWinnerId" to RaffleThread.lastWinnerId,
 				"lastWinnerPrize" to RaffleThread.lastWinnerPrize,
 				"currentTickets" to RaffleThread.userIds.size,
-				"usersParticipating" to RaffleThread.userIds.distinctBy { it.first }.size,
+				"usersParticipating" to RaffleThread.userIds.distinctBy { it }.size,
 				"started" to RaffleThread.started
 		)
 
