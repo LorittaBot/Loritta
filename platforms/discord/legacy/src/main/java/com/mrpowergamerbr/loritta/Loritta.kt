@@ -352,14 +352,17 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 
 				if (userIdArray != null) {
 					logger.info { "Loading ${userIdArray.size()} raffle user entries..." }
-					if (userIdArray.first().asJsonObject.has("second")) {
-						// Old code
-						logger.info { "Loading directly from the JSON array, using the \"first\" property value..." }
-						val data = userIdArray.map { it["first"].long }
-						RaffleThread.userIds.addAll(data)
-					} else {
-						logger.info { "Loading directly from the JSON array..." }
-						RaffleThread.userIds.addAll(userIdArray.map { it.long })
+					val firstUserIdEntry = userIdArray.firstOrNull()
+					if (firstUserIdEntry != null) {
+						if (firstUserIdEntry.isJsonObject && firstUserIdEntry.asJsonObject.has("second")) {
+							// Old code
+							logger.info { "Loading directly from the JSON array, using the \"first\" property value..." }
+							val data = userIdArray.map { it["first"].long }
+							RaffleThread.userIds.addAll(data)
+						} else {
+							logger.info { "Loading directly from the JSON array..." }
+							RaffleThread.userIds.addAll(userIdArray.map { it.long })
+						}
 					}
 				}
 			}
