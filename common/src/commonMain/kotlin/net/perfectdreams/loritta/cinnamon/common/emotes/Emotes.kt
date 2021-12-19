@@ -34,6 +34,7 @@ object Emotes {
     val CoinHeads = DiscordEmote(412586256409559041, "cara", false)
     val CoinTails = DiscordEmote(412586257114464259, "coroa", false)
 
+    val DefaultDance = DiscordEmote(607213397313847298L, "default_dance", true)
     val Tada = UnicodeEmote("\uD83C\uDF89")
     val WhiteFlag = UnicodeEmote("\uD83C\uDFF3️")
     val BlackFlag = UnicodeEmote("\uD83C\uDFF4")

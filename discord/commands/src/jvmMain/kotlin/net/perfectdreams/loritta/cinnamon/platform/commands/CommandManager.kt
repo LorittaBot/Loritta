@@ -63,6 +63,9 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockI
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.fortnite.ChangeFortniteBattleRoyaleNewsPageExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.fortnite.FortniteNewsExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.fortnite.declarations.FortniteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BobBurningPaperExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BolsoDrakeExecutor
@@ -170,6 +173,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
+import net.perfectdreams.neotilted.client.NeoTiltedClient
 import kotlin.system.exitProcess
 
 class CommandManager(
@@ -185,6 +189,7 @@ class CommandManager(
     private val rest = loritta.rest
 
     private val gabrielaImageServerClient = net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient(loritta.servicesConfig.gabrielaImageServer.url, loritta.http)
+    private val neoTiltedClient = NeoTiltedClient("http://127.0.0.1:8000", "a", loritta.http)
     private val random = loritta.random
     private val http = loritta.http
 
@@ -426,6 +431,17 @@ class CommandManager(
         commandManager.register(
             ChangeColorPortraitTypeButtonClickExecutor,
             ChangeColorPortraitTypeButtonClickExecutor(loritta, gabrielaImageServerClient)
+        )
+
+        // ===[ FORTNITE ]===
+        commandManager.register(
+            FortniteCommand,
+            FortniteNewsExecutor(neoTiltedClient)
+        )
+
+        commandManager.register(
+            ChangeFortniteBattleRoyaleNewsPageExecutor,
+            ChangeFortniteBattleRoyaleNewsPageExecutor(neoTiltedClient)
         )
 
         // Validate if we don't have more commands than Discord allows
