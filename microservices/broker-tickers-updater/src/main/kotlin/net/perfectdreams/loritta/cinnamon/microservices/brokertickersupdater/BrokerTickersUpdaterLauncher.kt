@@ -20,10 +20,10 @@ object BrokerTickersUpdaterLauncher {
         }
 
         val services = Pudding.createPostgreSQLPudding(
-            rootConfig.pudding.address ?: error("Missing database address!"),
-            rootConfig.pudding.database ?: error("Missing database!"),
-            rootConfig.pudding.username ?: error("Missing database username!"),
-            rootConfig.pudding.password ?: error("Missing database password!")
+            rootConfig.pudding.address,
+            rootConfig.pudding.database,
+            rootConfig.pudding.username,
+            rootConfig.pudding.password
         )
 
         Runtime.getRuntime().addShutdownHook(

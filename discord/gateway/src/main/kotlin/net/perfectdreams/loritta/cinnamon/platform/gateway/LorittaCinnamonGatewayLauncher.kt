@@ -32,10 +32,10 @@ object LorittaCinnamonGatewayLauncher {
         }
 
         val services = Pudding.createPostgreSQLPudding(
-            rootConfig.services.pudding.address ?: error("Missing database address!"),
-            rootConfig.services.pudding.database ?: error("Missing database!"),
-            rootConfig.services.pudding.username ?: error("Missing database username!"),
-            rootConfig.services.pudding.password ?: error("Missing database password!")
+            rootConfig.services.pudding.address,
+            rootConfig.services.pudding.database,
+            rootConfig.services.pudding.username,
+            rootConfig.services.pudding.password
         )
 
         Runtime.getRuntime().addShutdownHook(
