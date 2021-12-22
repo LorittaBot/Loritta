@@ -24,6 +24,8 @@ kotlin {
 
                 // Kord REST
                 api("dev.kord:kord-rest:0.8.x-SNAPSHOT")
+
+                implementation("net.perfectdreams.neotilted:client:0.0.1-SNAPSHOT")
             }
         }
     }

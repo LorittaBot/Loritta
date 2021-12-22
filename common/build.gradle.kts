@@ -95,7 +95,7 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:${Versions.KOTLINX_SERIALIZATION}")
-                api("io.ktor:ktor-client-core:1.6.0")
+                api("io.ktor:ktor-client-core:${Versions.KTOR}")
                 api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
 

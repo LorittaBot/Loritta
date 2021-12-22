@@ -272,7 +272,7 @@ class CommandRegistry(
         val emoji = when (declaration.category) {
             CommandCategory.FUN -> "\uD83D\uDE02"
             CommandCategory.IMAGES -> "\uD83D\uDDBC️"
-            CommandCategory.MINECRAFT -> "⛏️"
+            CommandCategory.MINECRAFT -> "\uD83D\uDC8E"
             CommandCategory.POKEMON -> TODO()
             CommandCategory.UNDERTALE -> "❤️"
             CommandCategory.ROBLOX -> TODO()
@@ -285,7 +285,7 @@ class CommandRegistry(
             CommandCategory.ACTION -> TODO()
             CommandCategory.ECONOMY -> "\uD83D\uDCB8"
             CommandCategory.VIDEOS -> "\uD83C\uDFAC"
-            CommandCategory.FORTNITE -> TODO()
+            CommandCategory.FORTNITE -> "⛏️"
             CommandCategory.MAGIC -> TODO()
         }
         append(emoji)

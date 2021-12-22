@@ -13,7 +13,7 @@ object BrokerTickersUpdaterLauncher {
     @JvmStatic
     fun main(args: Array<String>) {
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(BrokerTickersUpdaterLauncher::class, System.getProperty("brokertickersupdater.config", "broker-tickers-updater.conf"))
-        logger.info { "Loaded Loritta's configuration file" }
+        logger.info { "Loaded Broker Tickers Updater's configuration file" }
 
         val http = HttpClient {
             expectSuccess = false
