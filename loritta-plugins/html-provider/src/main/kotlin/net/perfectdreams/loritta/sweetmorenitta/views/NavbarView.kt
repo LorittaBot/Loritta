@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
 import kotlinx.html.DIV
 import kotlinx.html.HTML
@@ -19,6 +18,7 @@ import kotlinx.html.p
 import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.unsafe
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 abstract class NavbarView(
     locale: BaseLocale,
@@ -80,9 +80,7 @@ abstract class NavbarView(
                         }
 
                         div(classes = "entry") {
-                            a(classes = "fan-arts", href = "$base/fanarts") {
-                                attributes["data-enable-link-preload"] = "true"
-
+                            a(classes = "fan-arts", href = "https://fanarts.perfectdreams.net/") {
                                 i(classes = "fas fa-paint-brush") {}
 
                                 +" Fan Arts"
@@ -277,8 +275,7 @@ abstract class NavbarView(
                                 a(href = "$base/extras/about-loritta-character") {
                                     +"Sobre a Loritta (Personagem)"
                                 }
-                                a(href = "$base/fanarts") {
-                                    attributes["data-enable-link-preload"] = "true"
+                                a(href = "https://fanarts.perfectdreams.net/") {
                                     +"Fan Arts"
                                 }
                                 a(href = "$base/blog") {

@@ -42,7 +42,6 @@ import net.perfectdreams.spicymorenitta.routes.CommandsRoute
 import net.perfectdreams.spicymorenitta.routes.DailyRoute
 import net.perfectdreams.spicymorenitta.routes.DiscordBotBrasileiroRoute
 import net.perfectdreams.spicymorenitta.routes.DonateRoute
-import net.perfectdreams.spicymorenitta.routes.FanArtsRoute
 import net.perfectdreams.spicymorenitta.routes.HomeRoute
 import net.perfectdreams.spicymorenitta.routes.ReputationRoute
 import net.perfectdreams.spicymorenitta.routes.UpdateNavbarSizePostRender
@@ -118,7 +117,6 @@ class SpicyMorenitta : Logging {
 	val routes = mutableListOf(
 		HomeRoute(),
 		DiscordBotBrasileiroRoute(),
-		FanArtsRoute(this),
 		UpdateNavbarSizePostRender("/support", false, false),
 		UpdateNavbarSizePostRender("/blog", false, false),
 		UpdateNavbarSizePostRender("/guidelines", false, false),

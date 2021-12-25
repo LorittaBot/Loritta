@@ -3,17 +3,14 @@ package net.perfectdreams.loritta.plugin.htmlprovider
 import com.google.gson.JsonArray
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.sweetmorenitta.views.BlogPostView
 import net.perfectdreams.loritta.sweetmorenitta.views.BlogView
 import net.perfectdreams.loritta.sweetmorenitta.views.CommunityGuidelinesView
 import net.perfectdreams.loritta.sweetmorenitta.views.DailyView
 import net.perfectdreams.loritta.sweetmorenitta.views.DonateView
 import net.perfectdreams.loritta.sweetmorenitta.views.Error404View
-import net.perfectdreams.loritta.sweetmorenitta.views.FanArtArtistView
-import net.perfectdreams.loritta.sweetmorenitta.views.FanArtsView
 import net.perfectdreams.loritta.sweetmorenitta.views.HomeView
 import net.perfectdreams.loritta.sweetmorenitta.views.SponsorRedirectView
 import net.perfectdreams.loritta.sweetmorenitta.views.SponsorsView
@@ -22,7 +19,6 @@ import net.perfectdreams.loritta.sweetmorenitta.views.UserBannedView
 import net.perfectdreams.loritta.sweetmorenitta.views.landingpages.BrazilianBotLandingPageView
 import net.perfectdreams.loritta.sweetmorenitta.views.user.UserReputationView
 import net.perfectdreams.loritta.utils.Sponsor
-import net.perfectdreams.loritta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.website.blog.Post
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
@@ -110,22 +106,6 @@ class JVMHtmlProvider : LorittaHtmlProvider {
             return CommunityGuidelinesView(
                 arguments[1] as BaseLocale,
                 arguments[0] as String
-            ).generateHtml()
-        }
-
-        if (page == RouteKey.FAN_ARTS) {
-            return FanArtsView(
-                arguments[1] as BaseLocale,
-                arguments[0] as String
-            ).generateHtml()
-        }
-
-        if (page == RouteKey.FAN_ART_ARTIST) {
-            return FanArtArtistView(
-                arguments[1] as BaseLocale,
-                arguments[0] as String,
-                arguments[2] as FanArtArtist,
-                arguments[3] as JDAUser?
             ).generateHtml()
         }
 

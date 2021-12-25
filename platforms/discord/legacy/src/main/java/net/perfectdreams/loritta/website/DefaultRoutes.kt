@@ -9,8 +9,6 @@ import net.perfectdreams.loritta.website.routes.CommunityGuidelinesRoute
 import net.perfectdreams.loritta.website.routes.DailyRoute
 import net.perfectdreams.loritta.website.routes.DonateRoute
 import net.perfectdreams.loritta.website.routes.ExtrasRoute
-import net.perfectdreams.loritta.website.routes.FanArtArtistRoute
-import net.perfectdreams.loritta.website.routes.FanArtsRoute
 import net.perfectdreams.loritta.website.routes.HomeRoute
 import net.perfectdreams.loritta.website.routes.SponsorsRoute
 import net.perfectdreams.loritta.website.routes.SupportRoute
@@ -41,7 +39,6 @@ import net.perfectdreams.loritta.website.routes.api.v1.loritta.GetAvailableBackg
 import net.perfectdreams.loritta.website.routes.api.v1.loritta.GetAvailableProfileDesignsRoute
 import net.perfectdreams.loritta.website.routes.api.v1.loritta.GetCommandsRoute
 import net.perfectdreams.loritta.website.routes.api.v1.loritta.GetCurrentFanMadeAvatarRoute
-import net.perfectdreams.loritta.website.routes.api.v1.loritta.GetFanArtImageController
 import net.perfectdreams.loritta.website.routes.api.v1.loritta.GetFanArtsController
 import net.perfectdreams.loritta.website.routes.api.v1.loritta.GetLocaleRoute
 import net.perfectdreams.loritta.website.routes.api.v1.loritta.GetLorittaActionRoute
@@ -111,8 +108,6 @@ object DefaultRoutes {
 		BlogPostRoute(loritta),
 		CommandsRoute(loritta),
 		CommunityGuidelinesRoute(loritta),
-		FanArtArtistRoute(loritta),
-		FanArtsRoute(loritta),
 		SponsorsRoute(loritta),
 		ExtrasRoute(loritta),
 		ExtrasViewerRoute(loritta),
@@ -122,7 +117,7 @@ object DefaultRoutes {
 		DailyRoute(loritta),
 		DonateRoute(loritta),
 
-		// Landing Pages
+ 		// Landing Pages
 		BrazilianBotLandingPageRoute(loritta),
 
 		// Dashboard
@@ -195,7 +190,6 @@ object DefaultRoutes {
 		GetCommandsRoute(loritta),
 		GetCurrentFanMadeAvatarRoute(loritta),
 		GetFanArtsController(loritta),
-		GetFanArtImageController(loritta),
 		GetLocaleRoute(loritta),
 		GetLorittaActionRoute(loritta),
 		GetRaffleStatusRoute(loritta),
