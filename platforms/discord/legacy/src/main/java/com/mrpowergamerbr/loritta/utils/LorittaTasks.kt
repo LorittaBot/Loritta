@@ -3,7 +3,6 @@ package com.mrpowergamerbr.loritta.utils
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.mrpowergamerbr.loritta.analytics.AnalyticSender
 import com.mrpowergamerbr.loritta.analytics.InternalAnalyticSender
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.eventlog.DeleteOldStoredMessagesTask
 import com.mrpowergamerbr.loritta.utils.networkbans.ApplyBansTask
 import com.mrpowergamerbr.loritta.website.OptimizeAssetsTask
@@ -23,8 +22,6 @@ object LorittaTasks {
 	fun startTasks() {
 		DAILY_TAX_TASK = DailyTaxTask()
 
-		if (loritta.config.loritta.environment == EnvironmentType.PRODUCTION)
-			scheduleWithFixedDelay(LorittaLandRoleSync(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SponsorsSyncTask(), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(MutedUsersTask(), 0L, 3L, TimeUnit.MINUTES)
