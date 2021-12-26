@@ -265,7 +265,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			run {
 				var processedRequests = 0
 				for (textChannel in context.guild.textChannels) {
-					if (context.guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
+					if (context.guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_WRITE, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
 						val permissionOverride = textChannel.getPermissionOverride(mutedRole)
 						if (permissionOverride == null) { // Se é null...
 							textChannel.createPermissionOverride(mutedRole)
@@ -290,7 +290,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 			run {
 				var processedRequests = 0
 				for (voiceChannel in context.guild.voiceChannels) {
-					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
+					if (context.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_SPEAK, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
 						val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
 						if (permissionOverride == null) { // Se é null...
 							voiceChannel.createPermissionOverride(mutedRole)
