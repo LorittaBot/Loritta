@@ -78,7 +78,7 @@ open class InteractionContext(
     }
 
     /**
-     * Sends a Loritta-styled formatted messag
+     * Sends a Loritta-styled formatted message
      *
      * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`, however implementations can change the look and feel of the message.
      *
@@ -119,6 +119,53 @@ open class InteractionContext(
      * @param reply the already built LorittaReply
      */
     suspend fun sendReply(reply: LorittaReply, block: PublicInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
+        styled(reply)
+
+        apply(block)
+    }
+
+    /**
+     * Sends a Loritta-styled formatted ephemeral message
+     *
+     * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`, however implementations can change the look and feel of the message.
+     *
+     * Prefixes should *not* be used for important behavior of the command!
+     *
+     * @param content the content of the message
+     * @param prefix  the prefix of the message
+     */
+    suspend fun sendEphemeralReply(content: String, prefix: Emote, block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+        styled(content, prefix)
+
+        apply(block)
+    }
+
+    /**
+     * Sends a Loritta-styled formatted message
+     *
+     * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`, however implementations can change the look and feel of the message.
+     *
+     * Prefixes should *not* be used for important behavior of the command!
+     *
+     * @param content the content of the message
+     * @param prefix  the prefix of the message
+     */
+    suspend fun sendEphemeralReply(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+        styled(content, prefix)
+
+        apply(block)
+    }
+
+    /**
+     * Sends a Loritta-styled formatted message to this builder
+     *
+     * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`, however implementations can change the look and feel of the message.
+     *
+     * Prefixes should *not* be used for important behavior of the command!
+     *
+     * @param reply the already built LorittaReply
+     */
+    suspend fun sendEphemeralReply(reply: LorittaReply, block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
         styled(reply)
 
         apply(block)

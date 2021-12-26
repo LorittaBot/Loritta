@@ -8,6 +8,9 @@ achievements:
     rate:
       title: "Rate"
       description: "Because you need validation, and rewards, from someone else to be happy... Achievements related to the `{command}` command" # This references the "/rate" description
+    broker:
+      title: "Loritta's Stock Market Simulator"
+      description: "Make your sad feeling after losing sonhos go away with achievements! They won't bring your sonhos or your stock shares back, but they are sure nice to have! Achievements related to the `{command}` command" # This references the "/broker" description
     generic:
       description: "Achievements related to the `{command}` command" # This is a generic description for achievements that do not have a custom description
     miscellaneous:
@@ -54,6 +57,14 @@ achievements:
     weirdo:
       title: "Are you... a weirdo?"
       description: "Rate... or well, try to, rate a child"
+
+    # ===[ BROKER ]===
+    stonks:
+      title: "Stonks!"
+      description: "Make a positive profit when selling a share"
+    notStonks:
+      title: "Not Stonks"
+      description: "Make a negative profit when selling a share"
 
     # ===[ MISC ]===
     isThatAnUndertaleReference:

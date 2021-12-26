@@ -24,6 +24,12 @@ enum class AchievementCategory(
         Emotes.LoriReading,
         Color(127, 0, 255)
     ),
+    BROKER(
+        I18nKeysData.Achievements.Category.Broker.Title,
+        I18nKeysData.Achievements.Category.Broker.Description("/broker"),
+        Emotes.LoriStonks,
+        Color(23, 62, 163)
+    ),
     MISCELLANEOUS(
         I18nKeysData.Achievements.Category.Miscellaneous.Title,
         I18nKeysData.Achievements.Category.Miscellaneous.Description,
