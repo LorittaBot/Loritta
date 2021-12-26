@@ -321,8 +321,8 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), Comman
 							couldntEditChannels.add(voiceChannel)
 						}
 					} catch (e: Exception) {
-						logger.warn(e) { "Something went wrong while trying to change ${textChannel}'s permissions" }
-						couldntEditChannels.add(textChannel)
+						logger.warn(e) { "Something went wrong while trying to change ${voiceChannel}'s permissions" }
+						couldntEditChannels.add(voiceChannel)
 					}
 				}
 			}
