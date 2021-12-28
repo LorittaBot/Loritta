@@ -13,9 +13,9 @@ import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.dreamstorageservice.data.CreateImageLinkRequest
-import net.perfectdreams.dreamstorageservice.data.DeleteImageLinkRequest
-import net.perfectdreams.dreamstorageservice.data.UploadImageRequest
+import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
+import net.perfectdreams.dreamstorageservice.data.api.DeleteImageLinkRequest
+import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.utils.SimpleImageInfo
@@ -69,7 +69,7 @@ object DonationConfigTransformer : ConfigTransformer {
                 ImageIO.write(finalImage, MediaTypeUtils.convertContentTypeToExtension(targetContentType), baos)
 
                 // And now upload it!
-                val (imageId) = loritta.dreamStorageService.uploadImage(
+                val (isUnique, imageInfo) = loritta.dreamStorageService.uploadImage(
                     baos.toByteArray(),
                     targetContentType,
                     UploadImageRequest(false)
@@ -77,14 +77,14 @@ object DonationConfigTransformer : ConfigTransformer {
 
                 val (folder, file) = StoragePaths.CustomBadge(guild.idLong, "%s")
 
-                val (_, _, uploadedFile) = loritta.dreamStorageService.createImageLink(
+                val (info) = loritta.dreamStorageService.createImageLink(
                     CreateImageLinkRequest(
-                        imageId,
+                        imageInfo.imageId,
                         folder,
                         file
                     )
                 )
-                badgePath = uploadedFile
+                badgePath = info.file
                 badgePreferredMediaType = targetContentType.toString()
             }
         }

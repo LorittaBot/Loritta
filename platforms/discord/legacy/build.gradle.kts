@@ -53,7 +53,7 @@ dependencies {
     api("net.perfectdreams.loritta.cinnamon.pudding:client:${Versions.PUDDING}")
 
     // DreamStorageService
-    api("net.perfectdreams.dreamstorageservice:client:0.0.1-SNAPSHOT")
+    api("net.perfectdreams.dreamstorageservice:client:2.0.0-SNAPSHOT")
 
     api("org.apache.commons:commons-lang3:3.11")
     api("commons-codec:commons-codec:1.15")

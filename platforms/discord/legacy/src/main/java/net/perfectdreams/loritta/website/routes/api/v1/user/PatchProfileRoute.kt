@@ -20,9 +20,9 @@ import io.ktor.http.*
 import io.ktor.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.perfectdreams.dreamstorageservice.data.CreateImageLinkRequest
-import net.perfectdreams.dreamstorageservice.data.DeleteImageLinkRequest
-import net.perfectdreams.dreamstorageservice.data.UploadImageRequest
+import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
+import net.perfectdreams.dreamstorageservice.data.api.DeleteImageLinkRequest
+import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
@@ -179,21 +179,21 @@ class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(
 					val baos = ByteArrayOutputStream()
 					ImageIO.write(writeImage, MediaTypeUtils.convertContentTypeToExtension(targetContentType), baos)
 
-					val (imageId) = loritta.dreamStorageService.uploadImage(
+					val (isUnique, imageInfo) = loritta.dreamStorageService.uploadImage(
 						baos.toByteArray(),
 						targetContentType,
 						UploadImageRequest(false)
 					)
 
 					val (folder, file) = StoragePaths.CustomBackground(profile.id.value, "%s")
-					val (_, _, uploadedFile) = loritta.dreamStorageService.createImageLink(
+					val (linkInfo) = loritta.dreamStorageService.createImageLink(
 						CreateImageLinkRequest(
-							imageId,
+							imageInfo.imageId,
 							folder,
 							file
 						)
 					)
-					newPath = uploadedFile
+					newPath = linkInfo.file
 					preferredMediaType = targetContentType.toString()
 				}
 			}
