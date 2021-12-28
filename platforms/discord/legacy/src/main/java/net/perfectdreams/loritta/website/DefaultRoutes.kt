@@ -9,6 +9,8 @@ import net.perfectdreams.loritta.website.routes.CommunityGuidelinesRoute
 import net.perfectdreams.loritta.website.routes.DailyRoute
 import net.perfectdreams.loritta.website.routes.DonateRoute
 import net.perfectdreams.loritta.website.routes.ExtrasRoute
+import net.perfectdreams.loritta.website.routes.FanArtsArtistRoute
+import net.perfectdreams.loritta.website.routes.FanArtsRoute
 import net.perfectdreams.loritta.website.routes.HomeRoute
 import net.perfectdreams.loritta.website.routes.SponsorsRoute
 import net.perfectdreams.loritta.website.routes.SupportRoute
@@ -108,6 +110,8 @@ object DefaultRoutes {
 		BlogPostRoute(loritta),
 		CommandsRoute(loritta),
 		CommunityGuidelinesRoute(loritta),
+		FanArtsArtistRoute(loritta),
+		FanArtsRoute(loritta),
 		SponsorsRoute(loritta),
 		ExtrasRoute(loritta),
 		ExtrasViewerRoute(loritta),
