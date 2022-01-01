@@ -1,0 +1,67 @@
+<svg version="1.1" viewBox="0 0 285.75 52.917" height="200" width="1080"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<filter style="color-interpolation-filters:sRGB" id="filter919-8-8" x="-.096" y="-.096" width="1.192" height="1.192">
+			<feFlood flood-opacity=".502" flood-color="#000" result="flood"/>
+			<feComposite in="flood" in2="SourceGraphic" operator="in" result="composite1"/>
+			<feGaussianBlur in="composite1" stdDeviation="1.049" result="blur"/>
+			<feOffset dx="0" dy="0" result="offset"/>
+			<feComposite in="SourceGraphic" in2="offset" operator="over" result="composite2"/>
+		</filter>
+		<clipPath clipPathUnits="userSpaceOnUse" id="clipPath359-6-8">
+			<circle style="fill:#000;stroke-width:1" cx="155.016" cy="-16.571" r="67.733"/>
+		</clipPath>
+	</defs>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="matrix(.27402 .07041 -.07041 .27402 -6.036 37.886)" style="display:inline" class="guild-icon guild-icon-priority-6"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(44.831 45.822 65.766) scale(.20201)" class="guild-icon guild-icon-priority-6"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(38.586 51.967 314.67) scale(.20201)" class="guild-icon guild-icon-priority-6"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(-26.221 125.682 80.737) scale(.25502)" class="guild-icon guild-icon-priority-5"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(37.424 130.23 341.227) scale(.19922)" class="guild-icon guild-icon-priority-6"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="matrix(.15179 .00024 -.00024 .15179 57.438 27.296)" class="guild-icon guild-icon-priority-6"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(-3.016 464.683 -4655.706) scale(.22154)" class="guild-icon guild-icon-priority-6"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(10.051 -45.44 -29.976) scale(.36942)" class="guild-icon guild-icon-priority-3"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="matrix(.42255 -.04761 .04761 .42255 129.575 61.728)" class="guild-icon guild-icon-priority-2"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(5.015 -478.517 693.304) scale(.28432)" class="guild-icon guild-icon-priority-5"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(-2.963 421.295 744.38) scale(.33175)" class="guild-icon guild-icon-priority-5"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="matrix(.24802 -.1731 .1731 .24802 67.353 43.893)" class="guild-icon guild-icon-priority-4"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(-14.808 351.714 -798.711) scale(.36942)" class="guild-icon guild-icon-priority-5"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(-64.089 137.222 -105.034) scale(.38895)" class="guild-icon guild-icon-priority-2"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(14.411 38.887 687.787) scale(.39174)" style="display:inline" class="guild-icon guild-icon-priority-3"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="rotate(11.744 -58.817 303.07) scale(.53125)" style="display:inline" class="guild-icon guild-icon-priority-1"/>
+	</g>
+	<g style="display:inline;filter:url(#filter919-8-8)" class="guild-icon-wrapper">
+		<image width="135.467" height="135.467" preserveAspectRatio="none" xlink:href="caf959735a24b4bba1d31bb412fef58e.png" x="87.283" y="-84.304" clip-path="url(#clipPath359-6-8)" transform="matrix(.2129 .21482 -.21482 .2129 31.971 13.792)" class="guild-icon guild-icon-priority-4"/>
+	</g>
+</svg>
