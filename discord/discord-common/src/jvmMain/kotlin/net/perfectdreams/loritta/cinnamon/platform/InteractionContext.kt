@@ -5,8 +5,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
-import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.context.InteractionContext
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
@@ -51,7 +50,7 @@ open class InteractionContext(
         }
     }
 
-    suspend fun sendMessage(block: PublicInteractionOrFollowupMessageCreateBuilder.() -> (Unit)) {
+    suspend fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) {
         interaKTionsContext.sendMessage {
             // Disable ALL mentions, to avoid a "@everyone 3.0" moment
             allowedMentions {
@@ -62,7 +61,7 @@ open class InteractionContext(
         }
     }
 
-    suspend fun sendEphemeralMessage(block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> (Unit)) {
+    suspend fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) {
         interaKTionsContext.sendEphemeralMessage {
             // Disable ALL mentions, to avoid a "@everyone 3.0" moment
             allowedMentions {
@@ -87,7 +86,7 @@ open class InteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendReply(content: String, prefix: Emote, block: PublicInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
+    suspend fun sendReply(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
         styled(content, prefix)
 
         apply(block)
@@ -103,7 +102,7 @@ open class InteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendReply(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: PublicInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
+    suspend fun sendReply(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
         styled(content, prefix)
 
         apply(block)
@@ -118,7 +117,7 @@ open class InteractionContext(
      *
      * @param reply the already built LorittaReply
      */
-    suspend fun sendReply(reply: LorittaReply, block: PublicInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
+    suspend fun sendReply(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
         styled(reply)
 
         apply(block)
@@ -134,7 +133,7 @@ open class InteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendEphemeralReply(content: String, prefix: Emote, block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+    suspend fun sendEphemeralReply(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
         styled(content, prefix)
 
         apply(block)
@@ -150,7 +149,7 @@ open class InteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendEphemeralReply(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+    suspend fun sendEphemeralReply(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
         styled(content, prefix)
 
         apply(block)
@@ -165,7 +164,7 @@ open class InteractionContext(
      *
      * @param reply the already built LorittaReply
      */
-    suspend fun sendEphemeralReply(reply: LorittaReply, block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+    suspend fun sendEphemeralReply(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
         styled(reply)
 
         apply(block)
@@ -180,7 +179,7 @@ open class InteractionContext(
      * @see fail
      * @see CommandException
      */
-    fun fail(content: String, prefix: Emote, block: PublicInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
+    fun fail(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
         LorittaReply(
             content, prefix.asMention
         ),
@@ -195,7 +194,7 @@ open class InteractionContext(
      * @see fail
      * @see CommandException
      */
-    fun fail(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: PublicInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
+    fun fail(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
         LorittaReply(
             content, prefix
         ),
@@ -210,7 +209,7 @@ open class InteractionContext(
      * @see fail
      * @see CommandException
      */
-    fun fail(reply: LorittaReply, block: PublicInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail {
+    fun fail(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail {
         styled(reply)
         apply(block)
     }
@@ -222,7 +221,7 @@ open class InteractionContext(
      * @see fail
      * @see CommandException
      */
-    fun fail(block: PublicInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = throw CommandException {
+    fun fail(block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = throw CommandException {
         // Disable ALL mentions, to avoid a "@everyone 3.0" moment
         allowedMentions {
             repliedUser = true
@@ -240,7 +239,7 @@ open class InteractionContext(
      * @see fail
      * @see CommandException
      */
-    fun failEphemerally(content: String, prefix: Emote, block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
+    fun failEphemerally(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
         LorittaReply(
             content, prefix.asMention
         ),
@@ -255,7 +254,7 @@ open class InteractionContext(
      * @see fail
      * @see CommandException
      */
-    fun failEphemerally(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
+    fun failEphemerally(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
         LorittaReply(
             content, prefix
         ),
@@ -270,7 +269,7 @@ open class InteractionContext(
      * @see fail
      * @see CommandException
      */
-    fun failEphemerally(reply: LorittaReply, block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally {
+    fun failEphemerally(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally {
         styled(reply)
         apply(block)
     }
@@ -282,7 +281,7 @@ open class InteractionContext(
      * @see fail
      * @see CommandException
      */
-    fun failEphemerally(block: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = throw EphemeralCommandException {
+    fun failEphemerally(block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = throw EphemeralCommandException {
         // Disable ALL mentions, to avoid a "@everyone 3.0" moment
         allowedMentions {
             repliedUser = true

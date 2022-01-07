@@ -17,6 +17,9 @@ dependencies {
     implementation("net.perfectdreams.discordinteraktions:gateway-kord:${Versions.DISCORD_INTERAKTIONS}")
     implementation("dev.kord:kord-gateway:0.8.x-SNAPSHOT")
 
+    // Logging
+    api("ch.qos.logback:logback-classic:1.3.0-alpha12")
+
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
     implementation(kotlin("test"))

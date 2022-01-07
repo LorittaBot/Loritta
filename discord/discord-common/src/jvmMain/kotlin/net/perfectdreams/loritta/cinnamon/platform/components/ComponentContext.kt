@@ -1,8 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.components
 
 import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.discordinteraktions.common.builder.message.modify.EphemeralInteractionMessageModifyBuilder
-import net.perfectdreams.discordinteraktions.common.builder.message.modify.PublicInteractionMessageModifyBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
@@ -22,9 +21,7 @@ open class ComponentContext(
 ) : InteractionContext(loritta, i18nContext, user, interaKTionsContext) {
     suspend fun deferUpdateMessage() = interaKTionsContext.deferUpdateMessage()
 
-    suspend fun updateMessage(block: PublicInteractionMessageModifyBuilder.() -> (Unit)) = interaKTionsContext.updateMessage(block)
-
-    suspend fun updateEphemeralMessage(block: EphemeralInteractionMessageModifyBuilder.() -> (Unit)) = interaKTionsContext.updateEphemeralMessage(block)
+    suspend fun updateMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit)) = interaKTionsContext.updateMessage(block)
 
     /**
      * Checks if the [user] has the same user ID present in the [data].
