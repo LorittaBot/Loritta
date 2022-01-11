@@ -17,18 +17,15 @@ jobs:
       with: 
         submodules: recursive
 
-    - name: Get current time
-      uses: gerred/actions/current-time@master
-      id: current-time
-
     - name: Setup Java JDK
       uses: actions/setup-java@v1.4.3
       with:
-        java-version: 15
+        java-version: 17
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
-    # Runs a single command using the runners shell
     - name: Build with Gradle
-      run: "./gradlew build -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: build
