@@ -32,6 +32,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -42,9 +43,14 @@ import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.DatabaseConfig
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.update
+import kotlin.system.exitProcess
 
 class Pudding(private val database: Database) {
     companion object {
@@ -192,7 +198,24 @@ class Pudding(private val database: Database) {
                     execStatements(false, alterStatements)
                     commit()
                 }
+
+                // Migrate the old log -> new and then exit
+                BrokerSonhosTransactionsLog
+                    .selectAll()
+                    .orderBy(BrokerSonhosTransactionsLog.id, SortOrder.ASC)
+                    .forEach { bstl ->
+                        val stl = SonhosTransactionsLog.insertAndGetId {
+                            it[SonhosTransactionsLog.timestamp] = bstl[SonhosTransactionsLog.timestamp]
+                            it[SonhosTransactionsLog.user] = bstl[SonhosTransactionsLog.user]
+                        }
+
+                        BrokerSonhosTransactionsLog.update({ BrokerSonhosTransactionsLog.id eq bstl[BrokerSonhosTransactionsLog.id] }) {
+                            it[BrokerSonhosTransactionsLog.timestampLog] = stl
+                        }
+                    }
             }
+
+        exitProcess(0)
     }
 
     // From Exposed

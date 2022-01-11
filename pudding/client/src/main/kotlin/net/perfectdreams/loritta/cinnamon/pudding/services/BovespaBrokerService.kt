@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
@@ -19,6 +20,7 @@ import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
@@ -149,14 +151,18 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
                 }
             }
 
+            val timestampLogId = SonhosTransactionsLog.insertAndGetId {
+                it[SonhosTransactionsLog.user] = userId
+                it[SonhosTransactionsLog.timestamp] = now.toJavaInstant()
+            }
+
             BrokerSonhosTransactionsLog.insert {
-                it[BrokerSonhosTransactionsLog.user] = userId
+                it[BrokerSonhosTransactionsLog.timestampLog] = timestampLogId
                 it[BrokerSonhosTransactionsLog.action] = BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
                 it[BrokerSonhosTransactionsLog.ticker] = tickerId
                 it[BrokerSonhosTransactionsLog.sonhos] = howMuchValue
                 it[BrokerSonhosTransactionsLog.stockPrice] = tickerInformation.value
                 it[BrokerSonhosTransactionsLog.stockQuantity] = quantity
-                it[BrokerSonhosTransactionsLog.timestamp] = now.toJavaInstant()
             }
 
             logger.info { "User $userId bought $quantity $tickerId for $howMuchValue" }
@@ -223,14 +229,18 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
                 }
             }
 
+            val timestampLogId = SonhosTransactionsLog.insertAndGetId {
+                it[SonhosTransactionsLog.user] = userId
+                it[SonhosTransactionsLog.timestamp] = now.toJavaInstant()
+            }
+
             BrokerSonhosTransactionsLog.insert {
-                it[BrokerSonhosTransactionsLog.user] = userId
-                it[BrokerSonhosTransactionsLog.action] = BrokerSonhosTransactionsEntryAction.SOLD_SHARES
+                it[BrokerSonhosTransactionsLog.timestampLog] = timestampLogId
+                it[BrokerSonhosTransactionsLog.action] = BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
                 it[BrokerSonhosTransactionsLog.ticker] = tickerId
                 it[BrokerSonhosTransactionsLog.sonhos] = howMuchWillBePaidToTheUser
                 it[BrokerSonhosTransactionsLog.stockPrice] = tickerInformation.value
                 it[BrokerSonhosTransactionsLog.stockQuantity] = quantity
-                it[BrokerSonhosTransactionsLog.timestamp] = now.toJavaInstant()
             }
 
             logger.info { "User $userId sold $quantity $tickerId for $howMuchWillBePaidToTheUser" }
