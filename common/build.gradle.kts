@@ -131,6 +131,9 @@ kotlin {
 
                 // Emoji Stuff
                 api("com.vdurmont:emoji-java:5.1.1")
+
+                // Sequins Text Utils
+                api("net.perfectdreams.sequins.text:text-utils:1.0.1")
             }
         }
 

@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
+import net.perfectdreams.loritta.cinnamon.pudding.services.GiveawaysService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
@@ -24,6 +25,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Giveaways
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
@@ -114,6 +116,7 @@ class Pudding(private val database: Database) {
     val profileDesigns = ProfileDesignsService(this)
     val bovespaBroker = BovespaBrokerService(this)
     val puddingTasks = PuddingTasks(this)
+    val giveaways = GiveawaysService(this)
 
     /**
      * Starts tasks related to [Pudding], like table partition creation, purge old data, etc.
@@ -148,6 +151,7 @@ class Pudding(private val database: Database) {
             Marriages,
             UserAchievements,
             InteractionsData,
+            Giveaways,
             ExecutedApplicationCommandsLog,
             TickerPrices,
             BoughtStocks,
