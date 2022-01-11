@@ -6,7 +6,7 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.javatime.timestamp
 
 object BrokerSonhosTransactionsLog : LongIdTable() {
-    val timestampLog = reference("timestamp_log", SonhosTransactionsLog)
+    val timestampLog = reference("timestamp_log", SonhosTransactionsLog).nullable()
     val user = reference("user", Profiles).index().nullable()
     val action = postgresEnumeration<BovespaBrokerService.BrokerSonhosTransactionsEntryAction>("action")
     val ticker = reference("ticker", TickerPrices)
