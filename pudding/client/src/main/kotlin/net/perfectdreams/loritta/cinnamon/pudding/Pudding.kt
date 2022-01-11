@@ -49,6 +49,7 @@ import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import kotlin.system.exitProcess
 
@@ -200,19 +201,23 @@ class Pudding(private val database: Database) {
                 }
 
                 // Migrate the old log -> new and then exit
-                BrokerSonhosTransactionsLog
-                    .selectAll()
-                    .orderBy(BrokerSonhosTransactionsLog.id, SortOrder.ASC)
-                    .forEach { bstl ->
-                        val stl = SonhosTransactionsLog.insertAndGetId {
-                            it[SonhosTransactionsLog.timestamp] = bstl[SonhosTransactionsLog.timestamp]
-                            it[SonhosTransactionsLog.user] = bstl[SonhosTransactionsLog.user]
-                        }
+                if (SonhosTransactionsLog.selectAll().count() != 0L) {
+                    logger.warn { "Transactions were already migrated! Ignoring migration..." }
+                } else {
+                    BrokerSonhosTransactionsLog
+                        .selectAll()
+                        .orderBy(BrokerSonhosTransactionsLog.id, SortOrder.ASC)
+                        .forEach { bstl ->
+                            val stl = SonhosTransactionsLog.insertAndGetId {
+                                it[SonhosTransactionsLog.timestamp] = bstl[BrokerSonhosTransactionsLog.timestamp]!!
+                                it[SonhosTransactionsLog.user] = bstl[BrokerSonhosTransactionsLog.user]!!
+                            }
 
-                        BrokerSonhosTransactionsLog.update({ BrokerSonhosTransactionsLog.id eq bstl[BrokerSonhosTransactionsLog.id] }) {
-                            it[BrokerSonhosTransactionsLog.timestampLog] = stl
+                            BrokerSonhosTransactionsLog.update({ BrokerSonhosTransactionsLog.id eq bstl[BrokerSonhosTransactionsLog.id] }) {
+                                it[BrokerSonhosTransactionsLog.timestampLog] = stl
+                            }
                         }
-                    }
+                }
             }
 
         exitProcess(0)
