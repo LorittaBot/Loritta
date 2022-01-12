@@ -1,7 +1,8 @@
 pluginManagement {
     repositories {
-        gradlePluginPortal()
+        // I don't know why but if "gradlePluginPortal()" is before our custom Maven repo, the i18nHelper plugin isn't found
         maven("https://repo.perfectdreams.net/")
+        gradlePluginPortal()
     }
 }
 
