@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
@@ -155,7 +156,8 @@ class Pudding(private val database: Database) {
             BoughtStocks,
             BannedUsers,
             SonhosTransactionsLog,
-            BrokerSonhosTransactionsLog
+            BrokerSonhosTransactionsLog,
+            CachedDiscordUsers
         )
 
         if (schemas.isNotEmpty())

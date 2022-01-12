@@ -5,12 +5,14 @@ import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserBannedState
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -20,6 +22,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 
 class UsersService(private val pudding: Pudding) : Service(pudding) {
     /**
@@ -185,6 +188,65 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
                 it[BannedUsers.reason],
                 it[BannedUsers.bannedBy]?.let { UserId(it.toULong()) }
             )
+        }
+    }
+
+    /**
+     * Gets [userId]'s cached user info from the database if it is present
+     *
+     * @param userId the user's ID
+     * @return the cached user info or null if it doesn't exist
+     */
+    suspend fun getCachedUserInfoById(userId: UserId) = pudding.transaction {
+        val info = CachedDiscordUsers.select {
+            CachedDiscordUsers.id eq userId.value.toLong()
+        }.limit(1).firstOrNull() ?: return@transaction null
+
+        CachedUserInfo(
+            UserId(info[CachedDiscordUsers.id].value),
+            info[CachedDiscordUsers.name],
+            info[CachedDiscordUsers.discriminator],
+            info[CachedDiscordUsers.avatarId]
+        )
+    }
+
+    /**
+     * Inserts or updates [userId]'s cached user info
+     *
+     * The cached user info can be retrieved with [getCachedUserInfoById], avoiding Discord API calls just to pull user information
+     *
+     * @param userId        the user's ID
+     * @param name          the user's name
+     * @param discriminator the user's discriminator
+     * @param avatarId      the user's avatar ID
+     */
+    suspend fun insertOrUpdateCachedUserInfo(
+        userId: UserId,
+        name: String,
+        discriminator: String,
+        avatarId: String?
+    ) = pudding.transaction {
+        val info = CachedDiscordUsers.select {
+            CachedDiscordUsers.id eq userId.value.toLong()
+        }.limit(1).firstOrNull()
+
+        val now = System.currentTimeMillis()
+        if (info != null) {
+            CachedDiscordUsers.update({ CachedDiscordUsers.id eq userId.value.toLong() }) {
+                it[CachedDiscordUsers.name] = name
+                it[CachedDiscordUsers.discriminator] = discriminator
+                it[CachedDiscordUsers.avatarId] = avatarId
+                it[CachedDiscordUsers.updatedAt] = now
+            }
+        } else {
+            CachedDiscordUsers.insert {
+                it[CachedDiscordUsers.id] = userId.value.toLong()
+                it[CachedDiscordUsers.name] = name
+                it[CachedDiscordUsers.discriminator] = discriminator
+                it[CachedDiscordUsers.avatarId] = avatarId
+                it[CachedDiscordUsers.createdAt] = now
+                it[CachedDiscordUsers.updatedAt] = now
+            }
         }
     }
 }
