@@ -12,7 +12,7 @@ noTransactionsFunnyMessages:
   - "Vazio, um espaço desprovido de entidades"
   - "Vazio, um vazio existencial"
 unknownPage:
-  title: "Onde você foi parar?"
+  title: "Onde você foi parar?" #Easter Egg: If someone wants to go to a page that doesn't exist, show a small fun story
   description:
     - "Você está em um lugar frio, escuro e vazio..."
     - ""
