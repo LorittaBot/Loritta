@@ -58,7 +58,7 @@ class TransactionsExecutor : CommandExecutor() {
 
                     description = buildString {
                         for (transaction in transactions) {
-                            append("[<t:${transaction.timestamp.epochSeconds}:f> | <t:${transaction.timestamp.epochSeconds}:R>]")
+                            append("[<t:${transaction.timestamp.epochSeconds}:d> <t:${transaction.timestamp.epochSeconds}:t> | <t:${transaction.timestamp.epochSeconds}:R>]")
                             append(" ")
                             when (transaction) {
                                 is BrokerSonhosTransaction -> {
