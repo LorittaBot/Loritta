@@ -236,7 +236,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
 
             BrokerSonhosTransactionsLog.insert {
                 it[BrokerSonhosTransactionsLog.timestampLog] = timestampLogId
-                it[BrokerSonhosTransactionsLog.action] = BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
+                it[BrokerSonhosTransactionsLog.action] = BrokerSonhosTransactionsEntryAction.SOLD_SHARES
                 it[BrokerSonhosTransactionsLog.ticker] = tickerId
                 it[BrokerSonhosTransactionsLog.sonhos] = howMuchWillBePaidToTheUser
                 it[BrokerSonhosTransactionsLog.stockPrice] = tickerInformation.value
