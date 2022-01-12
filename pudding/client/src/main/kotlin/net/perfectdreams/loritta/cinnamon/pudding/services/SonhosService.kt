@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 
 class SonhosService(private val pudding: Pudding) : Service(pudding) {
@@ -39,7 +40,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             .select {
                 (SonhosTransactionsLog.user eq userId.value.toLong()).let {
                     if (TransactionType.HOME_BROKER in transactionTypeFilter)
-                        BrokerSonhosTransactionsLog.id.isNotNull()
+                        it.and(BrokerSonhosTransactionsLog.id.isNotNull())
                     else
                         it
                 }
@@ -64,7 +65,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                 .select {
                     (SonhosTransactionsLog.user eq userId.value.toLong()).let {
                         if (TransactionType.HOME_BROKER in transactionTypeFilter)
-                            BrokerSonhosTransactionsLog.id.isNotNull()
+                            it.and(BrokerSonhosTransactionsLog.id.isNotNull())
                         else
                             it
                     }

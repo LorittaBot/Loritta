@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.data.SingleUserCom
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 @Serializable
-data class ChangeTransactionPageData(
+data class TransactionListData(
     override val userId: Snowflake,
     val viewingTransactionsOfUserId: UserId,
     val page: Long,

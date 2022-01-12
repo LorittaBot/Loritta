@@ -20,14 +20,11 @@ class ChangeTransactionPageButtonClickExecutor(
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()
 
-        // We only want to "confirm" the user input (for roleplaying purposes, to avoid filling the chat with a lot of messages)
-        // so we will just keep the file but remove the components
-        //
-        // We could also use ephemeral messages, but nah, sometimes people *want* to show it off to other people without confirming
-        val decoded = context.decodeViaComponentDataUtilsAndRequireUserToMatch<ChangeTransactionPageData>(data)
+        val decoded = context.decodeViaComponentDataUtilsAndRequireUserToMatch<TransactionListData>(data)
 
         val builtMessage = TransactionsExecutor.createMessage(
             loritta,
+            context.i18nContext,
             decoded
         )
 

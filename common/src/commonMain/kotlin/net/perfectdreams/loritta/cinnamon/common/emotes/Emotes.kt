@@ -118,6 +118,9 @@ object Emotes {
     val BugHunterLevel2 = DiscordEmote(776924915055722507L, "bug_hunter_lvl_2", false)
     val VerifiedBotDeveloper = DiscordEmote(718883878378668112L, "verified_developer", false)
 
+    val ChevronLeft = DiscordEmote(930922528715722782L, "chevron_left", false)
+    val ChevronRight = DiscordEmote(930922702011773038L, "chevron_right", false)
+
     val Online = DiscordEmote(516265733659951104L, "online", false)
     val Idle = DiscordEmote(516265836009357322L, "idle", false)
     val DoNotDisturb = DiscordEmote(516265799338688533L, "do_not_disturb", false)
