@@ -7,6 +7,7 @@ import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
@@ -163,7 +164,7 @@ class Pudding(private val database: Database) {
             transaction {
                 createOrUpdatePostgreSQLEnum(AchievementType.values())
                 createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
-                createOrUpdatePostgreSQLEnum(BovespaBrokerService.BrokerSonhosTransactionsEntryAction.values())
+                createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(

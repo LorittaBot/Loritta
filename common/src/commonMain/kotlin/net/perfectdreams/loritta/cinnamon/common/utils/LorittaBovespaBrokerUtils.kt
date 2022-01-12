@@ -69,4 +69,9 @@ object LorittaBovespaBrokerUtils {
 
     @OptIn(ExperimentalTime::class)
     fun checkIfTickerDataIsStale(lastUpdatedAt: Instant) = Clock.System.now() > lastUpdatedAt.plus(LorittaBovespaBrokerUtils.OUTDATED_STOCKS_TIME)
+
+    enum class BrokerSonhosTransactionsEntryAction {
+        BOUGHT_SHARES,
+        SOLD_SHARES
+    }
 }
