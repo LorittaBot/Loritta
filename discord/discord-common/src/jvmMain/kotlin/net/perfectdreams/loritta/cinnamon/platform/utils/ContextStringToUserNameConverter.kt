@@ -7,6 +7,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
  */
 object ContextStringToUserNameConverter {
     suspend fun convert(context: ApplicationCommandContext, input: String): String {
-        return ContextStringToUserConverter.convert(context, input)?.name ?: input
+        return ContextStringToUserInfoConverter.convert(context, input)?.name ?: input
     }
 }
