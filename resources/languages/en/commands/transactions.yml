@@ -10,8 +10,8 @@ noTransactionsFunnyMessages:
   - "Empty, just like the emptiness of my heart"
   - "Empty, a space devoid of entities"
   - "Empty, an existential void"
-unknownPage: # Easter Egg: If someone wants to go to a page that doesn't exist, show a small fun story
-  title: "How you ended up here?"
+unknownPage:
+  title: "How you ended up here?" # Easter Egg: If someone wants to go to a page that doesn't exist, show a small fun story
   description:
     - "You are in a cold, dark and empty space..."
     - ""
