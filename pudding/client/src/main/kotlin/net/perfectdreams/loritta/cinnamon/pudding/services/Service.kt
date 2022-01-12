@@ -149,7 +149,7 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[SonhosTransactionsLog.id].value,
             row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
             UserId(row[SonhosTransactionsLog.user].value),
-            row[BrokerSonhosTransactionsLog.action].name,
+            row[BrokerSonhosTransactionsLog.action],
             row[BrokerSonhosTransactionsLog.ticker].value,
             row[BrokerSonhosTransactionsLog.sonhos],
             row[BrokerSonhosTransactionsLog.stockPrice],

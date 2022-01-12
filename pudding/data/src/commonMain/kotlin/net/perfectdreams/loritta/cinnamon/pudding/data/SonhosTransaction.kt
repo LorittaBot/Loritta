@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.data
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 
 @Serializable
 sealed class SonhosTransaction {
@@ -15,7 +16,7 @@ data class BrokerSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,
     override val user: UserId,
-    val action: String, // TODO: use the enum
+    val action: LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction,
     val ticker: String,
     val sonhos: Long,
     val stockPrice: Long,

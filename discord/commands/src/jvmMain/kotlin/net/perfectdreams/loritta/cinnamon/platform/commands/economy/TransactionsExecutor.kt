@@ -7,6 +7,9 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
+import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.SOLD_SHARES
+import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
@@ -17,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import kotlin.math.ceil
 import kotlin.time.ExperimentalTime
 
 class TransactionsExecutor : CommandExecutor() {
@@ -28,6 +32,8 @@ class TransactionsExecutor : CommandExecutor() {
 
         override val options = Options */
 
+        const val TRANSACTIONS_PER_PAGE = 10
+
         @OptIn(ExperimentalTime::class)
         suspend fun createMessage(
             loritta: LorittaCinnamon,
@@ -35,11 +41,15 @@ class TransactionsExecutor : CommandExecutor() {
         ): MessageBuilder.() -> (Unit) {
             val transactions = loritta.services.sonhos.getUserTransactions(
                 data.viewingTransactionsOfUserId,
-                10,
-                data.page
+                data.transactionTypeFilter,
+                TRANSACTIONS_PER_PAGE,
+                (data.page * TRANSACTIONS_PER_PAGE)
             )
 
-            val totalTransactions = loritta.services.sonhos.getUserTotalTransactions(data.viewingTransactionsOfUserId)
+            val totalTransactions = loritta.services.sonhos.getUserTotalTransactions(
+                data.viewingTransactionsOfUserId,
+                data.transactionTypeFilter
+            )
 
             return {
                 embed {
@@ -52,7 +62,10 @@ class TransactionsExecutor : CommandExecutor() {
                             append(" ")
                             when (transaction) {
                                 is BrokerSonhosTransaction -> {
-                                    append("\uD83D\uDCB8 Comprou ${transaction.stockQuantity} ações de `${transaction.ticker}` por ${transaction.sonhos} sonhos")
+                                    when (transaction.action) {
+                                        BOUGHT_SHARES -> append("\uD83D\uDCB8 Comprou ${transaction.stockQuantity} ações de `${transaction.ticker}` por ${transaction.sonhos} sonhos")
+                                        SOLD_SHARES -> append("\uD83D\uDCB8 Vendeu ${transaction.stockQuantity} ações de `${transaction.ticker}` por ${transaction.sonhos} sonhos")
+                                    }
                                 }
                                 is UnknownSonhosTransaction -> {
                                     append("${Emotes.LoriShrug} Transação Desconhecida (Bug?)")
@@ -65,28 +78,76 @@ class TransactionsExecutor : CommandExecutor() {
                     footer("Total de transações: $totalTransactions")
                 }
 
+                val totalPages = ceil((totalTransactions / TRANSACTIONS_PER_PAGE.toDouble())).toLong()
+                val addLeftButton = data.page != 0L
+                val addRightButton = (data.page + 1) != totalPages
+
                 actionRow {
-                    interactiveButton(
-                        ButtonStyle.Secondary,
-                        ChangeTransactionPageButtonClickExecutor,
-                        ComponentDataUtils.encode(
-                            data.copy(
-                                page = data.page - 1
+                    if (addLeftButton) {
+                        interactiveButton(
+                            ButtonStyle.Secondary,
+                            ChangeTransactionPageButtonClickExecutor,
+                            ComponentDataUtils.encode(
+                                data.copy(
+                                    page = data.page - 1
+                                )
                             )
-                        )
-                    ) {
-                        label = "<"
+                        ) {
+                            label = "<"
+                        }
+                    } else {
+                        interactiveButton(
+                            ButtonStyle.Secondary,
+                            ChangeTransactionPageButtonClickExecutor,
+                            ComponentDataUtils.encode(
+                                data.copy(
+                                    page = data.page - 1
+                                )
+                            )
+                        ) {
+                            label = "<"
+                            disabled = true
+                        }
                     }
-                    interactiveButton(
-                        ButtonStyle.Secondary,
-                        ChangeTransactionPageButtonClickExecutor,
-                        ComponentDataUtils.encode(
-                            data.copy(
-                                page = data.page + 1
+
+                    if (addRightButton) {
+                        interactiveButton(
+                            ButtonStyle.Secondary,
+                            ChangeTransactionPageButtonClickExecutor,
+                            ComponentDataUtils.encode(
+                                data.copy(
+                                    page = data.page + 1
+                                )
                             )
-                        )
-                    ) {
-                        label = ">"
+                        ) {
+                            label = ">"
+                        }
+                    } else {
+                        interactiveButton(
+                            ButtonStyle.Secondary,
+                            ChangeTransactionPageButtonClickExecutor,
+                            ComponentDataUtils.encode(
+                                data.copy(
+                                    page = data.page + 1
+                                )
+                            )
+                        ) {
+                            label = ">"
+                            disabled = true
+                        }
+                    }
+                }
+
+                actionRow {
+                    selectMenu("aaaa") {
+                        val transactionTypes = TransactionType.values()
+                        this.allowedValues = 1..(25.coerceAtMost(transactionTypes.size))
+
+                        for (transactionType in transactionTypes) {
+                            option(transactionType.name, transactionType.name) {
+                                default = true
+                            }
+                        }
                     }
                 }
             }
@@ -103,7 +164,8 @@ class TransactionsExecutor : CommandExecutor() {
             ChangeTransactionPageData(
                 context.user.id,
                 userId,
-                0
+                0,
+                TransactionType.values().toList()
             )
         )
 

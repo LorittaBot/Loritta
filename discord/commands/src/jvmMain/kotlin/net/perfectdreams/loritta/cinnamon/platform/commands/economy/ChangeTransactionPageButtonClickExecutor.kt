@@ -18,6 +18,8 @@ class ChangeTransactionPageButtonClickExecutor(
     )
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
+        context.deferUpdateMessage()
+
         // We only want to "confirm" the user input (for roleplaying purposes, to avoid filling the chat with a lot of messages)
         // so we will just keep the file but remove the components
         //
