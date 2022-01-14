@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
 import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
@@ -9,8 +8,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClic
 import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
 
 class ChangeTransactionPageButtonClickExecutor(
-    val loritta: LorittaCinnamon,
-    val client: GabrielaImageServerClient
+    val loritta: LorittaCinnamon
 ) : ButtonClickExecutor {
     companion object : ButtonClickExecutorDeclaration(
         ChangeTransactionPageButtonClickExecutor::class,

@@ -378,7 +378,7 @@ class CommandManager(
 
         commandManager.register(
             ChangeTransactionPageButtonClickExecutor,
-            ChangeTransactionPageButtonClickExecutor(loritta, gabrielaImageServerClient)
+            ChangeTransactionPageButtonClickExecutor(loritta)
         )
 
         // ===[ SOCIAL ]===
