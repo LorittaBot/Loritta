@@ -136,7 +136,7 @@ class TransactionsExecutor : CommandExecutor() {
                                                     }"
                                                 )
                                                 SOLD_SHARES -> append(
-                                                    "\uD83D\uDCB8 ${
+                                                    "\uD83D\uDCB5 ${
                                                         i18nContext.get(
                                                             TransactionsCommand.I18N_PREFIX.Types.HomeBroker.SoldShares(
                                                                 transaction.stockQuantity,
