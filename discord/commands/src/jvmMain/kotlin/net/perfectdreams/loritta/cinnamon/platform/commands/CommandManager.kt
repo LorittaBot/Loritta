@@ -61,8 +61,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerPortfo
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerSellStockExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionPageButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinflipBetGlobalExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.StartMatchmakingButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.TransactionsExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
@@ -379,6 +382,16 @@ class CommandManager(
         commandManager.register(
             ChangeTransactionPageButtonClickExecutor,
             ChangeTransactionPageButtonClickExecutor(loritta)
+        )
+
+        commandManager.register(
+            BetCommand,
+            CoinflipBetGlobalExecutor()
+        )
+
+        commandManager.register(
+            StartMatchmakingButtonClickExecutor,
+            StartMatchmakingButtonClickExecutor(loritta)
         )
 
         // ===[ SOCIAL ]===

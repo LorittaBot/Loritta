@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
+import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
@@ -25,6 +26,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingQueue
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
@@ -116,6 +118,7 @@ class Pudding(private val database: Database) {
     val backgrounds = BackgroundsService(this)
     val profileDesigns = ProfileDesignsService(this)
     val bovespaBroker = BovespaBrokerService(this)
+    val bets = BetsService(this)
     val puddingTasks = PuddingTasks(this)
 
     /**
@@ -157,7 +160,8 @@ class Pudding(private val database: Database) {
             BannedUsers,
             SonhosTransactionsLog,
             BrokerSonhosTransactionsLog,
-            CachedDiscordUsers
+            CachedDiscordUsers,
+            CoinflipGlobalMatchmakingQueue
         )
 
         if (schemas.isNotEmpty())
