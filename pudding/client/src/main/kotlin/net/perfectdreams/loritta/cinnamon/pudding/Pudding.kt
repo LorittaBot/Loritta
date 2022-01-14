@@ -27,6 +27,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingQueue
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
@@ -161,7 +163,9 @@ class Pudding(private val database: Database) {
             SonhosTransactionsLog,
             BrokerSonhosTransactionsLog,
             CachedDiscordUsers,
-            CoinflipGlobalMatchmakingQueue
+            CoinflipGlobalMatchmakingQueue,
+            CoinflipGlobalMatchmakingResults,
+            CoinflipGlobalSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())

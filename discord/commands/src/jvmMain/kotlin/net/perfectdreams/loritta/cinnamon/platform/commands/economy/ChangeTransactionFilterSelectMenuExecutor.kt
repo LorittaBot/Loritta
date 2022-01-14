@@ -10,8 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenu
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
 
 class ChangeTransactionFilterSelectMenuExecutor(
-    val loritta: LorittaCinnamon,
-    val client: GabrielaImageServerClient
+    val loritta: LorittaCinnamon
 ) : SelectMenuWithDataExecutor {
     companion object : SelectMenuExecutorDeclaration(ChangeTransactionFilterSelectMenuExecutor::class, ComponentExecutorIds.CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR)
 

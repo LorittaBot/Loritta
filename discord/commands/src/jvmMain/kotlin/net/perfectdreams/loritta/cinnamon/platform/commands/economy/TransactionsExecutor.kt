@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CoinflipBetGlobalSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.math.ceil
@@ -144,6 +145,19 @@ class TransactionsExecutor : CommandExecutor() {
                                                             )
                                                         )
                                                     }"
+                                                )
+                                            }
+                                        }
+                                        is CoinflipBetGlobalSonhosTransaction -> {
+                                            val wonTheBet = transaction.user == transaction.winner
+
+                                            if (wonTheBet) {
+                                                append(
+                                                    "\uD83D\uDCB5 Ganhou ${transaction.quantity} sonhos de ${transaction.loser} em apostas de sonhos girando uma moeda (global) - Esperou ${transaction.timeOnQueue}ms na fila"
+                                                )
+                                            } else {
+                                                append(
+                                                    "\uD83D\uDCB8 Perdeu ${transaction.quantity} sonhos para ${transaction.winner} em apostas de sonhos girando uma moeda (global) - Esperou ${transaction.timeOnQueue}ms na fila"
                                                 )
                                             }
                                         }

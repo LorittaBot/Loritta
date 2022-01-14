@@ -28,74 +28,93 @@ class CoinflipBetGlobalExecutor : CommandExecutor() {
             // TODO: Remove this hack! Maybe expose the token somewhere?
             val httpRequestManager = context.interaKTionsContext.bridge.manager as HttpRequestManager
 
-            val result = context.loritta.services.bets.addToMatchmakingQueue(
+            val results = context.loritta.services.bets.addToMatchmakingQueue(
                 UserId(context.user.id.value),
                 httpRequestManager.interactionToken,
                 quantity, // TODO: Add proper quantities
             )
 
-            when (result) {
-                is BetsService.AddedToQueueResult -> context.sendEphemeralMessage {
-                    content = "Você foi adicionado na fila de matchmaking! lets go :3"
-                }
-                is BetsService.AlreadyInQueueResult -> context.sendEphemeralMessage {
-                    content = "Você já está na fila do coinflip safade!!"
-                }
-                is BetsService.CoinflipResult -> {
-                    context.sendEphemeralMessage {
-                        allowedMentions {
-                            users.add(Snowflake(result.winner.value))
-                            users.add(Snowflake(result.loser.value))
+            for (result in results) {
+                when (result) {
+                    is BetsService.AddedToQueueResult -> context.sendEphemeralMessage {
+                        content = "Você foi adicionado na fila de matchmaking! lets go :3"
+                    }
+                    is BetsService.AlreadyInQueueResult -> context.sendEphemeralMessage {
+                        content = "Você já está na fila do coinflip safade!!"
+                    }
+                    is BetsService.CoinflipResult -> {
+                        context.sendEphemeralMessage {
+                            allowedMentions {
+                                users.add(Snowflake(result.winner.value))
+                                users.add(Snowflake(result.loser.value))
+                            }
+
+                            content = "Fim!\nVencedor: <@${result.winner.value}>\nPerdedor: <@${result.loser.value}>"
+
+                            actionRow {
+                                interactiveButton(
+                                    ButtonStyle.Primary,
+                                    StartMatchmakingButtonClickExecutor,
+                                    ComponentDataUtils.encode(
+                                        CoinflipGlobalStartMatchmakingData(
+                                            context.user.id,
+                                            quantity
+                                        )
+                                    )
+                                ) {
+                                    label = "vamo de novo pois o pai tá rico kk"
+
+                                    loriEmoji = Emotes.LoriRich
+                                }
+                            }
                         }
 
-                        content = "Fim!\nVencedor: <@${result.winner.value}>\nPerdedor: <@${result.loser.value}>"
+                        context.loritta.rest.interaction.createFollowupMessage(
+                            httpRequestManager.applicationId, // Should be always the application ID right?
+                            result.userInteractionToken,
+                            true
+                        ) {
+                            allowedMentions {
+                                users.add(Snowflake(result.winner.value))
+                                users.add(Snowflake(result.loser.value))
+                            }
 
-                        actionRow {
-                            interactiveButton(
-                                ButtonStyle.Primary,
-                                StartMatchmakingButtonClickExecutor,
-                                ComponentDataUtils.encode(
-                                    CoinflipGlobalStartMatchmakingData(
-                                        context.user.id,
-                                        quantity
+                            content = "Fim!\nVencedor: <@${result.winner.value}>\nPerdedor: <@${result.loser.value}>"
+
+                            actionRow {
+                                interactiveButton(
+                                    ButtonStyle.Primary,
+                                    StartMatchmakingButtonClickExecutor,
+                                    ComponentDataUtils.encode(
+                                        CoinflipGlobalStartMatchmakingData(
+                                            Snowflake(result.otherUser.value),
+                                            quantity
+                                        )
                                     )
-                                )
-                            ) {
-                                label = "vamo de novo pois o pai tá rico kk"
+                                ) {
+                                    label = "vamo de novo pois o pai tá rico kk"
 
-                                loriEmoji = Emotes.LoriRich
+                                    loriEmoji = Emotes.LoriRich
+                                }
                             }
                         }
                     }
-
-                    context.loritta.rest.interaction.createFollowupMessage(
-                        httpRequestManager.applicationId, // Should be always the application ID right?
-                        result.userInteractionToken,
-                        true
-                    ) {
-                        allowedMentions {
-                            users.add(Snowflake(result.winner.value))
-                            users.add(Snowflake(result.loser.value))
-                        }
-
-                        content = "Fim!\nVencedor: <@${result.winner.value}>\nPerdedor: <@${result.loser.value}>"
-
-
-                        actionRow {
-                            interactiveButton(
-                                ButtonStyle.Primary,
-                                StartMatchmakingButtonClickExecutor,
-                                ComponentDataUtils.encode(
-                                    CoinflipGlobalStartMatchmakingData(
-                                        Snowflake(result.otherUser.value),
-                                        quantity
-                                    )
-                                )
-                            ) {
-                                label = "vamo de novo pois o pai tá rico kk"
-
-                                loriEmoji = Emotes.LoriRich
+                    is BetsService.AnotherUserRemovedFromMatchmakingQueue -> {
+                        context.loritta.rest.interaction.createFollowupMessage(
+                            httpRequestManager.applicationId, // Should be always the application ID right?
+                            result.userInteractionToken,
+                            true
+                        ) {
+                            allowedMentions {
+                                users.add(Snowflake(result.user.value))
                             }
+
+                            content = "Você saiu da fila de matchmaking pois você não possui sonhos suficientes para realizar a sua aposta..."
+                        }
+                    }
+                    is BetsService.YouDontHaveEnoughSonhosToBetResult -> {
+                        context.sendEphemeralMessage {
+                            content = "Você não tem sonhos suficientes para apostar!"
                         }
                     }
                 }
@@ -106,6 +125,6 @@ class CoinflipBetGlobalExecutor : CommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
         context.deferChannelMessageEphemerally() // Defer because this sometimes takes too long
 
-        addToMatchmakingQueue(context, 0) // TODO: Quantity
+        addToMatchmakingQueue(context, 1) // TODO: Quantity
     }
 }

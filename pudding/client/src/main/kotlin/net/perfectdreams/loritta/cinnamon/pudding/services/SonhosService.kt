@@ -5,10 +5,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 
 class SonhosService(private val pudding: Pudding) : Service(pudding) {
@@ -31,20 +35,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         userId: UserId,
         transactionTypeFilter: List<TransactionType>
     ) = pudding.transaction {
-        SonhosTransactionsLog.let {
-            if (TransactionType.HOME_BROKER in transactionTypeFilter)
-                it.leftJoin(BrokerSonhosTransactionsLog)
-            else
-                it
-        }
-            .select {
-                (SonhosTransactionsLog.user eq userId.value.toLong()).let {
-                    if (TransactionType.HOME_BROKER in transactionTypeFilter)
-                        it.and(BrokerSonhosTransactionsLog.id.isNotNull())
-                    else
-                        it
-                }
-            }.count()
+        userTransactionQuery(userId, transactionTypeFilter).count()
     }
 
     suspend fun getUserTransactions(
@@ -54,25 +45,42 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         offset: Long
     ): List<SonhosTransaction> {
         return pudding.transaction {
-            // If we want to filter for specific transactions, check if the table ID is null!
-            // Example: BrokerSonhosTransactionsLog.id isNotNull
-            SonhosTransactionsLog.let {
-                if (TransactionType.HOME_BROKER in transactionTypeFilter)
-                    it.leftJoin(BrokerSonhosTransactionsLog)
-                else
-                    it
-            }
-                .select {
-                    (SonhosTransactionsLog.user eq userId.value.toLong()).let {
-                        if (TransactionType.HOME_BROKER in transactionTypeFilter)
-                            it.and(BrokerSonhosTransactionsLog.id.isNotNull())
-                        else
-                            it
-                    }
-                }
+            userTransactionQuery(userId, transactionTypeFilter)
                 .orderBy(SonhosTransactionsLog.id, SortOrder.DESC)
                 .limit(limit, offset)
                 .map { SonhosTransaction.fromRow(it) }
         }
     }
+
+    // If we want to filter for specific transactions, check if the table ID is null!
+    // Example: BrokerSonhosTransactionsLog.id isNotNull
+    private fun userTransactionQuery(
+        userId: UserId,
+        transactionTypeFilter: List<TransactionType>
+    ) = SonhosTransactionsLog.let {
+        if (TransactionType.HOME_BROKER in transactionTypeFilter)
+            it.leftJoin(BrokerSonhosTransactionsLog)
+        else it
+    }.let {
+        if (TransactionType.COINFLIP_BET_GLOBAL in transactionTypeFilter)
+            it.leftJoin(CoinflipGlobalSonhosTransactionsLog.leftJoin(CoinflipGlobalMatchmakingResults))
+        else
+            it
+    }
+        .select {
+            // Hacky!
+            // https://stackoverflow.com/questions/54361503/how-to-add-multiple-or-filter-conditions-based-on-incoming-parameters-using-expo
+            var cond = Op.build {
+                SonhosTransactionsLog.id neq SonhosTransactionsLog.id
+            }
+
+            for (type in transactionTypeFilter) {
+                cond = when (type) {
+                    TransactionType.HOME_BROKER -> cond.or(BrokerSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinflipGlobalSonhosTransactionsLog.id.isNotNull())
+                }
+            }
+
+            (SonhosTransactionsLog.user eq userId.value.toLong()).and(cond)
+        }
 }

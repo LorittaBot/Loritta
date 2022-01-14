@@ -24,6 +24,17 @@ data class BrokerSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class CoinflipBetGlobalSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val winner: UserId,
+    val loser: UserId,
+    val quantity: Long,
+    val timeOnQueue: Long
+) : SonhosTransaction()
+
+@Serializable
 data class UnknownSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,

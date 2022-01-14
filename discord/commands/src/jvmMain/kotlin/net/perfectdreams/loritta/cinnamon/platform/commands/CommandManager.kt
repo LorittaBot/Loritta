@@ -60,6 +60,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerInfoEx
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerPortfolioExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerSellStockExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinflipBetGlobalExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
@@ -382,6 +383,11 @@ class CommandManager(
         commandManager.register(
             ChangeTransactionPageButtonClickExecutor,
             ChangeTransactionPageButtonClickExecutor(loritta)
+        )
+
+        commandManager.register(
+            ChangeTransactionFilterSelectMenuExecutor,
+            ChangeTransactionFilterSelectMenuExecutor(loritta)
         )
 
         commandManager.register(

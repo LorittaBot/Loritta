@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.Achievement
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CoinflipBetGlobalSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
@@ -30,6 +31,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
@@ -154,6 +157,16 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[BrokerSonhosTransactionsLog.sonhos],
             row[BrokerSonhosTransactionsLog.stockPrice],
             row[BrokerSonhosTransactionsLog.stockQuantity]
+        )
+    } else if (row.getOrNull(CoinflipGlobalSonhosTransactionsLog.id) != null) {
+        CoinflipBetGlobalSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            UserId(row[CoinflipGlobalMatchmakingResults.winner].value),
+            UserId(row[CoinflipGlobalMatchmakingResults.loser].value),
+            row[CoinflipGlobalMatchmakingResults.quantity],
+            row[CoinflipGlobalMatchmakingResults.timeOnQueue].toMillis()
         )
     } else {
         UnknownSonhosTransaction(

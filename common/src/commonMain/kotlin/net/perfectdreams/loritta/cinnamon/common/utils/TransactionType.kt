@@ -14,5 +14,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Title,
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Description,
         Emotes.LoriStonks,
+    ),
+    COINFLIP_BET_GLOBAL(
+        TodoFixThisData,
+        TodoFixThisData,
+        Emotes.CoinHeads
     )
 }
