@@ -1,0 +1,37 @@
+description: "View all the sonhos transactions you sent and received!"
+yourTransactions: "Your Transactions"
+userTransactions: "{user}'s Transactions"
+page: "Page {page}"
+transactionsQuantity: "Transaction Quantity: {totalTransactions}"
+notAllTransactionsAreHere: "Currently not all transactions are visible in this command. To view more transactions, use `+transactions`!"
+noTransactionsFunnyMessages:
+  - "Empty, just like my bank account"
+  - "Empty, that is, not full"
+  - "Empty, just like the emptiness of my heart"
+  - "Empty, a space devoid of entities"
+  - "Empty, an existential void"
+unknownPage:
+  title: "How you ended up here?" # Easter Egg: If someone wants to go to a page that doesn't exist, show a small fun story
+  description:
+    - "You are in a cold, dark and empty space..."
+    - ""
+    - "In the end of the horizon you can see gigantic pages, filled with lines and numbers..."
+    - ""
+    - "You try to fly to them, but a unknown force prevents you from being able to move..."
+    - ""
+    - "You start to get desperate, how you ended up here? Maybe it was because you tried to go to a page that doesn't exist...?"
+    - ""
+    - "Then, a beacon illuminates a enormous hand that was in front of you all this time."
+  goToTheLastPage: "I'm scared, get me out of here!"
+types:
+  homeBroker:
+    title: "Loritta's Stock Market Simulator"
+    description: "Transactions related to Loritta's Stock Market Simulator"
+    boughtShares: "Bought {stockQuantity} shares of `{ticker}` for {sonhosQuantity} sonhos in Loritta's Stock Market Simulator"
+    soldShares: "Sold {stockQuantity} shares of `{ticker}` for {sonhosQuantity} sonhos in Loritta's Stock Market Simulator"
+
+options:
+  user:
+    text: "The user that you want to view their transactions"
+  page:
+    text: "The page that you want to view"

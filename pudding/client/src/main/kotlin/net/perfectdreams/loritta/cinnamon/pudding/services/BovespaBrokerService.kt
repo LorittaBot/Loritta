@@ -158,7 +158,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
 
             BrokerSonhosTransactionsLog.insert {
                 it[BrokerSonhosTransactionsLog.timestampLog] = timestampLogId
-                it[BrokerSonhosTransactionsLog.action] = BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
+                it[BrokerSonhosTransactionsLog.action] = LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
                 it[BrokerSonhosTransactionsLog.ticker] = tickerId
                 it[BrokerSonhosTransactionsLog.sonhos] = howMuchValue
                 it[BrokerSonhosTransactionsLog.stockPrice] = tickerInformation.value
@@ -236,7 +236,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
 
             BrokerSonhosTransactionsLog.insert {
                 it[BrokerSonhosTransactionsLog.timestampLog] = timestampLogId
-                it[BrokerSonhosTransactionsLog.action] = BrokerSonhosTransactionsEntryAction.SOLD_SHARES
+                it[BrokerSonhosTransactionsLog.action] = LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.SOLD_SHARES
                 it[BrokerSonhosTransactionsLog.ticker] = tickerId
                 it[BrokerSonhosTransactionsLog.sonhos] = howMuchWillBePaidToTheUser
                 it[BrokerSonhosTransactionsLog.stockPrice] = tickerInformation.value
@@ -298,11 +298,6 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
         val earnings: Long,
         val profit: Long
     )
-
-    enum class BrokerSonhosTransactionsEntryAction {
-        BOUGHT_SHARES,
-        SOLD_SHARES
-    }
 
     class NotEnoughSonhosException : RuntimeException()
     class OutOfSessionException(val currentSession: String) : RuntimeException()

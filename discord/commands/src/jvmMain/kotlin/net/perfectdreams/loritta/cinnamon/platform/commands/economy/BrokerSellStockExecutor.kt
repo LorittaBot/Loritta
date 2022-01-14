@@ -88,7 +88,8 @@ class BrokerSellStockExecutor : CommandExecutor() {
             context.failEphemerally(
                 context.i18nContext.get(
                     BrokerCommand.I18N_PREFIX.Sell.YouDontHaveEnoughStocks(
-                        e.currentBoughtSharesCount
+                        e.currentBoughtSharesCount,
+                        tickerId
                     )
                 )
             )

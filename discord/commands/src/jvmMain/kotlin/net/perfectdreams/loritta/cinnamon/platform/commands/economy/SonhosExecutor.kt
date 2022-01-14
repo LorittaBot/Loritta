@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CancelledCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
@@ -15,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.getUserProfile
 class SonhosExecutor() : CommandExecutor() {
     companion object : CommandExecutorDeclaration(SonhosExecutor::class) {
         object Options : CommandOptions() {
-            val user = optionalUser("user", CancelledCommand.I18N_PREFIX.Options.User)
+            val user = optionalUser("user", SonhosCommand.I18N_PREFIX.Options.User)
                 .register()
         }
 

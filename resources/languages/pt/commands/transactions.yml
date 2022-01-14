@@ -1,0 +1,37 @@
+---
+description: "Veja todas as transações de sonhos que você recebeu e realizou!"
+yourTransactions: "Suas Transações"
+userTransactions: "Transações de {user}"
+page: "Página {page}"
+transactionsQuantity: "Quantidade de Transações: {totalTransactions}"
+notAllTransactionsAreHere: "Atualmente nem todas as transações estão visíveis neste comando. Para ver mais transações, use `+transactions`!"
+noTransactionsFunnyMessages:
+  - "Vazio, igualzinho a minha conta bancária"
+  - "Vazio, ou seja, não cheio"
+  - "Vazio, igual ao vazio do meu coração"
+  - "Vazio, um espaço desprovido de entidades"
+  - "Vazio, um vazio existencial"
+unknownPage:
+  title: "Onde você foi parar?"
+  description:
+    - "Você está em um lugar frio, escuro e vazio..."
+    - ""
+    - "No final do horizonte você consegue ver páginas gigantes, cheias de linhas e números..."
+    - ""
+    - "Você tenta voar até elas, mas uma força te impede de conseguir se mover..."
+    - ""
+    - "Você começa a ficar desesperado, como você pode ter parado aqui? Será que foi porque você tentou ir em uma página que não existe...?"
+    - ""
+    - "E aí, uma luz ilumina uma mão gigante que estava na sua frente durante todo esse tempo."
+  goToTheLastPage: "Estou com medo, me deixe em um lugar seguro!"
+types:
+  homeBroker:
+    title: "Simulador do Mercado de Ações da Loritta"
+    description: "Transações relacionadas ao Simulador do Mercado de Ações da Loritta"
+    boughtShares: "Comprou {stockQuantity} ações de `{ticker}` por {sonhosQuantity} sonhos na Simulador do Mercado de Ações da Loritta"
+    soldShares: "Vendeu {stockQuantity} ações de `{ticker}` por {sonhosQuantity} sonhos na Simulador do Mercado de Ações da Loritta"
+options:
+  user:
+    text: "O usuário que você deseja ver as transações"
+  page:
+    text: "A página que você deseja ver"

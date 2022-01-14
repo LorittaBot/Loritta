@@ -1,11 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.entity.Snowflake
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.api.entities.UserAvatar
 import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
@@ -21,6 +26,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.Command
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptionType
+import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -191,24 +197,20 @@ class SlashCommandExecutorWrapper(
                             val value = interaKTionArgument.value as String
 
                             // Now check if it is a valid thing!
-                            // First, we will try matching via user mentions
-                            if (value.startsWith("<@") && value.endsWith(">")) {
-                                // Maybe it is a mention?
-                                val userId = value
-                                    .removePrefix("<@")
-                                    .removePrefix("!") // User has a nickname
-                                    .removeSuffix(">")
-                                    .toLongOrNull()
+                            // First, we will try matching via user mentions or user IDs
+                            val cachedUserInfo = ContextStringToUserInfoConverter.convert(
+                                cinnamonContext,
+                                value
+                            )
 
-                                if (userId != null) {
-                                    val user = context.data.resolved?.users?.get(Snowflake(userId))
-
-                                    if (user != null) {
-                                        // User avatar found! Let's use it!!
-                                        cinnamonArgs[it] = URLImageReference(user.avatar.url)
-                                        found = true
-                                    }
-                                }
+                            if (cachedUserInfo != null) {
+                                val userAvatar = UserAvatar(
+                                    cachedUserInfo.id.value,
+                                    cachedUserInfo.discriminator.toInt(),
+                                    cachedUserInfo.avatarId
+                                )
+                                cinnamonArgs[it] = URLImageReference(userAvatar.url)
+                                found = true
                             }
 
                             if (!found && value.startsWith("http")) {
@@ -302,6 +304,27 @@ class SlashCommandExecutorWrapper(
                         }
                     }
                 }
+            }
+
+            // TODO: Don't use GlobalScope!
+            GlobalScope.launch {
+                // Update the cached Discord users
+                // Updating in a separate task to avoid delaying the command processing too much
+                val users = mutableSetOf(context.sender)
+                users.addAll(args.types.values.filterIsInstance<User>())
+                val resolvedUsers = context.data.resolved?.users?.values
+                if (resolvedUsers != null)
+                    users.addAll(resolvedUsers)
+                val jobs = users
+                    .map {
+                        async {
+                            loritta.insertOrUpdateCachedUserInfo(it)
+                        }
+                    }
+
+                jobs.awaitAll()
+
+                logger.info { "Successfully updated user info cache of ${jobs.size} users!" }
             }
 
             executor.execute(
