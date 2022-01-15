@@ -14,5 +14,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Title,
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Description,
         Emotes.LoriStonks,
+    ),
+    SPARKLYPOWER_LSX(
+        I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Description,
+        Emotes.PantufaGaming,
     )
 }
