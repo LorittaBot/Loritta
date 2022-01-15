@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.datetime.Clock
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.ShipRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData

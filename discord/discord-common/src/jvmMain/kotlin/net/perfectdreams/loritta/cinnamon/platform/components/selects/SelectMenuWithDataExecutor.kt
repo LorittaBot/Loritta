@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.components.selects
 
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 
 interface SelectMenuWithDataExecutor : SelectMenuExecutor {

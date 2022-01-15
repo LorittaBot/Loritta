@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.social
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed

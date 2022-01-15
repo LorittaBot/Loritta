@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.RawCommandCh
 class SlashCommandOptionsWrapper(
     declarationExecutor: CommandExecutorDeclaration,
     i18nContext: I18nContext
-) : CommandOptions() {
+) : ApplicationCommandOptions() {
     companion object {
         private const val MAX_OPTIONS_DESCRIPTION_LENGTH = 100
     }
@@ -149,8 +149,8 @@ class SlashCommandOptionsWrapper(
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 when (it) {
-                                    is LocalizedCommandChoice -> option.choice(it.value as Double?, i18nContext.get(it.name))
-                                    is RawCommandChoice -> option.choice(it.value as Double?, it.name)
+                                    is LocalizedCommandChoice -> option.choice(it.value as Double, i18nContext.get(it.name))
+                                    is RawCommandChoice -> option.choice(it.value as Double, it.name)
                                 }
                             }
                         }

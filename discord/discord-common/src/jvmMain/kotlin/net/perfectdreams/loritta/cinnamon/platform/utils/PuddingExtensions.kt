@@ -3,7 +3,7 @@
  */
 package net.perfectdreams.loritta.cinnamon.platform.utils
 
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 

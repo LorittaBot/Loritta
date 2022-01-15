@@ -9,12 +9,12 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.discordinteraktions.api.entities.UserAvatar
-import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.UserAvatar
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
@@ -435,7 +435,7 @@ class SlashCommandExecutorWrapper(
      * @param types the arguments
      * @return a map with argument name -> argument value
      */
-    private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption<*>, Any?>) = types.map { it.key.name to it.value }
+    private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.common.commands.options.CommandOption<*>, Any?>) = types.map { it.key.name to it.value }
         .toMap()
 
     private fun buildJsonWithArguments(types: Map<CommandOption<*>, Any?>) = buildJsonObject {

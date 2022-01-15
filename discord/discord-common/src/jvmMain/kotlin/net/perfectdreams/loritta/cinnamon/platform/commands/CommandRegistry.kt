@@ -4,12 +4,12 @@ import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
-import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.declarations.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandDeclarationBuilder
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.declarations.commands.slash.slashCommand
-import net.perfectdreams.discordinteraktions.declarations.commands.wrappers.SlashCommandDeclarationWrapper
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationBuilder
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -101,7 +101,7 @@ class CommandRegistry(
                     executor
                 )
 
-                val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutorDeclaration(
+                val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutorDeclaration(
                     declaration::class,
                     declaration.id.value
                 ) {}
@@ -125,7 +125,7 @@ class CommandRegistry(
                 executor
             )
 
-            val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration(
+            val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutorDeclaration(
                 declaration::class,
                 declaration.id.value
             ) {}
