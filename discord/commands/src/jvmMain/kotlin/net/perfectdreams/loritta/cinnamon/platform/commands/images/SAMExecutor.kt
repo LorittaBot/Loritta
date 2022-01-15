@@ -4,16 +4,16 @@ import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.SAMLogoRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BRMemesCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
-class SAMExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(SAMExecutor::class) {
-        object Options : CommandOptions() {
+class SAMExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(SAMExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val type = string("type", BRMemesCommand.I18N_PREFIX.Sam.Options.Type)
                 .choice("1", BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam1)
                 .choice("2", BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam2)
@@ -27,7 +27,7 @@ class SAMExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
         val type = args[options.type]

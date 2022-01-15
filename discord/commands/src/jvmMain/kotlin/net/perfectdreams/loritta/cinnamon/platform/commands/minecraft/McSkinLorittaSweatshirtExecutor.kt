@@ -8,18 +8,18 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.URLUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import java.util.*
 
-class McSkinLorittaSweatshirtExecutor(val client: GabrielaImageServerClient, val mojang: MinecraftMojangAPI) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(McSkinLorittaSweatshirtExecutor::class) {
-        object Options : CommandOptions() {
+class McSkinLorittaSweatshirtExecutor(val client: GabrielaImageServerClient, val mojang: MinecraftMojangAPI) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(McSkinLorittaSweatshirtExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val skin = string("skin", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.Skin.Text)
                 .register()
 
@@ -36,7 +36,7 @@ class McSkinLorittaSweatshirtExecutor(val client: GabrielaImageServerClient, val
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val playerNameOrUrl = args[Options.skin]
         val sweatshirtStyleName = args[Options.sweatshirtStyle]
 

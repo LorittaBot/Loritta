@@ -3,13 +3,13 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
-class TioDoPaveExecutor() : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(TioDoPaveExecutor::class) {
+class TioDoPaveExecutor() : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(TioDoPaveExecutor::class) {
         // TODO: Localization
         // https://www.reddit.com/r/tiodopave/top/?sort=top&t=all&count=375&after=t3_666izg
         val PIADAS = listOf(
@@ -309,7 +309,7 @@ class TioDoPaveExecutor() : CommandExecutor() {
         )
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendMessage {
             embed {
                 author("Tio do Pavê", null, "https://loritta.website/assets/img/tio_do_pave.jpg")

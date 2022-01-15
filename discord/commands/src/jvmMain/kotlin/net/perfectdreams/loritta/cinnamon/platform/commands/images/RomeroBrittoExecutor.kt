@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.GabrielaImageServerSingleCommandBase
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.SingleImageOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 
 class RomeroBrittoExecutor(
     client: GabrielaImageServerClient
@@ -12,7 +12,7 @@ class RomeroBrittoExecutor(
     { client.images.romeroBritto(it) },
     "romero_britto.png"
 ) {
-    companion object : CommandExecutorDeclaration(RomeroBrittoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration(RomeroBrittoExecutor::class) {
         override val options = SingleImageOptions
     }
 }

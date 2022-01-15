@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.SilentCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorWrapper
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext as CinnamonComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.components.GuildComponentContext as CinnamonGuildComponentContext
@@ -21,7 +22,7 @@ class SelectMenuWithDataExecutorWrapper(
     private val loritta: LorittaCinnamon,
     // This is only used for metrics and logs
     private val executorDeclaration: SelectMenuExecutorDeclaration,
-    private val executor: net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
+    private val executor: net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 ) : SelectMenuWithDataExecutor {
     companion object {
         private val logger = KotlinLogging.logger {}

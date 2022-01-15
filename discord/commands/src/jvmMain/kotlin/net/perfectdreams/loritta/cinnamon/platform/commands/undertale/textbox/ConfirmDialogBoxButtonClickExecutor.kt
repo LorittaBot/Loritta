@@ -4,14 +4,14 @@ import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
 
 class ConfirmDialogBoxButtonClickExecutor(
     val loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
-) : ButtonClickExecutor {
+) : ButtonClickWithDataExecutor {
     companion object : ButtonClickExecutorDeclaration(ConfirmDialogBoxButtonClickExecutor::class, ComponentExecutorIds.CONFIRM_DIALOG_BOX_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {

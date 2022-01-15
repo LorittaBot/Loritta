@@ -10,8 +10,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHel
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.characters.CharacterType
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.characters.UniverseType
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 
 class ChangeUniverseSelectMenuExecutor(
     val loritta: LorittaCinnamon,

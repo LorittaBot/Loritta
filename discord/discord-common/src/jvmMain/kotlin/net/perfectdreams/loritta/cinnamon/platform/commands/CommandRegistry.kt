@@ -5,23 +5,20 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationBuilder
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclarationBuilder
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorWrapper
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandOptionsWrapper
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickBaseExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuBaseExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickWithDataExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutorWrapper
 
 class CommandRegistry(
@@ -34,26 +31,26 @@ class CommandRegistry(
         private const val MAX_COMMAND_DESCRIPTION_LENGTH = 100
     }
 
-    val declarations = mutableListOf<CommandDeclarationBuilder>()
-    val executors = mutableListOf<CommandExecutor>()
+    val declarations = mutableListOf<SlashCommandDeclarationBuilder>()
+    val executors = mutableListOf<net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor>()
 
     val selectMenusDeclarations = mutableListOf<SelectMenuExecutorDeclaration>()
-    val selectMenusExecutors = mutableListOf<SelectMenuExecutor>()
+    val selectMenusExecutors = mutableListOf<SelectMenuBaseExecutor>()
 
     val buttonsDeclarations = mutableListOf<ButtonClickExecutorDeclaration>()
-    val buttonsExecutors = mutableListOf<ButtonClickExecutor>()
+    val buttonsExecutors = mutableListOf<ButtonClickBaseExecutor>()
 
-    fun register(declaration: CommandDeclaration, vararg executors: CommandExecutor) {
+    fun register(declaration: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper, vararg executors: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor) {
         declarations.add(declaration.declaration())
         this.executors.addAll(executors)
     }
 
-    fun register(declaration: ButtonClickExecutorDeclaration, executor: ButtonClickExecutor) {
+    fun register(declaration: ButtonClickExecutorDeclaration, executor: ButtonClickBaseExecutor) {
         buttonsDeclarations.add(declaration)
         buttonsExecutors.add(executor)
     }
 
-    fun register(declaration: SelectMenuExecutorDeclaration, executor: SelectMenuExecutor) {
+    fun register(declaration: SelectMenuExecutorDeclaration, executor: SelectMenuBaseExecutor) {
         selectMenusDeclarations.add(declaration)
         selectMenusExecutors.add(executor)
     }
@@ -119,10 +116,10 @@ class CommandRegistry(
             val executor = buttonsExecutors.firstOrNull { declaration.parent == it::class }
                 ?: throw UnsupportedOperationException("The button click executor wasn't found! Did you register the button click executor?")
 
-            val interaKTionsExecutor = ButtonClickExecutorWrapper(
+            val interaKTionsExecutor = ButtonClickWithDataExecutorWrapper(
                 loritta,
                 declaration,
-                executor
+                executor as ButtonClickWithDataExecutor
             )
 
             val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.ButtonClickExecutorDeclaration(
@@ -138,8 +135,8 @@ class CommandRegistry(
     }
 
     private fun convertCommandDeclarationToInteraKTions(
-        declaration: CommandDeclarationBuilder,
-        declarationExecutor: CommandExecutorDeclaration?,
+        declaration: SlashCommandDeclarationBuilder,
+        declarationExecutor: SlashCommandExecutorDeclaration?,
         locale: I18nContext
     ): Pair<SlashCommandDeclarationWrapper, List<SlashCommandExecutor>> {
         val executors = mutableListOf<SlashCommandExecutor>()
@@ -160,8 +157,8 @@ class CommandRegistry(
     }
 
     fun convertCommandDeclarationToSlashCommand(
-        declaration: CommandDeclarationBuilder,
-        declarationExecutor: CommandExecutorDeclaration?,
+        declaration: SlashCommandDeclarationBuilder,
+        declarationExecutor: SlashCommandExecutorDeclaration?,
         locale: I18nContext,
         createdExecutors: MutableList<SlashCommandExecutor>
     ): SlashCommandDeclaration {
@@ -182,7 +179,7 @@ class CommandRegistry(
                 locale
             )
 
-            val interaKTionsExecutorDeclaration = object : SlashCommandExecutorDeclaration(declarationExecutor::class) {
+            val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration(declarationExecutor::class) {
                 override val options = interaKTionsOptions
             }
 
@@ -225,7 +222,7 @@ class CommandRegistry(
         }
     }
 
-    private fun SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: CommandDeclarationBuilder, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
+    private fun net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: SlashCommandDeclarationBuilder, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
         for (group in declaration.subcommandGroups) {
             subcommandGroup(group.labels.first(), i18nContext.get(declaration.description).shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH)) {
                 for (subcommand in group.subcommands) {
@@ -242,7 +239,7 @@ class CommandRegistry(
         }
     }
 
-    fun buildDescription(i18nContext: I18nContext, declaration: CommandDeclarationBuilder) = buildString {
+    fun buildDescription(i18nContext: I18nContext, declaration: SlashCommandDeclarationBuilder) = buildString {
         // It looks like this
         // "「Emoji Category」 Description"
         append("「")

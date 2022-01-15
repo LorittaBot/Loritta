@@ -8,8 +8,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimage
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 
 class PortraitSelectMenuExecutor(
     val loritta: LorittaCinnamon,

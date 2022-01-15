@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations
 
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.MoneyExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.MoneyExecutor
 
-object MoneyCommand : CommandDeclaration {
+object MoneyCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Money
 
     // Remember, Discord Slash Commands have a limit of 25 options per command!
@@ -46,7 +46,7 @@ object MoneyCommand : CommandDeclaration {
         "ZAR"
     )
 
-    override fun declaration() = command(listOf("money", "dinheiro", "grana"), CommandCategory.UTILS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(listOf("money", "dinheiro", "grana"), CommandCategory.UTILS, I18N_PREFIX.Description) {
         executor = MoneyExecutor
     }
 }

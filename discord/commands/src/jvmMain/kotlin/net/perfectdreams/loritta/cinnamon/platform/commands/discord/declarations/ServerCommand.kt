@@ -3,17 +3,17 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.discord.declaration
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ChannelInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.RoleInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
 
-object ServerCommand : CommandDeclaration {
+object ServerCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Server
 
-    override fun declaration() = command(listOf("server"), CommandCategory.DISCORD, TodoFixThisData) {
+    override fun declaration() = slashCommand(listOf("server"), CommandCategory.DISCORD, TodoFixThisData) {
         subcommand(listOf("icon"), I18nKeysData.Commands.Command.Server.Icon.Description) {
             executor = ServerIconExecutor
         }

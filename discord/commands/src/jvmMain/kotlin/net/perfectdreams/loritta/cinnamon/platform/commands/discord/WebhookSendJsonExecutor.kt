@@ -2,15 +2,15 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
-class WebhookSendJsonExecutor(val rest: RestClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(WebhookSendJsonExecutor::class) {
-        object Options : CommandOptions() {
+class WebhookSendJsonExecutor(val rest: RestClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(WebhookSendJsonExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val webhookUrl = string("webhook_url", WebhookCommand.I18N_PREFIX.Options.WebhookUrl.Text)
                 .register()
 
@@ -21,7 +21,7 @@ class WebhookSendJsonExecutor(val rest: RestClient) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally() // Defer the message ephemerally because we don't want users looking at the webhook URL
 
         val webhookUrl = args[Options.webhookUrl]

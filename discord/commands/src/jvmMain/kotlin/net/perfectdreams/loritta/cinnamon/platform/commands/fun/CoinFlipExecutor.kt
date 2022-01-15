@@ -1,18 +1,18 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import kotlin.random.Random
 
-class CoinFlipExecutor(val random: Random) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(CoinFlipExecutor::class)
+class CoinFlipExecutor(val random: Random) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(CoinFlipExecutor::class)
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val isTails = random.nextBoolean()
         val prefix: String
         val message: StringI18nData

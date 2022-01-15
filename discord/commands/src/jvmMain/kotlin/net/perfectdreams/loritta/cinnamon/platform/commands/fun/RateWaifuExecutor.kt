@@ -6,17 +6,17 @@ import kotlinx.datetime.toLocalDateTime
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserNameConverter
 import kotlin.random.Random
 
-class RateWaifuExecutor() : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(RateWaifuExecutor::class) {
-        object Options : CommandOptions() {
+class RateWaifuExecutor() : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(RateWaifuExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val waifu = string("waifu", RateCommand.I18N_PREFIX.WaifuHusbando.Options.Waifu)
                 .register()
         }
@@ -195,7 +195,7 @@ class RateWaifuExecutor() : CommandExecutor() {
         }
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         executeGeneric(
             ContextStringToUserNameConverter.convert(context, args[options.waifu]),
             context,

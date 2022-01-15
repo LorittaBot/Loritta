@@ -4,17 +4,17 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 
-class BrokerBuyStockExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(BrokerBuyStockExecutor::class) {
-        object Options : CommandOptions() {
+class BrokerBuyStockExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(BrokerBuyStockExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Buy.Options.Ticker.Text)
                 .also {
                     LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
@@ -30,7 +30,7 @@ class BrokerBuyStockExecutor : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally()
 
         val tickerId = args[Options.ticker].uppercase()

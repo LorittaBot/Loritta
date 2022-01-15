@@ -11,12 +11,12 @@ import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import kotlin.math.absoluteValue
@@ -25,9 +25,9 @@ import kotlin.random.Random
 class ShipExecutor(
     val client: GabrielaImageServerClient,
     val lorittaId: Snowflake
-) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(ShipExecutor::class) {
-        object Options : CommandOptions() {
+) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(ShipExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val user1 = string("user1", ShipCommand.I18N_PREFIX.Options.User1)
                 .register()
 
@@ -39,7 +39,7 @@ class ShipExecutor(
         private val inputConverter = ShipDiscordMentionInputConverter()
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()
 
         val user1 = args[options.user1]

@@ -10,17 +10,17 @@ import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndRemoveCodeBackticks
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import kotlin.streams.toList
 
-class EmojiInfoExecutor(val rest: RestClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(EmojiInfoExecutor::class) {
-        object Options : CommandOptions() {
+class EmojiInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(EmojiInfoExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val emoji = string("emoji", EmojiCommand.I18N_PREFIX.Info.Options.Emoji)
                 .register()
         }
@@ -31,7 +31,7 @@ class EmojiInfoExecutor(val rest: RestClient) : CommandExecutor() {
         private val emoteRegex = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val emojiContent = args[Options.emoji]
 
         if (EmojiManager.isEmoji(emojiContent)) {

@@ -7,14 +7,14 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
 
 class ChangeDialogBoxTypeButtonClickExecutor(
     val loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
-) : ButtonClickExecutor {
+) : ButtonClickWithDataExecutor {
     companion object : ButtonClickExecutorDeclaration(ChangeDialogBoxTypeButtonClickExecutor::class, ComponentExecutorIds.CHANGE_DIALOG_BOX_TYPE_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {

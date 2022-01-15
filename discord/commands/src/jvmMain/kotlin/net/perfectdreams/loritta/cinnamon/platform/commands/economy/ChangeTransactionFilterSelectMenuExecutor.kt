@@ -6,8 +6,8 @@ import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 
 class ChangeTransactionFilterSelectMenuExecutor(
     val loritta: LorittaCinnamon,

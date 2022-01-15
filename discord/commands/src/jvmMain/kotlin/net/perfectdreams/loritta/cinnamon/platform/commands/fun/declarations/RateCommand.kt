@@ -1,13 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations
 
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateHusbandoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateLoliExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateWaifuExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
-object RateCommand : CommandDeclaration {
+object RateCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Rate
     const val WAIFU_SINGULAR = "Waifu"
     const val WAIFU_PLURAL = "Waifus"
@@ -29,7 +29,7 @@ object RateCommand : CommandDeclaration {
         I18N_PREFIX.WaifuHusbando.Score10(type = type)
     )
 
-    override fun declaration() = command(listOf("rate", "avaliar"), CommandCategory.FUN, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(listOf("rate", "avaliar"), CommandCategory.FUN, I18N_PREFIX.Description) {
         subcommand(listOf("waifu"), I18N_PREFIX.WaifuHusbando.Description(WAIFU_SINGULAR)) {
             executor = RateWaifuExecutor
         }

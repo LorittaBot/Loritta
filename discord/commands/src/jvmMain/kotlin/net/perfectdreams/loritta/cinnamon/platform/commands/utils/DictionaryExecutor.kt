@@ -8,19 +8,19 @@ import io.ktor.http.*
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.footer
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.DictionaryCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.DictionaryCommand
 import org.jsoup.Jsoup
 import java.net.URLEncoder
 
-class DictionaryExecutor(val http: HttpClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(DictionaryExecutor::class) {
-        object Options : CommandOptions() {
+class DictionaryExecutor(val http: HttpClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(DictionaryExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val language = string("language", DictionaryCommand.I18N_PREFIX.Options.Language)
                 .also {
                     it.choice("pt-br", DictionaryCommand.I18N_PREFIX.Languages.PtBr)
@@ -34,7 +34,7 @@ class DictionaryExecutor(val http: HttpClient) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         // TODO: More languages
         val language = args[options.language]
         val wordToBeSearched = args[options.word]

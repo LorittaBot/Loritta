@@ -2,7 +2,8 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarati
 
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
+
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McBodyExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McHeadExecutor
@@ -11,11 +12,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinLorittaSweatshirtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 
-object MinecraftCommand : CommandDeclaration {
+object MinecraftCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Minecraft
     val I18N_CATEGORY_PREFIX = I18nKeysData.Commands.Category.Minecraft
 
-    override fun declaration() = command(listOf("minecraft"), CommandCategory.MINECRAFT, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */) {
+    override fun declaration() = slashCommand(listOf("minecraft"), CommandCategory.MINECRAFT, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */) {
         subcommandGroup(listOf("player"), I18N_PREFIX.Player.Description) {
             subcommand(listOf("skin"), I18N_PREFIX.Player.Skin.Description) {
                 executor = McSkinExecutor

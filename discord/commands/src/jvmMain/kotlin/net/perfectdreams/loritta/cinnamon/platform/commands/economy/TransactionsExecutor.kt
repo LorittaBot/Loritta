@@ -13,11 +13,11 @@ import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
@@ -29,9 +29,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.math.ceil
 import kotlin.time.ExperimentalTime
 
-class TransactionsExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(TransactionsExecutor::class) {
-        object Options : CommandOptions() {
+class TransactionsExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(TransactionsExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val user = optionalUser("user", TransactionsCommand.I18N_PREFIX.Options.User.Text)
                 .register()
 
@@ -254,7 +254,7 @@ class TransactionsExecutor : CommandExecutor() {
         }
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because this sometimes takes too long
 
         val userId = UserId(args[Options.user]?.id?.value ?: context.user.id.value)

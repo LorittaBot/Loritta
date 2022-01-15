@@ -1,18 +1,18 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.utils
 
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.text.MorseUtils
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
 
-class MorseFromExecutor(): CommandExecutor() {
-    companion object : CommandExecutorDeclaration(MorseFromExecutor::class) {
-        object Options : CommandOptions() {
+class MorseFromExecutor(): SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(MorseFromExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val textArgument = string("text", MorseCommand.I18N_PREFIX.Options.FromMorseToText)
                 .register()
         }
@@ -20,7 +20,7 @@ class MorseFromExecutor(): CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val text = args[options.textArgument]
 
         when (val fromMorseResult = MorseUtils.fromMorse(text)) {

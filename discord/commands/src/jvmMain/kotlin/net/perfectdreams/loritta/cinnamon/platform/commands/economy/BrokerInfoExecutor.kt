@@ -3,17 +3,17 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerExecutorUtils.brokerBaseEmbed
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerTickerInformation
 
-class BrokerInfoExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(BrokerInfoExecutor::class)
+class BrokerInfoExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(BrokerInfoExecutor::class)
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because this sometimes takes too long
 
         val stockInformations = context.loritta.services.bovespaBroker.getAllTickers()

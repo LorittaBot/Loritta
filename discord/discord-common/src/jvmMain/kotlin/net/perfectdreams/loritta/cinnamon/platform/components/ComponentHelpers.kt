@@ -11,8 +11,6 @@ import dev.kord.rest.builder.component.SelectOptionBuilder
 import net.perfectdreams.loritta.cinnamon.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.UnicodeEmote
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
 
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
