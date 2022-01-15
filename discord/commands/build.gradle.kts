@@ -23,7 +23,7 @@ kotlin {
                 api("net.perfectdreams.discordinteraktions:common-kord:${Versions.DISCORD_INTERAKTIONS}")
 
                 // Kord REST
-                api("dev.kord:kord-rest:0.8.x-SNAPSHOT")
+                api("dev.kord:kord-rest:${Versions.KORD}")
             }
         }
     }

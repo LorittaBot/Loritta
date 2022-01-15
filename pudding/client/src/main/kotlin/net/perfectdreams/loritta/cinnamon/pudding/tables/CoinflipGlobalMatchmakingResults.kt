@@ -8,6 +8,6 @@ object CoinflipGlobalMatchmakingResults : LongIdTable() {
     val winner = reference("user", Profiles).index()
     val loser = reference("loser", Profiles).index()
     val quantity = long("quantity").index()
-    val timestamp = timestamp("timestamp")
+    val timestamp = timestamp("timestamp").index()
     val timeOnQueue = duration("time_on_queue")
 }

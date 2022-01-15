@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
+import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingQueue
@@ -13,12 +14,48 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.update
 import java.time.Duration
 import java.time.Instant
 
 class BetsService(private val pudding: Pudding) : Service(pudding) {
-    suspend fun addToMatchmakingQueue(
+    suspend fun getCoinFlipBetGlobalUserBetsStats(
+        userId: UserId,
+        cutoff: kotlinx.datetime.Instant = kotlinx.datetime.Instant.DISTANT_PAST
+    ): UserCoinFlipBetGlobalStats {
+        val userAsLong = userId.value.toLong()
+
+        return pudding.transaction {
+            val sumField = CoinflipGlobalMatchmakingResults.quantity.sum()
+            val javaCutoff = cutoff.toJavaInstant()
+
+            val winCount = CoinflipGlobalMatchmakingResults.slice(sumField).select {
+                (CoinflipGlobalMatchmakingResults.winner eq userAsLong) and (CoinflipGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            }.count()
+
+            val lostCount = CoinflipGlobalMatchmakingResults.slice(sumField).select {
+                (CoinflipGlobalMatchmakingResults.loser eq userAsLong) and (CoinflipGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            }.count()
+
+            val winSum = CoinflipGlobalMatchmakingResults.slice(sumField).select {
+                (CoinflipGlobalMatchmakingResults.winner eq userAsLong) and (CoinflipGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            }.firstOrNull()?.getOrNull(sumField) ?: 0L
+
+            val lostSum = CoinflipGlobalMatchmakingResults.slice(sumField).select {
+                (CoinflipGlobalMatchmakingResults.loser eq userAsLong) and (CoinflipGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            }.firstOrNull()?.getOrNull(sumField) ?: 0L
+
+            return@transaction UserCoinFlipBetGlobalStats(
+                winCount,
+                lostCount,
+                winSum,
+                lostSum
+            )
+        }
+    }
+
+    suspend fun addToCoinFlipBetGlobalMatchmakingQueue(
         userId: UserId,
         userInteractionToken: String,
         quantity: Long
@@ -71,13 +108,23 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         CoinflipGlobalMatchmakingQueue.id eq anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.id]
                     }
 
+                    val isTails = pudding.random.nextBoolean()
+
                     val players = mutableListOf(
                         userId,
                         UserId(anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.user].value)
-                    ).also { it.shuffle() }
+                    )
 
-                    val winner = players.removeFirst()
-                    val loser = players.removeFirst()
+                    val winner: UserId
+                    val loser: UserId
+
+                    if (isTails) {
+                        winner = players[0]
+                        loser = players[1]
+                    } else {
+                        winner = players[1]
+                        loser = players[0]
+                    }
 
                     val resultId = CoinflipGlobalMatchmakingResults.insertAndGetId {
                         it[CoinflipGlobalMatchmakingResults.winner] = winner.value.toLong()
@@ -129,6 +176,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         CoinflipResult(
                             winner,
                             loser,
+                            isTails,
                             UserId(anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.user].value),
                             anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.userInteractionToken]
                         )
@@ -155,6 +203,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     class CoinflipResult(
         val winner: UserId,
         val loser: UserId,
+        val isTails: Boolean,
         val otherUser: UserId,
         val userInteractionToken: String
     ) : CoinflipGlobalMatchmakingResult()
@@ -163,4 +212,11 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         val user: UserId,
         val userInteractionToken: String
     ) : CoinflipGlobalMatchmakingResult()
+
+    class UserCoinFlipBetGlobalStats(
+        val winCount: Long,
+        val lostCount: Long,
+        val winSum: Long,
+        val lostSum: Long
+    )
 }

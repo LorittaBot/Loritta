@@ -15,7 +15,7 @@ dependencies {
 
     // Discord InteraKTions (Web Server)
     implementation("net.perfectdreams.discordinteraktions:gateway-kord:${Versions.DISCORD_INTERAKTIONS}")
-    implementation("dev.kord:kord-gateway:0.8.x-SNAPSHOT")
+    implementation("dev.kord:kord-gateway:${Versions.KORD}")
 
     // Logging
     api("ch.qos.logback:logback-classic:1.3.0-alpha12")

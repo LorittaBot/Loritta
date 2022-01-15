@@ -13,5 +13,6 @@ class ListCommandOption<T>(
     type,
     name,
     description,
-    listOf()
+    listOf(),
+    null
 )

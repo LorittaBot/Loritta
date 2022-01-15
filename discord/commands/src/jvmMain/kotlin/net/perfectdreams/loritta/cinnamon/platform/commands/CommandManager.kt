@@ -64,6 +64,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransa
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinflipBetGlobalExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosQuantityCoinFlipBetGlobalAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.StartMatchmakingButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.TransactionsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
@@ -398,6 +399,11 @@ class CommandManager(
         commandManager.register(
             StartMatchmakingButtonClickExecutor,
             StartMatchmakingButtonClickExecutor(loritta)
+        )
+
+        commandManager.register(
+            SonhosQuantityCoinFlipBetGlobalAutocompleteExecutor,
+            SonhosQuantityCoinFlipBetGlobalAutocompleteExecutor()
         )
 
         // ===[ SOCIAL ]===

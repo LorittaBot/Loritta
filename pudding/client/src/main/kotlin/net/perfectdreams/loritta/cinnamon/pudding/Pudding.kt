@@ -52,6 +52,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import java.security.SecureRandom
 
 class Pudding(private val database: Database) {
     companion object {
@@ -122,6 +123,7 @@ class Pudding(private val database: Database) {
     val bovespaBroker = BovespaBrokerService(this)
     val bets = BetsService(this)
     val puddingTasks = PuddingTasks(this)
+    val random = SecureRandom()
 
     /**
      * Starts tasks related to [Pudding], like table partition creation, purge old data, etc.
