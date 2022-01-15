@@ -23,7 +23,6 @@ import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenu
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutorWrapper
-import java.util.concurrent.atomic.AtomicInteger
 
 class CommandRegistry(
     val loritta: LorittaCinnamon,
@@ -74,16 +73,13 @@ class CommandRegistry(
     }
 
     private fun convertCommandsToInteraKTions(locale: I18nContext) {
-        val signatureIndex = AtomicInteger()
-
         for (declaration in declarations) {
             val declarationExecutor = declaration.executor
 
             val (declaration, executors) = convertCommandDeclarationToInteraKTions(
                 declaration,
                 declarationExecutor,
-                locale,
-                signatureIndex
+                locale
             )
 
             interaKTionsManager.register(
@@ -94,24 +90,19 @@ class CommandRegistry(
     }
 
     private fun convertSelectMenusToInteraKTions() {
-        val signatureIndex = AtomicInteger()
-
         for (declaration in selectMenusDeclarations) {
             val executor = selectMenusExecutors.firstOrNull { declaration.parent == it::class }
                 ?: throw UnsupportedOperationException("The select menu executor wasn't found! Did you register the select menu executor?")
 
             if (executor is SelectMenuWithDataExecutor) {
-                val rootSignature = signatureIndex.getAndIncrement()
-
                 val interaKTionsExecutor = SelectMenuWithDataExecutorWrapper(
                     loritta,
                     declaration,
-                    executor,
-                    rootSignature
+                    executor
                 )
 
                 val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.selects.SelectMenuExecutorDeclaration(
-                    rootSignature,
+                    declaration::class,
                     declaration.id.value
                 ) {}
 
@@ -124,23 +115,18 @@ class CommandRegistry(
     }
 
     private fun convertButtonsToInteraKTions() {
-        val signatureIndex = AtomicInteger()
-
         for (declaration in buttonsDeclarations) {
             val executor = buttonsExecutors.firstOrNull { declaration.parent == it::class }
                 ?: throw UnsupportedOperationException("The button click executor wasn't found! Did you register the button click executor?")
 
-            val rootSignature = signatureIndex.getAndIncrement()
-
             val interaKTionsExecutor = ButtonClickExecutorWrapper(
                 loritta,
                 declaration,
-                executor,
-                rootSignature
+                executor
             )
 
             val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickExecutorDeclaration(
-                rootSignature,
+                declaration::class,
                 declaration.id.value
             ) {}
 
@@ -154,8 +140,7 @@ class CommandRegistry(
     private fun convertCommandDeclarationToInteraKTions(
         declaration: CommandDeclarationBuilder,
         declarationExecutor: CommandExecutorDeclaration?,
-        locale: I18nContext,
-        signature: AtomicInteger
+        locale: I18nContext
     ): Pair<SlashCommandDeclarationWrapper, List<SlashCommandExecutor>> {
         val executors = mutableListOf<SlashCommandExecutor>()
 
@@ -163,7 +148,6 @@ class CommandRegistry(
             declaration,
             declarationExecutor,
             locale,
-            signature,
             executors
         )
 
@@ -179,20 +163,17 @@ class CommandRegistry(
         declaration: CommandDeclarationBuilder,
         declarationExecutor: CommandExecutorDeclaration?,
         locale: I18nContext,
-        signature: AtomicInteger,
         createdExecutors: MutableList<SlashCommandExecutor>
     ): SlashCommandDeclaration {
         if (declarationExecutor != null) {
             val executor = executors.firstOrNull { declarationExecutor.parent == it::class }
                 ?: throw UnsupportedOperationException("The command executor ${declarationExecutor.parent} wasn't found! Did you register the command executor?")
-            val rootSignature = signature.getAndIncrement()
 
             val interaKTionsExecutor = SlashCommandExecutorWrapper(
                 loritta,
                 declaration,
                 declarationExecutor,
-                executor,
-                rootSignature
+                executor
             )
 
             // Register all the command options with Discord InteraKTions
@@ -201,7 +182,7 @@ class CommandRegistry(
                 locale
             )
 
-            val interaKTionsExecutorDeclaration = object : SlashCommandExecutorDeclaration(rootSignature) {
+            val interaKTionsExecutorDeclaration = object : SlashCommandExecutorDeclaration(declarationExecutor::class) {
                 override val options = interaKTionsOptions
             }
 
@@ -213,7 +194,7 @@ class CommandRegistry(
                 if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty())
                     logger.warn { "Executor ${executor::class.simpleName} is set to ${declaration.labels.first()}'s root, but the command has subcommands and/or subcommand groups! Due to Discord's limitations the root command won't be usable!" }
 
-                addSubcommandGroups(declaration, signature, createdExecutors, locale)
+                addSubcommandGroups(declaration, createdExecutors, locale)
 
                 for (subcommand in declaration.subcommands) {
                     subcommands.add(
@@ -221,7 +202,6 @@ class CommandRegistry(
                             subcommand,
                             subcommand.executor!!,
                             locale,
-                            signature,
                             createdExecutors
                         )
                     )
@@ -229,7 +209,7 @@ class CommandRegistry(
             }
         } else {
             return slashCommand(declaration.labels.first(), buildDescription(locale, declaration)) {
-                addSubcommandGroups(declaration, signature, createdExecutors, locale)
+                addSubcommandGroups(declaration, createdExecutors, locale)
 
                 for (subcommand in declaration.subcommands) {
                     subcommands.add(
@@ -237,7 +217,6 @@ class CommandRegistry(
                             subcommand,
                             subcommand.executor,
                             locale,
-                            signature,
                             createdExecutors
                         )
                     )
@@ -246,7 +225,7 @@ class CommandRegistry(
         }
     }
 
-    private fun SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: CommandDeclarationBuilder, signature: AtomicInteger, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
+    private fun SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: CommandDeclarationBuilder, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
         for (group in declaration.subcommandGroups) {
             subcommandGroup(group.labels.first(), i18nContext.get(declaration.description).shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH)) {
                 for (subcommand in group.subcommands) {
@@ -255,7 +234,6 @@ class CommandRegistry(
                             subcommand,
                             subcommand.executor!!,
                             i18nContext,
-                            signature,
                             createdExecutors
                         )
                     )

@@ -44,8 +44,7 @@ class SlashCommandExecutorWrapper(
     // This is only used for metrics and logs
     private val rootDeclaration: CommandDeclarationBuilder,
     private val declarationExecutor: CommandExecutorDeclaration,
-    private val executor: CommandExecutor,
-    private val rootSignature: Int
+    private val executor: CommandExecutor
 ) : SlashCommandExecutor() {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -426,7 +425,7 @@ class SlashCommandExecutorWrapper(
     object CommandExecutionSuccess : CommandExecutionResult()
     class CommandExecutionFailure(val throwable: Throwable) : CommandExecutionResult()
 
-    override fun signature() = rootSignature
+    override fun signature() = declarationExecutor::class
 
     /**
      * Stringifies the arguments in the [types] map to its name

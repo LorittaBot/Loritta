@@ -21,8 +21,7 @@ class ButtonClickExecutorWrapper(
     private val loritta: LorittaCinnamon,
     // This is only used for metrics and logs
     private val executorDeclaration: ButtonClickExecutorDeclaration,
-    private val executor: ButtonClickExecutor,
-    private val rootSignature: Int
+    private val executor: ButtonClickExecutor
 ) : ButtonClickWithDataExecutor {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -138,5 +137,5 @@ class ButtonClickExecutorWrapper(
         logger.info { "(${context.sender.id.value}) $executor - OK! Took ${commandLatency * 1000}ms" }
     }
 
-    override fun signature() = rootSignature
+    override fun signature() = executorDeclaration::class
 }
