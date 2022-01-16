@@ -2,13 +2,12 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.message.create.FollowupMessageCreateBuilder
 import dev.kord.rest.builder.message.create.allowedMentions
 import kotlinx.datetime.Clock
+import net.perfectdreams.discordinteraktions.common.BarebonesInteractionContext
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
-import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.requests.managers.HttpRequestManager
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
@@ -63,7 +62,7 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
 
             val results = context.loritta.services.bets.addToCoinFlipBetGlobalMatchmakingQueue(
                 UserId(context.user.id.value),
-                httpRequestManager.interactionToken,
+                context.interaKTionsContext.discordInteraction.token,
                 quantity, // TODO: Add proper quantities
             )
 
@@ -105,8 +104,7 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
                             )
                         )
 
-                        // TODO: Add a converter on Discord InteraKTions to convert those messages
-                        val b = createCoinFlipResultMessage(
+                        val otherUserMessage = createCoinFlipResultMessage(
                             result.otherUser,
                             result,
                             quantity,
@@ -118,20 +116,13 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
                                 loserBetStats
                         )
 
-                        val builder = InteractionOrFollowupMessageCreateBuilder(true).apply(b)
-
-                        context.loritta.rest.interaction.createFollowupMessage(
-                            httpRequestManager.applicationId, // Should be always the application ID right?
-                            result.userInteractionToken,
-                            FollowupMessageCreateBuilder(true).apply {
-                                this.content = builder.content
-                                this.tts = builder.tts
-                                this.allowedMentions = builder.allowedMentions
-                                builder.components?.let { this.components.addAll(it) }
-                                builder.embeds?.let { this.embeds.addAll(it) }
-                                builder.files?.let { this.files.addAll(it) }
-                            }.toRequest()
+                        val otherUserContext = BarebonesInteractionContext(
+                            context.loritta.rest,
+                            context.interaKTionsContext.discordInteraction.applicationId, // Should be always the same app ID
+                            result.userInteractionToken
                         )
+
+                        otherUserContext.sendEphemeralMessage(otherUserMessage)
                     }
                     is BetsService.AnotherUserRemovedFromMatchmakingQueue -> {
                         context.loritta.rest.interaction.createFollowupMessage(
@@ -218,6 +209,6 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally() // Defer because this sometimes takes too long
 
-        addToMatchmakingQueue(context, 1) // TODO: Quantity
+        addToMatchmakingQueue(context, args[Options.quantity])
     }
 }
