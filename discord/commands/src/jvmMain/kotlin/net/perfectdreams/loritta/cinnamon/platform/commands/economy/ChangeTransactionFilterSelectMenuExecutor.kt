@@ -1,17 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
-import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 
 class ChangeTransactionFilterSelectMenuExecutor(
-    val loritta: LorittaCinnamon,
-    val client: GabrielaImageServerClient
+    val loritta: LorittaCinnamon
 ) : SelectMenuWithDataExecutor {
     companion object : SelectMenuExecutorDeclaration(ChangeTransactionFilterSelectMenuExecutor::class, ComponentExecutorIds.CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR)
 

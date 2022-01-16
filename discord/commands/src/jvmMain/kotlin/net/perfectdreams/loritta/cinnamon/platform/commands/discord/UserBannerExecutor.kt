@@ -8,17 +8,17 @@ import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 
-class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(UserBannerExecutor::class) {
-        object Options : CommandOptions() {
+class UserBannerExecutor(val rest: RestClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(UserBannerExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val user = optionalUser("user", UserCommand.I18N_PREFIX.Banner.Options.User)
                 .register()
         }
@@ -26,7 +26,7 @@ class UserBannerExecutor(val rest: RestClient) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val user = args[Options.user] ?: context.user
 
         // We need to retrieve from Discord's API to get the banner info

@@ -1,17 +1,17 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations
 
+import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BemBoladaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.FaustaoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TioDoPaveExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
-object SummonCommand : CommandDeclaration {
+object SummonCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Summon
 
-    override fun declaration() = command(listOf("summon"), CommandCategory.FUN, TodoFixThisData) {
+    override fun declaration() = slashCommand(listOf("summon"), CommandCategory.FUN, TodoFixThisData) {
         subcommand(listOf("tiodopavê"), I18N_PREFIX.Tiodopave.Description) {
             executor = TioDoPaveExecutor
         }

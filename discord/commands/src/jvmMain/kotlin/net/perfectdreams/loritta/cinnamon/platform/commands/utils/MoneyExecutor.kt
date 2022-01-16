@@ -2,18 +2,18 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.utils
 
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
 
-class MoneyExecutor(val ecbManager: ECBManager) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(MoneyExecutor::class) {
-        object Options : CommandOptions() {
+class MoneyExecutor(val ecbManager: ECBManager) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(MoneyExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val from = string("from", MoneyCommand.I18N_PREFIX.Options.From)
                 .also {
                     for (currencyId in MoneyCommand.currencyIds) {
@@ -49,7 +49,7 @@ class MoneyExecutor(val ecbManager: ECBManager) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val from = args[options.from]
         val to = args[options.to]
         val multiply = args[options.quantity] ?: 1.0

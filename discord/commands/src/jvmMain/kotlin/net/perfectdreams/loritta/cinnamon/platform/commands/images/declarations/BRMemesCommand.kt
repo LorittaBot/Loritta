@@ -1,5 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations
 
+import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BolsoFrameExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.Bolsonaro2Executor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BolsonaroExecutor
@@ -15,12 +19,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.LoriAtaExecut
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.MonicaAtaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.RomeroBrittoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.SAMExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
-object BRMemesCommand : CommandDeclaration {
+object BRMemesCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Brmemes
     const val I18N_CORTESFLOW_KEY_PREFIX = "commands.command.brmemes.cortesflow"
     val cortesFlowThumbnails = listOf(
@@ -46,7 +46,7 @@ object BRMemesCommand : CommandDeclaration {
         "rato-borrachudo-no-glasses"
     )
 
-    override fun declaration() = command(listOf("brmemes"), CommandCategory.IMAGES, TodoFixThisData) {
+    override fun declaration() = slashCommand(listOf("brmemes"), CommandCategory.IMAGES, TodoFixThisData) {
         subcommandGroup(listOf("bolsonaro"), I18N_PREFIX.Bolsonaro.Description) {
             subcommand(listOf("tv"), I18N_PREFIX.Bolsonaro.Tv.Description) {
                 executor = BolsonaroExecutor

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.GabrielaImageServerSingleCommandBase
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.SingleImageOptions
 
@@ -12,7 +12,7 @@ class BriggsCoverExecutor(
     { client.images.briggsCover(it) },
     "briggs_capa.png"
 ) {
-    companion object : CommandExecutorDeclaration(BriggsCoverExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration(BriggsCoverExecutor::class) {
         override val options = SingleImageOptions
     }
 }

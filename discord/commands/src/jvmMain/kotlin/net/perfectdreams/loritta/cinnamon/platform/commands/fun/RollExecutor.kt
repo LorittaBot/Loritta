@@ -4,17 +4,17 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.math.Dice
 import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import kotlin.random.Random
 
-class RollExecutor(val random: Random) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(RollExecutor::class) {
-        object Options : CommandOptions() {
+class RollExecutor(val random: Random) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(RollExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val dices = optionalString("dices", RollCommand.I18N_PREFIX.Options.Dices)
                 .register()
 
@@ -25,7 +25,7 @@ class RollExecutor(val random: Random) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val dicesAsString = args[options.dices]
         val mathematicalExpression = args[options.expression]
 

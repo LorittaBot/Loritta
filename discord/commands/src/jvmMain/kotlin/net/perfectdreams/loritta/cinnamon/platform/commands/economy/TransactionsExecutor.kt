@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
 import dev.kord.common.entity.ButtonStyle
+import dev.kord.rest.builder.message.EmbedBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
@@ -10,28 +11,31 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.SOLD_SHARES
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
+import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
+import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.math.ceil
-import kotlin.time.ExperimentalTime
 
-class TransactionsExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(TransactionsExecutor::class) {
-        object Options : CommandOptions() {
+class TransactionsExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(TransactionsExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val user = optionalUser("user", TransactionsCommand.I18N_PREFIX.Options.User.Text)
                 .register()
 
@@ -43,7 +47,7 @@ class TransactionsExecutor : CommandExecutor() {
 
         private const val TRANSACTIONS_PER_PAGE = 10
 
-        @OptIn(ExperimentalTime::class)
+
         suspend fun createMessage(
             loritta: LorittaCinnamon,
             i18nContext: I18nContext,
@@ -74,102 +78,37 @@ class TransactionsExecutor : CommandExecutor() {
 
                 if (data.page >= totalPages && totalPages != 0L) {
                     // ===[ EASTER EGG: USER INPUT TOO MANY PAGES ]===
-                    embed {
-                        title = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.Title)
-
-                        description = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.Description)
-                            .joinToString("\n")
-
-                        color = LorittaColors.LorittaRed.toKordColor()
-
-                        // TODO: Host this somewhere else
-                        image = "https://cdn.discordapp.com/attachments/513405772911345664/930945637841788958/fon_final_v3_sticker_small.png"
-                    }
-
-                    actionRow {
-                        interactiveButton(
-                            ButtonStyle.Primary,
-                            ChangeTransactionPageButtonClickExecutor,
-                            ComponentDataUtils.encode(
-                                data.copy(
-                                    page = totalPages - 1
-                                )
-                            )
-                        ) {
-                            label = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.GoToTheLastPage)
-                            loriEmoji = Emotes.LoriSob
-                        }
-                    }
+                    apply(
+                        createTooManyPagesMessage(
+                            i18nContext,
+                            data,
+                            totalPages
+                        )
+                    )
                 } else {
                     embed {
                         if (totalPages != 0L) {
                             // ===[ NORMAL TRANSACTION VIEW ]===
-                            title = buildString {
-                                if (isSelf)
-                                    append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
-                                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name}#${cachedUserInfo?.discriminator}")))
-
-                                append(" — ")
-
-                                append(i18nContext.get(TransactionsCommand.I18N_PREFIX.Page(data.page + 1)))
-                            }
-
-                            color = LorittaColors.LorittaAqua.toKordColor()
-
-                            description = buildString {
-                                for (transaction in transactions) {
-                                    append("[<t:${transaction.timestamp.epochSeconds}:d> <t:${transaction.timestamp.epochSeconds}:t> | <t:${transaction.timestamp.epochSeconds}:R>]")
-                                    append(" ")
-                                    when (transaction) {
-                                        is BrokerSonhosTransaction -> {
-                                            when (transaction.action) {
-                                                BOUGHT_SHARES -> append(
-                                                    "\uD83D\uDCB8 ${
-                                                        i18nContext.get(
-                                                            TransactionsCommand.I18N_PREFIX.Types.HomeBroker.BoughtShares(
-                                                                transaction.stockQuantity,
-                                                                transaction.ticker,
-                                                                transaction.sonhos
-                                                            )
-                                                        )
-                                                    }"
-                                                )
-                                                SOLD_SHARES -> append(
-                                                    "\uD83D\uDCB8 ${
-                                                        i18nContext.get(
-                                                            TransactionsCommand.I18N_PREFIX.Types.HomeBroker.SoldShares(
-                                                                transaction.stockQuantity,
-                                                                transaction.ticker,
-                                                                transaction.sonhos
-                                                            )
-                                                        )
-                                                    }"
-                                                )
-                                            }
-                                        }
-                                        // This should never happen because we do a left join with a "isNotNull" check
-                                        is UnknownSonhosTransaction -> {
-                                            append("${Emotes.LoriShrug} Transação Desconhecida (Bug?)")
-                                        }
-                                    }
-                                    append("\n")
-                                }
-                            }
-
-                            footer(i18nContext.get(TransactionsCommand.I18N_PREFIX.TransactionsQuantity(totalTransactions)))
+                            apply(
+                                createTransactionViewEmbed(
+                                    i18nContext,
+                                    data,
+                                    isSelf,
+                                    cachedUserInfo,
+                                    transactions,
+                                    totalTransactions
+                                )
+                            )
                         } else if (totalPages == 0L) {
                             // ===[ NO MATCHING TRANSACTIONS VIEW ]===
-                            title = buildString {
-                                if (isSelf)
-                                    append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
-                                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name}#${cachedUserInfo?.discriminator}")))
-                            }
-
-                            color = LorittaColors.LorittaRed.toKordColor()
-
-                            description = i18nContext.get(TransactionsCommand.I18N_PREFIX.NoTransactionsFunnyMessages).random()
-
-                            image = "${loritta.config.website}/assets/img/blog/lori_calca.gif"
+                            apply(
+                                createNoMatchingTransactionsEmbed(
+                                    loritta,
+                                    i18nContext,
+                                    isSelf,
+                                    cachedUserInfo
+                                )
+                            )
                         }
                     }
 
@@ -252,9 +191,161 @@ class TransactionsExecutor : CommandExecutor() {
                 }
             }
         }
+
+        private fun createTransactionViewEmbed(
+            i18nContext: I18nContext,
+            data: TransactionListData,
+            isSelf: Boolean,
+            cachedUserInfo: CachedUserInfo?,
+            transactions: List<SonhosTransaction>,
+            totalTransactions: Long
+        ): EmbedBuilder.() -> (Unit) = {
+            // ===[ NORMAL TRANSACTION VIEW ]===
+            title = buildString {
+                if (isSelf)
+                    append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
+                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name}#${cachedUserInfo?.discriminator}")))
+
+                append(" — ")
+
+                append(i18nContext.get(TransactionsCommand.I18N_PREFIX.Page(data.page + 1)))
+            }
+
+            color = LorittaColors.LorittaAqua.toKordColor()
+
+            description = buildString {
+                for (transaction in transactions) {
+                    append("[<t:${transaction.timestamp.epochSeconds}:d> <t:${transaction.timestamp.epochSeconds}:t> | <t:${transaction.timestamp.epochSeconds}:R>]")
+                    append(" ")
+                    when (transaction) {
+                        is BrokerSonhosTransaction -> {
+                            when (transaction.action) {
+                                BOUGHT_SHARES -> {
+                                    append("\uD83D\uDCB8")
+                                    append(" ")
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.HomeBroker.BoughtShares(
+                                                transaction.stockQuantity,
+                                                transaction.ticker,
+                                                transaction.sonhos
+                                            )
+                                        )
+                                    )
+                                }
+                                SOLD_SHARES -> {
+                                    append("\uD83D\uDCB5")
+                                    append(" ")
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.HomeBroker.SoldShares(
+                                                transaction.stockQuantity,
+                                                transaction.ticker,
+                                                transaction.sonhos
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        is SparklyPowerLSXSonhosTransaction -> {
+                            when (transaction.action) {
+                                SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER -> {
+                                    append("\uD83D\uDCB8")
+                                    append(" ")
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.SparklyPowerLsx.ExchangedToSparklyPower(
+                                                transaction.sonhos,
+                                                transaction.playerName,
+                                                transaction.sparklyPowerSonhos,
+                                                "mc.sparklypower.net"
+                                            )
+                                        )
+                                    )
+                                }
+                                SparklyPowerLSXTransactionEntryAction.EXCHANGED_FROM_SPARKLYPOWER -> {
+                                    append("\uD83D\uDCB5")
+                                    append(" ")
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.SparklyPowerLsx.ExchangedFromSparklyPower(
+                                                transaction.sparklyPowerSonhos,
+                                                transaction.playerName,
+                                                transaction.sonhos,
+                                                "mc.sparklypower.net"
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
+                        // This should never happen because we do a left join with a "isNotNull" check
+                        is UnknownSonhosTransaction -> {
+                            append("${Emotes.LoriShrug} Transação Desconhecida (Bug?)")
+                        }
+                    }
+                    append("\n")
+                }
+            }
+
+            footer(i18nContext.get(TransactionsCommand.I18N_PREFIX.TransactionsQuantity(totalTransactions)))
+        }
+
+        private fun createNoMatchingTransactionsEmbed(
+            loritta: LorittaCinnamon,
+            i18nContext: I18nContext,
+            isSelf: Boolean,
+            cachedUserInfo: CachedUserInfo?,
+        ): EmbedBuilder.() -> (Unit) = {
+            title = buildString {
+                if (isSelf)
+                    append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
+                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name}#${cachedUserInfo?.discriminator}")))
+            }
+
+            color = LorittaColors.LorittaRed.toKordColor()
+
+            description = i18nContext.get(TransactionsCommand.I18N_PREFIX.NoTransactionsFunnyMessages).random()
+
+            image = "${loritta.config.website}/assets/img/blog/lori_calca.gif"
+        }
+
+        private fun createTooManyPagesMessage(
+            i18nContext: I18nContext,
+            data: TransactionListData,
+            totalPages: Long
+        ): MessageBuilder.() -> (Unit) = {
+            embed {
+                title = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.Title)
+
+                description = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.Description)
+                    .joinToString("\n")
+
+                color = LorittaColors.LorittaRed.toKordColor()
+
+                // TODO: Host this somewhere else
+                image = "https://cdn.discordapp.com/attachments/513405772911345664/930945637841788958/fon_final_v3_sticker_small.png"
+            }
+
+            actionRow {
+                interactiveButton(
+                    ButtonStyle.Primary,
+                    ChangeTransactionPageButtonClickExecutor,
+                    ComponentDataUtils.encode(
+                        data.copy(
+                            page = totalPages - 1
+                        )
+                    )
+                ) {
+                    label = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.GoToTheLastPage)
+                    loriEmoji = Emotes.LoriSob
+                }
+            }
+        }
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because this sometimes takes too long
 
         val userId = UserId(args[Options.user]?.id?.value ?: context.user.id.value)

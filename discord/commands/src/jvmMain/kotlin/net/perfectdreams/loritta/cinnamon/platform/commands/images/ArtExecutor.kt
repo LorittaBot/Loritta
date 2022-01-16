@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.GabrielaImageServerSingleCommandBase
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.SingleImageOptions
 
@@ -12,7 +12,7 @@ class ArtExecutor(
     { client.images.art(it) },
     "art.png"
 ) {
-    companion object : CommandExecutorDeclaration(ArtExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration(ArtExecutor::class) {
         override val options = SingleImageOptions
     }
 }

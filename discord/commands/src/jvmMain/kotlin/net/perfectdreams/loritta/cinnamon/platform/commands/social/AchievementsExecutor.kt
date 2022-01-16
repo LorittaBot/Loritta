@@ -2,10 +2,10 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.social
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
-import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.utils.inlineField
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementCategory
@@ -16,24 +16,24 @@ import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWit
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.data.SingleUserComponentData
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.getUserAchievements
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 
-class AchievementsExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(AchievementsExecutor::class) {
+class AchievementsExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(AchievementsExecutor::class) {
         suspend fun createMessage(
             loritta: LorittaCinnamon,
             user: User,
@@ -143,7 +143,7 @@ class AchievementsExecutor : CommandExecutor() {
         }
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val achievements = context.loritta.services.users.getUserAchievements(context.user)
 
         context.sendMessage(

@@ -3,10 +3,10 @@ package net.perfectdreams.loritta.cinnamon.platform
 import dev.kord.rest.builder.message.EmbedBuilder
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.InteractionContext
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.common.context.InteractionContext
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote

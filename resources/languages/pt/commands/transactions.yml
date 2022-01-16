@@ -12,7 +12,7 @@ noTransactionsFunnyMessages:
   - "Vazio, um espaço desprovido de entidades"
   - "Vazio, um vazio existencial"
 unknownPage:
-  title: "Onde você foi parar?"
+  title: "Onde você foi parar?" #Easter Egg: If someone wants to go to a page that doesn't exist, show a small fun story
   description:
     - "Você está em um lugar frio, escuro e vazio..."
     - ""
@@ -28,8 +28,13 @@ types:
   homeBroker:
     title: "Simulador do Mercado de Ações da Loritta"
     description: "Transações relacionadas ao Simulador do Mercado de Ações da Loritta"
-    boughtShares: "Comprou {stockQuantity} ações de `{ticker}` por {sonhosQuantity} sonhos na Simulador do Mercado de Ações da Loritta"
-    soldShares: "Vendeu {stockQuantity} ações de `{ticker}` por {sonhosQuantity} sonhos na Simulador do Mercado de Ações da Loritta"
+    boughtShares: "Comprou {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity, plural, one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
+    soldShares: "Vendeu {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity, plural, one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
+  sparklyPowerLsx:
+    title: "Câmbio de Sonhos no SparklyPower"
+    description: "Transações relacionadas ao SparklyPower, o Servidor de Minecraft da Loritta"
+    exchangedToSparklyPower: "Transferiu {sonhosQuantity, plural, one {# sonho} other {# sonhos}} da Loritta para a conta `{playerName}` no SparklyPower, recebendo {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} lá [{sparklyPowerIp}]"
+    exchangedFromSparklyPower: "Transferiu {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} da conta `{playerName}` no SparklyPower para a Loritta, recebendo {sonhosQuantity, plural, one {# sonho} other {# sonhos}} aqui [{sparklyPowerIp}]"
 options:
   user:
     text: "O usuário que você deseja ver as transações"

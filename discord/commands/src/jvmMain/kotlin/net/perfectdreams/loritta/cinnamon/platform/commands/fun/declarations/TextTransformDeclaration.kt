@@ -1,5 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations
 
+import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextClapExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextLowercaseExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextMockExecutor
@@ -8,12 +12,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextUppercaseE
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextVaporQualityExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextVaporwaveExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextVemDeZapExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclaration
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
-object TextTransformDeclaration : CommandDeclaration {
+object TextTransformDeclaration : SlashCommandDeclarationWrapper {
     const val VEMDEZAP_LOCALE_PREFIX = "commands.command.vemdezap"
 
     val fullMatch = mapOf("100" to listOf("💯"),
@@ -339,7 +339,7 @@ object TextTransformDeclaration : CommandDeclaration {
     val VEMDEZAP_I18N_PREFIX = I18N_PREFIX.Vemdezap
     val CLAP_EMOJI = "\uD83D\uDC4F"
 
-    override fun declaration() = command(listOf("text", "texto"), CommandCategory.FUN, TodoFixThisData) {
+    override fun declaration() = slashCommand(listOf("text", "texto"), CommandCategory.FUN, TodoFixThisData) {
         subcommand(listOf("vaporwave", "vaporonda"), I18N_PREFIX.Vaporwave.Description) {
             executor = TextVaporwaveExecutor
         }

@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import kotlin.random.Random
 
-class TextVemDeZapExecutor(val random: Random) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(TextVemDeZapExecutor::class) {
-        object Options : CommandOptions() {
+class TextVemDeZapExecutor(val random: Random) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(TextVemDeZapExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val mood = string("mood", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Text)
                 .choice("happy", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy)
                 .choice("angry", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Angry)
@@ -34,7 +34,7 @@ class TextVemDeZapExecutor(val random: Random) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val mood = ZapZapMood.valueOf(args[options.mood].toUpperCase())
         val level = args[options.level]
         val split = args[options.text].split(" ")

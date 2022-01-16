@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.data
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 
 @Serializable
 sealed class SonhosTransaction {
@@ -21,6 +22,19 @@ data class BrokerSonhosTransaction(
     val sonhos: Long,
     val stockPrice: Long,
     val stockQuantity: Long
+) : SonhosTransaction()
+
+@Serializable
+data class SparklyPowerLSXSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val action: SparklyPowerLSXTransactionEntryAction,
+    val sonhos: Long,
+    val sparklyPowerSonhos: Long,
+    val playerName: String,
+    val playerUniqueId: String, // TODO: This is an UUID but Kotlin doesn't have an mpp UUID class yet
+    val exchangeRate: Double
 ) : SonhosTransaction()
 
 @Serializable
