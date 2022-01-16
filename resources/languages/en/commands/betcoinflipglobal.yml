@@ -1,0 +1,20 @@
+description: "O clássico \"Gire uma moeda e veja se irá cair cara ou coroa!\", mas agora com sonhos! Eu não me responsabilizo se você perder tudo em apostas"
+invalidQuantity: "Quantidade de sonhos inválida!"
+
+quittedMatchmakingQueue: "Você saiu da fila de espera!"
+youArentInTheMatchmakingQueueToLeaveIt: "Você não está na fila de espera para sair dela!"
+addedToMatchmakingQueue: "Você entrou na fila de espera!"
+youAreAlreadyInTheMatchmakingQueue: "Você já está na fila de espera!"
+leftMatchmakingQueueDueToNotEnoughSonhos: "Você saiu da fila de matchmaking pois você não possui sonhos suficientes para realizar a sua aposta..."
+notEnoughSonhosToBet: "Você não tem sonhos suficientes para apostar!"
+
+options:
+  quantity:
+    text: "A quantidade de sonhos que você deseja apostar"
+    choice:
+      justForFun: "Apenas para se divertir!"
+      matchmakingSonhos: "{sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+      quitMatchmakingQueue: "Sair da fila de {sonhosQuantity, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+      averageTimeInSeconds: "Estimado: {averageTimeSeconds}s"
+      playersInMatchmakingQueue: "Jogadores na fila!"
+      recentMatches: "{recentMatches, plural, =0 {# partidas recentes} one {# partida recente} other {# partidas recentes}}"

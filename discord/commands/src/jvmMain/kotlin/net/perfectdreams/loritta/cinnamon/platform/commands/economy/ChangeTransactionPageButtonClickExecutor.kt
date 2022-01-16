@@ -27,7 +27,7 @@ class ChangeTransactionPageButtonClickExecutor(
         )
 
         context.updateMessage {
-            apply(builtMessage)
+            builtMessage()
         }
     }
 }

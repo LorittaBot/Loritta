@@ -25,16 +25,20 @@ data class BrokerSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
-data class CoinflipBetGlobalSonhosTransaction(
+data class CoinFlipBetGlobalSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,
     override val user: UserId,
     val winner: UserId,
     val loser: UserId,
     val quantity: Long,
+    val quantityAfterTax: Long,
+    val tax: Long?,
+    val taxPercentage: Double?,
     val timeOnQueue: Long
 ) : SonhosTransaction()
 
+@Serializable
 data class SparklyPowerLSXSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,

@@ -27,7 +27,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
-import net.perfectdreams.loritta.cinnamon.pudding.data.CoinflipBetGlobalSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
@@ -46,13 +46,13 @@ class TransactionsExecutor : SlashCommandExecutor() {
 
         override val options = Options
 
-        private const val TRANSACTIONS_PER_PAGE = 10
+        const val TRANSACTIONS_PER_PAGE = 10
 
         suspend fun createMessage(
             loritta: LorittaCinnamon,
             i18nContext: I18nContext,
             data: TransactionListData
-        ): MessageBuilder.() -> (Unit) {
+        ): suspend MessageBuilder.() -> (Unit) = {
             val transactions = loritta.services.sonhos.getUserTransactions(
                 data.viewingTransactionsOfUserId,
                 data.transactionTypeFilter,
@@ -73,118 +73,115 @@ class TransactionsExecutor : SlashCommandExecutor() {
                 loritta.getCachedUserInfo(data.viewingTransactionsOfUserId)
             else null
 
-            return {
-                content = i18nContext.get(TransactionsCommand.I18N_PREFIX.NotAllTransactionsAreHere)
+            content = i18nContext.get(TransactionsCommand.I18N_PREFIX.NotAllTransactionsAreHere)
 
-                if (data.page >= totalPages && totalPages != 0L) {
-                    // ===[ EASTER EGG: USER INPUT TOO MANY PAGES ]===
-                    apply(
-                        createTooManyPagesMessage(
+            if (data.page >= totalPages && totalPages != 0L) {
+                // ===[ EASTER EGG: USER INPUT TOO MANY PAGES ]===
+                apply(
+                    createTooManyPagesMessage(
+                        i18nContext,
+                        data,
+                        totalPages
+                    )
+                )
+            } else {
+                embed {
+                    if (totalPages != 0L) {
+                        // ===[ NORMAL TRANSACTION VIEW ]===
+                        createTransactionViewEmbed(
+                            loritta,
                             i18nContext,
                             data,
-                            totalPages
+                            isSelf,
+                            cachedUserInfo,
+                            transactions,
+                            totalTransactions
                         )
-                    )
-                } else {
-                    embed {
-                        if (totalPages != 0L) {
-                            // ===[ NORMAL TRANSACTION VIEW ]===
-                            apply(
-                                createTransactionViewEmbed(
-                                    i18nContext,
-                                    data,
-                                    isSelf,
-                                    cachedUserInfo,
-                                    transactions,
-                                    totalTransactions
+                    } else if (totalPages == 0L) {
+                        // ===[ NO MATCHING TRANSACTIONS VIEW ]===
+                        apply(
+                            createNoMatchingTransactionsEmbed(
+                                loritta,
+                                i18nContext,
+                                isSelf,
+                                cachedUserInfo
+                            )
+                        )
+                    }
+                }
+
+                val addLeftButton = data.page != 0L && totalTransactions != 0L
+                val addRightButton = totalPages > (data.page + 1) && totalTransactions != 0L
+
+                actionRow {
+                    if (addLeftButton) {
+                        interactiveButton(
+                            ButtonStyle.Primary,
+                            ChangeTransactionPageButtonClickExecutor,
+                            ComponentDataUtils.encode(
+                                data.copy(
+                                    page = data.page - 1
                                 )
                             )
-                        } else if (totalPages == 0L) {
-                            // ===[ NO MATCHING TRANSACTIONS VIEW ]===
-                            apply(
-                                createNoMatchingTransactionsEmbed(
-                                    loritta,
-                                    i18nContext,
-                                    isSelf,
-                                    cachedUserInfo
-                                )
-                            )
-                        }
-                    }
-
-                    val addLeftButton = data.page != 0L && totalTransactions != 0L
-                    val addRightButton = totalPages > (data.page + 1) && totalTransactions != 0L
-
-                    actionRow {
-                        if (addLeftButton) {
-                            interactiveButton(
-                                ButtonStyle.Primary,
-                                ChangeTransactionPageButtonClickExecutor,
-                                ComponentDataUtils.encode(
-                                    data.copy(
-                                        page = data.page - 1
-                                    )
-                                )
-                            ) {
-                                loriEmoji = Emotes.ChevronLeft
-                            }
-                        } else {
-                            interactiveButton(
-                                ButtonStyle.Primary,
-                                ChangeTransactionPageButtonClickExecutor,
-                                ComponentDataUtils.encode(
-                                    data.copy(
-                                        page = data.page - 1
-                                    )
-                                )
-                            ) {
-                                loriEmoji = Emotes.ChevronLeft
-                                disabled = true
-                            }
-                        }
-
-                        if (addRightButton) {
-                            interactiveButton(
-                                ButtonStyle.Primary,
-                                ChangeTransactionPageButtonClickExecutor,
-                                ComponentDataUtils.encode(
-                                    data.copy(
-                                        page = data.page + 1
-                                    )
-                                )
-                            ) {
-                                loriEmoji = Emotes.ChevronRight
-                            }
-                        } else {
-                            interactiveButton(
-                                ButtonStyle.Primary,
-                                ChangeTransactionPageButtonClickExecutor,
-                                ComponentDataUtils.encode(
-                                    data.copy(
-                                        page = data.page + 1
-                                    )
-                                )
-                            ) {
-                                loriEmoji = Emotes.ChevronRight
-                                disabled = true
-                            }
-                        }
-                    }
-
-                    actionRow {
-                        selectMenu(
-                            ChangeTransactionFilterSelectMenuExecutor,
-                            ComponentDataUtils.encode(data)
                         ) {
-                            val transactionTypes = TransactionType.values()
-                            this.allowedValues = 1..(25.coerceAtMost(transactionTypes.size))
+                            loriEmoji = Emotes.ChevronLeft
+                        }
+                    } else {
+                        interactiveButton(
+                            ButtonStyle.Primary,
+                            ChangeTransactionPageButtonClickExecutor,
+                            ComponentDataUtils.encode(
+                                data.copy(
+                                    page = data.page - 1
+                                )
+                            )
+                        ) {
+                            loriEmoji = Emotes.ChevronLeft
+                            disabled = true
+                        }
+                    }
 
-                            for (transactionType in transactionTypes) {
-                                option(i18nContext.get(transactionType.title), transactionType.name) {
-                                    description = i18nContext.get(transactionType.description)
-                                    loriEmoji = transactionType.emote
-                                    default = transactionType in data.transactionTypeFilter
-                                }
+                    if (addRightButton) {
+                        interactiveButton(
+                            ButtonStyle.Primary,
+                            ChangeTransactionPageButtonClickExecutor,
+                            ComponentDataUtils.encode(
+                                data.copy(
+                                    page = data.page + 1
+                                )
+                            )
+                        ) {
+                            loriEmoji = Emotes.ChevronRight
+                        }
+                    } else {
+                        interactiveButton(
+                            ButtonStyle.Primary,
+                            ChangeTransactionPageButtonClickExecutor,
+                            ComponentDataUtils.encode(
+                                data.copy(
+                                    page = data.page + 1
+                                )
+                            )
+                        ) {
+                            loriEmoji = Emotes.ChevronRight
+                            disabled = true
+                        }
+                    }
+                }
+
+                actionRow {
+                    selectMenu(
+                        ChangeTransactionFilterSelectMenuExecutor,
+                        ComponentDataUtils.encode(data)
+                    ) {
+                        val transactionTypes = TransactionType.values()
+                        this.allowedValues = 1..(25.coerceAtMost(transactionTypes.size))
+
+                        for (transactionType in transactionTypes) {
+                            option(i18nContext.get(transactionType.title), transactionType.name) {
+                                description = i18nContext.get(transactionType.description)
+                                loriEmoji = transactionType.emote
+                                default = transactionType in data.transactionTypeFilter
                             }
                         }
                     }
@@ -192,15 +189,28 @@ class TransactionsExecutor : SlashCommandExecutor() {
             }
         }
 
-        private fun createTransactionViewEmbed(
+        private fun StringBuilder.appendMoneyLostEmoji() {
+            append("\uD83D\uDCB8")
+            append(" ")
+        }
+
+        private fun StringBuilder.appendMoneyEarnedEmoji() {
+            append("\uD83D\uDCB5")
+            append(" ")
+        }
+
+        private suspend fun EmbedBuilder.createTransactionViewEmbed(
+            loritta: LorittaCinnamon,
             i18nContext: I18nContext,
             data: TransactionListData,
             isSelf: Boolean,
             cachedUserInfo: CachedUserInfo?,
             transactions: List<SonhosTransaction>,
             totalTransactions: Long
-        ): EmbedBuilder.() -> (Unit) = {
+        ) {
             // ===[ NORMAL TRANSACTION VIEW ]===
+            val cachedUserInfos = mutableMapOf<UserId, CachedUserInfo?>()
+
             title = buildString {
                 if (isSelf)
                     append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
@@ -221,8 +231,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                         is BrokerSonhosTransaction -> {
                             when (transaction.action) {
                                 BOUGHT_SHARES -> {
-                                    append("\uD83D\uDCB8")
-                                    append(" ")
+                                    appendMoneyLostEmoji()
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.HomeBroker.BoughtShares(
@@ -234,8 +243,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     )
                                 }
                                 SOLD_SHARES -> {
-                                    append("\uD83D\uDCB5")
-                                    append(" ")
+                                    appendMoneyEarnedEmoji()
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.HomeBroker.SoldShares(
@@ -248,24 +256,38 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                 }
                             }
                         }
-                        is CoinflipBetGlobalSonhosTransaction -> {
+                        is CoinFlipBetGlobalSonhosTransaction -> {
                             val wonTheBet = transaction.user == transaction.winner
+                            val winnerUserInfo = cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
+                            val loserUserInfo = cachedUserInfos.getOrPut(transaction.loser) { loritta.getCachedUserInfo(transaction.loser) }
 
-                            if (wonTheBet) {
-                                append(
-                                    "\uD83D\uDCB5 Ganhou ${transaction.quantity} sonhos de ${transaction.loser} em apostas de sonhos girando uma moeda (global) - Esperou ${transaction.timeOnQueue}ms na fila"
-                                )
+                            if (transaction.tax != null && transaction.taxPercentage != null) {
+                                // Taxed earning
+                                if (wonTheBet) {
+                                    append(
+                                        "\uD83D\uDCB5 Ganhou ${transaction.quantityAfterTax} sonhos (valor sem taxa: ${transaction.quantity}) de `${loserUserInfo?.name}#${loserUserInfo?.discriminator}` (`${transaction.loser.value}`) em apostas de sonhos girando uma moeda globalmente"
+                                    )
+                                } else {
+                                    append(
+                                        "\uD83D\uDCB8 Perdeu ${transaction.quantity} sonhos (valor após taxado: ${transaction.quantityAfterTax}) para `${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}` (`${transaction.winner.value}`) em apostas de sonhos girando uma moeda globalmente"
+                                    )
+                                }
                             } else {
-                                append(
-                                    "\uD83D\uDCB8 Perdeu ${transaction.quantity} sonhos para ${transaction.winner} em apostas de sonhos girando uma moeda (global) - Esperou ${transaction.timeOnQueue}ms na fila"
-                                )
+                                if (wonTheBet) {
+                                    append(
+                                        "\uD83D\uDCB5 Ganhou ${transaction.quantity} (sem taxas!) sonhos de `${loserUserInfo?.name}#${loserUserInfo?.discriminator}` (`${transaction.loser.value}`) em apostas de sonhos girando uma moeda globalmente"
+                                    )
+                                } else {
+                                    append(
+                                        "\uD83D\uDCB8 Perdeu ${transaction.quantity} (sem taxas!) sonhos para `${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}` (`${transaction.winner.value}`) em apostas de sonhos girando uma moeda globalmente"
+                                    )
+                                }
                             }
                         }
                         is SparklyPowerLSXSonhosTransaction -> {
                             when (transaction.action) {
                                 SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER -> {
-                                    append("\uD83D\uDCB8")
-                                    append(" ")
+                                    appendMoneyLostEmoji()
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.SparklyPowerLsx.ExchangedToSparklyPower(
@@ -278,8 +300,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     )
                                 }
                                 SparklyPowerLSXTransactionEntryAction.EXCHANGED_FROM_SPARKLYPOWER -> {
-                                    append("\uD83D\uDCB5")
-                                    append(" ")
+                                    appendMoneyEarnedEmoji()
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.SparklyPowerLsx.ExchangedFromSparklyPower(
@@ -324,7 +345,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
             image = "${loritta.config.website}/assets/img/blog/lori_calca.gif"
         }
 
-        private fun createTooManyPagesMessage(
+        suspend fun createTooManyPagesMessage(
             i18nContext: I18nContext,
             data: TransactionListData,
             totalPages: Long
@@ -365,7 +386,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
         val page = ((args[Options.page] ?: 1L) - 1)
             .coerceAtLeast(0)
 
-        val builtMessage = createMessage(
+        val message = createMessage(
             context.loritta,
             context.i18nContext,
             TransactionListData(
@@ -377,7 +398,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
         )
 
         context.sendMessage {
-            apply(builtMessage)
+            message()
         }
     }
 }

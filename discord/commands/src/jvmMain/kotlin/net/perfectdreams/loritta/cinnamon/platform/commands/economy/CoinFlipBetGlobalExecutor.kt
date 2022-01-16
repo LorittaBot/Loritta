@@ -2,42 +2,40 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.builder.message.create.allowedMentions
 import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.BarebonesInteractionContext
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
-import net.perfectdreams.discordinteraktions.common.requests.managers.HttpRequestManager
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.InteractionContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import kotlin.time.Duration.Companion.hours
-import kotlin.time.ExperimentalTime
 
-class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(CoinflipBetGlobalExecutor::class) {
+class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(CoinFlipBetGlobalExecutor::class) {
         object Options : ApplicationCommandOptions() {
-            val quantity = integer("quantity", TodoFixThisData)
-                .autocomplete(SonhosQuantityCoinFlipBetGlobalAutocompleteExecutor)
+            val quantity = string("quantity", BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Text)
+                .autocomplete(CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor)
                 .register()
         }
 
         override val options = Options
 
-        val QUANTITIES = listOf(
+        val QUANTITIES = listOf<Long>(
             0,
             100,
             1_000,
@@ -52,29 +50,33 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
             1_000_000
         )
 
-        @OptIn(ExperimentalTime::class)
         suspend fun addToMatchmakingQueue(
             context: InteractionContext,
             quantity: Long
         ) {
-            // TODO: Remove this hack! Maybe expose the token somewhere?
-            val httpRequestManager = context.interaKTionsContext.bridge.manager as HttpRequestManager
+            // Required because autocomplete is only validated in the client side
+            if (quantity !in QUANTITIES) {
+                context.sendEphemeralMessage {
+                    content = "Quantidade inválida!"
+                }
+                return
+            }
 
             val results = context.loritta.services.bets.addToCoinFlipBetGlobalMatchmakingQueue(
                 UserId(context.user.id.value),
                 context.interaKTionsContext.discordInteraction.token,
-                quantity, // TODO: Add proper quantities
+                quantity,
             )
 
             for (result in results) {
                 when (result) {
                     is BetsService.AddedToQueueResult -> context.sendEphemeralMessage {
-                        content = "Você foi adicionado na fila de matchmaking! lets go :3"
+                        content = "Você foi adicionado na fila de matchmaking! Caso nenhum match seja encontrado em até 5 minutos, você sairá automaticamente da fila! Você pode sair da fila a qualquer momento usando `/bet coinflip global` antes de encontrar uma partida! lets go :3"
                     }
                     is BetsService.AlreadyInQueueResult -> context.sendEphemeralMessage {
                         content = "Você já está na fila do coinflip safade!!"
                     }
-                    is BetsService.CoinflipResult -> {
+                    is BetsService.CoinFlipResult -> {
                         val winnerCachedUserInfo = context.loritta.getCachedUserInfo(result.winner)
                         val loserCachedUserInfo = context.loritta.getCachedUserInfo(result.loser)
                         val now24HoursAgo = Clock.System.now()
@@ -125,11 +127,13 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
                         otherUserContext.sendEphemeralMessage(otherUserMessage)
                     }
                     is BetsService.AnotherUserRemovedFromMatchmakingQueue -> {
-                        context.loritta.rest.interaction.createFollowupMessage(
-                            httpRequestManager.applicationId, // Should be always the application ID right?
-                            result.userInteractionToken,
-                            true
-                        ) {
+                        val otherUserContext = BarebonesInteractionContext(
+                            context.loritta.rest,
+                            context.interaKTionsContext.discordInteraction.applicationId, // Should be always the same app ID
+                            result.userInteractionToken
+                        )
+
+                        otherUserContext.sendEphemeralMessage {
                             allowedMentions {
                                 users.add(Snowflake(result.user.value))
                             }
@@ -137,6 +141,7 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
                             content = "Você saiu da fila de matchmaking pois você não possui sonhos suficientes para realizar a sua aposta..."
                         }
                     }
+
                     is BetsService.YouDontHaveEnoughSonhosToBetResult -> {
                         context.sendEphemeralMessage {
                             content = "Você não tem sonhos suficientes para apostar!"
@@ -148,7 +153,7 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
 
         private fun createCoinFlipResultMessage(
             selfUser: UserId,
-            result: BetsService.CoinflipResult,
+            result: BetsService.CoinFlipResult,
             quantity: Long,
             winnerCachedUserInfo: CachedUserInfo?,
             loserCachedUserInfo: CachedUserInfo?,
@@ -184,15 +189,14 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
                 )
             }
 
-            styled(
-                "Nas últimas 24 horas, você ganhou ${selfStats.winCount} partidas e perdeu ${selfStats.lostCount} partidas. Total de sonhos: ${selfStats.winSum - selfStats.lostSum}"
-            )
+            styled("Nas últimas 24 horas, você ganhou ${selfStats.winCount} partidas e perdeu ${selfStats.lostCount} partidas. Total de sonhos: ${selfStats.winSum - selfStats.lostSum}")
+
             actionRow {
                 interactiveButton(
                     ButtonStyle.Primary,
-                    StartMatchmakingButtonClickExecutor,
+                    StartCoinFlipGlobalBetMatchmakingButtonClickExecutor,
                     ComponentDataUtils.encode(
-                        CoinflipGlobalStartMatchmakingData(
+                        CoinFlipBetGlobalStartMatchmakingData(
                             Snowflake(selfUser.value),
                             quantity
                         )
@@ -209,6 +213,39 @@ class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally() // Defer because this sometimes takes too long
 
-        addToMatchmakingQueue(context, args[Options.quantity])
+        val quantityAsString = args[Options.quantity]
+
+        val isRemoveFromQueueRequest = quantityAsString.startsWith("q")
+
+        val quantity = NumberUtils.convertShortenedNumberToLong(
+            context.i18nContext,
+            quantityAsString
+                .removePrefix("q")
+        ) ?: context.failEphemerally("Quantidade inválida!")
+
+        if (isRemoveFromQueueRequest) {
+            val leftQueue = context.loritta.services.bets.removeFromCoinFlipBetGlobalMatchmakingQueue(
+                UserId(context.user.id.value),
+                quantity
+            )
+
+            if (leftQueue) {
+                context.sendEphemeralMessage {
+                    styled(
+                        context.i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.QuittedMatchmakingQueue),
+                        Emotes.LoriSmile
+                    )
+                }
+            } else {
+                context.sendEphemeralMessage {
+                    styled(
+                        context.i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouArentInTheMatchmakingQueueToLeaveIt),
+                        Emotes.Error
+                    )
+                }
+            }
+        } else {
+            addToMatchmakingQueue(context, quantity)
+        }
     }
 }

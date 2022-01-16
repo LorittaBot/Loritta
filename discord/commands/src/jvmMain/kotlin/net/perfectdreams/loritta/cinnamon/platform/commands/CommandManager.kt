@@ -62,10 +62,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerSellSt
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionPageButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinflipBetGlobalExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinFlipBetGlobalExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosQuantityCoinFlipBetGlobalAutocompleteExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.StartMatchmakingButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.StartCoinFlipGlobalBetMatchmakingButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.TransactionsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
@@ -393,17 +393,17 @@ class CommandManager(
 
         commandManager.register(
             BetCommand,
-            CoinflipBetGlobalExecutor()
+            CoinFlipBetGlobalExecutor()
         )
 
         commandManager.register(
-            StartMatchmakingButtonClickExecutor,
-            StartMatchmakingButtonClickExecutor(loritta)
+            StartCoinFlipGlobalBetMatchmakingButtonClickExecutor,
+            StartCoinFlipGlobalBetMatchmakingButtonClickExecutor(loritta)
         )
 
         commandManager.register(
-            SonhosQuantityCoinFlipBetGlobalAutocompleteExecutor,
-            SonhosQuantityCoinFlipBetGlobalAutocompleteExecutor()
+            CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor,
+            CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta)
         )
 
         // ===[ SOCIAL ]===

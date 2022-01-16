@@ -9,7 +9,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.Achievement
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.CoinflipBetGlobalSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
@@ -32,8 +33,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
@@ -160,15 +162,18 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[BrokerSonhosTransactionsLog.stockPrice],
             row[BrokerSonhosTransactionsLog.stockQuantity]
         )
-    } else if (row.getOrNull(CoinflipGlobalSonhosTransactionsLog.id) != null) {
-        CoinflipBetGlobalSonhosTransaction(
+    } else if (row.getOrNull(CoinFlipBetGlobalSonhosTransactionsLog.id) != null) {
+        CoinFlipBetGlobalSonhosTransaction(
             row[SonhosTransactionsLog.id].value,
             row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
             UserId(row[SonhosTransactionsLog.user].value),
-            UserId(row[CoinflipGlobalMatchmakingResults.winner].value),
-            UserId(row[CoinflipGlobalMatchmakingResults.loser].value),
-            row[CoinflipGlobalMatchmakingResults.quantity],
-            row[CoinflipGlobalMatchmakingResults.timeOnQueue].toMillis()
+            UserId(row[CoinFlipBetGlobalMatchmakingResults.winner].value),
+            UserId(row[CoinFlipBetGlobalMatchmakingResults.loser].value),
+            row[CoinFlipBetGlobalMatchmakingResults.quantity],
+            row[CoinFlipBetGlobalMatchmakingResults.quantityAfterTax],
+            row[CoinFlipBetGlobalMatchmakingResults.tax],
+            row[CoinFlipBetGlobalMatchmakingResults.taxPercentage],
+            row[CoinFlipBetGlobalMatchmakingResults.timeOnQueue].toMillis(),
         )
     } else if (row.getOrNull(SparklyPowerLSXSonhosTransactionsLog.id) != null) {
         SparklyPowerLSXSonhosTransaction(
@@ -190,3 +195,8 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
         )
     }
 }
+
+fun Daily.Companion.fromRow(row: ResultRow) = Daily(
+    UserId(row[Dailies.receivedById]),
+    Instant.fromEpochMilliseconds(row[Dailies.receivedAt])
+)

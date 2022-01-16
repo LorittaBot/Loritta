@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.cinnamon.platform.components.data.SingleUserComponentData
 
 @Serializable
-data class CoinflipGlobalStartMatchmakingData(
+data class CoinFlipBetGlobalStartMatchmakingData(
     override val userId: Snowflake,
     val quantity: Long
 ) : SingleUserComponentData

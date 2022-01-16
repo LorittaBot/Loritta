@@ -163,6 +163,7 @@ class CommandRegistry(
             when (executor) {
                 is StringAutocompleteExecutor -> {
                     val interaKTionsExecutor = StringAutocompleteExecutorWrapper(
+                        loritta,
                         declaration as StringAutocompleteExecutorDeclaration,
                         executor
                     )
@@ -179,6 +180,7 @@ class CommandRegistry(
 
                 is IntegerAutocompleteExecutor -> {
                     val interaKTionsExecutor = IntegerAutocompleteExecutorWrapper(
+                        loritta,
                         declaration as IntegerAutocompleteExecutorDeclaration,
                         executor
                     )
@@ -194,6 +196,7 @@ class CommandRegistry(
                 }
                 is NumberAutocompleteExecutor -> {
                     val interaKTionsExecutor = NumberAutocompleteExecutorWrapper(
+                        loritta,
                         declaration as NumberAutocompleteExecutorDeclaration,
                         executor
                     )

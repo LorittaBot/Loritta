@@ -3,13 +3,15 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingQueue
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.avg
+import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -20,6 +22,92 @@ import java.time.Duration
 import java.time.Instant
 
 class BetsService(private val pudding: Pudding) : Service(pudding) {
+    suspend fun getCoinFlipBetGlobalMatchmakingStats(
+        quantities: List<Long>,
+        cutoff: kotlinx.datetime.Instant = kotlinx.datetime.Instant.DISTANT_PAST
+    ): Map<Long, CoinFlipBetGlobalMatchmakingQuantityStats> {
+        return pudding.transaction {
+            _cleanUpMatchmakingQueue()
+
+            val javaCutoff = cutoff.toJavaInstant()
+
+            val avgTimeOnQueueField = CoinFlipBetGlobalMatchmakingResults.timeOnQueue.avg()
+            val quantityCount = CoinFlipBetGlobalMatchmakingResults.quantity.count()
+
+            val averageTimeOnQueueData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.quantity, avgTimeOnQueueField)
+                .select {
+                    CoinFlipBetGlobalMatchmakingResults.quantity inList quantities and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+                }.groupBy(CoinFlipBetGlobalMatchmakingResults.quantity)
+
+            val recentMatchesData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.quantity, quantityCount).select {
+                CoinFlipBetGlobalMatchmakingResults.quantity inList quantities and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            }.groupBy(CoinFlipBetGlobalMatchmakingResults.quantity)
+
+            val playerPresentInMatchmakingQueueData = CoinFlipBetGlobalMatchmakingQueue.slice(CoinFlipBetGlobalMatchmakingQueue.quantity).select {
+                CoinFlipBetGlobalMatchmakingQueue.quantity inList quantities
+            }.groupBy(CoinFlipBetGlobalMatchmakingQueue.quantity)
+
+            return@transaction quantities.associateWith {
+                CoinFlipBetGlobalMatchmakingQuantityStats(
+                    averageTimeOnQueueData.firstOrNull { row -> row[CoinFlipBetGlobalMatchmakingResults.quantity] == it }
+                        ?.getOrNull(avgTimeOnQueueField)?.toLong()?.let {
+                            Duration.ofNanos(it)
+                        },
+                    recentMatchesData.firstOrNull { row ->
+                        row[CoinFlipBetGlobalMatchmakingResults.quantity] == it
+                    }?.getOrNull(quantityCount) ?: 0L,
+                    playerPresentInMatchmakingQueueData.any { row -> row[CoinFlipBetGlobalMatchmakingQueue.quantity] == it }
+                )
+            }
+        }
+    }
+
+    suspend fun getUserCoinFlipBetGlobalMatchmakingStats(
+        userId: UserId,
+        quantities: List<Long>,
+        cutoff: kotlinx.datetime.Instant = kotlinx.datetime.Instant.DISTANT_PAST
+    ): Map<Long, UserSpecificCoinFlipBetGlobalMatchmakingQuantityStats> {
+        return pudding.transaction {
+            _cleanUpMatchmakingQueue()
+
+            val javaCutoff = cutoff.toJavaInstant()
+
+            val avgTimeOnQueueField = CoinFlipBetGlobalMatchmakingResults.timeOnQueue.avg()
+            val quantityCount = CoinFlipBetGlobalMatchmakingResults.quantity.count()
+
+            val averageTimeOnQueueData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.quantity, avgTimeOnQueueField)
+                .select {
+                    CoinFlipBetGlobalMatchmakingResults.quantity inList quantities and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+                }.groupBy(CoinFlipBetGlobalMatchmakingResults.quantity)
+
+            val recentMatchesData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.quantity, quantityCount).select {
+                CoinFlipBetGlobalMatchmakingResults.quantity inList quantities and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            }.groupBy(CoinFlipBetGlobalMatchmakingResults.quantity)
+
+            val playerPresentInMatchmakingQueue = CoinFlipBetGlobalMatchmakingQueue.slice(CoinFlipBetGlobalMatchmakingQueue.quantity).select {
+                CoinFlipBetGlobalMatchmakingQueue.quantity inList quantities
+            }.groupBy(CoinFlipBetGlobalMatchmakingQueue.quantity)
+
+            val currentPlayerPresentInMatchmakingQueue = CoinFlipBetGlobalMatchmakingQueue.slice(CoinFlipBetGlobalMatchmakingQueue.quantity).select {
+                CoinFlipBetGlobalMatchmakingQueue.quantity inList quantities and (CoinFlipBetGlobalMatchmakingQueue.user eq userId.value.toLong())
+            }.groupBy(CoinFlipBetGlobalMatchmakingQueue.quantity)
+
+            return@transaction quantities.associateWith {
+                UserSpecificCoinFlipBetGlobalMatchmakingQuantityStats(
+                    averageTimeOnQueueData.firstOrNull { row -> row[CoinFlipBetGlobalMatchmakingResults.quantity] == it }
+                        ?.getOrNull(avgTimeOnQueueField)?.toLong()?.let {
+                            Duration.ofNanos(it)
+                        },
+                    recentMatchesData.firstOrNull { row ->
+                        row[CoinFlipBetGlobalMatchmakingResults.quantity] == it
+                    }?.getOrNull(quantityCount) ?: 0L,
+                    playerPresentInMatchmakingQueue.any { row -> row[CoinFlipBetGlobalMatchmakingQueue.quantity] == it },
+                    currentPlayerPresentInMatchmakingQueue.any { row -> row[CoinFlipBetGlobalMatchmakingQueue.quantity] == it }
+                )
+            }
+        }
+    }
+
     suspend fun getCoinFlipBetGlobalUserBetsStats(
         userId: UserId,
         cutoff: kotlinx.datetime.Instant = kotlinx.datetime.Instant.DISTANT_PAST
@@ -27,23 +115,25 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         val userAsLong = userId.value.toLong()
 
         return pudding.transaction {
-            val sumField = CoinflipGlobalMatchmakingResults.quantity.sum()
+            _cleanUpMatchmakingQueue()
+
+            val sumField = CoinFlipBetGlobalMatchmakingResults.quantity.sum()
             val javaCutoff = cutoff.toJavaInstant()
 
-            val winCount = CoinflipGlobalMatchmakingResults.slice(sumField).select {
-                (CoinflipGlobalMatchmakingResults.winner eq userAsLong) and (CoinflipGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            val winCount = CoinFlipBetGlobalMatchmakingResults.slice(sumField).select {
+                (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.count()
 
-            val lostCount = CoinflipGlobalMatchmakingResults.slice(sumField).select {
-                (CoinflipGlobalMatchmakingResults.loser eq userAsLong) and (CoinflipGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            val lostCount = CoinFlipBetGlobalMatchmakingResults.slice(sumField).select {
+                (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.count()
 
-            val winSum = CoinflipGlobalMatchmakingResults.slice(sumField).select {
-                (CoinflipGlobalMatchmakingResults.winner eq userAsLong) and (CoinflipGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            val winSum = CoinFlipBetGlobalMatchmakingResults.slice(sumField).select {
+                (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.firstOrNull()?.getOrNull(sumField) ?: 0L
 
-            val lostSum = CoinflipGlobalMatchmakingResults.slice(sumField).select {
-                (CoinflipGlobalMatchmakingResults.loser eq userAsLong) and (CoinflipGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
+            val lostSum = CoinFlipBetGlobalMatchmakingResults.slice(sumField).select {
+                (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.firstOrNull()?.getOrNull(sumField) ?: 0L
 
             return@transaction UserCoinFlipBetGlobalStats(
@@ -55,23 +145,43 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         }
     }
 
+    suspend fun removeFromCoinFlipBetGlobalMatchmakingQueue(
+        userId: UserId,
+        quantity: Long
+    ): Boolean {
+        return pudding.transaction {
+            _cleanUpMatchmakingQueue()
+
+            CoinFlipBetGlobalMatchmakingQueue.deleteWhere {
+                CoinFlipBetGlobalMatchmakingQueue.user eq userId.value.toLong() and (CoinFlipBetGlobalMatchmakingQueue.quantity eq quantity)
+            } != 0
+        }
+    }
+
     suspend fun addToCoinFlipBetGlobalMatchmakingQueue(
         userId: UserId,
         userInteractionToken: String,
         quantity: Long
-    ): List<CoinflipGlobalMatchmakingResult> {
+    ): List<CoinFlipGlobalMatchmakingResult> {
         return pudding.transaction {
-            val results = mutableListOf<CoinflipGlobalMatchmakingResult>()
+            val now = Instant.now()
+            _cleanUpMatchmakingQueue()
 
-            val selfUserMatchmakingQueueCount = CoinflipGlobalMatchmakingQueue.select {
-                CoinflipGlobalMatchmakingQueue.user eq userId.value.toLong()
+            // Used for matchmaking results, because some responses may have multiple results
+            // (Example: if someone joins the matchmaking queue but doesn't have enough sonhos for it)
+            val results = mutableListOf<CoinFlipGlobalMatchmakingResult>()
+
+            // Get if the user is already on the matchmaking queue for the current quantity
+            val selfUserMatchmakingQueueCount = CoinFlipBetGlobalMatchmakingQueue.select {
+                CoinFlipBetGlobalMatchmakingQueue.user eq userId.value.toLong() and (CoinFlipBetGlobalMatchmakingQueue.quantity eq quantity)
             }.count()
 
             if (selfUserMatchmakingQueueCount != 0L)
                 return@transaction results.apply { add(AlreadyInQueueResult()) }
 
-            val anotherUserMatchmakingData = CoinflipGlobalMatchmakingQueue.select {
-                CoinflipGlobalMatchmakingQueue.user neq userId.value.toLong() and (CoinflipGlobalMatchmakingQueue.quantity eq quantity)
+            // If not, we are going to check if there is anyone else on the matchmaking queue that isn't ourselves...
+            val anotherUserMatchmakingData = CoinFlipBetGlobalMatchmakingQueue.select {
+                CoinFlipBetGlobalMatchmakingQueue.user neq userId.value.toLong() and (CoinFlipBetGlobalMatchmakingQueue.quantity eq quantity)
             }.firstOrNull()
 
             // Create self profile
@@ -84,35 +194,54 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                 // Check if both users have enough sonhos
                 val anotherUserProfile = pudding.users._getOrCreateUserProfile(
                     UserId(
-                        anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.user].value
+                        anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.user].value
                     )
                 )
 
                 if (quantity > anotherUserProfile.money) {
                     // The other user doesn't have enough sonhos to participate, let's remove them from the global matchmaking queue and then we will notify that they were removed
-                    CoinflipGlobalMatchmakingQueue.deleteWhere {
-                        CoinflipGlobalMatchmakingQueue.id eq anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.id]
+                    CoinFlipBetGlobalMatchmakingQueue.deleteWhere {
+                        CoinFlipBetGlobalMatchmakingQueue.id eq anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.id]
                     }
 
                     results.add(
                         AnotherUserRemovedFromMatchmakingQueue(
-                            UserId(anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.user].value),
-                            anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.userInteractionToken]
+                            UserId(anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.user].value),
+                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken]
                         )
                     )
                 } else {
-                    val now = Instant.now()
+                    val otherUserId = UserId(anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.user].value)
 
                     // Do matchmaking stuff
-                    CoinflipGlobalMatchmakingQueue.deleteWhere {
-                        CoinflipGlobalMatchmakingQueue.id eq anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.id]
+                    CoinFlipBetGlobalMatchmakingQueue.deleteWhere {
+                        CoinFlipBetGlobalMatchmakingQueue.id eq anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.id]
+                    }
+
+                    val selfActiveDonations = pudding.payments._getActiveMoneyFromDonations(userId)
+                    val otherUserActiveDonations = pudding.payments._getActiveMoneyFromDonations(otherUserId)
+
+                    // TODO: Don't hardcode this! Move this to somewhere else
+                    val taxPercentage = 0.05
+                    // "Recommended" plan (R$ 40) has non-tax for coinflip
+                    val noSonhosTax = selfActiveDonations >= 25 || otherUserActiveDonations >= 25
+
+                    val tax: Long?
+                    val quantityAfterTax: Long
+
+                    if (noSonhosTax) {
+                        tax = null
+                        quantityAfterTax = quantity
+                    } else {
+                        tax = (quantity * taxPercentage).toLong()
+                        quantityAfterTax = quantity - tax
                     }
 
                     val isTails = pudding.random.nextBoolean()
 
                     val players = mutableListOf(
                         userId,
-                        UserId(anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.user].value)
+                        otherUserId
                     )
 
                     val winner: UserId
@@ -126,12 +255,15 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         loser = players[0]
                     }
 
-                    val resultId = CoinflipGlobalMatchmakingResults.insertAndGetId {
-                        it[CoinflipGlobalMatchmakingResults.winner] = winner.value.toLong()
-                        it[CoinflipGlobalMatchmakingResults.loser] = loser.value.toLong()
-                        it[CoinflipGlobalMatchmakingResults.quantity] = quantity
-                        it[CoinflipGlobalMatchmakingResults.timestamp] = now
-                        it[CoinflipGlobalMatchmakingResults.timeOnQueue] = Duration.between(anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.timestamp], now)
+                    val resultId = CoinFlipBetGlobalMatchmakingResults.insertAndGetId {
+                        it[CoinFlipBetGlobalMatchmakingResults.winner] = winner.value.toLong()
+                        it[CoinFlipBetGlobalMatchmakingResults.loser] = loser.value.toLong()
+                        it[CoinFlipBetGlobalMatchmakingResults.quantity] = quantity
+                        it[CoinFlipBetGlobalMatchmakingResults.quantityAfterTax] = quantityAfterTax
+                        it[CoinFlipBetGlobalMatchmakingResults.tax] = tax
+                        it[CoinFlipBetGlobalMatchmakingResults.taxPercentage] = taxPercentage
+                        it[CoinFlipBetGlobalMatchmakingResults.timestamp] = now
+                        it[CoinFlipBetGlobalMatchmakingResults.timeOnQueue] = Duration.between(anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.timestamp], now)
                     }
 
                     if (quantity != 0L) {
@@ -141,9 +273,9 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                             it[SonhosTransactionsLog.timestamp] = now
                         }
 
-                        CoinflipGlobalSonhosTransactionsLog.insert {
-                            it[CoinflipGlobalSonhosTransactionsLog.timestampLog] = winnerTransactionLogId
-                            it[CoinflipGlobalSonhosTransactionsLog.matchmakingResult] = resultId
+                        CoinFlipBetGlobalSonhosTransactionsLog.insert {
+                            it[CoinFlipBetGlobalSonhosTransactionsLog.timestampLog] = winnerTransactionLogId
+                            it[CoinFlipBetGlobalSonhosTransactionsLog.matchmakingResult] = resultId
                         }
 
                         val loserTransactionLogId = SonhosTransactionsLog.insertAndGetId {
@@ -151,72 +283,107 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                             it[SonhosTransactionsLog.timestamp] = now
                         }
 
-                        CoinflipGlobalSonhosTransactionsLog.insert {
-                            it[CoinflipGlobalSonhosTransactionsLog.timestampLog] = loserTransactionLogId
-                            it[CoinflipGlobalSonhosTransactionsLog.matchmakingResult] = resultId
+                        CoinFlipBetGlobalSonhosTransactionsLog.insert {
+                            it[CoinFlipBetGlobalSonhosTransactionsLog.timestampLog] = loserTransactionLogId
+                            it[CoinFlipBetGlobalSonhosTransactionsLog.matchmakingResult] = resultId
                         }
 
                         // Then add/remove the sonhos of the users
                         // Add sonhos to the winner
                         Profiles.update({ Profiles.id eq winner.value.toLong() }) {
                             with(SqlExpressionBuilder) {
-                                it.update(Profiles.money, Profiles.money + quantity)
+                                it.update(Profiles.money, Profiles.money + quantityAfterTax)
                             }
                         }
 
                         // Remove sonhos of the loser
                         Profiles.update({ Profiles.id eq loser.value.toLong() }) {
                             with(SqlExpressionBuilder) {
-                                it.update(Profiles.money, Profiles.money - quantity)
+                                it.update(Profiles.money, Profiles.money - quantityAfterTax)
                             }
                         }
                     }
 
                     results.add(
-                        CoinflipResult(
+                        CoinFlipResult(
                             winner,
                             loser,
                             isTails,
-                            UserId(anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.user].value),
-                            anotherUserMatchmakingData[CoinflipGlobalMatchmakingQueue.userInteractionToken]
+                            otherUserId,
+                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken],
+                            quantity,
+                            quantityAfterTax,
+                            tax,
+                            taxPercentage
                         )
                     )
                     return@transaction results
                 }
             }
 
-            CoinflipGlobalMatchmakingQueue.insert {
-                it[CoinflipGlobalMatchmakingQueue.user] = profile.id.value.toLong()
-                it[CoinflipGlobalMatchmakingQueue.userInteractionToken] = userInteractionToken
-                it[CoinflipGlobalMatchmakingQueue.quantity] = quantity
-                it[CoinflipGlobalMatchmakingQueue.timestamp] = Instant.now()
+            CoinFlipBetGlobalMatchmakingQueue.insert {
+                it[CoinFlipBetGlobalMatchmakingQueue.user] = profile.id.value.toLong()
+                it[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken] = userInteractionToken
+                it[CoinFlipBetGlobalMatchmakingQueue.quantity] = quantity
+                it[CoinFlipBetGlobalMatchmakingQueue.timestamp] = now
+                it[CoinFlipBetGlobalMatchmakingQueue.expiresAt] = now.plusMillis(300_000)
             }
 
             return@transaction results.apply { add(AddedToQueueResult()) }
         }
     }
 
-    sealed class CoinflipGlobalMatchmakingResult
+    private fun _cleanUpMatchmakingQueue() {
+        // Clean up matchmaking queue
+        val now = Instant.now()
 
-    class AlreadyInQueueResult : CoinflipGlobalMatchmakingResult()
-    class AddedToQueueResult : CoinflipGlobalMatchmakingResult()
-    class CoinflipResult(
+        CoinFlipBetGlobalMatchmakingQueue.deleteWhere {
+            CoinFlipBetGlobalMatchmakingQueue.expiresAt less now
+        }
+    }
+
+    sealed class CoinFlipGlobalMatchmakingResult
+
+    class AlreadyInQueueResult : CoinFlipGlobalMatchmakingResult()
+    class AddedToQueueResult : CoinFlipGlobalMatchmakingResult()
+    class CoinFlipResult(
         val winner: UserId,
         val loser: UserId,
         val isTails: Boolean,
         val otherUser: UserId,
-        val userInteractionToken: String
-    ) : CoinflipGlobalMatchmakingResult()
-    class YouDontHaveEnoughSonhosToBetResult : CoinflipGlobalMatchmakingResult()
+        val userInteractionToken: String,
+        val quantity: Long,
+        val quantityAfterTax: Long,
+        val tax: Long?,
+        val taxPercentage: Double?
+    ) : CoinFlipGlobalMatchmakingResult()
+    class YouDontHaveEnoughSonhosToBetResult : CoinFlipGlobalMatchmakingResult()
     class AnotherUserRemovedFromMatchmakingQueue(
         val user: UserId,
         val userInteractionToken: String
-    ) : CoinflipGlobalMatchmakingResult()
+    ) : CoinFlipGlobalMatchmakingResult()
 
     class UserCoinFlipBetGlobalStats(
         val winCount: Long,
         val lostCount: Long,
         val winSum: Long,
         val lostSum: Long
+    )
+
+    open class CoinFlipBetGlobalMatchmakingQuantityStats(
+        val averageTimeOnQueue: Duration?,
+        val recentMatches: Long,
+        val playersPresentInMatchmakingQueue: Boolean,
+    )
+
+    class UserSpecificCoinFlipBetGlobalMatchmakingQuantityStats(
+        averageTimeOnQueue: Duration?,
+        recentMatches: Long,
+        playersPresentInMatchmakingQueue: Boolean,
+        val userPresentInMatchmakingQueue: Boolean
+    ) : CoinFlipBetGlobalMatchmakingQuantityStats(
+        averageTimeOnQueue,
+        recentMatches,
+        playersPresentInMatchmakingQueue
     )
 }

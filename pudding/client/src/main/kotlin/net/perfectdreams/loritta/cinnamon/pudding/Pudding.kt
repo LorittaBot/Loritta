@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
+import net.perfectdreams.loritta.cinnamon.pudding.services.PaymentsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ShipEffectsService
@@ -27,12 +28,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingQueue
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
@@ -124,6 +127,7 @@ class Pudding(private val database: Database) {
     val profileDesigns = ProfileDesignsService(this)
     val bovespaBroker = BovespaBrokerService(this)
     val bets = BetsService(this)
+    val payments = PaymentsService(this)
     val puddingTasks = PuddingTasks(this)
     val random = SecureRandom()
 
@@ -167,10 +171,12 @@ class Pudding(private val database: Database) {
             SonhosTransactionsLog,
             BrokerSonhosTransactionsLog,
             CachedDiscordUsers,
-            CoinflipGlobalMatchmakingQueue,
-            CoinflipGlobalMatchmakingResults,
-            CoinflipGlobalSonhosTransactionsLog,
-            SparklyPowerLSXSonhosTransactionsLog
+            CoinFlipBetGlobalMatchmakingQueue,
+            CoinFlipBetGlobalMatchmakingResults,
+            CoinFlipBetGlobalSonhosTransactionsLog,
+            SparklyPowerLSXSonhosTransactionsLog,
+            Dailies,
+            Payments
         )
 
         if (schemas.isNotEmpty())

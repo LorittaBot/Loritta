@@ -7,6 +7,7 @@ kotlin {
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "1.8"
+            kotlinOptions.languageVersion = "1.6"
         }
         withJava()
     }

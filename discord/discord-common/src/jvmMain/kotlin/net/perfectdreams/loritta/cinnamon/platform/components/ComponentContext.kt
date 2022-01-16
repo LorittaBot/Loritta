@@ -21,7 +21,7 @@ open class ComponentContext(
 ) : InteractionContext(loritta, i18nContext, user, interaKTionsContext) {
     suspend fun deferUpdateMessage() = interaKTionsContext.deferUpdateMessage()
 
-    suspend fun updateMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit)) = interaKTionsContext.updateMessage(block)
+    suspend inline fun updateMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit)) = interaKTionsContext.updateMessage(block)
 
     /**
      * Checks if the [user] has the same user ID present in the [data].
