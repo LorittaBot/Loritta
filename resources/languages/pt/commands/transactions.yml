@@ -30,6 +30,11 @@ types:
     description: "Transações relacionadas ao Simulador do Mercado de Ações da Loritta"
     boughtShares: "Comprou {stockQuantity} ações de `{ticker}` por {sonhosQuantity} sonhos na Simulador do Mercado de Ações da Loritta"
     soldShares: "Vendeu {stockQuantity} ações de `{ticker}` por {sonhosQuantity} sonhos na Simulador do Mercado de Ações da Loritta"
+  sparklyPowerLsx:
+    title: "Câmbio de Sonhos no SparklyPower"
+    description: "Transações relacionadas ao SparklyPower, o Servidor de Minecraft da Loritta"
+    exchangedToSparklyPower: "Trocou {sonhosQuantity} sonhos da Loritta para a conta `{playerName}` (`{playerUniqueId}`) no SparklyPower ({sparklyPowerIp})"
+    exchangedFromSparklyPower: "Trocou {sonhosQuantity} sonhos da conta `{playerName}`(`{playerUniqueId}`) no SparklyPower para a Loritta ({sparklyPowerIp})"
 options:
   user:
     text: "O usuário que você deseja ver as transações"
