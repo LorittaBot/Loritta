@@ -28,13 +28,13 @@ types:
   homeBroker:
     title: "Simulador do Mercado de Ações da Loritta"
     description: "Transações relacionadas ao Simulador do Mercado de Ações da Loritta"
-    boughtShares: "Comprou {stockQuantity} ações de `{ticker}` por {sonhosQuantity} sonhos na Simulador do Mercado de Ações da Loritta"
-    soldShares: "Vendeu {stockQuantity} ações de `{ticker}` por {sonhosQuantity} sonhos na Simulador do Mercado de Ações da Loritta"
+    boughtShares: "Comprou {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity, plural, one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
+    soldShares: "Vendeu {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity, plural, one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
   sparklyPowerLsx:
     title: "Câmbio de Sonhos no SparklyPower"
     description: "Transações relacionadas ao SparklyPower, o Servidor de Minecraft da Loritta"
-    exchangedToSparklyPower: "Trocou {sonhosQuantity} sonhos da Loritta para a conta `{playerName}` (`{playerUniqueId}`) no SparklyPower ({sparklyPowerIp})"
-    exchangedFromSparklyPower: "Trocou {sonhosQuantity} sonhos da conta `{playerName}`(`{playerUniqueId}`) no SparklyPower para a Loritta ({sparklyPowerIp})"
+    exchangedToSparklyPower: "Transferiu {sonhosQuantity, plural, one {# sonho} other {# sonhos}} da Loritta para a conta `{playerName}` (`{playerUniqueId}`) no SparklyPower, recebendo {afterExchangeRateSonhosQuantity, plural, one {# sonho} other {# sonhos}} lá [{sparklyPowerIp}]"
+    exchangedFromSparklyPower: "Transferiu {sonhosQuantity, plural, one {# sonho} other {# sonhos}} da conta `{playerName}` (`{playerUniqueId}`) no SparklyPower para a Loritta, recebendo {afterExchangeRateSonhosQuantity, plural, one {# sonho} other {# sonhos}} aqui [{sparklyPowerIp}]"
 options:
   user:
     text: "O usuário que você deseja ver as transações"
