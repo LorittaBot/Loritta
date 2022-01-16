@@ -31,7 +31,7 @@ data class SparklyPowerLSXSonhosTransaction(
     override val user: UserId,
     val action: SparklyPowerLSXTransactionEntryAction,
     val sonhos: Long,
-    val afterExchangeRateSonhos: Long,
+    val sparklyPowerSonhos: Long,
     val playerName: String,
     val playerUniqueId: String, // TODO: This is an UUID but Kotlin doesn't have an mpp UUID class yet
     val exchangeRate: Double

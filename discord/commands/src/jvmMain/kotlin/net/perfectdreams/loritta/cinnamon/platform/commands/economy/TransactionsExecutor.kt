@@ -259,7 +259,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                                 transaction.sonhos,
                                                 transaction.playerName,
                                                 transaction.playerUniqueId,
-                                                transaction.afterExchangeRateSonhos,
+                                                transaction.sparklyPowerSonhos,
                                                 "mc.sparklypower.net"
                                             )
                                         )
@@ -271,10 +271,10 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.SparklyPowerLsx.ExchangedFromSparklyPower(
-                                                transaction.sonhos,
+                                                transaction.sparklyPowerSonhos,
                                                 transaction.playerName,
                                                 transaction.playerUniqueId,
-                                                transaction.afterExchangeRateSonhos,
+                                                transaction.sonhos,
                                                 "mc.sparklypower.net"
                                             )
                                         )

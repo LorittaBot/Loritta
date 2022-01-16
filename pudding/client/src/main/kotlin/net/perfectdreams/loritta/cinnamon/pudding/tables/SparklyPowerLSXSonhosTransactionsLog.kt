@@ -8,7 +8,7 @@ object SparklyPowerLSXSonhosTransactionsLog : LongIdTable() {
     val timestampLog = reference("timestamp_log", SonhosTransactionsLog)
     val action = postgresEnumeration<SparklyPowerLSXTransactionEntryAction>("action")
     val sonhos = long("sonhos")
-    val afterExchangeRateSonhos = long("after_exchange_rate_sonhos")
+    val sparklyPowerSonhos = long("sparklypower_sonhos")
     val playerName = text("player_name")
     val playerUniqueId = uuid("player_unique_id")
     val exchangeRate = double("exchange_rate")
