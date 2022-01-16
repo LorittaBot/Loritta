@@ -33,6 +33,8 @@ types:
   sparklyPowerLsx:
     title: "Câmbio de Sonhos no SparklyPower"
     description: "Transações relacionadas ao SparklyPower, o Servidor de Minecraft da Loritta"
+    exchangedToSparklyPower: "Transferiu {sonhosQuantity, plural, one {# sonho} other {# sonhos}} da Loritta para a conta `{playerName}` no SparklyPower, recebendo {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} lá [{sparklyPowerIp}]"
+    exchangedFromSparklyPower: "Transferiu {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} da conta `{playerName}` no SparklyPower para a Loritta, recebendo {sonhosQuantity, plural, one {# sonho} other {# sonhos}} aqui [{sparklyPowerIp}]"
 options:
   user:
     text: "O usuário que você deseja ver as transações"
