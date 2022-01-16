@@ -27,8 +27,8 @@ types:
   homeBroker:
     title: "Loritta's Stock Market Simulator"
     description: "Transactions related to Loritta's Stock Market Simulator"
-    boughtShares: "Bought {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity, plural, one {# sonho} other {# sonhos}} sonhos in Loritta's Stock Market Simulator"
-    soldShares: "Sold {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity, plural, one {# sonho} other {# sonhos}} sonhos in Loritta's Stock Market Simulator"
+    boughtShares: "Bought {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity, plural, one {# sonho} other {# sonhos}} in Loritta's Stock Market Simulator"
+    soldShares: "Sold {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity, plural, one {# sonho} other {# sonhos}} in Loritta's Stock Market Simulator"
   sparklyPowerLsx:
     title: "SparklyPower Sonhos Exchange"
     description: "Transactions related to SparklyPower, Loritta's Minecraft Server"
