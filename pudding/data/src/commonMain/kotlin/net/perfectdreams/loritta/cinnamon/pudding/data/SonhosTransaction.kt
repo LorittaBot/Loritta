@@ -32,7 +32,8 @@ data class SparklyPowerLSXSonhosTransaction(
     val action: SparklyPowerLSXTransactionEntryAction,
     val sonhos: Long,
     val playerName: String,
-    val playerUniqueId: String // TODO: This is an UUID but Kotlin doesn't have an mpp UUID class yet
+    val playerUniqueId: String, // TODO: This is an UUID but Kotlin doesn't have an mpp UUID class yet
+    val exchangeRate: Double
 ) : SonhosTransaction()
 
 @Serializable

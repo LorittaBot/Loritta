@@ -259,6 +259,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                                 transaction.sonhos,
                                                 transaction.playerName,
                                                 transaction.playerUniqueId,
+                                                (transaction.sonhos * transaction.exchangeRate).toInt(),
                                                 "mc.sparklypower.net"
                                             )
                                         )
@@ -273,6 +274,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                                 transaction.sonhos,
                                                 transaction.playerName,
                                                 transaction.playerUniqueId,
+                                                (transaction.sonhos / transaction.exchangeRate).toInt(),
                                                 "mc.sparklypower.net"
                                             )
                                         )

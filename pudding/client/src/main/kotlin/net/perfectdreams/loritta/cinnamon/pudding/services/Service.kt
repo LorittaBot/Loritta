@@ -165,7 +165,8 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[SparklyPowerLSXSonhosTransactionsLog.action],
             row[SparklyPowerLSXSonhosTransactionsLog.sonhos],
             row[SparklyPowerLSXSonhosTransactionsLog.playerName],
-            row[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId].toString()
+            row[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId].toString(),
+            row[SparklyPowerLSXSonhosTransactionsLog.exchangeRate]
         )
     } else {
         UnknownSonhosTransaction(

@@ -10,4 +10,5 @@ object SparklyPowerLSXSonhosTransactionsLog : LongIdTable() {
     val sonhos = long("sonhos")
     val playerName = text("player_name")
     val playerUniqueId = uuid("player_unique_id")
+    val exchangeRate = double("exchange_rate")
 }
