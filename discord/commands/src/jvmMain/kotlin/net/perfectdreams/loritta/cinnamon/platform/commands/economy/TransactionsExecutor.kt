@@ -258,7 +258,6 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                             TransactionsCommand.I18N_PREFIX.Types.SparklyPowerLsx.ExchangedToSparklyPower(
                                                 transaction.sonhos,
                                                 transaction.playerName,
-                                                transaction.playerUniqueId,
                                                 transaction.sparklyPowerSonhos,
                                                 "mc.sparklypower.net"
                                             )
@@ -273,7 +272,6 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                             TransactionsCommand.I18N_PREFIX.Types.SparklyPowerLsx.ExchangedFromSparklyPower(
                                                 transaction.sparklyPowerSonhos,
                                                 transaction.playerName,
-                                                transaction.playerUniqueId,
                                                 transaction.sonhos,
                                                 "mc.sparklypower.net"
                                             )

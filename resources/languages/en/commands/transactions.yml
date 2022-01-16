@@ -32,8 +32,8 @@ types:
   sparklyPowerLsx:
     title: "SparklyPower Sonhos Exchange"
     description: "Transactions related to SparklyPower, Loritta's Minecraft Server"
-    exchangedToSparklyPower: "Exchanged {sonhosQuantity, plural, one {# sonho} other {# sonhos}} from Loritta to `{playerName}`'s (`{playerUniqueId}`) account on SparklyPower, receiving {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} there [{sparklyPowerIp}]"
-    exchangedFromSparklyPower: "Exchanged {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} from `{playerName}`'s (`{playerUniqueId}`) account on SparklyPower to Loritta, receiving {sonhosQuantity, plural, one {# sonho} other {# sonhos}} here [{sparklyPowerIp}]"
+    exchangedToSparklyPower: "Exchanged {sonhosQuantity, plural, one {# sonho} other {# sonhos}} from Loritta to `{playerName}`'s account on SparklyPower, receiving {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} there [{sparklyPowerIp}]"
+    exchangedFromSparklyPower: "Exchanged {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} from `{playerName}`'s account on SparklyPower to Loritta, receiving {sonhosQuantity, plural, one {# sonho} other {# sonhos}} here [{sparklyPowerIp}]"
 options:
   user:
     text: "The user that you want to view their transactions"
