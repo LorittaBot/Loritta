@@ -1,10 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.components.buttons
 
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.discordinteraktions.common.components.buttons.ButtonClickWithDataExecutor
-import net.perfectdreams.discordinteraktions.common.context.components.ComponentContext
-import net.perfectdreams.discordinteraktions.common.context.components.GuildComponentContext
+import net.perfectdreams.discordinteraktions.common.components.ComponentContext
+import net.perfectdreams.discordinteraktions.common.components.GuildComponentContext
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -13,17 +12,18 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.SilentCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorWrapper
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext as CinnamonComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.components.GuildComponentContext as CinnamonGuildComponentContext
 
-class ButtonClickExecutorWrapper(
+class ButtonClickWithDataExecutorWrapper(
     private val loritta: LorittaCinnamon,
     // This is only used for metrics and logs
     private val executorDeclaration: ButtonClickExecutorDeclaration,
-    private val executor: ButtonClickExecutor,
-    private val rootSignature: Int
-) : ButtonClickWithDataExecutor {
+    private val executor: ButtonClickWithDataExecutor
+) : net.perfectdreams.discordinteraktions.common.components.ButtonClickWithDataExecutor {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -138,5 +138,5 @@ class ButtonClickExecutorWrapper(
         logger.info { "(${context.sender.id.value}) $executor - OK! Took ${commandLatency * 1000}ms" }
     }
 
-    override fun signature() = rootSignature
+    override fun signature() = executorDeclaration::class
 }

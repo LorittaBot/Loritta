@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
@@ -38,6 +39,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import org.jetbrains.exposed.sql.ResultRow
@@ -167,6 +169,18 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             UserId(row[CoinflipGlobalMatchmakingResults.loser].value),
             row[CoinflipGlobalMatchmakingResults.quantity],
             row[CoinflipGlobalMatchmakingResults.timeOnQueue].toMillis()
+        )
+    } else if (row.getOrNull(SparklyPowerLSXSonhosTransactionsLog.id) != null) {
+        SparklyPowerLSXSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[SparklyPowerLSXSonhosTransactionsLog.action],
+            row[SparklyPowerLSXSonhosTransactionsLog.sonhos],
+            row[SparklyPowerLSXSonhosTransactionsLog.sparklyPowerSonhos],
+            row[SparklyPowerLSXSonhosTransactionsLog.playerName],
+            row[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId].toString(),
+            row[SparklyPowerLSXSonhosTransactionsLog.exchangeRate]
         )
     } else {
         UnknownSonhosTransaction(

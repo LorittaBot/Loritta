@@ -2,14 +2,14 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
-class FaustaoExecutor() : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(FaustaoExecutor::class)
+class FaustaoExecutor() : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(FaustaoExecutor::class)
 
     // TODO: Localization
     private val frases = listOf(
@@ -50,7 +50,7 @@ class FaustaoExecutor() : CommandExecutor() {
         "http://i.imgur.com/z7Ec5I3.png"
     )
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendMessage {
             embed {
                 author("Faustão", null, avatars.random())

@@ -11,14 +11,15 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.SOLD_SHARES
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
+import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
@@ -28,13 +29,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinflipBetGlobalSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.math.ceil
 
-class TransactionsExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(TransactionsExecutor::class) {
-        object Options : CommandOptions() {
+class TransactionsExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(TransactionsExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val user = optionalUser("user", TransactionsCommand.I18N_PREFIX.Options.User.Text)
                 .register()
 
@@ -218,8 +220,10 @@ class TransactionsExecutor : CommandExecutor() {
                     when (transaction) {
                         is BrokerSonhosTransaction -> {
                             when (transaction.action) {
-                                BOUGHT_SHARES -> append(
-                                    "\uD83D\uDCB8 ${
+                                BOUGHT_SHARES -> {
+                                    append("\uD83D\uDCB8")
+                                    append(" ")
+                                    append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.HomeBroker.BoughtShares(
                                                 transaction.stockQuantity,
@@ -227,10 +231,12 @@ class TransactionsExecutor : CommandExecutor() {
                                                 transaction.sonhos
                                             )
                                         )
-                                    }"
-                                )
-                                SOLD_SHARES -> append(
-                                    "\uD83D\uDCB5 ${
+                                    )
+                                }
+                                SOLD_SHARES -> {
+                                    append("\uD83D\uDCB5")
+                                    append(" ")
+                                    append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.HomeBroker.SoldShares(
                                                 transaction.stockQuantity,
@@ -238,8 +244,8 @@ class TransactionsExecutor : CommandExecutor() {
                                                 transaction.sonhos
                                             )
                                         )
-                                    }"
-                                )
+                                    )
+                                }
                             }
                         }
                         is CoinflipBetGlobalSonhosTransaction -> {
@@ -253,6 +259,38 @@ class TransactionsExecutor : CommandExecutor() {
                                 append(
                                     "\uD83D\uDCB8 Perdeu ${transaction.quantity} sonhos para ${transaction.winner} em apostas de sonhos girando uma moeda (global) - Esperou ${transaction.timeOnQueue}ms na fila"
                                 )
+                            }
+                        }
+                        is SparklyPowerLSXSonhosTransaction -> {
+                            when (transaction.action) {
+                                SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER -> {
+                                    append("\uD83D\uDCB8")
+                                    append(" ")
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.SparklyPowerLsx.ExchangedToSparklyPower(
+                                                transaction.sonhos,
+                                                transaction.playerName,
+                                                transaction.sparklyPowerSonhos,
+                                                "mc.sparklypower.net"
+                                            )
+                                        )
+                                    )
+                                }
+                                SparklyPowerLSXTransactionEntryAction.EXCHANGED_FROM_SPARKLYPOWER -> {
+                                    append("\uD83D\uDCB5")
+                                    append(" ")
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.SparklyPowerLsx.ExchangedFromSparklyPower(
+                                                transaction.sparklyPowerSonhos,
+                                                transaction.playerName,
+                                                transaction.sonhos,
+                                                "mc.sparklypower.net"
+                                            )
+                                        )
+                                    )
+                                }
                             }
                         }
                         // This should never happen because we do a left join with a "isNotNull" check
@@ -320,7 +358,7 @@ class TransactionsExecutor : CommandExecutor() {
         }
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because this sometimes takes too long
 
         val userId = UserId(args[Options.user]?.id?.value ?: context.user.id.value)

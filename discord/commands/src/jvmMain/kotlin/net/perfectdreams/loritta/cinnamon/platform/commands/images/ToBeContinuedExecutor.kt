@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.GabrielaImageServerSingleCommandBase
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.SingleImageOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 
 class ToBeContinuedExecutor(
     client: GabrielaImageServerClient
@@ -12,7 +12,7 @@ class ToBeContinuedExecutor(
     { client.images.toBeContinued(it) },
     "to_be_continued.png"
 ) {
-    companion object : CommandExecutorDeclaration(ToBeContinuedExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration(ToBeContinuedExecutor::class) {
         override val options = SingleImageOptions
     }
 }

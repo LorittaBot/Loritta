@@ -11,18 +11,18 @@ import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndRemoveCodeBackticks
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
 
-class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(InviteInfoExecutor::class) {
-        object Options : CommandOptions() {
+class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(InviteInfoExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val invite = string("invite", InviteCommand.I18N_PREFIX.Info.Options.Invite)
                 .register()
         }
@@ -46,7 +46,7 @@ class InviteInfoExecutor(val rest: RestClient) : CommandExecutor() {
         return null
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val text = args[Options.invite]
         val inviteCode = if (text.contains("/")) {
             getInviteCodeFromUrl(text)

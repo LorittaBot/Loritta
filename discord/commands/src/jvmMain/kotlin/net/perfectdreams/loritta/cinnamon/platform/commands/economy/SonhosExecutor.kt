@@ -2,18 +2,18 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.getUserProfile
 
-class SonhosExecutor() : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(SonhosExecutor::class) {
-        object Options : CommandOptions() {
+class SonhosExecutor() : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(SonhosExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val user = optionalUser("user", SonhosCommand.I18N_PREFIX.Options.User)
                 .register()
         }
@@ -21,7 +21,7 @@ class SonhosExecutor() : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because this sometimes takes too long
 
         val user = args[options.user] ?: context.user

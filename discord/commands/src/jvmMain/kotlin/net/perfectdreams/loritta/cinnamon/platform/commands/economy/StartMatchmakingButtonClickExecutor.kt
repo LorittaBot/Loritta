@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
 
 class StartMatchmakingButtonClickExecutor(
     val loritta: LorittaCinnamon
-) : ButtonClickExecutor {
+) : ButtonClickWithDataExecutor {
     companion object : ButtonClickExecutorDeclaration(
         StartMatchmakingButtonClickExecutor::class,
         ComponentExecutorIds.START_MATCHMAKING_BUTTON_EXECUTOR

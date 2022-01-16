@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalMatchmaki
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinflipGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -64,8 +65,11 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
     }.let {
         if (TransactionType.COINFLIP_BET_GLOBAL in transactionTypeFilter)
             it.leftJoin(CoinflipGlobalSonhosTransactionsLog.leftJoin(CoinflipGlobalMatchmakingResults))
-        else
-            it
+        else it
+    }.let {
+        if (TransactionType.SPARKLYPOWER_LSX in transactionTypeFilter)
+            it.leftJoin(SparklyPowerLSXSonhosTransactionsLog)
+        else it
     }
         .select {
             // Hacky!
@@ -78,6 +82,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                 cond = when (type) {
                     TransactionType.HOME_BROKER -> cond.or(BrokerSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinflipGlobalSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.SPARKLYPOWER_LSX -> cond.or(SparklyPowerLSXSonhosTransactionsLog.id.isNotNull())
                 }
             }
 

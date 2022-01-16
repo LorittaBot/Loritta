@@ -19,5 +19,10 @@ enum class TransactionType(
         TodoFixThisData,
         TodoFixThisData,
         Emotes.CoinHeads
+    ),
+    SPARKLYPOWER_LSX(
+        I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Description,
+        Emotes.PantufaGaming,
     )
 }

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.platform.components
 
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentId
 
-open class ComponentDeclaration(
+sealed class ComponentExecutorDeclaration(
     /**
      * The "parent" is Any to avoid issues with anonymous classes
      *
@@ -17,3 +17,13 @@ open class ComponentDeclaration(
      */
     val id: ComponentId
 )
+
+open class ButtonClickExecutorDeclaration(
+    parent: Any,
+    id: ComponentId
+) : ComponentExecutorDeclaration(parent, id)
+
+open class SelectMenuExecutorDeclaration(
+    parent: Any,
+    id: ComponentId
+) : ComponentExecutorDeclaration(parent, id)

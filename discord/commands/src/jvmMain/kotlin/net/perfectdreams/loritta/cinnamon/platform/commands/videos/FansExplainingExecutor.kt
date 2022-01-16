@@ -3,16 +3,16 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.videos
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.FansExplainingRequest
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 
-class FansExplainingExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(FansExplainingExecutor::class) {
-        object Options : CommandOptions() {
+class FansExplainingExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(FansExplainingExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val section1Line1 = string("section1_line1", FansExplainingCommand.I18N_PREFIX.Options.Section1Line1)
                 .register()
             val section1Line2 = string("section1_line2", FansExplainingCommand.I18N_PREFIX.Options.Section1Line2)
@@ -42,7 +42,7 @@ class FansExplainingExecutor(val client: GabrielaImageServerClient) : CommandExe
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
         val section1Line1 = args[options.section1Line1]

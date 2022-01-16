@@ -9,15 +9,15 @@ import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuild
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.discordinteraktions.platforms.kord.context.manager.HttpRequestManager
+import net.perfectdreams.discordinteraktions.common.requests.managers.HttpRequestManager
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.InteractionContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
@@ -28,9 +28,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.ExperimentalTime
 
-class CoinflipBetGlobalExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(CoinflipBetGlobalExecutor::class) {
-        object Options : CommandOptions() {
+class CoinflipBetGlobalExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(CoinflipBetGlobalExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val quantity = integer("quantity", TodoFixThisData)
                 .autocomplete(SonhosQuantityCoinFlipBetGlobalAutocompleteExecutor)
                 .register()
@@ -215,7 +215,7 @@ class CoinflipBetGlobalExecutor : CommandExecutor() {
         }
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally() // Defer because this sometimes takes too long
 
         addToMatchmakingQueue(context, 1) // TODO: Quantity

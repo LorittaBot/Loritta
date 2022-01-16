@@ -4,7 +4,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.DiscordInteractionsConfig
