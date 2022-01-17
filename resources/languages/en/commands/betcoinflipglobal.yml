@@ -23,6 +23,9 @@ dontWantTaxAnymorePremiumPlanUpsellOtherUserHasPremium: "Because your opponent h
 joinMatchmakingQueueJustForFunButton: "Join the queue again, just for fun!"
 joinMatchmakingQueueButton: "Join the {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}'s queue again"
 
+youHaveConsecutiveWins: "You have **{streak,plural, =0 {# consecutive wins} one {# consecutive win} other {# consecutive wins}}**!"
+youHaveConsecutiveLosses: "You have **{streak,plural, =0 {# consecutive losses} one {# consecutive loss} other {# consecutive losses}}**!"
+
 options:
   quantity:
     text: "The sonhos quantity you want to bet"
