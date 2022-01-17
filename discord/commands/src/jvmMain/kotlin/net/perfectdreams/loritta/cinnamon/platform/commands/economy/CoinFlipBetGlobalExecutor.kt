@@ -356,6 +356,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
             styled(
                 i18nContext.get(
                     BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.RecentBetsStats(
+                        selfStats.winCount + selfStats.lostCount,
                         selfStats.winCount,
                         selfStats.lostCount,
                         selfStats.winSum - selfStats.lostSum

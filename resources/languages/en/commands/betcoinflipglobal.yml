@@ -17,7 +17,7 @@ lost: "Too bad {user}, you lost {sonhosCount,plural, =0 {# sonhos} one {# sonho}
 congratulationsJustForFun: "Congratulations {user}, you won against `{loserTag}` (`{loserId}`)"
 lostJustForFun: "Too bad {user}, you lost to `{winnerTag}` (`{winnerId}`)... I know, losing is always a pain, but that's the spirit of the game! Be more lucky next time!"
 
-recentBetsStats: "In the last 24 hours, you won {winCount,plural, =0 {# matches} one {# match} other {# matches}} e lost {loseCount,plural, =0 {# matches} one {# match} other {# matches}}! Total sonhos: {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+recentBetsStats: "In the last 24 hours, you played {playedCount,plural, =0 {# matches} one {# match} other {# matches}}, won {winCount,plural, =0 {# matches} one {# match} other {# matches}} and lost {loseCount,plural, =0 {# matches} one {# match} other {# matches}}! Total sonhos: {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 dontWantTaxAnymorePremiumPlanUpsellOtherUserHasPremium: "Because your opponent has the premium plan \"Recommended\", you didn't need to pay tax on your sonhos reward! Hey, do you wanna have this too? Then buy the \"Recommended\" plan at my store! We accept payments via boleto, credit card and Pix and buying there you help me stay online while you have fun with more advantages! But don't worry, the choice is yours and you can stay using Loritta without worrying about paying anything. Interested? Then [click here]({premiumShopWebsiteLink})!"
 
 joinMatchmakingQueueJustForFunButton: "Join the queue again, just for fun!"
