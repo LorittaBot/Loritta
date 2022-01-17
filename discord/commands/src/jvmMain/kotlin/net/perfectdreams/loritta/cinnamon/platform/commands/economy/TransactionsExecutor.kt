@@ -264,22 +264,52 @@ class TransactionsExecutor : SlashCommandExecutor() {
                             if (transaction.tax != null && transaction.taxPercentage != null) {
                                 // Taxed earning
                                 if (wonTheBet) {
+                                    appendMoneyEarnedEmoji()
                                     append(
-                                        "\uD83D\uDCB5 Ganhou ${transaction.quantityAfterTax} sonhos (valor sem taxa: ${transaction.quantity}) de `${loserUserInfo?.name}#${loserUserInfo?.discriminator}` (`${transaction.loser.value}`) em apostas de sonhos girando uma moeda globalmente"
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.WonTaxed(
+                                                transaction.quantityAfterTax,
+                                                transaction.quantity,
+                                                "${loserUserInfo?.name}#${loserUserInfo?.discriminator}",
+                                                transaction.loser.value
+                                            )
+                                        )
                                     )
                                 } else {
+                                    appendMoneyLostEmoji()
                                     append(
-                                        "\uD83D\uDCB8 Perdeu ${transaction.quantity} sonhos (valor após taxado: ${transaction.quantityAfterTax}) para `${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}` (`${transaction.winner.value}`) em apostas de sonhos girando uma moeda globalmente"
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.LostTaxed(
+                                                transaction.quantityAfterTax,
+                                                transaction.quantity,
+                                                "${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}",
+                                                transaction.winner.value
+                                            )
+                                        )
                                     )
                                 }
                             } else {
                                 if (wonTheBet) {
+                                    appendMoneyEarnedEmoji()
                                     append(
-                                        "\uD83D\uDCB5 Ganhou ${transaction.quantity} (sem taxas!) sonhos de `${loserUserInfo?.name}#${loserUserInfo?.discriminator}` (`${transaction.loser.value}`) em apostas de sonhos girando uma moeda globalmente"
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.Won(
+                                                transaction.quantity,
+                                                "${loserUserInfo?.name}#${loserUserInfo?.discriminator}",
+                                                transaction.loser.value
+                                            )
+                                        )
                                     )
                                 } else {
+                                    appendMoneyLostEmoji()
                                     append(
-                                        "\uD83D\uDCB8 Perdeu ${transaction.quantity} (sem taxas!) sonhos para `${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}` (`${transaction.winner.value}`) em apostas de sonhos girando uma moeda globalmente"
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.Lost(
+                                                transaction.quantity,
+                                                "${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}",
+                                                transaction.winner.value
+                                            )
+                                        )
                                     )
                                 }
                             }

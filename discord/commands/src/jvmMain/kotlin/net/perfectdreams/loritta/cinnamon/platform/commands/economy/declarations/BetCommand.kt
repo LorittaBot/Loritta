@@ -15,5 +15,9 @@ object BetCommand : SlashCommandDeclarationWrapper {
                 executor = CoinFlipBetGlobalExecutor
             }
         }
+
+        subcommand(listOf("coinflipglobal"), COINFLIP_GLOBAL_I18N_PREFIX.Description) {
+            executor = CoinFlipBetGlobalExecutor
+        }
     }
 }

@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.toJavaInstant
+import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
@@ -8,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchm
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.avg
@@ -15,11 +17,13 @@ import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.update
 import java.time.Duration
 import java.time.Instant
+import kotlin.time.Duration.Companion.hours
 
 class BetsService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getCoinFlipBetGlobalMatchmakingStats(
@@ -205,7 +209,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     }
 
                     results.add(
-                        AnotherUserRemovedFromMatchmakingQueue(
+                        AnotherUserRemovedFromMatchmakingQueueResult(
                             UserId(anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.user].value),
                             anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken]
                         )
@@ -224,7 +228,14 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     // TODO: Don't hardcode this! Move this to somewhere else
                     val taxPercentage = 0.05
                     // "Recommended" plan (R$ 40) has non-tax for coinflip
+                    // We check >= 25 because... idk, it doesn't really matter
                     val noSonhosTax = selfActiveDonations >= 25 || otherUserActiveDonations >= 25
+
+                    val premiumUsers = mutableListOf<UserId>()
+                    if (selfActiveDonations >= 25)
+                        premiumUsers.add(userId)
+                    if (otherUserActiveDonations >= 25)
+                        premiumUsers.add(otherUserId)
 
                     val tax: Long?
                     val quantityAfterTax: Long
@@ -314,9 +325,77 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                             quantity,
                             quantityAfterTax,
                             tax,
-                            taxPercentage
+                            taxPercentage,
+                            premiumUsers
                         )
                     )
+
+                    // Check achievements
+                    val giveOutSevenSequentiallyWinsAchievementToWinner = CoinFlipBetGlobalMatchmakingResults.select {
+                        CoinFlipBetGlobalMatchmakingResults.winner eq winner.value.toLong() or (CoinFlipBetGlobalMatchmakingResults.loser eq winner.value.toLong())
+                    }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+                        .limit(7)
+                        .toList()
+                        .let {
+                            if (it.size != 7)
+                                false
+                            else
+                                it.all { it[CoinFlipBetGlobalMatchmakingResults.winner].value == winner.value.toLong() }
+                        }
+
+                    val giveOutSevenSequentiallyLossesAchievementToLoser = CoinFlipBetGlobalMatchmakingResults.select {
+                        CoinFlipBetGlobalMatchmakingResults.winner eq loser.value.toLong() or (CoinFlipBetGlobalMatchmakingResults.loser eq loser.value.toLong())
+                    }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+                        .limit(7)
+                        .toList()
+                        .let {
+                            if (it.size != 7)
+                                false
+                            else
+                                it.all { it[CoinFlipBetGlobalMatchmakingResults.loser].value == loser.value.toLong() }
+                        }
+
+                    val now24HoursAgo = Instant.now().minusMillis(24.hours.inWholeMilliseconds)
+
+                    val giveOutFiveHundredMatchesAchievementToWinner = CoinFlipBetGlobalMatchmakingResults.select {
+                        CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq now24HoursAgo and (CoinFlipBetGlobalMatchmakingResults.winner eq winner.value.toLong() or (CoinFlipBetGlobalMatchmakingResults.loser eq winner.value.toLong()))
+                    }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+                        .count() >= 500
+
+                    val giveOutFiveHundredMatchesAchievementToLoser = CoinFlipBetGlobalMatchmakingResults.select {
+                        CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq now24HoursAgo and (CoinFlipBetGlobalMatchmakingResults.winner eq loser.value.toLong() or (CoinFlipBetGlobalMatchmakingResults.loser eq loser.value.toLong()))
+                    }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+                        .count() >= 500
+
+                    fun giveOutAchievementToUser(userThatWillReceiveTheAchievement: UserId, achievementType: AchievementType) {
+                        if (userThatWillReceiveTheAchievement == userId) {
+                            results.add(SelfUserAchievementResult(achievementType))
+                        } else {
+                            results.add(
+                                OtherUserAchievementResult(
+                                    achievementType,
+                                    userThatWillReceiveTheAchievement,
+                                    anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken]
+                                )
+                            )
+                        }
+                    }
+
+                    giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_WIN)
+                    giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_LOSE)
+
+                    if (giveOutSevenSequentiallyWinsAchievementToWinner)
+                        giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_WINS)
+
+                    if (giveOutSevenSequentiallyLossesAchievementToLoser)
+                        giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_WINS)
+
+                    if (giveOutFiveHundredMatchesAchievementToWinner)
+                        giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_PROFESSIONAL)
+
+                    if (giveOutFiveHundredMatchesAchievementToLoser)
+                        giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_PROFESSIONAL)
+
                     return@transaction results
                 }
             }
@@ -355,10 +434,19 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         val quantity: Long,
         val quantityAfterTax: Long,
         val tax: Long?,
-        val taxPercentage: Double?
+        val taxPercentage: Double?,
+        val premiumUsers: List<UserId>
     ) : CoinFlipGlobalMatchmakingResult()
     class YouDontHaveEnoughSonhosToBetResult : CoinFlipGlobalMatchmakingResult()
-    class AnotherUserRemovedFromMatchmakingQueue(
+    class AnotherUserRemovedFromMatchmakingQueueResult(
+        val user: UserId,
+        val userInteractionToken: String
+    ) : CoinFlipGlobalMatchmakingResult()
+    class SelfUserAchievementResult(
+        val achievementType: AchievementType
+    ) : CoinFlipGlobalMatchmakingResult()
+    class OtherUserAchievementResult(
+        val achievementType: AchievementType,
         val user: UserId,
         val userInteractionToken: String
     ) : CoinFlipGlobalMatchmakingResult()

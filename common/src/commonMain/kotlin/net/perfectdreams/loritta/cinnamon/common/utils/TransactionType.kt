@@ -10,15 +10,15 @@ enum class TransactionType(
     val description: StringI18nData,
     val emote: Emote
 ) {
+    COINFLIP_BET_GLOBAL(
+        I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBetGlobal.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBetGlobal.Description,
+        Emotes.CoinTails
+    ),
     HOME_BROKER(
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Title,
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Description,
         Emotes.LoriStonks,
-    ),
-    COINFLIP_BET_GLOBAL(
-        TodoFixThisData,
-        TodoFixThisData,
-        Emotes.CoinHeads
     ),
     SPARKLYPOWER_LSX(
         I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Title,

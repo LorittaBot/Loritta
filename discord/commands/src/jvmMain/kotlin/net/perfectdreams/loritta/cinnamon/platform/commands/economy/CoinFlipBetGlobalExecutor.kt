@@ -7,17 +7,23 @@ import net.perfectdreams.discordinteraktions.common.BarebonesInteractionContext
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.platform.InteractionContext
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
+import net.perfectdreams.loritta.cinnamon.platform.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
@@ -55,12 +61,15 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
             quantity: Long
         ) {
             // Required because autocomplete is only validated in the client side
-            if (quantity !in QUANTITIES) {
-                context.sendEphemeralMessage {
-                    content = "Quantidade inválida!"
-                }
-                return
-            }
+            if (quantity !in QUANTITIES)
+                context.failEphemerally(
+                    context.i18nContext.get(
+                        BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.InvalidQuantity(
+                            QUANTITIES.joinToString(", ")
+                        )
+                    ),
+                    Emotes.Error
+                )
 
             val results = context.loritta.services.bets.addToCoinFlipBetGlobalMatchmakingQueue(
                 UserId(context.user.id.value),
@@ -71,10 +80,20 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
             for (result in results) {
                 when (result) {
                     is BetsService.AddedToQueueResult -> context.sendEphemeralMessage {
-                        content = "Você foi adicionado na fila de matchmaking! Caso nenhum match seja encontrado em até 5 minutos, você sairá automaticamente da fila! Você pode sair da fila a qualquer momento usando `/bet coinflip global` antes de encontrar uma partida! lets go :3"
+                        styled(
+                            context.i18nContext.get(
+                                BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.AddedToMatchmakingQueue
+                            ),
+                            Emotes.LoriRich
+                        )
                     }
                     is BetsService.AlreadyInQueueResult -> context.sendEphemeralMessage {
-                        content = "Você já está na fila do coinflip safade!!"
+                        styled(
+                            context.i18nContext.get(
+                                BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouAreAlreadyInTheMatchmakingQueue
+                            ),
+                            Emotes.LoriRage
+                        )
                     }
                     is BetsService.CoinFlipResult -> {
                         val winnerCachedUserInfo = context.loritta.getCachedUserInfo(result.winner)
@@ -94,6 +113,8 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
 
                         context.sendEphemeralMessage(
                             createCoinFlipResultMessage(
+                                context.loritta,
+                                context.i18nContext,
                                 UserId(context.user.id.value),
                                 result,
                                 quantity,
@@ -107,6 +128,8 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                         )
 
                         val otherUserMessage = createCoinFlipResultMessage(
+                            context.loritta,
+                            context.i18nContext,
                             result.otherUser,
                             result,
                             quantity,
@@ -126,7 +149,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
 
                         otherUserContext.sendEphemeralMessage(otherUserMessage)
                     }
-                    is BetsService.AnotherUserRemovedFromMatchmakingQueue -> {
+                    is BetsService.AnotherUserRemovedFromMatchmakingQueueResult -> {
                         val otherUserContext = BarebonesInteractionContext(
                             context.loritta.rest,
                             context.interaKTionsContext.discordInteraction.applicationId, // Should be always the same app ID
@@ -138,20 +161,71 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                                 users.add(Snowflake(result.user.value))
                             }
 
-                            content = "Você saiu da fila de matchmaking pois você não possui sonhos suficientes para realizar a sua aposta..."
+                            styled(
+                                "${mentionUser(Snowflake(result.user.value))} ${context.i18nContext.get(
+                                    BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.LeftMatchmakingQueueDueToNotEnoughSonhos
+                                )}",
+                                Emotes.LoriSob
+                            )
+                            styled(
+                                context.i18nContext.get(
+                                    GACampaigns.sonhosBundlesUpsellDiscordMessage(
+                                        context.loritta.config.website,
+                                        "bet-coinflip-global",
+                                        "removed-from-mm"
+                                    )
+                                ),
+                                Emotes.CreditCard
+                            )
                         }
                     }
 
                     is BetsService.YouDontHaveEnoughSonhosToBetResult -> {
                         context.sendEphemeralMessage {
-                            content = "Você não tem sonhos suficientes para apostar!"
+                            styled(
+                                "${mentionUser(context.user.id)} ${context.i18nContext.get(
+                                    BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.NotEnoughSonhosToBet
+                                )}",
+                                Emotes.LoriSob
+                            )
+
+                            styled(
+                                context.i18nContext.get(
+                                    GACampaigns.sonhosBundlesUpsellDiscordMessage(
+                                        context.loritta.config.website,
+                                        "bet-coinflip-global",
+                                        "mm-check"
+                                    )
+                                ),
+                                Emotes.CreditCard
+                            )
                         }
+                    }
+                    is BetsService.OtherUserAchievementResult -> {
+                        val otherUserContext = BarebonesInteractionContext(
+                            context.loritta.rest,
+                            context.interaKTionsContext.discordInteraction.applicationId, // Should be always the same app ID
+                            result.userInteractionToken
+                        )
+
+                        AchievementUtils.giveAchievementToUser(
+                            context.loritta,
+                            net.perfectdreams.loritta.cinnamon.platform.BarebonesInteractionContext(otherUserContext),
+                            context.i18nContext,
+                            result.user,
+                            result.achievementType
+                        )
+                    }
+                    is BetsService.SelfUserAchievementResult -> {
+                        context.giveAchievement(result.achievementType)
                     }
                 }
             }
         }
 
         private fun createCoinFlipResultMessage(
+            loritta: LorittaCinnamon,
+            i18nContext: I18nContext,
             selfUser: UserId,
             result: BetsService.CoinFlipResult,
             quantity: Long,
@@ -159,37 +233,127 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
             loserCachedUserInfo: CachedUserInfo?,
             selfStats: BetsService.UserCoinFlipBetGlobalStats,
         ): MessageBuilder.() -> (Unit) = {
-            allowedMentions {
-                users.add(Snowflake(result.winner.value))
-                users.add(Snowflake(result.loser.value))
-            }
-
             val isSelfUserTheWinner = result.winner == selfUser
+            val isJustForFun = quantity == 0L
 
             styled(
                 if (result.isTails)
-                    "**Coroa!**"
+                    "**${i18nContext.get(CoinFlipCommand.I18N_PREFIX.Tails)}!**"
                 else
-                    "**Cara!**",
+                    "**${i18nContext.get(CoinFlipCommand.I18N_PREFIX.Heads)}!**",
                 if (result.isTails)
                     Emotes.CoinTails
                 else
                     Emotes.CoinHeads
             )
 
-            if (isSelfUserTheWinner) {
-                styled(
-                    "Parabéns <@${selfUser.value}>, você ganhou $quantity sonhos! Financiado por `${loserCachedUserInfo?.name}#${loserCachedUserInfo?.discriminator}` (`${loserCachedUserInfo?.id?.value}`) rsrs",
-                    Emotes.LoriRich
-                )
+            if (isJustForFun) {
+                if (isSelfUserTheWinner) {
+                    styled(
+                        i18nContext.get(
+                            BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.CongratulationsJustForFun(
+                                user = mentionUser(Snowflake(selfUser.value)),
+                                loserTag = "${loserCachedUserInfo?.name}#${loserCachedUserInfo?.discriminator}",
+                                loserId = loserCachedUserInfo?.id?.value.toString()
+                            )
+                        ),
+                        Emotes.LoriRich
+                    )
+                } else {
+                    styled(
+                        i18nContext.get(
+                            BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.LostJustForFun(
+                                user = mentionUser(Snowflake(selfUser.value)),
+                                winnerTag = "${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}",
+                                winnerId = winnerCachedUserInfo?.id?.value.toString()
+                            )
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
+            } else if (result.tax != null && result.taxPercentage != null) {
+                // Taxed
+                if (isSelfUserTheWinner) {
+                    styled(
+                        i18nContext.get(
+                            BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.CongratulationsTaxed(
+                                user = mentionUser(Snowflake(selfUser.value)),
+                                sonhosCount = result.quantityAfterTax,
+                                sonhosCountWithoutTax = result.quantity,
+                                loserTag = "${loserCachedUserInfo?.name}#${loserCachedUserInfo?.discriminator}",
+                                loserId = loserCachedUserInfo?.id?.value.toString()
+                            )
+                        ),
+                        Emotes.LoriRich
+                    )
+                } else {
+                    styled(
+                        i18nContext.get(
+                            BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.LostTaxed(
+                                user = mentionUser(Snowflake(selfUser.value)),
+                                sonhosCount = result.quantityAfterTax,
+                                sonhosCountWithoutTax = result.quantity,
+                                winnerTag = "${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}",
+                                winnerId = winnerCachedUserInfo?.id?.value.toString()
+                            )
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
             } else {
-                styled(
-                    "Que pena <@${selfUser.value}>, você perdeu $quantity sonhos para `${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}` (`${winnerCachedUserInfo?.id?.value}`)",
-                    Emotes.LoriSob
-                )
+                if (isSelfUserTheWinner) {
+                    styled(
+                        i18nContext.get(
+                            BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.Congratulations(
+                                user = mentionUser(Snowflake(selfUser.value)),
+                                sonhosCount = result.quantityAfterTax,
+                                loserTag = "${loserCachedUserInfo?.name}#${loserCachedUserInfo?.discriminator}",
+                                loserId = loserCachedUserInfo?.id?.value.toString()
+                            )
+                        ),
+                        Emotes.LoriRich
+                    )
+
+                    // Upsell if the user does not have premium but the loser has
+                    if (result.winner !in result.premiumUsers && result.loser in result.premiumUsers) {
+                        styled(
+                            i18nContext.get(
+                                BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.DontWantTaxAnymorePremiumPlanUpsellOtherUserHasPremium(
+                                    GACampaigns.premiumUpsellDiscordMessageUrl(
+                                        loritta.config.website,
+                                        "bet-coinflip-global",
+                                        "victory-against-premium-users"
+                                    )
+                                )
+                            ),
+                            Emotes.CreditCard
+                        )
+                    }
+                } else {
+                    styled(
+                        i18nContext.get(
+                            BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.Lost(
+                                user = mentionUser(Snowflake(selfUser.value)),
+                                sonhosCount = result.quantityAfterTax,
+                                winnerTag = "${winnerCachedUserInfo?.name}#${winnerCachedUserInfo?.discriminator}",
+                                winnerId = winnerCachedUserInfo?.id?.value.toString()
+                            )
+                        ),
+                        Emotes.LoriSob
+                    )
+                }
             }
 
-            styled("Nas últimas 24 horas, você ganhou ${selfStats.winCount} partidas e perdeu ${selfStats.lostCount} partidas. Total de sonhos: ${selfStats.winSum - selfStats.lostSum}")
+            styled(
+                i18nContext.get(
+                    BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.RecentBetsStats(
+                        selfStats.winCount,
+                        selfStats.lostCount,
+                        selfStats.winSum - selfStats.lostSum
+                    )
+                ),
+                Emotes.LoriReading
+            )
 
             actionRow {
                 interactiveButton(
@@ -202,7 +366,11 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                         )
                     )
                 ) {
-                    label = "vamo de novo pois o pai tá rico kk"
+                    label = if (isJustForFun) {
+                        i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.JoinMatchmakingQueueJustForFunButton)
+                    } else {
+                        i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.JoinMatchmakingQueueButton(quantity))
+                    }
 
                     loriEmoji = Emotes.LoriRich
                 }
@@ -221,7 +389,14 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
             context.i18nContext,
             quantityAsString
                 .removePrefix("q")
-        ) ?: context.failEphemerally("Quantidade inválida!")
+        ) ?: context.failEphemerally(
+            context.i18nContext.get(
+                BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.InvalidQuantity(
+                    QUANTITIES.joinToString(", ")
+                )
+            ),
+            Emotes.Error
+        )
 
         if (isRemoveFromQueueRequest) {
             val leftQueue = context.loritta.services.bets.removeFromCoinFlipBetGlobalMatchmakingQueue(
