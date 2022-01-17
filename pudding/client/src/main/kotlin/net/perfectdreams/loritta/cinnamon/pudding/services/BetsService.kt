@@ -211,6 +211,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     suspend fun addToCoinFlipBetGlobalMatchmakingQueue(
         userId: UserId,
         userInteractionToken: String,
+        userLanguage: String,
         quantity: Long
     ): List<CoinFlipGlobalMatchmakingResult> {
         return pudding.transaction {
@@ -257,7 +258,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     results.add(
                         AnotherUserRemovedFromMatchmakingQueueResult(
                             UserId(anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.user].value),
-                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken]
+                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken],
+                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.language]
                         )
                     )
                 } else {
@@ -398,6 +400,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                             isTails,
                             otherUserId,
                             anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken],
+                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.language],
                             quantity,
                             quantityAfterTax,
                             tax,
@@ -453,7 +456,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                                 OtherUserAchievementResult(
                                     achievementType,
                                     userThatWillReceiveTheAchievement,
-                                    anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken]
+                                    anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken],
+                                    anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.language]
                                 )
                             )
                         }
@@ -481,6 +485,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
             CoinFlipBetGlobalMatchmakingQueue.insert {
                 it[CoinFlipBetGlobalMatchmakingQueue.user] = profile.id.value.toLong()
                 it[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken] = userInteractionToken
+                it[CoinFlipBetGlobalMatchmakingQueue.language] = userLanguage
                 it[CoinFlipBetGlobalMatchmakingQueue.quantity] = quantity
                 it[CoinFlipBetGlobalMatchmakingQueue.timestamp] = now
                 it[CoinFlipBetGlobalMatchmakingQueue.expiresAt] = now.plusMillis(300_000)
@@ -509,6 +514,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         val isTails: Boolean,
         val otherUser: UserId,
         val userInteractionToken: String,
+        val otherUserLanguage: String,
         val quantity: Long,
         val quantityAfterTax: Long,
         val tax: Long?,
@@ -520,7 +526,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     class YouDontHaveEnoughSonhosToBetResult : CoinFlipGlobalMatchmakingResult()
     class AnotherUserRemovedFromMatchmakingQueueResult(
         val user: UserId,
-        val userInteractionToken: String
+        val userInteractionToken: String,
+        val language: String
     ) : CoinFlipGlobalMatchmakingResult()
     class SelfUserAchievementResult(
         val achievementType: AchievementType
@@ -528,7 +535,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     class OtherUserAchievementResult(
         val achievementType: AchievementType,
         val user: UserId,
-        val userInteractionToken: String
+        val userInteractionToken: String,
+        val language: String
     ) : CoinFlipGlobalMatchmakingResult()
 
     class UserCoinFlipBetGlobalStats(

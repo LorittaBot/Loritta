@@ -74,6 +74,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
             val results = context.loritta.services.bets.addToCoinFlipBetGlobalMatchmakingQueue(
                 UserId(context.user.id.value),
                 context.interaKTionsContext.discordInteraction.token,
+                context.loritta.languageManager.getIdByI18nContext(context.i18nContext),
                 quantity,
             )
 
@@ -133,7 +134,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
 
                         val otherUserMessage = createCoinFlipResultMessage(
                             context.loritta,
-                            context.i18nContext,
+                            context.loritta.languageManager.getI18nContextById(result.otherUserLanguage),
                             result.otherUser,
                             result,
                             quantity,
@@ -164,19 +165,21 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                             result.userInteractionToken
                         )
 
+                        val otherUserI18nContext = context.loritta.languageManager.getI18nContextById(result.language)
+
                         otherUserContext.sendEphemeralMessage {
                             allowedMentions {
                                 users.add(Snowflake(result.user.value))
                             }
 
                             styled(
-                                "${mentionUser(Snowflake(result.user.value))} ${context.i18nContext.get(
+                                "${mentionUser(Snowflake(result.user.value))} ${otherUserI18nContext.get(
                                     BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.LeftMatchmakingQueueDueToNotEnoughSonhos
                                 )}",
                                 Emotes.LoriSob
                             )
                             styled(
-                                context.i18nContext.get(
+                                otherUserI18nContext.get(
                                     GACampaigns.sonhosBundlesUpsellDiscordMessage(
                                         context.loritta.config.website,
                                         "bet-coinflip-global",
@@ -216,10 +219,12 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                             result.userInteractionToken
                         )
 
+                        val otherUserI18nContext = context.loritta.languageManager.getI18nContextById(result.language)
+
                         AchievementUtils.giveAchievementToUser(
                             context.loritta,
                             net.perfectdreams.loritta.cinnamon.platform.BarebonesInteractionContext(otherUserContext),
-                            context.i18nContext,
+                            otherUserI18nContext,
                             result.user,
                             result.achievementType
                         )
