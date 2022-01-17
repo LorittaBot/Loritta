@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
@@ -9,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 
@@ -73,7 +75,23 @@ class BrokerBuyStockExecutor : SlashCommandExecutor() {
                 )
             )
         } catch (e: BovespaBrokerService.NotEnoughSonhosException) {
-            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.YouDontHaveEnoughSonhos))
+            context.failEphemerally {
+                styled(
+                    context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.YouDontHaveEnoughSonhos),
+                    Emotes.LoriSob
+                )
+
+                styled(
+                    context.i18nContext.get(
+                        GACampaigns.sonhosBundlesUpsellDiscordMessage(
+                            context.loritta.config.website,
+                            "lori-broker",
+                            "buy-shares-not-enough-sonhos"
+                        )
+                    ),
+                    Emotes.CreditCard
+                )
+            }
         } catch (e: BovespaBrokerService.TooManySharesException) {
             context.failEphemerally(
                 context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.TooManyShares(LorittaBovespaBrokerUtils.MAX_STOCK_SHARES_PER_USER))
