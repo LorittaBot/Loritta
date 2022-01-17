@@ -36,6 +36,7 @@ types:
     wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de `{loserTag}` (`{loserId}`) em apostas globais de sonhos girando uma moeda"
     lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para `{winnerTag}` (`{winnerId}`) em apostas globais de sonhos girando uma moeda"
     won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de `{loserTag}` (`{loserId}`) em apostas globais de sonhos girando uma moeda"
+    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para `{winnerTag}` (`{winnerId}`) em apostas globais de sonhos girando uma moeda"
   sparklyPowerLsx:
     title: "Câmbio de Sonhos no SparklyPower"
     description: "Transações relacionadas ao SparklyPower, o Servidor de Minecraft da Loritta"
