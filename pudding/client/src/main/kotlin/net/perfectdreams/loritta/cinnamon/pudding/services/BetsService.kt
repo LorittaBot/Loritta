@@ -434,7 +434,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_WINS)
 
                     if (giveOutSevenSequentiallyLossesAchievementToLoser)
-                        giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_WINS)
+                        giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_LOSSES)
 
                     if (giveOutFiveHundredMatchesAchievementToWinner)
                         giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_PROFESSIONAL)
