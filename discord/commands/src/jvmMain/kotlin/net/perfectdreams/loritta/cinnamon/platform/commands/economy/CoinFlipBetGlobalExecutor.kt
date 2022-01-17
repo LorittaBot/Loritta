@@ -377,8 +377,8 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                 styled(
                     i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveWins(selfStreak)),
                     when {
-                        selfStreak >= 15 -> Emotes.LoriHappy
-                        selfStreak >= 10 -> Emotes.LoriUwU
+                        selfStreak >= 10 -> Emotes.LoriHappy
+                        selfStreak >= 5 -> Emotes.LoriUwU
                         else -> Emotes.LoriWow
                     }
                 )
@@ -386,8 +386,8 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                 styled(
                     i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveLosses(selfStreak)),
                     when {
-                        selfStreak >= 15 -> Emotes.LoriSob
-                        selfStreak >= 10 -> Emotes.LoriRage
+                        selfStreak >= 10 -> Emotes.LoriSob
+                        selfStreak >= 5 -> Emotes.LoriRage
                         else -> Emotes.LoriHmpf
                     }
                 )
