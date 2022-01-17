@@ -110,11 +110,11 @@ class SlashCommandOptionsWrapper(
                             }
 
                             if (it.autoCompleteExecutorDeclaration != null) {
-                                /* option.autocomplete(
+                                option.autocomplete(
                                     object : net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration(
                                         it.autoCompleteExecutorDeclaration::class
                                     ) {}
-                                ) */
+                                )
                             }
                         }
 
@@ -150,11 +150,11 @@ class SlashCommandOptionsWrapper(
                             }
 
                             if (it.autoCompleteExecutorDeclaration != null) {
-                                /* option.autocomplete(
+                                option.autocomplete(
                                     object : net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration(
                                         it.autoCompleteExecutorDeclaration::class
                                     ) {}
-                                ) */
+                                )
                             }
                         }
 
@@ -190,11 +190,11 @@ class SlashCommandOptionsWrapper(
                             }
 
                             if (it.autoCompleteExecutorDeclaration != null) {
-                                /* option.autocomplete(
+                                option.autocomplete(
                                     object : net.perfectdreams.discordinteraktions.common.autocomplete.NumberAutocompleteExecutorDeclaration(
                                         it.autoCompleteExecutorDeclaration::class
                                     ) {}
-                                ) */
+                                )
                             }
                         }
 

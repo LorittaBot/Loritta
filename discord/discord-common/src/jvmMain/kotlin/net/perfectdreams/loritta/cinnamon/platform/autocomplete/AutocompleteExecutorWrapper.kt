@@ -20,10 +20,9 @@ sealed class AutocompleteExecutorWrapperBase<T>(
         val rootDeclarationClazzName = executorDeclaration::class.simpleName
         val executorClazzName = executor::class.simpleName
 
-        // TODO: Add the user that triggered the autocomplete
-        logger.info { "$executor" }
+        logger.info { "(${context.sender.id.value}) $executor" }
 
-        val timer = Prometheus.EXECUTED_SELECT_MENU_LATENCY_COUNT
+        val timer = Prometheus.EXECUTED_AUTOCOMPLETE_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
@@ -64,8 +63,7 @@ sealed class AutocompleteExecutorWrapperBase<T>(
         }
 
         val commandLatency = timer.observeDuration()
-        // TODO: Add the user that triggered the autocomplete
-        logger.info { "$executor - OK! Took ${commandLatency * 1000}ms" }
+        logger.info { "(${context.sender.id.value}) $executor - OK! Took ${commandLatency * 1000}ms" }
 
         // Weird hack
         return result

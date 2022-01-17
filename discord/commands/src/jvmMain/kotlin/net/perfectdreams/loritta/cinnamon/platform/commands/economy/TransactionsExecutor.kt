@@ -46,7 +46,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
 
         override val options = Options
 
-        const val TRANSACTIONS_PER_PAGE = 10
+        private const val TRANSACTIONS_PER_PAGE = 10
 
         suspend fun createMessage(
             loritta: LorittaCinnamon,
