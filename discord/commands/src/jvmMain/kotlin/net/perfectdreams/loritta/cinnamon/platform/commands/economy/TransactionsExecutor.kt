@@ -268,10 +268,10 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.WonTaxed(
-                                                transaction.quantityAfterTax,
-                                                transaction.quantity,
-                                                "${loserUserInfo?.name}#${loserUserInfo?.discriminator}",
-                                                transaction.loser.value
+                                                quantity = transaction.quantity,
+                                                quantityAfterTax = transaction.quantityAfterTax,
+                                                loserTag = "${loserUserInfo?.name}#${loserUserInfo?.discriminator}",
+                                                loserId = transaction.loser.value
                                             )
                                         )
                                     )
@@ -280,10 +280,10 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.LostTaxed(
-                                                transaction.quantityAfterTax,
-                                                transaction.quantity,
-                                                "${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}",
-                                                transaction.winner.value
+                                                quantity = transaction.quantity,
+                                                quantityAfterTax = transaction.quantityAfterTax,
+                                                winnerTag = "${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}",
+                                                winnerId = transaction.winner.value
                                             )
                                         )
                                     )
@@ -294,9 +294,9 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.Won(
-                                                transaction.quantity,
-                                                "${loserUserInfo?.name}#${loserUserInfo?.discriminator}",
-                                                transaction.loser.value
+                                                quantityAfterTax = transaction.quantity,
+                                                loserTag = "${loserUserInfo?.name}#${loserUserInfo?.discriminator}",
+                                                loserId = transaction.loser.value
                                             )
                                         )
                                     )
@@ -305,9 +305,9 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.Lost(
-                                                transaction.quantity,
-                                                "${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}",
-                                                transaction.winner.value
+                                                quantity = transaction.quantity,
+                                                winnerTag = "${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}",
+                                                winnerId = transaction.winner.value
                                             )
                                         )
                                     )

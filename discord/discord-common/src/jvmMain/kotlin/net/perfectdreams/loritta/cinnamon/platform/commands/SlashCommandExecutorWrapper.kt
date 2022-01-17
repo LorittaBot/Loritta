@@ -319,7 +319,8 @@ class SlashCommandExecutorWrapper(
                 users.addAll(args.types.values.filterIsInstance<User>())
                 val resolvedUsers = context.data.resolved?.users?.values
                 if (resolvedUsers != null)
-                    users.addAll(resolvedUsers)
+                    // TODO: Maybe implement proper hash codes in the InteraKTions "User"?
+                    users.addAll(resolvedUsers.distinctBy { it.id })
                 val jobs = users
                     .map {
                         async {

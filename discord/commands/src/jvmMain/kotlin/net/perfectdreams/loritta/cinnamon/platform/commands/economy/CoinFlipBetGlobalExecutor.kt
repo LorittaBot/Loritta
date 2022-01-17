@@ -123,7 +123,11 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                                 if (isSelfUserTheWinner)
                                     winnerBetStats
                                 else
-                                    loserBetStats
+                                    loserBetStats,
+                                if (isSelfUserTheWinner)
+                                    result.winnerStreakCount
+                                else
+                                    result.loserStreakCount
                             )
                         )
 
@@ -138,7 +142,11 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                             if (!isSelfUserTheWinner)
                                 winnerBetStats
                             else
-                                loserBetStats
+                                loserBetStats,
+                            if (!isSelfUserTheWinner)
+                                result.winnerStreakCount
+                            else
+                                result.loserStreakCount
                         )
 
                         val otherUserContext = BarebonesInteractionContext(
@@ -232,6 +240,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
             winnerCachedUserInfo: CachedUserInfo?,
             loserCachedUserInfo: CachedUserInfo?,
             selfStats: BetsService.UserCoinFlipBetGlobalStats,
+            selfStreak: Int
         ): MessageBuilder.() -> (Unit) = {
             val isSelfUserTheWinner = result.winner == selfUser
             val isJustForFun = quantity == 0L
@@ -347,6 +356,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
             styled(
                 i18nContext.get(
                     BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.RecentBetsStats(
+                        selfStats.winCount + selfStats.lostCount,
                         selfStats.winCount,
                         selfStats.lostCount,
                         selfStats.winSum - selfStats.lostSum
@@ -354,6 +364,20 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                 ),
                 Emotes.LoriReading
             )
+
+            // If the user won, then the selfStreak is their winning streak
+            // (After all, if they won... the losing streak would be 0)
+            if (isSelfUserTheWinner) {
+                styled(
+                    i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveWins(selfStreak)),
+                    Emotes.LoriWow
+                )
+            } else {
+                styled(
+                    i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveLosses(selfStreak)),
+                    Emotes.LoriHmpf
+                )
+            }
 
             actionRow {
                 interactiveButton(

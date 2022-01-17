@@ -149,6 +149,52 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         }
     }
 
+    suspend fun getCoinFlipBetGlobalUserWinningStreakStats(
+        userId: UserId
+    ): Int {
+        val userAsLong = userId.value.toLong()
+
+        return pudding.transaction {
+            val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+                (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong)
+            }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+
+            var streakCount = 0
+
+            for (data in userMatchmakingData) {
+                if (data[CoinFlipBetGlobalMatchmakingResults.winner].value != userAsLong)
+                    break
+
+                streakCount++
+            }
+
+            return@transaction streakCount
+        }
+    }
+
+    suspend fun getCoinFlipBetGlobalUserLosingStreakStats(
+        userId: UserId
+    ): Int {
+        val userAsLong = userId.value.toLong()
+
+        return pudding.transaction {
+            val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+                (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong)
+            }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+
+            var streakCount = 0
+
+            for (data in userMatchmakingData) {
+                if (data[CoinFlipBetGlobalMatchmakingResults.loser].value != userAsLong)
+                    break
+
+                streakCount++
+            }
+
+            return@transaction streakCount
+        }
+    }
+
     suspend fun removeFromCoinFlipBetGlobalMatchmakingQueue(
         userId: UserId,
         quantity: Long
@@ -266,9 +312,12 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         loser = players[0]
                     }
 
+                    val winnerAsLong = winner.value.toLong()
+                    val loserAsLong = loser.value.toLong()
+
                     val resultId = CoinFlipBetGlobalMatchmakingResults.insertAndGetId {
-                        it[CoinFlipBetGlobalMatchmakingResults.winner] = winner.value.toLong()
-                        it[CoinFlipBetGlobalMatchmakingResults.loser] = loser.value.toLong()
+                        it[CoinFlipBetGlobalMatchmakingResults.winner] = winnerAsLong
+                        it[CoinFlipBetGlobalMatchmakingResults.loser] = loserAsLong
                         it[CoinFlipBetGlobalMatchmakingResults.quantity] = quantity
                         it[CoinFlipBetGlobalMatchmakingResults.quantityAfterTax] = quantityAfterTax
                         it[CoinFlipBetGlobalMatchmakingResults.tax] = tax
@@ -280,7 +329,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     if (quantity != 0L) {
                         // If the quantity is not zero, add them to the transactions log!
                         val winnerTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                            it[SonhosTransactionsLog.user] = winner.value.toLong()
+                            it[SonhosTransactionsLog.user] = winnerAsLong
                             it[SonhosTransactionsLog.timestamp] = now
                         }
 
@@ -290,7 +339,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         }
 
                         val loserTransactionLogId = SonhosTransactionsLog.insertAndGetId {
-                            it[SonhosTransactionsLog.user] = loser.value.toLong()
+                            it[SonhosTransactionsLog.user] = loserAsLong
                             it[SonhosTransactionsLog.timestamp] = now
                         }
 
@@ -315,6 +364,33 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         }
                     }
 
+                    // Get the win/lose streak of both users
+                    val winnerUserMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+                        (CoinFlipBetGlobalMatchmakingResults.winner eq winnerAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq winnerAsLong)
+                    }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+
+                    var winnerStreakCount = 0
+
+                    for (data in winnerUserMatchmakingData) {
+                        if (data[CoinFlipBetGlobalMatchmakingResults.winner].value != winnerAsLong)
+                            break
+
+                        winnerStreakCount++
+                    }
+
+                    val loserUserMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+                        (CoinFlipBetGlobalMatchmakingResults.winner eq loserAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq loserAsLong)
+                    }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+
+                    var loserStreakCount = 0
+
+                    for (data in loserUserMatchmakingData) {
+                        if (data[CoinFlipBetGlobalMatchmakingResults.loser].value != loserAsLong)
+                            break
+
+                        loserStreakCount++
+                    }
+
                     results.add(
                         CoinFlipResult(
                             winner,
@@ -326,7 +402,9 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                             quantityAfterTax,
                             tax,
                             taxPercentage,
-                            premiumUsers
+                            premiumUsers,
+                            winnerStreakCount,
+                            loserStreakCount
                         )
                     )
 
@@ -388,7 +466,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_WINS)
 
                     if (giveOutSevenSequentiallyLossesAchievementToLoser)
-                        giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_WINS)
+                        giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_LOSSES)
 
                     if (giveOutFiveHundredMatchesAchievementToWinner)
                         giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_PROFESSIONAL)
@@ -435,7 +513,9 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         val quantityAfterTax: Long,
         val tax: Long?,
         val taxPercentage: Double?,
-        val premiumUsers: List<UserId>
+        val premiumUsers: List<UserId>,
+        val winnerStreakCount: Int,
+        val loserStreakCount: Int
     ) : CoinFlipGlobalMatchmakingResult()
     class YouDontHaveEnoughSonhosToBetResult : CoinFlipGlobalMatchmakingResult()
     class AnotherUserRemovedFromMatchmakingQueueResult(

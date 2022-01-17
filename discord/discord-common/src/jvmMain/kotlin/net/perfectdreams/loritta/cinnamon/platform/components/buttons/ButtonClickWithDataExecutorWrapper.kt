@@ -34,7 +34,7 @@ class ButtonClickWithDataExecutorWrapper(
 
         logger.info { "(${context.sender.id.value}) $executor" }
 
-        val timer = Prometheus.EXECUTED_SELECT_MENU_LATENCY_COUNT
+        val timer = Prometheus.EXECUTED_BUTTON_CLICK_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 

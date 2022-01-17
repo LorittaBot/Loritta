@@ -17,6 +17,8 @@ recentBetsStats: "Nas últimas 24 horas, você ganhou {winCount,plural, =0 {# pa
 dontWantTaxAnymorePremiumPlanUpsellOtherUserHasPremium: "Como o seu oponente possui o plano premium \"Recomendado\", você não teve que pagar taxa nos sonhos recebidos! Psiu, você quer ter isso também? Então compre o plano \"Recomendado\" na minha lojinha! Nós aceitamos pagamentos via boleto, cartão de crédito e Pix e comprando por lá você me ajuda a ficar online enquanto você se diverte com mais vantagens! Mas não se preocupe, a escolha é sua e você pode continuar a usar a Loritta sem se preocupar em tirar dinheiro do seu bolso. Ficou interessado? Então [clique aqui]({premiumShopWebsiteLink})!"
 joinMatchmakingQueueJustForFunButton: "Entrar na fila novamente, apenas para se divertir!"
 joinMatchmakingQueueButton: "Entrar na fila de {sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} novamente"
+youHaveConsecutiveWins: "Você tem **{streak,plural, =0 {# vitórias consecutivas} one {# vitória consecutiva} other {# vitórias consecutivas}}**!"
+youHaveConsecutiveLosses: "Você tem **{streak,plural, =0 {# derrotas consecutivas} one {# derrota consecutiva} other {# derrotas consecutivas}}**!"
 options:
   quantity:
     text: "A quantidade de sonhos que você deseja apostar"
