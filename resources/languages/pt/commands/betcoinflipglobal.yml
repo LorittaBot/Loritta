@@ -22,6 +22,7 @@ options:
     text: "A quantidade de sonhos que você deseja apostar"
     choice:
       justForFun: "Apenas para se divertir!"
+      matchmakingSonhos: "{sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
       quitMatchmakingQueue: "Sair da fila de {sonhosQuantity, plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
       averageTimeInSeconds: "Estimado: {averageTimeSeconds,number,#.##}s"
       playersInMatchmakingQueue: "Jogadores na fila!"
