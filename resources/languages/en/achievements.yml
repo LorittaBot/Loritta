@@ -63,20 +63,20 @@ achievements:
 
     # ===[ COIN FLIP BET ]===
     coinFlipBetProfessional:
-      title: "Girador de Moedas Professional"
-      description: "Jogar 500 partidas de apostas de sonhos girando uma moeda em menos de 24 horas"
+      title: "Professional Coin Flipper"
+      description: "Play 500 matches of coin flip bet in just 24 hours"
     coinFlipBetWin:
-      title: "Girador de Moedas Talentoso"
-      description: "Ganhar uma aposta de sonhos girando uma moeda"
+      title: "Talented Coin Flipper"
+      description: "Win a coin flip bet"
     coinFlipBetLose:
-      title: "Pitada de Azar"
-      description: "Perder uma aposta de sonhos girando uma moeda"
+      title: "Pinch of Bad Luck"
+      description: "Lose a coin flip bet"
     coinFlipBetBugSevenSequentialWins:
-      title: "Coin Flip Bugado??"
-      description: "Ganhar sete vezes seguidas em apostas de sonhos girando uma moeda"
+      title: "Bugged Coin Flip??" #This references the users that are always complaining that the coin flip is bugged and that's why they are always losing
+      description: "Win a coin flip bet seven times in a row"
     coinFlipBetBugSevenSequentialLosses:
-      title: "Bugaram meu Coin Flip!"
-      description: "Perder sete vezes seguidas em apostas de sonhos girando uma moeda"
+      title: "Someone Bugged my Coin Flip!" #This references the users that are always complaining that the coin flip is bugged and that's why they are always losing
+      description: "Lose a coin flip bet seven times in a row"
 
     # ===[ BROKER ]===
     stonks:
