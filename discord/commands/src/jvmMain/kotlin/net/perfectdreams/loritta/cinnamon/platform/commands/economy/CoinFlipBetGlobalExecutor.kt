@@ -372,15 +372,24 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
 
             // If the user won, then the selfStreak is their winning streak
             // (After all, if they won... the losing streak would be 0)
+            // emojis = the three stages of happiness/grief idk i never watched it
             if (isSelfUserTheWinner) {
                 styled(
                     i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveWins(selfStreak)),
-                    Emotes.LoriWow
+                    when {
+                        selfStreak >= 15 -> Emotes.LoriHappy
+                        selfStreak >= 10 -> Emotes.LoriUwU
+                        else -> Emotes.LoriWow
+                    }
                 )
             } else {
                 styled(
                     i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveLosses(selfStreak)),
-                    Emotes.LoriHmpf
+                    when {
+                        selfStreak >= 15 -> Emotes.LoriSob
+                        selfStreak >= 10 -> Emotes.LoriRage
+                        else -> Emotes.LoriHmpf
+                    }
                 )
             }
 

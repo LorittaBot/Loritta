@@ -108,7 +108,7 @@ class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
         context.sendMessage {
             styled(
                 context.i18nContext.get(HungerGamesCommand.I18N_PREFIX.SimulationCreated(saveLink)),
-                Emotes.LoriHappy
+                Emotes.LoriHappyJumping
             )
         }
     }
