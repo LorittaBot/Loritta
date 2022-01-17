@@ -35,7 +35,7 @@ types:
     wonTaxed: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (tax-free value: {quantity}) from `{loserTag}` (`{loserId}`) in global sonhos coin flip bets"
     lostTaxed: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (value after taxes: {quantityAfterTax}) to `{winnerTag}` (`{winnerId}`) in global sonhos coin flip bets"
     won: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (no taxes!) from `{loserTag}` (`{loserId}`) in global sonhos coin flip bets"
-    lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} sonhos (no taxes!) to `{winnerTag}` (`${winnerId}`) in global sonhos coin flip bets"
+    lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} sonhos (no taxes!) to `{winnerTag}` (`{winnerId}`) in global sonhos coin flip bets"
   sparklyPowerLsx:
     title: "SparklyPower Sonhos Exchange"
     description: "Transactions related to SparklyPower, Loritta's Minecraft Server"
