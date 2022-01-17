@@ -29,7 +29,7 @@ kotlin {
                 implementation("io.github.netvl.ecoji:ecoji:1.0.0")
 
                 // We want to use Kord REST on our project too!
-                api("dev.kord:kord-rest:0.8.x-SNAPSHOT")
+                api("dev.kord:kord-rest:${Versions.KORD}")
 
                 // Prometheus, for metrics
                 api("io.prometheus:simpleclient:${Versions.PROMETHEUS}")

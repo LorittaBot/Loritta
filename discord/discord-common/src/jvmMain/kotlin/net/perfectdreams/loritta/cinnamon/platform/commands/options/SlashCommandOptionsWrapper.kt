@@ -88,6 +88,14 @@ class SlashCommandOptionsWrapper(
                                     is RawCommandChoice -> option.choice(it.value as String, it.name)
                                 }
                             }
+
+                            if (it.autoCompleteExecutorDeclaration != null) {
+                                option.autocomplete(
+                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration(
+                                        it.autoCompleteExecutorDeclaration::class
+                                    ) {}
+                                )
+                            }
                         }
 
                         is NullableStringCommandOption -> optionalString(
@@ -99,6 +107,14 @@ class SlashCommandOptionsWrapper(
                                     is LocalizedCommandChoice -> option.choice(it.value as String, i18nContext.get(it.name))
                                     is RawCommandChoice -> option.choice(it.value as String, it.name)
                                 }
+                            }
+
+                            if (it.autoCompleteExecutorDeclaration != null) {
+                                option.autocomplete(
+                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration(
+                                        it.autoCompleteExecutorDeclaration::class
+                                    ) {}
+                                )
                             }
                         }
 
@@ -112,6 +128,14 @@ class SlashCommandOptionsWrapper(
                                     is RawCommandChoice -> option.choice(it.value, it.name)
                                 }
                             }
+
+                            if (it.autoCompleteExecutorDeclaration != null) {
+                                option.autocomplete(
+                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration(
+                                        it.autoCompleteExecutorDeclaration::class
+                                    ) {}
+                                )
+                            }
                         }
 
                         is NullableIntegerCommandOption -> optionalInteger(
@@ -123,6 +147,14 @@ class SlashCommandOptionsWrapper(
                                     is LocalizedCommandChoice -> option.choice(it.value, i18nContext.get(it.name))
                                     is RawCommandChoice -> option.choice(it.value, it.name)
                                 }
+                            }
+
+                            if (it.autoCompleteExecutorDeclaration != null) {
+                                option.autocomplete(
+                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration(
+                                        it.autoCompleteExecutorDeclaration::class
+                                    ) {}
+                                )
                             }
                         }
 
@@ -136,6 +168,14 @@ class SlashCommandOptionsWrapper(
                                     is RawCommandChoice -> option.choice(it.value, it.name)
                                 }
                             }
+
+                            if (it.autoCompleteExecutorDeclaration != null) {
+                                option.autocomplete(
+                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.NumberAutocompleteExecutorDeclaration(
+                                        it.autoCompleteExecutorDeclaration::class
+                                    ) {}
+                                )
+                            }
                         }
 
                         is NullableNumberCommandOption -> optionalNumber(
@@ -147,6 +187,14 @@ class SlashCommandOptionsWrapper(
                                     is LocalizedCommandChoice -> option.choice(it.value, i18nContext.get(it.name))
                                     is RawCommandChoice -> option.choice(it.value, it.name)
                                 }
+                            }
+
+                            if (it.autoCompleteExecutorDeclaration != null) {
+                                option.autocomplete(
+                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.NumberAutocompleteExecutorDeclaration(
+                                        it.autoCompleteExecutorDeclaration::class
+                                    ) {}
+                                )
                             }
                         }
 

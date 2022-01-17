@@ -67,6 +67,33 @@ enum class AchievementType(
         I18nKeysData.Achievements.Achievement.Weirdo.Description
     ),
 
+    // ===[ COIN FLIP BET ]===
+    COIN_FLIP_BET_PROFESSIONAL(
+        AchievementCategory.COIN_FLIP_BET,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetProfessional.Title,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetProfessional.Description
+    ),
+    COIN_FLIP_BET_WIN(
+        AchievementCategory.COIN_FLIP_BET,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetWin.Title,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetWin.Description
+    ),
+    COIN_FLIP_BET_LOSE(
+        AchievementCategory.COIN_FLIP_BET,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetLose.Title,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetLose.Description
+    ),
+    COIN_FLIP_BET_SEVEN_SEQUENTIAL_WINS(
+        AchievementCategory.COIN_FLIP_BET,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetBugSevenSequentialWins.Title,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetBugSevenSequentialWins.Description
+    ),
+    COIN_FLIP_BET_SEVEN_SEQUENTIAL_LOSSES(
+        AchievementCategory.COIN_FLIP_BET,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetBugSevenSequentialLosses.Title,
+        I18nKeysData.Achievements.Achievement.CoinFlipBetBugSevenSequentialLosses.Description
+    ),
+
     // ===[ BROKER ]===
     STONKS(
         AchievementCategory.BROKER,

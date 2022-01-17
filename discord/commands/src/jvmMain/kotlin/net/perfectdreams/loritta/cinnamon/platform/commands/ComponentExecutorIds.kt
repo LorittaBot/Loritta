@@ -17,6 +17,7 @@ object ComponentExecutorIds {
     val CHANGE_COLOR_PORTRAIT_TYPE_BUTTON_EXECUTOR = register("0006")
     val CHANGE_TRANSACTION_PAGE_BUTTON_EXECUTOR = register("0007")
     val CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR = register("0008")
+    val START_MATCHMAKING_BUTTON_EXECUTOR = register("0009")
 
     /**
      * Verifies if the [id] matches our constraints

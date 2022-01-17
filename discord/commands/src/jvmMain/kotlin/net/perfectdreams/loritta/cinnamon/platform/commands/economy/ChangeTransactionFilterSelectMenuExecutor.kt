@@ -33,7 +33,7 @@ class ChangeTransactionFilterSelectMenuExecutor(
         )
 
         context.updateMessage {
-            apply(builtMessage)
+            builtMessage()
         }
     }
 }
