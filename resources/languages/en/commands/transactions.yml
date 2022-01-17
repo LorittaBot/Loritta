@@ -27,8 +27,8 @@ types:
   homeBroker:
     title: "Loritta's Stock Market Simulator"
     description: "Transactions related to Loritta's Stock Market Simulator"
-    boughtShares: "Bought {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity, plural, one {# sonho} other {# sonhos}} in Loritta's Stock Market Simulator"
-    soldShares: "Sold {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity, plural, one {# sonho} other {# sonhos}} in Loritta's Stock Market Simulator"
+    boughtShares: "Bought {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} in Loritta's Stock Market Simulator"
+    soldShares: "Sold {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} in Loritta's Stock Market Simulator"
   coinFlipBetGlobal:
     title: "Global Coin Flip Bets"
     description: "Transactions related to sonhos coin flip bets... globally!"
@@ -39,8 +39,8 @@ types:
   sparklyPowerLsx:
     title: "SparklyPower Sonhos Exchange"
     description: "Transactions related to SparklyPower, Loritta's Minecraft Server"
-    exchangedToSparklyPower: "Exchanged {sonhosQuantity, plural, one {# sonho} other {# sonhos}} from Loritta to `{playerName}`'s account on SparklyPower, receiving {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} there [{sparklyPowerIp}]"
-    exchangedFromSparklyPower: "Exchanged {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} from `{playerName}`'s account on SparklyPower to Loritta, receiving {sonhosQuantity, plural, one {# sonho} other {# sonhos}} here [{sparklyPowerIp}]"
+    exchangedToSparklyPower: "Exchanged {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from Loritta to `{playerName}`'s account on SparklyPower, receiving {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} there [{sparklyPowerIp}]"
+    exchangedFromSparklyPower: "Exchanged {sparklyPowerSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from `{playerName}`'s account on SparklyPower to Loritta, receiving {sonhosQuantity, plural, one {# sonho} other {# sonhos}} here [{sparklyPowerIp}]"
 options:
   user:
     text: "The user that you want to view their transactions"
