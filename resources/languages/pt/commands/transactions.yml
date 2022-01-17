@@ -28,9 +28,19 @@ types:
   homeBroker:
     title: "Simulador do Mercado de Ações da Loritta"
     description: "Transações relacionadas ao Simulador do Mercado de Ações da Loritta"
+    boughtShares: "Comprou {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
+    soldShares: "Vendeu {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
+  coinFlipBetGlobal:
+    title: "Apostas Globais de Lançamento de Moedas"
+    description: "Transações relacionadas a apostas de lançamento de moedas... globalmente!"
+    wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de `{loserTag}` (`{loserId}`) em apostas globais de sonhos girando uma moeda"
+    lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para `{winnerTag}` (`{winnerId}`) em apostas globais de sonhos girando uma moeda"
+    won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de `{loserTag}` (`{loserId}`) em apostas globais de sonhos girando uma moeda"
   sparklyPowerLsx:
     title: "Câmbio de Sonhos no SparklyPower"
     description: "Transações relacionadas ao SparklyPower, o Servidor de Minecraft da Loritta"
+    exchangedToSparklyPower: "Transferiu {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} da Loritta para a conta `{playerName}` no SparklyPower, recebendo {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} lá [{sparklyPowerIp}]"
+    exchangedFromSparklyPower: "Transferiu {sparklyPowerSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} da conta `{playerName}` no SparklyPower para a Loritta, recebendo {sonhosQuantity, plural, one {# sonho} other {# sonhos}} aqui [{sparklyPowerIp}]"
 options:
   user:
     text: "O usuário que você deseja ver as transações"
