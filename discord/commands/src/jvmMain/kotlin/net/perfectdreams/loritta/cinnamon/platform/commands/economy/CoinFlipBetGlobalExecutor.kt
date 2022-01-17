@@ -125,9 +125,9 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                                 else
                                     loserBetStats,
                                 if (isSelfUserTheWinner)
-                                    context.loritta.services.bets.getCoinFlipBetGlobalUserWinningStreakStats(result.winner)
+                                    result.winnerStreakCount
                                 else
-                                    context.loritta.services.bets.getCoinFlipBetGlobalUserLosingStreakStats(result.loser)
+                                    result.loserStreakCount
                             )
                         )
 
@@ -144,9 +144,9 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                             else
                                 loserBetStats,
                             if (!isSelfUserTheWinner)
-                                context.loritta.services.bets.getCoinFlipBetGlobalUserWinningStreakStats(result.winner)
+                                result.winnerStreakCount
                             else
-                                context.loritta.services.bets.getCoinFlipBetGlobalUserLosingStreakStats(result.loser)
+                                result.loserStreakCount
                         )
 
                         val otherUserContext = BarebonesInteractionContext(
