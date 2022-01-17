@@ -11,6 +11,17 @@ import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteExecutor
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.IntegerAutocompleteExecutor
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.IntegerAutocompleteExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.IntegerAutocompleteExecutorWrapper
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.NumberAutocompleteExecutor
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.NumberAutocompleteExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.NumberAutocompleteExecutorWrapper
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.StringAutocompleteExecutor
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.StringAutocompleteExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.StringAutocompleteExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandOptionsWrapper
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickBaseExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
@@ -40,6 +51,9 @@ class CommandRegistry(
     val buttonsDeclarations = mutableListOf<ButtonClickExecutorDeclaration>()
     val buttonsExecutors = mutableListOf<ButtonClickBaseExecutor>()
 
+    val autocompleteDeclarations = mutableListOf<AutocompleteExecutorDeclaration<*>>()
+    val autocompleteExecutors = mutableListOf<AutocompleteExecutor<*>>()
+
     fun register(declaration: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper, vararg executors: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor) {
         declarations.add(declaration.declaration())
         this.executors.addAll(executors)
@@ -55,10 +69,16 @@ class CommandRegistry(
         selectMenusExecutors.add(executor)
     }
 
+    fun register(declaration: AutocompleteExecutorDeclaration<*>, executor: AutocompleteExecutor<*>) {
+        autocompleteDeclarations.add(declaration)
+        autocompleteExecutors.add(executor)
+    }
+
     suspend fun convertToInteraKTions(locale: I18nContext) {
         convertCommandsToInteraKTions(locale)
         convertSelectMenusToInteraKTions()
         convertButtonsToInteraKTions()
+        convertAutocompleteToInteraKTions()
 
         if (loritta.interactionsConfig.registerGlobally) {
             interaKTionsRegistry.updateAllGlobalCommands(true)
@@ -131,6 +151,66 @@ class CommandRegistry(
                 interaKTionsExecutorDeclaration,
                 interaKTionsExecutor
             )
+        }
+    }
+
+    private fun convertAutocompleteToInteraKTions() {
+        for (declaration in autocompleteDeclarations) {
+            val executor = autocompleteExecutors.firstOrNull { declaration.parent == it::class }
+                ?: throw UnsupportedOperationException("The autocomplete executor wasn't found! Did you register the autocomplete executor?")
+
+            // We use a class reference because we need to have a consistent signature, because we also use it on the SlashCommandOptionsWrapper class
+            when (executor) {
+                is StringAutocompleteExecutor -> {
+                    val interaKTionsExecutor = StringAutocompleteExecutorWrapper(
+                        loritta,
+                        declaration as StringAutocompleteExecutorDeclaration,
+                        executor
+                    )
+
+                    val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration(
+                        declaration::class
+                    ) {}
+
+                    interaKTionsManager.register(
+                        interaKTionsExecutorDeclaration,
+                        interaKTionsExecutor
+                    )
+                }
+
+                is IntegerAutocompleteExecutor -> {
+                    val interaKTionsExecutor = IntegerAutocompleteExecutorWrapper(
+                        loritta,
+                        declaration as IntegerAutocompleteExecutorDeclaration,
+                        executor
+                    )
+
+                    val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration(
+                        declaration::class
+                    ) {}
+
+                    interaKTionsManager.register(
+                        interaKTionsExecutorDeclaration,
+                        interaKTionsExecutor
+                    )
+                }
+                is NumberAutocompleteExecutor -> {
+                    val interaKTionsExecutor = NumberAutocompleteExecutorWrapper(
+                        loritta,
+                        declaration as NumberAutocompleteExecutorDeclaration,
+                        executor
+                    )
+
+                    val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.autocomplete.NumberAutocompleteExecutorDeclaration(
+                        declaration::class
+                    ) {}
+
+                    interaKTionsManager.register(
+                        interaKTionsExecutorDeclaration,
+                        interaKTionsExecutor
+                    )
+                }
+            }
         }
     }
 

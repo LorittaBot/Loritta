@@ -7,27 +7,22 @@ import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecuto
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 
-class ChangeTransactionPageButtonClickExecutor(
+class StartCoinFlipGlobalBetMatchmakingButtonClickExecutor(
     val loritta: LorittaCinnamon
 ) : ButtonClickWithDataExecutor {
     companion object : ButtonClickExecutorDeclaration(
-        ChangeTransactionPageButtonClickExecutor::class,
-        ComponentExecutorIds.CHANGE_TRANSACTION_PAGE_BUTTON_EXECUTOR
+        StartCoinFlipGlobalBetMatchmakingButtonClickExecutor::class,
+        ComponentExecutorIds.START_MATCHMAKING_BUTTON_EXECUTOR
     )
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()
 
-        val decoded = context.decodeViaComponentDataUtilsAndRequireUserToMatch<TransactionListData>(data)
+        val decoded = context.decodeViaComponentDataUtilsAndRequireUserToMatch<CoinFlipBetGlobalStartMatchmakingData>(data)
 
-        val builtMessage = TransactionsExecutor.createMessage(
-            loritta,
-            context.i18nContext,
-            decoded
+        CoinFlipBetGlobalExecutor.addToMatchmakingQueue(
+            context,
+            decoded.quantity
         )
-
-        context.updateMessage {
-            builtMessage()
-        }
     }
 }

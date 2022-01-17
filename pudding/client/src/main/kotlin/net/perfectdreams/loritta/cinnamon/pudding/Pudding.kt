@@ -10,10 +10,12 @@ import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
+import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
+import net.perfectdreams.loritta.cinnamon.pudding.services.PaymentsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ShipEffectsService
@@ -26,9 +28,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
@@ -50,6 +57,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import java.security.SecureRandom
 
 class Pudding(private val database: Database) {
     companion object {
@@ -118,7 +126,10 @@ class Pudding(private val database: Database) {
     val backgrounds = BackgroundsService(this)
     val profileDesigns = ProfileDesignsService(this)
     val bovespaBroker = BovespaBrokerService(this)
+    val bets = BetsService(this)
+    val payments = PaymentsService(this)
     val puddingTasks = PuddingTasks(this)
+    val random = SecureRandom()
 
     /**
      * Starts tasks related to [Pudding], like table partition creation, purge old data, etc.
@@ -160,7 +171,12 @@ class Pudding(private val database: Database) {
             SonhosTransactionsLog,
             BrokerSonhosTransactionsLog,
             CachedDiscordUsers,
-            SparklyPowerLSXSonhosTransactionsLog
+            CoinFlipBetGlobalMatchmakingQueue,
+            CoinFlipBetGlobalMatchmakingResults,
+            CoinFlipBetGlobalSonhosTransactionsLog,
+            SparklyPowerLSXSonhosTransactionsLog,
+            Dailies,
+            Payments
         )
 
         if (schemas.isNotEmpty())

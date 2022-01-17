@@ -24,6 +24,12 @@ enum class AchievementCategory(
         Emotes.LoriReading,
         Color(127, 0, 255)
     ),
+    COIN_FLIP_BET(
+        I18nKeysData.Achievements.Category.CoinFlipBet.Title,
+        I18nKeysData.Achievements.Category.CoinFlipBet.Description("/bet coinflip"),
+        Emotes.CoinHeads,
+        Color(203, 186, 123)
+    ),
     BROKER(
         I18nKeysData.Achievements.Category.Broker.Title,
         I18nKeysData.Achievements.Category.Broker.Description("/broker"),

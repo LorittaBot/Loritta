@@ -8,6 +8,9 @@ achievements:
     rate:
       title: "Rate"
       description: "Because you need validation, and rewards, from someone else to be happy... Achievements related to the `{command}` command" # This references the "/rate" description
+    coinFlipBet:
+      title: "Coin Flip Bet"
+      description: "I never thought that flipping a coin was so much fun! Achievements related to the `{command}` command"
     broker:
       title: "Loritta's Stock Market Simulator"
       description: "Make your sad feeling after losing sonhos go away with achievements! They won't bring your sonhos or your stock shares back, but they are sure nice to have! Achievements related to the `{command}` command" # This references the "/broker" description
@@ -57,6 +60,23 @@ achievements:
     weirdo:
       title: "Are you... a weirdo?"
       description: "Rate... or well, try to, rate a child"
+
+    # ===[ COIN FLIP BET ]===
+    coinFlipBetProfessional:
+      title: "Professional Coin Flipper"
+      description: "Play 500 matches of coin flip bet in just 24 hours"
+    coinFlipBetWin:
+      title: "Talented Coin Flipper"
+      description: "Win a coin flip bet"
+    coinFlipBetLose:
+      title: "Pinch of Bad Luck"
+      description: "Lose a coin flip bet"
+    coinFlipBetBugSevenSequentialWins:
+      title: "Bugged Coin Flip??" #This references the users that are always complaining that the coin flip is bugged and that's why they are always losing
+      description: "Win a coin flip bet seven times in a row"
+    coinFlipBetBugSevenSequentialLosses:
+      title: "Someone Bugged my Coin Flip!" #This references the users that are always complaining that the coin flip is bugged and that's why they are always losing
+      description: "Lose a coin flip bet seven times in a row"
 
     # ===[ BROKER ]===
     stonks:

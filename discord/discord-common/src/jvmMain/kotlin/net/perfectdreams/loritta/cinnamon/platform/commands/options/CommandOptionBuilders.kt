@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.options
 
-import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteExecutorDeclaration
 import net.perfectdreams.discordinteraktions.common.entities.Channel
 import net.perfectdreams.discordinteraktions.common.entities.Role
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteExecutorDeclaration
 
 sealed class CommandOptionBuilder<T, ChoiceableType>(
     val name: String,
