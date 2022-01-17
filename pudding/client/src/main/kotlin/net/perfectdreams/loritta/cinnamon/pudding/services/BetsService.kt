@@ -385,7 +385,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     var loserStreakCount = 0
 
                     for (data in loserUserMatchmakingData) {
-                        if (data[CoinFlipBetGlobalMatchmakingResults.winner].value != winnerAsLong)
+                        if (data[CoinFlipBetGlobalMatchmakingResults.loser].value != loserAsLong)
                             break
 
                         loserStreakCount++
