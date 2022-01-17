@@ -149,6 +149,52 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         }
     }
 
+    suspend fun getCoinFlipBetGlobalUserWinningStreakStats(
+        userId: UserId
+    ): Int {
+        val userAsLong = userId.value.toLong()
+
+        return pudding.transaction {
+            val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+                (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong)
+            }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+
+            var streakCount = 0
+
+            for (data in userMatchmakingData) {
+                if (data[CoinFlipBetGlobalMatchmakingResults.winner].value != userAsLong)
+                    break
+
+                streakCount++
+            }
+
+            return@transaction streakCount
+        }
+    }
+
+    suspend fun getCoinFlipBetGlobalUserLosingStreakStats(
+        userId: UserId
+    ): Int {
+        val userAsLong = userId.value.toLong()
+
+        return pudding.transaction {
+            val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
+                (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong)
+            }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
+
+            var streakCount = 0
+
+            for (data in userMatchmakingData) {
+                if (data[CoinFlipBetGlobalMatchmakingResults.loser].value != userAsLong)
+                    break
+
+                streakCount++
+            }
+
+            return@transaction streakCount
+        }
+    }
+
     suspend fun removeFromCoinFlipBetGlobalMatchmakingQueue(
         userId: UserId,
         quantity: Long
