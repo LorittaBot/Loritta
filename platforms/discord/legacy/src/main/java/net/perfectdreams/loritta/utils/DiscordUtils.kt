@@ -79,6 +79,21 @@ object DiscordUtils {
 			}
 		}
 
+		// First, we will check if it is an ID and then we will check if it is a name
+		// This avoids users using another user's ID as a name, causing havoc
+		// (Example: "+pay 297153970613387264", which would've meant that you want to transfer to Loritta
+		// but if someone has the name "297153970613387264", it would've been transferred to them, not Lori!)
+		// Check if it is a Discord ID
+		try {
+			if (extractUserViaUserIdRetrieval) {
+				val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(input)
+
+				if (user != null) // Pelo visto é!
+					return user
+			}
+		} catch (e: Exception) {
+		}
+
 		// Vamos tentar procurar pelo username + discriminator
 		if (guild != null) {
 			if (extractUserViaNameAndDiscriminator) {
@@ -110,17 +125,6 @@ object DiscordUtils {
 				if (matchedMember != null)
 					return matchedMember.user
 			}
-		}
-
-		// Ok, então só pode ser um ID do Discord!
-		try {
-			if (extractUserViaUserIdRetrieval) {
-				val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(input)
-
-				if (user != null) // Pelo visto é!
-					return user
-			}
-		} catch (e: Exception) {
 		}
 
 		return null
