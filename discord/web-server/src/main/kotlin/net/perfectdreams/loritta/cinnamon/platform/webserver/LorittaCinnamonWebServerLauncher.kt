@@ -12,8 +12,29 @@ import kotlin.concurrent.thread
 object LorittaCinnamonWebServerLauncher {
     private val logger = KotlinLogging.logger {}
 
+    fun getMaxMemory(): Long {
+        return Runtime.getRuntime().maxMemory()
+    }
+
+    fun getUsedMemory(): Long {
+        return getMaxMemory() - getFreeMemory()
+    }
+
+    fun getTotalMemory(): Long {
+        return Runtime.getRuntime().totalMemory()
+    }
+
+    fun getFreeMemory(): Long {
+        return Runtime.getRuntime().freeMemory()
+    }
+
     @JvmStatic
     fun main(args: Array<String>) {
+        logger.info { "Max Memory: ${getMaxMemory()}"}
+        logger.info { "Used Memory: ${getUsedMemory()}"}
+        logger.info { "Total Memory: ${getTotalMemory()}"}
+        logger.info { "Free Memory: ${getFreeMemory()}"}
+
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaCinnamonWebServer::class, ConfigUtils.defaultConfigFileName)
         logger.info { "Loaded Loritta's configuration file" }
 
