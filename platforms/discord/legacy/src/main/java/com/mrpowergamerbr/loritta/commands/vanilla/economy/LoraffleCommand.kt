@@ -23,6 +23,8 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.utils.AccountUtils
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.GACampaigns
 
 class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), CommandCategory.ECONOMY) {
 	companion object {
@@ -37,15 +39,15 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 		if (arg0 == "clear" && loritta.config.isOwner(context.userHandle.id)) {
 			context.reply(
-                    LorittaReply(
-                            "Limpando ${RaffleThread.userIds.size}..."
-                    )
+				LorittaReply(
+					"Limpando ${RaffleThread.userIds.size}..."
+				)
 			)
 			RaffleThread.userIds.clear()
 			context.reply(
-                    LorittaReply(
-                            "Limpo! ${RaffleThread.userIds.size}"
-                    )
+				LorittaReply(
+					"Limpo! ${RaffleThread.userIds.size}"
+				)
 			)
 			return
 		}
@@ -59,39 +61,39 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 			if (dailyReward == null) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
 				context.reply(
-                        LorittaReply(
-                                locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
-                                Constants.ERROR
-                        )
+					LorittaReply(
+						locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
+						Constants.ERROR
+					)
 				)
 				return
 			}
 
 			if (quantity > MAX_TICKETS_BY_USER_PER_ROUND) {
 				context.reply(
-                        LorittaReply(
-                                "Você só pode apostar no máximo $MAX_TICKETS_BY_USER_PER_ROUND tickets por rodada!",
-                                Constants.ERROR
-                        )
+					LorittaReply(
+						"Você só pode apostar no máximo $MAX_TICKETS_BY_USER_PER_ROUND tickets por rodada!",
+						Constants.ERROR
+					)
 				)
 				return
 			}
 
 			val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/raffle")
-					.userAgent(loritta.lorittaCluster.getUserAgent())
-					.header("Authorization", loritta.lorittaInternalApiKey.name)
-					.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-					.readTimeout(loritta.config.loritta.clusterReadTimeout)
-					.send(
-							gson.toJson(
-									jsonObject(
-											"userId" to context.userHandle.id,
-											"quantity" to quantity,
-											"localeId" to context.config.localeId
-									)
-							)
+				.userAgent(loritta.lorittaCluster.getUserAgent())
+				.header("Authorization", loritta.lorittaInternalApiKey.name)
+				.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+				.readTimeout(loritta.config.loritta.clusterReadTimeout)
+				.send(
+					gson.toJson(
+						jsonObject(
+							"userId" to context.userHandle.id,
+							"quantity" to quantity,
+							"localeId" to context.config.localeId
+						)
 					)
-					.body()
+				)
+				.body()
 
 			val json = JsonParser.parseString(body)
 
@@ -99,33 +101,42 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 
 			if (status == BuyRaffleTicketStatus.THRESHOLD_EXCEEDED) {
 				context.reply(
-                        LorittaReply(
-                                "Você já tem tickets demais! Guarde um pouco do seu dinheiro para a próxima rodada!",
-                                Constants.ERROR
-                        )
+					LorittaReply(
+						"Você já tem tickets demais! Guarde um pouco do seu dinheiro para a próxima rodada!",
+						Constants.ERROR
+					)
 				)
 				return
 			}
 
 			if (status == BuyRaffleTicketStatus.TOO_MANY_TICKETS) {
 				context.reply(
-                        LorittaReply(
-                                "Você não pode apostar tantos tickets assim! Você pode apostar, no máximo, mais ${MAX_TICKETS_BY_USER_PER_ROUND - json["ticketCount"].int} tickets!",
-                                Constants.ERROR
-                        )
+					LorittaReply(
+						"Você não pode apostar tantos tickets assim! Você pode apostar, no máximo, mais ${MAX_TICKETS_BY_USER_PER_ROUND - json["ticketCount"].int} tickets!",
+						Constants.ERROR
+					)
 				)
 				return
 			}
 
 			if (status == BuyRaffleTicketStatus.NOT_ENOUGH_MONEY) {
 				context.reply(
-                        LorittaReply(
-                                context.locale["commands.command.raffle.notEnoughMoney", json["canOnlyPay"].int, quantity, if (quantity == 1) "" else "s"],
-                                Constants.ERROR
-                        )
+					LorittaReply(
+						context.locale["commands.command.raffle.notEnoughMoney", json["canOnlyPay"].int, quantity, if (quantity == 1) "" else "s"],
+						Constants.ERROR
+					),
+					LorittaReply(
+						GACampaigns.sonhosBundlesUpsellDiscordMessage(
+							"https://loritta.website/", // Hardcoded, woo
+							"loraffle-legacy",
+							"buy-tickets-not-enough-sonhos"
+						),
+						prefix = Emotes.LORI_RICH.asMention
+					)
 				)
 				return
 			}
+
 
 			if (status == BuyRaffleTicketStatus.STALE_RAFFLE_DATA) {
 				context.reply(
@@ -138,29 +149,29 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			}
 
 			context.reply(
-                    LorittaReply(
-                            context.locale["commands.command.raffle.youBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * 250],
-                            "\uD83C\uDFAB"
-                    ),
-                    LorittaReply(
-                            context.locale["commands.command.raffle.wantMoreChances", context.config.commandPrefix],
-                            mentionUser = false
-                    )
+				LorittaReply(
+					context.locale["commands.command.raffle.youBoughtAnTicket", quantity, if (quantity == 1) "" else "s", quantity.toLong() * 250],
+					"\uD83C\uDFAB"
+				),
+				LorittaReply(
+					context.locale["commands.command.raffle.wantMoreChances", context.config.commandPrefix],
+					mentionUser = false
+				)
 			)
 			return
 		}
 
 		val body = HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/raffle")
-				.userAgent(loritta.lorittaCluster.getUserAgent())
-				.header("Authorization", loritta.lorittaInternalApiKey.name)
-				.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-				.readTimeout(loritta.config.loritta.clusterReadTimeout)
-				.body()
+			.userAgent(loritta.lorittaCluster.getUserAgent())
+			.header("Authorization", loritta.lorittaInternalApiKey.name)
+			.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+			.readTimeout(loritta.config.loritta.clusterReadTimeout)
+			.body()
 
 		val json = JsonParser.parseString(body)
 
 		val lastWinnerId = json["lastWinnerId"].nullString
-				?.toLongOrNull()
+			?.toLongOrNull()
 		val currentTickets = json["currentTickets"].int
 		val usersParticipating = json["usersParticipating"].int
 		val started = json["started"].long
@@ -184,40 +195,40 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		}.stripCodeMarks()
 
 		context.reply(
-                LorittaReply(
-                        "**Lorifa**",
-                        "<:loritta:331179879582269451>"
-                ),
-                LorittaReply(
-                        context.locale["commands.command.raffle.currentPrize", (currentTickets * 250).toString()],
-                        "<:starstruck:540988091117076481>",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        context.locale["commands.command.raffle.boughtTickets", currentTickets],
-                        "\uD83C\uDFAB",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        context.locale["commands.command.raffle.usersParticipating", usersParticipating],
-                        "\uD83D\uDC65",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        context.locale["commands.command.raffle.lastWinner", "$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize],
-                        "\uD83D\uDE0E",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        context.locale["commands.command.raffle.resultsIn", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(started + 3600000, locale)],
-                        prefix = "\uD83D\uDD52",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        context.locale["commands.command.raffle.buyAnTicketFor", context.config.commandPrefix],
-                        prefix = "\uD83D\uDCB5",
-                        mentionUser = false
-                )
+			LorittaReply(
+				"**Lorifa**",
+				"<:loritta:331179879582269451>"
+			),
+			LorittaReply(
+				context.locale["commands.command.raffle.currentPrize", (currentTickets * 250).toString()],
+				"<:starstruck:540988091117076481>",
+				mentionUser = false
+			),
+			LorittaReply(
+				context.locale["commands.command.raffle.boughtTickets", currentTickets],
+				"\uD83C\uDFAB",
+				mentionUser = false
+			),
+			LorittaReply(
+				context.locale["commands.command.raffle.usersParticipating", usersParticipating],
+				"\uD83D\uDC65",
+				mentionUser = false
+			),
+			LorittaReply(
+				context.locale["commands.command.raffle.lastWinner", "$nameAndDiscriminator (${lastWinner?.id})", lastWinnerPrize],
+				"\uD83D\uDE0E",
+				mentionUser = false
+			),
+			LorittaReply(
+				context.locale["commands.command.raffle.resultsIn", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(started + 3600000, locale)],
+				prefix = "\uD83D\uDD52",
+				mentionUser = false
+			),
+			LorittaReply(
+				context.locale["commands.command.raffle.buyAnTicketFor", context.config.commandPrefix],
+				prefix = "\uD83D\uDCB5",
+				mentionUser = false
+			)
 		)
 	}
 

@@ -1,14 +1,17 @@
 package net.perfectdreams.loritta.plugin.helpinghands.commands
 
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.GACampaigns
 import net.perfectdreams.loritta.utils.GenericReplies
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.sendStyledReply
 
 class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
         plugin.loritta,
@@ -47,8 +50,24 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
 
             val profile = lorittaUser.profile
 
-            if (LOSE_PRIZE > profile.money)
-                fail(locale["commands.command.guessnumber.notEnoughSonhos"])
+            if (LOSE_PRIZE > profile.money) {
+                sendStyledReply {
+                    this.append {
+                        message = locale["commands.command.guessnumber.notEnoughSonhos"]
+                        prefix = Constants.ERROR
+                    }
+
+                    this.append {
+                        message = GACampaigns.sonhosBundlesUpsellDiscordMessage(
+                            "https://loritta.website/", // Hardcoded, woo
+                            "guess-number-legacy",
+                            "bet-not-enough-sonhos"
+                        )
+                        prefix = Emotes.LORI_RICH.asMention
+                    }
+                }
+                return@executesDiscord
+            }
 
             val randomNumber = Loritta.RANDOM.nextInt(1, 11)
             val won = number == randomNumber

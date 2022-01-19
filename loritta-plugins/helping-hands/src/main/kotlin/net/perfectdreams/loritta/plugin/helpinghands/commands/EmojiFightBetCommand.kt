@@ -2,14 +2,17 @@ package net.perfectdreams.loritta.plugin.helpinghands.commands
 
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.plugin.helpinghands.utils.EmojiFight
 import net.perfectdreams.loritta.utils.AccountUtils
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.GACampaigns
 import net.perfectdreams.loritta.utils.GenericReplies
 import net.perfectdreams.loritta.utils.NumberUtils
+import net.perfectdreams.loritta.utils.sendStyledReply
 
 class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
 		plugin.loritta,
@@ -50,8 +53,24 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 
 			val selfUserProfile = lorittaUser.profile
 
-			if (totalEarnings > selfUserProfile.money)
-				fail(locale["commands.command.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
+			if (totalEarnings > selfUserProfile.money) {
+				sendStyledReply {
+					this.append {
+						message = locale["commands.command.flipcoinbet.notEnoughMoneySelf"]
+						prefix = Constants.ERROR
+					}
+
+					this.append {
+						message = GACampaigns.sonhosBundlesUpsellDiscordMessage(
+							"https://loritta.website/", // Hardcoded, woo
+							"bet-coinflip-legacy",
+							"bet-not-enough-sonhos"
+						)
+						prefix = Emotes.LORI_RICH.asMention
+					}
+				}
+				return@executesDiscord
+			}
 
 			// Only allow users to participate in a emoji fight bet if the user got their daily reward today
 			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)

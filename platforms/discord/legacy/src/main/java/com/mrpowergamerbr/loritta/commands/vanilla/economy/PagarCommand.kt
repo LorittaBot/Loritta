@@ -12,8 +12,6 @@ import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.gson
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
@@ -21,10 +19,13 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.utils.AccountUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.GACampaigns
 import net.perfectdreams.loritta.utils.NumberUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
@@ -134,10 +135,18 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 			if (howMuch.toBigDecimal() > balanceQuantity) {
 				context.reply(
-						LorittaReply(
-								locale["commands.command.pay.insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
-								Constants.ERROR
-						)
+					LorittaReply(
+						locale["commands.command.pay.insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
+						Constants.ERROR
+					),
+					LorittaReply(
+						GACampaigns.sonhosBundlesUpsellDiscordMessage(
+							"https://loritta.website/", // Hardcoded, woo
+							"pay-legacy",
+							"transfer-not-enough-sonhos"
+						),
+						prefix = Emotes.LORI_RICH.asMention
+					)
 				)
 				return
 			}

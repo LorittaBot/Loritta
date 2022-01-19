@@ -15,7 +15,8 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.api.commands.*
+import net.perfectdreams.loritta.api.commands.ArgumentType
+import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
@@ -23,6 +24,8 @@ import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstrac
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.tables.Raspadinhas
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.GACampaigns
+import net.perfectdreams.loritta.utils.sendStyledReply
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
@@ -138,12 +141,21 @@ class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 		val mutex = mutexes.getOrPut(context.user.idLong, { Mutex() })
 		mutex.withLock {
 			if (150 > profile.money) {
-				context.reply(
-						LorittaReply(
-								"Você precisa de 150 sonhos para poder comprar uma raspadinha!",
-								Constants.ERROR
+				context.sendStyledReply {
+					this.append {
+						this.message = "Você precisa de 150 sonhos para poder comprar uma raspadinha!"
+						prefix = Constants.ERROR
+					}
+
+					this.append {
+						this.message = GACampaigns.sonhosBundlesUpsellDiscordMessage(
+							"https://loritta.website/", // Hardcoded, woo
+							"scratch-card-legacy",
+							"bet-not-enough-sonhos"
 						)
-				)
+						prefix = Emotes.LORI_RICH.asMention
+					}
+				}
 				return@withLock
 			}
 

@@ -13,14 +13,22 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
-import net.perfectdreams.loritta.utils.*
+import net.perfectdreams.loritta.utils.AccountUtils
+import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.GACampaigns
+import net.perfectdreams.loritta.utils.GenericReplies
+import net.perfectdreams.loritta.utils.NumberUtils
+import net.perfectdreams.loritta.utils.PaymentUtils
+import net.perfectdreams.loritta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.utils.extensions.toJDA
+import net.perfectdreams.loritta.utils.sendStyledReply
 
 class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
 		plugin.loritta,
@@ -94,8 +102,24 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 
 			val selfUserProfile = lorittaUser.profile
 
-			if (number > selfUserProfile.money)
-				fail(locale["commands.command.flipcoinbet.notEnoughMoneySelf"], Constants.ERROR)
+			if (number > selfUserProfile.money) {
+				sendStyledReply {
+					this.append {
+						message = locale["commands.command.flipcoinbet.notEnoughMoneySelf"]
+						prefix = Constants.ERROR
+					}
+
+					this.append {
+						message = GACampaigns.sonhosBundlesUpsellDiscordMessage(
+							"https://loritta.website/", // Hardcoded, woo
+							"bet-coinflip-legacy",
+							"bet-not-enough-sonhos"
+						)
+						prefix = Emotes.LORI_RICH.asMention
+					}
+				}
+				return@executesDiscord
+			}
 
 			val invitedUserProfile = loritta.getOrCreateLorittaProfile(invitedUser.id)
 			val bannedState = invitedUserProfile.getBannedState()
