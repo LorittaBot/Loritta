@@ -64,6 +64,7 @@ class GuessNumberCommand(plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
                             "bet-not-enough-sonhos"
                         )
                         prefix = Emotes.LORI_RICH.asMention
+                        mentionUser = false
                     }
                 }
                 return@executesDiscord

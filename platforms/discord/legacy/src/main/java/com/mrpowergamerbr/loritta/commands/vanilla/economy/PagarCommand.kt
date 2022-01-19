@@ -145,7 +145,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 							"pay-legacy",
 							"transfer-not-enough-sonhos"
 						),
-						prefix = Emotes.LORI_RICH.asMention
+						prefix = Emotes.LORI_RICH.asMention,
+						mentionUser = false
 					)
 				)
 				return

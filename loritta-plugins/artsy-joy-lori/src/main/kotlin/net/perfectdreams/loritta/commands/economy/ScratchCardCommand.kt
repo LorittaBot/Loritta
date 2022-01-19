@@ -154,6 +154,7 @@ class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 							"bet-not-enough-sonhos"
 						)
 						prefix = Emotes.LORI_RICH.asMention
+						mentionUser = false
 					}
 				}
 				return@withLock

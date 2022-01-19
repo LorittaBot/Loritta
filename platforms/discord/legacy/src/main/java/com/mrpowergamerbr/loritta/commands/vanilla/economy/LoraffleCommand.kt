@@ -131,7 +131,8 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 							"loraffle-legacy",
 							"buy-tickets-not-enough-sonhos"
 						),
-						prefix = Emotes.LORI_RICH.asMention
+						prefix = Emotes.LORI_RICH.asMention,
+						mentionUser = false
 					)
 				)
 				return

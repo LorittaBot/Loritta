@@ -31,10 +31,10 @@ import net.perfectdreams.loritta.utils.extensions.toJDA
 import net.perfectdreams.loritta.utils.sendStyledReply
 
 class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
-		plugin.loritta,
-		listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
-				.flatMap { listOf("$it bet", "$it apostar") },
-		CommandCategory.ECONOMY
+	plugin.loritta,
+	listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
+		.flatMap { listOf("$it bet", "$it apostar") },
+	CommandCategory.ECONOMY
 ) {
 	companion object {
 		// Used to avoid dupes
@@ -89,7 +89,7 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 			}
 
 			val number = NumberUtils.convertShortenedNumberToLong(args[1])
-					?: GenericReplies.invalidNumber(this, args[1].stripCodeMarks())
+				?: GenericReplies.invalidNumber(this, args[1].stripCodeMarks())
 
 			val tax = (number * (1.0 - plan.totalCoinFlipReward)).toLong()
 			val money = number - tax
@@ -116,6 +116,7 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 							"bet-not-enough-sonhos"
 						)
 						prefix = Emotes.LORI_RICH.asMention
+						mentionUser = false
 					}
 				}
 				return@executesDiscord
@@ -129,43 +130,43 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 
 			// Only allow users to participate in a coin flip bet if the user got their daily reward today
 			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
-					?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
+				?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
 
 			val message = reply(
-					LorittaReply(
-						if (hasNoTax)
-							locale[
-									"commands.command.flipcoinbet.startBetNoTax",
-									invitedUser.asMention,
-									user.asMention,
-									locale["commands.command.flipcoin.heads"],
-									money,
-									locale["commands.command.flipcoin.tails"],
-									whoHasTheNoTaxReward?.asMention ?: "???"
-							]
-						else
-							locale[
-									"commands.command.flipcoinbet.startBet",
-									invitedUser.asMention,
-									user.asMention,
-									locale["commands.command.flipcoin.heads"],
-									money,
-									locale["commands.command.flipcoin.tails"],
-									number,
-									tax
-							],
-						Emotes.LORI_RICH,
-						mentionUser = false
-					),
-					LorittaReply(
-							locale[
-									"commands.command.flipcoinbet.clickToAcceptTheBet",
-									invitedUser.asMention,
-									"✅"
-							],
-							"🤝",
-							mentionUser = false
-					)
+				LorittaReply(
+					if (hasNoTax)
+						locale[
+								"commands.command.flipcoinbet.startBetNoTax",
+								invitedUser.asMention,
+								user.asMention,
+								locale["commands.command.flipcoin.heads"],
+								money,
+								locale["commands.command.flipcoin.tails"],
+								whoHasTheNoTaxReward?.asMention ?: "???"
+						]
+					else
+						locale[
+								"commands.command.flipcoinbet.startBet",
+								invitedUser.asMention,
+								user.asMention,
+								locale["commands.command.flipcoin.heads"],
+								money,
+								locale["commands.command.flipcoin.tails"],
+								number,
+								tax
+						],
+					Emotes.LORI_RICH,
+					mentionUser = false
+				),
+				LorittaReply(
+					locale[
+							"commands.command.flipcoinbet.clickToAcceptTheBet",
+							invitedUser.asMention,
+							"✅"
+					],
+					"🤝",
+					mentionUser = false
+				)
 			).toJDA()
 
 			message.onReactionAdd(this) {
@@ -179,8 +180,8 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 								plugin.launch {
 									mutex.withLock {
 										listOf(
-												selfUserProfile.refreshInDeferredTransaction(),
-												invitedUserProfile.refreshInDeferredTransaction()
+											selfUserProfile.refreshInDeferredTransaction(),
+											invitedUserProfile.refreshInDeferredTransaction()
 										).awaitAll()
 
 										if (number > selfUserProfile.money)
@@ -212,10 +213,10 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 												invitedUserProfile.takeSonhosNested(number)
 
 												PaymentUtils.addToTransactionLogNested(
-														number,
-														SonhosPaymentReason.COIN_FLIP_BET,
-														givenBy = invitedUserProfile.id.value,
-														receivedBy = selfUserProfile.id.value
+													number,
+													SonhosPaymentReason.COIN_FLIP_BET,
+													givenBy = invitedUserProfile.id.value,
+													receivedBy = selfUserProfile.id.value
 												)
 											}
 										} else {
@@ -226,25 +227,25 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 												selfUserProfile.takeSonhosNested(number)
 
 												PaymentUtils.addToTransactionLogNested(
-														number,
-														SonhosPaymentReason.COIN_FLIP_BET,
-														givenBy = selfUserProfile.id.value,
-														receivedBy = invitedUserProfile.id.value
+													number,
+													SonhosPaymentReason.COIN_FLIP_BET,
+													givenBy = selfUserProfile.id.value,
+													receivedBy = invitedUserProfile.id.value
 												)
 											}
 										}
 
 										reply(
-												LorittaReply(
-														"**$message!**",
-														prefix,
-														mentionUser = false
-												),
-												LorittaReply(
-														locale["commands.command.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
-														Emotes.LORI_RICH,
-														mentionUser = false
-												)
+											LorittaReply(
+												"**$message!**",
+												prefix,
+												mentionUser = false
+											),
+											LorittaReply(
+												locale["commands.command.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
+												Emotes.LORI_RICH,
+												mentionUser = false
+											)
 										)
 									}
 								}

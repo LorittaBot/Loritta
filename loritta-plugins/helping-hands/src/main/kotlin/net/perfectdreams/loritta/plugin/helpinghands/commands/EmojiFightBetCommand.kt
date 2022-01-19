@@ -67,6 +67,7 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 							"bet-not-enough-sonhos"
 						)
 						prefix = Emotes.LORI_RICH.asMention
+						mentionUser = false
 					}
 				}
 				return@executesDiscord
