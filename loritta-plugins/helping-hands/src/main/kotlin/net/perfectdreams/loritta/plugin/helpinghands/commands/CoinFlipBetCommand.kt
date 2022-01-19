@@ -245,6 +245,10 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 												locale["commands.command.flipcoinbet.congratulations", winner.asMention, money, loser.asMention],
 												Emotes.LORI_RICH,
 												mentionUser = false
+											),
+											LorittaReply(
+												"Psiu, cansado de procurar pessoas que querem apostar com você? Então experimente o `/bet coinflipglobal`, um novo comando que permite você apostar com outros usuários, inclusive de outros servidores, sem precisar sair do conforto da sua ~~casa~~ servidor!",
+												mentionUser = false
 											)
 										)
 									}
