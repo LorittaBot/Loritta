@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.DailyCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -49,15 +50,12 @@ class DailyExecutor : SlashCommandExecutor() {
                     Emotes.Error
                 )
 
-                styled(
-                    context.i18nContext.get(
-                        GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                            context.loritta.config.website,
-                            "daily",
-                            "please-wait-daily-reset"
-                        )
-                    ),
-                    Emotes.CreditCard
+                userHaventGotDailyTodayOrUpsellSonhosBundles(
+                    context.loritta,
+                    context.i18nContext,
+                    UserId(context.user.id.value),
+                    "daily",
+                    "please-wait-daily-reset"
                 )
             }
             return

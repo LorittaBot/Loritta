@@ -9,4 +9,4 @@ import net.perfectdreams.discordinteraktions.common.builder.message.create.Inter
  *
  * Implementations should catch this exception and send the [builder], logging the error is not required.
  */
-class CommandException(val builder: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) : RuntimeException()
+class CommandException(val builder: InteractionOrFollowupMessageCreateBuilder) : RuntimeException()

@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
+import net.perfectdreams.loritta.cinnamon.platform.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
@@ -178,15 +179,13 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                                 )}",
                                 Emotes.LoriSob
                             )
-                            styled(
-                                otherUserI18nContext.get(
-                                    GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                                        context.loritta.config.website,
-                                        "bet-coinflip-global",
-                                        "removed-from-mm"
-                                    )
-                                ),
-                                Emotes.CreditCard
+
+                            userHaventGotDailyTodayOrUpsellSonhosBundles(
+                                context.loritta,
+                                context.i18nContext,
+                                UserId(context.user.id.value),
+                                "bet-coinflip-global",
+                                "removed-from-mm"
                             )
                         }
                     }
@@ -200,15 +199,12 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                                 Emotes.LoriSob
                             )
 
-                            styled(
-                                context.i18nContext.get(
-                                    GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                                        context.loritta.config.website,
-                                        "bet-coinflip-global",
-                                        "mm-check"
-                                    )
-                                ),
-                                Emotes.CreditCard
+                            userHaventGotDailyTodayOrUpsellSonhosBundles(
+                                context.loritta,
+                                context.i18nContext,
+                                UserId(context.user.id.value),
+                                "bet-coinflip-global",
+                                "mm-check"
                             )
                         }
                     }

@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy
 
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
@@ -12,6 +11,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
+import net.perfectdreams.loritta.cinnamon.platform.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 
 class BrokerBuyStockExecutor : SlashCommandExecutor() {
@@ -81,15 +82,12 @@ class BrokerBuyStockExecutor : SlashCommandExecutor() {
                     Emotes.LoriSob
                 )
 
-                styled(
-                    context.i18nContext.get(
-                        GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                            context.loritta.config.website,
-                            "lori-broker",
-                            "buy-shares-not-enough-sonhos"
-                        )
-                    ),
-                    Emotes.CreditCard
+                userHaventGotDailyTodayOrUpsellSonhosBundles(
+                    context.loritta,
+                    context.i18nContext,
+                    UserId(context.user.id.value),
+                    "lori-broker",
+                    "buy-shares-not-enough-sonhos"
                 )
             }
         } catch (e: BovespaBrokerService.TooManySharesException) {

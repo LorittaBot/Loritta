@@ -344,7 +344,7 @@ class SlashCommandExecutorWrapper(
                 return CommandExecutionSuccess // SilentCommandExceptions should be ignored
 
             if (e is CommandException) {
-                context.sendMessage(e.builder)
+                context.sendPublicMessage(e.builder)
                 return CommandExecutionSuccess
             }
 

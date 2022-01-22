@@ -7,7 +7,6 @@ import net.perfectdreams.discordinteraktions.common.components.GuildComponentCon
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -98,7 +97,7 @@ class SelectMenuWithDataExecutorWrapper(
                 return // SilentCommandExceptions should be ignored
 
             if (e is CommandException) {
-                context.sendMessage(e.builder)
+                context.sendPublicMessage(e.builder)
                 return
             }
 
