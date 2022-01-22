@@ -274,7 +274,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     val otherUserActiveDonations = pudding.payments._getActiveMoneyFromDonations(otherUserId)
 
                     // TODO: Don't hardcode this! Move this to somewhere else
-                    val taxPercentage = 0.05
+                    var taxPercentage = 0.05
                     // "Recommended" plan (R$ 40) has non-tax for coinflip
                     // We check >= 25 because... idk, it doesn't really matter
                     val noSonhosTax = selfActiveDonations >= 25 || otherUserActiveDonations >= 25
@@ -291,6 +291,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     if (noSonhosTax) {
                         tax = null
                         quantityAfterTax = quantity
+                        taxPercentage = 0.0
                     } else {
                         tax = (quantity * taxPercentage).toLong()
                         quantityAfterTax = quantity - tax
