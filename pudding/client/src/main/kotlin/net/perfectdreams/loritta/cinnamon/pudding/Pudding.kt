@@ -7,12 +7,13 @@ import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
+import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedInteractionsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
 import net.perfectdreams.loritta.cinnamon.pudding.services.PaymentsService
@@ -33,6 +34,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchm
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
@@ -148,23 +150,6 @@ class Pudding(private val database: Database) {
             logger.warn { "I wasn't able to get the machine's hostname! Falling back to \"Unknown\"..." }
             return "$suffix - Unknown"
         }
-
-        /* private val puddingApplicationName: String by lazy {
-            try {
-                val proc = ProcessBuilder("hostname")
-                    .start()
-
-                proc.waitFor(5, TimeUnit.SECONDS)
-                proc.destroyForcibly()
-
-                val hostname = proc.inputStream.readAllBytes().toString(Charsets.UTF_8)
-
-                "Loritta Cinnamon Pudding - $hostname"
-            } catch (e: Exception) {
-                logger.warn(e) { "Something went wrong while trying to get the machine's hostname! Falling back to \"Unknown\"..." }
-                "Loritta Cinnamon Pudding - Unknown"
-            }
-        } */
     }
 
     val users = UsersService(this)
@@ -173,7 +158,7 @@ class Pudding(private val database: Database) {
     val shipEffects = ShipEffectsService(this)
     val marriages = MarriagesService(this)
     val interactionsData = InteractionsDataService(this)
-    val executedApplicationCommandsLog = ExecutedApplicationCommandsLogService(this)
+    val executedInteractionsLog = ExecutedInteractionsLogService(this)
     val backgrounds = BackgroundsService(this)
     val profileDesigns = ProfileDesignsService(this)
     val bovespaBroker = BovespaBrokerService(this)
@@ -216,6 +201,7 @@ class Pudding(private val database: Database) {
             UserAchievements,
             InteractionsData,
             ExecutedApplicationCommandsLog,
+            ExecutedComponentsLog,
             TickerPrices,
             BoughtStocks,
             BannedUsers,
@@ -234,6 +220,7 @@ class Pudding(private val database: Database) {
             transaction {
                 createOrUpdatePostgreSQLEnum(AchievementType.values())
                 createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
+                createOrUpdatePostgreSQLEnum(ComponentType.values())
                 createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
                 createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
 
@@ -247,28 +234,31 @@ class Pudding(private val database: Database) {
                 )
 
                 // This is a workaround because Exposed does not support (yet) Partitioned Tables
-                if (ExecutedApplicationCommandsLog in schemas) {
-                    // The reason we use partitioned tables for the ExecutedApplicationCommandsLog table, is because there is a LOT of commands there
-                    // Removing old logs is painfully slow due to vacuuming and stuff, querying recent commands is also pretty slow.
-                    // So it is better to split stuff up in separate partitions!
-                    val createStatements = createStatementsPartitioned(ExecutedApplicationCommandsLog, "RANGE(sent_at)")
-
-                    execStatements(false, createStatements)
-                    commit()
-                }
-
-                // Now call the addMissingColumnsStatements again with the partitioned tables
-                // We can not use createMissingTablesAndColumns here because Exposed will think that the table does not exist
-                // because it is a partitioned table!
-                if (ExecutedApplicationCommandsLog in schemas) {
-                    val alterStatements = SchemaUtils.addMissingColumnsStatements(
-                        ExecutedApplicationCommandsLog
-                    )
-
-                    execStatements(false, alterStatements)
-                    commit()
-                }
+                if (ExecutedApplicationCommandsLog in schemas)
+                    createPartitionedTable(ExecutedApplicationCommandsLog)
+                if (ExecutedComponentsLog in schemas)
+                    createPartitionedTable(ExecutedComponentsLog)
             }
+    }
+
+    private fun Transaction.createPartitionedTable(table: Table) {
+        // The reason we use partitioned tables for the ExecutedApplicationCommandsLog table, is because there is a LOT of commands there
+        // Removing old logs is painfully slow due to vacuuming and stuff, querying recent commands is also pretty slow.
+        // So it is better to split stuff up in separate partitions!
+        val createStatements = createStatementsPartitioned(table, "RANGE(sent_at)")
+
+        execStatements(false, createStatements)
+        commit()
+
+        val alterStatements = SchemaUtils.addMissingColumnsStatements(
+            table
+        )
+
+        // Now call the addMissingColumnsStatements again with the partitioned tables
+        // We can not use createMissingTablesAndColumns here because Exposed will think that the table does not exist
+        // because it is a partitioned table!
+        execStatements(false, alterStatements)
+        commit()
     }
 
     // From Exposed

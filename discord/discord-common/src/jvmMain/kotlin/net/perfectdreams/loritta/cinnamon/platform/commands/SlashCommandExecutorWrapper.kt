@@ -98,7 +98,7 @@ class SlashCommandExecutorWrapper(
         val commandLatency = timer.observeDuration()
         logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
 
-        loritta.services.executedApplicationCommandsLog.insertApplicationCommandLog(
+        loritta.services.executedInteractionsLog.insertApplicationCommandLog(
             context.sender.id.value.toLong(),
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
