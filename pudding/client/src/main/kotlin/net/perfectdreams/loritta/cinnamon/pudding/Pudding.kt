@@ -228,9 +228,9 @@ class Pudding(private val database: Database) {
                 SchemaUtils.createMissingTablesAndColumns(
                     *schemas
                         .toMutableList()
-                        .apply {
-                            this.remove(ExecutedApplicationCommandsLog)
-                        }.toTypedArray()
+                        // Partitioned tables
+                        .filter { it !in listOf(ExecutedApplicationCommandsLog, ExecutedComponentsLog) }
+                        .toTypedArray()
                 )
 
                 // This is a workaround because Exposed does not support (yet) Partitioned Tables
