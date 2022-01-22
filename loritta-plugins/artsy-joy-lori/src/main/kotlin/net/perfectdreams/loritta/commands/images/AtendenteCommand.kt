@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Rectangle
@@ -37,6 +38,8 @@ class AtendenteCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
             val context = this
 
             if (args.isNotEmpty()) {
+                OutdatedCommandUtils.sendOutdatedCommandMessage(this, this.locale, "drawnmask atendente")
+
                 val template = readImage(File(Loritta.ASSETS, "atendente.png"))
 
                 val width = 214

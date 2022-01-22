@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.common.locale.LocaleStringData
 import com.mrpowergamerbr.loritta.utils.toBufferedImage
 import net.perfectdreams.loritta.api.commands.Command
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
@@ -35,7 +36,10 @@ class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "drawnmask sign")
+
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+
 		val base = BufferedImage(405, 550, BufferedImage.TYPE_INT_ARGB)
 		val scaled = contextImage.getScaledInstance(405, 550, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 
