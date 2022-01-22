@@ -63,12 +63,14 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockI
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinFlipBetGlobalExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.DailyExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.StartCoinFlipGlobalBetMatchmakingButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.TransactionsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.DailyCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
@@ -368,6 +370,7 @@ class CommandManager(
 
         // ===[ ECONOMY ]===
         commandManager.register(SonhosCommand, SonhosExecutor())
+        commandManager.register(DailyCommand, DailyExecutor())
         commandManager.register(
             BrokerCommand,
             BrokerInfoExecutor(),

@@ -46,7 +46,7 @@ object WebhookUtils {
         val client = HttpClient(CIO) {
             expectSuccess = false
         }
-        return KtorRequestHandler(client, requestRateLimiter, clock, parser)
+        return KtorRequestHandler(client, requestRateLimiter, clock, parser, "")
     }
 
     // Same thing as Kord's "executeWebhook" method, but we accept a WebhookExecuteRequest class instead of a builder
