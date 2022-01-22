@@ -78,7 +78,7 @@ class Pudding(private val database: Database) {
          */
         fun createPostgreSQLPudding(address: String, databaseName: String, username: String, password: String): Pudding {
             val hikariConfig = createHikariConfig()
-            hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=$puddingApplicationName"
+            hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${getPuddingApplicationName()}"
 
             hikariConfig.username = username
             hikariConfig.password = password
@@ -116,7 +116,41 @@ class Pudding(private val database: Database) {
                 }
             )
 
-        private val puddingApplicationName: String by lazy {
+        private fun getPuddingApplicationName(): String {
+            val suffix = "Loritta Cinnamon Pudding"
+            // From hostname command
+            try {
+                val proc = ProcessBuilder("hostname")
+                    .start()
+
+                proc.waitFor(5, TimeUnit.SECONDS)
+                proc.destroyForcibly()
+
+                val hostname = proc.inputStream.readAllBytes().toString(Charsets.UTF_8).removeSuffix("\n")
+
+                logger.warn { "Machine Hostname via \"hostname\" command: $hostname" }
+                return "$suffix - $hostname"
+            } catch (e: Exception) {
+                logger.warn(e) { "Something went wrong while trying to get the machine's hostname via the \"hostname\" command!" }
+            }
+
+            // From hostname env variable
+            System.getenv("HOSTNAME")?.let {
+                logger.warn { "Machine Hostname via \"HOSTNAME\" env variable: $it" }
+                return "$suffix - $it"
+            }
+
+            // From computername env variable
+            System.getenv("COMPUTERNAME")?.let {
+                logger.warn { "Machine Hostname via \"COMPUTERNAME\" env variable: $it" }
+                return "$suffix - $it"
+            }
+
+            logger.warn { "I wasn't able to get the machine's hostname! Falling back to \"Unknown\"..." }
+            return "$suffix - Unknown"
+        }
+
+        /* private val puddingApplicationName: String by lazy {
             try {
                 val proc = ProcessBuilder("hostname")
                     .start()
@@ -128,9 +162,10 @@ class Pudding(private val database: Database) {
 
                 "Loritta Cinnamon Pudding - $hostname"
             } catch (e: Exception) {
+                logger.warn(e) { "Something went wrong while trying to get the machine's hostname! Falling back to \"Unknown\"..." }
                 "Loritta Cinnamon Pudding - Unknown"
             }
-        }
+        } */
     }
 
     val users = UsersService(this)
