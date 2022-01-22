@@ -58,6 +58,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
+import java.util.concurrent.TimeUnit
 
 class Pudding(private val database: Database) {
     companion object {
@@ -77,7 +78,7 @@ class Pudding(private val database: Database) {
          */
         fun createPostgreSQLPudding(address: String, databaseName: String, username: String, password: String): Pudding {
             val hikariConfig = createHikariConfig()
-            hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName"
+            hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=$puddingApplicationName"
 
             hikariConfig.username = username
             hikariConfig.password = password
@@ -114,6 +115,22 @@ class Pudding(private val database: Database) {
                     defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
                 }
             )
+
+        private val puddingApplicationName: String by lazy {
+            try {
+                val proc = ProcessBuilder("hostname")
+                    .start()
+
+                proc.waitFor(5, TimeUnit.SECONDS)
+                proc.destroyForcibly()
+
+                val hostname = proc.inputStream.readAllBytes().toString(Charsets.UTF_8)
+
+                "Loritta Cinnamon Pudding - $hostname"
+            } catch (e: Exception) {
+                "Loritta Cinnamon Pudding - Unknown"
+            }
+        }
     }
 
     val users = UsersService(this)
