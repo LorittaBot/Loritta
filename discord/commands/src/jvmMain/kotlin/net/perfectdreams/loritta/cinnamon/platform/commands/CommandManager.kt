@@ -86,6 +86,9 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.CepoDeMadeira
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ChicoAtaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.CortesFlowExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrakeExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrawnMaskAtendenteExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrawnMaskSignExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrawnMaskWordExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.EdnaldoBandeiraExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.EdnaldoTvExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.GessyAtaExecutor
@@ -117,6 +120,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BobBurningPaperCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BuckShirtCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.DrakeCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.DrawnMaskCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.GetOverHereCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.InvertColorsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.LoriSignCommand
@@ -354,6 +358,12 @@ class CommandManager(
         commandManager.register(InvertColorsCommand, InvertColorsExecutor(gabrielaImageServerClient))
         commandManager.register(MemeMakerCommand, MemeMakerExecutor(gabrielaImageServerClient))
         commandManager.register(MarkMetaCommand, MarkMetaExecutor(gabrielaImageServerClient))
+        commandManager.register(
+            DrawnMaskCommand,
+            DrawnMaskAtendenteExecutor(gabrielaImageServerClient),
+            DrawnMaskSignExecutor(gabrielaImageServerClient),
+            DrawnMaskWordExecutor(gabrielaImageServerClient)
+        )
 
         // ===[ VIDEOS ]===
         commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(gabrielaImageServerClient))
