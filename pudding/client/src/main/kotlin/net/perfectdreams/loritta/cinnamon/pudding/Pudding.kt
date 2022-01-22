@@ -124,9 +124,8 @@ class Pudding(private val database: Database) {
                     .start()
 
                 proc.waitFor(5, TimeUnit.SECONDS)
-                proc.destroyForcibly()
-
                 val hostname = proc.inputStream.readAllBytes().toString(Charsets.UTF_8).removeSuffix("\n")
+                proc.destroyForcibly()
 
                 logger.warn { "Machine Hostname via \"hostname\" command: $hostname" }
                 return "$suffix - $hostname"
