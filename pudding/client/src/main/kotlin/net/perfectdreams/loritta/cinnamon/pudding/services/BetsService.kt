@@ -354,14 +354,14 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         // Add sonhos to the winner
                         Profiles.update({ Profiles.id eq winner.value.toLong() }) {
                             with(SqlExpressionBuilder) {
-                                it.update(Profiles.money, Profiles.money + quantityAfterTax)
+                                it.update(Profiles.money, Profiles.money + quantity)
                             }
                         }
 
                         // Remove sonhos of the loser
                         Profiles.update({ Profiles.id eq loser.value.toLong() }) {
                             with(SqlExpressionBuilder) {
-                                it.update(Profiles.money, Profiles.money - quantityAfterTax)
+                                it.update(Profiles.money, Profiles.money - quantity)
                             }
                         }
                     }
