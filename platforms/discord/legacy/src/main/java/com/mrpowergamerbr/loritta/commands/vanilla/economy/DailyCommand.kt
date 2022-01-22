@@ -10,11 +10,14 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", "bolsafamília"), CommandCategory.ECONOMY) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.daily.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "daily")
+		
 		// 1. Pegue quando o daily foi pego da última vez
 		// 2. Pegue o tempo de quando seria amanhã
 		// 3. Compare se o tempo atual é maior que o tempo de amanhã
