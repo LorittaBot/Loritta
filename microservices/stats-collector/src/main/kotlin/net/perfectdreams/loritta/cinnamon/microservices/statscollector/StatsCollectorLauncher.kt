@@ -14,7 +14,7 @@ object StatsCollectorLauncher {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(StatsCollectorLauncher::class, System.getProperty("analyticscollector.config", "analytics-collector.conf"))
+        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(StatsCollectorLauncher::class, System.getProperty("statscollector.config", "stats-collector.conf"))
         logger.info { "Loaded Loritta's configuration file" }
 
         val http = HttpClient {

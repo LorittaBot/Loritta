@@ -45,7 +45,7 @@ class StatsCollector(val config: RootConfig, val services: Pudding, val http: Ht
         async {
             try {
                 val response = http.get<HttpResponse>("$it/api/v1/loritta/status") {
-                    userAgent("Loritta Cinnamon Analytics Collector")
+                    userAgent("Loritta Cinnamon Stats Collector")
                 }
 
                 val body = response.readText()

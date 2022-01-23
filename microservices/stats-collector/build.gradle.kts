@@ -36,7 +36,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/lorittabot/analytics-collector"
+        image = "ghcr.io/lorittabot/stats-collector"
 
         auth {
             username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")

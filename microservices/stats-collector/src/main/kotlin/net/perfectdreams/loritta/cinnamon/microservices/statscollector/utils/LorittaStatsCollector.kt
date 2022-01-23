@@ -10,7 +10,7 @@ class LorittaStatsCollector(val m: StatsCollector) : RunnableCoroutineWrapper() 
 
     override suspend fun runCoroutine() {
         try {
-            logger.info { "Collecting analytics data from Loritta Legacy..." }
+            logger.info { "Collecting stats data from Loritta Legacy..." }
             val statuses = m.getLorittaLegacyStatusFromAllClusters()
 
             var guildCount = 0L
@@ -21,13 +21,13 @@ class LorittaStatsCollector(val m: StatsCollector) : RunnableCoroutineWrapper() 
 
                     val areAllShardsAreReady = status.shards.any { it.status == "CONNECTED" }
                     if (!areAllShardsAreReady) {
-                        logger.warn { "Shards in ${status.id} (${status.name}) are not ready! Skipping analytics collection task..." }
+                        logger.warn { "Shards in ${status.id} (${status.name}) are not ready! Skipping stats collection task..." }
                         return
                     }
 
                     guildCount += status.shards.sumOf { it.guildCount }
                 } catch (e: StatsCollector.ClusterOfflineException) {
-                    logger.warn(e) { "Cluster ${e.url} is offline! Skipping analytics collection task..." }
+                    logger.warn(e) { "Cluster ${e.url} is offline! Skipping stats collection task..." }
                     return
                 }
             }
@@ -39,13 +39,13 @@ class LorittaStatsCollector(val m: StatsCollector) : RunnableCoroutineWrapper() 
             jobs.forEach {
                 try {
                     it.second.join()
-                    logger.info { "Successfully sent Loritta Legacy's analytics data to ${it.first}!" }
+                    logger.info { "Successfully sent Loritta Legacy's stats data to ${it.first}!" }
                 } catch (e: Exception) {
-                    logger.warn(e) { "Something went wrong while trying to send Loritta Legacy's analytics data to ${it.first}!" }
+                    logger.warn(e) { "Something went wrong while trying to send Loritta Legacy's stats data to ${it.first}!" }
                 }
             }
         } catch (e: Exception) {
-            logger.warn { "Something went wrong while collecting and sending analytics data!" }
+            logger.warn { "Something went wrong while collecting and sending stats data!" }
         }
     }
 }
