@@ -10,11 +10,7 @@ plugins {
 
 dependencies {
     implementation(project(":pudding:client"))
-    implementation("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
-    implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
-    implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
-    implementation("pw.forst", "exposed-upsert", "1.1.0")
-    implementation("io.ktor:ktor-client-cio:1.6.0")
+    implementation("io.ktor:ktor-client-java:1.6.0")
     api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
 

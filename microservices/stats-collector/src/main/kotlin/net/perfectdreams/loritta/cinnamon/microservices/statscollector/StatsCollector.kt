@@ -41,7 +41,9 @@ class StatsCollector(val config: RootConfig, val services: Pudding, val http: Ht
 
             val body = response.readText()
 
-            Json.decodeFromString<LorittaLegacyStatusResponse>(body)
+            val data = Json.decodeFromString<LorittaLegacyStatusResponse>(body)
+            logger.info { "Successfully retrieved data from Cluster ${data.id} (${data.name})!" }
+            data
         } catch (e: Exception) {
             logger.warn(e) { "Cluster $it is offline!" }
             throw ClusterOfflineException(it)
