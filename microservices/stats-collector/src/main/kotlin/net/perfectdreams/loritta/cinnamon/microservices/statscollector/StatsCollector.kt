@@ -13,9 +13,9 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.microservices.statscollector.endpoints.DatabaseStatsSender
-import net.perfectdreams.loritta.cinnamon.microservices.statscollector.endpoints.DiscordBotsStatsSender
-import net.perfectdreams.loritta.cinnamon.microservices.statscollector.endpoints.TopggStatsSender
+import net.perfectdreams.loritta.cinnamon.microservices.statscollector.senders.DatabaseStatsSender
+import net.perfectdreams.loritta.cinnamon.microservices.statscollector.senders.DiscordBotsStatsSender
+import net.perfectdreams.loritta.cinnamon.microservices.statscollector.senders.TopggStatsSender
 import net.perfectdreams.loritta.cinnamon.microservices.statscollector.utils.LorittaLegacyStatusResponse
 import net.perfectdreams.loritta.cinnamon.microservices.statscollector.utils.StatsTasks
 import net.perfectdreams.loritta.cinnamon.microservices.statscollector.utils.config.RootConfig

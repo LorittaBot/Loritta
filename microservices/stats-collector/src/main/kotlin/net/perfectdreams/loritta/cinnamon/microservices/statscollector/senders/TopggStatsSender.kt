@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.microservices.statscollector.endpoints
+package net.perfectdreams.loritta.cinnamon.microservices.statscollector.senders
 
 import io.ktor.client.*
 import io.ktor.client.request.*

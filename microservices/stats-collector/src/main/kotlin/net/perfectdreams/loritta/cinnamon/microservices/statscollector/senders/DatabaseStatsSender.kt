@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.microservices.statscollector.endpoints
+package net.perfectdreams.loritta.cinnamon.microservices.statscollector.senders
 
 import kotlinx.datetime.Clock
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
