@@ -10,7 +10,7 @@ plugins {
 
 dependencies {
     implementation(project(":pudding:client"))
-    implementation("io.ktor:ktor-client-java:1.6.0")
+    implementation("io.ktor:ktor-client-java:1.6.7")
     api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
 
