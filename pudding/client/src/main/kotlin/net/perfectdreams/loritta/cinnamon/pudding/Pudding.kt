@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ShipEffectsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.SonhosService
+import net.perfectdreams.loritta.cinnamon.pudding.services.StatsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
@@ -35,6 +36,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhos
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
@@ -164,6 +166,7 @@ class Pudding(private val database: Database) {
     val bovespaBroker = BovespaBrokerService(this)
     val bets = BetsService(this)
     val payments = PaymentsService(this)
+    val stats = StatsService(this)
     val puddingTasks = PuddingTasks(this)
     val random = SecureRandom()
 
@@ -213,7 +216,8 @@ class Pudding(private val database: Database) {
             CoinFlipBetGlobalSonhosTransactionsLog,
             SparklyPowerLSXSonhosTransactionsLog,
             Dailies,
-            Payments
+            Payments,
+            GuildCountStats
         )
 
         if (schemas.isNotEmpty())
