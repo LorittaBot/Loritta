@@ -11,37 +11,31 @@ class LorittaStatsCollector(val m: StatsCollector) : RunnableCoroutineWrapper() 
     override suspend fun runCoroutine() {
         try {
             logger.info { "Collecting stats data from Loritta Legacy..." }
-            val statuses = m.getLorittaLegacyStatusFromAllClusters()
+            val statuses = try {
+                m.getLorittaLegacyStatusFromAllClusters()
+            } catch (e: StatsCollector.ClusterOfflineException) {
+                logger.warn(e) { "Cluster ${e.url} is offline! Skipping stats collection task..." }
+                return
+            }
 
             var guildCount = 0L
 
-            for (statusJob in statuses) {
-                try {
-                    val status = statusJob.await()
-
-                    val areAllShardsAreReady = status.shards.any { it.status == "CONNECTED" }
-                    if (!areAllShardsAreReady) {
-                        logger.warn { "Shards in ${status.id} (${status.name}) are not ready! Skipping stats collection task..." }
-                        return
-                    }
-
-                    guildCount += status.shards.sumOf { it.guildCount }
-                } catch (e: StatsCollector.ClusterOfflineException) {
-                    logger.warn(e) { "Cluster ${e.url} is offline! Skipping stats collection task..." }
+            for (status in statuses) {
+                val areAllShardsAreReady = status.shards.any { it.status == "CONNECTED" }
+                if (!areAllShardsAreReady) {
+                    logger.warn { "Shards in ${status.id} (${status.name}) are not ready! Skipping stats collection task..." }
                     return
                 }
+
+                guildCount += status.shards.sumOf { it.guildCount }
             }
 
-            val jobs = m.senders.map {
-                it to m.launch { it.send(guildCount) }
-            }
-
-            jobs.forEach {
+            m.senders.forEach {
                 try {
-                    it.second.join()
-                    logger.info { "Successfully sent Loritta Legacy's stats data to ${it.first}!" }
+                    it.send(guildCount)
+                    logger.info { "Successfully sent Loritta Legacy's stats data to ${it}!" }
                 } catch (e: Exception) {
-                    logger.warn(e) { "Something went wrong while trying to send Loritta Legacy's stats data to ${it.first}!" }
+                    logger.warn(e) { "Something went wrong while trying to send Loritta Legacy's stats data to ${it}!" }
                 }
             }
         } catch (e: Exception) {

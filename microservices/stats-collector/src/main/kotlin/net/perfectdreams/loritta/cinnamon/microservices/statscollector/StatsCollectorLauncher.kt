@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.statscollector
 
 import io.ktor.client.*
-import kotlinx.coroutines.cancelAndJoin
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.statscollector.utils.config.RootConfig
@@ -36,15 +34,6 @@ object StatsCollectorLauncher {
 
         Runtime.getRuntime().addShutdownHook(
             thread(false) {
-                loritta.shuttingDown = true
-                loritta.jobs.forEach {
-                    runBlocking {
-                        try {
-                            it.cancelAndJoin()
-                        } catch (e: Exception) {}
-                    }
-                }
-
                 // Shutdown services when stopping the application
                 // This is needed for the Pudding Tasks
                 services.shutdown()
