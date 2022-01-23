@@ -40,8 +40,7 @@ class StatsCollector(val config: RootConfig, val services: Pudding, val http: Ht
             val address = InetAddress.getByName(it.substringAfterLast("/"))
             logger.info { "$it: ${address.hostAddress}" }
 
-            val response = http.get<HttpResponse>("https://$address/api/v1/loritta/status") {
-                header("Host", it.removePrefix("https://"))
+            val response = http.get<HttpResponse>("$it/api/v1/loritta/status") {
                 userAgent("Loritta Cinnamon Stats Collector")
             }
 
