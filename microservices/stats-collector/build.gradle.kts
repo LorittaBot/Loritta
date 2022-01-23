@@ -31,10 +31,6 @@ tasks.withType<KotlinCompile> {
 }
 
 jib {
-    container {
-        ports = listOf("8080")
-    }
-
     to {
         image = "ghcr.io/lorittabot/stats-collector"
 
