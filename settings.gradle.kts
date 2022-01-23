@@ -26,3 +26,4 @@ include(":discord:gateway")
 
 // ===[ MICROSERVICES ]===
 include("microservices:broker-tickers-updater")
+include("microservices:stats-collector")
