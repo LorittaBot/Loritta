@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.cinnamon.microservices.statscollector.utils.Lor
 import net.perfectdreams.loritta.cinnamon.microservices.statscollector.utils.StatsTasks
 import net.perfectdreams.loritta.cinnamon.microservices.statscollector.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import java.net.InetAddress
 
 /**
  * Collects stats from Loritta (Legacy) and sends it to Stats Senders
@@ -36,17 +35,11 @@ class StatsCollector(val config: RootConfig, val services: Pudding, val http: Ht
 
     suspend fun getLorittaLegacyStatusFromAllClusters() = config.lorittaLegacyClusterUrls.map {
         try {
-            // Workaround
-            val address = InetAddress.getByName(it.substringAfterLast("/"))
-            logger.info { "$it: ${address.hostAddress}" }
-
             val response = http.get<HttpResponse>("$it/api/v1/loritta/status") {
                 userAgent("Loritta Cinnamon Stats Collector")
             }
 
             val body = response.readText()
-
-            logger.info { "Response: $body" }
 
             val data = Json.decodeFromString<LorittaLegacyStatusResponse>(body)
             logger.info { "Successfully retrieved data from Cluster ${data.id} (${data.name})!" }
