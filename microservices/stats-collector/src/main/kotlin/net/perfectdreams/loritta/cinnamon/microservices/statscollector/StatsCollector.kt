@@ -47,6 +47,8 @@ class StatsCollector(val config: RootConfig, val services: Pudding, val http: Ht
 
             val body = response.readText()
 
+            logger.info { "Response: $body" }
+
             val data = Json.decodeFromString<LorittaLegacyStatusResponse>(body)
             logger.info { "Successfully retrieved data from Cluster ${data.id} (${data.name})!" }
             data
