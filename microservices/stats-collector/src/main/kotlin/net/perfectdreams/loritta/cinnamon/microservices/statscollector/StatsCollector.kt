@@ -37,7 +37,7 @@ class StatsCollector(val config: RootConfig, val services: Pudding, val http: Ht
     suspend fun getLorittaLegacyStatusFromAllClusters() = config.lorittaLegacyClusterUrls.map {
         try {
             // Workaround
-            val address = InetAddress.getByName(it.substringAfter("/"))
+            val address = InetAddress.getByName(it.substringAfterLast("/"))
             logger.info { "$it: ${address.hostAddress}" }
 
             val response = http.get<HttpResponse>("https://$address/api/v1/loritta/status") {
