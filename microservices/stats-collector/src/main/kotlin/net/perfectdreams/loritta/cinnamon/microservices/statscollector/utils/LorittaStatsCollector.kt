@@ -21,7 +21,7 @@ class LorittaStatsCollector(val m: StatsCollector) : RunnableCoroutineWrapper() 
             var guildCount = 0L
 
             for (status in statuses) {
-                val areAllShardsAreReady = status.shards.any { it.status == "CONNECTED" }
+                val areAllShardsAreReady = status.shards.all { it.status == "CONNECTED" }
                 if (!areAllShardsAreReady) {
                     logger.warn { "Shards in ${status.id} (${status.name}) are not ready! Skipping stats collection task..." }
                     return
