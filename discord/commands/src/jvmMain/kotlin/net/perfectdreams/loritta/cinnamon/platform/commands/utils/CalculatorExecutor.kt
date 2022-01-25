@@ -14,6 +14,7 @@ class CalculatorExecutor() : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(CalculatorExecutor::class) {
         object Options : ApplicationCommandOptions() {
             val expression = string("expression", CalculatorCommand.I18N_PREFIX.Options.Expression)
+                .autocomplete(CalculatorPreprocessAutocompleteExecutor)
                 .register()
         }
 
