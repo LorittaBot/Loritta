@@ -15,7 +15,7 @@ class SlashCommandOptionsWrapper(
     i18nContext: I18nContext
 ) : ApplicationCommandOptions() {
     companion object {
-        private const val MAX_OPTIONS_DESCRIPTION_LENGTH = 100
+        const val MAX_OPTIONS_DESCRIPTION_LENGTH = 100
     }
 
     init {

@@ -163,6 +163,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.Co
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.PortraitSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.AnagramExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorPreprocessAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ChooseExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.DictionaryExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ECBManager
@@ -375,6 +376,7 @@ class CommandManager(
         commandManager.register(MorseCommand, MorseFromExecutor(), MorseToExecutor())
         commandManager.register(DictionaryCommand, DictionaryExecutor(http), MorseToExecutor())
         commandManager.register(CalculatorCommand, CalculatorExecutor())
+        commandManager.register(CalculatorPreprocessAutocompleteExecutor, CalculatorPreprocessAutocompleteExecutor())
         commandManager.register(AnagramCommand, AnagramExecutor())
         commandManager.register(ChooseCommand, ChooseExecutor())
 
