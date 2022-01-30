@@ -70,7 +70,7 @@ object NitroBoostUtils {
 					val guild = lorittaShards.getGuildById(guildWithBoostFeature[ServerConfigs.id].value) ?: continue
 					val boosters = guild.boosters
 
-					logger.info { "Guild $guild has donation features enabled! Giving sonhos to $boosters" }
+					logger.info { "Guild $guild has donation features enabled! Checking how many $boosters users can receive the reward..." }
 
 					val todayAtMidnight = Instant.now()
 						.atZone(ZoneId.of("America/Sao_Paulo"))
@@ -87,6 +87,8 @@ object NitroBoostUtils {
 							Dailies.receivedById inList boosters.map { it.user.idLong } and (Dailies.receivedAt greaterEq todayAtMidnight)
 						}.groupBy(Dailies.receivedById)
 							.map { it[Dailies.receivedById] }
+
+						logger.info { "Guild $guild has donation features enabled! Giving sonhos to $boostersThatGotDailyRecently" }
 
 						Profiles.update({ Profiles.id inList boostersThatGotDailyRecently }) {
 							with(SqlExpressionBuilder) {
