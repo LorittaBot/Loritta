@@ -82,7 +82,8 @@ object NitroBoostUtils {
 						// Only give the boosting reward if they got daily today
 						val boostersThatGotDailyRecently = Dailies.select {
 							Dailies.receivedById inList boosters.map { it.user.idLong } and (Dailies.receivedAt greaterEq todayAtMidnight)
-						}.limit(1).map { it[Dailies.receivedAt] }
+						}.groupBy(Dailies.receivedById)
+							.map { it[Dailies.receivedById] }
 
 						Profiles.update({ Profiles.id inList boostersThatGotDailyRecently }) {
 							with(SqlExpressionBuilder) {
