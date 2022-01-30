@@ -1,11 +1,14 @@
 package net.perfectdreams.loritta.plugin.donatorsostentation
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.int
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.nullLong
+import com.github.salomonbrys.kotson.obj
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.editMessageIfContentWasChanged
@@ -24,7 +27,12 @@ import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.or
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.sum
+import org.jetbrains.exposed.sql.update
 import java.math.BigDecimal
 
 object NitroBoostUtils {
@@ -38,33 +46,6 @@ object NitroBoostUtils {
 
 			val boostAsDonationGuilds = config.boostEnabledGuilds.map { it.id }
 			try {
-				// get premium keys
-				val guildsWithBoostFeature = loritta.newSuspendedTransaction {
-					(ServerConfigs innerJoin DonationKeys).slice(ServerConfigs.id, DonationKeys.expiresAt, DonationKeys.value)
-							.select {
-								DonationKeys.value greaterEq 99.99 and (DonationKeys.expiresAt greaterEq System.currentTimeMillis())
-							}.toMutableList()
-				}
-
-				// Vantagem de key de doador: boosters ganham 2 sonhos por minuto
-				for (guildWithBoostFeature in guildsWithBoostFeature) {
-					if (guildWithBoostFeature[ServerConfigs.id].value in boostAsDonationGuilds) // Esses sonhos serão dados mais para frente, já que eles são considerados doadores
-						continue
-
-					val guild = lorittaShards.getGuildById(guildWithBoostFeature[ServerConfigs.id].value) ?: continue
-					val boosters = guild.boosters
-
-					logger.info { "Guild $guild has donation features enabled! Giving sonhos to $boosters" }
-
-					loritta.newSuspendedTransaction {
-						Profiles.update({ Profiles.id inList boosters.map { it.user.idLong } }) {
-							with(SqlExpressionBuilder) {
-								it.update(money, money + 2)
-							}
-						}
-					}
-				}
-
 				if (LorittaLauncher.loritta.isMaster) {
 					val moneySumId = Payments.money.sum()
 					val mostPayingUsers = loritta.newSuspendedTransaction {
