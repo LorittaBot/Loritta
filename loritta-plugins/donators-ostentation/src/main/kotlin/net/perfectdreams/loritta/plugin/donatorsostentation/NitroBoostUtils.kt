@@ -55,7 +55,7 @@ object NitroBoostUtils {
 
 				// get premium keys
 				val guildsWithBoostFeature = loritta.newSuspendedTransaction {
-					(ServerConfigs innerJoin DonationKeys).slice(ServerConfigs.id, DonationKeys.expiresAt, donationKeySum)
+					(ServerConfigs innerJoin DonationKeys).slice(ServerConfigs.id, donationKeySum)
 						.select { (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
 						.groupBy(ServerConfigs.id)
 						.having { donationKeySum greaterEq 99.99 }
