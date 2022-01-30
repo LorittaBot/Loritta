@@ -83,7 +83,7 @@ object NitroBoostUtils {
 
 					loritta.newSuspendedTransaction {
 						// Only give the boosting reward if they got daily today
-						val boostersThatGotDailyRecently = Dailies.select {
+						val boostersThatGotDailyRecently = Dailies.slice(Dailies.receivedById).select {
 							Dailies.receivedById inList boosters.map { it.user.idLong } and (Dailies.receivedAt greaterEq todayAtMidnight)
 						}.groupBy(Dailies.receivedById)
 							.map { it[Dailies.receivedById] }
