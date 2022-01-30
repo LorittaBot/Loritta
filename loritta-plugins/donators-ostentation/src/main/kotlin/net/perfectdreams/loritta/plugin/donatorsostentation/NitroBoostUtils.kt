@@ -51,12 +51,15 @@ object NitroBoostUtils {
 
 			val boostAsDonationGuilds = config.boostEnabledGuilds.map { it.id }
 			try {
+				val donationKeySum = DonationKeys.value.sum()
+
 				// get premium keys
 				val guildsWithBoostFeature = loritta.newSuspendedTransaction {
-					(ServerConfigs innerJoin DonationKeys).slice(ServerConfigs.id, DonationKeys.expiresAt, DonationKeys.value)
-						.select {
-							DonationKeys.value greaterEq 99.99 and (DonationKeys.expiresAt greaterEq System.currentTimeMillis())
-						}.toMutableList()
+					(ServerConfigs innerJoin DonationKeys).slice(ServerConfigs.id, DonationKeys.expiresAt, donationKeySum)
+						.select { (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
+						.groupBy(ServerConfigs.id)
+						.having { donationKeySum greaterEq 99.99 }
+						.toMutableList()
 				}
 
 				// Vantagem de key de doador: boosters ganham 2 sonhos por minuto
