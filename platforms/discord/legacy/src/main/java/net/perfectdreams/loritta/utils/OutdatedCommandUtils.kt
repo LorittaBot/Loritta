@@ -18,7 +18,7 @@ import java.time.temporal.ChronoUnit
 object OutdatedCommandUtils {
     private val ZONE_UTC = ZoneOffset.UTC
     private val MESSAGE_INTENT_DEADLINE = ZonedDateTime.of(2022, 4, 1, 0, 0, 0, 0, ZONE_UTC)
-    private val OUTDATED_COMMAND_WARNING_DEADLINE = MESSAGE_INTENT_DEADLINE.minusMonths(1L)
+    private val OUTDATED_COMMAND_WARNING_DEADLINE = MESSAGE_INTENT_DEADLINE.minusDays(7L)
 
     suspend fun sendOutdatedCommandMessage(context: CommandContext, locale: BaseLocale, slashCommandName: String) {
         if (shouldSendOutdatedCommandWarning())
