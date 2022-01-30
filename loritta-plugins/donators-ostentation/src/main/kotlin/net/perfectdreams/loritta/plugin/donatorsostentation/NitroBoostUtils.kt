@@ -7,8 +7,10 @@ import com.github.salomonbrys.kotson.nullLong
 import com.github.salomonbrys.kotson.obj
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.dao.DonationKey
+import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.DonationKeys
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.extensions.await
 import com.mrpowergamerbr.loritta.utils.extensions.editMessageIfContentWasChanged
@@ -28,12 +30,15 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.update
 import java.math.BigDecimal
+import java.time.Instant
+import java.time.ZoneId
 
 object NitroBoostUtils {
 	private val logger = KotlinLogging.logger {}
@@ -46,18 +51,59 @@ object NitroBoostUtils {
 
 			val boostAsDonationGuilds = config.boostEnabledGuilds.map { it.id }
 			try {
+				// get premium keys
+				val guildsWithBoostFeature = loritta.newSuspendedTransaction {
+					(ServerConfigs innerJoin DonationKeys).slice(ServerConfigs.id, DonationKeys.expiresAt, DonationKeys.value)
+						.select {
+							DonationKeys.value greaterEq 99.99 and (DonationKeys.expiresAt greaterEq System.currentTimeMillis())
+						}.toMutableList()
+				}
+
+				// Vantagem de key de doador: boosters ganham 2 sonhos por minuto
+				for (guildWithBoostFeature in guildsWithBoostFeature) {
+					if (guildWithBoostFeature[ServerConfigs.id].value in boostAsDonationGuilds) // Esses sonhos serão dados mais para frente, já que eles são considerados doadores
+						continue
+
+					val guild = lorittaShards.getGuildById(guildWithBoostFeature[ServerConfigs.id].value) ?: continue
+					val boosters = guild.boosters
+
+					logger.info { "Guild $guild has donation features enabled! Giving sonhos to $boosters" }
+
+					val todayAtMidnight = Instant.now()
+						.atZone(ZoneId.of("America/Sao_Paulo"))
+						.toOffsetDateTime()
+						.withHour(0)
+						.withMinute(0)
+						.withSecond(0)
+						.toInstant()
+						.toEpochMilli()
+
+					loritta.newSuspendedTransaction {
+						// Only give the boosting reward if they got daily today
+						val boostersThatGotDailyRecently = Dailies.select {
+							Dailies.receivedById inList boosters.map { it.user.idLong } and (Dailies.receivedAt greaterEq todayAtMidnight)
+						}.limit(1).map { it[Dailies.receivedAt] }
+
+						Profiles.update({ Profiles.id inList boostersThatGotDailyRecently }) {
+							with(SqlExpressionBuilder) {
+								it.update(money, money + 2)
+							}
+						}
+					}
+				}
+
 				if (LorittaLauncher.loritta.isMaster) {
 					val moneySumId = Payments.money.sum()
 					val mostPayingUsers = loritta.newSuspendedTransaction {
 						Payments.slice(Payments.userId, moneySumId)
-								.select {
-									Payments.paidAt.isNotNull() and (Payments.expiresAt greaterEq System.currentTimeMillis()) and
-											((Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED))
-								}
-								.groupBy(Payments.userId)
-								.having { moneySumId greaterEq REQUIRED_TO_RECEIVE_DREAM_BOOST }
-								.orderBy(moneySumId, SortOrder.DESC)
-								.toMutableList()
+							.select {
+								Payments.paidAt.isNotNull() and (Payments.expiresAt greaterEq System.currentTimeMillis()) and
+										((Payments.reason eq PaymentReason.DONATION) or (Payments.reason eq PaymentReason.SPONSORED))
+							}
+							.groupBy(Payments.userId)
+							.having { moneySumId greaterEq REQUIRED_TO_RECEIVE_DREAM_BOOST }
+							.orderBy(moneySumId, SortOrder.DESC)
+							.toMutableList()
 					}
 
 
@@ -214,7 +260,7 @@ object NitroBoostUtils {
 				this.money = BigDecimal(20.00)
 				this.expiresAt = Long.MAX_VALUE // Nunca!
 				this.metadata = jsonObject(
-						"guildId" to member.guild.idLong
+					"guildId" to member.guild.idLong
 				)
 			}
 
@@ -224,7 +270,7 @@ object NitroBoostUtils {
 				this.value = 20.00
 				this.expiresAt = Long.MAX_VALUE // Nunca!
 				this.metadata = jsonObject(
-						"guildId" to member.guild.idLong
+					"guildId" to member.guild.idLong
 				)
 			}
 		}
@@ -232,14 +278,14 @@ object NitroBoostUtils {
 		// Fim!
 		try {
 			member.user.openPrivateChannel().await().sendMessage(
-					EmbedBuilder()
-							.setTitle("Obrigada por ativar o seu boost! ${Emotes.LORI_HAPPY}")
-							.setDescription(
-									"Obrigada por ativar o seu Nitro Boost no meu servidor! ${Emotes.LORI_NITRO_BOOST}\n\nA cada dia eu estou mais próxima de virar uma digital influencer de sucesso, graças a sua ajuda! ${Emotes.LORI_HAPPY}\n\nAh, e como agradecimento por você ter ativado o seu boost no meu servidor, você irá receber todas as minhas vantagens de quem doa 19,99 reais! (Até você desativar o seu boost... espero que você não desative... ${Emotes.LORI_CRYING})\n\nContinue sendo incrível!"
-							)
-							.setImage("https://loritta.website/assets/img/fanarts/Loritta_-_Raspoza.png")
-							.setColor(Constants.LORITTA_AQUA)
-							.build()
+				EmbedBuilder()
+					.setTitle("Obrigada por ativar o seu boost! ${Emotes.LORI_HAPPY}")
+					.setDescription(
+						"Obrigada por ativar o seu Nitro Boost no meu servidor! ${Emotes.LORI_NITRO_BOOST}\n\nA cada dia eu estou mais próxima de virar uma digital influencer de sucesso, graças a sua ajuda! ${Emotes.LORI_HAPPY}\n\nAh, e como agradecimento por você ter ativado o seu boost no meu servidor, você irá receber todas as minhas vantagens de quem doa 19,99 reais! (Até você desativar o seu boost... espero que você não desative... ${Emotes.LORI_CRYING})\n\nContinue sendo incrível!"
+					)
+					.setImage("https://loritta.website/assets/img/fanarts/Loritta_-_Raspoza.png")
+					.setColor(Constants.LORITTA_AQUA)
+					.build()
 			).await()
 		} catch (e: Exception) {}
 	}
