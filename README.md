@@ -179,9 +179,9 @@ Seems too hard but you *really* want to use Loritta? Don't worry, you can use ou
 
 #### If you compiled it yourself...
 
-**Loritta's Discord JAR**: `loritta-discord/build/libs/` (get the Fat JAR version!)
+**Loritta's Discord JAR**: `discord/legacy/build/libs/` (get the runnable JAR version!)
 
-**Loritta's Libraries:** `libs/`
+**Loritta's Libraries:** `discord/legacy/build/libs/libs/`
 
 #### If you are lazy and don't want to compile it yourself...
 **You can find precompiled artifacts here:** https://github.com/LorittaBot/Loritta/actions?query=workflow%3A%22Build+Loritta%22
@@ -189,15 +189,15 @@ Seems too hard but you *really* want to use Loritta? Don't worry, you can use ou
 You will need to get `Loritta (Discord)` and `Loritta (Libs)`
 
 ### `3.` 🧹 Preparing the environment²
-* Copy the `loritta-discord-*-fat.jar` to your created folder.
+* Copy the `legacy-runnable-*.jar` to your created folder.
 * Copy the `libs` folder to your created folder.
 * If you did everything right, you should have in the root folder...
-* * A file named `loritta-discord-*.jar`, this is Loritta's executable.
+* * A file named `legacy-runnable-*.jar`, this is Loritta's executable.
 * * A folder named `libs` containing all Loritta dependencies.
 
 ### `4.` 🚶 The pre-start saga
 
-* Run Loritta again with `java -jar loritta-discord-*-fat.jar` (replace the JAR name with the JAR in your folder)
+* Run Loritta again with `java -jar legacy-runnable-*.jar` (replace the JAR name with the JAR in your folder)
 * Update the configurations with your own values. You don't *need* to configure everything, just the bare minimum (bot token, folders, databases, etc) to get her up and running!
 
 #### ⚠️ Values that you *need* to change before starting Loritta
