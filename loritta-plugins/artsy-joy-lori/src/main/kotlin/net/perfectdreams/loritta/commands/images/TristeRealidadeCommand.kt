@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstrac
 import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordUser
 import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.utils.ImageFormat
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
 import java.awt.image.BufferedImage
@@ -33,6 +34,8 @@ class TristeRealidadeCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBa
         localizedDescription("$LOCALE_PREFIX.tristerealidade.description")
 
         executesDiscord {
+            OutdatedCommandUtils.sendOutdatedCommandMessage(this, this.locale, "sadreality")
+
             val context = this
 
             var x = 0
