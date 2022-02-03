@@ -124,13 +124,16 @@ class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
                     inline = true
                 }
 
-                if (invite.channel.name.value != null) field {
-                    name = "${Emotes.SpeakingHead} " + context.i18nContext.get(
-                        InviteCommand.I18N_PREFIX.Info.InvitationChannel
-                    )
-                    value = "#${invite.channel.name.value} (`${invite.channel.id.value}`)"
+                val inviteChannel = invite.channel
+                if (inviteChannel != null) {
+                    if (inviteChannel.name.value != null) field {
+                        name = "${Emotes.SpeakingHead} " + context.i18nContext.get(
+                            InviteCommand.I18N_PREFIX.Info.InvitationChannel
+                        )
+                        value = "#${inviteChannel.name.value} (`${inviteChannel.id.value}`)"
 
-                    inline = true
+                        inline = true
+                    }
                 }
 
                 if (invite.inviter.value != null) field {
