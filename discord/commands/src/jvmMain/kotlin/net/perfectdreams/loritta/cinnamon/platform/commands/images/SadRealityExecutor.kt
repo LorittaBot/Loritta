@@ -7,6 +7,7 @@ import net.perfectdreams.discordinteraktions.common.entities.UserAvatar
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.SadRealityRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
+import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
@@ -15,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SadRealityCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import java.util.*
 
@@ -66,6 +68,8 @@ class SadRealityExecutor(
             user6FromArguments?.let { SadRealityUser(it.id, it.avatar) }
         )
 
+        var noPermissionToQuery = false
+
         if (listOfUsers.filterNotNull().size != 6 && context is GuildApplicationCommandContext) {
             // Get random users from chat
             try {
@@ -99,12 +103,24 @@ class SadRealityExecutor(
                         SadRealityUser(it.id, UserAvatar(it.id.value, it.discriminator.toInt(), it.avatar))
                     }
                 }
-            } catch (e: KtorRequestException) {} // No permission to query! TODO: Good message saying "enable chat history if you want me to get the recent users talking in chat"
+            } catch (e: KtorRequestException) {
+                // No permission to query!
+                noPermissionToQuery = true
+            }
         }
 
         // Not enough users!
-        if (listOfUsers.filterNotNull().size != 6)
-            return
+        if (listOfUsers.filterNotNull().size != 6) {
+            context.fail {
+                styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsers), Emotes.LoriSob)
+
+                if (noPermissionToQuery) {
+                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersPermissionsTip), Emotes.LoriReading)
+                } else if (context !is GuildApplicationCommandContext) {
+                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersGuildTip), Emotes.LoriReading)
+                }
+            }
+        }
 
         // These should never be null at this point
         val user1 = listOfUsers[0]!!

@@ -1,4 +1,7 @@
 description: "Creates a sad reality with members of your server... Yeah, sadly we don't always win."
+notEnoughUsers: "There aren't enough users for me to make a sad reality, sorry..."
+notEnoughUsersPermissionsTip: "I could pull users from the server's recent messages, but for that you need to give me permission to read the channel's message history!"
+notEnoughUsersGuildTip: "I could pull users from a server's recent messages, but... well, we are in a direct message channel, the only two users here are me and you!"
 slot:
   theGuyYouLike:
     male: "THE GUY YOU LIKE"
