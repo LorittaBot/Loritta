@@ -1,1 +1,54 @@
 ---
+description: "Cria uma triste realidade com os membros do seu servidor... É, nem sempre a gente sai ganhando."
+notEnoughUsers: "Não existem membros suficientes para fazer uma triste realidade, sorry ;w;"
+notEnoughUsersPermissionsTip: "Eu poderia pegar membros das mensagens mais recentes do servidor, mas para isso eu preciso ter permissão para ler o histórico de mensagens do canal!"
+notEnoughUsersGuildTip: "Eu poderia pegar membros das mensagens mais recentes de um servidor, mas... bem, estamos em um canal de mensagem diretas, os únicos dois usuários aqui são você e eu!"
+slot:
+  theGuyYouLike:
+    male: "O CARA QUE VOCÊ GOSTA"
+    female: "A MINA QUE VOCÊ GOSTA"
+    loritta: "A MORENA QUE VOCÊ GOSTA"
+  theFather:
+    male:
+      lovedGenderMale: "O PAI DELE"
+      lovedGenderFemale: "O PAI DELA"
+    female:
+      lovedGenderMale: "A MÃE DELE"
+      lovedGenderFemale: "A MÃE DELA"
+  theBrother:
+    male:
+      lovedGenderMale: "IRMÃO DELE"
+      lovedGenderFemale: "IRMÃO DELA"
+    female:
+      lovedGenderMale: "IRMÃ DELE"
+      lovedGenderFemale: "IRMÃ DELA"
+  theFirstLover:
+    male:
+      lovedGenderMale: "PRIMEIRO AMOR DELE"
+      lovedGenderFemale: "PRIMEIRO AMOR DELA"
+    female:
+      lovedGenderMale: "PRIMEIRO AMOR DELE"
+      lovedGenderFemale: "PRIMEIRO AMOR DELA"
+  theBestFriend:
+    male:
+      lovedGenderMale: "MELHOR AMIGO DELE"
+      lovedGenderFemale: "MELHOR AMIGO DELA"
+    female:
+      lovedGenderMale: "MELHOR AMIGA DELE"
+      lovedGenderFemale: "MELHOR AMIGA DELA"
+  you:
+    male: "VOCÊ"
+    female: "VOCÊ"
+options:
+  user1:
+    text: "O primeiro usuário na imagem, \"{text}\""
+  user2:
+    text: "O segundo usuário na imagem, \"{text}\""
+  user3:
+    text: "O terceiro usuário na imagem, \"{text}\""
+  user4:
+    text: "O quatro usuário na imagem, \"{text}\""
+  user5:
+    text: "O quinto usuário na imagem, \"{text}\""
+  user6:
+    text: "O sexto usuário na imagem, \"{text}\""
