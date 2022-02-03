@@ -60,12 +60,12 @@ class SadRealityExecutor(
         val user6FromArguments = args[options.user6]
 
         val listOfUsers = mutableListOf(
-            user1FromArguments?.let { SadRealityUser(it.id, it.avatar) },
-            user2FromArguments?.let { SadRealityUser(it.id, it.avatar) },
-            user3FromArguments?.let { SadRealityUser(it.id, it.avatar) },
-            user4FromArguments?.let { SadRealityUser(it.id, it.avatar) },
-            user5FromArguments?.let { SadRealityUser(it.id, it.avatar) },
-            user6FromArguments?.let { SadRealityUser(it.id, it.avatar) }
+            user1FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
+            user2FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
+            user3FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
+            user4FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
+            user5FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
+            user6FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) }
         )
 
         var noPermissionToQuery = false
@@ -92,7 +92,7 @@ class SadRealityExecutor(
                 while (listOfUsers.filterNotNull().size != 6 && uniqueNonBotUsers.isNotEmpty()) {
                     val indexOfFirstNullEntry = listOfUsers.indexOf(null)
                     listOfUsers[indexOfFirstNullEntry] = uniqueNonBotUsers.poll()?.let {
-                        SadRealityUser(it.id, UserAvatar(it.id.value, it.discriminator.toInt(), it.avatar))
+                        SadRealityUser(it.id, "${it.username}#${it.discriminator}", UserAvatar(it.id.value, it.discriminator.toInt(), it.avatar))
                     }
                 }
 
@@ -100,7 +100,7 @@ class SadRealityExecutor(
                 while (listOfUsers.filterNotNull().size != 6 && uniqueBotUsers.isNotEmpty()) {
                     val indexOfFirstNullEntry = listOfUsers.indexOf(null)
                     listOfUsers[indexOfFirstNullEntry] = uniqueBotUsers.poll()?.let {
-                        SadRealityUser(it.id, UserAvatar(it.id.value, it.discriminator.toInt(), it.avatar))
+                        SadRealityUser(it.id, "${it.username}#${it.discriminator}", UserAvatar(it.id.value, it.discriminator.toInt(), it.avatar))
                     }
                 }
             } catch (e: KtorRequestException) {
@@ -152,74 +152,92 @@ class SadRealityExecutor(
 
         val result = client.images.sadReality(
             SadRealityRequest(
-                if (user1.id == lorittaId) {
-                    context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Loritta)
-                } else {
-                    when (lovedGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Male)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female)
-                    }
-                },
-                when (theFatherGender) {
-                    Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderMale)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale)
-                    }
-                    Gender.FEMALE -> when (lovedGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderMale)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderFemale)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderMale)
-                    }
-                },
-                when (theBrotherGender) {
-                    Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderMale)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale)
-                    }
-                    Gender.FEMALE -> when (lovedGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderMale)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderFemale)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderMale)
-                    }
-                },
-                when (theFirstLoverGender) {
-                    Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderMale)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale)
-                    }
-                    Gender.FEMALE -> when (lovedGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderMale)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderFemale)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderMale)
-                    }
-                },
-                when (theBestFriendGender) {
-                    Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderMale)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale)
-                    }
-                    Gender.FEMALE -> when (lovedGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderMale)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderFemale)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderMale)
-                    }
-                },
-                when (youGender) {
-                    Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Male)
-                    Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Female)
-                    Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Male)
-                },
-                URLImageData(user1.avatar.url),
-                URLImageData(user2.avatar.url),
-                URLImageData(user3.avatar.url),
-                URLImageData(user4.avatar.url),
-                URLImageData(user5.avatar.url),
-                URLImageData(user6.avatar.url)
+                SadRealityRequest.SadRealityUser(
+                    if (user1.id == lorittaId) {
+                        context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Loritta)
+                    } else {
+                        when (lovedGender) {
+                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Male)
+                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female)
+                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female)
+                        }
+                    },
+                    user1.tag,
+                    URLImageData(user1.avatar.url)
+                ),
+                SadRealityRequest.SadRealityUser(
+                    when (theFatherGender) {
+                        Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
+                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderMale)
+                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale)
+                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale)
+                        }
+                        Gender.FEMALE -> when (lovedGender) {
+                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderMale)
+                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderFemale)
+                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderMale)
+                        }
+                    },
+                    user2.tag,
+                    URLImageData(user2.avatar.url),
+                ),
+                SadRealityRequest.SadRealityUser(
+                    when (theBrotherGender) {
+                        Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
+                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderMale)
+                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale)
+                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale)
+                        }
+                        Gender.FEMALE -> when (lovedGender) {
+                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderMale)
+                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderFemale)
+                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderMale)
+                        }
+                    },
+                    user3.tag,
+                    URLImageData(user3.avatar.url),
+                ),
+                SadRealityRequest.SadRealityUser(
+                    when (theFirstLoverGender) {
+                        Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
+                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderMale)
+                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale)
+                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale)
+                        }
+                        Gender.FEMALE -> when (lovedGender) {
+                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderMale)
+                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderFemale)
+                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderMale)
+                        }
+                    },
+                    user4.tag,
+                    URLImageData(user4.avatar.url),
+                ),
+                SadRealityRequest.SadRealityUser(
+                    when (theBestFriendGender) {
+                        Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
+                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderMale)
+                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale)
+                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale)
+                        }
+                        Gender.FEMALE -> when (lovedGender) {
+                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderMale)
+                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderFemale)
+                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderMale)
+                        }
+                    },
+                    user5.tag,
+                    URLImageData(user5.avatar.url),
+                ),
+                SadRealityRequest.SadRealityUser(
+                    when (youGender) {
+                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Male)
+                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Female)
+                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Male)
+                    },
+                    user6.tag,
+                    URLImageData(user6.avatar.url),
+                )
             )
         )
 
@@ -230,6 +248,7 @@ class SadRealityExecutor(
 
     data class SadRealityUser(
         val id: Snowflake,
+        val tag: String,
         val avatar: UserAvatar
     )
 }

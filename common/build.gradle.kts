@@ -127,7 +127,7 @@ kotlin {
                 api("net.perfectdreams.minecraftmojangapi:minecraft-mojang-api:0.0.1-SNAPSHOT")
 
                 // Gabriela Image Server
-                api("net.perfectdreams.gabrielaimageserver:client:2.0.5")
+                api("net.perfectdreams.gabrielaimageserver:client:2.0.6")
 
                 // Emoji Stuff
                 api("com.vdurmont:emoji-java:5.1.1")
