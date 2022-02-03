@@ -109,6 +109,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.PetPetExecuto
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.RipTvExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.RomeroBrittoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.SAMExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.SadRealityExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.StudiopolisTvExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.SustoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.TerminatorAnimeExecutor
@@ -131,6 +132,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.PepeDreamCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.PetPetCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.RipTvCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SadRealityCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SonicCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SustoCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.TerminatorAnimeCommand
@@ -365,6 +367,7 @@ class CommandManager(
             DrawnMaskSignExecutor(gabrielaImageServerClient),
             DrawnMaskWordExecutor(gabrielaImageServerClient)
         )
+        commandManager.register(SadRealityCommand, SadRealityExecutor(rest, gabrielaImageServerClient, Snowflake(discordConfig.applicationId)))
 
         // ===[ VIDEOS ]===
         commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(gabrielaImageServerClient))

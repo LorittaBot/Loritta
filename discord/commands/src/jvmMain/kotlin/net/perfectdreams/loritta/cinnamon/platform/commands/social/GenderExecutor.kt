@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.platform.utils.getOrCreateUserProfile
 
 class GenderExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(GenderExecutor::class) {
@@ -25,7 +25,9 @@ class GenderExecutor : SlashCommandExecutor() {
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val userSettings = context.loritta.services.users.getOrCreateProfileSettings(UserId(context.user.id.value))
+        val userSettings = context.loritta.services.users.getOrCreateUserProfile(context.user)
+            .getProfileSettings()
+
         val gender = Gender.valueOf(args[Options.gender].uppercase())
 
         if (userSettings.gender != gender)

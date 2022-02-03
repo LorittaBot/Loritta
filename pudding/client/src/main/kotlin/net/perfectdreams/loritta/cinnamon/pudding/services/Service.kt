@@ -51,6 +51,7 @@ open class Service(private val pudding: Pudding) {
         pudding,
         UserProfile(
             UserId(row[Profiles.id].value.toULong()),
+            row[Profiles.settings].value,
             row[Profiles.money],
             row[Profiles.isAfk],
             row[Profiles.afkReason]
