@@ -66,13 +66,14 @@ class SlashCommandOptionsWrapper(
                     // (User Avatar, Link, Emote, etc)
                     // Can't be required because some commands do use optional arguments before this (example: /meme)
                     optionalString(
-                        it.name,
-                        "User Mention, Image URL or Emote. If not present, I will use an image from the channel!"
+                        it.name + "_data",
+                        "User, URL or Emote"
                     ).register()
 
-                    // TODO: Fix this later
-                    /* optionalBoolean("${it.name}_history", "Image from the most recent message in chat")
-                                .register() */
+                    optionalAttachment(
+                        it.name + "_file",
+                        "Image Attachment"
+                    ).register()
                 }
 
                 // ===[ NORMAL ARG TYPES ]===

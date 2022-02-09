@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
+import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.Snowflake
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -195,11 +196,17 @@ class SlashCommandExecutorWrapper(
                     is ImageReferenceCommandOption -> {
                         // Special case: Image References
                         // Get the argument that matches our image reference
-                        val interaKTionArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name == it.name }
+                        val interaKTionAttachmentArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name.removeSuffix("_data") == it.name }
+                        val interaKTionAvatarLinkOrEmoteArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name.removeSuffix("_file") == it.name }
+
                         var found = false
 
-                        if (interaKTionArgument != null) {
-                            val value = interaKTionArgument.value as String
+                        // Attachments take priority
+                        if (interaKTionAttachmentArgument != null) {
+                            found = true
+                            cinnamonArgs[it] = URLImageReference((interaKTionAttachmentArgument.value as DiscordAttachment).url)
+                        } else if (interaKTionAvatarLinkOrEmoteArgument != null) {
+                            val value = interaKTionAvatarLinkOrEmoteArgument.value as String
 
                             // Now check if it is a valid thing!
                             // First, we will try matching via user mentions or user IDs
