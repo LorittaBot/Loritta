@@ -203,8 +203,11 @@ class SlashCommandExecutorWrapper(
 
                         // Attachments take priority
                         if (interaKTionAttachmentArgument != null) {
-                            found = true
-                            cinnamonArgs[it] = URLImageReference((interaKTionAttachmentArgument.value as DiscordAttachment).url)
+                            val attachment = (interaKTionAttachmentArgument.value as DiscordAttachment)
+                            if (attachment.filename.substringAfterLast(".").lowercase() in SUPPORTED_IMAGE_EXTENSIONS) {
+                                found = true
+                                cinnamonArgs[it] =  URLImageReference(attachment.url)
+                            }
                         } else if (interaKTionAvatarLinkOrEmoteArgument != null) {
                             val value = interaKTionAvatarLinkOrEmoteArgument.value as String
 
@@ -326,7 +329,7 @@ class SlashCommandExecutorWrapper(
                 users.addAll(args.types.values.filterIsInstance<User>())
                 val resolvedUsers = context.data.resolved?.users?.values
                 if (resolvedUsers != null)
-                    // TODO: Maybe implement proper hash codes in the InteraKTions "User"?
+                // TODO: Maybe implement proper hash codes in the InteraKTions "User"?
                     users.addAll(resolvedUsers.distinctBy { it.id })
                 val jobs = users
                     .map {
