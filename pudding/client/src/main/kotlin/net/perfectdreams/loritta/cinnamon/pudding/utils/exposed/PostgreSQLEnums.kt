@@ -19,13 +19,8 @@ inline fun <reified T : Enum<T>> Transaction.createOrUpdatePostgreSQLEnum(enumVa
 
     val alreadyInsertedEnumValues = mutableSetOf<String>()
 
-    exec("SELECT  n.nspname AS enum_schema,  \n" +
-            "        t.typname AS enum_name,  \n" +
-            "        e.enumlabel AS enum_value\n" +
-            "FROM    pg_type t JOIN \n" +
-            "        pg_enum e ON t.oid = e.enumtypid JOIN \n" +
-            "        pg_catalog.pg_namespace n ON n.oid = t.typnamespace\n" +
-            "WHERE   t.typname = '$psqlType'") {
+    // https://stackoverflow.com/a/30417601/7271796
+    exec("SELECT unnest(enum_range(null, null::$psqlType)) AS enum_value;") {
         while (it.next())
             alreadyInsertedEnumValues.add(it.getString("enum_value"))
     }
