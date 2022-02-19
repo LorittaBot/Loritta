@@ -31,6 +31,10 @@ import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickWithDataExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutorWrapper
+import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitWithDataExecutorWrapper
+import net.perfectdreams.loritta.cinnamon.platform.modals.components.ModalComponentsWrapper
 
 class CommandRegistry(
     val loritta: LorittaCinnamon,
@@ -54,6 +58,9 @@ class CommandRegistry(
     val autocompleteDeclarations = mutableListOf<AutocompleteExecutorDeclaration<*>>()
     val autocompleteExecutors = mutableListOf<AutocompleteExecutor<*>>()
 
+    val modalSubmitDeclarations = mutableListOf<ModalSubmitExecutorDeclaration>()
+    val modalSubmitExecutors = mutableListOf<ModalSubmitWithDataExecutor>()
+
     fun register(declaration: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper, vararg executors: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor) {
         declarations.add(declaration.declaration())
         this.executors.addAll(executors)
@@ -74,11 +81,17 @@ class CommandRegistry(
         autocompleteExecutors.add(executor)
     }
 
+    fun register(declaration: ModalSubmitExecutorDeclaration, executor: ModalSubmitWithDataExecutor) {
+        modalSubmitDeclarations.add(declaration)
+        modalSubmitExecutors.add(executor)
+    }
+
     suspend fun convertToInteraKTions(locale: I18nContext) {
         convertCommandsToInteraKTions(locale)
         convertSelectMenusToInteraKTions()
         convertButtonsToInteraKTions()
         convertAutocompleteToInteraKTions()
+        convertModalSubmitToInteraKTions()
 
         if (loritta.interactionsConfig.registerGlobally) {
             interaKTionsRegistry.updateAllGlobalCommands(true)
@@ -211,6 +224,28 @@ class CommandRegistry(
                     )
                 }
             }
+        }
+    }
+
+    private fun convertModalSubmitToInteraKTions() {
+        for (declaration in modalSubmitDeclarations) {
+            val executor = modalSubmitExecutors.firstOrNull { declaration.parent == it::class }
+                ?: throw UnsupportedOperationException("The modal submit executor wasn't found! Did you register the modal submit executor?")
+
+            // We use a class reference because we need to have a consistent signature, because we also use it on the SlashCommandOptionsWrapper class
+            val interaKTionsExecutor = ModalSubmitWithDataExecutorWrapper(loritta, declaration, executor)
+
+            val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration(
+                declaration::class,
+                declaration.id
+            ) {
+                override val options = ModalComponentsWrapper(declaration)
+            }
+
+            interaKTionsManager.register(
+                interaKTionsExecutorDeclaration,
+                interaKTionsExecutor
+            )
         }
     }
 

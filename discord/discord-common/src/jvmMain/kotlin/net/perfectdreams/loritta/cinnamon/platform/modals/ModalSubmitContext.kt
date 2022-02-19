@@ -1,31 +1,25 @@
-package net.perfectdreams.loritta.cinnamon.platform
+package net.perfectdreams.loritta.cinnamon.platform.modals
 
-import dev.kord.rest.builder.interaction.ModalBuilder
 import dev.kord.rest.builder.message.EmbedBuilder
-import net.perfectdreams.discordinteraktions.common.BarebonesInteractionContext
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.entities.User
+import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitContext
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.entities.LorittaReply
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitExecutorDeclaration
 
-open class BarebonesInteractionContext(
-    open val interaKTionsContext: BarebonesInteractionContext
+open class ModalSubmitContext(
+    val loritta: LorittaCinnamon,
+    val i18nContext: I18nContext,
+    val user: User,
+    val interaKTionsContext: ModalSubmitContext
 ) {
-    /**
-     * Defers the application command request message with a public message
-     */
-    suspend fun deferChannelMessage() = interaKTionsContext.deferChannelMessage()
-
-    /**
-     * Defers the application command request message with a ephemeral message
-     */
-    suspend fun deferChannelMessageEphemerally() = interaKTionsContext.deferChannelMessageEphemerally()
-
     suspend fun sendMessage(message: String, embed: EmbedBuilder? = null) {
         interaKTionsContext.sendMessage {
             // Disable ALL mentions, to avoid a "@everyone 3.0" moment
@@ -283,6 +277,4 @@ open class BarebonesInteractionContext(
         }
     )
 
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, title, builder)
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, data, title, builder)
 }
