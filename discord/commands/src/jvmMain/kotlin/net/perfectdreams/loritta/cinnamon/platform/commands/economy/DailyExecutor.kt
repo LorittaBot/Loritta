@@ -122,8 +122,8 @@ class DailyExecutor : SlashCommandExecutor() {
                                     currentUserThreshold.minimumSonhosForTrigger,
                                     currentUserThreshold.maxDayThreshold,
                                     currentUserThreshold.tax,
-                                    "<t:$todayDailyTaxTimeEpoch:f>",
-                                    "<t:$todayDailyTaxTimeEpoch:R>"
+                                    "<t:$todayDailyTaxTimeEpoch:R>",
+                                    "<t:$todayDailyTaxTimeEpoch:f>"
                                 )
                             ),
                             Emotes.LoriCoffee
@@ -137,8 +137,8 @@ class DailyExecutor : SlashCommandExecutor() {
                                     currentUserThreshold.minimumSonhosForTrigger,
                                     currentUserThreshold.maxDayThreshold,
                                     currentUserThreshold.tax,
-                                    "<t:$whenYouAreGoingToStartToLoseSonhosEpoch:f>",
-                                    "<t:$whenYouAreGoingToStartToLoseSonhosEpoch:R>"
+                                    "<t:$whenYouAreGoingToStartToLoseSonhosEpoch:R>",
+                                    "<t:$whenYouAreGoingToStartToLoseSonhosEpoch:f>"
                                 )
                             ),
                             Emotes.LoriCoffee
@@ -152,8 +152,8 @@ class DailyExecutor : SlashCommandExecutor() {
                                 currentUserThreshold.minimumSonhosForTrigger,
                                 currentUserThreshold.maxDayThreshold,
                                 currentUserThreshold.tax,
+                                "<t:$todayDailyTaxTimeEpoch:R>",
                                 "<t:$todayDailyTaxTimeEpoch:f>",
-                                "<t:$todayDailyTaxTimeEpoch:R>"
                             )
                         ),
                         Emotes.LoriCoffee
