@@ -10,14 +10,13 @@ plugins {
 
 dependencies {
     implementation(project(":pudding:client"))
-    implementation("net.perfectdreams.tradingviewscraper:TradingViewScraper:0.0.7-20211213.140733-2")
     implementation("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
     implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
     implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
     implementation("pw.forst", "exposed-upsert", "1.1.0")
-    implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
     api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
     api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
+    api("dev.kord:kord-rest:${Versions.KORD}")
 
     // Logback GELF, used for Graylog logging
     implementation("de.siegmar:logback-gelf:3.0.0")
@@ -37,7 +36,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/lorittabot/broker-tickers-updater"
+        image = "ghcr.io/lorittabot/daily-tax"
 
         auth {
             username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
@@ -52,7 +51,7 @@ jib {
 
 tasks.withType<ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.microservice.brokertickersupdater.BrokerTickersUpdaterLauncher"
+        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.microservice.dailytax.DailyTaxLauncher"
     }
 }
 

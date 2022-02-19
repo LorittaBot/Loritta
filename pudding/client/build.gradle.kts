@@ -17,6 +17,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
     implementation("org.postgresql:postgresql:42.2.23")
     implementation("com.zaxxer:HikariCP:5.0.0")
+    implementation("pw.forst", "exposed-upsert", "1.1.0")
 
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"

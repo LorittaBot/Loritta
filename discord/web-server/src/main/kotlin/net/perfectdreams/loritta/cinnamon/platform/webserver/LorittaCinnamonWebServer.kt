@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandManager
+import net.perfectdreams.loritta.cinnamon.platform.utils.CinnamonMessageQueueListener
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.ServicesConfig
@@ -55,6 +56,7 @@ class LorittaCinnamonWebServer(
                     true
                 else it in tableNames
             }
+            services.messageQueueListener = CinnamonMessageQueueListener(this@LorittaCinnamonWebServer)
             services.startPuddingTasks()
 
             commandManager.register()

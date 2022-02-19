@@ -10,12 +10,14 @@ import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.pudding.data.MessageQueuePayload
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedInteractionsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
+import net.perfectdreams.loritta.cinnamon.pudding.services.MessageQueueService
 import net.perfectdreams.loritta.cinnamon.pudding.services.PaymentsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
@@ -30,6 +32,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
@@ -48,6 +51,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.TaskQueue
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -64,7 +68,7 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 
-class Pudding(private val database: Database) {
+class Pudding(val hikariDataSource: HikariDataSource, private val database: Database) {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
@@ -87,7 +91,9 @@ class Pudding(private val database: Database) {
             hikariConfig.username = username
             hikariConfig.password = password
 
-            return Pudding(connectToDatabase(HikariDataSource(hikariConfig)))
+            val hikariDataSource = HikariDataSource(hikariConfig)
+
+            return Pudding(hikariDataSource, connectToDatabase(hikariDataSource))
         }
 
         private fun createHikariConfig(): HikariConfig {
@@ -167,7 +173,9 @@ class Pudding(private val database: Database) {
     val bets = BetsService(this)
     val payments = PaymentsService(this)
     val stats = StatsService(this)
+    val messageQueue = MessageQueueService(this)
     val puddingTasks = PuddingTasks(this)
+    var messageQueueListener: ((MessageQueuePayload) -> (Boolean))? = null
     val random = SecureRandom()
 
     /**
@@ -217,7 +225,9 @@ class Pudding(private val database: Database) {
             SparklyPowerLSXSonhosTransactionsLog,
             Dailies,
             Payments,
-            GuildCountStats
+            GuildCountStats,
+            CachedDiscordUsersDirectMessageChannels,
+            TaskQueue
         )
 
         if (schemas.isNotEmpty())
