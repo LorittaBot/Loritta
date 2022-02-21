@@ -39,6 +39,7 @@ tasks.withType<KotlinCompile> {
 jib {
     container {
         ports = listOf("8080")
+        mainClass = "net.perfectdreams.loritta.cinnamon.platform.gateway.LorittaCinnamonGatewayLauncher"
     }
 
     to {

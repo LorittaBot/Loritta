@@ -1,3 +1,10 @@
+
+import java.io.ByteArrayOutputStream
+import java.io.FileOutputStream
+
+
+
+
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
@@ -59,6 +66,17 @@ jib {
 
 val jsBrowserProductionWebpack = tasks.getByPath(":web:showtime:frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
+val generateDiscordInteractionDeclarationAsJsonByteArrayOutputStream = ByteArrayOutputStream()
+val generateDiscordInteractionDeclarationsAsJson = task("generateDiscordInteractionDeclarationsAsJson", JavaExec::class) {
+    mainClass.set("net.perfectdreams.loritta.cinnamon.platform.commands.DumpPublicInteractionCommands")
+    classpath = project(":discord:commands").sourceSets["main"].runtimeClasspath
+    standardOutput = FileOutputStream(File(buildDir, "generated-resources/commands/discord-interactions.json"))
+
+    doFirst {
+        File(buildDir, "generated-resources/commands/").mkdirs()
+    }
+}
+
 tasks {
     val sass = sassTask("style.scss", "style.css")
 
@@ -66,6 +84,7 @@ tasks {
         // We need to wait until the JS build finishes and the SASS files are generated
         dependsOn(jsBrowserProductionWebpack)
         dependsOn(sass)
+        dependsOn(generateDiscordInteractionDeclarationsAsJson)
 
         // Copy the output from the frontend task to the backend resources
         from(jsBrowserProductionWebpack.destinationDirectory) {
@@ -75,6 +94,11 @@ tasks {
         // Same thing with the SASS output
         from(File(buildDir, "sass")) {
             into("static/v3/assets/css/")
+        }
+
+        // Same thing with our generated resources
+        from(File(buildDir, "generated-resources")) {
+            into("")
         }
     }
 }
