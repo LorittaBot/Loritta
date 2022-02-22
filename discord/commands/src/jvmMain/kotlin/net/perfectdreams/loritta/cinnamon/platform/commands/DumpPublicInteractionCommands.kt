@@ -145,7 +145,7 @@ object DumpPublicInteractionCommands {
         println(Json.encodeToString(commands))
     }
 
-    private fun convertToData(declaration: SlashCommandDeclarationBuilder): InteractionCommand{
+    private fun convertToData(declaration: SlashCommandDeclarationBuilder): InteractionCommand {
         return InteractionCommand(
             declaration.labels,
             declaration.description,
