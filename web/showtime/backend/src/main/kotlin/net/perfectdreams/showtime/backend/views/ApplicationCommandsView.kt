@@ -6,7 +6,6 @@ import kotlinx.html.HTMLTag
 import kotlinx.html.HtmlBlockTag
 import kotlinx.html.TagConsumer
 import kotlinx.html.a
-import kotlinx.html.b
 import kotlinx.html.classes
 import kotlinx.html.code
 import kotlinx.html.details
@@ -18,21 +17,20 @@ import kotlinx.html.input
 import kotlinx.html.legend
 import kotlinx.html.p
 import kotlinx.html.source
-import kotlinx.html.span
 import kotlinx.html.style
 import kotlinx.html.summary
 import kotlinx.html.unsafe
 import kotlinx.html.video
 import kotlinx.html.visit
 import net.perfectdreams.dokyo.WebsiteTheme
-import net.perfectdreams.loritta.api.commands.CommandCategory
-import net.perfectdreams.loritta.api.commands.CommandInfo
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
+import net.perfectdreams.showtime.backend.PublicApplicationCommands
 import net.perfectdreams.showtime.backend.utils.ImageUtils
 import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
 import net.perfectdreams.showtime.backend.utils.NitroPayAdSize
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
-import net.perfectdreams.showtime.backend.utils.commands.AdditionalCommandInfoConfig
 import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.utils.locale.formatAsHtml
@@ -40,15 +38,15 @@ import java.awt.Color
 import java.time.LocalDate
 import java.time.ZoneId
 
-class CommandsView(
+class ApplicationCommandsView(
     websiteTheme: WebsiteTheme,
     iconManager: SVGIconManager,
     hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
     path: String,
-    val commands: List<CommandInfo>,
-    val filterByCategory: CommandCategory? = null,
-    val additionalCommandInfos: List<AdditionalCommandInfoConfig>
+    val i18nContext: I18nContext,
+    val commands: List<PublicApplicationCommands.InteractionCommand>,
+    val filterByCategory: CommandCategory? = null
 ) : SidebarsView(
     websiteTheme,
     iconManager,
@@ -122,7 +120,7 @@ class CommandsView(
                     attributes["data-command-category"] = category.name
 
                     div {
-                        +category.getLocalizedName(locale)
+                        + i18nContext.get(category.localizedName)
                     }
 
                     div {
@@ -217,9 +215,9 @@ class CommandsView(
 
                 div(classes = "media-body") {
                     if (category != null) {
-                        for (entry in category.getLocalizedDescription(locale)) {
+                        for (entry in i18nContext.get(category.localizedDescription)) {
                             p {
-                                +entry
+                                + entry
                             }
                         }
                     } else {
@@ -427,18 +425,19 @@ class CommandsView(
         // We change the first compare by to negative because we want it in a descending order (most commands in category -> less commands)
         for (command in publicCommands.sortedWith(compareBy({
             -(commands.groupBy { it.category }[it.category]?.size ?: 0)
-        }, CommandInfo::category, CommandInfo::label))) {
+        }, PublicApplicationCommands.InteractionCommand::category, PublicApplicationCommands.InteractionCommand::label))) {
             val commandDescriptionKey = command.description
-            val commandExamplesKey = command.examples
+            // TODO: Fix this
+            // val commandExamplesKey = command.examples
             val commandLabel = command.label
 
             // Additional command info (like images)
-            val additionalInfo = additionalCommandInfos.firstOrNull { it.name == command.name }
+            val additionalInfo = PublicApplicationCommands.additionalCommandsInfo[command.executor]
 
             val color = getCategoryColor(command.category)
 
             commandEntry {
-                attributes["data-command-name"] = command.name
+                attributes["data-command-name"] = command.executor ?: "UnknownCommand"
                 attributes["data-command-category"] = command.category.name
 
                 style = if (filterByCategory == null || filterByCategory == command.category)
@@ -452,7 +451,7 @@ class CommandsView(
                     summary {
                         commandCategoryTag {
                             style = "background-color: rgb(${color.red}, ${color.green}, ${color.blue});"
-                            +(command.category.getLocalizedName(locale))
+                            +(i18nContext.get(command.category.localizedName))
                         }
 
                         div {
@@ -466,18 +465,14 @@ class CommandsView(
                                     commandLabel {
                                         style =
                                             "font-size: 1.5em; font-weight: bold; box-shadow: inset 0 0px 0 white, inset 0 -1px 0 rgb(${color.red}, ${color.green}, ${color.blue});"
-                                        +commandLabel
+                                        +"/"
+                                        +(command.label)
                                     }
                                 }
 
                                 commandDescription {
                                     style = "word-wrap: anywhere;"
-
-                                    if (commandDescriptionKey != null) {
-                                        +locale.get(commandDescriptionKey)
-                                    } else {
-                                        +"???"
-                                    }
+                                    +i18nContext.get(commandDescriptionKey)
                                 }
                             }
 
@@ -491,6 +486,7 @@ class CommandsView(
                     div(classes = "details-content") {
                         style = "line-height: 1.4;"
 
+                        // TODO: Fix this
                         if (additionalInfo != null) {
                             // Add additional images, if present
                             if (additionalInfo.imageUrls != null && additionalInfo.imageUrls.isNotEmpty()) {
@@ -537,7 +533,8 @@ class CommandsView(
                             }
                         }
 
-                        if (command.aliases.isNotEmpty()) {
+                        // TODO: Fix this
+                        /* if (command.aliases.isNotEmpty()) {
                             div {
                                 b {
                                     style = "color: rgb(${color.red}, ${color.green}, ${color.blue});"
@@ -619,7 +616,7 @@ class CommandsView(
                                     }
                                 }
                             }
-                        }
+                        } */
                     }
                 }
             }

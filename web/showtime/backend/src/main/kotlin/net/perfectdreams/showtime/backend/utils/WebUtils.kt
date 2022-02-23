@@ -4,18 +4,9 @@ import kotlinx.html.DIV
 import kotlinx.html.IMG
 import kotlinx.html.img
 import kotlinx.html.style
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
-import net.perfectdreams.showtime.backend.ShowtimeBackend
-
-val imagesInfo = Json.decodeFromString<List<ImageInfo>>(
-    (ShowtimeBackend::class.java.getResourceAsStream("/images-info.json") ?: error("Missing images-info.json in the application resources!"))
-        .readAllBytes()
-        .toString(Charsets.UTF_8)
-)
 
 fun DIV.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Unit = {}) {
-    val imageInfo = imagesInfo.firstOrNull { it.path.removePrefix("static") == path }
+    val imageInfo = ImageUtils.optimizedImagesInfoWithVariants.firstOrNull { it.path.removePrefix("static") == path }
 
     if (imageInfo != null) {
         imgSrcSet(

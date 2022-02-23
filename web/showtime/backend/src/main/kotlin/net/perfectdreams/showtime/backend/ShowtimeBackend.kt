@@ -20,6 +20,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.utils.format
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.showtime.backend.routes.LocalizedRoute
 import net.perfectdreams.showtime.backend.utils.HttpRedirectException
@@ -32,7 +33,9 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
 
-class ShowtimeBackend {
+class ShowtimeBackend(
+    val languageManager: LanguageManager
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val yaml = Yaml()

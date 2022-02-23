@@ -10,6 +10,7 @@ version = "1.0-SNAPSHOT"
 dependencies {
     implementation(kotlin("stdlib-jdk8"))
     api(project(":web:showtime:web-common"))
+    api(project(":discord:discord-common"))
     api(project(":discord:commands"))
 
     // Logging Stuff
@@ -59,6 +60,8 @@ jib {
 }
 
 val jsBrowserProductionWebpack = tasks.getByPath(":web:showtime:frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+
+// Optimize image assets
 val optimizeImageAssets = tasks.register<ImageOptimizerTask>("optimizeImageAssets") {
     sourceImagesDirectory.set(file("src/main/images"))
     outputImagesDirectory.set(file("$buildDir/images"))
@@ -68,14 +71,32 @@ val optimizeImageAssets = tasks.register<ImageOptimizerTask>("optimizeImageAsset
     imagesOptimizationSettings.set(listOf())
 }
 
+// Annotates images width, height and file size on a JSON file, used for the commands view to avoid content shifting when loading images
+// TODO: I wanted to annotate the images in the "$buildDir/build/resources/main", but I wasn't able to do it... Maybe there's a way?
+val annotateOptimizedImageAttributes = tasks.register<AnnotateImageAttributesTask>("annotateOptimizedImageAttributes") {
+    sourceImagesDirectory.set(file("src/main/images"))
+    outputImagesInfoFile.set(file("$buildDir/generated-resources/optimized-images-attributes.json"))
+
+    dependsOn(optimizeImageAssets)
+}
+
+val annotateBundledImageAttributes = tasks.register<AnnotateImageAttributesTask>("annotateBundledImageAttributes") {
+    sourceImagesDirectory.set(file("src/main/resources"))
+    outputImagesInfoFile.set(file("$buildDir/generated-resources/bundled-images-attributes.json"))
+}
+
 tasks {
     val sass = sassTask("style.scss", "style.css")
 
     processResources {
+        from("../../../resources/") // Include folders from the resources root folder
+
         // We need to wait until the JS build finishes and the SASS files are generated
         dependsOn(jsBrowserProductionWebpack)
         dependsOn(sass)
         dependsOn(optimizeImageAssets)
+        dependsOn(annotateOptimizedImageAttributes)
+        dependsOn(annotateBundledImageAttributes)
 
         // Copy the output from the frontend task to the backend resources
         from(jsBrowserProductionWebpack.destinationDirectory) {

@@ -13,6 +13,7 @@ import kotlinx.html.style
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
 import net.perfectdreams.dokyo.RoutePath
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
 import net.perfectdreams.showtime.backend.utils.NitroPayAdSize
@@ -26,7 +27,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 
 class ExtrasRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RoutePath.EXTRAS) {
-    override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+    override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
         try {
             val authors = ExtrasUtils.loadAuthors(showtime)
             val categories = ExtrasUtils.loadWikiEntries(showtime, locale)

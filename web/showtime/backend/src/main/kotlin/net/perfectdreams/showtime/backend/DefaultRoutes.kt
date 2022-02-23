@@ -1,5 +1,6 @@
 package net.perfectdreams.showtime.backend
 
+import net.perfectdreams.showtime.backend.routes.ApplicationCommandsRoute
 import net.perfectdreams.showtime.backend.routes.CommandsRoute
 import net.perfectdreams.showtime.backend.routes.ExtrasRoute
 import net.perfectdreams.showtime.backend.routes.HomeRoute
@@ -11,7 +12,8 @@ object DefaultRoutes {
         HomeRoute(showtime),
         SupportRoute(showtime),
         CommandsRoute(showtime),
+        ApplicationCommandsRoute(showtime),
         PremiumRoute(showtime),
-        ExtrasRoute(showtime)
+        ExtrasRoute(showtime),
     )
 }

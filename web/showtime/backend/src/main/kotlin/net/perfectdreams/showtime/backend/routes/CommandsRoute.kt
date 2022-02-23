@@ -10,15 +10,15 @@ import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
 import kotlinx.serialization.json.Json
 import net.perfectdreams.dokyo.RoutePath
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandInfo
 import net.perfectdreams.showtime.backend.ShowtimeBackend
-import net.perfectdreams.showtime.backend.utils.SimpleImageInfo
 import net.perfectdreams.showtime.backend.utils.commands.AdditionalCommandInfoConfigs
 import net.perfectdreams.showtime.backend.utils.userTheme
 import net.perfectdreams.showtime.backend.views.CommandsView
 
-class CommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RoutePath.COMMANDS) {
+class CommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RoutePath.LEGACY_COMMANDS) {
     val commands: List<CommandInfo> by lazy {
         Json.decodeFromString<List<CommandInfo>>(
             ShowtimeBackend::class.java.getResourceAsStream("/commands/default.json")!!
@@ -27,7 +27,7 @@ class CommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Ro
         )
     }
 
-    override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+    override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
         try {
             val additionalCommandInfo = ConfigFactory.parseString(
                 // Workaround because HOCON can't deserialize root lists (sad)
@@ -39,21 +39,13 @@ class CommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Ro
             // Workaround because HOCON can't deserialize root lists (sad)
             val config = Hocon.decodeFromConfig<AdditionalCommandInfoConfigs>(additionalCommandInfo)
 
-            val imageSizes = mutableMapOf<String, Pair<Int, Int>>()
-
-            for (imageUrl in config.additionalCommandInfos.flatMap { it.imageUrls ?: listOf() }) {
-                println("/static$imageUrl")
-                val info = SimpleImageInfo(CommandsRoute::class.java.getResourceAsStream("/static$imageUrl"))
-                imageSizes[imageUrl] = Pair(info.width, info.height)
-            }
-
             call.respondText(
                 CommandsView(
                     call.request.userTheme,
                     showtime.svgIconManager,
                     showtime.hashManager,
                     locale,
-                    "/commands",
+                    "/commands/application",
                     commands,
                     call.parameters["category"]?.toUpperCase()?.let {
                         try {
@@ -62,8 +54,7 @@ class CommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Ro
                             null
                         }
                     },
-                    config.additionalCommandInfos,
-                    imageSizes
+                    config.additionalCommandInfos
                 ).generateHtml(),
                 ContentType.Text.Html
             )
