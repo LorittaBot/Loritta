@@ -40,21 +40,21 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class CommandsView(
-        websiteTheme: WebsiteTheme,
-        iconManager: SVGIconManager,
-        hashManager: WebsiteAssetsHashManager,
-        locale: BaseLocale,
-        path: String,
-        val commands: List<CommandInfo>,
-        val filterByCategory: CommandCategory? = null,
-        val additionalCommandInfos: List<AdditionalCommandInfoConfig>,
-        val imageSizes: Map<String, Pair<Int, Int>>
+    websiteTheme: WebsiteTheme,
+    iconManager: SVGIconManager,
+    hashManager: WebsiteAssetsHashManager,
+    locale: BaseLocale,
+    path: String,
+    val commands: List<CommandInfo>,
+    val filterByCategory: CommandCategory? = null,
+    val additionalCommandInfos: List<AdditionalCommandInfoConfig>,
+    val imageSizes: Map<String, Pair<Int, Int>>
 ) : SidebarsView(
-        websiteTheme,
-        iconManager,
-        hashManager,
-        locale,
-        path
+    websiteTheme,
+    iconManager,
+    hashManager,
+    locale,
+    path
 ) {
     companion object {
         // We don't want to show commands in the "MAGIC" category
@@ -134,12 +134,12 @@ class CommandsView(
     }
 
     override fun HtmlBlockTag.rightSidebarContents() {
-        fun generateCategoryInfo(
-                category: CommandCategory?,
-                visible: Boolean,
-                imageUrl: String
+        fun generateAllCommandsInfo(
+            visible: Boolean,
+            imagePath: String,
+            sizes: String
         ) {
-            val categoryName = category?.name ?: "ALL"
+            val categoryName = "ALL"
 
             div(classes = "media") {
                 style = "width: 100%;"
@@ -154,7 +154,7 @@ class CommandsView(
                             "display: flex;\n" +
                             "align-items: center; justify-content: center;"
 
-                    img(src = imageUrl) {
+                    imgSrcSetFromResources(imagePath, sizes) {
                         // Lazy load the images, because *for some reason* it loads all images even tho the div is display none.
                         attributes["loading"] = "lazy"
                         style = "max-height: 100%; max-width: 100%;"
@@ -162,33 +162,25 @@ class CommandsView(
                 }
 
                 div(classes = "media-body") {
-                    if (category != null) {
-                        for (entry in category.getLocalizedDescription(locale)) {
-                            p {
-                                +entry
-                            }
-                        }
-                    } else {
-                        for (entry in locale.getList("commands.category.all.description")) {
-                            p {
-                                formatAsHtml(
-                                        entry,
-                                        {
-                                            if (it == 0) {
-                                                code {
-                                                    +"+"
-                                                }
-                                            }
+                    for (entry in locale.getList("commands.category.all.description")) {
+                        p {
+                            formatAsHtml(
+                                entry,
+                                {
+                                    if (it == 0) {
+                                        code {
+                                            +"+"
+                                        }
+                                    }
 
-                                            if (it == 1) {
-                                                code {
-                                                    +"+ping"
-                                                }
-                                            }
-                                        },
-                                        { +it }
-                                )
-                            }
+                                    if (it == 1) {
+                                        code {
+                                            +"+ping"
+                                        }
+                                    }
+                                },
+                                { +it }
+                            )
                         }
                     }
                 }
@@ -196,10 +188,10 @@ class CommandsView(
         }
 
         fun generateCategoryInfo(
-                category: CommandCategory?,
-                visible: Boolean,
-                imagePath: String,
-                sizes: String
+            category: CommandCategory?,
+            visible: Boolean,
+            imagePath: String,
+            sizes: String
         ) {
             val categoryName = category?.name ?: "ALL"
 
@@ -239,122 +231,122 @@ class CommandsView(
             }
         }
 
-        generateCategoryInfo(
-                null,
-                filterByCategory == null,
-                "/v3/assets/img/support/lori_support_268w.png"
+        generateAllCommandsInfo(
+            filterByCategory == null,
+            "${versionPrefix}/assets/img/support/lori_support.png",
+            "(max-width: 800px) 50vw, 15vw"
         )
 
         generateCategoryInfo(
-                CommandCategory.IMAGES,
-                filterByCategory == CommandCategory.IMAGES,
-                "/v3/assets/img/categories/images.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.FUN,
-                filterByCategory == CommandCategory.FUN,
-                "/v3/assets/img/categories/fun.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.MODERATION,
-                filterByCategory == CommandCategory.MODERATION,
-                "/v3/assets/img/categories/moderation.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.SOCIAL,
-                filterByCategory == CommandCategory.SOCIAL,
-                "/v3/assets/img/categories/social.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.DISCORD,
-                filterByCategory == CommandCategory.DISCORD,
-                "/v3/assets/img/categories/loritta_wumpus.png",
-                "(max-width: 1366px) 250px",
-        )
-
-        generateCategoryInfo(
-                CommandCategory.UTILS,
-                filterByCategory == CommandCategory.UTILS,
-                "/v3/assets/img/categories/utilities.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.MISC,
-                filterByCategory == CommandCategory.MISC,
-                "/v3/assets/img/categories/miscellaneous.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.ACTION,
-                filterByCategory == CommandCategory.ACTION,
-                "/v3/assets/img/categories/hug.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.UNDERTALE,
-                filterByCategory == CommandCategory.UNDERTALE,
-                "/v3/assets/img/categories/lori_sans.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.POKEMON,
-                filterByCategory == CommandCategory.POKEMON,
-                "/v3/assets/img/categories/lori_pikachu.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.ECONOMY,
-                filterByCategory == CommandCategory.ECONOMY,
-                "/v3/assets/img/categories/money.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.FORTNITE,
-                filterByCategory == CommandCategory.FORTNITE,
-                "/v3/assets/img/categories/loritta_fortnite.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.VIDEOS,
-                filterByCategory == CommandCategory.VIDEOS,
-                "/v3/assets/img/categories/videos.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.ANIME,
-                filterByCategory == CommandCategory.ANIME,
-                "/v3/assets/img/categories/anime.png",
-                "(max-width: 1366px) 250px"
-        )
-
-        generateCategoryInfo(
-                CommandCategory.MINECRAFT,
-                filterByCategory == CommandCategory.MINECRAFT,
-                "/v3/assets/img/categories/minecraft.png",
+            CommandCategory.IMAGES,
+            filterByCategory == CommandCategory.IMAGES,
+            "/v3/assets/img/categories/images.png",
             "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
-                CommandCategory.ROBLOX,
-                filterByCategory == CommandCategory.ROBLOX,
-                "/v3/assets/img/categories/roblox.png",
-                "(max-width: 1366px) 250px"
+            CommandCategory.FUN,
+            filterByCategory == CommandCategory.FUN,
+            "/v3/assets/img/categories/fun.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.MODERATION,
+            filterByCategory == CommandCategory.MODERATION,
+            "/v3/assets/img/categories/moderation.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.SOCIAL,
+            filterByCategory == CommandCategory.SOCIAL,
+            "/v3/assets/img/categories/social.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.DISCORD,
+            filterByCategory == CommandCategory.DISCORD,
+            "/v3/assets/img/categories/loritta_wumpus.png",
+            "(max-width: 1366px) 250px",
+        )
+
+        generateCategoryInfo(
+            CommandCategory.UTILS,
+            filterByCategory == CommandCategory.UTILS,
+            "/v3/assets/img/categories/utilities.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.MISC,
+            filterByCategory == CommandCategory.MISC,
+            "/v3/assets/img/categories/miscellaneous.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.ACTION,
+            filterByCategory == CommandCategory.ACTION,
+            "/v3/assets/img/categories/hug.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.UNDERTALE,
+            filterByCategory == CommandCategory.UNDERTALE,
+            "/v3/assets/img/categories/lori_sans.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.POKEMON,
+            filterByCategory == CommandCategory.POKEMON,
+            "/v3/assets/img/categories/lori_pikachu.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.ECONOMY,
+            filterByCategory == CommandCategory.ECONOMY,
+            "/v3/assets/img/categories/money.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.FORTNITE,
+            filterByCategory == CommandCategory.FORTNITE,
+            "/v3/assets/img/categories/loritta_fortnite.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.VIDEOS,
+            filterByCategory == CommandCategory.VIDEOS,
+            "/v3/assets/img/categories/videos.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.ANIME,
+            filterByCategory == CommandCategory.ANIME,
+            "/v3/assets/img/categories/anime.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.MINECRAFT,
+            filterByCategory == CommandCategory.MINECRAFT,
+            "/v3/assets/img/categories/minecraft.png",
+            "(max-width: 1366px) 250px"
+        )
+
+        generateCategoryInfo(
+            CommandCategory.ROBLOX,
+            filterByCategory == CommandCategory.ROBLOX,
+            "/v3/assets/img/categories/roblox.png",
+            "(max-width: 1366px) 250px"
         )
 
         // Generate ads below the <hr> tag
@@ -473,7 +465,7 @@ class CommandsView(
 
                                     commandLabel {
                                         style =
-                                                "font-size: 1.5em; font-weight: bold; box-shadow: inset 0 0px 0 white, inset 0 -1px 0 rgb(${color.red}, ${color.green}, ${color.blue});"
+                                            "font-size: 1.5em; font-weight: bold; box-shadow: inset 0 0px 0 white, inset 0 -1px 0 rgb(${color.red}, ${color.green}, ${color.blue});"
                                         +commandLabel
                                     }
                                 }
@@ -577,7 +569,7 @@ class CommandsView(
 
                                 for (example in examples) {
                                     val split = example.split("|-|")
-                                            .map { it.trim() }
+                                        .map { it.trim() }
 
                                     div {
                                         style = "padding-bottom: 8px;"
@@ -663,33 +655,33 @@ class CommandsView(
     }
 
     class COMMANDCATEGORY(consumer: TagConsumer<*>) :
-            HTMLTag(
-                    "lori-command-category", consumer, emptyMap(),
-                    inlineTag = false,
-                    emptyTag = false
-            ), HtmlBlockTag
+        HTMLTag(
+            "lori-command-category", consumer, emptyMap(),
+            inlineTag = false,
+            emptyTag = false
+        ), HtmlBlockTag
 
     fun FlowOrInteractiveContent.commandCategory(block: COMMANDCATEGORY.() -> Unit = {}) {
         COMMANDCATEGORY(consumer).visit(block)
     }
 
     class COMMANDENTRY(consumer: TagConsumer<*>) :
-            HTMLTag(
-                    "lori-command-entry", consumer, emptyMap(),
-                    inlineTag = false,
-                    emptyTag = false
-            ), HtmlBlockTag
+        HTMLTag(
+            "lori-command-entry", consumer, emptyMap(),
+            inlineTag = false,
+            emptyTag = false
+        ), HtmlBlockTag
 
     fun FlowOrInteractiveContent.commandEntry(block: COMMANDENTRY.() -> Unit = {}) {
         COMMANDENTRY(consumer).visit(block)
     }
 
     fun FlowOrInteractiveContent.commandCategoryTag(block: HtmlBlockTag.() -> Unit = {}) =
-            customHtmlTag("lori-command-category-tag", block)
+        customHtmlTag("lori-command-category-tag", block)
 
     fun FlowOrInteractiveContent.commandLabel(block: HtmlBlockTag.() -> Unit = {}) =
-            customHtmlTag("lori-command-label", block)
+        customHtmlTag("lori-command-label", block)
 
     fun FlowOrInteractiveContent.commandDescription(block: HtmlBlockTag.() -> Unit = {}) =
-            customHtmlTag("lori-command-description", block)
+        customHtmlTag("lori-command-description", block)
 }
