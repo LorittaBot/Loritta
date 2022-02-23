@@ -1,0 +1,42 @@
+// CSS for the "/commands" view
+lori-command-category {
+    display: flex;
+    justify-content: space-between;
+
+    > div {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+}
+
+lori-command-category-tag {
+    position: absolute;
+    // The background-color is going to be set within the page generation itself
+    // background-color: rgb(${color.red}, ${color.green}, ${color.blue});
+    border-radius: 0px 0px 0px 7px;
+    top: 0;
+    right: 0;
+    padding: 5px;
+    color: white;
+    font-weight: bold;
+}
+
+lori-command-entry {
+    .thumbnail {
+        display: block;
+        float: right;
+        border-radius: 7px;
+        margin-left: 8px;
+        margin-bottom: 8px;
+        // The width and aspect ratio is set inline
+
+        @media screen and (max-width: 600px) {
+            // If the screen is too smol, set the image inline instead of floating
+            float: none;
+            // And center the image!
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+}

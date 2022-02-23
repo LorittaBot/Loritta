@@ -1,0 +1,5 @@
+---
+description: "¡Algunas veces tus sorteos recaen en aquellos usuarios que no \"merecen\" ganar el sorteo, por lo que puedes pedirme que tire los dados nuevamente y obtenga nuevos ganadores!"
+giveawayHowToEnd: "{0}giveaway end {1}"
+giveawayStillRunning: "El sorteo que intentó rodar nuevos ganadores... bueno, ¡sigue rodando! Si está buscando terminar el sorteo, use {0}"
+rerolledGiveaway: "¡Listo! Puse nuevos ganadores para el sorteo que pediste, ahora puedes descansar tranquilo sin tener que hacer esa sonrisa falsa solo porque el miembro que odias ha ganado."

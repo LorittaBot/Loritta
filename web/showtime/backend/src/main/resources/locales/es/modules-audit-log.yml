@@ -1,0 +1,7 @@
+---
+modules:
+  auditLog:
+    title: "Registro de Auditoría"
+    generic: "{0} realizó operación {1}"
+    updated: "{0} hizo cambios en {1}"
+    resetXp: "{0} reinició la experiencia de todos los usuarios"

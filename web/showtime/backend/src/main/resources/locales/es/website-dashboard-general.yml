@@ -1,0 +1,30 @@
+---
+website:
+  dashboard:
+    general:
+      commandPrefix:
+        title: "Prefijo de Loritta"
+        subtext: "El Prefijo es el texto que viene antes de un comando. Por defecto vengo con el signo +, pero puedes cambiarlo en esta opción."
+      deleteMessagesAfterExecuting:
+        title: "Borrar mensaje del usuario al ejecutar un comando"
+        subtext: "Cuando se ejecute un comando, borraré el mensaje de quien lo ejecutó."
+      tellMissingPermissionOnAChannel:
+        title: "Avisar cuando no tengo permiso para hablar en un canal"
+        subtext: "Si no soy capaz de enviar un mensaje en un canal por no tener el permiso, enviaré un mensaje directo para la Administración del servidor. útil para depurar problemas."
+      tellUserWhenUsingUnknownCommand:
+        title: "Avisar el usuario cuando ejecute un comando desconocido"
+        subtext: "Si un usuario ejecuta un comando inexistente, le avisaré que no tengo el comando deseado, recomendaré cual comando él probablemente quería usar y, si el usuario quiere saber todos mis lindos comandos, que use el comando de ayuda."
+      blacklistedChannels:
+        title: "Canales que serán prohibidos de usar comandos"
+        subtext: "En estos canales, ignoraré comandos de usuarios, como si no estuviera allá! (Igual que esté observando sus mensajes para dar XP, hihi~) Si quieres configurar para que roles específicas puedan sobrepasar esta restricción, configuralas en la sección de permisos."
+      tellUserWhenUsingCommandsOnABlacklistedChannel:
+        title: "Enviar un mensaje para el usuario cuando ejecute comandos en canales prohibidos"
+        subtext: "Caso hayas configurado canales en los cuales sea prohibido usar comandos, puedes activar esta opción para que, cuando un usuario intente ejecutar un comando en canales prohibidos, le aviso que no se puede usar comandos en ese canal."
+      messageWhenUsingACommandInABlockedChannel:
+        title: "Mensaje al ejecutar un comando en un canal prohibido"
+    owner: "Dueño"
+    administrator: "Administrador"
+    manager: "Gestiona"
+    member: "Miembro"
+    addLori: "Agregar a Lori"
+    configureLori: "Configurar Lori"

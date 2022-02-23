@@ -1,0 +1,49 @@
+.tooltip {
+    position: relative;
+    cursor: pointer;
+    // display: inline-block;
+    // border-bottom: 1px dotted black;
+
+    &.tooltip-glow {
+        box-shadow: 0px 0px 5px #29a6fe;
+        transition-duration: 0.2s;
+
+        &:hover {
+            box-shadow: 0px 0px 15px lighten(#29a6fe, 15%);
+        }
+    }
+}
+  
+.tooltip .tooltip-text {
+    visibility: hidden;
+    opacity: 0;
+    // max-width does not work here because we are using a absolute positioned div
+    width: max-content;
+    max-width: 300px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+
+    // A lot of resets to avoid inheriting the parent style
+    font-weight: normal;
+    font-family: "Lato", Arial, Helvetica, sans-serif;
+    font-size: 14px;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    bottom: 100%;
+    left: 50%;
+    transform: translate(-50%, 0);
+
+    // Pointer Events should pass through
+    pointer-events: none;
+}
+  
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+    transition-duration: 0.3s;
+}
