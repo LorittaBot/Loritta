@@ -9,7 +9,8 @@ class GenerateOptimizedImage(
     val sourceFile: File,
     val targetFile: File,
     val targetFolder: File,
-    val imagesInfo: CopyOnWriteArrayList<ImageInfo>
+    val pngQuantPathString: String,
+    val imagesInfo: CopyOnWriteArrayList<ImageInfo>,
 ) : Runnable {
     override fun run() {
         try {
@@ -93,7 +94,7 @@ class GenerateOptimizedImage(
 
         // https://stackoverflow.com/questions/39894913/how-do-i-get-the-best-png-compression-with-gulp-imagemin-plugins
         val proc = ProcessBuilder(
-            "L:\\Tools\\pngquant\\pngquant.exe" ?: "/usr/bin/pngquant",
+            pngQuantPathString,
             "--quality=70-90",
             "--strip",
             "-f",

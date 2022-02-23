@@ -21,6 +21,11 @@ jobs:
       with: 
         submodules: recursive
 
+    - name: Install pngquant
+      run: |
+        sudo apt-get update
+        sudo apt-get install pngquant
+
     - name: Setup Java JDK
       uses: actions/setup-java@v1.4.3
       with:

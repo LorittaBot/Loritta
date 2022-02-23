@@ -18,6 +18,7 @@ import org.gradle.work.ChangeType
 import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
 import java.io.File
+import java.io.IOException
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
@@ -59,6 +60,7 @@ abstract class ImageOptimizerTask : DefaultTask() {
     fun execute(inputChanges: InputChanges) {
         val outputImagesInfoFile = outputImagesInfoFile.get().asFile
         val targetFolder = outputImagesDirectory.asFile.get()
+        val pngQuantPath = findPngQuantCommandPath()
 
         val list = if (outputImagesInfoFile.exists())
             CopyOnWriteArrayList(Json.decodeFromString(ListSerializer(ImageInfo.serializer()),  outputImagesInfoFile.readText()))
@@ -92,6 +94,7 @@ abstract class ImageOptimizerTask : DefaultTask() {
                         change.file,
                         targetFile,
                         targetFolder,
+                        pngQuantPath,
                         list
                     )
                 )
@@ -103,6 +106,56 @@ abstract class ImageOptimizerTask : DefaultTask() {
 
         outputImagesInfoFile
             .writeText(Json.encodeToString(ListSerializer(ImageInfo.serializer()), list))
+    }
+
+    private fun findPngQuantCommandPath(): String {
+        logger.info("Finding where pngquant is...")
+
+        try {
+            ProcessBuilder(
+                "pngquant",
+            ).start()
+
+            return "pngquant"
+        } catch (e: IOException) {
+            logger.info("PNGQuant was not found in the path \"pngquant\"...")
+        }
+
+        try {
+            ProcessBuilder(
+                "pngquant.exe",
+            ).start()
+
+            return "pngquant.exe"
+        } catch (e: IOException) {
+            logger.info("PNGQuant was not found in the path \"pngquant.exe\"...")
+        }
+
+        try {
+            ProcessBuilder(
+                "/usr/bin/pngquant",
+            ).start()
+
+            return "/usr/bin/pngquant"
+        } catch (e: IOException) {
+            logger.info("PNGQuant was not found in the path \"/usr/bin/pngquant\"...")
+        }
+
+        val systemPropPngQuantPath = System.getProperty("pngquant.path")
+        
+        if (systemPropPngQuantPath != null) {
+            try {
+                ProcessBuilder(
+                    systemPropPngQuantPath,
+                ).start()
+
+                return systemPropPngQuantPath
+            } catch (e: IOException) {
+                logger.info("PNGQuant was not found in the path \"$systemPropPngQuantPath\"...")
+            }
+        }
+
+        error("PNGQuant was not found in the path! Please install PNGQuant or, if it is already installed, provide the path via the \"pngquant.path\" system property (Example: \"./gradlew -Dpngquant.path=/home/lorittapath/to/pngquant/pngquant ...\")")
     }
 }
 
