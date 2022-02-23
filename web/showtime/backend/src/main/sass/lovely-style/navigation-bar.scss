@@ -110,11 +110,6 @@
 
   @media screen and (max-width: 1366px) {
     .navigation-bar.responsive {position: relative;}
-    .navigation-bar.responsive .icon {
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
     .navigation-bar.responsive .entry {
       float: none;
       display: block;
