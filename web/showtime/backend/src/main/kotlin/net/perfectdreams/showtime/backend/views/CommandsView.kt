@@ -33,7 +33,7 @@ import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.showtime.backend.utils.commands.AdditionalCommandInfoConfig
 import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
-import net.perfectdreams.showtime.backend.utils.imgSrcSet
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.utils.locale.formatAsHtml
 import java.awt.Color
 import java.time.LocalDate
@@ -199,11 +199,7 @@ class CommandsView(
                 category: CommandCategory?,
                 visible: Boolean,
                 imagePath: String,
-                fileName: String,
-                sizes: String,
-                max: Int,
-                min: Int,
-                step: Int
+                sizes: String
         ) {
             val categoryName = category?.name ?: "ALL"
 
@@ -220,7 +216,7 @@ class CommandsView(
                             "display: flex;\n" +
                             "align-items: center; justify-content: center;"
 
-                    imgSrcSet(imagePath, fileName, sizes, max, min, step) {
+                    imgSrcSetFromResources(imagePath, sizes) {
                         // Lazy load the images, because *for some reason* it loads all images even tho the div is display none.
                         attributes["loading"] = "lazy"
                         style = "max-height: 100%; max-width: 100%;"
@@ -252,177 +248,113 @@ class CommandsView(
         generateCategoryInfo(
                 CommandCategory.IMAGES,
                 filterByCategory == CommandCategory.IMAGES,
-                "/v3/assets/img/categories/images/",
-                "images.png",
-                "(max-width: 1366px) 250px",
-                1486,
-                186,
-                100
+                "/v3/assets/img/categories/images.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.FUN,
                 filterByCategory == CommandCategory.FUN,
-                "/v3/assets/img/categories/fun/",
-                "fun.png",
-                "(max-width: 1366px) 250px",
-                1213,
-                113,
-                100
+                "/v3/assets/img/categories/fun.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.MODERATION,
                 filterByCategory == CommandCategory.MODERATION,
-                "/v3/assets/img/categories/moderation/",
-                "moderation.png",
-                "(max-width: 1366px) 250px",
-                994,
-                194,
-                100
+                "/v3/assets/img/categories/moderation.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.SOCIAL,
                 filterByCategory == CommandCategory.SOCIAL,
-                "/v3/assets/img/categories/social/",
-                "social.png",
-                "(max-width: 1366px) 250px",
-                2000,
-                100,
-                100
+                "/v3/assets/img/categories/social.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.DISCORD,
                 filterByCategory == CommandCategory.DISCORD,
-                "/v3/assets/img/categories/discord/",
-                "discord.png",
+                "/v3/assets/img/categories/loritta_wumpus.png",
                 "(max-width: 1366px) 250px",
-                1064,
-                164,
-                100
         )
 
         generateCategoryInfo(
                 CommandCategory.UTILS,
                 filterByCategory == CommandCategory.UTILS,
-                "/v3/assets/img/categories/utilities/",
-                "utilities.png",
-                "(max-width: 1366px) 250px",
-                1128,
-                128,
-                100
+                "/v3/assets/img/categories/utilities.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.MISC,
                 filterByCategory == CommandCategory.MISC,
-                "/v3/assets/img/categories/miscellaneous/",
-                "miscellaneous.png",
-                "(max-width: 1366px) 250px",
-                1798,
-                198,
-                100
+                "/v3/assets/img/categories/miscellaneous.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.ACTION,
                 filterByCategory == CommandCategory.ACTION,
-                "/v3/assets/img/categories/action/",
-                "action.png",
-                "(max-width: 1366px) 250px",
-                1583,
-                183,
-                100
+                "/v3/assets/img/categories/hug.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.UNDERTALE,
                 filterByCategory == CommandCategory.UNDERTALE,
-                "/v3/assets/img/categories/undertale/",
-                "undertale.png",
-                "(max-width: 1366px) 250px",
-                1041,
-                141,
-                100
+                "/v3/assets/img/categories/lori_sans.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.POKEMON,
                 filterByCategory == CommandCategory.POKEMON,
-                "/v3/assets/img/categories/pokemon/",
-                "pokemon.png",
-                "(max-width: 1366px) 250px",
-                960,
-                160,
-                100
+                "/v3/assets/img/categories/lori_pikachu.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.ECONOMY,
                 filterByCategory == CommandCategory.ECONOMY,
-                "/v3/assets/img/categories/economy/",
-                "economy.png",
-                "(max-width: 1366px) 250px",
-                1811,
-                111,
-                100
+                "/v3/assets/img/categories/money.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.FORTNITE,
                 filterByCategory == CommandCategory.FORTNITE,
-                "/v3/assets/img/categories/fortnite/",
-                "fortnite.png",
-                "(max-width: 1366px) 250px",
-                3479,
-                179,
-                100
+                "/v3/assets/img/categories/loritta_fortnite.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.VIDEOS,
                 filterByCategory == CommandCategory.VIDEOS,
-                "/v3/assets/img/categories/videos/",
-                "videos.png",
-                "(max-width: 1366px) 250px",
-                1541,
-                141,
-                100
+                "/v3/assets/img/categories/videos.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.ANIME,
                 filterByCategory == CommandCategory.ANIME,
-                "/v3/assets/img/categories/anime/",
-                "anime.png",
-                "(max-width: 1366px) 250px",
-                1102,
-                102,
-                100
+                "/v3/assets/img/categories/anime.png",
+                "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.MINECRAFT,
                 filterByCategory == CommandCategory.MINECRAFT,
-                "/v3/assets/img/categories/minecraft/",
-                "minecraft.png",
-                "(max-width: 1366px) 250px",
-                505,
-                105,
-                100
+                "/v3/assets/img/categories/minecraft.png",
+            "(max-width: 1366px) 250px"
         )
 
         generateCategoryInfo(
                 CommandCategory.ROBLOX,
                 filterByCategory == CommandCategory.ROBLOX,
-                "/v3/assets/img/categories/roblox/",
-                "roblox.png",
-                "(max-width: 1366px) 250px",
-                3805,
-                105,
-                100
+                "/v3/assets/img/categories/roblox.png",
+                "(max-width: 1366px) 250px"
         )
 
         // Generate ads below the <hr> tag

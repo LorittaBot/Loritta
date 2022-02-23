@@ -6,7 +6,7 @@ import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.html.style
-import net.perfectdreams.showtime.backend.utils.imgSrcSet
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.views.BaseView
 
 fun DIV.chitChat(locale: BaseLocale, websiteUrl: String, sectionClassName: String) {
@@ -32,13 +32,9 @@ fun DIV.chitChat(locale: BaseLocale, websiteUrl: String, sectionClassName: Strin
             }
 
             div(classes = "media-figure") {
-                imgSrcSet(
-                        "${BaseView.versionPrefix}/assets/img/home/",
-                        "lori_prize.png",
-                        "(max-width: 800px) 50vw, 15vw",
-                        613,
-                        113,
-                        100
+                imgSrcSetFromResources(
+                        "${BaseView.versionPrefix}/assets/img/home/lori_prize.png",
+                        "(max-width: 800px) 50vw, 15vw"
                 )
             }
         }

@@ -12,7 +12,7 @@ import kotlinx.html.style
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
-import net.perfectdreams.showtime.backend.utils.imgSrcSet
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 
 class SupportView(
     websiteTheme: WebsiteTheme,
@@ -33,13 +33,9 @@ class SupportView(
         div(classes = "even-wrapper") {
             div(classes = "media") {
                 div(classes = "media-figure") {
-                    imgSrcSet(
-                        "${versionPrefix}/assets/img/support/",
-                        "lori_support.png",
-                        "(max-width: 800px) 50vw, 15vw",
-                        1168,
-                        168,
-                        100
+                    imgSrcSetFromResources(
+                        "${versionPrefix}/assets/img/support/lori_support.png",
+                        "(max-width: 800px) 50vw, 15vw"
                     )
                 }
 

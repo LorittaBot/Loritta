@@ -59,6 +59,14 @@ jib {
 }
 
 val jsBrowserProductionWebpack = tasks.getByPath(":web:showtime:frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+val optimizeImageAssets = tasks.register<ImageOptimizerTask>("optimizeImageAssets") {
+    sourceImagesDirectory.set(file("src/main/images"))
+    outputImagesDirectory.set(file("$buildDir/images"))
+    outputImagesInfoFile.set(file("$buildDir/generated-resources/images-info.json"))
+
+    // Unused for now
+    imagesOptimizationSettings.set(listOf())
+}
 
 tasks {
     val sass = sassTask("style.scss", "style.css")
@@ -67,6 +75,7 @@ tasks {
         // We need to wait until the JS build finishes and the SASS files are generated
         dependsOn(jsBrowserProductionWebpack)
         dependsOn(sass)
+        dependsOn(optimizeImageAssets)
 
         // Copy the output from the frontend task to the backend resources
         from(jsBrowserProductionWebpack.destinationDirectory) {
@@ -76,6 +85,16 @@ tasks {
         // Same thing with the SASS output
         from(File(buildDir, "sass")) {
             into("static/v3/assets/css/")
+        }
+
+        // Same thing with the images
+        from(File(buildDir, "images")) {
+            into("")
+        }
+
+        // Same thing with the generated-resources output
+        from(File(buildDir, "generated-resources")) {
+            into("")
         }
     }
 }

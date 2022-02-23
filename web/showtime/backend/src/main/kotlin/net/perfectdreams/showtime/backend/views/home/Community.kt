@@ -6,7 +6,7 @@ import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.html.style
-import net.perfectdreams.showtime.backend.utils.imgSrcSet
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.views.BaseView
 
 fun DIV.community(locale: BaseLocale, sectionClassName: String) {
@@ -21,13 +21,9 @@ fun DIV.community(locale: BaseLocale, sectionClassName: String) {
 
         div(classes = "media") {
             div(classes = "media-figure") {
-                imgSrcSet(
-                        "${BaseView.versionPrefix}/assets/img/home/",
-                        "lori_community.png",
-                        "(max-width: 800px) 50vw, 15vw",
-                        768,
-                        168,
-                        100
+                imgSrcSetFromResources(
+                        "${BaseView.versionPrefix}/assets/img/home/lori_community.png",
+                        "(max-width: 800px) 50vw, 15vw"
                 )
             }
 

@@ -16,7 +16,7 @@ import kotlinx.html.video
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
-import net.perfectdreams.showtime.backend.utils.imgSrcSet
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 
 class PremiumView(
     websiteTheme: WebsiteTheme,
@@ -50,13 +50,9 @@ class PremiumView(
 
             div(classes = "media") {
                 div(classes = "media-figure") {
-                    imgSrcSet(
-                        "${websiteUrl}${versionPrefix}/assets/img/donate/",
-                        "lori_donate.png",
-                        "(max-width: 800px) 50vw, 15vw",
-                        1272,
-                        272,
-                        100
+                    imgSrcSetFromResources(
+                        "${versionPrefix}/assets/img/donate/lori_donate.png",
+                        "(max-width: 800px) 50vw, 15vw"
                     )
                     // img(src = "${websiteUrl}/assets/img/loritta_pobre.png", alt = "Loritta Pobre") {}
                 }

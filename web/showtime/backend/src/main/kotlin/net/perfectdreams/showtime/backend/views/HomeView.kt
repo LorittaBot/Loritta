@@ -16,7 +16,7 @@ import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
-import net.perfectdreams.showtime.backend.utils.imgSrcSet
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.views.home.chitChat
 import net.perfectdreams.showtime.backend.views.home.community
 import net.perfectdreams.showtime.backend.views.home.customization
@@ -53,42 +53,26 @@ class HomeView(
                 HomeElements.lorittaSelfie.apply(this)
 
                 // Ordem: Do primeiro (a base) para o último
-                imgSrcSet(
-                    "${websiteUrl}${versionPrefix}/assets/img/loritta/",
-                    "loritta_v2.png",
-                    "(max-width: 1366px) 570px",
-                    1681,
-                    181,
-                    100
+                imgSrcSetFromResources(
+                    "${versionPrefix}/assets/img/loritta/loritta_v2.png",
+                    "(max-width: 1366px) 570px"
                 )
-                imgSrcSet(
-                    "${websiteUrl}${versionPrefix}/assets/img/loritta/",
-                    "loritta_v2_dark.png",
-                    "(max-width: 1366px) 570px",
-                    1681,
-                    181,
-                    100
+                imgSrcSetFromResources(
+                    "${versionPrefix}/assets/img/loritta/loritta_v2_dark.png",
+                    "(max-width: 1366px) 570px"
                 ) {
                     classes = classes + "dark-sweater-pose"
                 }
-                imgSrcSet(
-                    "${websiteUrl}${versionPrefix}/assets/img/loritta/",
-                    "loritta_v2_blink.png",
-                    "(max-width: 1366px) 570px",
-                    1681,
-                    181,
-                    100
+                imgSrcSetFromResources(
+                    "${versionPrefix}/assets/img/loritta/loritta_v2_blink.png",
+                    "(max-width: 1366px) 570px"
                 ) {
                     HomeElements.blinkingPose.apply(this)
                     classes = classes + "blinking-pose"
                 }
-                imgSrcSet(
-                    "${websiteUrl}${versionPrefix}/assets/img/loritta/",
-                    "loritta_v2_blush.png",
-                    "(max-width: 1366px) 570px",
-                    1681,
-                    181,
-                    100
+                imgSrcSetFromResources(
+                    "${versionPrefix}/assets/img/loritta/loritta_v2_blush.png",
+                    "(max-width: 1366px) 570px"
                 ) {
                     HomeElements.blushingPose.apply(this)
                     classes = classes + "blushing-pose"
@@ -115,7 +99,7 @@ class HomeView(
                     div {
                         // TODO: Fix
                         a(classes = "add-me button pink has-shadow is-big", href = "https://google.com/") {
-                            img(classes = "lori-happy", src = "${websiteUrl}$versionPrefix/assets/img/lori_happy.gif")
+                            img(classes = "lori-happy", src = "$versionPrefix/assets/img/lori_happy.gif")
                             i(classes = "fas fa-plus") {}
 
                             + " ${locale["website.jumbotron.addMe"]}"
@@ -186,13 +170,9 @@ class HomeView(
                     }
                 }
                 div(classes = "media-figure") {
-                    imgSrcSet(
-                        "${websiteUrl}${versionPrefix}/assets/img/home/",
-                        "lori_gabi.png",
-                        "(max-width: 800px) 50vw, 15vw",
-                        1278,
-                        178,
-                        100
+                    imgSrcSetFromResources(
+                        "${versionPrefix}/assets/img/home/lori_gabi.png",
+                        "(max-width: 800px) 50vw, 15vw"
                     )
                 }
             }

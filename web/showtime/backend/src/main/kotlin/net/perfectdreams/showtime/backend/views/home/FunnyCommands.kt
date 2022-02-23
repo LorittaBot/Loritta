@@ -12,7 +12,7 @@ import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.html.ul
-import net.perfectdreams.showtime.backend.utils.imgSrcSet
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.views.BaseView
 
 fun DIV.funnyCommands(locale: BaseLocale, websiteUrl: String, sectionClassName: String) {
@@ -40,13 +40,9 @@ fun DIV.funnyCommands(locale: BaseLocale, websiteUrl: String, sectionClassName: 
 
         div(classes = "media") {
             div(classes = "media-figure") {
-                imgSrcSet(
-                        "${BaseView.versionPrefix}/assets/img/home/",
-                        "lori_commands.png",
-                        "(max-width: 800px) 50vw, 15vw",
-                        791,
-                        191,
-                        100
+                imgSrcSetFromResources(
+                        "${BaseView.versionPrefix}/assets/img/home/lori_commands.png",
+                        "(max-width: 800px) 50vw, 15vw"
                 )
             }
             div(classes = "media-body") {
@@ -97,13 +93,9 @@ fun DIV.funnyCommandsBrasil(locale: BaseLocale, websiteUrl: String) {
 
         div(classes = "media") {
             div(classes = "media-figure") {
-                imgSrcSet(
-                        "${BaseView.versionPrefix}/assets/img/home/",
-                        "lori_commands.png",
-                        "(max-width: 800px) 50vw, 15vw",
-                        791,
-                        191,
-                        100
+                imgSrcSetFromResources(
+                    "${BaseView.versionPrefix}/assets/img/home/",
+                    "(max-width: 800px) 50vw, 15vw"
                 )
             }
             div(classes = "media-body") {
