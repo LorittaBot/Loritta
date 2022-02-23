@@ -17,8 +17,6 @@ commands:
         playerNameJavaEdition: "O nome da conta do jogador no Minecraft: Java Edition"
     pokemon:
       name: "Pokémon"
-    undertale:
-      name: "Undertale"
     roblox:
       name: "ROBLOX"
     anime:
