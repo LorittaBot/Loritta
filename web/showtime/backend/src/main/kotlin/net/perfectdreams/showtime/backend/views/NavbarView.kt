@@ -82,7 +82,7 @@ abstract class NavbarView(
                         }
 
                         div(classes = "entry") {
-                            a(classes = "commands", href = "$base/commands") {
+                            a(classes = "commands", href = "$base/commands/slash") {
                                 attributes["data-preload-link"] = "true"
 
                                 iconManager.terminal.apply(this)
@@ -286,7 +286,7 @@ abstract class NavbarView(
                                 a(href = "$base/support") {
                                     +locale["website.navbar.support"]
                                 }
-                                a(href = "$base/commands") {
+                                a(href = "$base/commands/slash") {
                                     +locale["modules.sectionNames.commands"]
                                 }
                                 a(href = "$base/donate") {

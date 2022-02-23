@@ -6,8 +6,8 @@ import kotlinx.html.HTMLTag
 import kotlinx.html.HtmlBlockTag
 import kotlinx.html.TagConsumer
 import kotlinx.html.a
+import kotlinx.html.button
 import kotlinx.html.classes
-import kotlinx.html.code
 import kotlinx.html.details
 import kotlinx.html.div
 import kotlinx.html.fieldSet
@@ -24,6 +24,7 @@ import kotlinx.html.video
 import kotlinx.html.visit
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.showtime.backend.PublicApplicationCommands
 import net.perfectdreams.showtime.backend.utils.ImageUtils
@@ -33,7 +34,6 @@ import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
-import net.perfectdreams.showtime.backend.utils.locale.formatAsHtml
 import java.awt.Color
 import java.time.LocalDate
 import java.time.ZoneId
@@ -71,6 +71,18 @@ class ApplicationCommandsView(
         // it to overflow for *some reason*.
         div(classes = "side-content") {
             div {
+                style = "text-align: center;"
+
+                a(href = "/${locale.path}/commands/legacy") {
+                    attributes["data-preload-link"] = "true"
+
+                    button(classes = "button-discord button-discord-info pure-button") {
+                        +i18nContext.get(I18nKeysData.Website.Commands.ViewLegacyCommands)
+                    }
+                }
+            }
+
+            div {
                 style = "margin: 6px 10px;\n" +
                         "display: flex;\n" +
                         "align-items: center;\n" +
@@ -90,7 +102,7 @@ class ApplicationCommandsView(
         }
 
         // The first entry is "All"
-        a(href = "/${locale.path}/commands", classes = "entry") {
+        a(href = "/${locale.path}/commands/slash", classes = "entry") {
             if (filterByCategory == null)
                 classes = classes + "selected"
 
@@ -112,7 +124,7 @@ class ApplicationCommandsView(
             val commandsInThisCategory = commands.count { it.category == category }
 
             // Register a redirect, the frontend will cancel this event if JS is enabled and filter the entries manually
-            a(href = "/${locale.path}/commands/${category.name.toLowerCase()}", classes = "entry") {
+            a(href = "/${locale.path}/commands/slash/${category.name.lowercase()}", classes = "entry") {
                 if (filterByCategory == category)
                     classes = classes + "selected"
 
@@ -160,25 +172,9 @@ class ApplicationCommandsView(
                 }
 
                 div(classes = "media-body") {
-                    for (entry in locale.getList("commands.category.all.description")) {
+                    for (entry in i18nContext.get(I18nKeysData.Website.Commands.WelcomeToMyCommandListIntro)) {
                         p {
-                            formatAsHtml(
-                                entry,
-                                {
-                                    if (it == 0) {
-                                        code {
-                                            +"+"
-                                        }
-                                    }
-
-                                    if (it == 1) {
-                                        code {
-                                            +"+ping"
-                                        }
-                                    }
-                                },
-                                { +it }
-                            )
+                            + entry
                         }
                     }
                 }
@@ -186,12 +182,12 @@ class ApplicationCommandsView(
         }
 
         fun generateCategoryInfo(
-            category: CommandCategory?,
+            category: CommandCategory,
             visible: Boolean,
             imagePath: String,
             sizes: String
         ) {
-            val categoryName = category?.name ?: "ALL"
+            val categoryName = category.name
 
             div(classes = "media") {
                 style = "width: 100%;"
@@ -214,15 +210,9 @@ class ApplicationCommandsView(
                 }
 
                 div(classes = "media-body") {
-                    if (category != null) {
-                        for (entry in i18nContext.get(category.localizedDescription)) {
-                            p {
-                                + entry
-                            }
-                        }
-                    } else {
+                    for (entry in i18nContext.get(category.localizedDescription)) {
                         p {
-                            +"Todos os comandos"
+                            + entry
                         }
                     }
                 }

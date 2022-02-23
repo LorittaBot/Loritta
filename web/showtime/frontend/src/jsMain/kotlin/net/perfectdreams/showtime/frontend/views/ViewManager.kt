@@ -3,9 +3,10 @@ package net.perfectdreams.showtime.frontend.views
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.showtime.frontend.ShowtimeFrontend
+import net.perfectdreams.showtime.frontend.routes.ApplicationCommandsRoute
 import net.perfectdreams.showtime.frontend.routes.BaseRoute
-import net.perfectdreams.showtime.frontend.routes.CommandsRoute
 import net.perfectdreams.showtime.frontend.routes.HomeRoute
+import net.perfectdreams.showtime.frontend.routes.LegacyCommandsRoute
 import kotlin.math.max
 
 class ViewManager(val showtime: ShowtimeFrontend) {
@@ -15,7 +16,8 @@ class ViewManager(val showtime: ShowtimeFrontend) {
     var preparingMutex = Mutex()
     val routes = mutableListOf<BaseRoute>(
         HomeRoute(showtime),
-        CommandsRoute(showtime)
+        LegacyCommandsRoute(showtime),
+        ApplicationCommandsRoute(showtime)
     )
 
     suspend fun preparePreLoad(path: String) {

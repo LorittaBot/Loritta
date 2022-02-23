@@ -16,9 +16,9 @@ import net.perfectdreams.loritta.api.commands.CommandInfo
 import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.utils.commands.AdditionalCommandInfoConfigs
 import net.perfectdreams.showtime.backend.utils.userTheme
-import net.perfectdreams.showtime.backend.views.CommandsView
+import net.perfectdreams.showtime.backend.views.LegacyCommandsView
 
-class CommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RoutePath.LEGACY_COMMANDS) {
+class LegacyCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RoutePath.LEGACY_COMMANDS) {
     val commands: List<CommandInfo> by lazy {
         Json.decodeFromString<List<CommandInfo>>(
             ShowtimeBackend::class.java.getResourceAsStream("/commands/default.json")!!
@@ -40,12 +40,13 @@ class CommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Ro
             val config = Hocon.decodeFromConfig<AdditionalCommandInfoConfigs>(additionalCommandInfo)
 
             call.respondText(
-                CommandsView(
+                LegacyCommandsView(
                     call.request.userTheme,
                     showtime.svgIconManager,
                     showtime.hashManager,
                     locale,
-                    "/commands/application",
+                    "/commands/legacy",
+                    i18nContext,
                     commands,
                     call.parameters["category"]?.toUpperCase()?.let {
                         try {

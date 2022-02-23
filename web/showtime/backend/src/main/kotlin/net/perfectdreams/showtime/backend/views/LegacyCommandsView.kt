@@ -7,6 +7,7 @@ import kotlinx.html.HtmlBlockTag
 import kotlinx.html.TagConsumer
 import kotlinx.html.a
 import kotlinx.html.b
+import kotlinx.html.button
 import kotlinx.html.classes
 import kotlinx.html.code
 import kotlinx.html.details
@@ -25,8 +26,10 @@ import kotlinx.html.unsafe
 import kotlinx.html.video
 import kotlinx.html.visit
 import net.perfectdreams.dokyo.WebsiteTheme
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandInfo
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.showtime.backend.utils.ImageUtils
 import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
 import net.perfectdreams.showtime.backend.utils.NitroPayAdSize
@@ -40,12 +43,13 @@ import java.awt.Color
 import java.time.LocalDate
 import java.time.ZoneId
 
-class CommandsView(
+class LegacyCommandsView(
     websiteTheme: WebsiteTheme,
     iconManager: SVGIconManager,
     hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
     path: String,
+    val i18nContext: I18nContext,
     val commands: List<CommandInfo>,
     val filterByCategory: CommandCategory? = null,
     val additionalCommandInfos: List<AdditionalCommandInfoConfig>
@@ -73,6 +77,18 @@ class CommandsView(
         // it to overflow for *some reason*.
         div(classes = "side-content") {
             div {
+                style = "text-align: center;"
+
+                a(href = "/${locale.path}/commands/slash") {
+                    attributes["data-preload-link"] = "true"
+
+                    button(classes = "button-discord button-discord-info pure-button") {
+                        +i18nContext.get(I18nKeysData.Website.Commands.ViewSlashCommands)
+                    }
+                }
+            }
+
+            div {
                 style = "margin: 6px 10px;\n" +
                         "display: flex;\n" +
                         "align-items: center;\n" +
@@ -92,7 +108,7 @@ class CommandsView(
         }
 
         // The first entry is "All"
-        a(href = "/${locale.path}/commands", classes = "entry") {
+        a(href = "/${locale.path}/commands/legacy", classes = "entry") {
             if (filterByCategory == null)
                 classes = classes + "selected"
 
@@ -114,7 +130,7 @@ class CommandsView(
             val commandsInThisCategory = commands.count { it.category == category }
 
             // Register a redirect, the frontend will cancel this event if JS is enabled and filter the entries manually
-            a(href = "/${locale.path}/commands/${category.name.toLowerCase()}", classes = "entry") {
+            a(href = "/${locale.path}/commands/legacy/${category.name.lowercase()}", classes = "entry") {
                 if (filterByCategory == category)
                     classes = classes + "selected"
 
