@@ -1,0 +1,7 @@
+---
+website:
+  commands:
+    viewSlashCommands: "Ver a lista de comandos com / (novo)"
+    viewLegacyCommands: "Ver a lista de comandos por mensagem (antigo)"
+    welcomeToMyCommandListIntro:
+      - "Seja bem-vindo(a) à minha lista de comandos! Aqui você pode ver informações, explicações, exemplos e mais sobre os comandos que eu tenho."
