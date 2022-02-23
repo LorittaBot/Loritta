@@ -91,14 +91,17 @@ class GenerateOptimizedImage(
     private fun optimizePNG(file: File) {
         val originalFileSize = file.length()
 
+        // https://stackoverflow.com/questions/39894913/how-do-i-get-the-best-png-compression-with-gulp-imagemin-plugins
         val proc = ProcessBuilder(
             "L:\\Tools\\pngquant\\pngquant.exe" ?: "/usr/bin/pngquant",
-            "--quality=80-80",
+            "--quality=70-90",
             "--strip",
             "-f",
             "--ext",
             ".png",
             "--skip-if-larger",
+            "--speed",
+            "1",
             file.absolutePath
         ).start()
 
