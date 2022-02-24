@@ -1,20 +1,20 @@
 package net.perfectdreams.showtime.backend.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import kotlinx.html.ASIDE
 import kotlinx.html.FlowOrInteractiveContent
 import kotlinx.html.HEAD
 import kotlinx.html.HTML
 import kotlinx.html.HTMLTag
 import kotlinx.html.HtmlBlockTag
+import kotlinx.html.NAV
 import kotlinx.html.ScriptType
 import kotlinx.html.SectioningOrFlowContent
-import kotlinx.html.aside
 import kotlinx.html.head
 import kotlinx.html.html
 import kotlinx.html.id
 import kotlinx.html.link
 import kotlinx.html.meta
+import kotlinx.html.nav
 import kotlinx.html.script
 import kotlinx.html.section
 import kotlinx.html.stream.appendHTML
@@ -191,7 +191,7 @@ window["nitroAds"] = window["nitroAds"] || {
 
     fun FlowOrInteractiveContent.sidebarWrapper(block: HtmlBlockTag.() -> Unit = {}) = customHtmlTag("lori-sidebar-wrapper", block)
 
-    fun SectioningOrFlowContent.leftSidebar(block: ASIDE.() -> Unit = {}) = aside(classes = "left-sidebar") {
+    fun SectioningOrFlowContent.leftSidebar(block: NAV.() -> Unit = {}) = nav(classes = "left-sidebar") {
         id = "left-sidebar"
         attributes["data-preload-keep-scroll"] = "true"
         block.invoke(this)

@@ -13,7 +13,7 @@ lori-sidebar-wrapper {
     font-size: 16px;
     line-height: 24px;
 
-    aside.left-sidebar {
+    nav.left-sidebar {
         background: linear-gradient(-90deg, var(--background-wrapper-secondary) 55%, #43b1ff00), url("../img/website_bg.png");
 
         // Start fading out the sidebar background if the screen size is too small, helps with text since you don't have a background overlapping
