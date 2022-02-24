@@ -109,47 +109,7 @@
   }
 
   @media screen and (max-width: 1366px) {
-    .navigation-bar.responsive {position: relative;}
-    .navigation-bar.responsive .entry {
-      float: none;
-      display: block;
-      text-align: left;
-    }
-  }
-
-  .navigation-bar.responsive {
-      div {
-        display: flex;
-        flex-direction: column;
-      }
-
-      height: 100vh;
-      overflow: auto;
-      position: fixed;
-      flex-direction: column;
-
-      .left-side-entries {
-        flex-direction: column;
-        flex-grow: 0;
-
-        .entry {
-          display: block;
-        }
-      }
-
-      .right-side-entries {
-        flex-direction: column;
-        margin-left: unset;
-      }
-  }
-
-  @media screen and (max-width: 1366px) {
     .navigation-bar.expanded {position: relative;}
-    .navigation-bar.expanded .icon {
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
     .navigation-bar.expanded .entry {
       float: none;
       display: block;
