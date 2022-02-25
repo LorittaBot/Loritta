@@ -102,7 +102,7 @@ class ShowtimeBackend(
                         Json.encodeToString(
                             UserIdentification(
                                 // This is not broken, Kotlin IR is just parsing Longs incorrectly
-                                // Wait until Kotlin 1.6.20, it has a fix for this :3 (Kotlin 1.6.20-M1 already fixes this issue, remove this comment when Loritta starts using 1.6.20)
+                                // Wait until Kotlin 1.6.20, it has a fix for this :3
                                 826810315982766121L,
                                 "Test Account",
                                 "0000",
