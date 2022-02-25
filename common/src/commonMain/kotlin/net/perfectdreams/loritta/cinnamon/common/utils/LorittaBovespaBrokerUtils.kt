@@ -24,7 +24,6 @@ object LorittaBovespaBrokerUtils {
         "PETR4"  to "Petrobrás",
         "MGLU3"  to "Magazine Luiza",
         "VIIA3"  to "Via Varejo",
-        "LAME4"  to "Lojas Americanas",
         "ITUB4"  to "Itaú Unibanco",
         "VALE3"  to "Vale S.A.",
         "BBDC4"  to "Bradesco S.A.",
