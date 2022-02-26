@@ -113,7 +113,6 @@ if (window.spicyMorenittaLoaded === undefined) {
                 }
             }
 
-            // Google Analytics
             // Google AdSense
             // script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {}
 
@@ -141,7 +140,7 @@ window["nitroAds"] = window["nitroAds"] || {
                 link {
                     attributes["rel"] = "alternate"
                     attributes["hreflang"] = localeName
-                    attributes["href"] = "$websiteUrl/$websiteLocaleId/$path"
+                    attributes["href"] = "$websiteUrl/$websiteLocaleId$path"
                 }
             }
         }
