@@ -86,7 +86,8 @@ kotlin {
 
     sourceSets {
         commonMain {
-            kotlin.srcDir(generateI18nKeys.get().languageTargetFolder)
+            // If a task only has one output, you can reference the task itself
+            kotlin.srcDir(generateI18nKeys)
 
             dependencies {
                 // API = We want to allow dependencies to access those classes
