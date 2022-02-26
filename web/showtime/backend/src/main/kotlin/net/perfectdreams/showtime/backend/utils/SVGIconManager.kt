@@ -3,6 +3,7 @@ package net.perfectdreams.showtime.backend.utils
 import kotlinx.html.HTMLTag
 import kotlinx.html.unsafe
 import net.perfectdreams.showtime.backend.ShowtimeBackend
+import org.jsoup.nodes.Element
 import org.jsoup.parser.ParseSettings
 import org.jsoup.parser.Parser
 
@@ -57,6 +58,7 @@ class SVGIconManager(val showtime: ShowtimeBackend) {
     val owo = register("owo", "loritta/owo.svg")
 
     // ===[ BRANDS ]===
+    val perfectDreams = register("perfectdreams", "perfectdreams-logo-black-with-yellow-star.svg", SVGOptions.DO_NOT_ADD_ICON_CLASS)
     val discord = register("discord", "fontawesome5/brands/discord.svg")
     val instagram = register("instagram", "fontawesome5/brands/instagram.svg")
     val twitter = register("twitter", "fontawesome5/brands/twitter.svg")
@@ -78,35 +80,41 @@ class SVGIconManager(val showtime: ShowtimeBackend) {
             SVGIconManager::class.java.getResourceAsStream("/icons/$path")
                 .bufferedReader()
                 .readText(),
-                "/"
+            "/"
         )
 
         val svgTag = document.getElementsByTag("svg")
-                .first()!!
+            .first()!!
 
-        svgTag.addClass("icon") // Add the "icon" class name to the SVG root, this helps us styling it via CSS
-                .addClass("icon-$name") // Also add the icon name to the SVG root, so we can individually style with CSS
+        if (SVGOptions.DO_NOT_ADD_ICON_CLASS !in options) {
+            svgTag.addClass("icon") // Add the "icon" class name to the SVG root, this helps us styling it via CSS
+        }
+
+        svgTag.addClass("icon-$name") // Also add the icon name to the SVG root, so we can individually style with CSS
 
         if (SVGOptions.REMOVE_FILLS in options) {
             // Remove all "fill" tags
             svgTag.getElementsByAttribute("fill")
-                    .removeAttr("fill")
+                .removeAttr("fill")
         }
 
-        val svgIcon = SVGIcon(svgTag.toString())
+        val svgIcon = SVGIcon(svgTag)
         registeredSvgs[name] = svgIcon
         return svgIcon
     }
 
-    class SVGIcon(private val html: String) {
-        fun apply(content: HTMLTag) {
+    class SVGIcon(private val html: Element) {
+        fun apply(content: HTMLTag, block: Element.() -> (Unit) = {}) {
             content.unsafe {
-                raw(html)
+                val clonedElement = html.clone()
+                block.invoke(clonedElement)
+                raw(clonedElement.toString())
             }
         }
     }
 
     enum class SVGOptions {
-        REMOVE_FILLS
+        REMOVE_FILLS,
+        DO_NOT_ADD_ICON_CLASS
     }
 }

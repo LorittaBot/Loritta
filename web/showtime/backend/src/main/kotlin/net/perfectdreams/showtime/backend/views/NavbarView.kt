@@ -362,7 +362,9 @@ abstract class NavbarView(
                             +"© "
                             +"MrPowerGamerBR"
                             +" & "
-                            +"PerfectDreams"
+                            iconManager.perfectDreams.apply(this) {
+                                this.attr("style", "height: 1em; width: auto;")
+                            }
                             +" "
                             +"2017-${LocalDate.now().year}"
                             +" — "
