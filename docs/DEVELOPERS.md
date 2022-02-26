@@ -16,10 +16,13 @@ Originally Loritta was made in Java, but in May 2017 I decided migrate to Kotlin
 * You need to have Git installed on your machine.
 * Check if your machine has the `JAVA_HOME` property set correctly, newer JDK versions downloaded from Adoptium may already have the variable set correctly.
 * You can check if the variable is set by using... `echo $env:JAVA_HOME` 
-* * PowerShell: `echo $env:JAVA_HOME`
-* * Bash: `echo $JAVA_HOME`
+  * PowerShell: `echo $env:JAVA_HOME`
+  * Bash: `echo $JAVA_HOME`
+* pngquant (required only if you want to build the `:web:showtime:backend` module)
+  * Windows or MacOS: https://pngquant.org/
+  * Linux: Install it via your distro's package manager
 
-### 🧹 Preparing the enviornment 
+### 🧹 Preparing the environment 
 
 Clone the repository with git
 
@@ -28,6 +31,32 @@ git clone -b cinnamon https://github.com/LorittaBot/Loritta.git
 ```
 
 You may have noticed the `-b` flag, this is used to indicate that we are cloning the `cinnamon` `b`ranch.
+
+#### Preparing pngquant path
+
+> pngquant was not found in the path! Please install pngquant or, if it is already installed, provide the path via the "pngquant.path" system property (Example: "./gradlew -Dpngquant.path=/home/lorittapath/to/pngquant/pngquant ...")
+
+If you are going to compile the `:web:showtime:backend` module, you need to setup pngquant's path so the script is able to find where `pngquant` is. By default, it searches on the following paths:
+* In your `PATH`
+* In `/usr/bin/pngquant`
+* In the path specified by the system property `pngquant.path`
+
+If you installed `pngquant` using your distro's package manager, it should already be in your `PATH` so you don't need to do anything, but if you installed it manually or if you are using Windows/MacOS, you need to specify the `pngquant.path` system property.
+
+Go to the `gradle.properties` file and append
+```
+systemProp.pngquant.path=/set/the/path/to/pngquant
+```
+
+Example:
+```
+systemProp.pngquant.path=L:\\Tools\\pngquant\\pngquant.exe
+```
+
+If you are compiling Loritta via the command line instead of compiling within IntelliJ IDEA, you can provide the system property to the `/gradlew` command directly
+```
+./gradlew -Dpngquant.path=/home/lorittapath/to/pngquant/pngquant ...
+```
 
 ### 🐘 Compiling with Gradle
 
