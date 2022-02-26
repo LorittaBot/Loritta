@@ -3,8 +3,7 @@ package net.perfectdreams.showtime.backend.routes
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.typesafe.config.ConfigFactory
 import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.html.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
@@ -39,8 +38,8 @@ class LegacyCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showti
             // Workaround because HOCON can't deserialize root lists (sad)
             val config = Hocon.decodeFromConfig<AdditionalCommandInfoConfigs>(additionalCommandInfo)
 
-            call.respondText(
-                LegacyCommandsView(
+            call.respondHtml(
+                block = LegacyCommandsView(
                     call.request.userTheme,
                     showtime.svgIconManager,
                     showtime.hashManager,
@@ -56,8 +55,7 @@ class LegacyCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showti
                         }
                     },
                     config.additionalCommandInfos
-                ).generateHtml(),
-                ContentType.Text.Html
+                ).generateHtml()
             )
         } catch (e: Exception) {
             e.printStackTrace()

@@ -19,6 +19,7 @@ dependencies {
 
     // Ktor
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
+    implementation("io.ktor:ktor-html-builder:${Versions.KTOR}")
 
     // KotlinX HTML
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")

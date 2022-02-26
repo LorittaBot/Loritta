@@ -2,8 +2,7 @@ package net.perfectdreams.showtime.backend.routes
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.html.*
 import net.perfectdreams.dokyo.RoutePath
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
@@ -15,8 +14,8 @@ import net.perfectdreams.showtime.backend.views.ApplicationCommandsView
 class ApplicationCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RoutePath.APPLICATION_COMMANDS) {
     override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
         try {
-            call.respondText(
-                ApplicationCommandsView(
+            call.respondHtml(
+                block = ApplicationCommandsView(
                     call.request.userTheme,
                     showtime.svgIconManager,
                     showtime.hashManager,
@@ -31,8 +30,7 @@ class ApplicationCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(s
                             null
                         }
                     }
-                ).generateHtml(),
-                ContentType.Text.Html
+                ).generateHtml()
             )
         } catch (e: Exception) {
             e.printStackTrace()

@@ -3,8 +3,7 @@ package net.perfectdreams.showtime.backend.routes
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.typesafe.config.ConfigFactory
 import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.html.*
 import kotlinx.html.div
 import kotlinx.html.fieldSet
 import kotlinx.html.legend
@@ -215,8 +214,8 @@ class ExtrasRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rout
                 val contentInMarkdown =
                     showtime.renderer.render(showtime.parser.parse(contentToBeTransformedToMarkdown))
 
-                call.respondText(
-                    ExtrasView(
+                call.respondHtml(
+                    block = ExtrasView(
                         call.request.userTheme,
                         showtime.svgIconManager,
                         showtime.hashManager,
@@ -228,14 +227,13 @@ class ExtrasRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rout
                         ),
                         authors,
                         categories
-                    ).generateHtml(),
-                    ContentType.Text.Html
+                    ).generateHtml()
                 )
             } else if (render is ExtrasUtils.DynamicExtrasEntry) {
                 val content = createHTML().div { render.generator.generateContent(this) }
 
-                call.respondText(
-                    ExtrasView(
+                call.respondHtml(
+                    block = ExtrasView(
                         call.request.userTheme,
                         showtime.svgIconManager,
                         showtime.hashManager,
@@ -247,8 +245,7 @@ class ExtrasRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rout
                         ),
                         authors,
                         categories
-                    ).generateHtml(),
-                    ContentType.Text.Html
+                    ).generateHtml()
                 )
             }
         } catch (e: Exception) {

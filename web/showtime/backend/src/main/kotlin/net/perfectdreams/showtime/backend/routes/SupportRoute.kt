@@ -2,8 +2,7 @@ package net.perfectdreams.showtime.backend.routes
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import io.ktor.application.*
-import io.ktor.http.*
-import io.ktor.response.*
+import io.ktor.html.*
 import net.perfectdreams.dokyo.RoutePath
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
@@ -12,15 +11,14 @@ import net.perfectdreams.showtime.backend.views.SupportView
 
 class SupportRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RoutePath.SUPPORT) {
     override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
-        call.respondText(
-            SupportView(
+        call.respondHtml(
+            block = SupportView(
                 call.request.userTheme,
                 showtime.svgIconManager,
                 showtime.hashManager,
                 locale,
                 "/support"
-            ).generateHtml(),
-            ContentType.Text.Html
+            ).generateHtml()
         )
     }
 }
