@@ -61,7 +61,7 @@ lori-sidebar-wrapper {
                 }
             }
 
-            height: 0; // Required because if it is "height: 100%;" (which is what was before) the left sidebar occupies the entire screen on Safari
+            height: 100%;
             margin-right: 8px;
             // padding-top: 40px;
             width: 250px;
@@ -201,7 +201,7 @@ lori-sidebar-wrapper {
             }
         }
 
-        aside.left-sidebar {
+        nav.left-sidebar {
             // Replace overflow with "visible", this allows the summary/details to overflow outside of the parent div
             // (Before we were using "initial" but looks like Apple doesn't like this)
             overflow: visible;
