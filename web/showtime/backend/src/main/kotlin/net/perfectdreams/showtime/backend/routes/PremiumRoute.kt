@@ -17,6 +17,7 @@ class PremiumRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rou
                 showtime.svgIconManager,
                 showtime.hashManager,
                 locale,
+                i18nContext,
                 "/donate"
             ).generateHtml()
         )

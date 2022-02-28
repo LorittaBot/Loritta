@@ -32,6 +32,7 @@ dependencies {
 
     // YAML
     implementation("org.yaml:snakeyaml:1.30")
+    implementation("com.charleskorn.kaml:kaml:0.36.0")
 
     // Sequins
     api("net.perfectdreams.sequins.ktor:base-route:1.0.2")
@@ -42,6 +43,15 @@ dependencies {
 }
 
 jib {
+    extraDirectories {
+        paths {
+            path {
+                setFrom("content")
+                into = "/content"
+            }
+        }
+    }
+
     container {
         ports = listOf("8080")
     }

@@ -14,6 +14,7 @@ import kotlinx.html.span
 import kotlinx.html.style
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
@@ -33,12 +34,14 @@ class HomeView(
     iconManager: SVGIconManager,
     hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
+    i18nContext: I18nContext,
     path: String
 ) : NavbarView(
     websiteTheme,
     iconManager,
     hashManager,
     locale,
+    i18nContext,
     path
 ) {
     override val hasDummyNavbar = false

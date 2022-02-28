@@ -18,6 +18,7 @@ class HomeRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RouteP
                     showtime.svgIconManager,
                     showtime.hashManager,
                     locale,
+                    i18nContext,
                     "/"
                 ).generateHtml()
             )

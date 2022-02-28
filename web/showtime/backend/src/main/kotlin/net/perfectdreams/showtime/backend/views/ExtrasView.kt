@@ -13,6 +13,7 @@ import kotlinx.html.img
 import kotlinx.html.style
 import kotlinx.html.unsafe
 import net.perfectdreams.dokyo.WebsiteTheme
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.showtime.backend.utils.extras.AuthorConfig
@@ -23,6 +24,7 @@ open class ExtrasView(
     iconManager: SVGIconManager,
     hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
+    i18nContext: I18nContext,
     path: String,
     val renderEntry: ExtrasUtils.RenderEntry,
     val authors: List<AuthorConfig>,
@@ -32,6 +34,7 @@ open class ExtrasView(
     iconManager,
     hashManager,
     locale,
+    i18nContext,
     path
 ) {
     override val sidebarAdId = "extras"

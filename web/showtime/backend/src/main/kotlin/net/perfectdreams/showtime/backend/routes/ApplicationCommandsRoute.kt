@@ -20,8 +20,8 @@ class ApplicationCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(s
                     showtime.svgIconManager,
                     showtime.hashManager,
                     locale,
-                    "/commands/slash",
                     i18nContext,
+                    "/commands/slash",
                     PublicApplicationCommands.flattenedDataDeclarations,
                     call.parameters["category"]?.toUpperCase()?.let {
                         try {

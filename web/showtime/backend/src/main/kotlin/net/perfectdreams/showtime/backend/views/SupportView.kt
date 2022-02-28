@@ -10,6 +10,7 @@ import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.style
 import net.perfectdreams.dokyo.WebsiteTheme
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
@@ -19,12 +20,14 @@ class SupportView(
     iconManager: SVGIconManager,
     hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
+    i18nContext: I18nContext,
     path: String
 ) : NavbarView(
     websiteTheme,
     iconManager,
     hashManager,
     locale,
+    i18nContext,
     path
 ) {
     override fun getTitle() = locale["website.support.title"]

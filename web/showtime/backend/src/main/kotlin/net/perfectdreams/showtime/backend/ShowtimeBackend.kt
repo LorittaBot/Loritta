@@ -16,12 +16,15 @@ import io.ktor.routing.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.util.*
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.serializable.UserIdentification
+import net.perfectdreams.showtime.backend.content.ContentBase
+import net.perfectdreams.showtime.backend.content.MultilanguageContent
 import net.perfectdreams.showtime.backend.routes.LocalizedRoute
 import net.perfectdreams.showtime.backend.utils.HttpRedirectException
 import net.perfectdreams.showtime.backend.utils.ResourcesUtils
@@ -29,6 +32,7 @@ import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.showtime.backend.utils.redirect
 import org.yaml.snakeyaml.Yaml
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
@@ -40,6 +44,8 @@ class ShowtimeBackend(
         private val logger = KotlinLogging.logger {}
         private val yaml = Yaml()
         private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
+        val rootFolder = File(".")
+        val contentFolder = File(rootFolder, "content")
     }
 
     val locales = loadLocales()
@@ -371,5 +377,72 @@ class ShowtimeBackend(
         }
 
         return locales
+    }
+
+    fun loadSourceContents(): List<MultilanguageContent> {
+        val contents = mutableListOf<MultilanguageContent>()
+        loadSourceContentsFromFolder(contentFolder, contents)
+        return contents
+    }
+
+    fun loadSourceContentsFromFolder(folder: String): List<MultilanguageContent> {
+        val contents = mutableListOf<MultilanguageContent>()
+        loadSourceContentsFromFolder(File(contentFolder, folder), contents)
+        return contents
+    }
+
+    fun loadSourceContentsFromFolder(folder: File, contents: MutableList<MultilanguageContent>) {
+        folder.listFiles().forEach {
+            if (it.isDirectory && it.name.endsWith(".post")) {
+                val ml = loadMultilanguageSourceContentsFromFolder(it)
+                if (ml != null)
+                    contents.add(ml)
+            } else if (it.isDirectory) {
+                loadSourceContentsFromFolder(it, contents)
+            } else {
+                logger.warn { "I don't know how to handle $it! Ignoring..." }
+            }
+        }
+    }
+
+    fun loadMultilanguageSourceContentsFromFolder(folder: File): MultilanguageContent? {
+        if (!folder.exists())
+            return null
+
+        val pathFolder = folder
+            .relativeTo(contentFolder)
+            .toString()
+            .replace("\\", "/")
+            .removeSuffix(".post")
+
+        val path = if (pathFolder.isEmpty())
+            "/${folder.nameWithoutExtension.substringBefore(".")}"
+        else
+            "/$pathFolder"
+
+        val metadataFile = File(folder, "meta.yml")
+        if (!metadataFile.exists())
+            error("Folder $folder does not have a metadata file!")
+
+        val meta = com.charleskorn.kaml.Yaml.default.decodeFromString<MultilanguageContent.ContentMetadata>(metadataFile.readText(Charsets.UTF_8))
+
+        return MultilanguageContent(
+            meta,
+            folder,
+            path,
+            folder.listFiles()
+                .filter { it.extension == "md" }
+                .associate {
+                    val (languageId, i18nContext) = languageManager.languageContexts.entries.first { (languageId, i18nContext) -> it.nameWithoutExtension == languageId }
+
+                    // woo hacks
+                    when (languageId) {
+                        "en" -> "us"
+                        "pt" -> "br"
+                    }
+
+                    it.nameWithoutExtension to ContentBase.fromFile(it, "/$languageId$path")
+                }
+        )
     }
 }

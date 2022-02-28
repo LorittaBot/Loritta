@@ -48,8 +48,8 @@ class LegacyCommandsView(
     iconManager: SVGIconManager,
     hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
+    i18nContext: I18nContext,
     path: String,
-    val i18nContext: I18nContext,
     val commands: List<CommandInfo>,
     val filterByCategory: CommandCategory? = null,
     val additionalCommandInfos: List<AdditionalCommandInfoConfig>
@@ -58,6 +58,7 @@ class LegacyCommandsView(
     iconManager,
     hashManager,
     locale,
+    i18nContext,
     path
 ) {
     companion object {

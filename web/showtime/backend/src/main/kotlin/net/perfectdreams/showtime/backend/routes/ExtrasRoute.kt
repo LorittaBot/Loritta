@@ -220,6 +220,7 @@ class ExtrasRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rout
                         showtime.svgIconManager,
                         showtime.hashManager,
                         locale,
+                        i18nContext,
                         "/extras",
                         ExtrasUtils.RenderEntry(
                             contentInMarkdown,
@@ -238,6 +239,7 @@ class ExtrasRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rout
                         showtime.svgIconManager,
                         showtime.hashManager,
                         locale,
+                        i18nContext,
                         "/extras",
                         ExtrasUtils.RenderEntry(
                             content,

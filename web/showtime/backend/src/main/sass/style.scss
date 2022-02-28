@@ -31,6 +31,7 @@ $primary-color: #29a6fe;
 @import 'fancy_details';
 @import 'tooltip';
 @import 'svg_icons';
+@import 'content';
 
 @import 'views/commands';
 
@@ -105,6 +106,7 @@ iframe {
 
 body {
   @include lovely-body($hide-overflow-x: true);
+  display: flex; // Required for the sticky footer
 }
 
 @include navigation-bar();

@@ -43,8 +43,8 @@ class ApplicationCommandsView(
     iconManager: SVGIconManager,
     hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
+    i18nContext: I18nContext,
     path: String,
-    val i18nContext: I18nContext,
     val commands: List<PublicApplicationCommands.InteractionCommand>,
     val filterByCategory: CommandCategory? = null
 ) : SidebarsView(
@@ -52,6 +52,7 @@ class ApplicationCommandsView(
     iconManager,
     hashManager,
     locale,
+    i18nContext,
     path
 ) {
     companion object {

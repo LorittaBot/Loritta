@@ -44,8 +44,8 @@ class LegacyCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showti
                     showtime.svgIconManager,
                     showtime.hashManager,
                     locale,
-                    "/commands/legacy",
                     i18nContext,
+                    "/commands/legacy",
                     commands,
                     call.parameters["category"]?.toUpperCase()?.let {
                         try {

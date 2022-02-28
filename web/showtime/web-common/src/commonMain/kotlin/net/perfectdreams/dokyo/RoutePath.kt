@@ -8,4 +8,6 @@ object RoutePath {
     const val APPLICATION_COMMANDS = "/commands/slash/{category?}"
     const val PREMIUM = "/donate"
     const val EXTRAS = "/extras/{renderPage...}"
+    const val BLOG = "/blog"
+    const val BLOG_POST = "/blog/{post}"
 }

@@ -17,5 +17,7 @@ object DefaultRoutes {
         ApplicationCommandsRoute(showtime),
         PremiumRoute(showtime),
         ExtrasRoute(showtime),
+        // BlogRoute(showtime),
+        // BlogPostRoute(showtime)
     )
 }
