@@ -219,7 +219,7 @@ lori-sidebar-wrapper {
 
             // Keeps everything centralized vertically (looks pretty)
             display: flex;
-            align-items: center;
+            flex-basis: auto; // If this isn't present, the "height: 50px;" doesn't work
 
             .contents {
                 #sidebar-navbar-control {
@@ -237,6 +237,8 @@ lori-sidebar-wrapper {
 
                 // Remove the gradient drawing background, keep solid color
                 background: #ebebeb;
+
+                align-items: center;
 
                 details {
                     position: relative;
