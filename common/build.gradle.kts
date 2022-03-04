@@ -5,9 +5,10 @@ plugins {
     id("maven-publish")
 }
 
-i18nHelper {
+val generateI18nKeys = tasks.register<net.perfectdreams.i18nhelper.plugin.GenerateI18nKeysTask>("generateI18nKeys") {
     generatedPackage.set("net.perfectdreams.loritta.cinnamon.i18n")
-    languageSourceFolder.set("../resources/languages/en/")
+    languageSourceFolder.set(file("../resources/languages/en/"))
+    languageTargetFolder.set(file("$buildDir/generated/languages"))
     translationLoadTransform.set { file, map ->
         // Before, all commands locales were split up into different files, based on the category, example:
         // commands-discord.yml
@@ -85,7 +86,8 @@ kotlin {
 
     sourceSets {
         commonMain {
-            kotlin.srcDir("build/generated/languages")
+            // If a task only has one output, you can reference the task itself
+            kotlin.srcDir(generateI18nKeys)
 
             dependencies {
                 // API = We want to allow dependencies to access those classes

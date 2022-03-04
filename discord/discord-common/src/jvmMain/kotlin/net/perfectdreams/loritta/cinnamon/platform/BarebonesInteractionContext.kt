@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform
 
+import dev.kord.rest.builder.interaction.ModalBuilder
 import dev.kord.rest.builder.message.EmbedBuilder
 import net.perfectdreams.discordinteraktions.common.BarebonesInteractionContext
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
@@ -10,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.common.entities.LorittaReply
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitExecutorDeclaration
 
 open class BarebonesInteractionContext(
     open val interaKTionsContext: BarebonesInteractionContext
@@ -280,4 +282,7 @@ open class BarebonesInteractionContext(
             apply(block)
         }
     )
+
+    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, title, builder)
+    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, data, title, builder)
 }

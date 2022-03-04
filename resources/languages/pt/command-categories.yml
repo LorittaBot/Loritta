@@ -4,40 +4,79 @@ commands:
   category:
     fun:
       name: "Diversão"
+      description:
+        - "Quer se divertir? Quer animar sua conversa no servidor com várias coisas aleatórias, malucas e engraçadas? Então use os comandos de diversão para te deixar feliz!"
     images:
       name: "Imagens"
+      description:
+        - "Crie imagens divertidas e malucas sem precisar sair do seu servidor no Discord! Perfeito se você não quiser abrir o Photoshop apenas para criar um meme tosco para seus amigos e familiares!"
       options:
         image: "A imagem que você quer usar, pode ser uma menção de usuário (foto de perfil de usuário), URL de imagem ou um emoji do Discord"
     videos:
       name: "Vídeos"
+      description:
+        - "Casado de criar imagens divertidas e malucas? Então que tal criar vídeos divertidos e malucos sem precisar sair do seu servidor no Discord!"
     minecraft:
       name: "Minecraft"
+      description:
+        - "O Minecraft é um dos jogos mais marcantes de todos os tempos, e você sabia que sem ele... talvez eu nem existiria?"
+        - "Comandos relacionados ao Minecraft."
       unknownPlayer: "`{playerName}` não é um jogador de Minecraft: Java Edition válido!"
       options:
         playerNameJavaEdition: "O nome da conta do jogador no Minecraft: Java Edition"
     pokemon:
       name: "Pokémon"
+      description:
+        - "Comandos relacionados ao Pokémon."
     undertale:
-      name: "Undertale"
+      name: "Undertale/DELTARUNE"
+      description:
+        - "You're gonna have a bad time."
+        - "Comandos relacionados com as duas obras-primas feitas pelo Toby Fox: Undertale e DELTARUNE!"
     roblox:
       name: "ROBLOX"
+      description:
+        - "Comandos relacionados ao ROBLOX."
     anime:
       name: "Anime"
+      description:
+        - "Comandos relacionados a Anime."
     discord:
       name: "Discord"
+      description:
+        - "Comandos relacionados ao Discord, a melhor rede social de chat já criada!"
     fortnite:
       name: "Fortnite"
+      description:
+        - "Where are we dropping boys and girls?"
+        - "Comandos relacionados ao Fortnite, para você ficar informado sobre a loja, stats e curiosidades enquanto espera o ônibus de batalha partir!"
     misc:
       name: "Miscelânea"
+      description:
+        - "Comandos que não se encaixam em uma categoria específica."
     moderation:
       name: "Moderação"
+      description:
+        - "Comandos para tornar sua vida como moderador em seus servidores mais fácil!"
     utils:
       name: "Utilitários"
+      description:
+        - "Comandos úteis para tornar sua vida mais fácil e rápida!"
     social:
       name: "Social"
+      description:
+        - "Humanos são criaturas sociáveis e precisam de interação social. E para isto você pode interagir com a sua família, amigos, vizinhos e até mesmo com os membros do seu servidor no Discord. E, acredite, os meus comandos são um ótimo instrumento para interagir com outras pessoas!"
     economy:
       name: "Economia"
+      description:
+        - "Ficar rico na vida real é super difícil... então por que você não tenta ficar rico na minha economia?"
+        - "Comandos relacionados com sonhos, a minha moeda!"
     action:
       name: "Ações"
+      description:
+        - "Beijos, tapas, abraços e carinhos!"
+        - "Está com dificuldade para expressar o que você realmente está sentido e precisa de uma GIF para ajudar? Sem problemas, eu tenho uma pasta com várias reações legais para você usar!"
     magic:
       name: "Mágica"
+      description:
+        - "Comandos que você jamais deverá ver durante toda a sua vida, se você está vendo isto... Você é um mágico!"

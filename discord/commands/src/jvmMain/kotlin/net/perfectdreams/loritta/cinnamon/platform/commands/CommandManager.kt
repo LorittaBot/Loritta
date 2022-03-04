@@ -280,11 +280,6 @@ class CommandManager(
         commandManager.register(RollCommand, RollExecutor(random))
 
         commandManager.register(
-            HelpCommand,
-            HelpExecutor()
-        )
-
-        commandManager.register(
             MinecraftCommand,
             McSkinExecutor(mojangApi),
             McAvatarExecutor(mojangApi),
@@ -375,6 +370,7 @@ class CommandManager(
         commandManager.register(FansExplainingCommand, FansExplainingExecutor(gabrielaImageServerClient))
 
         // ===[ UTILS ]===
+        commandManager.register(HelpCommand, HelpExecutor())
         commandManager.register(MoneyCommand, MoneyExecutor(ECBManager()))
         commandManager.register(MorseCommand, MorseFromExecutor(), MorseToExecutor())
         commandManager.register(DictionaryCommand, DictionaryExecutor(http), MorseToExecutor())

@@ -10,8 +10,7 @@ ata:
     description: "Gessy seen one of your images and reacted in the best way possible"
 
 bolsonaro:
-  # https://twitter.com/sensacionalista/status/1414567158437253124
-  description: "70% sees the corruption in Bolsonaro's government, and 30% needs to go to the ophthalmologist"
+  description: "70% sees the corruption in Bolsonaro's government, and 30% needs to go to the ophthalmologist" #References this tweet: https://twitter.com/sensacionalista/status/1414567158437253124
   tv:
     description: "I wonder what Bolsonaro is showing in his television? Probably Fake News, as always!"
   frame:
@@ -61,7 +60,7 @@ sam:
       sam3: "Logo sarrada in the air"
 
 canelladvd:
-  description: "Make Matheus Canella hold one of the best DVDs of the world, for only R$ 1.95! (arr dollar sign one zero dot ninety and five brazilian reais!!!)"
+  description: "Make Matheus Canella hold one of the best DVDs of the world, for only R$ 1.95! (arr dollar sign one dot ninety and five brazilian reais!!!)" #References this video: https://youtu.be/c3f7uSpnrhk
 
 cepo:
   description: "Destroy someone, Gugu Gaiteiro style!"
