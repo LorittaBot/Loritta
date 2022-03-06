@@ -69,6 +69,8 @@ class DailyTaxPendingMessageProcessor(
                         )
                     }
 
+                    logger.info { "Sent direct message to $userId! Success? $messageWasSuccessfullySent" }
+
                     // https://www.gotoquiz.com/web-coding/programming/java-programming/convert-between-java-enums-and-postgresql-enums/
                     val updateStatement = it.prepareStatement("UPDATE ${DailyTaxPendingDirectMessages.tableName} SET state = CAST(? AS ${DailyTaxPendingDirectMessageState::class.simpleName!!.lowercase()}) WHERE id = ?;")
                     updateStatement.setObject(1, (if (messageWasSuccessfullySent) DailyTaxPendingDirectMessageState.SUCCESSFULLY_SENT_VIA_DIRECT_MESSAGE else DailyTaxPendingDirectMessageState.FAILED_TO_SEND_VIA_DIRECT_MESSAGE).name)

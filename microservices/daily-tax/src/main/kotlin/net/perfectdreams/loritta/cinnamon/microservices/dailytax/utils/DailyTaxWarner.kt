@@ -35,7 +35,7 @@ class DailyTaxWarner(val m: DailyTax) : RunnableCoroutineWrapper() {
                 // Delete all pending direct messages because we will replace with newer messages
                 DailyTaxPendingDirectMessages.deleteAll()
 
-                DailyTaxUtils.getAndProcessInactiveDailyUsers(0) { threshold, inactiveDailyUser ->
+                DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 0) { threshold, inactiveDailyUser ->
                     m.services.users._insertPendingDailyTaxDirectMessage(
                         UserId(inactiveDailyUser.id),
                         UserDailyTaxWarnDirectMessage(

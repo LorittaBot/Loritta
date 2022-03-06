@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
 
+import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds.THRESHOLDS
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
@@ -10,13 +11,16 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 object DailyTaxUtils {
+    private val logger = KotlinLogging.logger {}
+
     /**
      * Gets and processes inactive daily users
      *
+     * @param lorittaId lori so cute she doesn't deserve to be hit with the inactive daily tax
      * @param dayOffset offsets (plusDays) the current day by [dayOffset]
      * @param block     block that will be executed when a inactive daily user is found
      */
-    fun getAndProcessInactiveDailyUsers(dayOffset: Long, block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
+    fun getAndProcessInactiveDailyUsers(lorittaId: Long, dayOffset: Long, block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
         val moneySum = Payments.money.sum()
 
         val usersToBeIgnored = Payments.slice(Payments.userId, moneySum).select {
@@ -25,10 +29,11 @@ object DailyTaxUtils {
             .having { moneySum greaterEq 90.00 } // It is actually 99.99 but shhhhh
             .map { it[Payments.userId] }
             .toMutableSet()
-
-        val processedUsers = mutableSetOf<Long>()
+        usersToBeIgnored.add(lorittaId)
 
         for (threshold in THRESHOLDS.sortedByDescending { it.minimumSonhosForTrigger }) {
+            logger.info { "Checking daily inactivity tax threshold $threshold" }
+
             val nowXDaysAgo = LocalDateTime.now()
                 .atOffset(ZoneOffset.UTC)
                 .plusDays(dayOffset)
@@ -55,11 +60,14 @@ object DailyTaxUtils {
                 }
             }
 
-            affectedProfiles.filter { it.id !in usersToBeIgnored && it.id !in processedUsers }.forEach { inactiveDailyUser ->
+            logger.info { "There are ${affectedProfiles.size} affected profiles (including users to be ignored) for the threshold $threshold!" }
+
+            affectedProfiles.filter { it.id !in usersToBeIgnored }.forEach { inactiveDailyUser ->
+                logger.info { "Processing inactive daily user $inactiveDailyUser in the tax threshold $threshold" }
                 block.invoke(threshold, inactiveDailyUser)
             }
 
-            processedUsers.addAll(affectedProfiles.map { it.id })
+            usersToBeIgnored.addAll(affectedProfiles.map { it.id })
         }
     }
 

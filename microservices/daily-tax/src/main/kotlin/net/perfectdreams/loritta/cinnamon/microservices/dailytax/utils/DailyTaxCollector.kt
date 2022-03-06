@@ -45,7 +45,7 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
                 // Delete all pending direct messages because we will replace with newer messages
                 DailyTaxPendingDirectMessages.deleteAll()
 
-                DailyTaxUtils.getAndProcessInactiveDailyUsers(0) { threshold, inactiveDailyUser ->
+                DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 0) { threshold, inactiveDailyUser ->
                     alreadyWarnedThatTheyWereTaxed.add(inactiveDailyUser.id)
 
                     Profiles.update({ Profiles.id eq inactiveDailyUser.id }) {
@@ -95,7 +95,7 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
                 .toKotlinInstant()
 
             m.services.transaction {
-                DailyTaxUtils.getAndProcessInactiveDailyUsers(1) { threshold, inactiveDailyUser ->
+                DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 1) { threshold, inactiveDailyUser ->
                     // Don't warn them about the tax if they were already taxed before
                     if (!alreadyWarnedThatTheyWereTaxed.contains(inactiveDailyUser.id)) {
                         m.services.users._insertPendingDailyTaxDirectMessage(
