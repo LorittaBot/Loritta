@@ -19,10 +19,18 @@ inline fun <reified T : Enum<T>> Transaction.createOrUpdatePostgreSQLEnum(enumVa
 
     val alreadyInsertedEnumValues = mutableSetOf<String>()
 
+    var enumExists = false
+    exec("SELECT 1 FROM pg_type WHERE typname = '$psqlType';") {
+        // If there's any row, then it means that the type exists
+        enumExists = it.next()
+    }
+
     // https://stackoverflow.com/a/30417601/7271796
-    exec("SELECT unnest(enum_range(null, null::$psqlType)) AS enum_value;") {
-        while (it.next())
-            alreadyInsertedEnumValues.add(it.getString("enum_value"))
+    if (enumExists) {
+        exec("SELECT unnest(enum_range(null, null::$psqlType)) AS enum_value;") {
+            while (it.next())
+                alreadyInsertedEnumValues.add(it.getString("enum_value"))
+        }
     }
 
     val missingEnums = valueNames.filter { it !in alreadyInsertedEnumValues }

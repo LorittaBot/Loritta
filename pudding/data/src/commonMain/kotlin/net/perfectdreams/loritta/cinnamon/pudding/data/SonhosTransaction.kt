@@ -52,6 +52,16 @@ data class SparklyPowerLSXSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class DailyTaxSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long,
+    val maxDayThreshold: Int,
+    val minimumSonhosForTrigger: Long
+) : SonhosTransaction()
+
+@Serializable
 data class UnknownSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,

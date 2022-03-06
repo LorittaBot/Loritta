@@ -2,10 +2,15 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
+import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxPendingDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserBannedState
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
@@ -14,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -258,6 +264,46 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             CachedDiscordUsersDirectMessageChannels.deleteWhere {
                 CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong()
             }
+        }
+    }
+
+    suspend fun insertPendingDailyTaxDirectMessage(userId: UserId, data: DailyTaxPendingDirectMessage) = _insertPendingDailyTaxDirectMessage(userId, data)
+
+    fun _insertPendingDailyTaxDirectMessage(userId: UserId, data: DailyTaxPendingDirectMessage) {
+        DailyTaxPendingDirectMessages.insert {
+            it[DailyTaxPendingDirectMessages.userId] = userId.value.toLong()
+            it[DailyTaxPendingDirectMessages.state] = DailyTaxPendingDirectMessageState.PENDING
+            it[DailyTaxPendingDirectMessages.data] = Json.encodeToString(data)
+        }
+    }
+
+    /**
+     * Gets and updates a pending daily tax direct message
+     */
+    suspend fun getAndUpdateStatePendingDailyTaxDirectMessage(
+        userId: UserId,
+        findState: List<DailyTaxPendingDirectMessageState>,
+        newState: DailyTaxPendingDirectMessageState
+    ): DailyTaxPendingDirectMessage? {
+        return pudding.transaction {
+            val dataResult = DailyTaxPendingDirectMessages.select {
+                DailyTaxPendingDirectMessages.userId eq userId.value.toLong() and (DailyTaxPendingDirectMessages.state inList findState)
+            }.limit(1)
+                .firstOrNull()
+
+            val data = dataResult?.let {
+                Json.decodeFromString<DailyTaxPendingDirectMessage>(it[DailyTaxPendingDirectMessages.data])
+            }
+
+            if (dataResult != null) {
+                DailyTaxPendingDirectMessages.update({
+                    DailyTaxPendingDirectMessages.id eq dataResult[DailyTaxPendingDirectMessages.id]
+                }) {
+                    it[DailyTaxPendingDirectMessages.state] = newState
+                }
+            }
+
+            data
         }
     }
 }

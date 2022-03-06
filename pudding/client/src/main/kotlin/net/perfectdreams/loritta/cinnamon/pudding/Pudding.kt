@@ -8,16 +8,15 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
-import net.perfectdreams.loritta.cinnamon.pudding.data.MessageQueuePayload
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedInteractionsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
-import net.perfectdreams.loritta.cinnamon.pudding.services.MessageQueueService
 import net.perfectdreams.loritta.cinnamon.pudding.services.PaymentsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
@@ -37,6 +36,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchm
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
@@ -51,7 +52,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.TaskQueue
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -173,9 +173,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
     val bets = BetsService(this)
     val payments = PaymentsService(this)
     val stats = StatsService(this)
-    val messageQueue = MessageQueueService(this)
     val puddingTasks = PuddingTasks(this)
-    var messageQueueListener: ((MessageQueuePayload) -> (Boolean))? = null
     val random = SecureRandom()
 
     /**
@@ -227,7 +225,8 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             Payments,
             GuildCountStats,
             CachedDiscordUsersDirectMessageChannels,
-            TaskQueue
+            DailyTaxPendingDirectMessages,
+            DailyTaxSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())
@@ -237,6 +236,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
                 createOrUpdatePostgreSQLEnum(ComponentType.values())
                 createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
                 createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
+                createOrUpdatePostgreSQLEnum(DailyTaxPendingDirectMessageState.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(
