@@ -52,4 +52,4 @@ jobs:
       if: github.ref == 'refs/heads/cinnamon'
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: ":discord:web-server:jib :discord:gateway:jib :web:showtime:backend:jib :microservices:broker-tickers-updater:jib :microservices:stats-collector:jib"
+        arguments: ":discord:web-server:jib :discord:gateway:jib :web:showtime:backend:jib :microservices:broker-tickers-updater:jib :microservices:stats-collector:jib :microservices:daily-tax:jib"
