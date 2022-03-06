@@ -108,11 +108,19 @@ if (window.spicyMorenittaLoaded === undefined) {
             // script(src = "$versionPrefix/adsbygoogle.js") {}
 
             // Google Analytics
+            // TODO: Remove later if Plausible is that good
             deferredScript("https://www.googletagmanager.com/gtag/js?id=UA-53518408-9")
             script(type = ScriptType.textJavaScript) {
                 unsafe {
                     raw("""window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-53518408-9');""")
                 }
+            }
+
+            deferredScript(
+                src = "https://web-analytics.perfectdreams.net/js/plausible.js",
+            ) {
+                attributes["data-domain"] = "loritta.website"
+                defer = true
             }
 
             // Google AdSense
