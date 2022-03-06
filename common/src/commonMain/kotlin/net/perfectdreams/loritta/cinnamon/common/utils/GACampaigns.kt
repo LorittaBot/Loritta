@@ -59,6 +59,14 @@ object GACampaigns {
         return "${lorittaWebsiteUrl}donate?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
     }
 
+    fun dailyWebRewardDiscordCampaignUrl(
+        lorittaWebsiteUrl: String,
+        medium: String,
+        campaignContent: String
+    ): String {
+        return dailyUrl(lorittaWebsiteUrl, "discord", medium, "daily-web-reward", campaignContent)
+    }
+
     fun dailyUrl(
         lorittaWebsiteUrl: String,
         source: String,

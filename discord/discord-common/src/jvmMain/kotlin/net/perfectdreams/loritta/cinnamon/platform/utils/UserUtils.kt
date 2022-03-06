@@ -70,11 +70,9 @@ object UserUtils {
                     howMuchWillBeRemoved = data.howMuchWillBeRemoved,
                     taxPercentage = data.tax,
                     inactivityTaxTimeWillBeTriggeredAt = "<t:${data.inactivityTaxTimeWillBeTriggeredAt.epochSeconds}:f>",
-                    dailyLink = GACampaigns.dailyUrl(
+                    dailyLink = GACampaigns.dailyWebRewardDiscordCampaignUrl(
                         lorittaWebsiteUrl,
-                        "discord",
                         "daily-tax-message",
-                        "daily-web-reward",
                         "user-warned-about-taxes"
                     ),
                     premiumLink = GACampaigns.premiumUpsellDiscordCampaignUrl(
@@ -108,11 +106,9 @@ object UserUtils {
                     daysWithoutGettingDaily = data.maxDayThreshold,
                     taxPercentage = data.tax,
                     nextInactivityTaxTimeWillBeTriggeredAt = "<t:${data.nextInactivityTaxTimeWillBeTriggeredAt.epochSeconds}:f>",
-                    dailyLink = GACampaigns.dailyUrl(
+                    dailyLink = GACampaigns.dailyWebRewardDiscordCampaignUrl(
                         lorittaWebsiteUrl,
-                        "discord",
                         "daily-tax-message",
-                        "daily-web-reward",
                         "user-taxed"
                     ),
                     premiumLink = GACampaigns.premiumUpsellDiscordCampaignUrl(

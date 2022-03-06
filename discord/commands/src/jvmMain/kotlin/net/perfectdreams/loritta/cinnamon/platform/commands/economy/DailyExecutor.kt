@@ -84,19 +84,15 @@ class DailyExecutor : SlashCommandExecutor() {
         }
 
         val url = if (context is GuildApplicationCommandContext)
-            GACampaigns.dailyUrl(
+            GACampaigns.dailyWebRewardDiscordCampaignUrl(
                 context.loritta.config.website,
-                "discord",
                 "daily",
-                "daily-web-reward",
                 "cmd-with-multiplier"
             ) + "&guild=${context.guildId.value}"
         else // Used for daily multiplier priority
-            GACampaigns.dailyUrl(
+            GACampaigns.dailyWebRewardDiscordCampaignUrl(
                 context.loritta.config.website,
-                "discord",
                 "daily",
-                "daily-web-reward",
                 "cmd-without-multiplier"
             )
 
