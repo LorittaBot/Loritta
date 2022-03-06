@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.plugin.helpinghands.commands
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.commands.vanilla.magic.LoriToolsCommand
-import net.perfectdreams.loritta.plugin.helpinghands.utils.DailyInactivityTaxUtils
 
 object DailyInactivityTaxExecutor : LoriToolsCommand.LoriToolsExecutor {
 	override val args = "daily_inactivity execute"

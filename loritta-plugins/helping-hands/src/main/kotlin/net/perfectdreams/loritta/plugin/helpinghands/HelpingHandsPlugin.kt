@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.plugin.helpinghands.commands.EmojiFightBetComma
 import net.perfectdreams.loritta.plugin.helpinghands.commands.EmojiFightCommand
 import net.perfectdreams.loritta.plugin.helpinghands.commands.GuessNumberCommand
 import net.perfectdreams.loritta.plugin.helpinghands.commands.RepListCommand
-import net.perfectdreams.loritta.plugin.helpinghands.utils.DailyInactivityTaxUtils
 
 class HelpingHandsPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugin(name, loritta) {
 	override fun onEnable() {
@@ -22,8 +21,6 @@ class HelpingHandsPlugin(name: String, loritta: LorittaDiscord) : LorittaDiscord
 				EmojiFightBetCommand(this)
 		)
 
-		if (loritta.isMaster)
-			launch(DailyInactivityTaxUtils.createAutoInactivityTask())
 		this.loriToolsExecutors += DailyInactivityTaxExecutor
 	}
 
