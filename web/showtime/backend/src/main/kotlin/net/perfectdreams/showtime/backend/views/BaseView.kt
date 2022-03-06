@@ -116,7 +116,7 @@ if (window.spicyMorenittaLoaded === undefined) {
                 }
             }
 
-            deferredScript(
+            script(
                 src = "https://web-analytics.perfectdreams.net/js/plausible.js",
             ) {
                 attributes["data-domain"] = "loritta.website"
