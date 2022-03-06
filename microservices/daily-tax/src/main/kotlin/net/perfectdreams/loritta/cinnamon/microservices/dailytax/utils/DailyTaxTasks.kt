@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
 
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.dailytax.DailyTax
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -49,11 +50,16 @@ class DailyTaxTasks(private val m: DailyTax) {
         executorService.scheduleAtFixedRate(pendingMessageProcessor, 0, 1, TimeUnit.SECONDS)
     }
 
-    fun scheduleEveryDayAtSpecificHour(time: LocalTime, runnable: Runnable) {
+    private fun scheduleEveryDayAtSpecificHour(time: LocalTime, runnable: Runnable) {
+        val now = Instant.now()
         val today = LocalDate.now(ZoneOffset.UTC)
         val todayAtTime = LocalDateTime.of(today, time)
-        val tomorrowAtTime = todayAtTime.plusDays(1)
-        val diff = tomorrowAtTime.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
+        val gonnaBeScheduledAtTime =  if (now > todayAtTime.toInstant(ZoneOffset.UTC)) {
+            // If today at time is larger than today, then it means that we need to schedule it for tomorrow
+            todayAtTime.plusDays(1)
+        } else todayAtTime
+
+        val diff = gonnaBeScheduledAtTime.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
 
         logger.info { "Scheduling ${runnable::class.simpleName} to be executed in ${diff}ms" }
         executorService.scheduleAtFixedRate(
