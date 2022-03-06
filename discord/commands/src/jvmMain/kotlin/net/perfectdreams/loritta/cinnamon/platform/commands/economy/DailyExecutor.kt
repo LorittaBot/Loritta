@@ -84,9 +84,17 @@ class DailyExecutor : SlashCommandExecutor() {
         }
 
         val url = if (context is GuildApplicationCommandContext)
-            "${context.loritta.config.website}daily?guild=${context.guildId.value}"
+            GACampaigns.dailyWebRewardDiscordCampaignUrl(
+                context.loritta.config.website,
+                "daily",
+                "cmd-with-multiplier"
+            ) + "&guild=${context.guildId.value}"
         else // Used for daily multiplier priority
-            "${context.loritta.config.website}daily"
+            GACampaigns.dailyWebRewardDiscordCampaignUrl(
+                context.loritta.config.website,
+                "daily",
+                "cmd-without-multiplier"
+            )
 
         context.sendEphemeralMessage {
             styled(
@@ -112,7 +120,7 @@ class DailyExecutor : SlashCommandExecutor() {
                         .withMinute(0)
                         .withSecond(0)
                         .withNano(0)
-                        .plusDays(currentUserThreshold.maxDayThreshold)
+                        .plusDays(currentUserThreshold.maxDayThreshold.toLong())
 
                     if (OffsetDateTime.now(dailyTaxZoneOffset) > whenYouAreGoingToStartToLoseSonhos.toOffsetDateTime()) {
                         // User is already losing sonhos

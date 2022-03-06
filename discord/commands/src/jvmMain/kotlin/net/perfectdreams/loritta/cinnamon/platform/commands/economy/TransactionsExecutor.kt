@@ -28,6 +28,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
@@ -190,12 +191,12 @@ class TransactionsExecutor : SlashCommandExecutor() {
         }
 
         private fun StringBuilder.appendMoneyLostEmoji() {
-            append("\uD83D\uDCB8")
+            append(Emotes.MoneyWithWings)
             append(" ")
         }
 
         private fun StringBuilder.appendMoneyEarnedEmoji() {
-            append("\uD83D\uDCB5")
+            append(Emotes.DollarBill)
             append(" ")
         }
 
@@ -344,6 +345,20 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                 }
                             }
                         }
+
+                        is DailyTaxSonhosTransaction -> {
+                            appendMoneyLostEmoji()
+                            append(
+                                i18nContext.get(
+                                    TransactionsCommand.I18N_PREFIX.Types.InactiveDailyTax.Lost(
+                                        transaction.sonhos,
+                                        transaction.maxDayThreshold,
+                                        transaction.minimumSonhosForTrigger
+                                    )
+                                )
+                            )
+                        }
+
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> {
                             append("${Emotes.LoriShrug} Transação Desconhecida (Bug?)")

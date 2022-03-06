@@ -25,8 +25,9 @@ include(":discord:web-server")
 include(":discord:gateway")
 
 // ===[ MICROSERVICES ]===
-include("microservices:broker-tickers-updater")
-include("microservices:stats-collector")
+include(":microservices:broker-tickers-updater")
+include(":microservices:stats-collector")
+include(":microservices:daily-tax")
 
 // ===[ WEB ]===
 include(":web:showtime:web-common")

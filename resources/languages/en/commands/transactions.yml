@@ -41,6 +41,10 @@ types:
     description: "Transactions related to SparklyPower, Loritta's Minecraft Server"
     exchangedToSparklyPower: "Exchanged {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from Loritta to `{playerName}`'s account on SparklyPower, receiving {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} there [{sparklyPowerIp}]"
     exchangedFromSparklyPower: "Exchanged {sparklyPowerSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from `{playerName}`'s account on SparklyPower to Loritta, receiving {sonhosQuantity, plural, one {# sonho} other {# sonhos}} here [{sparklyPowerIp}]"
+  inactiveDailyTax:
+    title: "Daily Reward Inactivity Tax"
+    description: "Transactions related to the daily reward inactivity tax"
+    lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} in taxes, because the user was {daysWithoutGettingDaily,plural,=0{# days} one {# day} other {# days}} without getting the daily reward while they had more than {sonhosBracketQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 options:
   user:
     text: "The user that you want to view their transactions"

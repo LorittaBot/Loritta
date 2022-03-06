@@ -24,5 +24,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Title,
         I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Description,
         Emotes.PantufaGaming,
+    ),
+    INACTIVE_DAILY_TAX(
+        I18nKeysData.Commands.Command.Transactions.Types.InactiveDailyTax.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.InactiveDailyTax.Description,
+        Emotes.MoneyWithWings,
     )
 }

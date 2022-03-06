@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
+import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
@@ -36,6 +37,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
@@ -187,6 +189,15 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[SparklyPowerLSXSonhosTransactionsLog.playerName],
             row[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId].toString(),
             row[SparklyPowerLSXSonhosTransactionsLog.exchangeRate]
+        )
+    } else if (row.getOrNull(DailyTaxSonhosTransactionsLog.id) != null) {
+        DailyTaxSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[DailyTaxSonhosTransactionsLog.sonhos],
+            row[DailyTaxSonhosTransactionsLog.maxDayThreshold],
+            row[DailyTaxSonhosTransactionsLog.minimumSonhosForTrigger]
         )
     } else {
         UnknownSonhosTransaction(

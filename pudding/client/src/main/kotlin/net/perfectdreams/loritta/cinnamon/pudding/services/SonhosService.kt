@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
@@ -72,6 +73,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         if (TransactionType.SPARKLYPOWER_LSX in transactionTypeFilter)
             it.leftJoin(SparklyPowerLSXSonhosTransactionsLog)
         else it
+    }.let {
+        if (TransactionType.INACTIVE_DAILY_TAX in transactionTypeFilter)
+            it.leftJoin(DailyTaxSonhosTransactionsLog)
+        else it
     }
         .select {
             // Hacky!
@@ -85,6 +90,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                     TransactionType.HOME_BROKER -> cond.or(BrokerSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinFlipBetGlobalSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SPARKLYPOWER_LSX -> cond.or(SparklyPowerLSXSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.INACTIVE_DAILY_TAX -> cond.or(DailyTaxSonhosTransactionsLog.id.isNotNull())
                 }
             }
 

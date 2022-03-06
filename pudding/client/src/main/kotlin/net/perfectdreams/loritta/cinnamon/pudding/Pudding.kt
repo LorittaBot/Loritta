@@ -8,6 +8,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
@@ -30,10 +31,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
@@ -64,7 +68,7 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 
-class Pudding(private val database: Database) {
+class Pudding(val hikariDataSource: HikariDataSource, private val database: Database) {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
@@ -87,7 +91,9 @@ class Pudding(private val database: Database) {
             hikariConfig.username = username
             hikariConfig.password = password
 
-            return Pudding(connectToDatabase(HikariDataSource(hikariConfig)))
+            val hikariDataSource = HikariDataSource(hikariConfig)
+
+            return Pudding(hikariDataSource, connectToDatabase(hikariDataSource))
         }
 
         private fun createHikariConfig(): HikariConfig {
@@ -217,7 +223,10 @@ class Pudding(private val database: Database) {
             SparklyPowerLSXSonhosTransactionsLog,
             Dailies,
             Payments,
-            GuildCountStats
+            GuildCountStats,
+            CachedDiscordUsersDirectMessageChannels,
+            DailyTaxPendingDirectMessages,
+            DailyTaxSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())
@@ -227,6 +236,7 @@ class Pudding(private val database: Database) {
                 createOrUpdatePostgreSQLEnum(ComponentType.values())
                 createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
                 createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
+                createOrUpdatePostgreSQLEnum(DailyTaxPendingDirectMessageState.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(
