@@ -7,7 +7,7 @@ import kotlinx.html.js.onClickFunction
 import net.perfectdreams.loritta.embededitor.select
 import net.perfectdreams.loritta.embededitor.utils.*
 import org.w3c.dom.HTMLTextAreaElement
-import kotlin.browser.document
+import kotlinx.browser.document
 
 object MessageContentEditor : EditorBase {
     val changeContent: ELEMENT_CONFIGURATION = { m, discordMessage, currentElement, renderInfo ->

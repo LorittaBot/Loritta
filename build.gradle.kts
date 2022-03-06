@@ -1,9 +1,5 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-    repositories { jcenter() }
-}
-
 allprojects {
     group = "net.perfectdreams.loritta"
     version = Versions.LORITTA
@@ -29,8 +25,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_14
-    targetCompatibility = JavaVersion.VERSION_14
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
 }
 
 subprojects {

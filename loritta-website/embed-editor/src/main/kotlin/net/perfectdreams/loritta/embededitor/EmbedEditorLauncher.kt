@@ -1,10 +1,13 @@
 package net.perfectdreams.loritta.embededitor
 
-import io.ktor.util.InternalAPI
-import org.w3c.dom.*
+import kotlinx.browser.document
+import kotlinx.browser.window
+import org.w3c.dom.Document
+import org.w3c.dom.Element
+import org.w3c.dom.ParentNode
+import org.w3c.dom.Window
+import org.w3c.dom.asList
 import org.w3c.dom.events.Event
-import kotlin.browser.document
-import kotlin.browser.window
 
 fun main() {
     document.onDOMReady {

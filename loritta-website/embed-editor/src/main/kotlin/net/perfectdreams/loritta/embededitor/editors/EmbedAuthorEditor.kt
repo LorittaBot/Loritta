@@ -1,19 +1,23 @@
 package net.perfectdreams.loritta.embededitor.editors
 
-import kotlinx.html.CommonAttributeGroupFacade
-import kotlinx.html.FlowContent
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.dom.create
 import kotlinx.html.js.onClickFunction
 import net.perfectdreams.loritta.embededitor.EmbedEditor
 import net.perfectdreams.loritta.embededitor.data.DiscordEmbed
-import net.perfectdreams.loritta.embededitor.data.DiscordMessage
-import net.perfectdreams.loritta.embededitor.generator.EmbedAuthorGenerator
 import net.perfectdreams.loritta.embededitor.select
-import net.perfectdreams.loritta.embededitor.utils.*
+import net.perfectdreams.loritta.embededitor.utils.TingleModal
+import net.perfectdreams.loritta.embededitor.utils.TingleOptions
+import net.perfectdreams.loritta.embededitor.utils.addLovelyFooterButton
+import net.perfectdreams.loritta.embededitor.utils.discordH2Heading
+import net.perfectdreams.loritta.embededitor.utils.discordH5Heading
+import net.perfectdreams.loritta.embededitor.utils.discordTextArea
+import net.perfectdreams.loritta.embededitor.utils.discordTextInput
+import net.perfectdreams.loritta.embededitor.utils.lovelyButton
+import net.perfectdreams.loritta.embededitor.utils.visibleModal
 import org.w3c.dom.HTMLTextAreaElement
-import kotlin.browser.document
+import kotlinx.browser.document
 
 object EmbedAuthorEditor : EditorBase {
     val isNotNull: ELEMENT_CONFIGURATION = { m, discordMessage, currentElement, renderInfo ->

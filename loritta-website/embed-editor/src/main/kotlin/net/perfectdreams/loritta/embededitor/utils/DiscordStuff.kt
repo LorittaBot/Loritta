@@ -11,7 +11,7 @@ import org.w3c.dom.HTMLDivElement
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLTextAreaElement
 import org.w3c.dom.events.Event
-import kotlin.dom.clear
+import kotlinx.dom.clear
 
 fun FlowContent.discordTextInput(
         m: EmbedEditor,

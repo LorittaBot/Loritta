@@ -122,7 +122,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         httpWithoutTimeout
     )
     // By lazy because this is a hacky workaround due to Databases.dataSourceLoritta requiring the "loritta" variable to be initialized
-    val pudding by lazy { Pudding(Pudding.connectToDatabase(Databases.dataSourceLoritta)) }
+    val pudding by lazy { Pudding(Databases.dataSourceLoritta, Pudding.connectToDatabase(Databases.dataSourceLoritta)) }
     override val random = Random(System.currentTimeMillis())
     private val logger = KotlinLogging.logger {}
 

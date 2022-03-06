@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.embededitor.select
 import net.perfectdreams.loritta.embededitor.utils.*
 import org.w3c.dom.HTMLInputElement
 import org.w3c.dom.HTMLTextAreaElement
-import kotlin.browser.document
+import kotlinx.browser.document
 
 object EmbedFieldEditor : EditorBase {
     val changeField: ELEMENT_CONFIGURATION = { m, discordMessage, currentElement, renderInfo ->

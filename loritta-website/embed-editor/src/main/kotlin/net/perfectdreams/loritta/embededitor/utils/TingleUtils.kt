@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.embededitor.utils
 import kotlinx.coroutines.delay
 import net.perfectdreams.loritta.embededitor.select
 import org.w3c.dom.Element
-import kotlin.browser.document
+import kotlinx.browser.document
 // import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import kotlin.dom.hasClass
 

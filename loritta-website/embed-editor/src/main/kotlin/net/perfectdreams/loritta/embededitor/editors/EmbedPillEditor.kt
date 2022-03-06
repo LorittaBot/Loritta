@@ -9,7 +9,7 @@ import kotlinx.html.js.onInputFunction
 import kotlinx.html.style
 import net.perfectdreams.loritta.embededitor.select
 import org.w3c.dom.HTMLInputElement
-import kotlin.browser.document
+import kotlinx.browser.document
 
 object EmbedPillEditor : EditorBase {
     val pillCallback: ELEMENT_CONFIGURATION = { m, discordMessage, currentElement, renderInfo ->
