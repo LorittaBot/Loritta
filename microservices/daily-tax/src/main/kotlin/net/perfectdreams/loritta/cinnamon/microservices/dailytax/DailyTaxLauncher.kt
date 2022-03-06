@@ -1,23 +1,26 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax
 
-import io.ktor.client.*
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import kotlin.concurrent.thread
 
-object BrokerTickersUpdaterLauncher {
+object DailyTaxLauncher {
     private val logger = KotlinLogging.logger {}
 
     @JvmStatic
     fun main(args: Array<String>) {
-        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(BrokerTickersUpdaterLauncher::class, System.getProperty("brokertickersupdater.config", "broker-tickers-updater.conf"))
+        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(DailyTaxLauncher::class, System.getProperty("dailytax.config", "daily-tax.conf"))
         logger.info { "Loaded Loritta's configuration file" }
 
-        val http = HttpClient {
-            expectSuccess = false
-        }
+        val languageManager = LanguageManager(
+            DailyTax::class,
+            "en",
+            "/languages/"
+        )
+        languageManager.loadLanguagesAndContexts()
 
         val services = Pudding.createPostgreSQLPudding(
             rootConfig.pudding.address,
@@ -39,7 +42,7 @@ object BrokerTickersUpdaterLauncher {
         val loritta = DailyTax(
             rootConfig,
             services,
-            http
+            languageManager
         )
 
         loritta.start()

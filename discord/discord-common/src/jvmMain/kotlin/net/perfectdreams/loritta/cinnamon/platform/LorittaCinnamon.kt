@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.platform
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
-import dev.kord.rest.json.request.DMCreateRequest
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
@@ -10,6 +9,7 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.ServicesConfig
@@ -89,22 +89,10 @@ abstract class LorittaCinnamon(
      *
      * The ID of the direct message channel is cached.
      */
-    suspend fun sendMessageToUserViaDirectMessage(userId: UserId, builder: UserMessageCreateBuilder.() -> (Unit)) {
-        val cachedChannelId = services.users.getCachedDiscordDirectMessageChannel(userId)
-        val channelId = cachedChannelId ?: run {
-            val id = rest.user.createDM(DMCreateRequest(Snowflake(userId.value.toLong()))).id.value.toLong()
-            services.users.insertOrUpdateCachedDiscordDirectMessageChannel(userId, id)
-            id
-        }
-
-        try {
-            rest.channel.createMessage(
-                Snowflake(channelId),
-                builder
-            )
-        } catch (e: KtorRequestException) {
-            logger.warn(e) { "Something went wrong while trying to send a message to $userId! Invalidating cached direct message if present..." }
-            services.users.deleteCachedDiscordDirectMessageChannel(userId)
-        }
-    }
+    suspend fun sendMessageToUserViaDirectMessage(userId: UserId, builder: UserMessageCreateBuilder.() -> (Unit)) = UserUtils.sendMessageToUserViaDirectMessage(
+        services,
+        rest,
+        userId,
+        builder
+    )
 }

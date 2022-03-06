@@ -38,16 +38,34 @@ object GACampaigns {
         medium: String,
         campaignContent: String
     ): String {
-        return "<${sonhosBundlesUpsellUrl(lorittaWebsiteUrl, "discord", medium, "premium-upsell", campaignContent)}>"
+        return "<${premiumUrl(lorittaWebsiteUrl, "discord", medium, "premium-upsell", campaignContent)}>"
     }
 
-    fun premiumUpsellUrl(
+    fun premiumUpsellDiscordCampaignUrl(
+        lorittaWebsiteUrl: String,
+        medium: String,
+        campaignContent: String
+    ): String {
+        return premiumUrl(lorittaWebsiteUrl, "discord", medium, "premium-upsell", campaignContent)
+    }
+
+    fun premiumUrl(
         lorittaWebsiteUrl: String,
         source: String,
         medium: String,
         campaignName: String,
         campaignContent: String
     ): String {
-        return "${lorittaWebsiteUrl}premium?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
+        return "${lorittaWebsiteUrl}donate?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
+    }
+
+    fun dailyUrl(
+        lorittaWebsiteUrl: String,
+        source: String,
+        medium: String,
+        campaignName: String,
+        campaignContent: String
+    ): String {
+        return "${lorittaWebsiteUrl}daily?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
     }
 }

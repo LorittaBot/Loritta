@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
 
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds.THRESHOLDS
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
@@ -8,30 +10,13 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 
 object DailyTaxUtils {
-    val THRESHOLDS = listOf(
-        DailyTaxThreshold(
-            3L,
-            100_000_000L,
-            0.5
-        ),
-        DailyTaxThreshold(
-            7L,
-            10_000_000L,
-            0.25
-        ),
-        DailyTaxThreshold(
-            14L,
-            1_000_000L,
-            0.1
-        ),
-        DailyTaxThreshold(
-            30L,
-            100_000L,
-            0.05
-        )
-    )
-
-    fun doSomething(dayOffset: Long, block: (threshold: DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
+    /**
+     * Gets and processes inactive daily users
+     *
+     * @param dayOffset offsets (plusDays) the current day by [dayOffset]
+     * @param block     block that will be executed when a inactive daily user is found
+     */
+    fun getAndProcessInactiveDailyUsers(dayOffset: Long, block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
         val moneySum = Payments.money.sum()
 
         val usersToBeIgnored = Payments.slice(Payments.userId, moneySum).select {
@@ -47,7 +32,7 @@ object DailyTaxUtils {
             val nowXDaysAgo = LocalDateTime.now()
                 .atOffset(ZoneOffset.UTC)
                 .plusDays(dayOffset)
-                .minusDays(threshold.maxDayThreshold)
+                .minusDays(threshold.maxDayThreshold.toLong())
                 .toInstant()
                 .toEpochMilli()
 
@@ -77,12 +62,6 @@ object DailyTaxUtils {
             processedUsers.addAll(affectedProfiles.map { it.id })
         }
     }
-
-    data class DailyTaxThreshold(
-        val maxDayThreshold: Long,
-        val minimumSonhosForTrigger: Long,
-        val tax: Double
-    )
 
     data class InactiveDailyUser(
         val id: Long,

@@ -10,13 +10,15 @@ plugins {
 
 dependencies {
     implementation(project(":pudding:client"))
+    implementation(project(":discord:discord-common"))
     implementation("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
     implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
     implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
     implementation("pw.forst", "exposed-upsert", "1.1.0")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
-    api("dev.kord:kord-rest:${Versions.KORD}")
+    implementation("com.zaxxer:HikariCP:${Versions.HIKARICP}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
+    implementation("dev.kord:kord-rest:${Versions.KORD}")
 
     // Logback GELF, used for Graylog logging
     implementation("de.siegmar:logback-gelf:3.0.0")

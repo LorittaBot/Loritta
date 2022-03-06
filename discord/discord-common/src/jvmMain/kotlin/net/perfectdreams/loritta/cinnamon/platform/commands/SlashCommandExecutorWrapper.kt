@@ -10,16 +10,19 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.entities.UserAvatar
+import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
 import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ChannelCommandOption
@@ -34,8 +37,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.StringListCo
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserListCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxTaxedDirectMessage
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxWarnDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.streams.toList
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
@@ -347,6 +353,30 @@ class SlashCommandExecutorWrapper(
                 cinnamonContext,
                 net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments(cinnamonArgs)
             )
+
+            // Additional notifications will only be passed on if the request state is "already replied"
+            // This avoids out of order messages when the request is deferred
+            if (context.bridge.state.value == InteractionRequestState.ALREADY_REPLIED) {
+                val userId = UserId(context.sender.id.value)
+
+                val pendingDailyTaxDirectMessage = loritta.services.users.getAndUpdateStatePendingDailyTaxDirectMessage(
+                    userId,
+                    listOf(
+                        DailyTaxPendingDirectMessageState.PENDING,
+                        DailyTaxPendingDirectMessageState.FAILED_TO_SEND_VIA_DIRECT_MESSAGE,
+                    ),
+                    DailyTaxPendingDirectMessageState.SUCCESSFULLY_SENT_VIA_EPHEMERAL_MESSAGE
+                )
+
+                if (pendingDailyTaxDirectMessage != null) {
+                    val builder = when (pendingDailyTaxDirectMessage) {
+                        is UserDailyTaxTaxedDirectMessage -> UserUtils.buildDailyTaxMessage(i18nContext, loritta.config.website, userId, pendingDailyTaxDirectMessage)
+                        is UserDailyTaxWarnDirectMessage -> UserUtils.buildDailyTaxMessage(i18nContext, loritta.config.website, userId, pendingDailyTaxDirectMessage)
+                    }
+
+                    cinnamonContext.sendEphemeralMessage(builder)
+                }
+            }
 
             return CommandExecutionSuccess
         } catch (e: Throwable) {

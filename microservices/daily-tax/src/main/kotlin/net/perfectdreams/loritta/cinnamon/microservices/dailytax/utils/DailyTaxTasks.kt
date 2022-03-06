@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
 
+import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.dailytax.DailyTax
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -9,38 +10,58 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class DailyTaxTasks(private val m: DailyTax) {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     private val executorService = Executors.newScheduledThreadPool(1)
 
+    private val dailyTaxWarner = DailyTaxWarner(m)
+    private val dailyTaxCollector = DailyTaxCollector(m)
+    private val pendingMessageProcessor = DailyTaxPendingMessageProcessor(m.config.loritta, m.services, m.rest, m.languageManager)
+
     fun start() {
-        run {
-            val midnightLessOneHour = LocalTime.MIDNIGHT.minusHours(1)
-            val today = LocalDate.now(ZoneOffset.UTC)
-            val todayMidnight = LocalDateTime.of(today, midnightLessOneHour)
-            val tomorrowMidnight = todayMidnight.plusDays(1)
-            val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
+        // 12 hours before
+        scheduleEveryDayAtSpecificHour(
+            LocalTime.of(12, 0),
+            dailyTaxWarner
+        )
 
-            executorService.scheduleAtFixedRate(
-                DailyTaxWarner(m),
-                diff,
-                TimeUnit.DAYS.toMillis(1L),
-                TimeUnit.MILLISECONDS
-            )
-        }
+        // 4 hours before
+        scheduleEveryDayAtSpecificHour(
+            LocalTime.of(20, 0),
+            dailyTaxWarner
+        )
 
-        run {
-            val midnight = LocalTime.MIDNIGHT
-            val today = LocalDate.now(ZoneOffset.UTC)
-            val todayMidnight = LocalDateTime.of(today, midnight)
-            val tomorrowMidnight = todayMidnight.plusDays(1)
-            val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
+        // 1 hour before
+        scheduleEveryDayAtSpecificHour(
+            LocalTime.of(23, 0),
+            dailyTaxWarner
+        )
 
-            executorService.scheduleAtFixedRate(
-                DailyTaxCollector(m),
-                diff,
-                TimeUnit.DAYS.toMillis(1L),
-                TimeUnit.MILLISECONDS
-            )
-        }
+        // at midnight + notify about the user abouit taxes
+        scheduleEveryDayAtSpecificHour(
+            LocalTime.MIDNIGHT,
+            dailyTaxCollector
+        )
+
+        // Pending Message Processor
+        executorService.scheduleAtFixedRate(pendingMessageProcessor, 0, 1, TimeUnit.SECONDS)
+    }
+
+    fun scheduleEveryDayAtSpecificHour(time: LocalTime, runnable: Runnable) {
+        val today = LocalDate.now(ZoneOffset.UTC)
+        val todayAtTime = LocalDateTime.of(today, time)
+        val tomorrowAtTime = todayAtTime.plusDays(1)
+        val diff = tomorrowAtTime.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
+
+        logger.info { "Scheduling ${runnable::class.simpleName} to be executed in ${diff}ms" }
+        executorService.scheduleAtFixedRate(
+            runnable,
+            diff,
+            TimeUnit.DAYS.toMillis(1L),
+            TimeUnit.MILLISECONDS
+        )
     }
 
     fun shutdown() {
