@@ -34,20 +34,11 @@ class DailyTaxTasks(private val m: DailyTax) {
             dailyTaxWarner
         )
 
-        // TODO: Remove this block later, this was used to test it 30 minutes before the daily reward inactivity tax happened
-        if (LocalDateTime.now().isBefore(LocalDateTime.of(2022, 3, 7, 0, 0))) {
-            // 30 minutes before
-            scheduleEveryDayAtSpecificHour(
-                LocalTime.of(23, 30),
-                dailyTaxWarner
-            )
-        } else {
-            // 1 hour before
-            scheduleEveryDayAtSpecificHour(
-                LocalTime.of(23, 0),
-                dailyTaxWarner
-            )
-        }
+        // 1 hour before
+        scheduleEveryDayAtSpecificHour(
+            LocalTime.of(23, 0),
+            dailyTaxWarner
+        )
 
         // at midnight + notify about the user abouit taxes
         scheduleEveryDayAtSpecificHour(
