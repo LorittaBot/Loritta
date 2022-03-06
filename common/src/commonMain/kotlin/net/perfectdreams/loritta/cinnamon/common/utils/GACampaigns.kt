@@ -38,7 +38,7 @@ object GACampaigns {
         medium: String,
         campaignContent: String
     ): String {
-        return "<${premiumUrl(lorittaWebsiteUrl, "discord", medium, "premium-upsell", campaignContent)}>"
+        return "<${premiumUpsellDiscordCampaignUrl(lorittaWebsiteUrl, medium, campaignContent)}>"
     }
 
     fun premiumUpsellDiscordCampaignUrl(
