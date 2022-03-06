@@ -47,16 +47,21 @@ object DailyTaxUtils {
                 """SELECT profiles.id, profiles.money FROM profiles LEFT JOIN LATERAL (SELECT received_at FROM dailies WHERE profiles.id = dailies.received_by AND dailies.received_at > $nowXDaysAgo LIMIT 1) AS a ON TRUE WHERE profiles.money >= ${threshold.minimumSonhosForTrigger} AND a.received_at IS NULL;"""
             ) { rs ->
                 while (rs.next()) {
-                    val profileId = rs.getLong(1)
-                    val money = rs.getLong(2)
-                    val moneyToBeRemoved = (money * threshold.tax).toLong()
-                    affectedProfiles.add(
-                        InactiveDailyUser(
-                            profileId,
-                            money,
-                            moneyToBeRemoved
+                    try {
+                        val profileId = rs.getLong(1)
+                        val money = rs.getLong(2)
+                        val moneyToBeRemoved = (money * threshold.tax).toLong()
+                        affectedProfiles.add(
+                            InactiveDailyUser(
+                                profileId,
+                                money,
+                                moneyToBeRemoved
+                            )
                         )
-                    )
+                    } catch (e: Exception) {
+                        // org.jetbrains.exposed.exceptions.ExposedSQLException: org.postgresql.util.PSQLException: Bad value for type long : 9.223372036854776e+18
+                        logger.warn(e) { "Exception while trying to read ResultSet, skipping entry..." }
+                    }
                 }
             }
 
