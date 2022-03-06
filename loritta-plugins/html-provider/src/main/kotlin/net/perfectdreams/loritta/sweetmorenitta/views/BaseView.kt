@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.sweetmorenitta.views
 
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.HEAD
 import kotlinx.html.HTML
 import kotlinx.html.ScriptType
@@ -13,6 +12,7 @@ import kotlinx.html.stream.appendHTML
 import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.unsafe
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.website.LorittaWebsite
 import net.perfectdreams.loritta.website.utils.WebsiteAssetsHashes
 
@@ -87,6 +87,17 @@ window.addEventListener('load', function () {
                     unsafe {
                         raw("""window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'UA-53518408-9');""")
                     }
+                }
+
+                // Plausible
+                script(
+                    src = "https://web-analytics.perfectdreams.net/js/plausible.js",
+                ) {
+                    attributes["data-domain"] = LorittaWebsite.INSTANCE.config.websiteUrl
+                        .replace("http://", "")
+                        .replace("https://", "")
+                        .replace("/", "")
+                    defer = true
                 }
 
                 // Detect AdBlock
