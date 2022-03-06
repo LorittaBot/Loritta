@@ -33,10 +33,6 @@ abstract class LorittaCinnamon(
     val services: Pudding,
     val http: HttpClient
 ) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
-
     // TODO: *Really* set a random seed
     val random = Random(0)
 
