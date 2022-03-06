@@ -28,6 +28,6 @@ enum class TransactionType(
     INACTIVE_DAILY_TAX(
         I18nKeysData.Commands.Command.Transactions.Types.InactiveDailyTax.Title,
         I18nKeysData.Commands.Command.Transactions.Types.InactiveDailyTax.Description,
-        Emotes.MoneyWithWings,
+        Emotes.LoriSob,
     )
 }
