@@ -15,7 +15,7 @@ class DailyTaxTasks(private val m: DailyTax) {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val executorService = Executors.newScheduledThreadPool(1)
+    private val executorService = Executors.newScheduledThreadPool(2)
 
     private val dailyTaxWarner = DailyTaxWarner(m)
     private val dailyTaxCollector = DailyTaxCollector(m)
