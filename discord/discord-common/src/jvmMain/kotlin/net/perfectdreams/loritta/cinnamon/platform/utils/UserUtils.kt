@@ -34,13 +34,14 @@ object UserUtils {
         builder: UserMessageCreateBuilder.() -> (Unit)
     ): Boolean {
         val cachedChannelId = pudding.users.getCachedDiscordDirectMessageChannel(userId)
-        val channelId = cachedChannelId ?: run {
-            val id = rest.user.createDM(DMCreateRequest(Snowflake(userId.value.toLong()))).id.value.toLong()
-            pudding.users.insertOrUpdateCachedDiscordDirectMessageChannel(userId, id)
-            id
-        }
 
         return try {
+            val channelId = cachedChannelId ?: run {
+                val id = rest.user.createDM(DMCreateRequest(Snowflake(userId.value.toLong()))).id.value.toLong()
+                pudding.users.insertOrUpdateCachedDiscordDirectMessageChannel(userId, id)
+                id
+            }
+            
             rest.channel.createMessage(
                 Snowflake(channelId),
                 builder
