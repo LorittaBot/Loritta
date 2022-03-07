@@ -42,7 +42,7 @@ class DailyTaxTasks(private val m: DailyTax) {
 
         // at midnight + notify about the user about taxes
         scheduleEveryDayAtSpecificHour(
-            LocalTime.MIDNIGHT
+            LocalTime.MIDNIGHT,
             dailyTaxCollector
         )
 
