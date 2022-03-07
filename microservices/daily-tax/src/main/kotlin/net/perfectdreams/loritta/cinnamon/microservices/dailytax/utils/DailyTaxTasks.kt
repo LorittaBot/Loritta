@@ -40,9 +40,9 @@ class DailyTaxTasks(private val m: DailyTax) {
             dailyTaxWarner
         )
 
-        // at midnight + notify about the user abouit taxes
+        // at midnight + notify about the user about taxes
         scheduleEveryDayAtSpecificHour(
-            LocalTime.MIDNIGHT,
+            LocalTime.MIDNIGHT.plusMinutes(30), // TODO: woo tests please remove this later
             dailyTaxCollector
         )
 
