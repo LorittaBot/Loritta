@@ -41,7 +41,7 @@ object UserUtils {
                 pudding.users.insertOrUpdateCachedDiscordDirectMessageChannel(userId, id)
                 id
             }
-
+            
             rest.channel.createMessage(
                 Snowflake(channelId),
                 builder
@@ -49,10 +49,6 @@ object UserUtils {
             true
         } catch (e: KtorRequestException) {
             // 17:18:41.465 [DefaultDispatcher-worker-1] DEBUG [R]:[KTOR]:[ExclusionRequestRateLimiter] - [RESPONSE]:403:POST:https://discord.com/api/v9/channels/944325028885971016/messages body:{"message": "Cannot send messages to this user", "code": 50007}
-            logger.warn(e) { "Something went wrong while trying to send a message to $userId! Invalidating cached direct message if present..." }
-            pudding.users.deleteCachedDiscordDirectMessageChannel(userId)
-            false
-        } catch (e: Exception) {
             logger.warn(e) { "Something went wrong while trying to send a message to $userId! Invalidating cached direct message if present..." }
             pudding.users.deleteCachedDiscordDirectMessageChannel(userId)
             false
@@ -92,7 +88,7 @@ object UserUtils {
 
             timestamp = data.triggeredWarnAt
 
-            image = "https://cdn.discordapp.com/attachments/358774895850815488/949774877957685359/unknown.png"
+            image = lorittaWebsiteUrl + "v3/assets/img/sonhos/loritta_sonhos_drool.png"
         }
     }
 
