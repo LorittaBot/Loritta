@@ -364,6 +364,7 @@ class SlashCommandExecutorWrapper(
                     listOf(
                         DailyTaxPendingDirectMessageState.PENDING,
                         DailyTaxPendingDirectMessageState.FAILED_TO_SEND_VIA_DIRECT_MESSAGE,
+                        DailyTaxPendingDirectMessageState.SKIPPED_DIRECT_MESSAGE
                     ),
                     DailyTaxPendingDirectMessageState.SUCCESSFULLY_SENT_VIA_EPHEMERAL_MESSAGE
                 )

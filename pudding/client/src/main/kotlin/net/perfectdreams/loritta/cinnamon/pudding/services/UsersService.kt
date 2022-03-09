@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -274,6 +275,27 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             it[DailyTaxPendingDirectMessages.userId] = userId.value.toLong()
             it[DailyTaxPendingDirectMessages.state] = DailyTaxPendingDirectMessageState.PENDING
             it[DailyTaxPendingDirectMessages.data] = Json.encodeToString(data)
+        }
+    }
+
+    suspend fun insertSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
+        _insertSkipUserDailyTaxDirectMessageEntry(userId)
+    }
+
+    fun _insertSkipUserDailyTaxDirectMessageEntry(userId: UserId) {
+        DailyTaxUsersToSkipDirectMessages.insert {
+            it[DailyTaxUsersToSkipDirectMessages.userId] = userId.value.toLong()
+            it[DailyTaxUsersToSkipDirectMessages.timestamp] = java.time.Instant.now()
+        }
+    }
+
+    suspend fun deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
+        _deleteSkipUserDailyTaxDirectMessageEntry(userId)
+    }
+
+    fun _deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) {
+        DailyTaxUsersToSkipDirectMessages.deleteWhere {
+            DailyTaxUsersToSkipDirectMessages.userId eq userId.value.toLong()
         }
     }
 

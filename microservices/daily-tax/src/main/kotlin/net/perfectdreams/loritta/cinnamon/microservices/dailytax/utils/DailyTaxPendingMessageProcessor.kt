@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxTaxedDirectMe
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxWarnDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
 
 /**
  * Processes daily tax pending messages from our message queue.
@@ -53,29 +54,66 @@ class DailyTaxPendingMessageProcessor(
 
                     count++
 
-                    // TODO: Add builder conversion instead of having multiple methods for each builder
-                    val realUserId = UserId(userId)
-                    val builder = when (pendingDailyTaxDirectMessage) {
-                        is UserDailyTaxTaxedDirectMessage -> UserUtils.buildDailyTaxMessage(i18nContext, lorittaConfig.website, realUserId, pendingDailyTaxDirectMessage)
-                        is UserDailyTaxWarnDirectMessage -> UserUtils.buildDailyTaxMessage(i18nContext, lorittaConfig.website, realUserId, pendingDailyTaxDirectMessage)
-                    }.toKordUserMessageCreateBuilder()
+                    val selectSkipStatement = it.prepareStatement("SELECT COUNT(*) AS count FROM ${DailyTaxUsersToSkipDirectMessages.tableName} WHERE \"user\" = ?;")
+                    selectSkipStatement.setLong(1, userId)
+                    val skipRs = selectSkipStatement.executeQuery()
+                    skipRs.next()
+                    val shouldSkipDM = skipRs.getInt("count") == 1
 
-                    val messageWasSuccessfullySent = runBlocking {
-                        UserUtils.sendMessageToUserViaDirectMessage(
-                            pudding,
-                            rest,
-                            UserId(userId),
-                            builder
+                    if (shouldSkipDM) {
+                        logger.info { "Skipping direct message to $userId because they haven't acknowledged our last message by collecting the daily reward!" }
+
+                        val updateStatement = it.prepareStatement("UPDATE ${DailyTaxPendingDirectMessages.tableName} SET state = CAST(? AS ${DailyTaxPendingDirectMessageState::class.simpleName!!.lowercase()}) WHERE id = ?;")
+                        updateStatement.setObject(
+                            1,
+                            DailyTaxPendingDirectMessageState.SKIPPED_DIRECT_MESSAGE.name
                         )
+                        updateStatement.setLong(2, id)
+                        updateStatement.execute()
+                    } else {
+                        // TODO: Add builder conversion instead of having multiple methods for each builder
+                        val realUserId = UserId(userId)
+                        val builder = when (pendingDailyTaxDirectMessage) {
+                            is UserDailyTaxTaxedDirectMessage -> UserUtils.buildDailyTaxMessage(
+                                i18nContext,
+                                lorittaConfig.website,
+                                realUserId,
+                                pendingDailyTaxDirectMessage
+                            )
+                            is UserDailyTaxWarnDirectMessage -> UserUtils.buildDailyTaxMessage(
+                                i18nContext,
+                                lorittaConfig.website,
+                                realUserId,
+                                pendingDailyTaxDirectMessage
+                            )
+                        }.toKordUserMessageCreateBuilder()
+
+                        val messageWasSuccessfullySent = runBlocking {
+                            UserUtils.sendMessageToUserViaDirectMessage(
+                                pudding,
+                                rest,
+                                UserId(userId),
+                                builder
+                            )
+                        }
+
+                        logger.info { "Sent direct message to $userId! Success? $messageWasSuccessfullySent" }
+
+                        // https://www.gotoquiz.com/web-coding/programming/java-programming/convert-between-java-enums-and-postgresql-enums/
+                        val updateStatement = it.prepareStatement("UPDATE ${DailyTaxPendingDirectMessages.tableName} SET state = CAST(? AS ${DailyTaxPendingDirectMessageState::class.simpleName!!.lowercase()}) WHERE id = ?;")
+                        updateStatement.setObject(
+                            1,
+                            (if (messageWasSuccessfullySent) DailyTaxPendingDirectMessageState.SUCCESSFULLY_SENT_VIA_DIRECT_MESSAGE else DailyTaxPendingDirectMessageState.FAILED_TO_SEND_VIA_DIRECT_MESSAGE).name
+                        )
+                        updateStatement.setLong(2, id)
+                        updateStatement.execute()
+
+                        if (messageWasSuccessfullySent) {
+                            val insertSkipStatement = it.prepareStatement("INSERT INTO ${DailyTaxUsersToSkipDirectMessages.tableName} (\"user\", timestamp) VALUES (?, NOW());")
+                            insertSkipStatement.setLong(1, userId)
+                            insertSkipStatement.execute()
+                        }
                     }
-
-                    logger.info { "Sent direct message to $userId! Success? $messageWasSuccessfullySent" }
-
-                    // https://www.gotoquiz.com/web-coding/programming/java-programming/convert-between-java-enums-and-postgresql-enums/
-                    val updateStatement = it.prepareStatement("UPDATE ${DailyTaxPendingDirectMessages.tableName} SET state = CAST(? AS ${DailyTaxPendingDirectMessageState::class.simpleName!!.lowercase()}) WHERE id = ?;")
-                    updateStatement.setObject(1, (if (messageWasSuccessfullySent) DailyTaxPendingDirectMessageState.SUCCESSFULLY_SENT_VIA_DIRECT_MESSAGE else DailyTaxPendingDirectMessageState.FAILED_TO_SEND_VIA_DIRECT_MESSAGE).name)
-                    updateStatement.setLong(2, id)
-                    updateStatement.execute()
                 }
 
                 it.commit()

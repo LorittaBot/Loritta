@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhos
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
@@ -226,7 +227,8 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             GuildCountStats,
             CachedDiscordUsersDirectMessageChannels,
             DailyTaxPendingDirectMessages,
-            DailyTaxSonhosTransactionsLog
+            DailyTaxSonhosTransactionsLog,
+            DailyTaxUsersToSkipDirectMessages
         )
 
         if (schemas.isNotEmpty())
