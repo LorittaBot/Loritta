@@ -3,7 +3,7 @@ inactiveDailyTax:
   warn:
     - "Howdy {user}! Because you have more than {sonhosTaxBracketThreshold,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} and have been more than {daysWithoutGettingDaily,plural,=0{# days} one {# day} other {# days}} without collecting your daily reward, LorittaLand's government is thinking a lot about your {currentSonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} and are going to take {howMuchWillBeRemoved,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (taxa de {taxPercentage, number,#.##%}) from you if you don't get the daily reward until {inactivityTaxTimeWillBeTriggeredAt}!"
     - ""
-    - "**Get your daily reward by [clicking here]({dailyLink}) to prevent your sonhos from being usurped by the government!**"
+    - "**Get your daily reward by [clicking here]({dailyLink}) to prevent your sonhos from being usurped by the government!** If you don't collect your daily reward, you will keep losing sonhos every day at {timeWhenDailyTaxIsTriggered}!"
     - ""
     - "The tax exists to hinder people who only accumulate sonhos only to leave them mouldering in their accounts, without putting the effort to collect their daily reward."
     - ""
@@ -13,7 +13,7 @@ inactiveDailyTax:
   taxed:
     - "Geez {user}! Because you have more than {sonhosTaxBracketThreshold,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} and have been more than {daysWithoutGettingDaily,plural,=0{# days} one {# day} other {# days}} without collecting your daily reward, LorittaLand's government usurped {howMuchWasRemoved,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (tax of {taxPercentage, number,#.##%}) from your account!"
     - ""
-    - "**Get your daily reward by [clicking here]({dailyLink}) to prevent your sonhos to keep being usurped by the government!**"
+    - "**Get your daily reward by [clicking here]({dailyLink}) to prevent your sonhos to keep being usurped by the government!** If you don't collect your daily reward, you will keep losing sonhos every day at {timeWhenDailyTaxIsTriggered}!"
     - ""
     - "The tax exists to hinder people who only accumulate sonhos only to leave them mouldering in their accounts, without putting the effort to collect their daily reward."
     - ""
