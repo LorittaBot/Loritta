@@ -4,7 +4,7 @@ inactiveDailyTax:
   warn:
     - "Olá {user}! Como você tem mais de {sonhosTaxBracketThreshold,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} e está há mais de {daysWithoutGettingDaily,plural,=0{# dias} one {# dia} other {# dias}} sem pegar a sua recompensa diária, o governo da LorittaLand está dando uma bizoiada nos seus {currentSonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} e irão passar a mão em {howMuchWillBeRemoved,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (taxa de {taxPercentage, number,#.##%}) seus se você não pegar a recompensa diária até {inactivityTaxTimeWillBeTriggeredAt}!"
     - ""
-    - "**Get your daily reward by [clicking here]({dailyLink}) to prevent your sonhos from being usurped by the government!** If you don't collect your daily reward, you will keep losing sonhos every day at {timeWhenDailyTaxIsTriggered}!"
+    - "**Pegue a sua recompensa diária [clicando aqui]({dailyLink}) para impedir que seus sonhos sejam usurpados pelo governo!** Se você não pegar a sua recompensa diária, você irá continuar a perder sonhos todos os dias às {timeWhenDailyTaxIsTriggered}!"
     - ""
     - "O imposto existe para dificultar as pessoas que só acumulam sonhos apenas para deixar eles mofando em suas contas, sem ela se esforçar para pegar a recompensa diária."
     - ""
