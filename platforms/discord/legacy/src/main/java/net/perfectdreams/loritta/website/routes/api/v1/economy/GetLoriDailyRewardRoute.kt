@@ -24,6 +24,7 @@ import io.ktor.request.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -407,6 +408,8 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					dailyPayout.toLong(),
 					SonhosPaymentReason.DAILY
 				)
+
+				loritta.pudding.users._deleteSkipUserDailyTaxDirectMessageEntry(UserId(id))
 			}
 
 			payload["receivedDailyAt"] = receivedDailyAt
