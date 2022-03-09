@@ -48,8 +48,6 @@ class DailyTaxTasks(private val m: DailyTax) {
 
         // Pending Message Processor
         executorService.scheduleAtFixedRate(pendingMessageProcessor, 0, 1, TimeUnit.SECONDS)
-
-        dailyTaxWarner.run()
     }
 
     private fun scheduleEveryDayAtSpecificHour(time: LocalTime, runnable: Runnable) {
