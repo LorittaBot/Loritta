@@ -10,7 +10,7 @@ inactiveDailyTax:
     - ""
     - "Você sabia que assinantes do Plano Premium \"Completo\" não pagam o imposto de inatividade? [Compre o Plano Premium \"Completo\" hoje mesmo]({premiumLink})!"
     - ""
-    - "*This warning will only be sent once to your DMs if you have them open to avoid spamming you. I will continue notifying you about taxes in your DMs after you collect your daily reward!*"
+    - "*Este aviso só será enviado uma vez no seu privado se você tiver as suas mensagens diretas abertas para evitar eu te spammar. Continuarei avisando sobre impostos no seu privado depois que você pegar a sua recompensa diária!*"
   taxed:
     - "Eita {user}! Como você tem mais de {sonhosTaxBracketThreshold,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} e está há mais de {daysWithoutGettingDaily,plural,=0{# dias} one {# dia} other {# dias}} sem pegar a sua recompensa diária, o governo da LorittaLand usurpou {howMuchWasRemoved,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (taxa de {taxPercentage, number,#.##%}) da sua conta!"
     - ""
@@ -22,4 +22,4 @@ inactiveDailyTax:
     - ""
     - "Você sabia que assinantes do Plano Premium \"Completo\" não pagam o imposto de inatividade? [Compre o Plano Premium \"Completo\" hoje mesmo]({premiumLink})!"
     - ""
-    - "*This warning will only be sent once to your DMs if you have them open to avoid spamming you. I will continue notifying you about taxes in your DMs after you collect your daily reward!*"
+    - "*Este aviso só será enviado uma vez no seu privado se você tiver as suas mensagens diretas abertas para evitar eu te spammar. Continuarei avisando sobre impostos no seu privado depois que você pegar a sua recompensa diária!*"
