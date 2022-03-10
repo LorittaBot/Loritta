@@ -86,36 +86,42 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
             }
 
             logger.info { "Successfully collected today's daily tax!" }
-            logger.info { "Checking how many users would be affected if they didn't get the daily between today and tomorrow..." }
 
-            val tomorrowAtMidnight = LocalDateTime.now(ZoneOffset.UTC)
-                .plusDays(1)
-                .withHour(0)
-                .withMinute(0)
-                .withSecond(0)
-                .withNano(0)
-                .toInstant(ZoneOffset.UTC)
-                .toKotlinInstant()
+            suspend fun warnTaxInTheFutureDays(dayOffset: Long) {
+                logger.info { "Checking how many users would be affected if they didn't get the daily between today and +$dayOffset days..." }
+                val plusXDaysAtMidnight = LocalDateTime.now(ZoneOffset.UTC)
+                    .plusDays(dayOffset)
+                    .withHour(0)
+                    .withMinute(0)
+                    .withSecond(0)
+                    .withNano(0)
+                    .toInstant(ZoneOffset.UTC)
+                    .toKotlinInstant()
 
-            m.services.transaction {
-                DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 1) { threshold, inactiveDailyUser ->
-                    // Don't warn them about the tax if they were already taxed before
-                    if (!alreadyWarnedThatTheyWereTaxed.contains(inactiveDailyUser.id)) {
-                        m.services.users._insertPendingDailyTaxDirectMessage(
-                            UserId(inactiveDailyUser.id),
-                            UserDailyTaxWarnDirectMessage(
-                                tomorrowAtMidnight,
-                                now,
-                                inactiveDailyUser.money,
-                                inactiveDailyUser.moneyToBeRemoved,
-                                threshold.maxDayThreshold,
-                                threshold.minimumSonhosForTrigger,
-                                threshold.tax
+                m.services.transaction {
+                    DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 1) { threshold, inactiveDailyUser ->
+                        // Don't warn them about the tax if they were already taxed before
+                        if (!alreadyWarnedThatTheyWereTaxed.contains(inactiveDailyUser.id)) {
+                            m.services.users._insertPendingDailyTaxDirectMessage(
+                                UserId(inactiveDailyUser.id),
+                                UserDailyTaxWarnDirectMessage(
+                                    plusXDaysAtMidnight,
+                                    now,
+                                    inactiveDailyUser.money,
+                                    inactiveDailyUser.moneyToBeRemoved,
+                                    threshold.maxDayThreshold,
+                                    threshold.minimumSonhosForTrigger,
+                                    threshold.tax
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
+
+            warnTaxInTheFutureDays(1)
+            warnTaxInTheFutureDays(2)
+            warnTaxInTheFutureDays(3)
         } catch (e: Exception) {
             logger.warn { "Something went wrong while collecting tax from inactive daily users!" }
         }
