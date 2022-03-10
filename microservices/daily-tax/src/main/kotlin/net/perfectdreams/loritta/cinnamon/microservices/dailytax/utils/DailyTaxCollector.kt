@@ -42,7 +42,7 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
 
             val alreadyWarnedThatTheyWereTaxed = mutableSetOf<Long>()
 
-            // We need to use Read Commited to avoid "Culd not serialize access due to concurrent update"
+            // We need to use Read Commited to avoid "Could not serialize access due to concurrent update"
             // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
             m.services.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
                 // Delete all pending direct messages because we will replace with newer messages
