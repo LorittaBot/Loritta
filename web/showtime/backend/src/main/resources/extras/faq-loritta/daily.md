@@ -23,7 +23,7 @@ Tem altas chances de o problema estar na sua conexão. Verifique se você fechou
 ## Estou perdendo sonhos para uma taxa de inatividade do daily...
 As taxas de inatividade do daily são taxas que eu coloquei para que as pessoas passassem a pegar daily com mais frequência e como uma tentativa de desconcentrar grandes quantidades de sonho nas mãos de um usuário só. Você só será taxado caso se encaixe em um dos casos abaixo.
 
-* Caso o usuário tenha mais de 100.000 (10 mil) sonhos: Se não pegar daily a mais de 30 dias, 5% dos sonhos da pessoa serão removidos
+* Caso o usuário tenha mais de 100.000 (100 mil) sonhos: Se não pegar daily a mais de 30 dias, 5% dos sonhos da pessoa serão removidos
 * Caso o usuário tenha mais de 1.000.000 (1 milhão) sonhos: Se não pegar daily a mais de 14 dias, 10% dos sonhos da pessoa serão removidos
 * Caso o usuário tenha mais de 10.000.000 (10 milhões) sonhos: Se não pegar daily a mais de 7 dias, 25% dos sonhos da pessoa serão removidos
 * Caso o usuário tenha mais de 100.000.000 (100 milhões) sonhos: Se não pegar daily a mais de 3 dias, 50% dos sonhos da pessoa serão removidos
