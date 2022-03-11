@@ -126,7 +126,7 @@ object UserUtils {
 
             timestamp = data.inactivityTaxTimeTriggeredAt
 
-            image = "https://cdn.discordapp.com/attachments/358774895850815488/949775565433471046/unknown.png"
+            image = lorittaWebsiteUrl + "v3/assets/img/sonhos/loritta_sonhos_running.png"
         }
     }
 }
