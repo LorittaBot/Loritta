@@ -18,8 +18,8 @@ data class PaymentSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,
     override val user: UserId,
-    val receivedBy: UserId,
     val givenBy: UserId,
+    val receivedBy: UserId,
     val sonhos: Long
 ) : SonhosTransaction()
 
