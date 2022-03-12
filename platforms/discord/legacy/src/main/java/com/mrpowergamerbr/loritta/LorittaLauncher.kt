@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.utils.readConfigurationFromFile
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Paths
+import java.util.*
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
@@ -23,6 +24,9 @@ object LorittaLauncher {
 
 	@JvmStatic
 	fun main(args: Array<String>) {
+		// https://github.com/JetBrains/Exposed/issues/1356
+		TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+
 		installCoroutinesDebugProbes()
 		try {
 			setKotlinScriptingClasspath()
