@@ -14,6 +14,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
@@ -21,6 +24,8 @@ import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthentication
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.ZoneId
@@ -96,6 +101,8 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 			}
 
 			loritta.newSuspendedTransaction {
+				val now = Instant.now()
+
 				giverProfile.takeSonhosNested(howMuch)
 				receiverProfile.addSonhosNested(howMuch)
 
@@ -105,6 +112,34 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 						givenBy = giverProfile.id.value,
 						receivedBy = receiverProfile.id.value
 				)
+
+				// Cinnamon transaction system
+				val paymentResult = PaymentSonhosTransactionResults.insertAndGetId {
+					it[PaymentSonhosTransactionResults.givenBy] = giverProfile.id.value
+					it[PaymentSonhosTransactionResults.receivedBy] = receiverProfile.id.value
+					it[PaymentSonhosTransactionResults.sonhos] = howMuch
+					it[PaymentSonhosTransactionResults.timestamp] = now
+				}
+
+				val giverTransactionLogId = SonhosTransactionsLog.insertAndGetId {
+					it[SonhosTransactionsLog.user] = giverProfile.id.value
+					it[SonhosTransactionsLog.timestamp] = now
+				}
+
+				PaymentSonhosTransactionsLog.insert {
+					it[PaymentSonhosTransactionsLog.timestampLog] = giverTransactionLogId
+					it[PaymentSonhosTransactionsLog.paymentResult] = paymentResult
+				}
+
+				val receiverTransactionLogId = SonhosTransactionsLog.insertAndGetId {
+					it[SonhosTransactionsLog.user] = receiverProfile.id.value
+					it[SonhosTransactionsLog.timestamp] = now
+				}
+
+				PaymentSonhosTransactionsLog.insert {
+					it[PaymentSonhosTransactionsLog.timestampLog] = receiverTransactionLogId
+					it[PaymentSonhosTransactionsLog.paymentResult] = paymentResult
+				}
 			}
 
 			logger.info { "$giverId (antes possuia ${beforeGiver} sonhos) transferiu ${howMuch} sonhos para ${receiverProfile.userId} (antes possuia ${beforeReceiver} sonhos, recebeu apenas $howMuch (taxado!))" }

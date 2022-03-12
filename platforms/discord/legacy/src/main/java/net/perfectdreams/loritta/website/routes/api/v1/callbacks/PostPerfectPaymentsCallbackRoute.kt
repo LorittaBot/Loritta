@@ -1,12 +1,16 @@
 package net.perfectdreams.loritta.website.routes.api.v1.callbacks
 
-import com.github.salomonbrys.kotson.*
+import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.long
+import com.github.salomonbrys.kotson.nullLong
+import com.github.salomonbrys.kotson.nullString
+import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.dao.DonationKey
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import io.ktor.application.*
 import io.ktor.http.*
@@ -19,6 +23,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.BannedUsers
@@ -30,12 +37,16 @@ import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
-import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
 import java.awt.Color
 import java.time.Instant
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
+import kotlin.collections.set
 
 class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/perfect-payments") {
 	companion object {
@@ -238,6 +249,16 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 							bundle[SonhosBundles.sonhos],
 							SonhosPaymentReason.BUNDLE_PURCHASE
 						)
+
+						val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+							it[SonhosTransactionsLog.user] = internalPayment.userId
+							it[SonhosTransactionsLog.timestamp] = Instant.now()
+						}
+
+						SonhosBundlePurchaseSonhosTransactionsLog.insert {
+							it[SonhosBundlePurchaseSonhosTransactionsLog.timestampLog] = transactionLogId
+							it[SonhosBundlePurchaseSonhosTransactionsLog.bundle] = bundle[SonhosBundles.id]
+						}
 					}
 
 					sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${com.mrpowergamerbr.loritta.utils.loritta.instanceConfig.loritta.website.url}support")

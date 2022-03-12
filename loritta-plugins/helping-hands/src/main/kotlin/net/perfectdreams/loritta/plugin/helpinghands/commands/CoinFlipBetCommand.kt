@@ -15,6 +15,9 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
@@ -29,6 +32,9 @@ import net.perfectdreams.loritta.utils.UserPremiumPlans
 import net.perfectdreams.loritta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import net.perfectdreams.loritta.utils.sendStyledReply
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
+import java.time.Instant
 
 class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBase(
 	plugin.loritta,
@@ -73,26 +79,36 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 			val hasNoTax: Boolean
 			val whoHasTheNoTaxReward: User?
 			val plan: UserPremiumPlans?
+			val tax: Long?
+			val taxPercentage: Double?
+			val quantityAfterTax: Long
+			val money: Long
+
+			val number = NumberUtils.convertShortenedNumberToLong(args[1])
+				?: GenericReplies.invalidNumber(this, args[1].stripCodeMarks())
 
 			if (selfPlan.totalCoinFlipReward == 1.0) {
 				whoHasTheNoTaxReward = discordMessage.author
 				hasNoTax = true
 				plan = selfPlan
+				taxPercentage = 0.0
+				tax = null
+				money = number
 			} else if (otherPlan.totalCoinFlipReward == 1.0) {
 				whoHasTheNoTaxReward = invitedUser
 				hasNoTax = true
 				plan = otherPlan
+				taxPercentage = 0.0
+				tax = null
+				money = number
 			} else {
 				whoHasTheNoTaxReward = null
 				hasNoTax = false
 				plan = UserPremiumPlans.Essential
+				taxPercentage = (1.0.toBigDecimal() - selfPlan.totalCoinFlipReward.toBigDecimal()).toDouble() // Avoid rounding errors
+				tax = (number * taxPercentage).toLong()
+				money = number - tax
 			}
-
-			val number = NumberUtils.convertShortenedNumberToLong(args[1])
-				?: GenericReplies.invalidNumber(this, args[1].stripCodeMarks())
-
-			val tax = (number * (1.0 - plan.totalCoinFlipReward)).toLong()
-			val money = number - tax
 
 			if (!hasNoTax && tax == 0L)
 				fail(locale["commands.command.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
@@ -204,6 +220,7 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 
 										val winner: User
 										val loser: User
+										val now = Instant.now()
 
 										if (isTails) {
 											winner = user
@@ -218,6 +235,37 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 													givenBy = invitedUserProfile.id.value,
 													receivedBy = selfUserProfile.id.value
 												)
+
+												// Cinnamon transaction system
+												val mmResult = CoinFlipBetMatchmakingResults.insertAndGetId {
+													it[CoinFlipBetMatchmakingResults.timestamp] = now
+													it[CoinFlipBetMatchmakingResults.winner] = selfUserProfile.id.value
+													it[CoinFlipBetMatchmakingResults.loser] = invitedUserProfile.id.value
+													it[CoinFlipBetMatchmakingResults.quantity] = number
+													it[CoinFlipBetMatchmakingResults.quantityAfterTax] = money
+													it[CoinFlipBetMatchmakingResults.tax] = tax
+													it[CoinFlipBetMatchmakingResults.taxPercentage] = taxPercentage
+												}
+
+												val winnerTransactionLogId = SonhosTransactionsLog.insertAndGetId {
+													it[SonhosTransactionsLog.user] = selfUserProfile.id.value
+													it[SonhosTransactionsLog.timestamp] = now
+												}
+
+												CoinFlipBetSonhosTransactionsLog.insert {
+													it[CoinFlipBetSonhosTransactionsLog.timestampLog] = winnerTransactionLogId
+													it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = mmResult
+												}
+
+												val loserTransactionLogId = SonhosTransactionsLog.insertAndGetId {
+													it[SonhosTransactionsLog.user] = invitedUserProfile.id.value
+													it[SonhosTransactionsLog.timestamp] = now
+												}
+
+												CoinFlipBetSonhosTransactionsLog.insert {
+													it[CoinFlipBetSonhosTransactionsLog.timestampLog] = loserTransactionLogId
+													it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = mmResult
+												}
 											}
 										} else {
 											winner = invitedUser
@@ -232,6 +280,37 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 													givenBy = selfUserProfile.id.value,
 													receivedBy = invitedUserProfile.id.value
 												)
+
+												// Cinnamon transaction system
+												val mmResult = CoinFlipBetMatchmakingResults.insertAndGetId {
+													it[CoinFlipBetMatchmakingResults.timestamp] = Instant.now()
+													it[CoinFlipBetMatchmakingResults.winner] = invitedUserProfile.id.value
+													it[CoinFlipBetMatchmakingResults.loser] = selfUserProfile.id.value
+													it[CoinFlipBetMatchmakingResults.quantity] = number
+													it[CoinFlipBetMatchmakingResults.quantityAfterTax] = money
+													it[CoinFlipBetMatchmakingResults.tax] = tax
+													it[CoinFlipBetMatchmakingResults.taxPercentage] = taxPercentage
+												}
+
+												val winnerTransactionLogId = SonhosTransactionsLog.insertAndGetId {
+													it[SonhosTransactionsLog.user] = invitedUserProfile.id.value
+													it[SonhosTransactionsLog.timestamp] = now
+												}
+
+												CoinFlipBetSonhosTransactionsLog.insert {
+													it[CoinFlipBetSonhosTransactionsLog.timestampLog] = winnerTransactionLogId
+													it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = mmResult
+												}
+
+												val loserTransactionLogId = SonhosTransactionsLog.insertAndGetId {
+													it[SonhosTransactionsLog.user] = selfUserProfile.id.value
+													it[SonhosTransactionsLog.timestamp] = now
+												}
+
+												CoinFlipBetSonhosTransactionsLog.insert {
+													it[CoinFlipBetSonhosTransactionsLog.timestampLog] = loserTransactionLogId
+													it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = mmResult
+												}
 											}
 										}
 
