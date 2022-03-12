@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
@@ -36,6 +37,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
@@ -177,6 +180,18 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[CoinFlipBetGlobalMatchmakingResults.tax],
             row[CoinFlipBetGlobalMatchmakingResults.taxPercentage],
             row[CoinFlipBetGlobalMatchmakingResults.timeOnQueue].toMillis(),
+        )
+    } else if (row.getOrNull(CoinFlipBetSonhosTransactionsLog.id) != null) {
+        CoinFlipBetSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            UserId(row[CoinFlipBetMatchmakingResults.winner].value),
+            UserId(row[CoinFlipBetMatchmakingResults.loser].value),
+            row[CoinFlipBetMatchmakingResults.quantity],
+            row[CoinFlipBetMatchmakingResults.quantityAfterTax],
+            row[CoinFlipBetMatchmakingResults.tax],
+            row[CoinFlipBetMatchmakingResults.taxPercentage]
         )
     } else if (row.getOrNull(SparklyPowerLSXSonhosTransactionsLog.id) != null) {
         SparklyPowerLSXSonhosTransaction(

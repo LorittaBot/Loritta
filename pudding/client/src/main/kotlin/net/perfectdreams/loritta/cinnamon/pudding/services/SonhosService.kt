@@ -8,6 +8,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
@@ -66,6 +68,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             it.leftJoin(BrokerSonhosTransactionsLog)
         else it
     }.let {
+        if (TransactionType.COINFLIP_BET in transactionTypeFilter)
+            it.leftJoin(CoinFlipBetSonhosTransactionsLog.leftJoin(CoinFlipBetMatchmakingResults))
+        else it
+    }.let {
         if (TransactionType.COINFLIP_BET_GLOBAL in transactionTypeFilter)
             it.leftJoin(CoinFlipBetGlobalSonhosTransactionsLog.leftJoin(CoinFlipBetGlobalMatchmakingResults))
         else it
@@ -88,6 +94,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             for (type in transactionTypeFilter) {
                 cond = when (type) {
                     TransactionType.HOME_BROKER -> cond.or(BrokerSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.COINFLIP_BET -> cond.or(CoinFlipBetSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinFlipBetGlobalSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SPARKLYPOWER_LSX -> cond.or(SparklyPowerLSXSonhosTransactionsLog.id.isNotNull())
                     TransactionType.INACTIVE_DAILY_TAX -> cond.or(DailyTaxSonhosTransactionsLog.id.isNotNull())

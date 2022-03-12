@@ -29,6 +29,13 @@ types:
     description: "Transactions related to Loritta's Stock Market Simulator"
     boughtShares: "Bought {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} in Loritta's Stock Market Simulator"
     soldShares: "Sold {stockQuantity, plural, one {# share} other {# shares}} of `{ticker}` for {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} in Loritta's Stock Market Simulator"
+  coinFlipBet:
+    title: "Coin Flip Bets"
+    description: "Transactions related to sonhos coin flip bets"
+    wonTaxed: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (tax-free value: {quantity}) from `{loserTag}` (`{loserId}`) in sonhos coin flip bets"
+    lostTaxed: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (value after taxes: {quantityAfterTax}) to `{winnerTag}` (`{winnerId}`) in sonhos coin flip bets"
+    won: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (no taxes!) from `{loserTag}` (`{loserId}`) in sonhos coin flip bets"
+    lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} sonhos (no taxes!) to `{winnerTag}` (`{winnerId}`) in sonhos coin flip bets"
   coinFlipBetGlobal:
     title: "Global Coin Flip Bets"
     description: "Transactions related to sonhos coin flip bets... globally!"
