@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
+import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
@@ -35,15 +36,24 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirec
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
@@ -51,6 +61,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
@@ -228,7 +240,18 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             CachedDiscordUsersDirectMessageChannels,
             DailyTaxPendingDirectMessages,
             DailyTaxSonhosTransactionsLog,
-            DailyTaxUsersToSkipDirectMessages
+            DailyTaxUsersToSkipDirectMessages,
+            CoinFlipBetMatchmakingResults,
+            CoinFlipBetSonhosTransactionsLog,
+            EmojiFightMatches,
+            EmojiFightParticipants,
+            EmojiFightMatchmakingResults,
+            EmojiFightSonhosTransactionsLog,
+            DivineInterventionSonhosTransactionsLog,
+            PaymentSonhosTransactionResults,
+            PaymentSonhosTransactionsLog,
+            SonhosBundles,
+            SonhosBundlePurchaseSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())
@@ -239,6 +262,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
                 createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
                 createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
                 createOrUpdatePostgreSQLEnum(DailyTaxPendingDirectMessageState.values())
+                createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(

@@ -8,6 +8,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.SOLD_SHARES
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
@@ -28,7 +29,12 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
@@ -70,9 +76,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
 
             val isSelf = data.viewingTransactionsOfUserId.value == data.userId.value
 
-            val cachedUserInfo = if (!isSelf)
-                loritta.getCachedUserInfo(data.viewingTransactionsOfUserId)
-            else null
+            val cachedUserInfo = loritta.getCachedUserInfo(data.viewingTransactionsOfUserId) ?: error("Missing cached user info!")
 
             content = i18nContext.get(TransactionsCommand.I18N_PREFIX.NotAllTransactionsAreHere)
 
@@ -98,7 +102,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                             transactions,
                             totalTransactions
                         )
-                    } else if (totalPages == 0L) {
+                    } else {
                         // ===[ NO MATCHING TRANSACTIONS VIEW ]===
                         apply(
                             createNoMatchingTransactionsEmbed(
@@ -205,17 +209,19 @@ class TransactionsExecutor : SlashCommandExecutor() {
             i18nContext: I18nContext,
             data: TransactionListData,
             isSelf: Boolean,
-            cachedUserInfo: CachedUserInfo?,
+            cachedUserInfo: CachedUserInfo,
             transactions: List<SonhosTransaction>,
             totalTransactions: Long
         ) {
             // ===[ NORMAL TRANSACTION VIEW ]===
-            val cachedUserInfos = mutableMapOf<UserId, CachedUserInfo?>()
+            val cachedUserInfos = mutableMapOf<UserId, CachedUserInfo?>(
+                cachedUserInfo.id to cachedUserInfo
+            )
 
             title = buildString {
                 if (isSelf)
                     append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
-                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name}#${cachedUserInfo?.discriminator}")))
+                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo.name.replace("`", "")}#${cachedUserInfo?.discriminator}")))
 
                 append(" — ")
 
@@ -229,6 +235,30 @@ class TransactionsExecutor : SlashCommandExecutor() {
                     append("[<t:${transaction.timestamp.epochSeconds}:d> <t:${transaction.timestamp.epochSeconds}:t> | <t:${transaction.timestamp.epochSeconds}:R>]")
                     append(" ")
                     when (transaction) {
+                        // ===[ PAYMENTS ]===
+                        is PaymentSonhosTransaction -> {
+                            val receivedTheSonhos = transaction.user == transaction.receivedBy
+                            val receiverUserInfo = cachedUserInfos.getOrPut(transaction.receivedBy) { loritta.getCachedUserInfo(transaction.receivedBy) }
+                            val giverUserInfo = cachedUserInfos.getOrPut(transaction.givenBy) { loritta.getCachedUserInfo(transaction.givenBy) }
+
+                            if (receivedTheSonhos) {
+                                appendMoneyEarnedEmoji()
+                                append(
+                                    i18nContext.get(
+                                        TransactionsCommand.I18N_PREFIX.Types.Payment.Received(transaction.sonhos, "${giverUserInfo?.name?.replace("`", "")}#${giverUserInfo?.discriminator}", transaction.givenBy.value)
+                                    )
+                                )
+                            } else {
+                                appendMoneyLostEmoji()
+                                append(
+                                    i18nContext.get(
+                                        TransactionsCommand.I18N_PREFIX.Types.Payment.Sent(transaction.sonhos, "${receiverUserInfo?.name?.replace("`", "")}#${receiverUserInfo?.discriminator}", transaction.receivedBy.value)
+                                    )
+                                )
+                            }
+                        }
+
+                        // ===[ BROKER ]===
                         is BrokerSonhosTransaction -> {
                             when (transaction.action) {
                                 BOUGHT_SHARES -> {
@@ -257,6 +287,68 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                 }
                             }
                         }
+
+                        // ===[ COIN FLIP BET ]===
+                        is CoinFlipBetSonhosTransaction -> {
+                            val wonTheBet = transaction.user == transaction.winner
+                            val winnerUserInfo = cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
+                            val loserUserInfo = cachedUserInfos.getOrPut(transaction.loser) { loritta.getCachedUserInfo(transaction.loser) }
+
+                            if (transaction.tax != null && transaction.taxPercentage != null) {
+                                // Taxed earning
+                                if (wonTheBet) {
+                                    appendMoneyEarnedEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.CoinFlipBet.WonTaxed(
+                                                quantity = transaction.quantity,
+                                                quantityAfterTax = transaction.quantityAfterTax,
+                                                loserTag = "${loserUserInfo?.name?.replace("`", "")}#${loserUserInfo?.discriminator}",
+                                                loserId = transaction.loser.value
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    appendMoneyLostEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.CoinFlipBet.LostTaxed(
+                                                quantity = transaction.quantity,
+                                                quantityAfterTax = transaction.quantityAfterTax,
+                                                winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
+                                                winnerId = transaction.winner.value
+                                            )
+                                        )
+                                    )
+                                }
+                            } else {
+                                if (wonTheBet) {
+                                    appendMoneyEarnedEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.CoinFlipBet.Won(
+                                                quantityAfterTax = transaction.quantity,
+                                                loserTag = "${loserUserInfo?.name?.replace("`", "")}#${loserUserInfo?.discriminator}",
+                                                loserId = transaction.loser.value
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    appendMoneyLostEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.CoinFlipBet.Lost(
+                                                quantity = transaction.quantity,
+                                                winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
+                                                winnerId = transaction.winner.value
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
+
+                        // ===[ COIN FLIP BET GLOBAL ]===
                         is CoinFlipBetGlobalSonhosTransaction -> {
                             val wonTheBet = transaction.user == transaction.winner
                             val winnerUserInfo = cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
@@ -271,7 +363,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                             TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.WonTaxed(
                                                 quantity = transaction.quantity,
                                                 quantityAfterTax = transaction.quantityAfterTax,
-                                                loserTag = "${loserUserInfo?.name}#${loserUserInfo?.discriminator}",
+                                                loserTag = "${loserUserInfo?.name?.replace("`", "")}#${loserUserInfo?.discriminator}",
                                                 loserId = transaction.loser.value
                                             )
                                         )
@@ -283,7 +375,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                             TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.LostTaxed(
                                                 quantity = transaction.quantity,
                                                 quantityAfterTax = transaction.quantityAfterTax,
-                                                winnerTag = "${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}",
+                                                winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
                                                 winnerId = transaction.winner.value
                                             )
                                         )
@@ -296,7 +388,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.Won(
                                                 quantityAfterTax = transaction.quantity,
-                                                loserTag = "${loserUserInfo?.name}#${loserUserInfo?.discriminator}",
+                                                loserTag = "${loserUserInfo?.name?.replace("`", "")}#${loserUserInfo?.discriminator}",
                                                 loserId = transaction.loser.value
                                             )
                                         )
@@ -307,7 +399,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.Lost(
                                                 quantity = transaction.quantity,
-                                                winnerTag = "${winnerUserInfo?.name}#${winnerUserInfo?.discriminator}",
+                                                winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
                                                 winnerId = transaction.winner.value
                                             )
                                         )
@@ -315,6 +407,73 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                 }
                             }
                         }
+
+                        // ===[ EMOJI FIGHT BET ]===
+                        is EmojiFightBetSonhosTransaction -> {
+                            val wonTheBet = transaction.user == transaction.winner
+                            val winnerUserInfo = cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
+                            // We don't store the loser because there may be multiple losers, so we only check that if the user isn't the "winner", then they are the loser
+                            val loserUserInfo = cachedUserInfo.id
+
+                            val userCountExcludingTheWinner = transaction.usersInMatch - 1
+
+                            if (transaction.tax != null && transaction.taxPercentage != null) {
+                                // Taxed earning
+                                if (wonTheBet) {
+                                    appendMoneyEarnedEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.WonTaxed(
+                                                quantity = transaction.entryPrice * userCountExcludingTheWinner,
+                                                quantityAfterTax = transaction.entryPriceAfterTax * userCountExcludingTheWinner,
+                                                userInEmojiFight = userCountExcludingTheWinner,
+                                                emojiFightEmoji = transaction.emoji
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    appendMoneyLostEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.LostTaxed(
+                                                quantity = transaction.entryPrice * userCountExcludingTheWinner,
+                                                quantityAfterTax = transaction.entryPriceAfterTax * userCountExcludingTheWinner,
+                                                winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
+                                                winnerId = transaction.winner.value,
+                                                emojiFightEmoji = transaction.emoji
+                                            )
+                                        )
+                                    )
+                                }
+                            } else {
+                                if (wonTheBet) {
+                                    appendMoneyEarnedEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.Won(
+                                                quantityAfterTax = transaction.entryPriceAfterTax * userCountExcludingTheWinner,
+                                                userInEmojiFight = userCountExcludingTheWinner,
+                                                emojiFightEmoji = transaction.emoji
+                                            )
+                                        )
+                                    )
+                                } else {
+                                    appendMoneyLostEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.Lost(
+                                                quantity = transaction.entryPrice * userCountExcludingTheWinner,
+                                                winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
+                                                winnerId = transaction.winner.value,
+                                                emojiFightEmoji = transaction.emoji
+                                            )
+                                        )
+                                    )
+                                }
+                            }
+                        }
+
+                        // ===[ SPARKLYPOWER LSX ]===
                         is SparklyPowerLSXSonhosTransaction -> {
                             when (transaction.action) {
                                 SparklyPowerLSXTransactionEntryAction.EXCHANGED_TO_SPARKLYPOWER -> {
@@ -346,6 +505,20 @@ class TransactionsExecutor : SlashCommandExecutor() {
                             }
                         }
 
+                        // ===[ SONHOS BUNDLES ]===
+                        is SonhosBundlePurchaseSonhosTransaction -> {
+                            appendMoneyEarnedEmoji()
+                            append(
+                                i18nContext.get(
+                                    TransactionsCommand.I18N_PREFIX.Types.SonhosBundlePurchase.PurchasedSonhos(
+                                        transaction.sonhos,
+                                        Emotes.LoriKiss
+                                    )
+                                )
+                            )
+                        }
+
+                        // ===[ DAILY TAX ]===
                         is DailyTaxSonhosTransaction -> {
                             appendMoneyLostEmoji()
                             append(
@@ -359,9 +532,31 @@ class TransactionsExecutor : SlashCommandExecutor() {
                             )
                         }
 
+                        // ===[ DIVINE INTERVENTION ]===
+                        is DivineInterventionSonhosTransaction -> {
+                            when (transaction.action) {
+                                DivineInterventionTransactionEntryAction.ADDED_SONHOS -> {
+                                    appendMoneyEarnedEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.DivineIntervention.Received(transaction.sonhos)
+                                        )
+                                    )
+                                }
+                                DivineInterventionTransactionEntryAction.REMOVED_SONHOS -> {
+                                    appendMoneyLostEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.DivineIntervention.Lost(transaction.sonhos)
+                                        )
+                                    )
+                                }
+                            }
+                        }
+
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> {
-                            append("${Emotes.LoriShrug} Transação Desconhecida (Bug?)")
+                            append("${Emotes.LoriShrug} Unknown Transaction (Bug?)")
                         }
                     }
                     append("\n")
@@ -380,7 +575,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
             title = buildString {
                 if (isSelf)
                     append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
-                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name}#${cachedUserInfo?.discriminator}")))
+                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name?.replace("`", "")}#${cachedUserInfo?.discriminator}")))
             }
 
             color = LorittaColors.LorittaRed.toKordColor()

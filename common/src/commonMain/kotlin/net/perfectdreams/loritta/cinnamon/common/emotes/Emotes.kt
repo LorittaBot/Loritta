@@ -31,6 +31,7 @@ object Emotes {
     val loriAmeno = DiscordEmote(673868465433477126, "lori_ameno", false)
     val LoriStonks = DiscordEmote(788434890927505448L, "lori_stonks", false)
     val LoriBanHammer = DiscordEmote(741058240455901254L, "lori_ban_hammer", false)
+    val LoriKiss = DiscordEmote(950112551541289010L, "lori_kiss", false)
 
     val PantufaGaming = DiscordEmote(853048446922784819L, "pantufa_gaming", false)
 
@@ -82,6 +83,8 @@ object Emotes {
     val Gift = UnicodeEmote("\uD83C\uDF81")
     val MoneyWithWings = UnicodeEmote("\uD83D\uDCB8")
     val DollarBill = UnicodeEmote("\uD83D\uDCB5")
+    val Rooster = UnicodeEmote("\uD83D\uDC13")
+    val Star = UnicodeEmote("⭐")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val Undertale = DiscordEmote(412576128340066304L, "undertale_heart", false)

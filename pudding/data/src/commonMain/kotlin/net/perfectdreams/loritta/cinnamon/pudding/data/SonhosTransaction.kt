@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.data
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 
@@ -11,6 +12,16 @@ sealed class SonhosTransaction {
     abstract val timestamp: Instant
     abstract val user: UserId
 }
+
+@Serializable
+data class PaymentSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val receivedBy: UserId,
+    val givenBy: UserId,
+    val sonhos: Long
+) : SonhosTransaction()
 
 @Serializable
 data class BrokerSonhosTransaction(
@@ -25,6 +36,19 @@ data class BrokerSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class CoinFlipBetSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val winner: UserId,
+    val loser: UserId,
+    val quantity: Long,
+    val quantityAfterTax: Long,
+    val tax: Long?,
+    val taxPercentage: Double?
+) : SonhosTransaction()
+
+@Serializable
 data class CoinFlipBetGlobalSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,
@@ -36,6 +60,20 @@ data class CoinFlipBetGlobalSonhosTransaction(
     val tax: Long?,
     val taxPercentage: Double?,
     val timeOnQueue: Long
+) : SonhosTransaction()
+
+@Serializable
+data class EmojiFightBetSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val winner: UserId,
+    val usersInMatch: Long,
+    val emoji: String,
+    val entryPrice: Long,
+    val entryPriceAfterTax: Long,
+    val tax: Long?,
+    val taxPercentage: Double?
 ) : SonhosTransaction()
 
 @Serializable
@@ -59,6 +97,25 @@ data class DailyTaxSonhosTransaction(
     val sonhos: Long,
     val maxDayThreshold: Int,
     val minimumSonhosForTrigger: Long
+) : SonhosTransaction()
+
+@Serializable
+data class SonhosBundlePurchaseSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long
+) : SonhosTransaction()
+
+@Serializable
+data class DivineInterventionSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val action: DivineInterventionTransactionEntryAction,
+    val givenBy: UserId?,
+    val sonhos: Long,
+    val reason: String?
 ) : SonhosTransaction()
 
 @Serializable
