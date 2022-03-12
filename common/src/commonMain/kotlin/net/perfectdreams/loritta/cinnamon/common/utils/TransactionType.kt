@@ -40,6 +40,11 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Description,
         Emotes.PantufaGaming,
     ),
+    SONHOS_BUNDLE_PURCHASE(
+        I18nKeysData.Commands.Command.Transactions.Types.SonhosBundlePurchase.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.SonhosBundlePurchase.Description,
+        Emotes.LoriRich,
+    ),
     INACTIVE_DAILY_TAX(
         I18nKeysData.Commands.Command.Transactions.Types.InactiveDailyTax.Title,
         I18nKeysData.Commands.Command.Transactions.Types.InactiveDailyTax.Description,

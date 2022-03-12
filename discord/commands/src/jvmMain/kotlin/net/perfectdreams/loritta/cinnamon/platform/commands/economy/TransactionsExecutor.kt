@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
@@ -234,6 +235,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                     append("[<t:${transaction.timestamp.epochSeconds}:d> <t:${transaction.timestamp.epochSeconds}:t> | <t:${transaction.timestamp.epochSeconds}:R>]")
                     append(" ")
                     when (transaction) {
+                        // ===[ PAYMENTS ]===
                         is PaymentSonhosTransaction -> {
                             val receivedTheSonhos = transaction.user == transaction.receivedBy
                             val receiverUserInfo = cachedUserInfos.getOrPut(transaction.receivedBy) { loritta.getCachedUserInfo(transaction.receivedBy) }
@@ -501,6 +503,19 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     )
                                 }
                             }
+                        }
+
+                        // ===[ SONHOS BUNDLES ]===
+                        is SonhosBundlePurchaseSonhosTransaction -> {
+                            appendMoneyEarnedEmoji()
+                            append(
+                                i18nContext.get(
+                                    TransactionsCommand.I18N_PREFIX.Types.SonhosBundlePurchase.PurchasedSonhos(
+                                        transaction.sonhos,
+                                        Emotes.LoriKiss
+                                    )
+                                )
+                            )
                         }
 
                         // ===[ DAILY TAX ]===

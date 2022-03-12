@@ -100,6 +100,14 @@ data class DailyTaxSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class SonhosBundlePurchaseSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long
+) : SonhosTransaction()
+
+@Serializable
 data class DivineInterventionSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,

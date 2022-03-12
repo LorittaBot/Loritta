@@ -21,6 +21,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransac
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import org.jetbrains.exposed.sql.Op
@@ -118,6 +120,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             it.leftJoin(SparklyPowerLSXSonhosTransactionsLog)
         else it
     }.let {
+        if (TransactionType.SONHOS_BUNDLE_PURCHASE in transactionTypeFilter)
+            it.leftJoin(SonhosBundlePurchaseSonhosTransactionsLog.leftJoin(SonhosBundles))
+        else it
+    }.let {
         if (TransactionType.INACTIVE_DAILY_TAX in transactionTypeFilter)
             it.leftJoin(DailyTaxSonhosTransactionsLog)
         else it
@@ -141,6 +147,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                     TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinFlipBetGlobalSonhosTransactionsLog.id.isNotNull())
                     TransactionType.EMOJI_FIGHT_BET -> cond.or(EmojiFightSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SPARKLYPOWER_LSX -> cond.or(SparklyPowerLSXSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.SONHOS_BUNDLE_PURCHASE -> cond.or(SonhosBundlePurchaseSonhosTransactionsLog.id.isNotNull())
                     TransactionType.INACTIVE_DAILY_TAX -> cond.or(DailyTaxSonhosTransactionsLog.id.isNotNull())
                     TransactionType.DIVINE_INTERVENTION -> cond.or(DivineInterventionSonhosTransactionsLog.id.isNotNull())
                 }

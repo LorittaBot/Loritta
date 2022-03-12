@@ -60,6 +60,10 @@ types:
     description: "Transactions related to SparklyPower, Loritta's Minecraft Server"
     exchangedToSparklyPower: "Exchanged {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from Loritta to `{playerName}`'s account on SparklyPower, receiving {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} there [{sparklyPowerIp}]"
     exchangedFromSparklyPower: "Exchanged {sparklyPowerSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from `{playerName}`'s account on SparklyPower to Loritta, receiving {sonhosQuantity, plural, one {# sonho} other {# sonhos}} here [{sparklyPowerIp}]"
+  sonhosBundlePurchase:
+    title: "Sonhos Bundle Purchase"
+    description: "Transactions related to sonhos purchases"
+    purchasedSonhos: "Bought {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} on Loritta's sonhos shop. Thank you for supporting Loritta! {loriKiss}"
   inactiveDailyTax:
     title: "Daily Reward Inactivity Tax"
     description: "Transactions related to the daily reward inactivity tax"

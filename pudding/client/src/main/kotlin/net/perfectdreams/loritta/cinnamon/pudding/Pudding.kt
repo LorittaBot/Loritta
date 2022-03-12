@@ -61,6 +61,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
@@ -247,7 +249,9 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             EmojiFightSonhosTransactionsLog,
             DivineInterventionSonhosTransactionsLog,
             PaymentSonhosTransactionResults,
-            PaymentSonhosTransactionsLog
+            PaymentSonhosTransactionsLog,
+            SonhosBundles,
+            SonhosBundlePurchaseSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())
