@@ -36,7 +36,7 @@ types:
     boughtShares: "Comprou {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
     soldShares: "Vendeu {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
   coinFlipBet:
-    title: "Apostas Girando uma Moeda"
+    title: "Apostas de Lançamento de Moedas"
     description: "Transações relacionadas a apostas de lançamento de moedas"
     wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de `{loserTag}` (`{loserId}`) em apostas de sonhos girando uma moeda"
     lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para `{winnerTag}` (`{winnerId}`) em apostas de sonhos girando uma moeda"
