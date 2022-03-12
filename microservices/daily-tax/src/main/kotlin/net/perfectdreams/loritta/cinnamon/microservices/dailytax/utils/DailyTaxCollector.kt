@@ -8,12 +8,10 @@ import net.perfectdreams.loritta.cinnamon.microservices.dailytax.DailyTax
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxTaxedDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxWarnDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.update
@@ -45,9 +43,6 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
             // We need to use Read Commited to avoid "Could not serialize access due to concurrent update"
             // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
             m.services.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
-                // Delete all pending direct messages because we will replace with newer messages
-                DailyTaxPendingDirectMessages.deleteAll()
-
                 DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 0) { threshold, inactiveDailyUser ->
                     alreadyWarnedThatTheyWereTaxed.add(inactiveDailyUser.id)
 
