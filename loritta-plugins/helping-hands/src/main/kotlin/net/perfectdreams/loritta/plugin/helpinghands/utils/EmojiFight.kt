@@ -13,6 +13,12 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
 import net.perfectdreams.loritta.utils.AccountUtils
@@ -20,6 +26,9 @@ import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.PaymentUtils
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.utils.UserPremiumPlans
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -38,13 +47,14 @@ class EmojiFight(
     private val addingUserToEventMutex = Mutex()
     private val finishingEventMutex = Mutex()
     private var eventFinished = false
+    val startedAt = Instant.now()
 
     /**
      * Starts the Emoji Fight
      */
     suspend fun start() {
         if (entryPrice != null) {
-            val tax = (entryPrice * (1.0 * UserPremiumPlans.Free.totalCoinFlipReward)).toLong()
+            val tax = (entryPrice * (1.0 - UserPremiumPlans.Free.totalCoinFlipReward)).toLong()
 
             if (tax == 0L)
                 context.fail(context.locale["commands.command.flipcoinbet.youNeedToBetMore"], Constants.ERROR)
@@ -211,6 +221,8 @@ class EmojiFight(
         eventFinished = true
 
         val result = loritta.newSuspendedTransaction {
+            val now = Instant.now()
+
             // We need to filter the "real" valid users.
             // Since some may have lost sonhos since the event start, so we are going to remove all of them.
             val realValidParticipatingUsers = mutableMapOf<User, String>()
@@ -235,28 +247,67 @@ class EmojiFight(
             if (2 > realValidParticipatingUsers.size)
                 return@newSuspendedTransaction null
 
+            // Cinnamon emoji fight match stats
+            val emojiFightMatch = EmojiFightMatches.insertAndGetId {
+                it[EmojiFightMatches.createdBy] = context.user.idLong
+                it[EmojiFightMatches.createdAt] = startedAt
+                it[EmojiFightMatches.finishedAt] = now
+                it[EmojiFightMatches.maxPlayers] = maxPlayers
+            }
+
+            val databaseParticipatingUserEntries = realValidParticipatingUsers.map { (user, emoji) ->
+                user to EmojiFightParticipants.insertAndGetId {
+                    it[EmojiFightParticipants.match] = emojiFightMatch
+                    it[EmojiFightParticipants.user] = user.idLong
+                    it[EmojiFightParticipants.emoji] = emoji
+                }
+            }.toMap()
+
             val winner = realValidParticipatingUsers.entries.random()
             val losers = realValidParticipatingUsers.entries.apply {
                 this.remove(winner)
             }
 
             if (entryPrice != null) {
-                val realPrize = entryPrice * losers.size
-
                 val selfActiveDonations = loritta._getActiveMoneyFromDonations(winner.key.idLong)
 
                 val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
 
                 val winnerProfile = userProfiles[winner.key]!!
+                val taxPercentage = (1.0.toBigDecimal() - selfPlan.totalCoinFlipReward.toBigDecimal()).toDouble() // Avoid rounding errors
+                val tax = (entryPrice * taxPercentage).toLong()
+                val taxedEntryPrice = entryPrice - tax
 
-                val taxedRealPrize = (selfPlan.totalCoinFlipReward * realPrize).toLong()
+                val realBeforeTaxesPrize = entryPrice * losers.size
+                val realAfterTaxesPrize = taxedEntryPrice * losers.size
 
-                winnerProfile.addSonhosNested(taxedRealPrize)
+                val resultId = EmojiFightMatchmakingResults.insertAndGetId {
+                    it[EmojiFightMatchmakingResults.winner] = databaseParticipatingUserEntries[winner.key] ?: error("Participating user is null! This should never happen!!")
+                    it[EmojiFightMatchmakingResults.entryPrice] = this@EmojiFight.entryPrice
+                    it[EmojiFightMatchmakingResults.entryPriceAfterTax] = taxedEntryPrice
+                    if (taxPercentage != 0.0) {
+                        it[EmojiFightMatchmakingResults.tax] = tax
+                        it[EmojiFightMatchmakingResults.taxPercentage] = taxPercentage
+                    }
+                }
+
+                winnerProfile.addSonhosNested(realAfterTaxesPrize)
                 PaymentUtils.addToTransactionLogNested(
-                    taxedRealPrize,
+                    realAfterTaxesPrize,
                     SonhosPaymentReason.EMOJI_FIGHT,
                     receivedBy = winnerProfile.id.value
                 )
+
+                // Cinnamon transaction system
+                val winnerTransactionLogId = SonhosTransactionsLog.insertAndGetId {
+                    it[SonhosTransactionsLog.user] = winnerProfile.id
+                    it[SonhosTransactionsLog.timestamp] = now
+                }
+
+                EmojiFightSonhosTransactionsLog.insert {
+                    it[EmojiFightSonhosTransactionsLog.timestampLog] = winnerTransactionLogId
+                    it[EmojiFightSonhosTransactionsLog.matchmakingResult] = resultId
+                }
 
                 for (loser in losers) {
                     val loserProfile = userProfiles[loser.key]!!
@@ -266,10 +317,29 @@ class EmojiFight(
                         SonhosPaymentReason.EMOJI_FIGHT,
                         givenBy = loserProfile.id.value
                     )
+
+                    // Cinnamon transaction system
+                    val loserTransactionLogId = SonhosTransactionsLog.insertAndGetId {
+                        it[SonhosTransactionsLog.user] = loserProfile.id
+                        it[SonhosTransactionsLog.timestamp] = now
+                    }
+
+                    EmojiFightSonhosTransactionsLog.insert {
+                        it[CoinFlipBetSonhosTransactionsLog.timestampLog] = loserTransactionLogId
+                        it[CoinFlipBetSonhosTransactionsLog.matchmakingResult] = resultId
+                    }
                 }
 
-                DbResponse(winner, losers, realPrize, taxedRealPrize)
+                DbResponse(winner, losers, realBeforeTaxesPrize, realAfterTaxesPrize)
             } else {
+                val resultId = EmojiFightMatchmakingResults.insertAndGetId {
+                    it[EmojiFightMatchmakingResults.winner] = databaseParticipatingUserEntries[winner.key] ?: error("Participating user is null! This should never happen!!")
+                    it[EmojiFightMatchmakingResults.entryPrice] = 0
+                    it[EmojiFightMatchmakingResults.entryPriceAfterTax] = 0
+                    it[EmojiFightMatchmakingResults.tax] = null
+                    it[EmojiFightMatchmakingResults.taxPercentage] = null
+                }
+
                 DbResponse(winner, losers, 0, 0)
             }
         }
