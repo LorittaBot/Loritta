@@ -7,7 +7,7 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 object DivineInterventionSonhosTransactionsLog : LongIdTable() {
     val timestampLog = reference("timestamp_log", SonhosTransactionsLog)
     val action = postgresEnumeration<DivineInterventionTransactionEntryAction>("action")
-    val givenBy = optReference("given_by", Profiles)
+    val editedBy = optReference("edited_by", Profiles)
     val sonhos = long("sonhos")
     val reason = text("reason").nullable()
 }

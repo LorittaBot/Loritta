@@ -244,7 +244,7 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
             UserId(row[SonhosTransactionsLog.user].value),
             row[DivineInterventionSonhosTransactionsLog.action],
-            row[DivineInterventionSonhosTransactionsLog.givenBy]?.let { UserId(it.value) },
+            row[DivineInterventionSonhosTransactionsLog.editedBy]?.let { UserId(it.value) },
             row[DivineInterventionSonhosTransactionsLog.sonhos],
             row[DivineInterventionSonhosTransactionsLog.reason]
         )
