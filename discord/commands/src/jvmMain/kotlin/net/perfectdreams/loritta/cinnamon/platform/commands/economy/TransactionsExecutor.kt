@@ -462,7 +462,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     append(
                                         i18nContext.get(
                                             TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.Lost(
-                                                quantity = transaction.entryPrice * userCountExcludingTheWinner,
+                                                quantity = transaction.entryPrice,
                                                 winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
                                                 winnerId = transaction.winner.value,
                                                 emojiFightEmoji = transaction.emoji
