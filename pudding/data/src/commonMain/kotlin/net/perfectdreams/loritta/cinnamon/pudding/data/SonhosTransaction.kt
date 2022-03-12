@@ -14,6 +14,16 @@ sealed class SonhosTransaction {
 }
 
 @Serializable
+data class PaymentSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val receivedBy: UserId,
+    val givenBy: UserId,
+    val sonhos: Long
+) : SonhosTransaction()
+
+@Serializable
 data class BrokerSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,

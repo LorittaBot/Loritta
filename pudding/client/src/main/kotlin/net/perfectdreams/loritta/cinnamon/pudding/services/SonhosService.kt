@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonho
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
@@ -92,6 +93,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         userId: UserId,
         transactionTypeFilter: List<TransactionType>
     ) = SonhosTransactionsLog.let {
+        if (TransactionType.PAYMENT in transactionTypeFilter)
+            it.leftJoin(PaymentSonhosTransactionsLog)
+        else it
+    }.let {
         if (TransactionType.HOME_BROKER in transactionTypeFilter)
             it.leftJoin(BrokerSonhosTransactionsLog)
         else it
@@ -129,6 +134,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
 
             for (type in transactionTypeFilter) {
                 cond = when (type) {
+                    TransactionType.PAYMENT -> cond.or(PaymentSonhosTransactionsLog.id.isNotNull())
                     TransactionType.HOME_BROKER -> cond.or(BrokerSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET -> cond.or(CoinFlipBetSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinFlipBetGlobalSonhosTransactionsLog.id.isNotNull())

@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
+import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
@@ -44,6 +45,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
@@ -159,7 +161,16 @@ fun BackgroundVariation.Companion.fromRow(row: ResultRow): BackgroundVariation {
 
 fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
     // "hasValue" does not work, because it only checks if the value is present on the table BUT it is always present! (but it is null)
-    return if (row.getOrNull(BrokerSonhosTransactionsLog.id) != null) {
+    return if (row.getOrNull(PaymentSonhosTransactionsLog.id) != null) {
+        PaymentSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            UserId(row[PaymentSonhosTransactionsLog.givenBy].value),
+            UserId(row[PaymentSonhosTransactionsLog.receivedBy].value),
+            row[PaymentSonhosTransactionsLog.sonhos],
+        )
+    } else if (row.getOrNull(BrokerSonhosTransactionsLog.id) != null) {
         BrokerSonhosTransaction(
             row[SonhosTransactionsLog.id].value,
             row[SonhosTransactionsLog.timestamp].toKotlinInstant(),

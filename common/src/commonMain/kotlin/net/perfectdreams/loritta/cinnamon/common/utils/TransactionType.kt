@@ -10,6 +10,11 @@ enum class TransactionType(
     val description: StringI18nData,
     val emote: Emote
 ) {
+    PAYMENT(
+        I18nKeysData.Commands.Command.Transactions.Types.Payment.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Payment.Description,
+        Emotes.Star
+    ),
     COINFLIP_BET(
         I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBet.Title,
         I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBet.Description,

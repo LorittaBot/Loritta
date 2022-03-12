@@ -24,6 +24,11 @@ unknownPage:
     - "Then, a beacon illuminates a enormous hand that was in front of you all this time."
   goToTheLastPage: "I'm scared, get me out of here!"
 types:
+  payment:
+    title: "Payments"
+    description: "Transactions related to sonhos transfers to other users"
+    sent: "Sent {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} to `{receiverTag}` (`{receiverId}`)"
+    received: "Received {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} from `{giverTag}` (`{giverId}`)"
   homeBroker:
     title: "Loritta's Stock Market Simulator"
     description: "Transactions related to Loritta's Stock Market Simulator"

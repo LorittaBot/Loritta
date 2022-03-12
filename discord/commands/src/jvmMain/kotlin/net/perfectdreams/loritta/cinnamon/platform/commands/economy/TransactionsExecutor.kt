@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransact
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
@@ -233,6 +234,28 @@ class TransactionsExecutor : SlashCommandExecutor() {
                     append("[<t:${transaction.timestamp.epochSeconds}:d> <t:${transaction.timestamp.epochSeconds}:t> | <t:${transaction.timestamp.epochSeconds}:R>]")
                     append(" ")
                     when (transaction) {
+                        is PaymentSonhosTransaction -> {
+                            val receivedTheSonhos = transaction.user == transaction.receivedBy
+                            val receiverUserInfo = cachedUserInfos.getOrPut(transaction.receivedBy) { loritta.getCachedUserInfo(transaction.receivedBy) }
+                            val giverUserInfo = cachedUserInfos.getOrPut(transaction.givenBy) { loritta.getCachedUserInfo(transaction.givenBy) }
+
+                            if (receivedTheSonhos) {
+                                appendMoneyEarnedEmoji()
+                                append(
+                                    i18nContext.get(
+                                        TransactionsCommand.I18N_PREFIX.Types.Payment.Received(transaction.sonhos, "${giverUserInfo?.name?.replace("`", "")}#${giverUserInfo?.discriminator}", transaction.givenBy.value)
+                                    )
+                                )
+                            } else {
+                                appendMoneyLostEmoji()
+                                append(
+                                    i18nContext.get(
+                                        TransactionsCommand.I18N_PREFIX.Types.Payment.Sent(transaction.sonhos, "${receiverUserInfo?.name?.replace("`", "")}#${receiverUserInfo?.discriminator}", transaction.receivedBy.value)
+                                    )
+                                )
+                            }
+                        }
+
                         // ===[ BROKER ]===
                         is BrokerSonhosTransaction -> {
                             when (transaction.action) {
@@ -494,6 +517,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
                             )
                         }
 
+                        // ===[ DIVINE INTERVENTION ]===
                         is DivineInterventionSonhosTransaction -> {
                             when (transaction.action) {
                                 DivineInterventionTransactionEntryAction.ADDED_SONHOS -> {

@@ -83,6 +83,7 @@ object Emotes {
     val MoneyWithWings = UnicodeEmote("\uD83D\uDCB8")
     val DollarBill = UnicodeEmote("\uD83D\uDCB5")
     val Rooster = UnicodeEmote("\uD83D\uDC13")
+    val Star = UnicodeEmote("⭐")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val Undertale = DiscordEmote(412576128340066304L, "undertale_heart", false)
