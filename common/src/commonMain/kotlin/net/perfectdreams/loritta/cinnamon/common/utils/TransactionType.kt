@@ -20,6 +20,11 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBetGlobal.Description,
         Emotes.CoinTails
     ),
+    EMOJI_FIGHT_BET(
+        I18nKeysData.Commands.Command.Transactions.Types.EmojiFightBet.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.EmojiFightBet.Description,
+        Emotes.Rooster
+    ),
     HOME_BROKER(
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Title,
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Description,

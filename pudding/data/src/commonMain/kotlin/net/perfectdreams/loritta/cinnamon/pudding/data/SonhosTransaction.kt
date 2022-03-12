@@ -52,6 +52,20 @@ data class CoinFlipBetGlobalSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class EmojiFightBetSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val winner: UserId,
+    val usersInMatch: Long,
+    val emoji: String,
+    val entryPrice: Long,
+    val entryPriceAfterTax: Long,
+    val tax: Long?,
+    val taxPercentage: Double?
+) : SonhosTransaction()
+
+@Serializable
 data class SparklyPowerLSXSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,

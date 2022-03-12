@@ -1,8 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
+import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
+import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
@@ -12,6 +14,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingR
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
@@ -54,7 +59,29 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             userTransactionQuery(userId, transactionTypeFilter)
                 .orderBy(SonhosTransactionsLog.id, SortOrder.DESC)
                 .limit(limit, offset)
-                .map { SonhosTransaction.fromRow(it) }
+                .map {
+                    // ===[ SPECIAL CASES ]===
+                    // We need to query how many users lost the bet
+                    if (it.getOrNull(EmojiFightSonhosTransactionsLog.id) != null) {
+                        val usersInMatch = EmojiFightParticipants.select { EmojiFightParticipants.match eq it[EmojiFightParticipants.match] }
+                            .count()
+
+                        EmojiFightBetSonhosTransaction(
+                            it[SonhosTransactionsLog.id].value,
+                            it[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+                            UserId(it[SonhosTransactionsLog.user].value),
+                            UserId(it[EmojiFightParticipants.user].value),
+                            usersInMatch,
+                            it[EmojiFightParticipants.emoji],
+                            it[EmojiFightMatchmakingResults.entryPrice],
+                            it[EmojiFightMatchmakingResults.entryPriceAfterTax],
+                            it[EmojiFightMatchmakingResults.tax],
+                            it[EmojiFightMatchmakingResults.taxPercentage]
+                        )
+                    } else {
+                        SonhosTransaction.fromRow(it)
+                    }
+                }
         }
     }
 
@@ -74,6 +101,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
     }.let {
         if (TransactionType.COINFLIP_BET_GLOBAL in transactionTypeFilter)
             it.leftJoin(CoinFlipBetGlobalSonhosTransactionsLog.leftJoin(CoinFlipBetGlobalMatchmakingResults))
+        else it
+    }.let {
+        if (TransactionType.EMOJI_FIGHT_BET in transactionTypeFilter)
+            it.leftJoin(EmojiFightSonhosTransactionsLog.leftJoin(EmojiFightMatchmakingResults.leftJoin(EmojiFightParticipants)))
         else it
     }.let {
         if (TransactionType.SPARKLYPOWER_LSX in transactionTypeFilter)
@@ -96,6 +127,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                     TransactionType.HOME_BROKER -> cond.or(BrokerSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET -> cond.or(CoinFlipBetSonhosTransactionsLog.id.isNotNull())
                     TransactionType.COINFLIP_BET_GLOBAL -> cond.or(CoinFlipBetGlobalSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.EMOJI_FIGHT_BET -> cond.or(EmojiFightSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SPARKLYPOWER_LSX -> cond.or(SparklyPowerLSXSonhosTransactionsLog.id.isNotNull())
                     TransactionType.INACTIVE_DAILY_TAX -> cond.or(DailyTaxSonhosTransactionsLog.id.isNotNull())
                 }

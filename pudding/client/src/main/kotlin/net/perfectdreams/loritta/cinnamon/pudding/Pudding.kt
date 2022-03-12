@@ -41,6 +41,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
@@ -232,7 +236,11 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             DailyTaxSonhosTransactionsLog,
             DailyTaxUsersToSkipDirectMessages,
             CoinFlipBetMatchmakingResults,
-            CoinFlipBetSonhosTransactionsLog
+            CoinFlipBetSonhosTransactionsLog,
+            EmojiFightMatches,
+            EmojiFightParticipants,
+            EmojiFightMatchmakingResults,
+            EmojiFightSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())
