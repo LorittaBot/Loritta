@@ -62,7 +62,7 @@ types:
   divineIntervention:
     title: "Divine Intervention"
     description: "Transactions made by Loritta's admins, \"the powers that be\""
-    received: "A divine intervention added {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+    received: "A divine intervention gave {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
     lost: "A divine intervention removed {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 options:
   user:
