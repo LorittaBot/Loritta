@@ -52,6 +52,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
@@ -245,6 +246,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             EmojiFightMatchmakingResults,
             EmojiFightSonhosTransactionsLog,
             DivineInterventionSonhosTransactionsLog,
+            PaymentSonhosTransactionResults,
             PaymentSonhosTransactionsLog
         )
 

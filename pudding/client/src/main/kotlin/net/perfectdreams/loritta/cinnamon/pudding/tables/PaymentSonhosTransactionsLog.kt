@@ -4,7 +4,5 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 
 object PaymentSonhosTransactionsLog : LongIdTable() {
     val timestampLog = reference("timestamp_log", SonhosTransactionsLog)
-    val givenBy = reference("given_by", Profiles)
-    val receivedBy = reference("received_by", Profiles)
-    val sonhos = long("sonhos")
+    val paymentResult = reference("payment_result", PaymentSonhosTransactionResults)
 }

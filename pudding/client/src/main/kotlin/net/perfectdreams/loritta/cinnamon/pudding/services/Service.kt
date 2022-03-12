@@ -45,6 +45,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
@@ -166,9 +167,9 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[SonhosTransactionsLog.id].value,
             row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
             UserId(row[SonhosTransactionsLog.user].value),
-            UserId(row[PaymentSonhosTransactionsLog.givenBy].value),
-            UserId(row[PaymentSonhosTransactionsLog.receivedBy].value),
-            row[PaymentSonhosTransactionsLog.sonhos],
+            UserId(row[PaymentSonhosTransactionResults.givenBy].value),
+            UserId(row[PaymentSonhosTransactionResults.receivedBy].value),
+            row[PaymentSonhosTransactionResults.sonhos],
         )
     } else if (row.getOrNull(BrokerSonhosTransactionsLog.id) != null) {
         BrokerSonhosTransaction(

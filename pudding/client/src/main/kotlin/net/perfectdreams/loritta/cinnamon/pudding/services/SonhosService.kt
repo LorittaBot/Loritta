@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonho
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
@@ -94,7 +95,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         transactionTypeFilter: List<TransactionType>
     ) = SonhosTransactionsLog.let {
         if (TransactionType.PAYMENT in transactionTypeFilter)
-            it.leftJoin(PaymentSonhosTransactionsLog)
+            it.leftJoin(PaymentSonhosTransactionsLog.leftJoin(PaymentSonhosTransactionResults))
         else it
     }.let {
         if (TransactionType.HOME_BROKER in transactionTypeFilter)
