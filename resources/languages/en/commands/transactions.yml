@@ -51,9 +51,9 @@ types:
   emojiFightBet:
     title: "Emoji Fight Bets"
     description: "Transactions related to emoji fight bets"
-    wonTaxed: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (tax-free value: {quantity}) from {userInEmojiFight} users in sonhos emoji fight bets because they all feared the mighty {emojiFightEmoji}"
+    wonTaxed: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (tax-free value: {quantity}) from {userInEmojiFight,plural, =0 {# users} one {# user} other {# users}} in sonhos emoji fight bets because they all feared the mighty {emojiFightEmoji}"
     lostTaxed: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (value after taxes: {quantityAfterTax}) to `{winnerTag}`'s {emojiFightEmoji} (`{winnerId}`) in sonhos emoji fight bets"
-    won: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (no taxes!) from {userInEmojiFight} users in sonhos emoji fight bets because they all feared the mighty {emojiFightEmoji}"
+    won: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (no taxes!) from {userInEmojiFight,plural, =0 {# users} one {# user} other {# users}} in sonhos emoji fight bets because they all feared the mighty {emojiFightEmoji}"
     lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} sonhos (no taxes!) to `{winnerTag}`'s {emojiFightEmoji} (`{winnerId}`) in sonhos emoji fight bets"
   sparklyPowerLsx:
     title: "SparklyPower Sonhos Exchange"
