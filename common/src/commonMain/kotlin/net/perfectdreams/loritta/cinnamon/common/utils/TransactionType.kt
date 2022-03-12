@@ -10,6 +10,11 @@ enum class TransactionType(
     val description: StringI18nData,
     val emote: Emote
 ) {
+    COINFLIP_BET(
+        I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBet.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBet.Description,
+        Emotes.CoinHeads
+    ),
     COINFLIP_BET_GLOBAL(
         I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBetGlobal.Title,
         I18nKeysData.Commands.Command.Transactions.Types.CoinFlipBetGlobal.Description,
