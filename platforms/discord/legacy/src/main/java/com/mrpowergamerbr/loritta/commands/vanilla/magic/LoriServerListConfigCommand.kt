@@ -21,13 +21,16 @@ import com.mrpowergamerbr.loritta.utils.lorittaSupervisor
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.dao.Payment
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.utils.ClusterOfflineException
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.id.EntityID
@@ -35,8 +38,10 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
+import java.time.Instant
 
 class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
@@ -146,6 +151,18 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 							it.update(money, money + arg1.toLong())
 						}
 					}
+
+					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+						it[SonhosTransactionsLog.user] = user.idLong
+						it[SonhosTransactionsLog.timestamp] = Instant.now()
+					}
+
+					DivineInterventionSonhosTransactionsLog.insert {
+						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
+						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
+						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.ADDED_SONHOS
+						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
+					}
 				}
 
 				context.reply(
@@ -163,6 +180,18 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCa
 						with(SqlExpressionBuilder) {
 							it.update(money, money - arg1.toLong())
 						}
+					}
+
+					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+						it[SonhosTransactionsLog.user] = user.idLong
+						it[SonhosTransactionsLog.timestamp] = Instant.now()
+					}
+
+					DivineInterventionSonhosTransactionsLog.insert {
+						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
+						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
+						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.REMOVED_SONHOS
+						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
 					}
 				}
 
