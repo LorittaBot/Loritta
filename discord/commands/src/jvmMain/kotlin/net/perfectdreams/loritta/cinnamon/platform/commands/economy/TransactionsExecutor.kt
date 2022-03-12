@@ -8,6 +8,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.BOUGHT_SHARES
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.SOLD_SHARES
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
@@ -30,6 +31,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
@@ -490,6 +492,27 @@ class TransactionsExecutor : SlashCommandExecutor() {
                                     )
                                 )
                             )
+                        }
+
+                        is DivineInterventionSonhosTransaction -> {
+                            when (transaction.action) {
+                                DivineInterventionTransactionEntryAction.ADDED_SONHOS -> {
+                                    appendMoneyEarnedEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.DivineIntervention.Received(transaction.sonhos)
+                                        )
+                                    )
+                                }
+                                DivineInterventionTransactionEntryAction.REMOVED_SONHOS -> {
+                                    appendMoneyLostEmoji()
+                                    append(
+                                        i18nContext.get(
+                                            TransactionsCommand.I18N_PREFIX.Types.DivineIntervention.Lost(transaction.sonhos)
+                                        )
+                                    )
+                                }
+                            }
                         }
 
                         // This should never happen because we do a left join with a "isNotNull" check

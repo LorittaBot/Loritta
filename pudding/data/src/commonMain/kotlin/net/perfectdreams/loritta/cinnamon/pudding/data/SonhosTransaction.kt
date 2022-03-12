@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.data
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 
@@ -86,6 +87,17 @@ data class DailyTaxSonhosTransaction(
     val sonhos: Long,
     val maxDayThreshold: Int,
     val minimumSonhosForTrigger: Long
+) : SonhosTransaction()
+
+@Serializable
+data class DivineInterventionSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val action: DivineInterventionTransactionEntryAction,
+    val givenBy: UserId?,
+    val sonhos: Long,
+    val reason: String?
 ) : SonhosTransaction()
 
 @Serializable

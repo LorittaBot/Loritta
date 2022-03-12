@@ -59,6 +59,11 @@ types:
     title: "Daily Reward Inactivity Tax"
     description: "Transactions related to the daily reward inactivity tax"
     lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} in taxes, because the user was {daysWithoutGettingDaily,plural,=0{# days} one {# day} other {# days}} without getting the daily reward while they had more than {sonhosBracketQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+  divineIntervention:
+    title: "Divine Intervention"
+    description: "Transactions made by Loritta's admins, \"the powers that be\""
+    received: "A divine intervention added {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+    lost: "A divine intervention removed {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 options:
   user:
     text: "The user that you want to view their transactions"

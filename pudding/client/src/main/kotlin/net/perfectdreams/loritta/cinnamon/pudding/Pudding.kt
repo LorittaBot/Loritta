@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
+import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
@@ -41,6 +42,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
@@ -240,7 +242,8 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             EmojiFightMatches,
             EmojiFightParticipants,
             EmojiFightMatchmakingResults,
-            EmojiFightSonhosTransactionsLog
+            EmojiFightSonhosTransactionsLog,
+            DivineInterventionSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())
@@ -251,6 +254,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
                 createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
                 createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
                 createOrUpdatePostgreSQLEnum(DailyTaxPendingDirectMessageState.values())
+                createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(

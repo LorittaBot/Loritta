@@ -39,5 +39,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.InactiveDailyTax.Title,
         I18nKeysData.Commands.Command.Transactions.Types.InactiveDailyTax.Description,
         Emotes.LoriSob,
+    ),
+    DIVINE_INTERVENTION(
+        I18nKeysData.Commands.Command.Transactions.Types.DivineIntervention.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.DivineIntervention.Description,
+        Emotes.Jesus,
     )
 }

@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingR
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
@@ -114,6 +115,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         if (TransactionType.INACTIVE_DAILY_TAX in transactionTypeFilter)
             it.leftJoin(DailyTaxSonhosTransactionsLog)
         else it
+    }.let {
+        if (TransactionType.DIVINE_INTERVENTION in transactionTypeFilter)
+            it.leftJoin(DivineInterventionSonhosTransactionsLog)
+        else it
     }
         .select {
             // Hacky!
@@ -130,6 +135,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                     TransactionType.EMOJI_FIGHT_BET -> cond.or(EmojiFightSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SPARKLYPOWER_LSX -> cond.or(SparklyPowerLSXSonhosTransactionsLog.id.isNotNull())
                     TransactionType.INACTIVE_DAILY_TAX -> cond.or(DailyTaxSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.DIVINE_INTERVENTION -> cond.or(DivineInterventionSonhosTransactionsLog.id.isNotNull())
                 }
             }
 

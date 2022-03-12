@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransact
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
+import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileSettings
@@ -41,6 +42,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingR
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
@@ -213,6 +215,16 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[DailyTaxSonhosTransactionsLog.sonhos],
             row[DailyTaxSonhosTransactionsLog.maxDayThreshold],
             row[DailyTaxSonhosTransactionsLog.minimumSonhosForTrigger]
+        )
+    } else if (row.getOrNull(DivineInterventionSonhosTransactionsLog.id) != null) {
+        DivineInterventionSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[DivineInterventionSonhosTransactionsLog.action],
+            row[DivineInterventionSonhosTransactionsLog.givenBy]?.let { UserId(it.value) },
+            row[DivineInterventionSonhosTransactionsLog.sonhos],
+            row[DivineInterventionSonhosTransactionsLog.reason]
         )
     } else {
         UnknownSonhosTransaction(
