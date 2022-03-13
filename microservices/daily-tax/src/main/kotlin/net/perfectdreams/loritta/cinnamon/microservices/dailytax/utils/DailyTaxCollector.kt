@@ -39,6 +39,7 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
                 .toKotlinInstant()
 
             val alreadyWarnedThatTheyWereTaxed = mutableSetOf<Long>()
+            val alreadyWarnedThatTheyAreGoingToBeTaxed = mutableSetOf<Long>()
 
             // We need to use Read Commited to avoid "Could not serialize access due to concurrent update"
             // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
@@ -96,7 +97,7 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
                 m.services.transaction {
                     DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 1) { threshold, inactiveDailyUser ->
                         // Don't warn them about the tax if they were already taxed before
-                        if (!alreadyWarnedThatTheyWereTaxed.contains(inactiveDailyUser.id)) {
+                        if (inactiveDailyUser.id !in alreadyWarnedThatTheyWereTaxed && inactiveDailyUser.id !in alreadyWarnedThatTheyAreGoingToBeTaxed) {
                             m.services.users._insertPendingDailyTaxDirectMessage(
                                 UserId(inactiveDailyUser.id),
                                 UserDailyTaxWarnDirectMessage(
@@ -109,6 +110,8 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
                                     threshold.tax
                                 )
                             )
+
+                            alreadyWarnedThatTheyAreGoingToBeTaxed.add(inactiveDailyUser.id)
                         }
                     }
                 }
