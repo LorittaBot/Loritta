@@ -30,6 +30,7 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/transfer-balance") {
 	companion object {
@@ -60,8 +61,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 
 			// Verificação de alt accounts
 			// Se o usuário tentar transferir para o mesmo user, dê um ban automático
-			val todayAtMidnight = Instant.now()
-					.atZone(Constants.LORITTA_TIMEZONE)
+			val todayAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 					.toOffsetDateTime()
 					.withHour(0)
 					.withMinute(0)

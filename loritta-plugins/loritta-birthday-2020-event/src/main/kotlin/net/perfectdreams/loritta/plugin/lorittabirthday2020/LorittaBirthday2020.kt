@@ -12,6 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.concurrent.ConcurrentHashMap
 
 object LorittaBirthday2020 {
@@ -127,7 +128,7 @@ object LorittaBirthday2020 {
 		// return calendar.get(Calendar.YEAR) == 2020
 		val endOfEvent = LocalDateTime.of(2020, 3, 30, 15, 0)
 				.atZone(Constants.LORITTA_TIMEZONE)
-		val now = Instant.now().atZone(Constants.LORITTA_TIMEZONE)
+		val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 
 		return now.isBefore(endOfEvent)
 	}

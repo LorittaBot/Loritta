@@ -6,9 +6,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.ZonedDateTime
 
 object PremiumSlotsUtils {
 	private val logger = KotlinLogging.logger {}
@@ -18,8 +17,7 @@ object PremiumSlotsUtils {
 
 	internal fun createPremiumSlotsAdvertisementTask(config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {
 		while (true) {
-			val now = Instant.now()
-					.atZone(Constants.LORITTA_TIMEZONE)
+			val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 
 			var whenShouldBeAnnounced = LocalDateTime.of(
 					now.year,
@@ -46,8 +44,7 @@ object PremiumSlotsUtils {
 
 	internal fun createPremiumSlotsCloseTask(config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {
 		while (true) {
-			val now = Instant.now()
-					.atZone(Constants.LORITTA_TIMEZONE)
+			val now = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 
 			var whenShouldBeAnnounced = LocalDateTime.of(
 					now.year,

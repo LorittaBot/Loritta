@@ -41,8 +41,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import java.time.Instant
-import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
 class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/daily-reward") {
@@ -54,16 +53,14 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 			.asMap()
 
 		suspend fun checkIfUserCanPayout(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): Int {
-			val todayAtMidnight = Instant.now()
-				.atZone(Constants.LORITTA_TIMEZONE)
+			val todayAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 				.toOffsetDateTime()
 				.withHour(0)
 				.withMinute(0)
 				.withSecond(0)
 				.toInstant()
 				.toEpochMilli()
-			val tomorrowAtMidnight = Instant.now()
-				.atZone(Constants.LORITTA_TIMEZONE)
+			val tomorrowAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 				.toOffsetDateTime()
 				.plusDays(1)
 				.withHour(0)
@@ -71,8 +68,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.withSecond(0)
 				.toInstant()
 				.toEpochMilli()
-			val nowOneHourAgo = Instant.now()
-				.atZone(Constants.LORITTA_TIMEZONE)
+			val nowOneHourAgo = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 				.toOffsetDateTime()
 				.let {
 					if (it.hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want

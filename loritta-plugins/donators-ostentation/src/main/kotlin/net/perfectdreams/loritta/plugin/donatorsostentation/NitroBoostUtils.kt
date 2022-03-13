@@ -39,6 +39,7 @@ import org.jetbrains.exposed.sql.update
 import java.math.BigDecimal
 import java.time.Instant
 import java.time.ZoneId
+import java.time.ZonedDateTime
 
 object NitroBoostUtils {
 	private val logger = KotlinLogging.logger {}
@@ -72,8 +73,7 @@ object NitroBoostUtils {
 
 					logger.info { "Guild $guild has donation features enabled! Checking how many $boosters users can receive the reward..." }
 
-					val todayAtMidnight = Instant.now()
-						.atZone(Constants.LORITTA_TIMEZONE)
+					val todayAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 						.toOffsetDateTime()
 						.withHour(0)
 						.withMinute(0)
