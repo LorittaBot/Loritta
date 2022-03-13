@@ -13,9 +13,8 @@ class PremiumRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rou
     override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
         call.respondHtml(
             block = PremiumView(
+                showtime,
                 call.request.userTheme,
-                showtime.svgIconManager,
-                showtime.hashManager,
                 locale,
                 i18nContext,
                 "/donate"

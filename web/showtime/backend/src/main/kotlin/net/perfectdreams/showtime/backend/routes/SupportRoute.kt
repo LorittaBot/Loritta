@@ -13,9 +13,8 @@ class SupportRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rou
     override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale, i18nContext: I18nContext) {
         call.respondHtml(
             block = SupportView(
+                showtime,
                 call.request.userTheme,
-                showtime.svgIconManager,
-                showtime.hashManager,
                 locale,
                 i18nContext,
                 "/support"

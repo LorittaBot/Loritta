@@ -11,23 +11,20 @@ import kotlinx.html.input
 import kotlinx.html.label
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
 import net.perfectdreams.showtime.backend.utils.NitroPayAdSize
-import net.perfectdreams.showtime.backend.utils.SVGIconManager
-import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 
 abstract class SidebarsView(
+    showtimeBackend: ShowtimeBackend,
     websiteTheme: WebsiteTheme,
-    iconManager: SVGIconManager,
-    hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
     i18nContext: I18nContext,
     path: String
 ) : NavbarView(
+    showtimeBackend,
     websiteTheme,
-    iconManager,
-    hashManager,
     locale,
     i18nContext,
     path

@@ -21,12 +21,10 @@ import kotlinx.html.title
 import kotlinx.html.unsafe
 import kotlinx.html.visit
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.showtime.backend.utils.SVGIconManager
-import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
+import net.perfectdreams.showtime.backend.ShowtimeBackend
 
 abstract class BaseView(
-    val iconManager: SVGIconManager,
-    val hashManager: WebsiteAssetsHashManager,
+    val showtimeBackend: ShowtimeBackend,
     val locale: BaseLocale,
     val i18nContext: I18nContext,
     val path: String
@@ -35,6 +33,9 @@ abstract class BaseView(
         val versionPrefix = "/v3"
         val websiteUrl = "https://loritta.website"
     }
+
+    val iconManager = showtimeBackend.svgIconManager
+    val hashManager = showtimeBackend.hashManager
 
     fun generateHtml(): HTML.() -> (Unit) = {
         val supportUrl = "https://loritta.website/support"

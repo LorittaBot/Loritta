@@ -32,9 +32,8 @@ class BlogPostRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Ro
 
         call.respondHtml(
             block = BlogPostView(
+                showtime,
                 call.request.userTheme,
-                showtime.svgIconManager,
-                showtime.hashManager,
                 locale,
                 i18nContext,
                 "/",

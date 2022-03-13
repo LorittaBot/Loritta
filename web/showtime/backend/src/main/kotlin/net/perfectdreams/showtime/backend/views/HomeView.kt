@@ -6,7 +6,6 @@ import kotlinx.html.a
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
-import kotlinx.html.i
 import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.p
@@ -15,8 +14,7 @@ import kotlinx.html.style
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.showtime.backend.utils.SVGIconManager
-import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
+import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.views.home.chitChat
 import net.perfectdreams.showtime.backend.views.home.community
@@ -26,20 +24,17 @@ import net.perfectdreams.showtime.backend.views.home.makeItAwesome
 import net.perfectdreams.showtime.backend.views.home.moderation
 import net.perfectdreams.showtime.backend.views.home.muchMore
 import net.perfectdreams.showtime.backend.views.home.notify
-import net.perfectdreams.showtime.backend.views.home.thankYou
 import net.perfectdreams.showtime.backend.views.home.trust
 
 class HomeView(
+    showtimeBackend: ShowtimeBackend,
     websiteTheme: WebsiteTheme,
-    iconManager: SVGIconManager,
-    hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
     i18nContext: I18nContext,
     path: String
 ) : NavbarView(
+    showtimeBackend,
     websiteTheme,
-    iconManager,
-    hashManager,
     locale,
     i18nContext,
     path
@@ -100,16 +95,15 @@ class HomeView(
                 }
                 div(classes = "buttons") {
                     div {
-                        // TODO: Fix
-                        a(classes = "add-me button pink has-shadow is-big", href = "https://google.com/") {
+                        a(classes = "add-me button pink has-shadow is-big", href = showtimeBackend.addBotUrl.toString()) {
                             img(classes = "lori-happy", src = "$versionPrefix/assets/img/lori_happy.gif")
-                            i(classes = "fas fa-plus") {}
+                            showtimeBackend.svgIconManager.plus.apply(this)
 
                             + " ${locale["website.jumbotron.addMe"]}"
                         }
 
                         a(classes = "button light-green has-shadow is-big", href = "#about-me") {
-                            i(classes = "fas fa-star") {}
+                            showtimeBackend.svgIconManager.star.apply(this)
 
                             + " ${locale["website.jumbotron.moreInfo"]}"
                         }
@@ -117,7 +111,7 @@ class HomeView(
                     div {
                         style = "margin-top: 0.5em;"
                         a(classes = "add-me button purple has-shadow is-big", href = "/${locale.path}/dashboard") {
-                            i(classes = "fas fa-cogs") {}
+                            showtimeBackend.svgIconManager.cogs.apply(this)
 
                             + " ${locale["website.jumbotron.dashboard"]}"
                         }
@@ -190,8 +184,10 @@ class HomeView(
         customization(locale, getOddOrEvenClassName(sectionId++))
         community(locale, getOddOrEvenClassName(sectionId++))
         muchMore(locale, getOddOrEvenClassName(sectionId++))
-        makeItAwesome(locale, getOddOrEvenClassName(sectionId++))
-        thankYou(locale, getOddOrEvenClassName(sectionId++))
+        makeItAwesome(showtimeBackend, locale, getOddOrEvenClassName(sectionId++))
+        // Disabled for now because our YourKit license is expired because I need to ask to renew it
+        // (or maybe just buy YourKit?)
+        // thankYou(locale, getOddOrEvenClassName(sectionId++))
     }
 
     fun getOddOrEvenClassName(id: Int): String {

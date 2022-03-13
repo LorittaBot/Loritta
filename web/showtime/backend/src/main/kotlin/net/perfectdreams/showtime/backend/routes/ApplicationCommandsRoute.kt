@@ -16,9 +16,8 @@ class ApplicationCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(s
         try {
             call.respondHtml(
                 block = ApplicationCommandsView(
+                    showtime,
                     call.request.userTheme,
-                    showtime.svgIconManager,
-                    showtime.hashManager,
                     locale,
                     i18nContext,
                     "/commands/slash",

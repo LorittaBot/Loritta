@@ -14,15 +14,15 @@ import kotlinx.html.style
 import kotlinx.html.unsafe
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.showtime.backend.utils.extras.AuthorConfig
 import net.perfectdreams.showtime.backend.utils.extras.ExtrasUtils
 
 open class ExtrasView(
+    showtimeBackend: ShowtimeBackend,
     websiteTheme: WebsiteTheme,
-    iconManager: SVGIconManager,
-    hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
     i18nContext: I18nContext,
     path: String,
@@ -30,9 +30,8 @@ open class ExtrasView(
     val authors: List<AuthorConfig>,
     val categories: List<ExtrasUtils.ExtrasCategory>
 ) : SidebarsView(
+    showtimeBackend,
     websiteTheme,
-    iconManager,
-    hashManager,
     locale,
     i18nContext,
     path
