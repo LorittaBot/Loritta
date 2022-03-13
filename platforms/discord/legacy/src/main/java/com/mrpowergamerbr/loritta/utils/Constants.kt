@@ -25,6 +25,7 @@ import java.awt.Font
 import java.io.File
 import java.io.FileInputStream
 import java.text.SimpleDateFormat
+import java.time.ZoneId
 import java.util.regex.Pattern
 import javax.imageio.ImageIO
 
@@ -187,6 +188,13 @@ object Constants {
 	// Canais de textos utilizados na Loritta
 	const val RELAY_YOUTUBE_VIDEOS_CHANNEL = "509043859792068609"
 	const val RELAY_TWITCH_STREAMS_CHANNEL = "520354012021784586"
+
+	/**
+	 * Timezone used by Loritta, Brazil's timezone
+	 *
+	 * In the future this should be configurable by the server admin or by the user
+	 */
+	val LORITTA_TIMEZONE = ZoneId.of("America/Sao_Paulo")
 
 	/**
 	 * Used in conjuction with the elvis operation ("?:") plus a "return;" when the image is null, this allows the user to receive feedback if the image

@@ -1,5 +1,6 @@
 package com.mrpowergamerbr.loritta.utils.extensions
 
+import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import java.text.DateFormatSymbols
 import java.time.Instant
@@ -15,7 +16,7 @@ import java.util.*
  */
 fun OffsetDateTime.humanize(locale: BaseLocale): String {
 	val localeId = locale.id
-	val fixedOffset = this.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime()
+	val fixedOffset = this.atZoneSameInstant(Constants.LORITTA_TIMEZONE).toOffsetDateTime()
 	val javaLocale = when (localeId) {
 		"default" -> Locale("pt", "br")
 		else -> Locale(localeId.split("-")[0], localeId.split("-").getOrNull(1) ?: "")
@@ -43,5 +44,5 @@ fun OffsetDateTime.humanize(locale: BaseLocale): String {
  * @return       the humanized date
  */
 fun Long.humanize(locale: BaseLocale): String {
-	return Instant.ofEpochMilli(this).atZone(ZoneId.systemDefault()).toOffsetDateTime().humanize(locale)
+	return Instant.ofEpochMilli(this).atZone(Constants.LORITTA_TIMEZONE).toOffsetDateTime().humanize(locale)
 }

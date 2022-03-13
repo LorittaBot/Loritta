@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.utils
 
 import com.mrpowergamerbr.loritta.dao.Profile
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.loritta
@@ -20,7 +21,7 @@ object DonateUtils {
 	fun getRandomDonationMessage(locale: BaseLocale, profile: Profile, donatorPaid: Double, guildPaid: Double): LorittaReply? {
 		val willRestartAt = loritta.patchData.willRestartAt
 		if (willRestartAt != null) {
-			val instant = Instant.ofEpochMilli(willRestartAt).atZone(ZoneId.systemDefault())
+			val instant = Instant.ofEpochMilli(willRestartAt).atZone(Constants.LORITTA_TIMEZONE)
 			val estimatedTime = lorittaShards.shardManager.shards.size * 8_000L
 			val fancyFormatted = com.mrpowergamerbr.loritta.utils.DateUtils.formatMillis(estimatedTime, loritta.localeManager.getLocaleById(locale.id))
 

@@ -16,7 +16,7 @@ object TimeUtils {
     private val MINUTE_PATTERN = "([0-9]+) ?(min)".toPattern()
     private val SECONDS_PATTERN = "([0-9]+) ?(s)".toPattern()
     // TODO: Would be better to not hardcode it
-    val TIME_ZONE = ZoneId.of("America/Sao_Paulo")
+    val TIME_ZONE = Constants.LORITTA_TIMEZONE
 
     fun convertToMillisRelativeToNow(input: String) = convertToLocalDateTimeRelativeToNow(input)
             .toInstant()

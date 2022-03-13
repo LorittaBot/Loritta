@@ -13,6 +13,7 @@ import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.DonationConfigs
 import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.MiscUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -54,7 +55,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 		suspend fun checkIfUserCanPayout(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): Int {
 			val todayAtMidnight = Instant.now()
-				.atZone(ZoneId.of("America/Sao_Paulo"))
+				.atZone(Constants.LORITTA_TIMEZONE)
 				.toOffsetDateTime()
 				.withHour(0)
 				.withMinute(0)
@@ -62,7 +63,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.toInstant()
 				.toEpochMilli()
 			val tomorrowAtMidnight = Instant.now()
-				.atZone(ZoneId.of("America/Sao_Paulo"))
+				.atZone(Constants.LORITTA_TIMEZONE)
 				.toOffsetDateTime()
 				.plusDays(1)
 				.withHour(0)
@@ -71,7 +72,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.toInstant()
 				.toEpochMilli()
 			val nowOneHourAgo = Instant.now()
-				.atZone(ZoneId.of("America/Sao_Paulo"))
+				.atZone(Constants.LORITTA_TIMEZONE)
 				.toOffsetDateTime()
 				.let {
 					if (it.hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want

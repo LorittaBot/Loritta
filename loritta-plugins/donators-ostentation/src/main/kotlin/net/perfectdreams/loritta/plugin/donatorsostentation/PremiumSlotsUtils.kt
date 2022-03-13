@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.plugin.donatorsostentation
 
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -18,7 +19,7 @@ object PremiumSlotsUtils {
 	internal fun createPremiumSlotsAdvertisementTask(config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {
 		while (true) {
 			val now = Instant.now()
-					.atZone(ZoneId.of("America/Sao_Paulo"))
+					.atZone(Constants.LORITTA_TIMEZONE)
 
 			var whenShouldBeAnnounced = LocalDateTime.of(
 					now.year,
@@ -27,7 +28,7 @@ object PremiumSlotsUtils {
 					17,
 					0,
 					0
-			).atZone(ZoneId.of("America/Sao_Paulo"))
+			).atZone(Constants.LORITTA_TIMEZONE)
 
 			// Verificar que, se já foi o deste mês, apenas anuncie mês que vem
 			if (whenShouldBeAnnounced.isBefore(now))
@@ -46,7 +47,7 @@ object PremiumSlotsUtils {
 	internal fun createPremiumSlotsCloseTask(config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {
 		while (true) {
 			val now = Instant.now()
-					.atZone(ZoneId.of("America/Sao_Paulo"))
+					.atZone(Constants.LORITTA_TIMEZONE)
 
 			var whenShouldBeAnnounced = LocalDateTime.of(
 					now.year,
@@ -55,7 +56,7 @@ object PremiumSlotsUtils {
 					23,
 					59,
 					59
-			).atZone(ZoneId.of("America/Sao_Paulo"))
+			).atZone(Constants.LORITTA_TIMEZONE)
 
 			// Verificar que, se já foi o deste mês, apenas anuncie mês que vem
 			if (whenShouldBeAnnounced.isBefore(now))

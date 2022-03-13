@@ -62,7 +62,7 @@ class AvatarCommand : AbstractCommand("avatar", category = CommandCategory.DISCO
 
 		// Easter Egg: Loritta
 		if (getAvatar.id == loritta.discordConfig.discord.clientId) {
-			val calendar = Calendar.getInstance()
+			val calendar = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
 			val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 
 			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.lorittaCute"]}* ${Emotes.LORI_SMILE}")

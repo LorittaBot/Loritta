@@ -73,7 +73,7 @@ object NitroBoostUtils {
 					logger.info { "Guild $guild has donation features enabled! Checking how many $boosters users can receive the reward..." }
 
 					val todayAtMidnight = Instant.now()
-						.atZone(ZoneId.of("America/Sao_Paulo"))
+						.atZone(Constants.LORITTA_TIMEZONE)
 						.toOffsetDateTime()
 						.withHour(0)
 						.withMinute(0)

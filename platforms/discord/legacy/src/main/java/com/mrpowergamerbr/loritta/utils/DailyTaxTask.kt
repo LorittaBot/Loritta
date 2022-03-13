@@ -18,7 +18,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.io.File
-import java.util.*
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 class DailyTaxTask : Runnable {
@@ -37,8 +37,7 @@ class DailyTaxTask : Runnable {
 			return
 
 		val lastDailyTax = File(Loritta.FOLDER, "last_daily_tax")
-
-		val hour = Calendar.getInstance()[Calendar.HOUR_OF_DAY]
+		val hour = LocalDateTime.now(Constants.LORITTA_TIMEZONE).hour
 
 		if (!force) {
 			if (18 != hour && 19 != hour)

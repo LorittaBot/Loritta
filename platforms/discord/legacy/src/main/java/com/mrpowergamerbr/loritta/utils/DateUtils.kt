@@ -62,16 +62,16 @@ object DateUtils {
 	}
 
 	fun formatDateDiff(date: Long, locale: BaseLocale): String {
-		val c = GregorianCalendar()
+		val c = GregorianCalendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
 		c.timeInMillis = date
-		val now = GregorianCalendar()
+		val now = GregorianCalendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
 		return formatDateDiff(now, c, locale)
 	}
 
 	fun formatDateDiff(fromDate: Long, toDate: Long, locale: BaseLocale): String {
-		val c = GregorianCalendar()
+		val c = GregorianCalendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
 		c.timeInMillis = fromDate
-		val now = GregorianCalendar()
+		val now = GregorianCalendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
 		now.timeInMillis = toDate
 		return formatDateDiff(now, c, locale)
 	}

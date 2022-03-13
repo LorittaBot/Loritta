@@ -252,7 +252,7 @@ class EmojiFight(
                 it[EmojiFightMatches.createdBy] = context.user.idLong
                 it[EmojiFightMatches.createdAt] = startedAt
                 it[EmojiFightMatches.finishedAt] = now
-                it[EmojiFightMatches.maxPlayers] = maxPlayers
+                it[EmojiFightMatches.maxPlayers] = this@EmojiFight.maxPlayers
             }
 
             val databaseParticipatingUserEntries = realValidParticipatingUsers.map { (user, emoji) ->

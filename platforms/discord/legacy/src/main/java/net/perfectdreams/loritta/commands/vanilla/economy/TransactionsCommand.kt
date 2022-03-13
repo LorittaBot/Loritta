@@ -132,7 +132,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 				val receivedSonhos = transaction[SonhosTransaction.receivedBy] == user.idLong
 
 				val givenAtTime = Instant.ofEpochMilli(transaction[SonhosTransaction.givenAt])
-						.atZone(ZoneId.systemDefault())
+						.atZone(Constants.LORITTA_TIMEZONE)
 
 				val day = givenAtTime.dayOfMonth.toString().padStart(2, '0')
 				val month = givenAtTime.monthValue.toString().padStart(2, '0')

@@ -106,7 +106,7 @@ class RemindersThread : Thread("Reminders Thread") {
             if (it.reactionEmote.isEmote(SNOOZE_EMOTE)) {
                 loritta.messageInteractionCache.remove(message.idLong)
 
-                val newReminderTime = Calendar.getInstance().timeInMillis + (Constants.ONE_MINUTE_IN_MILLISECONDS * DEFAULT_SNOOZE_MINUTES)
+                val newReminderTime = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE)).timeInMillis + (Constants.ONE_MINUTE_IN_MILLISECONDS * DEFAULT_SNOOZE_MINUTES)
                 loritta.newSuspendedTransaction {
                     Reminder.new {
                         userId = reminder.userId
@@ -116,7 +116,7 @@ class RemindersThread : Thread("Reminders Thread") {
                     }
                 }
 
-                val calendar = Calendar.getInstance()
+                val calendar = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
                 calendar.timeInMillis = newReminderTime
 
                 val dayOfMonth = String.format("%02d", calendar[Calendar.DAY_OF_MONTH])
@@ -160,7 +160,7 @@ class RemindersThread : Thread("Reminders Thread") {
                 }
             }
 
-            val calendar = Calendar.getInstance()
+            val calendar = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
             calendar.timeInMillis = inMillis
 
             val dayOfMonth = String.format("%02d", calendar[Calendar.DAY_OF_MONTH])

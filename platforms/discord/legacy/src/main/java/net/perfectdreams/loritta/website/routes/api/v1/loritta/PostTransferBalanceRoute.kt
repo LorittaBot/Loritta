@@ -7,6 +7,7 @@ import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.commands.vanilla.economy.PagarCommand
 import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.utils.Constants
 import io.ktor.application.*
 import io.ktor.request.*
 import kotlinx.coroutines.Dispatchers
@@ -60,7 +61,7 @@ class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticat
 			// Verificação de alt accounts
 			// Se o usuário tentar transferir para o mesmo user, dê um ban automático
 			val todayAtMidnight = Instant.now()
-					.atZone(ZoneId.of("America/Sao_Paulo"))
+					.atZone(Constants.LORITTA_TIMEZONE)
 					.toOffsetDateTime()
 					.withHour(0)
 					.withMinute(0)

@@ -3,6 +3,7 @@ package com.mrpowergamerbr.loritta.threads
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.mrpowergamerbr.loritta.Loritta
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.utils.lorittaShards
@@ -53,7 +54,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 		// Used to display the current Loritta cluster in the status
 		val currentCluster = loritta.lorittaCluster
 
-		val calendar = Calendar.getInstance()
+		val calendar = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
 		currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 		val firstInstance = loritta.lorittaShards.getShards().firstOrNull { it.status == JDA.Status.CONNECTED }
 

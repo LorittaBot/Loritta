@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.dao
 
 import com.mrpowergamerbr.loritta.tables.Dailies
 import com.mrpowergamerbr.loritta.tables.Profiles
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.loritta
 import mu.KotlinLogging
 import net.perfectdreams.loritta.tables.BannedUsers
@@ -18,7 +19,8 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
-import java.util.*
+import java.time.Instant
+import java.time.ZonedDateTime
 
 class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	companion object : EntityClass<Long, Profile>(Profiles) {
@@ -51,15 +53,16 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 					.firstOrNull()
 		}?.get(Dailies.receivedAt) ?: 0L
 
+		val tomorrow = ZonedDateTime.ofInstant(Instant.ofEpochMilli(receivedDailyAt), Constants.LORITTA_TIMEZONE)
+			.plusDays(1)
+			.withHour(0)
+			.withMinute(0)
+			.withSecond(0)
+			.withNano(0)
 
-		val calendar = Calendar.getInstance()
-		calendar.timeInMillis = receivedDailyAt
-		calendar.set(Calendar.HOUR_OF_DAY, 0)
-		calendar.set(Calendar.MINUTE, 0)
-		calendar.add(Calendar.DAY_OF_MONTH, 1)
-		val tomorrow = calendar.timeInMillis
+		val tomorrowInEpochMillis = tomorrow.toEpochSecond() * 1000
 
-		return Pair(System.currentTimeMillis() > tomorrow, tomorrow)
+		return Pair(System.currentTimeMillis() > tomorrowInEpochMillis, tomorrowInEpochMillis)
 	}
 
 	/**

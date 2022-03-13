@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.plugin.lorittabirthday2020
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.utils.Constants
 import kotlinx.coroutines.channels.Channel
 import mu.KotlinLogging
 import net.perfectdreams.loritta.plugin.lorittabirthday2020.tables.CollectedBirthday2020Points
@@ -125,8 +126,8 @@ object LorittaBirthday2020 {
 		// val calendar = Calendar.getInstance()
 		// return calendar.get(Calendar.YEAR) == 2020
 		val endOfEvent = LocalDateTime.of(2020, 3, 30, 15, 0)
-				.atZone(ZoneId.of("America/Sao_Paulo"))
-		val now = Instant.now().atZone(ZoneId.of("America/Sao_Paulo"))
+				.atZone(Constants.LORITTA_TIMEZONE)
+		val now = Instant.now().atZone(Constants.LORITTA_TIMEZONE)
 
 		return now.isBefore(endOfEvent)
 	}

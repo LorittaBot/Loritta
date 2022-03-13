@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Daily
 import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.tables.Dailies
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.DateUtils
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.messages.LorittaReply
@@ -53,7 +54,7 @@ object AccountUtils {
      */
     suspend fun getUserDailyRewardInTheLastXDays(profile: Profile, dailyInThePreviousDays: Long): Daily? {
         val dayAtMidnight = Instant.now()
-            .atZone(ZoneId.of("America/Sao_Paulo"))
+            .atZone(Constants.LORITTA_TIMEZONE)
             .toOffsetDateTime()
             .minusDays(dailyInThePreviousDays)
             .withHour(0)

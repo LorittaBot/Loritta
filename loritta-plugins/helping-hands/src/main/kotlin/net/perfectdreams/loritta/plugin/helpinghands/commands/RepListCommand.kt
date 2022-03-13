@@ -139,7 +139,7 @@ class RepListCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractCommandBas
 
                     val receivedReputation = reputation[Reputations.receivedById] == user.idLong
 
-                    val givenAtTime = Instant.ofEpochMilli(reputation[Reputations.receivedAt]).atZone(ZoneId.systemDefault())
+                    val givenAtTime = Instant.ofEpochMilli(reputation[Reputations.receivedAt]).atZone(Constants.LORITTA_TIMEZONE)
                     val year = givenAtTime.year
                     val month = givenAtTime.monthValue.toString().padStart(2, '0')
                     val day = givenAtTime.dayOfMonth.toString().padStart(2, '0')

@@ -24,7 +24,7 @@ class SponsorsAdvertisement(val m: QuirkyStuff, val config: QuirkyConfig) {
 
 		task = GlobalScope.launch(LorittaLauncher.loritta.coroutineDispatcher) {
 			while (true) {
-				val calendar = Calendar.getInstance()
+				val calendar = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
 				calendar[Calendar.DAY_OF_WEEK] = Calendar.WEDNESDAY
 				calendar[Calendar.HOUR_OF_DAY] = 17
 				calendar[Calendar.MINUTE] = 0

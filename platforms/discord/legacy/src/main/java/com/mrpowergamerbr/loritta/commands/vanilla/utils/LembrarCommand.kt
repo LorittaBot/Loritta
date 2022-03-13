@@ -4,20 +4,27 @@ import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.dao.Reminder
 import com.mrpowergamerbr.loritta.tables.Reminders
-import com.mrpowergamerbr.loritta.utils.*
+import com.mrpowergamerbr.loritta.utils.Constants
+import com.mrpowergamerbr.loritta.utils.TimeUtils
 import com.mrpowergamerbr.loritta.utils.extensions.humanize
 import com.mrpowergamerbr.loritta.utils.extensions.isEmote
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
+import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
+import com.mrpowergamerbr.loritta.utils.onResponseByAuthor
+import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import org.jetbrains.exposed.sql.deleteWhere
 import java.awt.Color
-import java.util.*
+import java.time.Instant
+import java.time.ZonedDateTime
 
 class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "lembrar", "lembrete", "reminder"), CommandCategory.UTILS) {
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
@@ -61,8 +68,8 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			loritta.messageInteractionCache.remove(reply.idLong)
 			reply.delete().queue()
 			val inMillis = TimeUtils.convertToMillisRelativeToNow(it.message.contentDisplay)
-			val calendar = Calendar.getInstance()
-			calendar.timeInMillis = inMillis
+			val instant = Instant.ofEpochMilli(inMillis)
+			val localDateTime = ZonedDateTime.ofInstant(instant, Constants.LORITTA_TIMEZONE)
 
 			val messageContent = message.trim()
 			logger.trace { "userId = ${context.userHandle.idLong}" }
@@ -70,22 +77,22 @@ class LembrarCommand : AbstractCommand("remindme", listOf("lembre", "remind", "l
 			logger.trace { "remindAt = $inMillis" }
 			logger.trace { "content = $messageContent" }
 
-			createReminder(context, calendar, messageContent)
+			createReminder(context, localDateTime, messageContent)
 
-			val dayOfMonth = String.format("%02d", calendar[Calendar.DAY_OF_MONTH])
-			val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
-			val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
-			val minutes = String.format("%02d", calendar[Calendar.MINUTE])
-			context.sendMessage(context.getAsMention(true) + locale["${LOCALE_PREFIX}.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes])
+			val dayOfMonth = String.format("%02d", localDateTime.dayOfMonth)
+			val month = String.format("%02d", localDateTime.monthValue)
+			val hours = String.format("%02d", localDateTime.hour)
+			val minutes = String.format("%02d", localDateTime.minute)
+			context.sendMessage(context.getAsMention(true) + locale["${LOCALE_PREFIX}.success", dayOfMonth, month, localDateTime.year, hours, minutes])
 		}
 	}
 
-	private suspend fun createReminder(context: CommandContext, calendar: Calendar, messageContent: String) {
+	private suspend fun createReminder(context: CommandContext, zonedDateTime: ZonedDateTime, messageContent: String) {
 		loritta.newSuspendedTransaction {
 			Reminder.new {
 				userId = context.userHandle.idLong
 				channelId = context.message.textChannel.idLong
-				remindAt = calendar.timeInMillis
+				remindAt = (zonedDateTime.toEpochSecond() * 1000)
 				content = messageContent
 			}
 		}

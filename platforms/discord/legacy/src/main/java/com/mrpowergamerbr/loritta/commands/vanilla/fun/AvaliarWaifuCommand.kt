@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.`fun`
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.common.commands.CommandCategory
@@ -33,7 +34,7 @@ class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", 
 			}
 
 			val waifuLowerCase = waifu.toLowerCase()
-			val random = SplittableRandom(Calendar.getInstance().get(Calendar.DAY_OF_YEAR) + waifuLowerCase.hashCode().toLong()) // Usar um RANDOM sempre com a mesma seed
+			val random = SplittableRandom(Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE)).get(Calendar.DAY_OF_YEAR) + waifuLowerCase.hashCode().toLong()) // Usar um RANDOM sempre com a mesma seed
 			val nota = random.nextInt(0, 11)
 
 			val scoreReason = context.locale.getList("$LOCALE_PREFIX.note${nota}").random()
