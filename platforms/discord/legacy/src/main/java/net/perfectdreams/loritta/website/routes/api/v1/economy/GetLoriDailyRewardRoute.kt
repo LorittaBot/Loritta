@@ -54,14 +54,12 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 
 		suspend fun checkIfUserCanPayout(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): Int {
 			val todayAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
-				.toOffsetDateTime()
 				.withHour(0)
 				.withMinute(0)
 				.withSecond(0)
 				.toInstant()
 				.toEpochMilli()
 			val tomorrowAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
-				.toOffsetDateTime()
 				.plusDays(1)
 				.withHour(0)
 				.withMinute(0)
@@ -69,7 +67,6 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 				.toInstant()
 				.toEpochMilli()
 			val nowOneHourAgo = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
-				.toOffsetDateTime()
 				.let {
 					if (it.hour != 0) // If the hour is 0, we would get the hour *one day ago*, which is isn't what we want
 						it.minusHours(1)
