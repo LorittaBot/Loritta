@@ -12,31 +12,24 @@ import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.html.ul
+import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
+import net.perfectdreams.showtime.backend.utils.SVGIconManager
+import net.perfectdreams.showtime.backend.utils.adWrapper
+import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.views.BaseView
 
-fun DIV.funnyCommands(locale: BaseLocale, websiteUrl: String, sectionClassName: String) {
+fun DIV.funnyCommands(svgIconManager: SVGIconManager, locale: BaseLocale, websiteUrl: String, sectionClassName: String) {
     div(classes = "$sectionClassName wobbly-bg") {
         id = "fun-section"
 
-        // generateNitroPayAdOrSponsor(2, "home-funny-commands1", "Loritta v2 Funny Commands") { true }
-        // generateNitroPayAdOrSponsor(3, "home-funny-commands2", "Loritta v2 Funny Commands") { it != NitroPayAdDisplay.PHONE }
-
-        /* div(classes = "funny-commands") {
-        div {
-            div(classes = "marquee") {
-                div(classes = "scroller") {
-                    headerCommands()
-                }
-            }
-
-            div(classes = "marquee marquee2") {
-                div(classes = "scroller") {
-                    headerCommands()
-                }
-            }
+        // TODO: Sponsor
+        adWrapper(svgIconManager) {
+            // generateNitroPayAdOrSponsor(2, "home-funny-commands1", "Loritta v2 Funny Commands") { true }
+            // generateNitroPayAdOrSponsor(3, "home-funny-commands2", "Loritta v2 Funny Commands") { it != NitroPayAdDisplay.PHONE }
+            generateNitroPayAd("home-funny-commands1", NitroPayAdGenerator.ALL_SIZES)
+            generateNitroPayAd("home-funny-commands2", NitroPayAdGenerator.ALL_SIZES)
         }
-        } */
 
         div(classes = "media") {
             div(classes = "media-figure") {

@@ -2,7 +2,11 @@ package net.perfectdreams.showtime.backend.utils
 
 import kotlinx.html.DIV
 import kotlinx.html.IMG
+import kotlinx.html.div
+import kotlinx.html.fieldSet
+import kotlinx.html.i
 import kotlinx.html.img
+import kotlinx.html.legend
 import kotlinx.html.style
 
 fun DIV.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Unit = {}) {
@@ -48,6 +52,28 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
         attributes["srcset"] = srcset
 
         this.apply(block)
+    }
+}
+
+fun DIV.adWrapper(svgIconManager: SVGIconManager, callback: DIV.() -> Unit) {
+    // Wraps the div in a nice wrapper
+    div {
+        style = "text-align: center;"
+        fieldSet {
+            style = "display: inline;\n" +
+                    "border: 2px solid rgba(0,0,0,.05);\n" +
+                    "border-radius: 7px;\n" +
+                    "color: rgba(0,0,0,.3);"
+
+            legend {
+                style = "margin-left: auto;"
+                svgIconManager.ad.apply(this)
+            }
+
+            div {
+                callback.invoke(this)
+            }
+        }
     }
 }
 

@@ -6,13 +6,21 @@ import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.html.style
+import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
+import net.perfectdreams.showtime.backend.utils.SVGIconManager
+import net.perfectdreams.showtime.backend.utils.adWrapper
+import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.views.BaseView
 
-fun DIV.community(locale: BaseLocale, sectionClassName: String) {
+fun DIV.community(svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassName: String) {
     div(classes = "$sectionClassName wobbly-bg") {
         style = "text-align: center;"
 
+        // TODO: Sponsors
+        adWrapper(svgIconManager) {
+            generateNitroPayAd("home-community", NitroPayAdGenerator.ALL_SIZES)
+        }
         // generateNitroPayAdOrSponsor(0, "home-community", "Loritta v2 Community") { true }
 
         // generateNitroPayAd("home-community", "Loritta v2 Community")

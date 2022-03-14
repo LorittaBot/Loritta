@@ -7,14 +7,22 @@ import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.html.style
+import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
+import net.perfectdreams.showtime.backend.utils.SVGIconManager
+import net.perfectdreams.showtime.backend.utils.adWrapper
+import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.views.BaseView
 
-fun DIV.notify(locale: BaseLocale, sectionClassName: String) {
+fun DIV.notify(svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassName: String) {
     div(classes = "$sectionClassName wobbly-bg") {
         style = "text-align: center;"
 
-        // generateNitroPayAd("home-digital-influencers", "Loritta v2 Digital Influencers")
+        // TODO: Sponsor
+        adWrapper(svgIconManager) {
+            // generateNitroPayAd("home-digital-influencers", "Loritta v2 Digital Influencers")
+            generateNitroPayAd("home-digital-influencers", NitroPayAdGenerator.ALL_SIZES)
+        }
 
         div(classes = "media") {
             div(classes = "media-figure") {

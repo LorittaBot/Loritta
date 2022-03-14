@@ -15,6 +15,9 @@ import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
+import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
+import net.perfectdreams.showtime.backend.utils.adWrapper
+import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.views.home.chitChat
 import net.perfectdreams.showtime.backend.views.home.community
@@ -127,8 +130,11 @@ class HomeView(
         div { id = "about-me" }
         var sectionId = 1
         div(classes = getOddOrEvenClassName(sectionId++)) {
-            // generateNitroPayAdOrSponsor(0, "home-below-header1", "Loritta v2 Below Header") { true }
-            // generateNitroPayAdOrSponsor(1, "home-below-header2", "Loritta v2 Below Header") { it != NitroPayAdDisplay.PHONE }
+            // TODO: Sponsor
+            adWrapper(iconManager) {
+                generateNitroPayAd("home-below-header1", NitroPayAdGenerator.ALL_SIZES)
+                generateNitroPayAd("home-below-header2", NitroPayAdGenerator.ALL_SIZES)
+            }
 
             // generateHowToSponsorButton(locale)
 
@@ -176,13 +182,13 @@ class HomeView(
         }
 
         trust(locale, getOddOrEvenClassName(sectionId++))
-        funnyCommands(locale, websiteUrl, getOddOrEvenClassName(sectionId++))
+        funnyCommands(iconManager, locale, websiteUrl, getOddOrEvenClassName(sectionId++))
         chitChat(locale, websiteUrl, getOddOrEvenClassName(sectionId++))
         // music(locale, websiteUrl)
         moderation(locale, websiteUrl, getOddOrEvenClassName(sectionId++))
-        notify(locale, getOddOrEvenClassName(sectionId++))
+        notify(iconManager, locale, getOddOrEvenClassName(sectionId++))
         customization(locale, getOddOrEvenClassName(sectionId++))
-        community(locale, getOddOrEvenClassName(sectionId++))
+        community(iconManager, locale, getOddOrEvenClassName(sectionId++))
         muchMore(locale, getOddOrEvenClassName(sectionId++))
         makeItAwesome(showtimeBackend, locale, getOddOrEvenClassName(sectionId++))
         // Disabled for now because our YourKit license is expired because I need to ask to renew it
