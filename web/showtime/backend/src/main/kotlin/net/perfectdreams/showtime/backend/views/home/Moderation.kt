@@ -10,14 +10,14 @@ import kotlinx.html.style
 import net.perfectdreams.showtime.backend.utils.mediaWithContentWrapper
 import net.perfectdreams.showtime.backend.views.BaseView
 
-fun DIV.moderation(locale: BaseLocale, websiteUrl: String, sectionClassName: String, isImageOnTheRightSide: Boolean) {
+fun DIV.moderation(locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
     div(classes = "odd-wrapper wobbly-bg") {
         style = "text-align: center;"
 
         mediaWithContentWrapper(
             isImageOnTheRightSide,
             {
-                img(src = "${websiteUrl}${BaseView.versionPrefix}/assets/img/lori_police.png") {}
+                img(src = "${BaseView.versionPrefix}/assets/img/lori_police.png") {}
             },
             {
                 div {

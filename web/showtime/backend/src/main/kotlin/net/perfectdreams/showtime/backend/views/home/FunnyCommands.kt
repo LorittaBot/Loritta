@@ -23,7 +23,6 @@ import net.perfectdreams.showtime.backend.views.BaseView
 fun DIV.funnyCommands(
     svgIconManager: SVGIconManager,
     locale: BaseLocale,
-    websiteUrl: String,
     sectionClassName: String,
     isImageOnTheRightSide: Boolean
 ) {

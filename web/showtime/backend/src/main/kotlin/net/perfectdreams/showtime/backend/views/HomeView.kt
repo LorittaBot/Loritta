@@ -189,10 +189,10 @@ class HomeView(
         }
 
         trust(locale, getOddOrEvenClassName(sectionId++))
-        funnyCommands(iconManager, locale, websiteUrl, getOddOrEvenClassName(sectionId++), getAndAlternate())
+        funnyCommands(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
         chitChat(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
         // music(locale, websiteUrl)
-        moderation(locale, websiteUrl, getOddOrEvenClassName(sectionId++), getAndAlternate())
+        moderation(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
         notify(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
         customization(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
         community(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
