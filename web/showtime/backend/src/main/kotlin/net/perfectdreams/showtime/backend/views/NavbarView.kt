@@ -93,7 +93,7 @@ abstract class NavbarView(
                         }
 
                         div(classes = "entry") {
-                            a(classes = "fan-arts", href = "$base/fanarts") {
+                            a(classes = "fan-arts", href = "https://fanarts.perfectdreams.net/") {
                                 iconManager.paintBrush.apply(this)
 
                                 +" Fan Arts"
@@ -303,8 +303,11 @@ abstract class NavbarView(
                                 a(href = "$base/daily") {
                                     +"Daily"
                                 }
-                                a(href = "$base/extras/about-loritta-bot") {
+                                a(href = "$base/extras/faq-loritta/about-loritta-bot") {
                                     +"Sobre a Loritta (Bot)"
+                                }
+                                a(href = "$base/extras/stories/how-loritta-bot-was-created") {
+                                    +"História da Criação da Loritta (Bot)"
                                 }
                             }
 
@@ -313,10 +316,7 @@ abstract class NavbarView(
                                     +"Loritta Morenitta"
                                 }
 
-                                a(href = "$base/extras/about-loritta-character") {
-                                    +"Sobre a Loritta (Personagem)"
-                                }
-                                a(href = "$base/fanarts") {
+                                a(href = "https://fanarts.perfectdreams.net/") {
                                     +"Fan Arts"
                                 }
                                 a(href = "$base/blog") {
