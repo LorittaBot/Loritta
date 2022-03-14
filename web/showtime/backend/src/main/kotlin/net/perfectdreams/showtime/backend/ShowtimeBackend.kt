@@ -22,6 +22,7 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordOAuth2AuthorizationURL
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.showtime.backend.content.ContentBase
 import net.perfectdreams.showtime.backend.content.MultilanguageContent
@@ -30,6 +31,7 @@ import net.perfectdreams.showtime.backend.utils.HttpRedirectException
 import net.perfectdreams.showtime.backend.utils.ResourcesUtils
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
+import net.perfectdreams.showtime.backend.utils.config.RootConfig
 import net.perfectdreams.showtime.backend.utils.redirect
 import org.yaml.snakeyaml.Yaml
 import java.io.File
@@ -38,6 +40,7 @@ import java.nio.file.Path
 import java.util.*
 
 class ShowtimeBackend(
+    val rootConfig: RootConfig,
     val languageManager: LanguageManager
 ) {
     companion object {
@@ -57,6 +60,14 @@ class ShowtimeBackend(
     val renderer = HtmlRenderer.builder(options).build()
     val svgIconManager = SVGIconManager(this)
     val hashManager = WebsiteAssetsHashManager(this)
+
+    val addBotUrl = DiscordOAuth2AuthorizationURL {
+        append("client_id", rootConfig.discord.applicationId.toString())
+        append("scope", "bot identify guilds email applications.commands")
+        append("permissions", 2080374975.toString())
+        append("response_type", "code")
+        append("redirect_uri", "${rootConfig.loritta.website}dashboard")
+    }
 
     private val typesToCache = listOf(
         ContentType.Text.CSS,

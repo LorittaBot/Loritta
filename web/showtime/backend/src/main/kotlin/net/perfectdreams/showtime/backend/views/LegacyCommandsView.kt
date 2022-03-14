@@ -30,6 +30,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandInfo
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.utils.ImageUtils
 import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
 import net.perfectdreams.showtime.backend.utils.NitroPayAdSize
@@ -44,9 +45,8 @@ import java.time.LocalDate
 import java.time.ZoneId
 
 class LegacyCommandsView(
+    showtimeBackend: ShowtimeBackend,
     websiteTheme: WebsiteTheme,
-    iconManager: SVGIconManager,
-    hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
     i18nContext: I18nContext,
     path: String,
@@ -54,9 +54,8 @@ class LegacyCommandsView(
     val filterByCategory: CommandCategory? = null,
     val additionalCommandInfos: List<AdditionalCommandInfoConfig>
 ) : SidebarsView(
+    showtimeBackend,
     websiteTheme,
-    iconManager,
-    hashManager,
     locale,
     i18nContext,
     path

@@ -2,7 +2,10 @@ package net.perfectdreams.showtime.backend.utils
 
 import kotlinx.html.DIV
 import kotlinx.html.IMG
+import kotlinx.html.div
+import kotlinx.html.fieldSet
 import kotlinx.html.img
+import kotlinx.html.legend
 import kotlinx.html.style
 
 fun DIV.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Unit = {}) {
@@ -18,6 +21,14 @@ fun DIV.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Uni
             block
         )
     } else error("Missing ImageInfo for \"$path\"!")
+}
+
+fun DIV.imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(path: String, sizes: String, block: IMG.() -> Unit = {}) {
+    try {
+        imgSrcSetFromResources(path, sizes, block)
+    } catch (e: Exception) {
+        img(src = path, block = block)
+    }
 }
 
 // Generates Image Sets
@@ -48,6 +59,54 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
         attributes["srcset"] = srcset
 
         this.apply(block)
+    }
+}
+
+fun DIV.adWrapper(svgIconManager: SVGIconManager, callback: DIV.() -> Unit) {
+    // Wraps the div in a nice wrapper
+    div {
+        style = "text-align: center;"
+        fieldSet {
+            style = "display: inline;\n" +
+                    "border: 2px solid rgba(0,0,0,.05);\n" +
+                    "border-radius: 7px;\n" +
+                    "color: rgba(0,0,0,.3);"
+
+            legend {
+                style = "margin-left: auto;"
+                svgIconManager.ad.apply(this)
+            }
+
+            div {
+                callback.invoke(this)
+            }
+        }
+    }
+}
+
+fun DIV.mediaWithContentWrapper(
+    mediaOnTheRightSide: Boolean,
+    mediaFigure: DIV.() -> (Unit),
+    mediaBody: DIV.() -> (Unit),
+) {
+    div(classes = "media") {
+        if (mediaOnTheRightSide) {
+            div(classes = "media-body") {
+                mediaBody.invoke(this)
+            }
+
+            div(classes = "media-figure") {
+                mediaFigure.invoke(this)
+            }
+        } else {
+            div(classes = "media-figure") {
+                mediaFigure.invoke(this)
+            }
+
+            div(classes = "media-body") {
+                mediaBody.invoke(this)
+            }
+        }
     }
 }
 

@@ -7,6 +7,7 @@ import kotlinx.html.a
 import kotlinx.html.body
 import kotlinx.html.div
 import kotlinx.html.footer
+import kotlinx.html.h2
 import kotlinx.html.h3
 import kotlinx.html.hr
 import kotlinx.html.id
@@ -17,20 +18,17 @@ import kotlinx.html.style
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.showtime.backend.utils.SVGIconManager
-import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
+import net.perfectdreams.showtime.backend.ShowtimeBackend
 import java.time.LocalDate
 
 abstract class NavbarView(
+    showtimeBackend: ShowtimeBackend,
     val websiteTheme: WebsiteTheme,
-    iconManager: SVGIconManager,
-    hashManager: WebsiteAssetsHashManager,
     locale: BaseLocale,
     i18nContext: I18nContext,
     path: String
 ) : BaseView(
-    iconManager,
-    hashManager,
+    showtimeBackend,
     locale,
     i18nContext,
     path
@@ -258,16 +256,20 @@ abstract class NavbarView(
                 footer {
                     div {
                         div(classes = "social-networks") {
-                            a(href = "https://github.com/LorittaBot") {
-                                iconManager.github.apply(this)
-                            }
-
                             a(href = "https://twitter.com/LorittaBot") {
                                 iconManager.twitter.apply(this)
                             }
 
                             a(href = "https://instagram.com/lorittabot") {
                                 iconManager.instagram.apply(this)
+                            }
+
+                            a(href = "https://youtube.com/c/Loritta") {
+                                iconManager.youtube.apply(this)
+                            }
+
+                            a(href = "https://github.com/LorittaBot") {
+                                iconManager.github.apply(this)
                             }
                         }
 
@@ -374,8 +376,7 @@ abstract class NavbarView(
                             +locale["website.footer.allRightsReserved"]
                         }
 
-                        // TODO: Fix
-                        /* hr {}
+                        hr {}
 
                         div(classes = "call-to-action-footer") {
                             div(classes = "lets-transform") {
@@ -388,16 +389,15 @@ abstract class NavbarView(
                             }
 
                             div(classes = "add-cta") {
-                                // TODO: Fix
-                                a(classes = "add-me button pink shadow big", href = "https://google.com/") {
+                                a(classes = "add-me button pink shadow big", href = showtimeBackend.addBotUrl.toString()) {
                                     style = "font-size: 1.5em;"
 
-                                    i(classes = "fas fa-plus") {}
+                                    showtimeBackend.svgIconManager.plus.apply(this)
 
                                     +" ${locale["website.jumbotron.addMe"]}"
                                 }
                             }
-                        } */
+                        }
                     }
                 }
             }

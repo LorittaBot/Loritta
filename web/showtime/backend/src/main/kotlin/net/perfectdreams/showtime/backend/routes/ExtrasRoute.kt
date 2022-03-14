@@ -216,9 +216,8 @@ class ExtrasRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rout
 
                 call.respondHtml(
                     block = ExtrasView(
+                        showtime,
                         call.request.userTheme,
-                        showtime.svgIconManager,
-                        showtime.hashManager,
                         locale,
                         i18nContext,
                         "/extras",
@@ -235,9 +234,8 @@ class ExtrasRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Rout
 
                 call.respondHtml(
                     block = ExtrasView(
+                        showtime,
                         call.request.userTheme,
-                        showtime.svgIconManager,
-                        showtime.hashManager,
                         locale,
                         i18nContext,
                         "/extras",

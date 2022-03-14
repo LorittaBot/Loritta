@@ -40,9 +40,8 @@ class LegacyCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showti
 
             call.respondHtml(
                 block = LegacyCommandsView(
+                    showtime,
                     call.request.userTheme,
-                    showtime.svgIconManager,
-                    showtime.hashManager,
                     locale,
                     i18nContext,
                     "/commands/legacy",

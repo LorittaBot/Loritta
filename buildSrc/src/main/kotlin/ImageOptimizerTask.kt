@@ -28,6 +28,8 @@ abstract class ImageOptimizerTask : DefaultTask() {
         // https://medium.com/hceverything/applying-srcset-choosing-the-right-sizes-for-responsive-images-at-different-breakpoints-a0433450a4a3
         // https://cloudfour.com/thinks/responsive-images-the-simple-way/#what-image-sizes-should-i-provide
         val widthSizes = listOf(
+            80,
+            160,
             320,
             640,
             960,
@@ -61,6 +63,7 @@ abstract class ImageOptimizerTask : DefaultTask() {
         val outputImagesInfoFile = outputImagesInfoFile.get().asFile
         val targetFolder = outputImagesDirectory.asFile.get()
         val pngQuantPath = findPngQuantCommandPath()
+        val gifsiclePath = findGifsicleCommandPath()
 
         val list = if (outputImagesInfoFile.exists())
             CopyOnWriteArrayList(Json.decodeFromString(ListSerializer(ImageInfo.serializer()),  outputImagesInfoFile.readText()))
@@ -95,6 +98,7 @@ abstract class ImageOptimizerTask : DefaultTask() {
                         targetFile,
                         targetFolder,
                         pngQuantPath,
+                        gifsiclePath,
                         list
                     )
                 )
@@ -108,41 +112,44 @@ abstract class ImageOptimizerTask : DefaultTask() {
             .writeText(Json.encodeToString(ListSerializer(ImageInfo.serializer()), list))
     }
 
-    private fun findPngQuantCommandPath(): String {
-        logger.info("Finding where pngquant is...")
+    private fun findPngQuantCommandPath() = findAppCommandPath("pngquant")
+    private fun findGifsicleCommandPath() = findAppCommandPath("gifsicle")
+
+    private fun findAppCommandPath(app: String): String {
+        logger.info("Finding where $app is...")
 
         try {
             ProcessBuilder(
-                "pngquant",
+                app,
             ).start()
 
-            return "pngquant"
+            return app
         } catch (e: IOException) {
-            logger.info("PNGQuant was not found in the path \"pngquant\"...")
+            logger.info("$app was not found in the path \"$app\"...")
         }
 
         try {
             ProcessBuilder(
-                "pngquant.exe",
+                "$app.exe",
             ).start()
 
-            return "pngquant.exe"
+            return "$app.exe"
         } catch (e: IOException) {
-            logger.info("PNGQuant was not found in the path \"pngquant.exe\"...")
+            logger.info("$app was not found in the path \"$app.exe\"...")
         }
 
         try {
             ProcessBuilder(
-                "/usr/bin/pngquant",
+                "/usr/bin/$app",
             ).start()
 
-            return "/usr/bin/pngquant"
+            return "/usr/bin/$app"
         } catch (e: IOException) {
-            logger.info("PNGQuant was not found in the path \"/usr/bin/pngquant\"...")
+            logger.info("PNGQuant was not found in the path \"/usr/bin/$app\"...")
         }
 
-        val systemPropPngQuantPath = System.getProperty("pngquant.path")
-        
+        val systemPropPngQuantPath = System.getProperty("$app.path")
+
         if (systemPropPngQuantPath != null) {
             try {
                 ProcessBuilder(
@@ -151,11 +158,11 @@ abstract class ImageOptimizerTask : DefaultTask() {
 
                 return systemPropPngQuantPath
             } catch (e: IOException) {
-                logger.info("PNGQuant was not found in the path \"$systemPropPngQuantPath\"...")
+                logger.info("$app was not found in the path \"$systemPropPngQuantPath\"...")
             }
         }
 
-        error("PNGQuant was not found in the path! Please install PNGQuant or, if it is already installed, provide the path via the \"pngquant.path\" system property (Example: \"./gradlew -Dpngquant.path=/home/lorittapath/to/pngquant/pngquant ...\")")
+        error("$app was not found in the path! Please install $app or, if it is already installed, provide the path via the \"$app.path\" system property (Example: \"./gradlew -D$app.path=/home/lorittapath/to/$app/$app ...\")")
     }
 }
 

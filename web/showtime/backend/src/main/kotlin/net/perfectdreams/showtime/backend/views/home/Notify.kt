@@ -7,34 +7,43 @@ import kotlinx.html.div
 import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.html.style
+import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
+import net.perfectdreams.showtime.backend.utils.SVGIconManager
+import net.perfectdreams.showtime.backend.utils.adWrapper
+import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.showtime.backend.utils.mediaWithContentWrapper
 import net.perfectdreams.showtime.backend.views.BaseView
 
-fun DIV.notify(locale: BaseLocale, sectionClassName: String) {
+fun DIV.notify(svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
     div(classes = "$sectionClassName wobbly-bg") {
         style = "text-align: center;"
 
-        // generateNitroPayAd("home-digital-influencers", "Loritta v2 Digital Influencers")
+        // TODO: Sponsor
+        adWrapper(svgIconManager) {
+            // generateNitroPayAd("home-digital-influencers", "Loritta v2 Digital Influencers")
+            generateNitroPayAd("home-digital-influencers", NitroPayAdGenerator.ALL_SIZES)
+        }
 
-        div(classes = "media") {
-            div(classes = "media-figure") {
+        mediaWithContentWrapper(
+            isImageOnTheRightSide,
+            {
                 div {
                     style = "position: relative;"
                     imgSrcSetFromResources(
-                            "${BaseView.versionPrefix}/assets/img/home/lori_notification.png",
-                            "(max-width: 800px) 50vw, 15vw"
+                        "${BaseView.versionPrefix}/assets/img/home/lori_notification.png",
+                        "(max-width: 800px) 50vw, 15vw"
                     )
                     imgSrcSetFromResources(
-                            "${BaseView.versionPrefix}/assets/img/home/lori_notification_video.png",
-                            "(max-width: 800px) 50vw, 15vw"
+                        "${BaseView.versionPrefix}/assets/img/home/lori_notification_video.png",
+                        "(max-width: 800px) 50vw, 15vw"
                     ) {
                         classes = setOf("icon-middle")
                         style = "position: absolute; top: 0; left: 0;"
                     }
                 }
-            }
-
-            div(classes = "media-body") {
+            },
+            {
                 div {
                     style = "text-align: left;"
 
@@ -52,6 +61,6 @@ fun DIV.notify(locale: BaseLocale, sectionClassName: String) {
                     }
                 }
             }
-        }
+        )
     }
 }

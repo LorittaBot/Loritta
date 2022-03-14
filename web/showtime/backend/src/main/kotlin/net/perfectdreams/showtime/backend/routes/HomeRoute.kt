@@ -14,9 +14,8 @@ class HomeRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, RouteP
         try {
             call.respondHtml(
                 block = HomeView(
+                    showtime,
                     call.request.userTheme,
-                    showtime.svgIconManager,
-                    showtime.hashManager,
                     locale,
                     i18nContext,
                     "/"

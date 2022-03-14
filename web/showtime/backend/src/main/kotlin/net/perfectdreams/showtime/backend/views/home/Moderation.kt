@@ -7,35 +7,36 @@ import kotlinx.html.h1
 import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.style
+import net.perfectdreams.showtime.backend.utils.mediaWithContentWrapper
 import net.perfectdreams.showtime.backend.views.BaseView
 
-fun DIV.moderation(locale: BaseLocale, websiteUrl: String, sectionClassName: String) {
+fun DIV.moderation(locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
     div(classes = "odd-wrapper wobbly-bg") {
         style = "text-align: center;"
 
-        div(classes = "media") {
-            div(classes = "media-body") {
+        mediaWithContentWrapper(
+            isImageOnTheRightSide,
+            {
+                img(src = "${BaseView.versionPrefix}/assets/img/lori_police.png") {}
+            },
+            {
                 div {
                     style = "text-align: left;"
 
                     div {
                         style = "text-align: center;"
                         h1 {
-                            + locale["website.home.moderation.title"]
+                            +locale["website.home.moderation.title"]
                         }
                     }
 
                     for (str in locale.getList("website.home.moderation.description")) {
                         p {
-                            + str
+                            +str
                         }
                     }
                 }
             }
-
-            div(classes = "media-figure") {
-                img(src = "${websiteUrl}${BaseView.versionPrefix}/assets/img/lori_police.png") {}
-            }
-        }
+        )
     }
 }

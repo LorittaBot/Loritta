@@ -21,10 +21,10 @@ jobs:
       with: 
         submodules: recursive
 
-    - name: Install pngquant
+    - name: Install tools
       run: |
         sudo apt-get update
-        sudo apt-get install pngquant
+        sudo apt-get install pngquant gifsicle
 
     - name: Setup Java JDK
       uses: actions/setup-java@v1.4.3
