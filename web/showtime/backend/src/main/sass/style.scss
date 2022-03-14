@@ -92,15 +92,26 @@ iframe {
 .guild-icons-horizontal {
   width: 100%;
   overflow: hidden;
+  white-space: nowrap;
 
   .guilds-wrapper {
+    display: inline-block;
     overflow: hidden;
     white-space: nowrap;
-    width: 9000px;
-    transform: translateX(-50%);
+    width: fit-content;
     text-align: center;
-    margin-left: 50%;
-    padding: 32px;
+    padding-top: 32px;
+    padding-bottom: 32px;
+    animation: guilds-wrapper-move 60s linear infinite;
+  }
+}
+
+@keyframes guilds-wrapper-move {
+  0% {
+      transform: translate(0, 0);
+  }
+  100% {
+      transform: translate(-100%, 0);
   }
 }
 

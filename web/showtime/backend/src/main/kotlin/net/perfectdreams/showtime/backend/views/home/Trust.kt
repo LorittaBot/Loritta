@@ -74,23 +74,28 @@ fun DIV.trust(locale: BaseLocale, sectionClassName: String) {
         }
 
         div(classes = "guild-icons-horizontal") {
-            div(classes = "guilds-wrapper") {
-                val middle = icons.size / 2
-                // We will only take 20 icons instead of all, to avoid adding icons to the DOM that are outside of most monitors' viewports
-                for ((idx, icon) in icons.subList(middle - 10, middle + 10).withIndex()) {
-                    val classNames = when (idx % 4) {
-                        1, 3 -> "icon-middle"
-                        2 -> "icon-top"
-                        else -> "icon-bottom"
-                    }
+            // We will only take 20 icons instead of all, to avoid adding icons to the DOM that are outside of most monitors' viewports
+            val middle = icons.size / 2
+            val icons = icons.subList(middle - 10, middle + 10).withIndex()
 
-                    // Checked the sizes with Firefox: Put "6vw" and hover the image URL in Firefox's inspect tab
-                    imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(icon.path, "6vw") {
-                        classes = setOf(classNames)
-                        title = icon.title
-                        attributes["loading"] = "lazy"
-                        width = "96"
-                        style = "border-radius: 9999px; margin-left: 4px; margin-right: 4px;"
+            // We need to duplicate the DOM for the Marquee effect
+            repeat(2) {
+                div(classes = "guilds-wrapper") {
+                    for ((idx, icon) in icons) {
+                        val classNames = when (idx % 4) {
+                            1, 3 -> "icon-middle"
+                            2 -> "icon-top"
+                            else -> "icon-bottom"
+                        }
+
+                        // Checked the sizes with Firefox: Put "6vw" and hover the image URL in Firefox's inspect tab
+                        imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(icon.path, "6vw") {
+                            classes = setOf(classNames)
+                            title = icon.title
+                            attributes["loading"] = "lazy"
+                            width = "96"
+                            style = "border-radius: 9999px; margin-left: 4px; margin-right: 4px;"
+                        }
                     }
                 }
             }
