@@ -5,11 +5,15 @@ import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.imageio.ImageIO
 
+
+
+
 class GenerateOptimizedImage(
     val sourceFile: File,
     val targetFile: File,
     val targetFolder: File,
     val pngQuantPathString: String,
+    val gifsiclePathString: String,
     val imagesInfo: CopyOnWriteArrayList<ImageInfo>,
 ) : Runnable {
     override fun run() {
@@ -19,70 +23,121 @@ class GenerateOptimizedImage(
 
             val imageType = sourceFile.extension
 
-            if (imageType == "png") {
-                // Load the image
-                val originalImage = ImageIO.read(sourceFile)
+            when (imageType) {
+                "png" -> {
+                    // Load the image
+                    val originalImage = ImageIO.read(sourceFile)
 
-                println("Copying ${sourceFile}...")
+                    println("Copying ${sourceFile}...")
 
-                // Copy current image as is
-                sourceFile.copyTo(targetFile, true)
+                    // Copy current image as is
+                    sourceFile.copyTo(targetFile, true)
 
-                optimizePNG(targetFile)
+                    optimizePNG(targetFile)
 
-                val variations = mutableListOf<ImageInfo>()
+                    val variations = mutableListOf<ImageInfo>()
 
-                // Optimize images based on our width sizes array
-                for (newWidth in ImageOptimizerTask.widthSizes.filter { originalImage.width >= it }) {
-                    val newHeight = (newWidth * originalImage.height) / originalImage.width
-                    println("Downscaling $sourceFile to ${newWidth}x${newHeight}...")
+                    // Optimize images based on our width sizes array
+                    for (newWidth in ImageOptimizerTask.widthSizes.filter { originalImage.width >= it }) {
+                        val newHeight = (newWidth * originalImage.height) / originalImage.width
+                        println("Downscaling $sourceFile to ${newWidth}x${newHeight}...")
 
-                    // Scale down to the width
-                    val downscaledImage = toBufferedImage(
-                        originalImage.getScaledInstance(
-                            newWidth,
-                            (newWidth * originalImage.height) / originalImage.width,
-                            BufferedImage.SCALE_SMOOTH
+                        // Scale down to the width
+                        val downscaledImage = toBufferedImage(
+                            originalImage.getScaledInstance(
+                                newWidth,
+                                (newWidth * originalImage.height) / originalImage.width,
+                                BufferedImage.SCALE_SMOOTH
+                            )
                         )
-                    )
-                    val downscaledImageFile = File(
-                        targetFile.parentFile,
-                        targetFile.nameWithoutExtension + "_${newWidth}w.${targetFile.extension}"
-                    )
-
-                    ImageIO.write(
-                        downscaledImage,
-                        "png",
-                        downscaledImageFile
-                    )
-
-                    optimizePNG(downscaledImageFile)
-
-                    variations.add(
-                        ImageInfo(
-                            downscaledImageFile.relativeTo(targetFolder).toString().replace("\\", "/"),
-                            downscaledImage.width,
-                            downscaledImage.height,
-                            downscaledImageFile.length(),
-                            null
+                        val downscaledImageFile = File(
+                            targetFile.parentFile,
+                            targetFile.nameWithoutExtension + "_${newWidth}w.${targetFile.extension}"
                         )
+
+                        ImageIO.write(
+                            downscaledImage,
+                            "png",
+                            downscaledImageFile
+                        )
+
+                        optimizePNG(downscaledImageFile)
+
+                        variations.add(
+                            ImageInfo(
+                                downscaledImageFile.relativeTo(targetFolder).toString().replace("\\", "/"),
+                                downscaledImage.width,
+                                downscaledImage.height,
+                                downscaledImageFile.length(),
+                                null
+                            )
+                        )
+                    }
+
+                    val imageInfo = ImageInfo(
+                        targetFileRelativeToTheBaseFolder.toString().replace("\\", "/"),
+                        originalImage.width,
+                        originalImage.height,
+                        sourceFile.length(),
+                        variations
                     )
+
+                    imagesInfo.add(imageInfo)
                 }
+                "gif" -> {
+                    // Load the image
+                    // https://stackoverflow.com/a/39131371/7271796
+                    val originalImage = ImageIO.read(sourceFile)
 
-                val imageInfo = ImageInfo(
-                    targetFileRelativeToTheBaseFolder.toString().replace("\\", "/"),
-                    originalImage.width,
-                    originalImage.height,
-                    sourceFile.length(),
-                    variations
-                )
+                    println("Copying ${sourceFile}...")
 
-                imagesInfo.add(imageInfo)
-            } else {
-                println("Copying $sourceFile (no optimizations)...")
+                    // Copy current image as is
+                    sourceFile.copyTo(targetFile, true)
 
-                // Copy current image as is
-                sourceFile.copyTo(targetFile, true)
+                    optimizeGIF(targetFile, targetFile)
+
+                    val variations = mutableListOf<ImageInfo>()
+
+                    // Optimize images based on our width sizes array
+                    for (newWidth in ImageOptimizerTask.widthSizes.filter { originalImage.width >= it }) {
+                        val newHeight = (newWidth * originalImage.height) / originalImage.width
+                        println("Downscaling $sourceFile to ${newWidth}x${newHeight}...")
+
+                        val downscaledImageFile = File(
+                            targetFile.parentFile,
+                            targetFile.nameWithoutExtension + "_${newWidth}w.${targetFile.extension}"
+                        )
+
+                        resizeGIF(sourceFile, downscaledImageFile, newWidth, newHeight)
+                        optimizeGIF(downscaledImageFile, downscaledImageFile)
+
+                        variations.add(
+                            ImageInfo(
+                                downscaledImageFile.relativeTo(targetFolder).toString().replace("\\", "/"),
+                                newWidth,
+                                newHeight,
+                                downscaledImageFile.length(),
+                                null
+                            )
+                        )
+                    }
+
+                    val imageInfo = ImageInfo(
+                        targetFileRelativeToTheBaseFolder.toString().replace("\\", "/"),
+                        originalImage.width,
+                        originalImage.height,
+                        sourceFile.length(),
+                        variations
+                    )
+
+                    imagesInfo.add(imageInfo)
+                }
+                else -> {
+                    println("Copying $sourceFile (no optimizations)...")
+
+                    // Copy current image as is
+                    sourceFile.copyTo(targetFile, true)
+                }
             }
         } catch (e: Exception) {
             throw RuntimeException(e)
@@ -123,6 +178,52 @@ class GenerateOptimizedImage(
         val newFileSize = file.length()
         println("Successfully optimized ${file.name}! $originalFileSize -> $newFileSize")
     }
+
+    private fun resizeGIF(file: File, output: File, width: Int, height: Int) {
+        val proc = ProcessBuilder(
+            gifsiclePathString,
+            "--resize",
+            "${width}x$height",
+            "-o",
+            "${output.absolutePath}",
+            file.absolutePath
+        ).start()
+
+        val result = proc.inputStream.readAllBytes()
+        val errorStreamResult = proc.errorStream.readAllBytes()
+
+        val s = proc.waitFor()
+
+        if (s != 0) {
+            error("Something went wrong while trying to resize GIF image! Status = $s; Error stream: ${errorStreamResult.toString(Charsets.UTF_8)}")
+        }
+
+        println("Successfully resized ${file.name}!")
+    }
+
+    private fun optimizeGIF(file: File, output: File) {
+        val proc = ProcessBuilder(
+            gifsiclePathString,
+            "-O3",
+            "--lossy=25", // Optimize GIFs a LOT
+            "--colors=64", // who cares about colors right
+            "-o",
+            "${output.absolutePath}",
+            file.absolutePath
+        ).start()
+
+        val result = proc.inputStream.readAllBytes()
+        val errorStreamResult = proc.errorStream.readAllBytes()
+
+        val s = proc.waitFor()
+
+        if (s != 0) {
+            error("Something went wrong while trying to optimize GIF image! Status = $s; Error stream: ${errorStreamResult.toString(Charsets.UTF_8)}")
+        }
+
+        println("Successfully optimize ${file.name}!")
+    }
+
 
     /**
      * Converts a given Image into a BufferedImage

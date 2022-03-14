@@ -23,6 +23,14 @@ fun DIV.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Uni
     } else error("Missing ImageInfo for \"$path\"!")
 }
 
+fun DIV.imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(path: String, sizes: String, block: IMG.() -> Unit = {}) {
+    try {
+        imgSrcSetFromResources(path, sizes, block)
+    } catch (e: Exception) {
+        img(src = path, block = block)
+    }
+}
+
 // Generates Image Sets
 fun DIV.imgSrcSet(path: String, fileName: String, sizes: String, max: Int, min: Int, stepInt: Int, block : IMG.() -> Unit = {}) {
     val srcsets = mutableListOf<String>()
