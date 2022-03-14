@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.microservices.brokertickersupdater.uti
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.tradingviewscraper.TradingViewAPI
+import org.jetbrains.exposed.sql.update
 import pw.forst.exposed.insertOrUpdate
 import java.time.Instant
 
@@ -36,6 +37,16 @@ class BrokerTickersUpdater(val config: RootConfig, val services: Pudding, val ht
         logger.info { "Connecting to TradingView..." }
         _tradingApi.connect()
         logger.info { "Connected! Yay!!" }
+
+        logger.info { "Disabling tickets that aren't in the validStocksCode list! Valid codes: ${LorittaBovespaBrokerUtils.validStocksCodes}" }
+        runBlocking {
+            services.transaction {
+                TickerPrices.update({ TickerPrices.ticker notInList LorittaBovespaBrokerUtils.validStocksCodes }) {
+                    it[TickerPrices.enabled] = false
+                }
+            }
+        }
+
         logger.info { "Starting WebServer..." }
 
         for (tickerId in LorittaBovespaBrokerUtils.validStocksCodes) {
