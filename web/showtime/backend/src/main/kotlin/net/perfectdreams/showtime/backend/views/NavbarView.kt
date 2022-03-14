@@ -65,7 +65,7 @@ abstract class NavbarView(
                     div(classes = "left-side-entries") {
                         div(classes = "entry loritta-navbar-logo") {
                             a(classes = "home-page", href = "$base/") {
-                                // attributes["data-preload-link"] = "true"
+                                attributes["data-preload-link"] = "true"
                                 style = "font-family: 'Pacifico', cursive; text-transform: none;"
 
                                 +"Loritta"
