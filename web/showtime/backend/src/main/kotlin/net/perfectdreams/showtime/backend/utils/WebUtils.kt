@@ -4,7 +4,6 @@ import kotlinx.html.DIV
 import kotlinx.html.IMG
 import kotlinx.html.div
 import kotlinx.html.fieldSet
-import kotlinx.html.i
 import kotlinx.html.img
 import kotlinx.html.legend
 import kotlinx.html.style
@@ -72,6 +71,32 @@ fun DIV.adWrapper(svgIconManager: SVGIconManager, callback: DIV.() -> Unit) {
 
             div {
                 callback.invoke(this)
+            }
+        }
+    }
+}
+
+fun DIV.mediaWithContentWrapper(
+    mediaOnTheRightSide: Boolean,
+    mediaFigure: DIV.() -> (Unit),
+    mediaBody: DIV.() -> (Unit),
+) {
+    div(classes = "media") {
+        if (mediaOnTheRightSide) {
+            div(classes = "media-body") {
+                mediaBody.invoke(this)
+            }
+
+            div(classes = "media-figure") {
+                mediaFigure.invoke(this)
+            }
+        } else {
+            div(classes = "media-figure") {
+                mediaFigure.invoke(this)
+            }
+
+            div(classes = "media-body") {
+                mediaBody.invoke(this)
             }
         }
     }

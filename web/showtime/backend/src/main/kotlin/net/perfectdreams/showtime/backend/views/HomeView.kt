@@ -181,14 +181,21 @@ class HomeView(
             }
         }
 
+        var imageOnTheRightSide = false
+        fun getAndAlternate(): Boolean {
+            val original = imageOnTheRightSide
+            imageOnTheRightSide = !imageOnTheRightSide
+            return original
+        }
+
         trust(locale, getOddOrEvenClassName(sectionId++))
-        funnyCommands(iconManager, locale, websiteUrl, getOddOrEvenClassName(sectionId++))
-        chitChat(locale, websiteUrl, getOddOrEvenClassName(sectionId++))
+        funnyCommands(iconManager, locale, websiteUrl, getOddOrEvenClassName(sectionId++), getAndAlternate())
+        chitChat(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
         // music(locale, websiteUrl)
-        moderation(locale, websiteUrl, getOddOrEvenClassName(sectionId++))
-        notify(iconManager, locale, getOddOrEvenClassName(sectionId++))
-        customization(locale, getOddOrEvenClassName(sectionId++))
-        community(iconManager, locale, getOddOrEvenClassName(sectionId++))
+        moderation(locale, websiteUrl, getOddOrEvenClassName(sectionId++), getAndAlternate())
+        notify(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+        customization(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+        community(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
         muchMore(locale, getOddOrEvenClassName(sectionId++))
         makeItAwesome(showtimeBackend, locale, getOddOrEvenClassName(sectionId++))
         // Disabled for now because our YourKit license is expired because I need to ask to renew it

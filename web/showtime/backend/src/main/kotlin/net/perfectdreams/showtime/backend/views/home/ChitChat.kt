@@ -7,12 +7,20 @@ import kotlinx.html.h1
 import kotlinx.html.p
 import kotlinx.html.style
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.showtime.backend.utils.mediaWithContentWrapper
 import net.perfectdreams.showtime.backend.views.BaseView
 
-fun DIV.chitChat(locale: BaseLocale, websiteUrl: String, sectionClassName: String) {
+fun DIV.chitChat(locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
     div(classes = "$sectionClassName wobbly-bg") {
-        div(classes = "media") {
-            div(classes = "media-body") {
+        mediaWithContentWrapper(
+            isImageOnTheRightSide,
+            {
+                imgSrcSetFromResources(
+                    "${BaseView.versionPrefix}/assets/img/home/lori_prize.png",
+                    "(max-width: 800px) 50vw, 15vw"
+                )
+            },
+            {
                 div {
                     style = "text-align: left;"
 
@@ -30,13 +38,6 @@ fun DIV.chitChat(locale: BaseLocale, websiteUrl: String, sectionClassName: Strin
                     }
                 }
             }
-
-            div(classes = "media-figure") {
-                imgSrcSetFromResources(
-                        "${BaseView.versionPrefix}/assets/img/home/lori_prize.png",
-                        "(max-width: 800px) 50vw, 15vw"
-                )
-            }
-        }
+        )
     }
 }

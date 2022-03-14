@@ -11,9 +11,10 @@ import net.perfectdreams.showtime.backend.utils.SVGIconManager
 import net.perfectdreams.showtime.backend.utils.adWrapper
 import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.showtime.backend.utils.mediaWithContentWrapper
 import net.perfectdreams.showtime.backend.views.BaseView
 
-fun DIV.community(svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassName: String) {
+fun DIV.community(svgIconManager: SVGIconManager, locale: BaseLocale, sectionClassName: String, isImageOnTheRightSide: Boolean) {
     div(classes = "$sectionClassName wobbly-bg") {
         style = "text-align: center;"
 
@@ -27,15 +28,15 @@ fun DIV.community(svgIconManager: SVGIconManager, locale: BaseLocale, sectionCla
         // generateAd("8109140955", "Loritta v2 Community", true)
         // generateAd("8109140955", "Loritta v2 Community", false)
 
-        div(classes = "media") {
-            div(classes = "media-figure") {
+        mediaWithContentWrapper(
+            isImageOnTheRightSide,
+            {
                 imgSrcSetFromResources(
-                        "${BaseView.versionPrefix}/assets/img/home/lori_community.png",
-                        "(max-width: 800px) 50vw, 15vw"
+                    "${BaseView.versionPrefix}/assets/img/home/lori_community.png",
+                    "(max-width: 800px) 50vw, 15vw"
                 )
-            }
-
-            div(classes = "media-body") {
+            },
+            {
                 div {
                     style = "text-align: left;"
 
@@ -53,6 +54,6 @@ fun DIV.community(svgIconManager: SVGIconManager, locale: BaseLocale, sectionCla
                     }
                 }
             }
-        }
+        )
     }
 }
