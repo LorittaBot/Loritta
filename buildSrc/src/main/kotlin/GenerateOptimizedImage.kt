@@ -5,9 +5,6 @@ import java.io.File
 import java.util.concurrent.CopyOnWriteArrayList
 import javax.imageio.ImageIO
 
-
-
-
 class GenerateOptimizedImage(
     val sourceFile: File,
     val targetFile: File,
