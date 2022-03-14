@@ -256,16 +256,20 @@ abstract class NavbarView(
                 footer {
                     div {
                         div(classes = "social-networks") {
-                            a(href = "https://github.com/LorittaBot") {
-                                iconManager.github.apply(this)
-                            }
-
                             a(href = "https://twitter.com/LorittaBot") {
                                 iconManager.twitter.apply(this)
                             }
 
                             a(href = "https://instagram.com/lorittabot") {
                                 iconManager.instagram.apply(this)
+                            }
+
+                            a(href = "https://youtube.com/c/Loritta") {
+                                iconManager.youtube.apply(this)
+                            }
+
+                            a(href = "https://github.com/LorittaBot") {
+                                iconManager.github.apply(this)
                             }
                         }
 
