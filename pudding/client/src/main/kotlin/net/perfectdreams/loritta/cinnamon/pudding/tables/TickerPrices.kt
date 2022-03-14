@@ -9,6 +9,7 @@ object TickerPrices : IdTable<String>() {
     val value = long("value")
     val dailyPriceVariation = double("daily_price_variation")
     val lastUpdatedAt = timestamp("last_updated_at")
+    val enabled = bool("active").default(true)
 
     override val id = ticker
     override val primaryKey = PrimaryKey(id)

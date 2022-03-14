@@ -22,7 +22,6 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.update
 import java.math.BigDecimal
@@ -38,7 +37,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
      * @return a list of all tickers
      */
     suspend fun getAllTickers() = pudding.transaction {
-        TickerPrices.selectAll()
+        TickerPrices.select { TickerPrices.enabled eq true }
             .map {
                 BrokerTickerInformation(
                     it[TickerPrices.ticker].value,

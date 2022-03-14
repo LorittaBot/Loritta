@@ -41,7 +41,8 @@ object LorittaBovespaBrokerUtils {
         "CIEL3"  to "Cielo",
         "IGTI3"  to "Jereissati Participações S.A.",
         "NVDC34" to "Nvidia",
-        "A1MD34" to "Advanced Micro Devices"
+        "A1MD34" to "Advanced Micro Devices",
+        "AMER3"  to "B2W Digital"
     )
 
     // The openTime/closingTime YY/MM/DD is just Loritta's creation date (30/03/2017), because this date formatting type on Discord will only show the time in HH:MM format
