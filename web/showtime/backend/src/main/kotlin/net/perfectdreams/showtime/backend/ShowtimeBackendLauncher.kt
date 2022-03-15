@@ -13,7 +13,7 @@ object ShowtimeBackendLauncher {
     fun main(args: Array<String>) {
         // https://github.com/JetBrains/Exposed/issues/1356
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-        
+
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(ShowtimeBackendLauncher::class, System.getProperty("showtime.config", "showtime.conf"))
         logger.info { "Loaded Showtime Backend's configuration file" }
 
