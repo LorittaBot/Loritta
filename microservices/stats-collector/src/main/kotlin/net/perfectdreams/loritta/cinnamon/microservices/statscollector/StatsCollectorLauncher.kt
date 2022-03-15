@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.statscollector.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import java.util.*
 import kotlin.concurrent.thread
 
 object StatsCollectorLauncher {
@@ -12,6 +13,9 @@ object StatsCollectorLauncher {
 
     @JvmStatic
     fun main(args: Array<String>) {
+        // https://github.com/JetBrains/Exposed/issues/1356
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(StatsCollectorLauncher::class, System.getProperty("statscollector.config", "stats-collector.conf"))
         logger.info { "Loaded Loritta's configuration file" }
 
