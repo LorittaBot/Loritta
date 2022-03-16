@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
-import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
+import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import net.perfectdreams.exposedpowerutils.sql.jsonb
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
-import org.jetbrains.exposed.sql.javatime.timestamp
+import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 
 object ExecutedApplicationCommandsLog : LongIdTableWithoutOverriddenPrimaryKey() {
     val userId = long("user").index()
     val guildId = long("guild").nullable()
     val channelId = long("channel")
-    val sentAt = timestamp("sent_at").index()
+    val sentAt = timestampWithTimeZone("sent_at").index()
 
     val type = postgresEnumeration<ApplicationCommandType>("type").index()
     val declaration = text("declaration").index()

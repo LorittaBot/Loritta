@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
+import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.javatime.timestamp
 
 object CoinFlipBetMatchmakingResults : LongIdTable() {
     val winner = reference("winner", Profiles).index()
@@ -10,5 +10,5 @@ object CoinFlipBetMatchmakingResults : LongIdTable() {
     val quantityAfterTax = long("quantity_after_tax")
     val tax = long("tax").nullable()
     val taxPercentage = double("tax_percentage").nullable()
-    val timestamp = timestamp("timestamp").index()
+    val timestamp = timestampWithTimeZone("timestamp").index()
 }
