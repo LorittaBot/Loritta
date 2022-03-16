@@ -1,14 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
-import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 object ExecutedComponentsLog : LongIdTableWithoutOverriddenPrimaryKey() {
     val userId = long("user").index()
     val guildId = long("guild").nullable()
     val channelId = long("channel")
-    val sentAt = timestampWithTimeZone("sent_at").index()
+    // Because this is already a partition table, we can't change its type (for now)
+    val sentAt = timestamp("sent_at").index()
 
     val type = postgresEnumeration<ComponentType>("type").index()
     val declaration = text("declaration").index()
