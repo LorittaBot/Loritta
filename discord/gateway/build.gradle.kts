@@ -18,7 +18,7 @@ dependencies {
     implementation("dev.kord:kord-gateway:${Versions.KORD}")
 
     // Logging
-    api("ch.qos.logback:logback-classic:1.3.0-alpha12")
+    api("ch.qos.logback:logback-classic:1.3.0-alpha14")
 
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
