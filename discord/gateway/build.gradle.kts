@@ -20,11 +20,7 @@ dependencies {
     // Logging
     api("ch.qos.logback:logback-classic:1.3.0-alpha14")
 
-    // Required for tests, if this is missing then Gradle will throw
-    // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
-    testImplementation(kotlin("test"))
-    testImplementation(kotlin("test-junit"))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.4.2")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.assertj:assertj-core:3.19.0")
 }
 
