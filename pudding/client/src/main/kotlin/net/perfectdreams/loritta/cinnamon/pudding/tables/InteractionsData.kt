@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.jsonb
+import net.perfectdreams.exposedpowerutils.sql.jsonb
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.javatime.timestamp
 

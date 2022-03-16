@@ -18,6 +18,8 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.23")
     implementation("com.zaxxer:HikariCP:${Versions.HIKARICP}")
     implementation("pw.forst", "exposed-upsert", "1.1.0")
+    implementation("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.0.0")
+    implementation("net.perfectdreams.exposedpowerutils:postgres-java-time:1.0.0")
 
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"

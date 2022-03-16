@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.postgresEnumeration
+import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
 import org.jetbrains.exposed.sql.javatime.timestamp
 
 object ExecutedComponentsLog : LongIdTableWithoutOverriddenPrimaryKey() {
