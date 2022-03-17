@@ -74,7 +74,7 @@ abstract class NavbarView(
 
                         div(classes = "entry") {
                             a(classes = "support", href = "$base/support") {
-                                // attributes["data-preload-link"] = "true"
+                                attributes["data-preload-link"] = "true"
 
                                 iconManager.discord.apply(this)
 
@@ -280,6 +280,7 @@ abstract class NavbarView(
                                 }
 
                                 a(href = "$base/") {
+                                    attributes["data-preload-link"] = "true"
                                     +locale["website.navbar.home"]
                                 }
                                 a(href = "$base/discord-bot-brasileiro") {
@@ -289,9 +290,11 @@ abstract class NavbarView(
                                     +locale["website.navbar.dashboard"]
                                 }
                                 a(href = "$base/support") {
+                                    attributes["data-preload-link"] = "true"
                                     +locale["website.navbar.support"]
                                 }
                                 a(href = "$base/commands/slash") {
+                                    attributes["data-preload-link"] = "true"
                                     +locale["modules.sectionNames.commands"]
                                 }
                                 a(href = "$base/donate") {
@@ -304,9 +307,11 @@ abstract class NavbarView(
                                     +"Daily"
                                 }
                                 a(href = "$base/extras/faq-loritta/about-loritta-bot") {
+                                    attributes["data-preload-link"] = "true"
                                     +"Sobre a Loritta (Bot)"
                                 }
                                 a(href = "$base/extras/stories/how-loritta-bot-was-created") {
+                                    attributes["data-preload-link"] = "true"
                                     +"História da Criação da Loritta (Bot)"
                                 }
                             }
