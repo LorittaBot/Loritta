@@ -1,5 +1,6 @@
 ---
 website:
+  localePathId: "br" #The locale ID that is prefixed on every localized page path, example: "/br/commands/"
   commands:
     viewSlashCommands: "Ver a lista de comandos com / (novo)"
     viewLegacyCommands: "Ver a lista de comandos por mensagem (antigo)"
