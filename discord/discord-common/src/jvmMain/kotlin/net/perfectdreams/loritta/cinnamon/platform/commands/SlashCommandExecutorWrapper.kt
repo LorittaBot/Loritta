@@ -13,7 +13,6 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
@@ -26,6 +25,7 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
 import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
+import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ChannelCommandOption
@@ -377,6 +377,32 @@ class SlashCommandExecutorWrapper(
 
                 // At this point, state should be "ALREADY_REPLIED"
                 val userId = UserId(context.sender.id.value)
+
+                // Website Update Message
+                val patchNotesNotifications = loritta.services.patchNotesNotifications.getUnreadPatchNotesNotificationsAndMarkAsRead(
+                    UserId(context.sender.id.value),
+                    Clock.System.now()
+                )
+
+                for (patchNote in patchNotesNotifications) {
+                    context.sendEphemeralMessage {
+                        styled(
+                            localI18nContext.get(
+                                I18nKeysData.Commands.CheckOutNews(
+                                    GACampaigns.patchNotesUrl(
+                                        loritta.config.website,
+                                        patchNote.path.removePrefix("/"),
+                                        "discord",
+                                        "slash-commands",
+                                        "lori-news",
+                                        "patch-notes-notification"
+                                    )
+                                )
+                            ),
+                            Emotes.LoriSunglasses
+                        )
+                    }
+                }
 
                 // Pending Daily Tax Direct Message
                 val pendingDailyTaxDirectMessage = loritta.services.users.getAndUpdateStatePendingDailyTaxDirectMessage(

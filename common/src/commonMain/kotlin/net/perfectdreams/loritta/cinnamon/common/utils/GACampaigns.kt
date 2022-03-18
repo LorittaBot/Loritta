@@ -76,4 +76,15 @@ object GACampaigns {
     ): String {
         return "${lorittaWebsiteUrl}daily?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
     }
+
+    fun patchNotesUrl(
+        lorittaWebsiteUrl: String,
+        path: String,
+        source: String,
+        medium: String,
+        campaignName: String,
+        campaignContent: String
+    ): String {
+        return "${lorittaWebsiteUrl}$path?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
+    }
 }

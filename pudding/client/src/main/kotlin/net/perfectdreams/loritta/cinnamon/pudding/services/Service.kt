@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
+import net.perfectdreams.loritta.cinnamon.pudding.data.PatchNotesNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileSettings
@@ -46,6 +47,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
@@ -260,4 +262,8 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
 fun Daily.Companion.fromRow(row: ResultRow) = Daily(
     UserId(row[Dailies.receivedById]),
     Instant.fromEpochMilliseconds(row[Dailies.receivedAt])
+)
+
+fun PatchNotesNotification.Companion.fromRow(row: ResultRow) = PatchNotesNotification(
+    row[PatchNotesNotifications.path]
 )
