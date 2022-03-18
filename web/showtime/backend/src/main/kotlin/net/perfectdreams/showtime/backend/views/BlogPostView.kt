@@ -4,7 +4,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.div
 import kotlinx.html.h1
-import kotlinx.html.p
+import kotlinx.html.unsafe
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
@@ -38,8 +38,8 @@ class BlogPostView(
                         +localizedContent.metadata.title
                     }
 
-                    p {
-                        +localizedContent.content
+                    unsafe {
+                        raw(showtimeBackend.renderer.render(showtimeBackend.parser.parse(localizedContent.content)))
                     }
                 }
             }

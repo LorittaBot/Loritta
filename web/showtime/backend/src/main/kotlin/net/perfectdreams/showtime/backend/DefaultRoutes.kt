@@ -1,6 +1,8 @@
 package net.perfectdreams.showtime.backend
 
 import net.perfectdreams.showtime.backend.routes.ApplicationCommandsRoute
+import net.perfectdreams.showtime.backend.routes.BlogPostRoute
+import net.perfectdreams.showtime.backend.routes.BlogRoute
 import net.perfectdreams.showtime.backend.routes.ExtrasRoute
 import net.perfectdreams.showtime.backend.routes.HomeRoute
 import net.perfectdreams.showtime.backend.routes.LegacyCommandsRedirectRoute
@@ -17,7 +19,7 @@ object DefaultRoutes {
         ApplicationCommandsRoute(showtime),
         PremiumRoute(showtime),
         ExtrasRoute(showtime),
-        // BlogRoute(showtime),
-        // BlogPostRoute(showtime)
+        BlogRoute(showtime),
+        BlogPostRoute(showtime)
     )
 }
