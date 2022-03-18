@@ -391,7 +391,8 @@ class SlashCommandExecutorWrapper(
                                 I18nKeysData.Commands.CheckOutNews(
                                     GACampaigns.patchNotesUrl(
                                         loritta.config.website,
-                                        patchNote.path.removePrefix("/"),
+                                        localI18nContext.get(I18nKeysData.Website.LocalePathId),
+                                        patchNote.path,
                                         "discord",
                                         "slash-commands",
                                         "lori-news",
