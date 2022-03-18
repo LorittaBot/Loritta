@@ -2,10 +2,13 @@ package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.Snowflake
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -120,6 +123,7 @@ class SlashCommandExecutorWrapper(
         )
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private suspend fun executeCommand(
         rootDeclarationClazzName: String?,
         executorClazzName: String?,
@@ -354,11 +358,27 @@ class SlashCommandExecutorWrapper(
                 net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments(cinnamonArgs)
             )
 
-            // Additional notifications will only be passed on if the request state is "already replied"
-            // This avoids out of order messages when the request is deferred
-            if (context.bridge.state.value == InteractionRequestState.ALREADY_REPLIED) {
+            // Required because "Smart cast is impossible" within the scope
+            val localI18nContext = i18nContext
+            // Additional messages that must be sent after the command sends at least one message
+            // TODO: Don't use GlobalScope!!
+            GlobalScope.launch {
+                var state = context.bridge.state.value
+
+                try {
+                    withTimeout(15_000) {
+                        while (state != InteractionRequestState.ALREADY_REPLIED)
+                            state = context.bridge.state.awaitChange() // The ".awaitChange()" is cancellable
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    logger.warn(e) { "Timed out while waiting for InteractionRequestState, we won't send any additional messages then..." }
+                    return@launch
+                }
+
+                // At this point, state should be "ALREADY_REPLIED"
                 val userId = UserId(context.sender.id.value)
 
+                // Pending Daily Tax Direct Message
                 val pendingDailyTaxDirectMessage = loritta.services.users.getAndUpdateStatePendingDailyTaxDirectMessage(
                     userId,
                     listOf(
@@ -371,8 +391,18 @@ class SlashCommandExecutorWrapper(
 
                 if (pendingDailyTaxDirectMessage != null) {
                     val builder = when (pendingDailyTaxDirectMessage) {
-                        is UserDailyTaxTaxedDirectMessage -> UserUtils.buildDailyTaxMessage(i18nContext, loritta.config.website, userId, pendingDailyTaxDirectMessage)
-                        is UserDailyTaxWarnDirectMessage -> UserUtils.buildDailyTaxMessage(i18nContext, loritta.config.website, userId, pendingDailyTaxDirectMessage)
+                        is UserDailyTaxTaxedDirectMessage -> UserUtils.buildDailyTaxMessage(
+                            localI18nContext,
+                            loritta.config.website,
+                            userId,
+                            pendingDailyTaxDirectMessage
+                        )
+                        is UserDailyTaxWarnDirectMessage -> UserUtils.buildDailyTaxMessage(
+                            localI18nContext,
+                            loritta.config.website,
+                            userId,
+                            pendingDailyTaxDirectMessage
+                        )
                     }
 
                     cinnamonContext.sendEphemeralMessage(builder)
