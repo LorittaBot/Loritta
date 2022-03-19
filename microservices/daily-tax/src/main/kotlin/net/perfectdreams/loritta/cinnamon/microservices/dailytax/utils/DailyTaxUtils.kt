@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds.THRESHOLDS
+import net.perfectdreams.loritta.cinnamon.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
@@ -23,10 +24,13 @@ object DailyTaxUtils {
     fun getAndProcessInactiveDailyUsers(lorittaId: Long, dayOffset: Long, block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
         val moneySum = Payments.money.sum()
 
+        val cheapestPlanWithoutDailyInactivityTaxCost = UserPremiumPlans.getPlansThatDoNotHaveDailyInactivityTax()
+            .minOf { it.cost }
+
         val usersToBeIgnored = Payments.slice(Payments.userId, moneySum).select {
             Payments.expiresAt greaterEq System.currentTimeMillis()
         }.groupBy(Payments.userId)
-            .having { moneySum greaterEq 90.00 } // It is actually 99.99 but shhhhh
+            .having { moneySum greaterEq (cheapestPlanWithoutDailyInactivityTaxCost - 10.00) } // It is actually 99.99 but shhhhh
             .map { it[Payments.userId] }
             .toMutableSet()
         usersToBeIgnored.add(lorittaId)

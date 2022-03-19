@@ -9,11 +9,22 @@ interface UserPremiumPlans {
         get() = coinFlipRewardTax != 0.0
 
     companion object {
+        val plans = listOf(
+            Free,
+            Essential,
+            Recommended,
+            Complete
+        )
+
         fun getPlanFromValue(value: Double) = when {
             value >= 99.99 -> Complete
             value >= 39.99 -> Recommended
             value >= 19.99 -> Essential
             else           -> Free
+        }
+
+        fun getPlansThatDoNotHaveDailyInactivityTax() = plans.filter {
+            !it.hasDailyInactivityTax
         }
     }
 
