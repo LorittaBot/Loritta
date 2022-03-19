@@ -13,6 +13,7 @@ import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.showtime.backend.utils.innerContent
 
 class SupportView(
     showtimeBackend: ShowtimeBackend,
@@ -30,80 +31,82 @@ class SupportView(
     override fun getTitle() = locale["website.support.title"]
 
     override fun DIV.generateContent() {
-        div(classes = "even-wrapper") {
-            div(classes = "media") {
-                div(classes = "media-figure") {
-                    imgSrcSetFromResources(
-                        "${versionPrefix}/assets/img/support/lori_support.png",
-                        "(max-width: 800px) 50vw, 15vw"
-                    )
-                }
+        innerContent {
+            div(classes = "even-wrapper") {
+                div(classes = "media") {
+                    div(classes = "media-figure") {
+                        imgSrcSetFromResources(
+                            "${versionPrefix}/assets/img/support/lori_support.png",
+                            "(max-width: 800px) 50vw, 15vw"
+                        )
+                    }
 
-                div(classes = "media-body") {
-                    div {
-                        style = "text-align: left;"
-
+                    div(classes = "media-body") {
                         div {
-                            style = "text-align: center;"
-                            h1 {
-                                + locale["website.support.title"]
-                            }
-                        }
+                            style = "text-align: left;"
 
-                        for (str in locale.getList("website.support.description")) {
-                            p {
-                                + str
+                            div {
+                                style = "text-align: center;"
+                                h1 {
+                                    +locale["website.support.title"]
+                                }
+                            }
+
+                            for (str in locale.getList("website.support.description")) {
+                                p {
+                                    +str
+                                }
                             }
                         }
                     }
                 }
             }
-        }
-        div(classes = "odd-wrapper wobbly-bg") {
-            div(classes = "media") {
-                div(classes = "media-body") {
-                    div {
-                        style = "text-align: center;"
-
+            div(classes = "odd-wrapper wobbly-bg") {
+                div(classes = "media") {
+                    div(classes = "media-body") {
                         div {
-                            style = "display: flex; justify-content: space-evenly; flex-wrap: wrap;"
+                            style = "text-align: center;"
 
                             div {
-                                style = "min-width: 300px; width: 50%;"
+                                style = "display: flex; justify-content: space-evenly; flex-wrap: wrap;"
 
-                                h2 {
-                                    + locale["website.support.supportServer.title"]
-                                }
+                                div {
+                                    style = "min-width: 300px; width: 50%;"
 
-                                locale.getList("website.support.supportServer.description").forEach {
-                                    p {
-                                        + it
+                                    h2 {
+                                        +locale["website.support.supportServer.title"]
+                                    }
+
+                                    locale.getList("website.support.supportServer.description").forEach {
+                                        p {
+                                            +it
+                                        }
+                                    }
+
+                                    a(href = "https://discord.gg/loritta") {
+                                        img(src = "https://discordapp.com/api/guilds/420626099257475072/widget.png?style=banner3") {
+                                            style = "border-radius: 7px;"
+                                        }
                                     }
                                 }
 
-                                a(href = "https://discord.gg/loritta") {
-                                    img(src = "https://discordapp.com/api/guilds/420626099257475072/widget.png?style=banner3") {
-                                        style = "border-radius: 7px;"
+                                div {
+                                    style = "min-width: 300px; width: 50%;"
+
+                                    h2 {
+                                        +locale["website.support.communityServer.title"]
                                     }
-                                }
-                            }
 
-                            div {
-                                style = "min-width: 300px; width: 50%;"
-
-                                h2 {
-                                    + locale["website.support.communityServer.title"]
-                                }
-
-                                locale.getList("website.support.communityServer.description").forEach {
-                                    p {
-                                        + it
+                                    locale.getList("website.support.communityServer.description").forEach {
+                                        p {
+                                            +it
+                                        }
                                     }
-                                }
 
-                                a(href = "https://discord.gg/lori") {
-                                    img(src = "https://discordapp.com/api/guilds/297732013006389252/widget.png?style=banner3") {
-                                        style = "border-radius: 7px;"
+                                    a(href = "https://discord.gg/lori") {
+                                        img(src = "https://discordapp.com/api/guilds/297732013006389252/widget.png?style=banner3") {
+                                            style = "border-radius: 7px;"
+                                        }
                                     }
                                 }
                             }

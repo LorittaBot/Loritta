@@ -19,6 +19,7 @@ import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
 import net.perfectdreams.showtime.backend.utils.adWrapper
 import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.showtime.backend.utils.innerContent
 import net.perfectdreams.showtime.backend.views.home.chitChat
 import net.perfectdreams.showtime.backend.views.home.community
 import net.perfectdreams.showtime.backend.views.home.customization
@@ -127,80 +128,83 @@ class HomeView(
             }
         }
 
-        div { id = "about-me" }
-        var sectionId = 1
-        div(classes = getOddOrEvenClassName(sectionId++)) {
-            // TODO: Sponsor
-            adWrapper(iconManager) {
-                generateNitroPayAd("home-below-header1", NitroPayAdGenerator.ALL_SIZES)
-                generateNitroPayAd("home-below-header2", NitroPayAdGenerator.ALL_SIZES)
-            }
+        innerContent {
+            div { id = "about-me" }
+            var sectionId = 1
+            div(classes = getOddOrEvenClassName(sectionId++)) {
+                // TODO: Sponsor
+                adWrapper(iconManager) {
+                    generateNitroPayAd("home-below-header1", NitroPayAdGenerator.ALL_SIZES)
+                    generateNitroPayAd("home-below-header2", NitroPayAdGenerator.ALL_SIZES)
+                }
 
-            // generateHowToSponsorButton(locale)
+                // generateHowToSponsorButton(locale)
 
-            div(classes = "media") {
-                div(classes = "media-body") {
-                    div {
-                        style = "text-align: center;"
+                div(classes = "media") {
+                    div(classes = "media-body") {
+                        div {
+                            style = "text-align: center;"
 
-                        h1 {
-                            // style = "font-size: 3.125rem;"
-                            + locale["website.home.intro.title"]
+                            h1 {
+                                // style = "font-size: 3.125rem;"
+                                +locale["website.home.intro.title"]
+                            }
+
+                            p {
+                                style = "font-size: 1.25em; text-align: left;"
+                                span {
+                                    style = "text-decoration: underline dotted #fe8129;"
+                                    +locale["website.home.intro.everyServer"]
+                                }
+                                +" ${locale["website.home.intro.membersWant"]}"
+                            }
+                        }
+
+                        div {
+                            style = "text-align: left;"
+                            for (str in locale.getList("website.home.intro.description")) {
+                                p {
+                                    +str
+                                }
+                            }
                         }
 
                         p {
-                            style = "font-size: 1.25em; text-align: left;"
-                            span {
-                                style = "text-decoration: underline dotted #fe8129;"
-                                + locale["website.home.intro.everyServer"]
-                            }
-                            + " ${locale["website.home.intro.membersWant"]}"
+                            style =
+                                "font-size: 1.25em; text-align: center; text-decoration: underline dotted #fe8129;"
+                            +locale["website.home.intro.itIsThatEasy"]
                         }
                     }
-
-                    div {
-                        style = "text-align: left;"
-                        for (str in locale.getList("website.home.intro.description")) {
-                            p {
-                                + str
-                            }
-                        }
+                    div(classes = "media-figure") {
+                        imgSrcSetFromResources(
+                            "${versionPrefix}/assets/img/home/lori_gabi.png",
+                            "(max-width: 800px) 50vw, 15vw"
+                        )
                     }
-
-                    p {
-                        style = "font-size: 1.25em; text-align: center; text-decoration: underline dotted #fe8129;"
-                        + locale["website.home.intro.itIsThatEasy"]
-                    }
-                }
-                div(classes = "media-figure") {
-                    imgSrcSetFromResources(
-                        "${versionPrefix}/assets/img/home/lori_gabi.png",
-                        "(max-width: 800px) 50vw, 15vw"
-                    )
                 }
             }
-        }
 
-        var imageOnTheRightSide = false
-        fun getAndAlternate(): Boolean {
-            val original = imageOnTheRightSide
-            imageOnTheRightSide = !imageOnTheRightSide
-            return original
-        }
+            var imageOnTheRightSide = false
+            fun getAndAlternate(): Boolean {
+                val original = imageOnTheRightSide
+                imageOnTheRightSide = !imageOnTheRightSide
+                return original
+            }
 
-        trust(locale, getOddOrEvenClassName(sectionId++))
-        funnyCommands(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
-        chitChat(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
-        // music(locale, websiteUrl)
-        moderation(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
-        notify(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
-        customization(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
-        community(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
-        muchMore(locale, getOddOrEvenClassName(sectionId++))
-        makeItAwesome(showtimeBackend, locale, getOddOrEvenClassName(sectionId++))
-        // Disabled for now because our YourKit license is expired because I need to ask to renew it
-        // (or maybe just buy YourKit?)
-        // thankYou(locale, getOddOrEvenClassName(sectionId++))
+            trust(locale, getOddOrEvenClassName(sectionId++))
+            funnyCommands(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            chitChat(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            // music(locale, websiteUrl)
+            moderation(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            notify(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            customization(locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            community(iconManager, locale, getOddOrEvenClassName(sectionId++), getAndAlternate())
+            muchMore(locale, getOddOrEvenClassName(sectionId++))
+            makeItAwesome(showtimeBackend, locale, getOddOrEvenClassName(sectionId++))
+            // Disabled for now because our YourKit license is expired because I need to ask to renew it
+            // (or maybe just buy YourKit?)
+            // thankYou(locale, getOddOrEvenClassName(sectionId++))
+        }
     }
 
     fun getOddOrEvenClassName(id: Int): String {

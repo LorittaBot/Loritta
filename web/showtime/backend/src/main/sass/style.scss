@@ -143,6 +143,22 @@ body {
   visibility: hidden;
 }
 
+#inner-content {
+    position: relative;
+
+    .background-overlay {
+        // Before we used the background on the divs itself (odd-wrapper and even-wrapper)
+        // The issue with this approach is that the background dowesn't persist its position between divs
+        // So it looks kinda wonky
+        background-image: url("/v3/assets/img/website_bg.png");
+        mask-image: linear-gradient(-90deg, black 0%, rgba(0, 0, 0, 0) 15%, rgba(0, 0, 0, 0) 85%, black 100%);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+}
 .odd-wrapper {
   background-color: var(--background-wrapper-primary);
 
@@ -157,8 +173,6 @@ body {
     height: 49px;
     width: 100%;
   }
-
-  background-image: linear-gradient(-90deg, #43b1ff00, var(--background-wrapper-primary) 15%, var(--background-wrapper-primary) 85%, #43b1ff00), url("/v3/assets/img/website_bg.png");
 }
 
 .even-wrapper {
@@ -175,8 +189,6 @@ body {
     height: 49px;
     width: 100%;
   }
-
-  background-image: linear-gradient(-90deg, #43b1ff00, var(--background-wrapper-secondary) 15%, var(--background-wrapper-secondary) 85%, #43b1ff00), url("/v3/assets/img/website_bg.png");
 }
 
 .media {

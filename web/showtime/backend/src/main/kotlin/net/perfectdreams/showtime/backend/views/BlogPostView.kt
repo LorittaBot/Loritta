@@ -10,6 +10,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.content.ContentBase
 import net.perfectdreams.showtime.backend.content.MultilanguageContent
+import net.perfectdreams.showtime.backend.utils.innerContent
 
 class BlogPostView(
     showtimeBackend: ShowtimeBackend,
@@ -31,15 +32,17 @@ class BlogPostView(
     override fun getTitle() = localizedContent.metadata.title
 
     override fun DIV.generateContent() {
-        div(classes = "odd-wrapper") {
-            div(classes = "media") {
-                div(classes = "media-body") {
-                    h1 {
-                        +localizedContent.metadata.title
-                    }
+        innerContent {
+            div(classes = "odd-wrapper") {
+                div(classes = "media") {
+                    div(classes = "media-body") {
+                        h1 {
+                            +localizedContent.metadata.title
+                        }
 
-                    unsafe {
-                        raw(showtimeBackend.renderer.render(showtimeBackend.parser.parse(localizedContent.content)))
+                        unsafe {
+                            raw(showtimeBackend.renderer.render(showtimeBackend.parser.parse(localizedContent.content)))
+                        }
                     }
                 }
             }

@@ -4,6 +4,7 @@ import kotlinx.html.DIV
 import kotlinx.html.IMG
 import kotlinx.html.div
 import kotlinx.html.fieldSet
+import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.legend
 import kotlinx.html.style
@@ -107,6 +108,16 @@ fun DIV.mediaWithContentWrapper(
                 mediaBody.invoke(this)
             }
         }
+    }
+}
+
+fun DIV.innerContent(block: DIV.() -> (Unit)) = div {
+    id = "inner-content"
+
+    div(classes = "background-overlay") {}
+
+    div {
+        block.invoke(this)
     }
 }
 

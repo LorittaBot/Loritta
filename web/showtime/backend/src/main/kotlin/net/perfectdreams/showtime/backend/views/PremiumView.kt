@@ -17,6 +17,7 @@ import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.showtime.backend.utils.innerContent
 
 class PremiumView(
     showtimeBackend: ShowtimeBackend,
@@ -34,55 +35,56 @@ class PremiumView(
     override fun getTitle() = locale["modules.sectionNames.commands"]
 
     override fun DIV.generateContent() {
-        div(classes = "odd-wrapper") {
-            div {
-                style = "text-align: center;"
-                h1(classes = "sectionHeader") {
-                    style = "font-size: 50px;"
-                    + locale["website.donate.needYourHelp"]
-                }
+        innerContent {
+            div(classes = "odd-wrapper") {
+                div {
+                    style = "text-align: center;"
+                    h1(classes = "sectionHeader") {
+                        style = "font-size: 50px;"
+                        +locale["website.donate.needYourHelp"]
+                    }
 
-                h2(classes = "sectionHeader") {
-                    style = "font-size: 30px;"
-                    + locale["website.donate.stayAwesome"]
-                }
-            }
-
-            div(classes = "media") {
-                div(classes = "media-figure") {
-                    imgSrcSetFromResources(
-                        "${versionPrefix}/assets/img/donate/lori_donate.png",
-                        "(max-width: 800px) 50vw, 15vw"
-                    )
-                    // img(src = "${websiteUrl}/assets/img/loritta_pobre.png", alt = "Loritta Pobre") {}
-                }
-
-                div(classes = "media-body") {
                     h2(classes = "sectionHeader") {
-                        + locale["website.donate.title"]
+                        style = "font-size: 30px;"
+                        +locale["website.donate.stayAwesome"]
+                    }
+                }
+
+                div(classes = "media") {
+                    div(classes = "media-figure") {
+                        imgSrcSetFromResources(
+                            "${versionPrefix}/assets/img/donate/lori_donate.png",
+                            "(max-width: 800px) 50vw, 15vw"
+                        )
+                        // img(src = "${websiteUrl}/assets/img/loritta_pobre.png", alt = "Loritta Pobre") {}
                     }
 
-                    for (text in locale.getList("website.donate.introDonate")) {
-                        p {
-                            unsafe {
-                                + text
-                            }
+                    div(classes = "media-body") {
+                        h2(classes = "sectionHeader") {
+                            +locale["website.donate.title"]
                         }
-                    }
 
-                    div {
-                        style = "text-align: center;"
-
-                        a(href = "#plans-features") {
-                            div(classes = "button-discord button-discord-info pure-button") {
-                                style = "font-size: 1.5em;"
-
-                                i(classes = "fas fa-list") {}
-                                +" ${locale["website.donate.viewPlans"]}"
+                        for (text in locale.getList("website.donate.introDonate")) {
+                            p {
+                                unsafe {
+                                    +text
+                                }
                             }
                         }
 
-                        /* if (keys.size() != 0) {
+                        div {
+                            style = "text-align: center;"
+
+                            a(href = "#plans-features") {
+                                div(classes = "button-discord button-discord-info pure-button") {
+                                    style = "font-size: 1.5em;"
+
+                                    i(classes = "fas fa-list") {}
+                                    +" ${locale["website.donate.viewPlans"]}"
+                                }
+                            }
+
+                            /* if (keys.size() != 0) {
                             div(classes = "button-discord button-discord-info pure-button") {
                                 id = "renew-button"
                                 style = "font-size: 1.5em;"
@@ -91,84 +93,85 @@ class PremiumView(
                                 + " ${locale["website.donate.renewPlan"]}"
                             }
                         } */
-                    }
+                        }
 
-                    div {
-                        style = "text-align: center; margin: 8px;"
+                        div {
+                            style = "text-align: center; margin: 8px;"
 
-                        video {
-                            controls = true
-                            width = "400"
-                            source {
-                                src = "https://cdn.discordapp.com/attachments/510601125221761054/534473346642083851/Lorisemdinheiro.mp4"
-                                type = "video/mp4"
+                            video {
+                                controls = true
+                                width = "400"
+                                source {
+                                    src =
+                                        "https://cdn.discordapp.com/attachments/510601125221761054/534473346642083851/Lorisemdinheiro.mp4"
+                                    type = "video/mp4"
+                                }
+                                +"Your browser does not support HTML5 video."
                             }
-                            + "Your browser does not support HTML5 video."
                         }
                     }
                 }
             }
-        }
 
-        div(classes = "even-wrapper wobbly-bg") {
-            div(classes = "media") {
-                div(classes = "vertically-centered-content") {
-                    style = "max-width: 100%;"
-                    div(classes = "sectionText") {
-                        div {
-                            style = "text-align: center;"
-                            h2(classes = "sectionHeader") {
-                                + locale["website.donate.donationBenefits"]
-                            }
-
-                            p {
-                                + locale["website.donate.benefitsExplain"]
-                            }
-
-                            p {
-                                a(href = "/sponsors", target = "_blank") {
-                                    + locale["website.donate.benefitsSponsor"]
-                                }
-                            }
-                        }
-
+            div(classes = "even-wrapper wobbly-bg") {
+                div(classes = "media") {
+                    div(classes = "vertically-centered-content") {
+                        style = "max-width: 100%;"
                         div(classes = "sectionText") {
                             div {
                                 style = "text-align: center;"
                                 h2(classes = "sectionHeader") {
-                                    + "Nossos Planos"
+                                    +locale["website.donate.donationBenefits"]
+                                }
+
+                                p {
+                                    +locale["website.donate.benefitsExplain"]
+                                }
+
+                                p {
+                                    a(href = "/sponsors", target = "_blank") {
+                                        +locale["website.donate.benefitsSponsor"]
+                                    }
                                 }
                             }
-                        }
 
-                        div {
-                            id = "plans-features"
-                            style = "margin: 0 auto"
+                            div(classes = "sectionText") {
+                                div {
+                                    style = "text-align: center;"
+                                    h2(classes = "sectionHeader") {
+                                        +"Nossos Planos"
+                                    }
+                                }
+                            }
+
+                            div {
+                                id = "plans-features"
+                                style = "margin: 0 auto"
+                            }
                         }
                     }
                 }
             }
-        }
 
-        div(classes = "odd-wrapper wobbly-bg") {
-            div(classes = "content-wrapper") {
-                style = "max-width: 100%;"
-                div(classes = "sectionText") {
-                    id = "top-donators-scoreboard-wrapper"
-                    style = "text-align: center;"
+            div(classes = "odd-wrapper wobbly-bg") {
+                div(classes = "content-wrapper") {
+                    style = "max-width: 100%;"
+                    div(classes = "sectionText") {
+                        id = "top-donators-scoreboard-wrapper"
+                        style = "text-align: center;"
 
-                    h2(classes = "sectionHeader") {
-                        + locale["website.donate.thanksToEveryone"]
-                    }
+                        h2(classes = "sectionHeader") {
+                            +locale["website.donate.thanksToEveryone"]
+                        }
 
-                    /* img(src = "https://loritta.website/assets/img/loritta_pudim.png", alt = "Loritta com um pudim na mão", classes = "animate-on-scroll-up is-invisible") {
+                        /* img(src = "https://loritta.website/assets/img/loritta_pudim.png", alt = "Loritta com um pudim na mão", classes = "animate-on-scroll-up is-invisible") {
                         height = "300"
                     } */
+                    }
                 }
             }
-        }
 
-        /* div {
+            /* div {
             id = "donation-keys-json"
             style = "display: none;"
 
@@ -176,5 +179,6 @@ class PremiumView(
                 + keys.toString()
             }
         } */
+        }
     }
 }
