@@ -8,6 +8,7 @@ import kotlinx.datetime.toKotlinLocalDateTime
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
+import net.perfectdreams.loritta.cinnamon.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
@@ -112,56 +113,74 @@ class DailyExecutor : SlashCommandExecutor() {
 
             // Check if the user is in a daily tax bracket and, if yes, tell to the user about it
             if (currentUserThreshold != null) {
-                if (userLastDailyReward != null) {
-                    // User is in a daily tax bracket and has received daily before
-                    val whenYouAreGoingToStartToLoseSonhos = userLastDailyReward.receivedAt.toJavaInstant()
-                        .atZone(dailyTaxZoneOffset)
-                        .withHour(0)
-                        .withMinute(0)
-                        .withSecond(0)
-                        .withNano(0)
-                        .plusDays(currentUserThreshold.maxDayThreshold.toLong())
+                val activeUserPayments = context.loritta.services.payments.getActiveMoneyFromDonations(UserId(context.user.id.value))
+                val activeUserPremiumPlan = UserPremiumPlans.getPlanFromValue(activeUserPayments)
 
-                    if (OffsetDateTime.now(dailyTaxZoneOffset) > whenYouAreGoingToStartToLoseSonhos.toOffsetDateTime()) {
-                        // User is already losing sonhos
+                if (activeUserPremiumPlan.hasDailyInactivityTax) {
+                    if (userLastDailyReward != null) {
+                        // User is in a daily tax bracket and has received daily before
+                        val whenYouAreGoingToStartToLoseSonhos = userLastDailyReward.receivedAt.toJavaInstant()
+                            .atZone(dailyTaxZoneOffset)
+                            .withHour(0)
+                            .withMinute(0)
+                            .withSecond(0)
+                            .withNano(0)
+                            .plusDays(currentUserThreshold.maxDayThreshold.toLong())
+
+                        if (OffsetDateTime.now(dailyTaxZoneOffset) > whenYouAreGoingToStartToLoseSonhos.toOffsetDateTime()) {
+                            // User is already losing sonhos
+                            styled(
+                                context.i18nContext.get(
+                                    DailyCommand.I18N_PREFIX.DailyTaxBracketInfo.UserIsAlreadyLosingSonhosDueToDailyTax(
+                                        currentUserThreshold.minimumSonhosForTrigger,
+                                        currentUserThreshold.maxDayThreshold,
+                                        currentUserThreshold.tax,
+                                        "<t:$todayDailyTaxTimeEpoch:R>",
+                                        "<t:$todayDailyTaxTimeEpoch:f>"
+                                    )
+                                ),
+                                Emotes.LoriCoffee
+                            )
+                        } else {
+                            // User will lose sonhos in the future
+                            val whenYouAreGoingToStartToLoseSonhosEpoch = whenYouAreGoingToStartToLoseSonhos.toEpochSecond()
+                            styled(
+                                context.i18nContext.get(
+                                    DailyCommand.I18N_PREFIX.DailyTaxBracketInfo.UserWillLoseSonhosInTheFuture(
+                                        currentUserThreshold.minimumSonhosForTrigger,
+                                        currentUserThreshold.maxDayThreshold,
+                                        currentUserThreshold.tax,
+                                        "<t:$whenYouAreGoingToStartToLoseSonhosEpoch:R>",
+                                        "<t:$whenYouAreGoingToStartToLoseSonhosEpoch:f>"
+                                    )
+                                ),
+                                Emotes.LoriCoffee
+                            )
+                        }
+                    } else {
+                        // User is in a daily tax bracket and has not received daily before
                         styled(
                             context.i18nContext.get(
-                                DailyCommand.I18N_PREFIX.DailyTaxBracketInfo.UserIsAlreadyLosingSonhosDueToDailyTax(
+                                DailyCommand.I18N_PREFIX.DailyTaxBracketInfo.UserIsAlreadyLosingSonhosDueToDailyTaxAndNeverGotDailyBefore(
                                     currentUserThreshold.minimumSonhosForTrigger,
                                     currentUserThreshold.maxDayThreshold,
                                     currentUserThreshold.tax,
                                     "<t:$todayDailyTaxTimeEpoch:R>",
-                                    "<t:$todayDailyTaxTimeEpoch:f>"
-                                )
-                            ),
-                            Emotes.LoriCoffee
-                        )
-                    } else {
-                        // User will lose sonhos in the future
-                        val whenYouAreGoingToStartToLoseSonhosEpoch = whenYouAreGoingToStartToLoseSonhos.toEpochSecond()
-                        styled(
-                            context.i18nContext.get(
-                                DailyCommand.I18N_PREFIX.DailyTaxBracketInfo.UserWillLoseSonhosInTheFuture(
-                                    currentUserThreshold.minimumSonhosForTrigger,
-                                    currentUserThreshold.maxDayThreshold,
-                                    currentUserThreshold.tax,
-                                    "<t:$whenYouAreGoingToStartToLoseSonhosEpoch:R>",
-                                    "<t:$whenYouAreGoingToStartToLoseSonhosEpoch:f>"
+                                    "<t:$todayDailyTaxTimeEpoch:f>",
                                 )
                             ),
                             Emotes.LoriCoffee
                         )
                     }
                 } else {
-                    // User is in a daily tax bracket and has not received daily before
+                    // User is in a daily tax bracket, but they don't have the daily inactivity tax
                     styled(
                         context.i18nContext.get(
-                            DailyCommand.I18N_PREFIX.DailyTaxBracketInfo.UserIsAlreadyLosingSonhosDueToDailyTaxAndNeverGotDailyBefore(
+                            DailyCommand.I18N_PREFIX.DailyTaxBracketInfo.UserDoesntHaveDailyTaxBecauseTheyArePremium(
                                 currentUserThreshold.minimumSonhosForTrigger,
                                 currentUserThreshold.maxDayThreshold,
                                 currentUserThreshold.tax,
-                                "<t:$todayDailyTaxTimeEpoch:R>",
-                                "<t:$todayDailyTaxTimeEpoch:f>",
+                                Emotes.LoriKiss
                             )
                         ),
                         Emotes.LoriCoffee
