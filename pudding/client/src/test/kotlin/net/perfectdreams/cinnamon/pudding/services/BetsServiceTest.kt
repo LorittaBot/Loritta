@@ -148,7 +148,7 @@ class BetsServiceTest {
             pudding.transaction {
                 val matchmakingResult = CoinFlipBetGlobalMatchmakingResults.selectAll().limit(1).first()
                 require(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.quantityAfterTax] == 100L) { "Quantity After Tax should be 100 but it is ${matchmakingResult[CoinFlipBetMatchmakingResults.quantityAfterTax]}!" }
-                require(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage] == 0.0) { "Tax percentage should be null but it is ${matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage]}!" }
+                require(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage] == 0.0) { "Tax percentage should be 0.0 but it is ${matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage]}!" }
             }
         }
     }
