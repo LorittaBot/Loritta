@@ -29,6 +29,8 @@ permissions:
   manageNicknames: "Gerenciar apelidos"
   manageRoles: "Gerenciar cargos"
   manageWebhooks: "Gerenciar webhooks"
+  manageEmojisAndStickers: "Gerenciar emojis e figurinhas"
+  useApplicationCommands: "Usar comandos de aplicativo"
   requestToSpeak: "Pedir para falar"
   manageThreads: "Gerenciar threads"
   createPublicThreads: "Criar threads públicas"
