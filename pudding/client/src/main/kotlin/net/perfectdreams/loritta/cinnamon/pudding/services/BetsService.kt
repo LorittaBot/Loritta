@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
@@ -23,6 +24,7 @@ import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.update
 import java.time.Duration
 import java.time.Instant
+import kotlin.math.min
 import kotlin.time.Duration.Companion.hours
 
 class BetsService(private val pudding: Pudding) : Service(pudding) {
@@ -211,6 +213,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     suspend fun addToCoinFlipBetGlobalMatchmakingQueue(
         userId: UserId,
         userInteractionToken: String,
+        userLanguage: String,
         quantity: Long
     ): List<CoinFlipGlobalMatchmakingResult> {
         return pudding.transaction {
@@ -257,7 +260,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     results.add(
                         AnotherUserRemovedFromMatchmakingQueueResult(
                             UserId(anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.user].value),
-                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken]
+                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken],
+                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.language]
                         )
                     )
                 } else {
@@ -268,20 +272,23 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         CoinFlipBetGlobalMatchmakingQueue.id eq anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.id]
                     }
 
+                    // Check if any of the two users are premium users
                     val selfActiveDonations = pudding.payments._getActiveMoneyFromDonations(userId)
                     val otherUserActiveDonations = pudding.payments._getActiveMoneyFromDonations(otherUserId)
 
-                    // TODO: Don't hardcode this! Move this to somewhere else
-                    val taxPercentage = 0.05
-                    // "Recommended" plan (R$ 40) has non-tax for coinflip
-                    // We check >= 25 because... idk, it doesn't really matter
-                    val noSonhosTax = selfActiveDonations >= 25 || otherUserActiveDonations >= 25
+                    val selfUserPremiumPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
+                    val otherUserPremiumPlan = UserPremiumPlans.getPlanFromValue(otherUserActiveDonations)
 
                     val premiumUsers = mutableListOf<UserId>()
-                    if (selfActiveDonations >= 25)
+                    if (!selfUserPremiumPlan.isCoinFlipBetRewardTaxed)
                         premiumUsers.add(userId)
-                    if (otherUserActiveDonations >= 25)
+                    if (!otherUserPremiumPlan.isCoinFlipBetRewardTaxed)
                         premiumUsers.add(otherUserId)
+
+                    // If there is someone in the premiumUsers list, then it means that it is a non taxed match!
+                    val noSonhosTax = premiumUsers.isNotEmpty()
+
+                    var taxPercentage = min(selfUserPremiumPlan.coinFlipRewardTax, otherUserPremiumPlan.coinFlipRewardTax)
 
                     val tax: Long?
                     val quantityAfterTax: Long
@@ -289,6 +296,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     if (noSonhosTax) {
                         tax = null
                         quantityAfterTax = quantity
+                        // This is actually not needed, because the variable should be 0.0 at this point
+                        taxPercentage = 0.0
                     } else {
                         tax = (quantity * taxPercentage).toLong()
                         quantityAfterTax = quantity - tax
@@ -350,6 +359,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
 
                         // Then add/remove the sonhos of the users
                         // Add sonhos to the winner
+                        // The winner should receive the after tax amount
                         Profiles.update({ Profiles.id eq winner.value.toLong() }) {
                             with(SqlExpressionBuilder) {
                                 it.update(Profiles.money, Profiles.money + quantityAfterTax)
@@ -357,9 +367,10 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         }
 
                         // Remove sonhos of the loser
+                        // The loser should lose the full quantity, before taxes
                         Profiles.update({ Profiles.id eq loser.value.toLong() }) {
                             with(SqlExpressionBuilder) {
-                                it.update(Profiles.money, Profiles.money - quantityAfterTax)
+                                it.update(Profiles.money, Profiles.money - quantity)
                             }
                         }
                     }
@@ -398,6 +409,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                             isTails,
                             otherUserId,
                             anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken],
+                            anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.language],
                             quantity,
                             quantityAfterTax,
                             tax,
@@ -453,7 +465,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                                 OtherUserAchievementResult(
                                     achievementType,
                                     userThatWillReceiveTheAchievement,
-                                    anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken]
+                                    anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken],
+                                    anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.language]
                                 )
                             )
                         }
@@ -481,6 +494,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
             CoinFlipBetGlobalMatchmakingQueue.insert {
                 it[CoinFlipBetGlobalMatchmakingQueue.user] = profile.id.value.toLong()
                 it[CoinFlipBetGlobalMatchmakingQueue.userInteractionToken] = userInteractionToken
+                it[CoinFlipBetGlobalMatchmakingQueue.language] = userLanguage
                 it[CoinFlipBetGlobalMatchmakingQueue.quantity] = quantity
                 it[CoinFlipBetGlobalMatchmakingQueue.timestamp] = now
                 it[CoinFlipBetGlobalMatchmakingQueue.expiresAt] = now.plusMillis(300_000)
@@ -509,6 +523,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         val isTails: Boolean,
         val otherUser: UserId,
         val userInteractionToken: String,
+        val otherUserLanguage: String,
         val quantity: Long,
         val quantityAfterTax: Long,
         val tax: Long?,
@@ -520,7 +535,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     class YouDontHaveEnoughSonhosToBetResult : CoinFlipGlobalMatchmakingResult()
     class AnotherUserRemovedFromMatchmakingQueueResult(
         val user: UserId,
-        val userInteractionToken: String
+        val userInteractionToken: String,
+        val language: String
     ) : CoinFlipGlobalMatchmakingResult()
     class SelfUserAchievementResult(
         val achievementType: AchievementType
@@ -528,7 +544,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     class OtherUserAchievementResult(
         val achievementType: AchievementType,
         val user: UserId,
-        val userInteractionToken: String
+        val userInteractionToken: String,
+        val language: String
     ) : CoinFlipGlobalMatchmakingResult()
 
     class UserCoinFlipBetGlobalStats(

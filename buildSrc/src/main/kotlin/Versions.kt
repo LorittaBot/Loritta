@@ -1,15 +1,16 @@
 object Versions {
     const val LORITTA = "2021-SNAPSHOT"
     const val PUDDING = "0.0.2-SNAPSHOT"
-    const val KOTLIN = "1.6.10"
+    const val KOTLIN = "1.6.20-M1"
     const val JVM_TARGET = "15"
     const val JIB = "3.1.4"
     const val KOTLINX_SERIALIZATION = "1.3.1"
     const val EXPOSED = "0.36.2"
     const val PROMETHEUS = "0.12.0"
     const val KTOR = "1.6.7"
-    const val DISCORD_INTERAKTIONS = "0.0.12-20220116.194132-7"
-    const val KORD = "bugfix-autocomplete-serialization-SNAPSHOT" // 0.8.x-SNAPSHOT
-    const val I18N_HELPER = "0.0.3-SNAPSHOT"
+    const val DISCORD_INTERAKTIONS = "0.0.12-20220319.162224-21"
+    const val KORD = "0.8.x-20220315.083129-149" // Should match Discord InteraKTions
+    const val I18N_HELPER = "0.0.4-SNAPSHOT"
     const val KOTLINX_DATE_TIME = "0.3.1"
+    const val HIKARICP = "5.0.1"
 }

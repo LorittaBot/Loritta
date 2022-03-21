@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.brokertickersupdater.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import java.util.*
 import kotlin.concurrent.thread
 
 object BrokerTickersUpdaterLauncher {
@@ -12,6 +13,9 @@ object BrokerTickersUpdaterLauncher {
 
     @JvmStatic
     fun main(args: Array<String>) {
+        // https://github.com/JetBrains/Exposed/issues/1356
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(BrokerTickersUpdaterLauncher::class, System.getProperty("brokertickersupdater.config", "broker-tickers-updater.conf"))
         logger.info { "Loaded Loritta's configuration file" }
 

@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
+import net.perfectdreams.loritta.cinnamon.platform.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
@@ -74,6 +75,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
             val results = context.loritta.services.bets.addToCoinFlipBetGlobalMatchmakingQueue(
                 UserId(context.user.id.value),
                 context.interaKTionsContext.discordInteraction.token,
+                context.loritta.languageManager.getIdByI18nContext(context.i18nContext),
                 quantity,
             )
 
@@ -133,7 +135,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
 
                         val otherUserMessage = createCoinFlipResultMessage(
                             context.loritta,
-                            context.i18nContext,
+                            context.loritta.languageManager.getI18nContextById(result.otherUserLanguage),
                             result.otherUser,
                             result,
                             quantity,
@@ -164,26 +166,26 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                             result.userInteractionToken
                         )
 
+                        val otherUserI18nContext = context.loritta.languageManager.getI18nContextById(result.language)
+
                         otherUserContext.sendEphemeralMessage {
                             allowedMentions {
                                 users.add(Snowflake(result.user.value))
                             }
 
                             styled(
-                                "${mentionUser(Snowflake(result.user.value))} ${context.i18nContext.get(
+                                "${mentionUser(Snowflake(result.user.value))} ${otherUserI18nContext.get(
                                     BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.LeftMatchmakingQueueDueToNotEnoughSonhos
                                 )}",
                                 Emotes.LoriSob
                             )
-                            styled(
-                                context.i18nContext.get(
-                                    GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                                        context.loritta.config.website,
-                                        "bet-coinflip-global",
-                                        "removed-from-mm"
-                                    )
-                                ),
-                                Emotes.CreditCard
+
+                            userHaventGotDailyTodayOrUpsellSonhosBundles(
+                                context.loritta,
+                                context.i18nContext,
+                                UserId(context.user.id.value),
+                                "bet-coinflip-global",
+                                "removed-from-mm"
                             )
                         }
                     }
@@ -197,15 +199,12 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                                 Emotes.LoriSob
                             )
 
-                            styled(
-                                context.i18nContext.get(
-                                    GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                                        context.loritta.config.website,
-                                        "bet-coinflip-global",
-                                        "mm-check"
-                                    )
-                                ),
-                                Emotes.CreditCard
+                            userHaventGotDailyTodayOrUpsellSonhosBundles(
+                                context.loritta,
+                                context.i18nContext,
+                                UserId(context.user.id.value),
+                                "bet-coinflip-global",
+                                "mm-check"
                             )
                         }
                     }
@@ -216,10 +215,12 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                             result.userInteractionToken
                         )
 
+                        val otherUserI18nContext = context.loritta.languageManager.getI18nContextById(result.language)
+
                         AchievementUtils.giveAchievementToUser(
                             context.loritta,
                             net.perfectdreams.loritta.cinnamon.platform.BarebonesInteractionContext(otherUserContext),
-                            context.i18nContext,
+                            otherUserI18nContext,
                             result.user,
                             result.achievementType
                         )
@@ -367,15 +368,24 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
 
             // If the user won, then the selfStreak is their winning streak
             // (After all, if they won... the losing streak would be 0)
+            // emojis = the three stages of happiness/grief idk i never watched it
             if (isSelfUserTheWinner) {
                 styled(
                     i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveWins(selfStreak)),
-                    Emotes.LoriWow
+                    when {
+                        selfStreak >= 10 -> Emotes.LoriHappy
+                        selfStreak >= 5 -> Emotes.LoriUwU
+                        else -> Emotes.LoriWow
+                    }
                 )
             } else {
                 styled(
                     i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveLosses(selfStreak)),
-                    Emotes.LoriHmpf
+                    when {
+                        selfStreak >= 10 -> Emotes.LoriSob
+                        selfStreak >= 5 -> Emotes.LoriRage
+                        else -> Emotes.LoriHmpf
+                    }
                 )
             }
 

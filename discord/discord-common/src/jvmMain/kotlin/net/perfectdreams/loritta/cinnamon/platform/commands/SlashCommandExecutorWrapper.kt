@@ -1,10 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
+import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.Snowflake
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
@@ -14,11 +18,14 @@ import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCom
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.entities.UserAvatar
+import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
 import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
+import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ChannelCommandOption
@@ -33,8 +40,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.StringListCo
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserListCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxTaxedDirectMessage
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxWarnDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.streams.toList
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
@@ -98,7 +108,7 @@ class SlashCommandExecutorWrapper(
         val commandLatency = timer.observeDuration()
         logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
 
-        loritta.services.executedApplicationCommandsLog.insertApplicationCommandLog(
+        loritta.services.executedInteractionsLog.insertApplicationCommandLog(
             context.sender.id.value.toLong(),
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
@@ -113,6 +123,7 @@ class SlashCommandExecutorWrapper(
         )
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private suspend fun executeCommand(
         rootDeclarationClazzName: String?,
         executorClazzName: String?,
@@ -195,11 +206,20 @@ class SlashCommandExecutorWrapper(
                     is ImageReferenceCommandOption -> {
                         // Special case: Image References
                         // Get the argument that matches our image reference
-                        val interaKTionArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name == it.name }
+                        val interaKTionAttachmentArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name.removeSuffix("_file") == it.name }
+                        val interaKTionAvatarLinkOrEmoteArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name.removeSuffix("_data") == it.name }
+
                         var found = false
 
-                        if (interaKTionArgument != null) {
-                            val value = interaKTionArgument.value as String
+                        // Attachments take priority
+                        if (interaKTionAttachmentArgument != null) {
+                            val attachment = (interaKTionAttachmentArgument.value as DiscordAttachment)
+                            if (attachment.filename.substringAfterLast(".").lowercase() in SUPPORTED_IMAGE_EXTENSIONS) {
+                                found = true
+                                cinnamonArgs[it] =  URLImageReference(attachment.url)
+                            }
+                        } else if (interaKTionAvatarLinkOrEmoteArgument != null) {
+                            val value = interaKTionAvatarLinkOrEmoteArgument.value as String
 
                             // Now check if it is a valid thing!
                             // First, we will try matching via user mentions or user IDs
@@ -319,7 +339,7 @@ class SlashCommandExecutorWrapper(
                 users.addAll(args.types.values.filterIsInstance<User>())
                 val resolvedUsers = context.data.resolved?.users?.values
                 if (resolvedUsers != null)
-                    // TODO: Maybe implement proper hash codes in the InteraKTions "User"?
+                // TODO: Maybe implement proper hash codes in the InteraKTions "User"?
                     users.addAll(resolvedUsers.distinctBy { it.id })
                 val jobs = users
                     .map {
@@ -338,13 +358,91 @@ class SlashCommandExecutorWrapper(
                 net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments(cinnamonArgs)
             )
 
+            // Required because "Smart cast is impossible" within the scope
+            val localI18nContext = i18nContext
+            // Additional messages that must be sent after the command sends at least one message
+            // TODO: Don't use GlobalScope!!
+            GlobalScope.launch {
+                var state = context.bridge.state.value
+
+                try {
+                    withTimeout(15_000) {
+                        while (state != InteractionRequestState.ALREADY_REPLIED)
+                            state = context.bridge.state.awaitChange() // The ".awaitChange()" is cancellable
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    logger.warn(e) { "Timed out while waiting for InteractionRequestState, we won't send any additional messages then..." }
+                    return@launch
+                }
+
+                // At this point, state should be "ALREADY_REPLIED"
+                val userId = UserId(context.sender.id.value)
+
+                // Website Update Message
+                val patchNotesNotifications = loritta.services.patchNotesNotifications.getUnreadPatchNotesNotificationsAndMarkAsRead(
+                    UserId(context.sender.id.value),
+                    Clock.System.now()
+                )
+
+                for (patchNote in patchNotesNotifications) {
+                    context.sendEphemeralMessage {
+                        styled(
+                            localI18nContext.get(
+                                I18nKeysData.Commands.CheckOutNews(
+                                    GACampaigns.patchNotesUrl(
+                                        loritta.config.website,
+                                        localI18nContext.get(I18nKeysData.Website.LocalePathId),
+                                        patchNote.path,
+                                        "discord",
+                                        "slash-commands",
+                                        "lori-news",
+                                        "patch-notes-notification"
+                                    )
+                                )
+                            ),
+                            Emotes.LoriSunglasses
+                        )
+                    }
+                }
+
+                // Pending Daily Tax Direct Message
+                val pendingDailyTaxDirectMessage = loritta.services.users.getAndUpdateStatePendingDailyTaxDirectMessage(
+                    userId,
+                    listOf(
+                        DailyTaxPendingDirectMessageState.PENDING,
+                        DailyTaxPendingDirectMessageState.FAILED_TO_SEND_VIA_DIRECT_MESSAGE,
+                        DailyTaxPendingDirectMessageState.SKIPPED_DIRECT_MESSAGE
+                    ),
+                    DailyTaxPendingDirectMessageState.SUCCESSFULLY_SENT_VIA_EPHEMERAL_MESSAGE
+                )
+
+                if (pendingDailyTaxDirectMessage != null) {
+                    val builder = when (pendingDailyTaxDirectMessage) {
+                        is UserDailyTaxTaxedDirectMessage -> UserUtils.buildDailyTaxMessage(
+                            localI18nContext,
+                            loritta.config.website,
+                            userId,
+                            pendingDailyTaxDirectMessage
+                        )
+                        is UserDailyTaxWarnDirectMessage -> UserUtils.buildDailyTaxMessage(
+                            localI18nContext,
+                            loritta.config.website,
+                            userId,
+                            pendingDailyTaxDirectMessage
+                        )
+                    }
+
+                    cinnamonContext.sendEphemeralMessage(builder)
+                }
+            }
+
             return CommandExecutionSuccess
         } catch (e: Throwable) {
             if (e is SilentCommandException)
                 return CommandExecutionSuccess // SilentCommandExceptions should be ignored
 
             if (e is CommandException) {
-                context.sendMessage(e.builder)
+                context.sendPublicMessage(e.builder)
                 return CommandExecutionSuccess
             }
 

@@ -25,11 +25,23 @@ unknownPage:
     - "E aí, uma luz ilumina uma mão gigante que estava na sua frente durante todo esse tempo."
   goToTheLastPage: "Estou com medo, me deixe em um lugar seguro!"
 types:
+  payment:
+    title: "Pagamentos"
+    description: "Transações relacionadas a transferências de sonhos para outros usuários"
+    sent: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para `{receiverTag}` (`{receiverId}`)"
+    received: "Recebeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} de `{giverTag}` (`{giverId}`)"
   homeBroker:
     title: "Simulador do Mercado de Ações da Loritta"
     description: "Transações relacionadas ao Simulador do Mercado de Ações da Loritta"
     boughtShares: "Comprou {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
     soldShares: "Vendeu {stockQuantity, plural, one {# ação} other {# ações}} de `{ticker}` por {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} no Simulador do Mercado de Ações da Loritta"
+  coinFlipBet:
+    title: "Apostas de Lançamento de Moedas"
+    description: "Transações relacionadas a apostas de lançamento de moedas"
+    wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de `{loserTag}` (`{loserId}`) em apostas de sonhos girando uma moeda"
+    lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para `{winnerTag}` (`{winnerId}`) em apostas de sonhos girando uma moeda"
+    won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de `{loserTag}` (`{loserId}`) em apostas de sonhos girando uma moeda"
+    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para `{winnerTag}` (`{winnerId}`) em apostas de sonhos girando uma moeda"
   coinFlipBetGlobal:
     title: "Apostas Globais de Lançamento de Moedas"
     description: "Transações relacionadas a apostas de lançamento de moedas... globalmente!"
@@ -37,11 +49,31 @@ types:
     lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para `{winnerTag}` (`{winnerId}`) em apostas globais de sonhos girando uma moeda"
     won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de `{loserTag}` (`{loserId}`) em apostas globais de sonhos girando uma moeda"
     lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para `{winnerTag}` (`{winnerId}`) em apostas globais de sonhos girando uma moeda"
+  emojiFightBet:
+    title: "Apostas em Rinha de Emojis"
+    description: "Transações relacionadas a apostas em rinhas de emojis"
+    wonTaxed: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor sem taxa: {quantity}) de {userInEmojiFight,plural, =0 {# usuários} one {# usuário} other {# usuários}} em uma rinha de emoji pois todos temeram o poderoso {emojiFightEmoji}"
+    lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para o {emojiFightEmoji} de `{winnerTag}` (`{winnerId}`) em uma apostas de sonhos em rinha de emojis"
+    won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de {userInEmojiFight,plural, =0 {# usuários} one {# usuário} other {# usuários}} em uma rinha de emoji pois todos temeram o poderoso {emojiFightEmoji}"
+    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para o {emojiFightEmoji} de `{winnerTag}` (`{winnerId}`) em uma apostas de sonhos em rinha de emojis"
   sparklyPowerLsx:
     title: "Câmbio de Sonhos no SparklyPower"
     description: "Transações relacionadas ao SparklyPower, o Servidor de Minecraft da Loritta"
     exchangedToSparklyPower: "Transferiu {sonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} da Loritta para a conta `{playerName}` no SparklyPower, recebendo {sparklyPowerSonhosQuantity, plural, one {# sonho} other {# sonhos}} lá [{sparklyPowerIp}]"
     exchangedFromSparklyPower: "Transferiu {sparklyPowerSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} da conta `{playerName}` no SparklyPower para a Loritta, recebendo {sonhosQuantity, plural, one {# sonho} other {# sonhos}} aqui [{sparklyPowerIp}]"
+  sonhosBundlePurchase:
+    title: "Compra de Pacotes de Sonhos"
+    description: "Transações relacionadas a compras de pacotes de sonhos"
+    purchasedSonhos: "Comprou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} na loja de sonhos da Loritta. Obrigada por apoiar a Loritta! {loriKiss}"
+  inactiveDailyTax:
+    title: "Imposto de Inatividade no Prêmio Diário"
+    description: "Transações relacionadas ao imposto de inatividade no prêmio diário"
+    lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} em imposto, pois ficou {daysWithoutGettingDaily,plural,=0{# dias} one {# dia} other {# dias}} sem pegar a recompensa diária enquanto tinha mais de {sonhosBracketQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+  divineIntervention:
+    title: "Intervenção Divina"
+    description: "Transações feitas pelos admins da Loritta, \"poder constituinte\""
+    received: "Uma intervenção divina deu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+    lost: "Uma intervenção divina removeu {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
 options:
   user:
     text: "O usuário que você deseja ver as transações"

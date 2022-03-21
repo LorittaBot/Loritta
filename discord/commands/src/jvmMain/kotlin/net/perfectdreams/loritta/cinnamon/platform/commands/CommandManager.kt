@@ -63,12 +63,14 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockI
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinFlipBetGlobalExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.DailyExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.StartCoinFlipGlobalBetMatchmakingButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.TransactionsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.DailyCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
@@ -84,6 +86,9 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.CepoDeMadeira
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ChicoAtaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.CortesFlowExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrakeExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrawnMaskAtendenteExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrawnMaskSignExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrawnMaskWordExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.EdnaldoBandeiraExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.EdnaldoTvExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.GessyAtaExecutor
@@ -104,6 +109,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.PetPetExecuto
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.RipTvExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.RomeroBrittoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.SAMExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.SadRealityExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.StudiopolisTvExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.SustoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.TerminatorAnimeExecutor
@@ -115,6 +121,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BobBurningPaperCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BuckShirtCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.DrakeCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.DrawnMaskCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.GetOverHereCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.InvertColorsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.LoriSignCommand
@@ -125,6 +132,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.PepeDreamCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.PetPetCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.RipTvCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SadRealityCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SonicCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SustoCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.TerminatorAnimeCommand
@@ -157,6 +165,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.Co
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.PortraitSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.AnagramExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorPreprocessAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ChooseExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.DictionaryExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ECBManager
@@ -271,11 +280,6 @@ class CommandManager(
         commandManager.register(RollCommand, RollExecutor(random))
 
         commandManager.register(
-            HelpCommand,
-            HelpExecutor()
-        )
-
-        commandManager.register(
             MinecraftCommand,
             McSkinExecutor(mojangApi),
             McAvatarExecutor(mojangApi),
@@ -352,6 +356,13 @@ class CommandManager(
         commandManager.register(InvertColorsCommand, InvertColorsExecutor(gabrielaImageServerClient))
         commandManager.register(MemeMakerCommand, MemeMakerExecutor(gabrielaImageServerClient))
         commandManager.register(MarkMetaCommand, MarkMetaExecutor(gabrielaImageServerClient))
+        commandManager.register(
+            DrawnMaskCommand,
+            DrawnMaskAtendenteExecutor(gabrielaImageServerClient),
+            DrawnMaskSignExecutor(gabrielaImageServerClient),
+            DrawnMaskWordExecutor(gabrielaImageServerClient)
+        )
+        commandManager.register(SadRealityCommand, SadRealityExecutor(rest, gabrielaImageServerClient, Snowflake(discordConfig.applicationId)))
 
         // ===[ VIDEOS ]===
         commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(gabrielaImageServerClient))
@@ -359,15 +370,18 @@ class CommandManager(
         commandManager.register(FansExplainingCommand, FansExplainingExecutor(gabrielaImageServerClient))
 
         // ===[ UTILS ]===
+        commandManager.register(HelpCommand, HelpExecutor())
         commandManager.register(MoneyCommand, MoneyExecutor(ECBManager()))
         commandManager.register(MorseCommand, MorseFromExecutor(), MorseToExecutor())
         commandManager.register(DictionaryCommand, DictionaryExecutor(http), MorseToExecutor())
         commandManager.register(CalculatorCommand, CalculatorExecutor())
+        commandManager.register(CalculatorPreprocessAutocompleteExecutor, CalculatorPreprocessAutocompleteExecutor())
         commandManager.register(AnagramCommand, AnagramExecutor())
         commandManager.register(ChooseCommand, ChooseExecutor())
 
         // ===[ ECONOMY ]===
         commandManager.register(SonhosCommand, SonhosExecutor())
+        commandManager.register(DailyCommand, DailyExecutor())
         commandManager.register(
             BrokerCommand,
             BrokerInfoExecutor(),

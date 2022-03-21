@@ -21,6 +21,11 @@ jobs:
       with: 
         submodules: recursive
 
+    - name: Install tools
+      run: |
+        sudo apt-get update
+        sudo apt-get install pngquant gifsicle
+
     - name: Setup Java JDK
       uses: actions/setup-java@v1.4.3
       with:
@@ -47,4 +52,4 @@ jobs:
       if: github.ref == 'refs/heads/cinnamon'
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: ":discord:web-server:jib :discord:gateway:jib :microservices:broker-tickers-updater:jib"
+        arguments: ":discord:web-server:jib :discord:gateway:jib :web:showtime:backend:jib :microservices:broker-tickers-updater:jib :microservices:stats-collector:jib :microservices:daily-tax:jib"

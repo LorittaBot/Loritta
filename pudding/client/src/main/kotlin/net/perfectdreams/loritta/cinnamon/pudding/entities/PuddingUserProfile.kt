@@ -14,6 +14,7 @@ class PuddingUserProfile(
     companion object;
 
     val id by data::id
+    val profileSettingsId by data::profileSettingsId
     val money by data::money
     val isAfk by data::isAfk
     val afkReason by data::afkReason
@@ -47,9 +48,8 @@ class PuddingUserProfile(
         }
     }
 
-    suspend fun getOrCreateProfileSettings() = pudding.users.getOrCreateProfileSettings(id)
-
-    suspend fun getProfileSettings() = pudding.users.getProfileSettings(id)
+    // Should ALWAYS not be null
+    suspend fun getProfileSettings() = pudding.users.getProfileSettings(profileSettingsId)!!
 
     /**
      * Get the user's current banned state, if it exists and if it is valid

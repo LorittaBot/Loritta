@@ -1,0 +1,65 @@
+---
+website:
+  genericDescription: "¡Hola, mi nombre es Loritta! ¡Solo un simple bot para Discord con características únicas que nunca antes había visto! ¡Hecho para el entretenimiento, la moderación, para ayudarte en tu día a día y mucho más!"
+  lorittaWebsite: "Website de Loritta"
+  jumbotron:
+    hello: "Hola yo soy"
+    tagline: "Solo un simple bot para el Discord"
+    addMe: "¡Agrégame!"
+    moreInfo: "Sepa más"
+    viewMoreFeatures: "Ver más funciones"
+    dashboard: "Panel de Control"
+  home:
+    intro:
+      title: "Transforma tu servidor en un lugar fantástico"
+      everyServer: "Todos los servidores de Discord encuentran los mismos problemas."
+      membersWant: "Los miembros quieren entretenimiento, los moderadores quieren automatización ... y tú solo quieres descansar."
+      itIsThatEasy: "¡Hacer que su servidor sea único y extraordinario nunca ha sido tan fácil!"
+      description:
+        - "Tu vida es demasiado preciosa para gastar tu tiempo en basura y tonterías, ¡déjame encargarme de las partes aburridas mientras te diviertes en tu servidor!"
+        - "Con funciones sociales y divertidas para entretener e involucrar a sus miembros, funciones moderadas para mantener su servidor siempre seguro y agradable, y con una forma fácil de configurar pero con un poder de personalización inigualable..."
+        - "¡Y todo gracias a una chica de 16 años que quiere hacer del mundo un lugar mejor!"
+    trust:
+      title: "¡Mucha gente como yo!"
+    funnyCommands:
+      title: "Entretener e involucrar a su servidor"
+      description:
+        - "Uno de mis mayores objetivos es hacer que usted (y los miembros de su servidor) sean más felices, incluso si es solo una pequeña sonrisa en su rostro."
+        - "¡Por eso tengo varios comandos diferentes y divertidos para que te diviertas y te rías con ellos! ¡Cómo evaluarwaifu, que puntúa su waifu; fausto, que invoca a nuestro querido Faustão (presentador Brasileño) en su servidor para recordar sus frases clásicas; ship, que muestra el amor entre dos usuarios de su servidor; tocón, destruir a alguien al estilo Gugu Gaiteiro; tretanews, para que pueda crear un video \"sin clickbait™\" con miembros de su servidor y varios otros comandos divertidos y divertidos!"
+    chitChat:
+      title: "Impulsa las conversaciones en tu servidor"
+      description:
+        - "¡Anime a los usuarios a chatear en su servidor brindándoles experiencia al unirse a discusiones y conversaciones en su servidor! Al adquirir experiencia, puede subir de nivel y recompensar a los usuarios activos con puestos y premios."
+        - "Para mantener la competitividad, usted y los miembros de su servidor pueden ver la clasificación de quién es el más hablador en su servidor, ¿podrá llegar a la cima?"
+    music:
+      title: "Música"
+      description:
+        - "¡Haz ruido con los miembros de tu servidor! Escuche y comparta sus canciones favoritas en su servidor junto con sus amigos, chateando mientras escucha sus canciones favoritas."
+        - "Con mi sistema de música extremadamente personalizable, puede permitir listas de reproducción, establecer la duración máxima de las canciones, colocar canciones automatizadas mientras nadie pide una canción y más. Tu experiencia para escuchar tu música favorita en tu servidor nunca ha sido la misma, ¡con mucha calidad y gestión!"
+    moderation:
+      title: "Moderación"
+      description:
+        - "Empecemos algo nuevo. Con su propia configuración de moderación, haga que su servidor sea increíble y super práctico. ¿Estás cansado de prohibir, advertir o expulsar a cualquier persona que infrinja las reglas manualmente? Déjamelo a mí, mientras no estés, cualquiera que rompa las reglas será castigado automáticamente."
+        - "¿Viste cómo todo es más fácil cuando hay trabajo en equipo?"
+    notify:
+      title: "Influencers digitales: ¡Tus fans nunca se perderán las noticias!"
+      description:
+        - "Notificar a tus fans que has enviado algo nuevo es aburrido y agotador... Quieres usar tu tiempo para ser productivo y crear contenido mejor y más grande para tus fans, pero la mayor parte del tiempo se dedica a recordarles a tus fans sobre contenido nuevo, ya que algunas redes sociales creen saber más sobre lo que les gusta y quieren recibir sus fans que sus propios fans..."
+        - "Evite tales problemas, veré su canal de YouTube, canal de Twitch, Twitter, comunidad de Amino, fuentes RSS y muchos otros lugares para ver si ha hecho algo nuevo. Concéntrate en tu progreso, yo me ocupo de la parte de notificar a tus fans."
+    customization:
+      title: "Personalización"
+      description:
+        - "Cada servidor es único, con diferentes demandas y necesidades. Quieres un servidor que sea tu visión de un servidor perfecto en Discord, después de todo, es tu rincón en Internet, ¡debe ser perfecto!"
+        - "Por esta razón, tengo un panel de configuración y administración intuitivo donde puedes modificar una gran variedad de funciones, para que tu servidor sea como sueñas. ¡Modifícame a tu gusto, adaptándome a tus preferencias y necesidades!"
+    community:
+      title: "Comunidad"
+      description:
+        - "Y, por supuesto, ¡no podía dejar de mencionar a personas a las que les gusta lo que hago!"
+        - "Gente increíble, ellos son los que hacen increíbles y bellas artes mías (están en la página de fanart, ¡ve y disfruta!), ¡Dóname para comprar budín y son amables conmigo! Incluso hicieron un Fan Club de Loritta (...¡en mi apartamento! ¡Justo en él! También me gusta el espacio personal, ¿vale?)"
+        - "Tampoco puedo olvidarme de la gente increíble en mi servidor de Discord, ¡donde todos son bienvenidos! Allí puedes hablar de todo, de mí, informar errores que deben ser corregidos, hacerme alguna sugerencia traviesa o ¡incluso hablar de cómo te va en la vida!"
+    muchMore:
+      title: "¡Y mucho más!"
+    makeItAwesome:
+      title: "Hagamos de su servidor un lugar increíble, juntos."
+    thankYou:
+      title: "¡Gracias a todos!"

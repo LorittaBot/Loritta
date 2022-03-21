@@ -10,8 +10,7 @@ ata:
   gessy:
     description: "Gessy viu uma de suas imagens e reagiu da melhor maneira possível"
 bolsonaro:
-  #https://twitter.com/sensacionalista/status/1414567158437253124
-  description: "70% vê a corrupção no governo Bolsonaro, e 30% precisam ir ao oftalmologista"
+  description: "70% vê a corrupção no governo Bolsonaro, e 30% precisam ir ao oftalmologista" #References this tweet: https://twitter.com/sensacionalista/status/1414567158437253124
   tv:
     description: "O que será que Bolsonaro está mostrando na televisão? Provavelmente fake news, como sempre!"
   frame:
@@ -57,7 +56,7 @@ sam:
       sam2: "Logo Cópia Barata"
       sam3: "Logo sarrada no ar"
 canelladvd:
-  description: "Faça Matheus Canella ter um dos melhores DVDs do mundo, por apenas R$ 1,95! (erre cifrão um zero vírgula noventa e cinco reais!!!)"
+  description: "Faça Matheus Canella ter um dos melhores DVDs do mundo, por apenas R$ 1,95! (erre cifrão um vírgula noventa e cinco reais!!!)" #References this video: https://youtu.be/c3f7uSpnrhk
 cepo:
   description: "Destrua alguém, estilo Gugu Gaiteiro!"
 briggscover:

@@ -20,7 +20,6 @@ import kotlin.io.path.isDirectory
 import kotlin.io.path.name
 import kotlin.io.path.nameWithoutExtension
 import kotlin.reflect.KClass
-import kotlin.streams.toList
 
 /**
  * Manages translations
@@ -82,6 +81,28 @@ class LanguageManager(
      */
     fun getI18nContextOrNullById(languageId: String): I18nContext? {
         return languageContexts[languageId]
+    }
+
+    /**
+     * Gets the ID of an I18nContext, if the ID doesn't exist, the default context ID ([defaultLanguageId]) will be used
+     *
+     * @param languageId the context of the language
+     * @return           the ID, if the language doesn't exist, the ID of the default language will be loaded
+     * @see              I18nContext
+     */
+    fun getIdByI18nContext(i18nContext: I18nContext): String {
+        return getIdByI18nContextOrNull(i18nContext) ?: defaultLanguageId
+    }
+
+    /**
+     * Gets the ID by its I18nContext
+     *
+     * @param languageId the context of the language
+     * @return           the ID
+     * @see              I18nContext
+     */
+    fun getIdByI18nContextOrNull(i18nContext: I18nContext): String? {
+        return languageContexts.entries.firstOrNull { it.value == i18nContext }?.key
     }
 
     fun loadLanguage(id: String, loadedLanguages: Map<String, Language>): Language? {

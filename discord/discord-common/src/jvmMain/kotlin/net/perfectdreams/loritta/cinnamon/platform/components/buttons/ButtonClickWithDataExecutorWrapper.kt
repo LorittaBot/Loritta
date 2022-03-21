@@ -1,10 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.platform.components.buttons
 
+import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
 import net.perfectdreams.discordinteraktions.common.components.GuildComponentContext
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -41,10 +43,10 @@ class ButtonClickWithDataExecutorWrapper(
         // These variables are used in the catch { ... } block, to make our lives easier
         var i18nContext: I18nContext? = null
         var cinnamonContext: CinnamonComponentContext? = null
+        val guildId = (context as? GuildComponentContext)?.guildId
+        var stacktrace: String? = null
 
         try {
-            val guildId = (context as? GuildComponentContext)?.guildId
-
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
                 loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: SlashCommandExecutorWrapper.NonGuildServerConfigRoot
@@ -92,7 +94,7 @@ class ButtonClickWithDataExecutorWrapper(
                 return // SilentCommandExceptions should be ignored
 
             if (e is CommandException) {
-                context.sendMessage(e.builder)
+                context.sendPublicMessage(e.builder)
                 return
             }
 
@@ -132,10 +134,25 @@ class ButtonClickWithDataExecutorWrapper(
                 context.sendMessage {
                     this.content = content
                 }
+
+            stacktrace = e.stackTraceToString()
         }
 
         val commandLatency = timer.observeDuration()
         logger.info { "(${context.sender.id.value}) $executor - OK! Took ${commandLatency * 1000}ms" }
+
+        loritta.services.executedInteractionsLog.insertComponentLog(
+            context.sender.id.value.toLong(),
+            guildId?.value?.toLong(),
+            context.channelId.value.toLong(),
+            Clock.System.now(),
+            ComponentType.BUTTON,
+            rootDeclarationClazzName!!,
+            executorClazzName!!,
+            stacktrace == null,
+            commandLatency,
+            stacktrace
+        )
     }
 
     override fun signature() = executorDeclaration::class

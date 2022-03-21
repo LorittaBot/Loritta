@@ -1,12 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.platform
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
+import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.ServicesConfig
@@ -76,4 +79,16 @@ abstract class LorittaCinnamon(
             user.avatar.avatarId
         )
     }
+
+    /**
+     * Sends the [builder] message to the [userId] via the user's direct message channel.
+     *
+     * The ID of the direct message channel is cached.
+     */
+    suspend fun sendMessageToUserViaDirectMessage(userId: UserId, builder: UserMessageCreateBuilder.() -> (Unit)) = UserUtils.sendMessageToUserViaDirectMessage(
+        services,
+        rest,
+        userId,
+        builder
+    )
 }

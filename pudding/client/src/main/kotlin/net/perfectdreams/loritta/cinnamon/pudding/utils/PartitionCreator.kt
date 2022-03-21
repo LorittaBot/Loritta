@@ -58,6 +58,7 @@ class PartitionCreator(private val pudding: Pudding) : Runnable {
 
         pudding.transaction {
             exec("CREATE TABLE IF NOT EXISTS executedapplicationcommandslog_y${beginningYear}m$beginningMonth PARTITION OF executedapplicationcommandslog FOR VALUES FROM ('$beginningYear-$beginningMonth-$beginningDay') TO ('$endYear-$endMonth-$endDay');")
+            exec("CREATE TABLE IF NOT EXISTS executedcomponentslog_y${beginningYear}m$beginningMonth PARTITION OF executedcomponentslog FOR VALUES FROM ('$beginningYear-$beginningMonth-$beginningDay') TO ('$endYear-$endMonth-$endDay');")
         }
     }
 }
