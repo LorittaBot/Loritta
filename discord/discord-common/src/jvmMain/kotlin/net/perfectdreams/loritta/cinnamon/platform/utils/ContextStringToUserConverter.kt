@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.utils
 
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 
 /**

@@ -2,20 +2,31 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
+import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxPendingDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserBannedState
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.or
@@ -29,10 +40,29 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @param  id the profile's ID
      * @return the user profile
      */
-    suspend fun getOrCreateUserProfile(id: UserId) = pudding.transaction {
-        val profile = getUserProfile(id)
+    suspend fun getOrCreateUserProfile(id: UserId) = pudding.transaction { _getOrCreateUserProfile(id) }
+
+    /**
+     * Gets a [PuddingUserProfile], if the profile doesn't exist, then null is returned
+     *
+     * @param id the profile's ID
+     * @return the user profile or null if it doesn't exist
+     */
+    suspend fun getUserProfile(id: UserId): PuddingUserProfile? {
+        return pudding.transaction { _getUserProfile(id) }
+    }
+
+    internal suspend fun _getUserProfile(id: UserId): PuddingUserProfile? {
+        return pudding.transaction {
+            Profiles.select { Profiles.id eq id.value.toLong() }
+                .firstOrNull()
+        }?.let { PuddingUserProfile.fromRow(it) }
+    }
+
+    internal suspend fun _getOrCreateUserProfile(id: UserId): PuddingUserProfile {
+        val profile = _getUserProfile(id)
         if (profile != null)
-            return@transaction profile
+            return profile
 
         val profileSettings = UserSettings.insert {
             it[gender] = Gender.UNKNOWN
@@ -49,7 +79,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             it[Profiles.settings] = profileSettings[UserSettings.id]
         }
 
-        return@transaction Profiles.select { Profiles.id eq insertId }
+        return Profiles.select { Profiles.id eq insertId }
             .limit(1)
             .first() // Should NEVER be null!
             .let {
@@ -59,59 +89,14 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     /**
-     * Gets a [PuddingUserProfile], if the profile doesn't exist, then null is returned
-     *
-     * @param id the profile's ID
-     * @return the user profile or null if it doesn't exist
-     */
-    suspend fun getUserProfile(id: UserId): PuddingUserProfile? {
-        return pudding.transaction {
-            Profiles.select { Profiles.id eq id.value.toLong() }
-                .firstOrNull()
-        }?.let { PuddingUserProfile.fromRow(it) }
-    }
-
-    /**
-     * Gets or creates a [PuddingProfileSettings]
-     *
-     * @param  id the user's ID
-     * @return the user settings
-     */
-    suspend fun getOrCreateProfileSettings(id: UserId) = pudding.transaction {
-        val setting = getProfileSettings(id)
-        if (setting != null)
-            return@transaction setting
-
-        val insertId = UserSettings.insertAndGetId {
-            it[UserSettings.id] = id.value.toLong()
-            it[UserSettings.aboutMe] = null
-            it[UserSettings.gender] = Gender.UNKNOWN
-            it[UserSettings.activeProfileDesign] = null
-            it[UserSettings.activeBackground] = null
-            it[UserSettings.doNotSendXpNotificationsInDm] = false
-            it[UserSettings.discordAccountFlags] = 0
-            it[UserSettings.discordPremiumType] = null
-            it[UserSettings.language] = null
-        }
-
-        return@transaction UserSettings.select { UserSettings.id eq insertId }
-            .limit(1)
-            .first() // Should NEVER be null!
-            .let {
-                PuddingProfileSettings
-                    .fromRow(it)
-            }
-    }
-
-    /**
      * Gets a [PuddingProfileSettings], if the profile doesn't exist, then null is returned
      *
-     * @param id the user's ID
+     * @param id the user's profile settings ID
      * @return the user settings or null if it doesn't exist
      */
-    suspend fun getProfileSettings(id: UserId): PuddingProfileSettings? {
+    suspend fun getProfileSettings(id: Long): PuddingProfileSettings? {
         return pudding.transaction {
-            UserSettings.select { UserSettings.id eq id.value.toLong() }
+            UserSettings.select { UserSettings.id eq id }
                 .firstOrNull()
         }?.let { PuddingProfileSettings.fromRow(it) }
     }
@@ -192,6 +177,161 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     suspend fun setAboutMe(userId: Long, text: String) = pudding.transaction {
         UserSettings.update({ UserSettings.id eq userId }) {
             it[UserSettings.aboutMe] = text
+        }
+    }
+
+    /**
+     * Gets [userId]'s cached user info from the database if it is present
+     *
+     * @param userId the user's ID
+     * @return the cached user info or null if it doesn't exist
+     */
+    suspend fun getCachedUserInfoById(userId: UserId) = pudding.transaction {
+        val info = CachedDiscordUsers.select {
+            CachedDiscordUsers.id eq userId.value.toLong()
+        }.limit(1).firstOrNull() ?: return@transaction null
+
+        CachedUserInfo(
+            UserId(info[CachedDiscordUsers.id].value),
+            info[CachedDiscordUsers.name],
+            info[CachedDiscordUsers.discriminator],
+            info[CachedDiscordUsers.avatarId]
+        )
+    }
+
+    /**
+     * Inserts or updates [userId]'s cached user info
+     *
+     * The cached user info can be retrieved with [getCachedUserInfoById], avoiding Discord API calls just to pull user information
+     *
+     * @param userId        the user's ID
+     * @param name          the user's name
+     * @param discriminator the user's discriminator
+     * @param avatarId      the user's avatar ID
+     */
+    suspend fun insertOrUpdateCachedUserInfo(
+        userId: UserId,
+        name: String,
+        discriminator: String,
+        avatarId: String?
+    ) = pudding.transaction {
+        val info = CachedDiscordUsers.select {
+            CachedDiscordUsers.id eq userId.value.toLong()
+        }.limit(1).firstOrNull()
+
+        val now = System.currentTimeMillis()
+        if (info != null) {
+            CachedDiscordUsers.update({ CachedDiscordUsers.id eq userId.value.toLong() }) {
+                it[CachedDiscordUsers.name] = name
+                it[CachedDiscordUsers.discriminator] = discriminator
+                it[CachedDiscordUsers.avatarId] = avatarId
+                it[CachedDiscordUsers.updatedAt] = now
+            }
+        } else {
+            CachedDiscordUsers.insert {
+                it[CachedDiscordUsers.id] = userId.value.toLong()
+                it[CachedDiscordUsers.name] = name
+                it[CachedDiscordUsers.discriminator] = discriminator
+                it[CachedDiscordUsers.avatarId] = avatarId
+                it[CachedDiscordUsers.createdAt] = now
+                it[CachedDiscordUsers.updatedAt] = now
+            }
+        }
+    }
+
+    suspend fun getCachedDiscordDirectMessageChannel(id: UserId): Long? {
+        return pudding.transaction {
+            CachedDiscordUsersDirectMessageChannels.select { CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong() }
+                .limit(1)
+                .firstOrNull()
+        }?.get(CachedDiscordUsersDirectMessageChannels.channelId)
+    }
+
+    suspend fun insertOrUpdateCachedDiscordDirectMessageChannel(id: UserId, channelId: Long) {
+        return pudding.transaction {
+            val info = CachedDiscordUsersDirectMessageChannels.select {
+                CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong()
+            }.limit(1).firstOrNull()
+
+            if (info != null) {
+                CachedDiscordUsersDirectMessageChannels.update({ CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong() }) {
+                    it[CachedDiscordUsersDirectMessageChannels.channelId] = channelId
+                }
+            } else {
+                CachedDiscordUsersDirectMessageChannels.insert {
+                    it[CachedDiscordUsersDirectMessageChannels.id] = id.value.toLong()
+                    it[CachedDiscordUsersDirectMessageChannels.channelId] = channelId
+                }
+            }
+        }
+    }
+
+    suspend fun deleteCachedDiscordDirectMessageChannel(id: UserId) {
+        return pudding.transaction {
+            CachedDiscordUsersDirectMessageChannels.deleteWhere {
+                CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong()
+            }
+        }
+    }
+
+    suspend fun insertPendingDailyTaxDirectMessage(userId: UserId, data: DailyTaxPendingDirectMessage) = _insertPendingDailyTaxDirectMessage(userId, data)
+
+    fun _insertPendingDailyTaxDirectMessage(userId: UserId, data: DailyTaxPendingDirectMessage) {
+        DailyTaxPendingDirectMessages.insert {
+            it[DailyTaxPendingDirectMessages.userId] = userId.value.toLong()
+            it[DailyTaxPendingDirectMessages.state] = DailyTaxPendingDirectMessageState.PENDING
+            it[DailyTaxPendingDirectMessages.data] = Json.encodeToString(data)
+        }
+    }
+
+    suspend fun insertSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
+        _insertSkipUserDailyTaxDirectMessageEntry(userId)
+    }
+
+    fun _insertSkipUserDailyTaxDirectMessageEntry(userId: UserId) {
+        DailyTaxUsersToSkipDirectMessages.insert {
+            it[DailyTaxUsersToSkipDirectMessages.userId] = userId.value.toLong()
+            it[DailyTaxUsersToSkipDirectMessages.timestamp] = java.time.Instant.now()
+        }
+    }
+
+    suspend fun deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
+        _deleteSkipUserDailyTaxDirectMessageEntry(userId)
+    }
+
+    fun _deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) {
+        DailyTaxUsersToSkipDirectMessages.deleteWhere {
+            DailyTaxUsersToSkipDirectMessages.userId eq userId.value.toLong()
+        }
+    }
+
+    /**
+     * Gets and updates a pending daily tax direct message
+     */
+    suspend fun getAndUpdateStatePendingDailyTaxDirectMessage(
+        userId: UserId,
+        findState: List<DailyTaxPendingDirectMessageState>,
+        newState: DailyTaxPendingDirectMessageState
+    ): DailyTaxPendingDirectMessage? {
+        return pudding.transaction {
+            val dataResult = DailyTaxPendingDirectMessages.select {
+                DailyTaxPendingDirectMessages.userId eq userId.value.toLong() and (DailyTaxPendingDirectMessages.state inList findState)
+            }.limit(1)
+                .firstOrNull()
+
+            val data = dataResult?.let {
+                Json.decodeFromString<DailyTaxPendingDirectMessage>(it[DailyTaxPendingDirectMessages.data])
+            }
+
+            if (dataResult != null) {
+                DailyTaxPendingDirectMessages.update({
+                    DailyTaxPendingDirectMessages.id eq dataResult[DailyTaxPendingDirectMessages.id]
+                }) {
+                    it[DailyTaxPendingDirectMessages.state] = newState
+                }
+            }
+
+            data
         }
     }
 }

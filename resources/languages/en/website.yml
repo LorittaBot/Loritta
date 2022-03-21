@@ -1,0 +1,7 @@
+website:
+  localePathId: "us" #The locale ID that is prefixed on every localized page path, example: "/br/commands/"
+  commands:
+    viewSlashCommands: "View Slash Commands list (new)"
+    viewLegacyCommands: "View Message Commands list (old)"
+    welcomeToMyCommandListIntro:
+      - "Welcome to my command list! Here you can see information, explanations, examples and more about the commands I have."

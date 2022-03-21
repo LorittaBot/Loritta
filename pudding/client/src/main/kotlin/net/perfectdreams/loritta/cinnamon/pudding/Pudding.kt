@@ -5,19 +5,30 @@ import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.Dispatchers
 import mu.KotlinLogging
+import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
+import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
+import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.DailiesService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
+import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedInteractionsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
+import net.perfectdreams.loritta.cinnamon.pudding.services.PatchNotesNotificationsService
+import net.perfectdreams.loritta.cinnamon.pudding.services.PaymentsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ReputationsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ServersService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ShipEffectsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.SonhosService
+import net.perfectdreams.loritta.cinnamon.pudding.services.StatsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
@@ -26,23 +37,49 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
+import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarrySonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ReceivedPatchNotesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.createOrUpdatePostgreSQLEnum
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
@@ -51,8 +88,10 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import java.security.SecureRandom
+import java.util.concurrent.TimeUnit
 
-class Pudding(private val database: Database) {
+class Pudding(val hikariDataSource: HikariDataSource, private val database: Database) {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
@@ -70,12 +109,14 @@ class Pudding(private val database: Database) {
          */
         fun createPostgreSQLPudding(address: String, databaseName: String, username: String, password: String): Pudding {
             val hikariConfig = createHikariConfig()
-            hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName"
+            hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${getPuddingApplicationName()}"
 
             hikariConfig.username = username
             hikariConfig.password = password
 
-            return Pudding(connectToDatabase(HikariDataSource(hikariConfig)))
+            val hikariDataSource = HikariDataSource(hikariConfig)
+
+            return Pudding(hikariDataSource, connectToDatabase(hikariDataSource))
         }
 
         private fun createHikariConfig(): HikariConfig {
@@ -107,6 +148,39 @@ class Pudding(private val database: Database) {
                     defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
                 }
             )
+
+        private fun getPuddingApplicationName(): String {
+            val suffix = "Loritta Cinnamon Pudding"
+            // From hostname command
+            try {
+                val proc = ProcessBuilder("hostname")
+                    .start()
+
+                proc.waitFor(5, TimeUnit.SECONDS)
+                val hostname = proc.inputStream.readAllBytes().toString(Charsets.UTF_8).removeSuffix("\n")
+                proc.destroyForcibly()
+
+                logger.warn { "Machine Hostname via \"hostname\" command: $hostname" }
+                return "$suffix - $hostname"
+            } catch (e: Exception) {
+                logger.warn(e) { "Something went wrong while trying to get the machine's hostname via the \"hostname\" command!" }
+            }
+
+            // From hostname env variable
+            System.getenv("HOSTNAME")?.let {
+                logger.warn { "Machine Hostname via \"HOSTNAME\" env variable: $it" }
+                return "$suffix - $it"
+            }
+
+            // From computername env variable
+            System.getenv("COMPUTERNAME")?.let {
+                logger.warn { "Machine Hostname via \"COMPUTERNAME\" env variable: $it" }
+                return "$suffix - $it"
+            }
+
+            logger.warn { "I wasn't able to get the machine's hostname! Falling back to \"Unknown\"..." }
+            return "$suffix - Unknown"
+        }
     }
 
     val users = UsersService(this)
@@ -115,13 +189,18 @@ class Pudding(private val database: Database) {
     val shipEffects = ShipEffectsService(this)
     val marriages = MarriagesService(this)
     val interactionsData = InteractionsDataService(this)
-    val executedApplicationCommandsLog = ExecutedApplicationCommandsLogService(this)
+    val executedInteractionsLog = ExecutedInteractionsLogService(this)
     val backgrounds = BackgroundsService(this)
     val profileDesigns = ProfileDesignsService(this)
     val bovespaBroker = BovespaBrokerService(this)
+    val bets = BetsService(this)
+    val payments = PaymentsService(this)
+    val stats = StatsService(this)
     val puddingTasks = PuddingTasks(this)
     val reputations = ReputationsService(this)
     val dailies = DailiesService(this)
+    val patchNotesNotifications = PatchNotesNotificationsService(this)
+    val random = SecureRandom()
 
     /**
      * Starts tasks related to [Pudding], like table partition creation, purge old data, etc.
@@ -162,50 +241,84 @@ class Pudding(private val database: Database) {
             Dailies,
             BannedUsers,
             MarrySonhosTransactionsLog,
+            ExecutedComponentsLog,
             TickerPrices,
             BoughtStocks,
             BannedUsers,
-            BrokerSonhosTransactionsLog
+            SonhosTransactionsLog,
+            BrokerSonhosTransactionsLog,
+            CachedDiscordUsers,
+            CoinFlipBetGlobalMatchmakingQueue,
+            CoinFlipBetGlobalMatchmakingResults,
+            CoinFlipBetGlobalSonhosTransactionsLog,
+            SparklyPowerLSXSonhosTransactionsLog,
+            Dailies,
+            Payments,
+            GuildCountStats,
+            CachedDiscordUsersDirectMessageChannels,
+            DailyTaxPendingDirectMessages,
+            DailyTaxSonhosTransactionsLog,
+            DailyTaxUsersToSkipDirectMessages,
+            CoinFlipBetMatchmakingResults,
+            CoinFlipBetSonhosTransactionsLog,
+            EmojiFightMatches,
+            EmojiFightParticipants,
+            EmojiFightMatchmakingResults,
+            EmojiFightSonhosTransactionsLog,
+            DivineInterventionSonhosTransactionsLog,
+            PaymentSonhosTransactionResults,
+            PaymentSonhosTransactionsLog,
+            SonhosBundles,
+            SonhosBundlePurchaseSonhosTransactionsLog,
+            PatchNotesNotifications,
+            ReceivedPatchNotesNotifications
         )
 
         if (schemas.isNotEmpty())
             transaction {
                 createOrUpdatePostgreSQLEnum(AchievementType.values())
                 createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
-                createOrUpdatePostgreSQLEnum(BovespaBrokerService.BrokerSonhosTransactionsEntryAction.values())
+                createOrUpdatePostgreSQLEnum(ComponentType.values())
+                createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
+                createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
+                createOrUpdatePostgreSQLEnum(DailyTaxPendingDirectMessageState.values())
+                createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }
                 SchemaUtils.createMissingTablesAndColumns(
                     *schemas
                         .toMutableList()
-                        .apply {
-                            this.remove(ExecutedApplicationCommandsLog)
-                        }.toTypedArray()
+                        // Partitioned tables
+                        .filter { it !in listOf(ExecutedApplicationCommandsLog, ExecutedComponentsLog) }
+                        .toTypedArray()
                 )
 
                 // This is a workaround because Exposed does not support (yet) Partitioned Tables
-                if (ExecutedApplicationCommandsLog in schemas) {
-                    // The reason we use partitioned tables for the ExecutedApplicationCommandsLog table, is because there is a LOT of commands there
-                    // Removing old logs is painfully slow due to vacuuming and stuff, querying recent commands is also pretty slow.
-                    // So it is better to split stuff up in separate partitions!
-                    val createStatements = createStatementsPartitioned(ExecutedApplicationCommandsLog, "RANGE(sent_at)")
-
-                    execStatements(false, createStatements)
-                    commit()
-                }
-
-                // Now call the addMissingColumnsStatements again with the partitioned tables
-                // We can not use createMissingTablesAndColumns here because Exposed will think that the table does not exist
-                // because it is a partitioned table!
-                if (ExecutedApplicationCommandsLog in schemas) {
-                    val alterStatements = SchemaUtils.addMissingColumnsStatements(
-                        ExecutedApplicationCommandsLog
-                    )
-
-                    execStatements(false, alterStatements)
-                    commit()
-                }
+                if (ExecutedApplicationCommandsLog in schemas)
+                    createPartitionedTable(ExecutedApplicationCommandsLog)
+                if (ExecutedComponentsLog in schemas)
+                    createPartitionedTable(ExecutedComponentsLog)
             }
+    }
+
+    private fun Transaction.createPartitionedTable(table: Table) {
+        // The reason we use partitioned tables for the ExecutedApplicationCommandsLog table, is because there is a LOT of commands there
+        // Removing old logs is painfully slow due to vacuuming and stuff, querying recent commands is also pretty slow.
+        // So it is better to split stuff up in separate partitions!
+        val createStatements = createStatementsPartitioned(table, "RANGE(sent_at)")
+
+        execStatements(false, createStatements)
+        commit()
+
+        val alterStatements = SchemaUtils.addMissingColumnsStatements(
+            table
+        )
+
+        // Now call the addMissingColumnsStatements again with the partitioned tables
+        // We can not use createMissingTablesAndColumns here because Exposed will think that the table does not exist
+        // because it is a partitioned table!
+        execStatements(false, alterStatements)
+        commit()
     }
 
     // From Exposed
@@ -259,11 +372,11 @@ class Pudding(private val database: Database) {
     }
 
     // https://github.com/JetBrains/Exposed/issues/1003
-    suspend fun <T> transaction(repetitions: Int = 5, statement: suspend org.jetbrains.exposed.sql.Transaction.() -> T): T {
+    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend org.jetbrains.exposed.sql.Transaction.() -> T): T {
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
-                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, database) {
+                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, database, transactionIsolation) {
                     statement.invoke(this)
                 }
             } catch (e: ExposedSQLException) {

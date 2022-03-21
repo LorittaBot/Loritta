@@ -1,0 +1,21 @@
+---
+website:
+  dashboard:
+    profile:
+      sectionNames:
+        yourServers: "Tus Servidores"
+        profileLayout: "Diseño del Perfil"
+        shipEffects: "Editar valores del Ship"
+        sonhosShop: "Tienda de Sonhos"
+        logout: "Salir"
+        deleteAccount: "Borrar Cuenta"
+      deleteAccount:
+        deleteMyAccount: "Borrar mi cuenta"
+        description:
+          - "Esta operación es irreversible! Todos tus datos serán borrados e perderás todo lo que conseguiste en Loritta!"
+          - "Después de confirmar, no podrás revertir esta operación. Esta borrará tu perfil, sonhos, keys de donador, recordatorios, reputaciones, matrimonios y mucho más, solo borra tus datos si estás totalmente seguro de lo que haces!"
+          - "Tendrás que quitar a Loritta de tus servidores manualmente y parar de utilizar comandos o funciones de ella, al usarla de nuevo, ella podrá guardar datos sobre ti."
+        yourAccountWillBeSuspendedWarning: "¡Si decides borrar los datos de tu cuenta, tu cuenta será suspendida temporalmente por (72 horas)!"
+        warningDescription:
+          - "Borrar los datos de tu cuenta no resolverá problemas que están pasando conmigo en tu servidor! Si estás teniendo problemas conmigo, entra en nuestro servidor de soporte para que te podamos ayudar!"
+        bannedAccountDueToDeletion: "Estás suspendido temporariamente por la solicitud de borrar los datos de tu cuenta"

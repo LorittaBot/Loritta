@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox
 
-import net.perfectdreams.discordinteraktions.api.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
@@ -9,8 +9,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExe
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.characters.CharacterType
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.selects.SelectMenuWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 
 class ChangeCharacterSelectMenuExecutor(
     val loritta: LorittaCinnamon,

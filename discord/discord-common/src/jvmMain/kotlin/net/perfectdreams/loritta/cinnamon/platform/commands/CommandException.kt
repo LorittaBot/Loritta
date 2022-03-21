@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
-import net.perfectdreams.discordinteraktions.common.builder.message.create.PublicInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 
 /**
  * Useful for command control flow, this allows you a quick and easy way to "halt" the execution of an command.
@@ -9,4 +9,4 @@ import net.perfectdreams.discordinteraktions.common.builder.message.create.Publi
  *
  * Implementations should catch this exception and send the [builder], logging the error is not required.
  */
-class CommandException(val builder: PublicInteractionOrFollowupMessageCreateBuilder.() -> (Unit)) : RuntimeException()
+class CommandException(val builder: InteractionOrFollowupMessageCreateBuilder) : RuntimeException()

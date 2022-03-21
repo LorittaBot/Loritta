@@ -5,9 +5,9 @@ import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
-import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.TobyTextBoxRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
@@ -15,10 +15,10 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper.textBoxTextOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
@@ -48,9 +48,9 @@ import java.io.InputStream
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
-class TextBoxExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(TextBoxExecutor::class) {
-        object Options : CommandOptions() {
+class TextBoxExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(TextBoxExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val text = textBoxTextOption()
                 .register()
         }
@@ -262,7 +262,7 @@ class TextBoxExecutor(val client: GabrielaImageServerClient) : CommandExecutor()
     }
 
     @OptIn(ExperimentalTime::class)
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because we will create a image
 
         val text = args[Options.text]

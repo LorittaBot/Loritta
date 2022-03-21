@@ -1,0 +1,6 @@
+---
+description: "Altera se você prefere que as punições sejam aplicadas diretamente ou se elas devem ter uma confirmação antes de punir!"
+disabled: "¡Se han deshabilitado los castigos rápidos! Al castigar a un usuario, tendrá que confirmar si realmente desea castigarlo o no... al menos de esa manera evitará ese remordimiento castigando a alguien que no debería haber recibido ese castigo."
+enabled: "¡Se han activado los castigos rápidos! Al castigar a un usuario, ni siquiera te preguntaré si realmente quieres castigar al usuario, ¡lo harás directamente y sin piedad! ... simplemente no te quejes después de que no quieras castigar a ese usuario, ¿de acuerdo?"
+howDisable: "Si quieres desactivar los castigos rápidos, usa el comando de nuevo!"
+howEnable: "Si quieres activar los castigos rápidos, usa el comando de nuevo!"

@@ -7,18 +7,18 @@ import io.ktor.client.statement.*
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import org.jsoup.Jsoup
 
-class HungerGamesExecutor(val rest: RestClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(HungerGamesExecutor::class) {
-        object Options : CommandOptions() {
+class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(HungerGamesExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val users = userList("user", HungerGamesCommand.I18N_PREFIX.Options.Users, 24, 24)
                 .register()
         }
@@ -26,7 +26,7 @@ class HungerGamesExecutor(val rest: RestClient) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext)
             context.fail {
                 content = context.i18nContext.get(I18nKeysData.Commands.CommandOnlyAvailableInGuilds)
@@ -108,7 +108,7 @@ class HungerGamesExecutor(val rest: RestClient) : CommandExecutor() {
         context.sendMessage {
             styled(
                 context.i18nContext.get(HungerGamesCommand.I18N_PREFIX.SimulationCreated(saveLink)),
-                Emotes.LoriHappy
+                Emotes.LoriHappyJumping
             )
         }
     }

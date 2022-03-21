@@ -20,12 +20,13 @@ dependencies {
     // Sequins
     api("net.perfectdreams.sequins.ktor:base-route:1.0.2")
 
+    // Logging
+    api("ch.qos.logback:logback-classic:1.3.0-alpha14")
+
     // Required for tests, if this is missing then Gradle will throw
     // "No tests found for given includes: [***Test](filter.includeTestsMatching)"
-    implementation(kotlin("test"))
-    implementation(kotlin("test-junit"))
-    implementation("org.junit.jupiter:junit-jupiter:5.4.2")
-    implementation("org.assertj:assertj-core:3.19.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
+    testImplementation("org.assertj:assertj-core:3.19.0")
 }
 
 tasks.test {
@@ -39,6 +40,7 @@ tasks.withType<KotlinCompile> {
 jib {
     container {
         ports = listOf("8080")
+        mainClass = "net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaCinnamonWebServerLauncher"
     }
 
     to {

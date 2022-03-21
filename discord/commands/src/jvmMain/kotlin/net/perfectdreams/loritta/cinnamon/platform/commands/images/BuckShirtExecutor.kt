@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.GabrielaImageServerSingleCommandBase
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.base.SingleImageOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 
 class BuckShirtExecutor(
     client: GabrielaImageServerClient
@@ -12,7 +12,7 @@ class BuckShirtExecutor(
     { client.images.buckShirt(it) },
     "buck_shirt.png"
 ) {
-    companion object : CommandExecutorDeclaration(BuckShirtExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration(BuckShirtExecutor::class) {
         override val options = SingleImageOptions
     }
 }

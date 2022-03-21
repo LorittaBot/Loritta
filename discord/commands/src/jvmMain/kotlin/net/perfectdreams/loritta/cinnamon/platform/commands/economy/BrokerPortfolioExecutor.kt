@@ -4,16 +4,16 @@ import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerExecutorUtils.brokerBaseEmbed
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
-class BrokerPortfolioExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(BrokerPortfolioExecutor::class)
+class BrokerPortfolioExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(BrokerPortfolioExecutor::class)
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()
 
         val stockInformations = context.loritta.services.bovespaBroker.getAllTickers()
@@ -28,6 +28,30 @@ class BrokerPortfolioExecutor : CommandExecutor() {
         context.sendMessage {
             brokerBaseEmbed(context) {
                 title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Portfolio.Title)}"
+
+                val totalStockCount = userStockAssets.sumOf { it.count }
+                val totalStockSum = userStockAssets.sumOf { it.sum }
+                val totalGainsIfSoldEverythingNow = userStockAssets.sumOf { stockAsset ->
+                    val tickerInformation = stockInformations.first { it.ticker == stockAsset.ticker }
+
+                    LorittaBovespaBrokerUtils.convertToSellingPrice(
+                        LorittaBovespaBrokerUtils.convertReaisToSonhos(
+                            tickerInformation.value
+                        )
+                    ) * stockAsset.count
+                }
+                val diff = totalGainsIfSoldEverythingNow - totalStockSum
+                val totalProfitPercentage = ((totalGainsIfSoldEverythingNow - totalStockSum.toDouble()) / totalStockSum)
+
+                description = context.i18nContext.get(
+                    BrokerCommand.I18N_PREFIX.Portfolio.YouHaveSharesInYourPortfolio(
+                        totalStockCount,
+                        totalStockSum,
+                        totalGainsIfSoldEverythingNow,
+                        diff.let { if (it > 0) "+$it" else it.toString() },
+                        totalProfitPercentage
+                    )
+                )
 
                 for (stockAsset in userStockAssets) {
                     val (tickerId, stockCount, stockSum, stockAverage) = stockAsset

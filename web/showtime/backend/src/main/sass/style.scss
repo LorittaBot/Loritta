@@ -1,0 +1,546 @@
+$primary-color: #29a6fe;
+
+// Lovely Style
+@import 'lovely-style/reset';
+@import 'lovely-style/body';
+@import 'lovely-style/navigation-bar';
+@import 'lovely-style/primary-color-headings';
+@import 'lovely-style/buttons';
+@import 'lovely-style/rainbow';
+@import 'lovely-style/fancy-table';
+@import 'lovely-style/text';
+@import 'lovely-style/fonts/oswald.scss';
+@import 'lovely-style/fonts/lato.scss';
+@import 'lovely-style/fancy-hr';
+
+@import 'header';
+@import 'effects';
+@import 'discord/discord_style_v2_edits';
+@import 'sidebars';
+@import 'fan-arts';
+@import 'dashboard';
+@import '_fonts';
+@import 'sponsors';
+@import 'blog';
+@import 'footer';
+@import 'code';
+// @import 'tingle.min';
+@import 'discord_buttons';
+@import '_daily-shop.scss';
+@import 'progress_indicator';
+@import 'fancy_details';
+@import 'tooltip';
+@import 'svg_icons';
+@import 'content';
+
+@import 'views/commands';
+
+/* latin */
+@font-face {
+  font-family: 'Pacifico';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap; // Logo text is a good candidate for swap since displaying a company’s name using a reasonable fallback will get the message across but you’d eventually use the official typeface.
+  src: local('Pacifico Regular'), local('Pacifico-Regular'), url(https://fonts.gstatic.com/s/pacifico/v12/FwZY7-Qmy14u9lezJ-6H6Mk.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@include import-font-lato();
+@include import-font-oswald();
+
+$min-reading-width: 1260px;
+$min-image-stacked-width: 800px;
+
+// COLOR VARIABLES, USED IN CONTAINERS AND STUFF
+// Themes should override those variables!
+:root {
+  // There are two variations of the background: One lighter and another darker
+  // The darker one is also used in the left sidebar!
+  --background-wrapper-primary: #f3f3f3;
+  --background-wrapper-secondary: #ebebeb;
+
+  // Used in the right sidebar background
+  --background-right-sidebar: #fcfcfc;
+
+  --fancy-details-summary: #{darken(#fcfcfc, 1.5%)};
+  --fancy-details-details: #{darken(#fcfcfc, 3%)};
+
+  --text: #404040;
+}
+
+html {
+  // Firefox Only, but damn it looks cool
+  scrollbar-width: thin;
+  scrollbar-color: #29a6fe #1672b3;
+}
+
+section h1 {
+  // For some reason "h1" tags inside a "section" are smaller due to... browsers stuff
+  font-size: xx-large;
+  line-height: 1em;
+}
+
+nav#navigation-bar .icon {
+  // Similar to text-shadow but for the svg icons :3
+  filter: drop-shadow(0 1px rgba(0, 0, 0, 0.2));
+}
+
+iframe {
+  max-width: 100vw;
+}
+
+.guild-icons-horizontal {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+
+  .guilds-wrapper {
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    width: fit-content;
+    text-align: center;
+    padding-top: 32px;
+    padding-bottom: 32px;
+    animation: guilds-wrapper-move 60s linear infinite;
+  }
+}
+
+@keyframes guilds-wrapper-move {
+  0% {
+      transform: translate(0, 0);
+  }
+  100% {
+      transform: translate(-100%, 0);
+  }
+}
+
+body {
+  @include lovely-body($hide-overflow-x: true);
+  display: flex; // Required for the sticky footer
+}
+
+@include navigation-bar();
+@include lovely-button-colors();
+
+.centralized-ad {
+  text-align: center;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.blinking-pose {
+  visibility: hidden;
+}
+
+.blushing-pose {
+  visibility: hidden;
+}
+
+.dark-sweater-pose {
+  visibility: hidden;
+}
+
+#inner-content {
+    position: relative;
+
+    .background-overlay {
+        // Before we used the background on the divs itself (odd-wrapper and even-wrapper)
+        // The issue with this approach is that the background dowesn't persist its position between divs
+        // So it looks kinda wonky
+        background-image: url("/v3/assets/img/website_bg.png");
+        mask-image: linear-gradient(-90deg, black 0%, rgba(0, 0, 0, 0) 15%, rgba(0, 0, 0, 0) 85%, black 100%);
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+}
+.odd-wrapper {
+  background-color: var(--background-wrapper-primary);
+
+  &.wobbly-bg::before {
+    display: inline-block;
+    content: "";
+
+    background-color: var(--background-wrapper-secondary);
+    -webkit-mask-image: url("../img/wobby-lines-odd.svg");
+    mask-image: url("../img/wobby-lines-even.svg");
+    
+    height: 49px;
+    width: 100%;
+  }
+}
+
+.even-wrapper {
+  background-color: var(--background-wrapper-secondary);
+
+  &.wobbly-bg::before {
+    display: inline-block;
+    content: "";
+
+    background-color: var(--background-wrapper-primary);
+    -webkit-mask-image: url("../img/wobby-lines-even.svg");
+    mask-image: url("../img/wobby-lines-even.svg");
+
+    height: 49px;
+    width: 100%;
+  }
+}
+
+.media {
+  display: flex;
+  align-items: center;
+  width: 75%;
+  max-width: 60em;
+  margin: auto;
+  line-height: 1.58;
+
+  @media screen and (max-width: $min-image-stacked-width) {
+    flex-direction: column;
+  }
+
+  &.single-column {
+    max-width: 50em;
+  }
+}
+
+// Colocar uma margem no li, para que não fique fei
+li {
+  margin-top: 0.7em;
+}
+
+// Links
+a {
+  background-color: transparent;
+  color: #006bf4;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.media-figure {
+  margin-right: 1em;
+  width: 25%;
+
+  @media screen and (max-width: $min-image-stacked-width) {
+    width: 50%;
+    order: 1;
+  }
+
+  img {
+    max-width: 100%;
+  }
+}
+
+.media-body {
+  flex: 1;
+  width: 75%;
+
+  @media screen and (max-width: $min-image-stacked-width) {
+    order: 2;
+    width: 95%;
+  }
+}
+
+/* h1, h2, h3 {
+  color: #29a6fe;
+  font-weight: 500;
+}
+
+h1 {
+  font-size: 3em;
+}
+
+h2 {
+  font-size: 2.25em;
+}
+
+h3 {
+  font-size: 1.75em;
+}
+
+h4 {
+  font-size: 1.125em;
+} */
+
+.inline-emoji {
+  height: 1.3em;
+  position: relative;
+  top: 0.3em;
+}
+
+@keyframes icon-middle {
+  0%, 50%, 100% { transform: translateY(0px); animation-timing-function: ease-out; }
+  25% { transform: translateY(10px); animation-timing-function: ease-in; }
+  75% { transform: translateY(-10px); animation-timing-function: ease-in; }
+}
+
+.icon-bottom {
+  animation: 8s linear infinite forwards icon-middle;
+  position: relative;
+  top: 16px;
+  animation-delay: 1s;
+}
+
+.icon-top {
+  animation: 8s linear infinite forwards icon-middle;
+  position: relative;
+  top: -16px;
+}
+
+.icon-middle {
+  animation: 8s linear infinite forwards icon-middle;
+  animation-delay: 0.5s;
+}
+
+.funny-commands {
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  position: relative;
+  height: 400px;
+}
+
+.marquee {
+  margin: 0 auto;
+  white-space: nowrap;
+  position: absolute;
+  top: 30px;
+  width: 100vw;
+}
+
+.marquee {
+  .scroller {
+    display: inline-block;
+    padding-left: 100%;
+    animation: marquee 120s linear infinite;
+    will-change: transform;
+  }
+}
+
+.marquee2 {
+  .scroller {
+  animation-delay: 60s;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate(-100%, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+.cards {
+  max-width: 960px;
+  margin: 0 auto 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-gap: 30px;
+
+  img {
+    max-width: 100%;
+  }
+}
+
+.uppercase {
+  text-transform: uppercase;
+}
+
+.left-horizontal-line {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+
+  &::after {
+    position: absolute;
+    top: 51%;
+    overflow: hidden;
+    width: 100%;
+    height: 2px;
+    content: '\a0';
+    background-color: #1996ed;
+    margin-left: 10px;
+    margin-right: 10px;
+  }
+}
+
+.color {
+  background-color: #ccc;
+}
+
+#loading-screen {
+  position: fixed;
+  background-color: #0006;
+  z-index: 5;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+  opacity: 0;
+  transition: 0.75s;
+  pointer-events: none;
+
+  div {
+    font-size: 1.5em;
+    color: white;
+    text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000
+  }
+}
+
+#loading-screen img {
+  @keyframes loading-spinner {
+    0% {
+      transform: scale(1, 1)
+    }
+    25%, 75% {
+      transform: scale(0, 1)
+    }
+    50% {
+      transform: scale(-1, 1)
+    }
+    100% {
+      transform: scale(1, 1);
+    }
+  }
+
+  animation: 15s linear infinite forwards loading-spinner;
+}
+
+.user-info {
+  background-color: #29a6fe;
+  border-radius: 8px;
+  box-shadow: 1px 1px 10px #0000004f;
+  display: flex;
+  align-items: center;
+  padding: 16px;
+
+  img {
+      border-radius: 999999px;
+      margin-right: 6px;
+      width: 128px;
+      height: 128px;
+  }
+
+  .text {
+      color: white;
+      padding-left: 16px;
+
+      .name {
+          font-size: 3em;
+      }
+  }
+}
+
+.server-entry {
+  background-color: #7289DA;
+  border-radius: 8px;
+  box-shadow: 1px 1px 10px #0000004f;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+}
+
+.server-list {
+  width: 100%;
+  margin: 0 auto 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-gap: 30px;
+  
+  .entry {
+    width: 100%;
+    background-color: #7289DA;
+    border-radius: 8px;
+    box-shadow: 1px 1px 10px #0000004f;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .icon {
+      height: 48px;
+      border-radius: 100%;
+    }
+
+    .top-row {
+      align-items: center;
+      display: flex;
+      padding: 4px;
+      background-color: #5e77d4;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+      z-index: 1;
+
+      .info {
+        overflow: hidden;
+        padding-left: 4px;
+
+        .name {
+          color: white;
+          font-size: 1.1em;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+    
+        .role {
+          color: rgba(255, 255, 255, 0.4);
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+
+    .bottom-row {
+      background-color: #7289DA;
+      padding: 4px;
+      text-align: right;
+
+      a {
+        display: inline-block;
+        text-decoration: none;
+        color: white;
+        border: 1px solid #a4b2e5;
+        border-radius: 4px;
+        padding: 4px;
+        transition: 0.5s;
+
+        &:hover {
+          background-color: #5e77d4;
+          border: 1px solid hsla(227, 56%, 47%, 1);
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 600px) {
+  // We still want to show the login bar, to avoid users being confused that they aren't logged in into the correct account
+  // This was calculated by writing "M" 24 times for the username, and then checking how much space does it need.
+  .navigation-bar .right-side-entries .entry:nth-last-child(2) { display: block; }
+
+  #hamburger-menu-button { display: block !important; } // Important to override the inline style set
+}
+
+@media screen and (max-width: 350px) {
+  // Shows the login bar *except* if the screen is waaaaay too smol
+  .navigation-bar .right-side-entries .entry:nth-last-child(2) { display: none; }
+}
+
+// Queremos que o tema escuro faça override de qualquer regra anterior
+@import 'themes/dark-theme';

@@ -1,14 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
+import net.perfectdreams.exposedpowerutils.sql.jsonb
+import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.jsonb
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.postgresEnumeration
 import org.jetbrains.exposed.sql.javatime.timestamp
 
 object ExecutedApplicationCommandsLog : LongIdTableWithoutOverriddenPrimaryKey() {
     val userId = long("user").index()
     val guildId = long("guild").nullable()
     val channelId = long("channel")
+    // Because this is already a partition table, we can't change its type (for now)
     val sentAt = timestamp("sent_at").index()
 
     val type = postgresEnumeration<ApplicationCommandType>("type").index()

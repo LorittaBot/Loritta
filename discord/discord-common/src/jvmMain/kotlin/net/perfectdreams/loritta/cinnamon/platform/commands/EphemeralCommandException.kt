@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
-import net.perfectdreams.discordinteraktions.common.builder.message.create.EphemeralInteractionOrFollowupMessageCreateBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 
 /**
  * Useful for command control flow, this allows you a quick and easy way to "halt" the execution of an command.
@@ -9,4 +9,4 @@ import net.perfectdreams.discordinteraktions.common.builder.message.create.Ephem
  *
  * Implementations should catch this exception and send the [builder], logging the error is not required.
  */
-class EphemeralCommandException(val builder: EphemeralInteractionOrFollowupMessageCreateBuilder.() -> (Unit)) : RuntimeException()
+class EphemeralCommandException(val builder: InteractionOrFollowupMessageCreateBuilder) : RuntimeException()

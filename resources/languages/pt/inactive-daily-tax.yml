@@ -1,0 +1,25 @@
+---
+inactiveDailyTax:
+  title: "Imposto de Inatividade no Prêmio Diário"
+  warn:
+    - "Olá {user}! Como você tem mais de {sonhosTaxBracketThreshold,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} e está há mais de {daysWithoutGettingDaily,plural,=0{# dias} one {# dia} other {# dias}} sem pegar a sua recompensa diária, o governo da LorittaLand está dando uma bizoiada nos seus {currentSonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} e irão passar a mão em {howMuchWillBeRemoved,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (taxa de {taxPercentage, number,#.##%}) seus se você não pegar a recompensa diária até {inactivityTaxTimeWillBeTriggeredAt}!"
+    - ""
+    - "**Pegue a sua recompensa diária [clicando aqui]({dailyLink}) para impedir que seus sonhos sejam usurpados pelo governo!** Se você não pegar a sua recompensa diária, você irá continuar a perder sonhos todos os dias às {timeWhenDailyTaxIsTriggered}!"
+    - ""
+    - "O imposto existe para dificultar as pessoas que só acumulam sonhos apenas para deixar eles mofando em suas contas, sem ela se esforçar para pegar a recompensa diária."
+    - ""
+    - "Você sabia que assinantes do Plano Premium \"Completo\" não pagam o imposto de inatividade? [Compre o Plano Premium \"Completo\" hoje mesmo]({premiumLink})!"
+    - ""
+    - "*Este aviso só será enviado uma vez no seu privado se você tiver as suas mensagens diretas abertas para evitar eu te spammar. Continuarei avisando sobre impostos no seu privado depois que você pegar a sua recompensa diária!*"
+  taxed:
+    - "Eita {user}! Como você tem mais de {sonhosTaxBracketThreshold,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} e está há mais de {daysWithoutGettingDaily,plural,=0{# dias} one {# dia} other {# dias}} sem pegar a sua recompensa diária, o governo da LorittaLand usurpou {howMuchWasRemoved,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (taxa de {taxPercentage, number,#.##%}) da sua conta!"
+    - ""
+    - "**Pegue a sua recompensa diária [clicando aqui]({dailyLink}) para impedir que seus sonhos continuem a ser usurpados pelo governo!** Se você não pegar a sua recompensa diária, você irá continuar a perder sonhos todos os dias às {timeWhenDailyTaxIsTriggered}!"
+    - ""
+    - "O imposto existe para dificultar as pessoas que só acumulam sonhos apenas para deixar eles mofando em suas contas, sem ela se esforçar para pegar a recompensa diária."
+    - ""
+    - "Se você não pegar a recompensa diária, você perderá sonhos novamente em {nextInactivityTaxTimeWillBeTriggeredAt}!"
+    - ""
+    - "Você sabia que assinantes do Plano Premium \"Completo\" não pagam o imposto de inatividade? [Compre o Plano Premium \"Completo\" hoje mesmo]({premiumLink})!"
+    - ""
+    - "*Este aviso só será enviado uma vez no seu privado se você tiver as suas mensagens diretas abertas para evitar eu te spammar. Continuarei avisando sobre impostos no seu privado depois que você pegar a sua recompensa diária!*"

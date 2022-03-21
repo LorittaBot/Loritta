@@ -1,0 +1,16 @@
+---
+website:
+  support:
+    title: "Servicio de asistencia"
+    supportServer:
+      title: "Servidor de soporte (¡Te ayudamos!)"
+      description:
+        - "¿Necesitas ayuda? Si tiene alguna pregunta o problema sobre Loritta, ¡únase a mi servidor de soporte!"
+    communityServer:
+      title: "Servidor de la comunidad (para conversaciones)"
+      description:
+        - "¿Quieres conocer a otros fanáticos de Loritta para charlar, dar sugerencias a Loritta, informar errores y hablar todo sobre Loritta Morenitta? ¡Entonces ingrese al servidor comunitario oficial de Loritta!"
+    description:
+      - "¿Tienes dudas y necesitas ayuda, quieres saber por qué soy inestable, estás de humor para descubrir nuevas noticias mías o simplemente quieres charlar con otras personas?"
+      - "¡Entonces ingrese a mi servidor de soporte! Allí tenemos ayudantes increíbles y cariñosos que están allí siempre que necesite ayuda. ¡Haz preguntas, aprende cosas nuevas y mucho más! Seguro que te ayudarán."
+      - "¡Sería un honor tenerte allí!"

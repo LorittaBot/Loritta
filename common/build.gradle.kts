@@ -5,9 +5,10 @@ plugins {
     id("maven-publish")
 }
 
-i18nHelper {
+val generateI18nKeys = tasks.register<net.perfectdreams.i18nhelper.plugin.GenerateI18nKeysTask>("generateI18nKeys") {
     generatedPackage.set("net.perfectdreams.loritta.cinnamon.i18n")
-    languageSourceFolder.set("../resources/languages/en/")
+    languageSourceFolder.set(file("../resources/languages/en/"))
+    languageTargetFolder.set(file("$buildDir/generated/languages"))
     translationLoadTransform.set { file, map ->
         // Before, all commands locales were split up into different files, based on the category, example:
         // commands-discord.yml
@@ -85,7 +86,8 @@ kotlin {
 
     sourceSets {
         commonMain {
-            kotlin.srcDir("build/generated/languages")
+            // If a task only has one output, you can reference the task itself
+            kotlin.srcDir(generateI18nKeys)
 
             dependencies {
                 // API = We want to allow dependencies to access those classes
@@ -95,12 +97,12 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
                 api("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:${Versions.KOTLINX_SERIALIZATION}")
-                api("io.ktor:ktor-client-core:1.6.0")
+                api("io.ktor:ktor-client-core:${Versions.KTOR}")
                 api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
+                api("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.KOTLINX_DATE_TIME}")
 
                 // Used for Math stuff
-                api("com.ionspin.kotlin:bignum:0.3.0")
+                api("com.ionspin.kotlin:bignum:0.3.3")
             }
         }
 
@@ -109,10 +111,6 @@ kotlin {
             dependencies {
                 api(kotlin("stdlib-jdk8"))
 
-                // Async Appender is broken in alpha5
-                // https://stackoverflow.com/questions/58742485/logback-error-no-attached-appenders-found
-                api("ch.qos.logback:logback-classic:1.3.0-alpha4")
-
                 // Used for caching
                 api("com.github.ben-manes.caffeine:caffeine:3.0.1")
 
@@ -120,18 +118,18 @@ kotlin {
                 api("org.jetbrains.kotlinx:kotlinx-serialization-hocon:${Versions.KOTLINX_SERIALIZATION}")
 
                 // Used for the LocaleManager
-                implementation("org.yaml:snakeyaml:1.28")
+                implementation("org.yaml:snakeyaml:1.30")
 
                 // Internationalization
                 api("net.perfectdreams.i18nhelper.formatters:icu-messageformat-jvm:${Versions.I18N_HELPER}")
-                implementation("com.charleskorn.kaml:kaml:0.35.0")
-                implementation("com.ibm.icu:icu4j:69.1")
+                implementation("com.charleskorn.kaml:kaml:0.38.0")
+                implementation("com.ibm.icu:icu4j:70.1")
 
                 // Used by Minecraft related commands
                 api("net.perfectdreams.minecraftmojangapi:minecraft-mojang-api:0.0.1-SNAPSHOT")
 
                 // Gabriela Image Server
-                api("net.perfectdreams.gabrielaimageserver:client:2.0.3")
+                api("net.perfectdreams.gabrielaimageserver:client:2.0.6")
 
                 // Emoji Stuff
                 api("com.vdurmont:emoji-java:5.1.1")
@@ -162,11 +160,7 @@ publishing {
         maven {
             name = "PerfectDreams"
             url = uri("https://repo.perfectdreams.net/")
-
-            credentials {
-                username = System.getProperty("USERNAME") ?: System.getenv("USERNAME")
-                password = System.getProperty("PASSWORD") ?: System.getenv("PASSWORD")
-            }
+            credentials(PasswordCredentials::class)
         }
     }
 }

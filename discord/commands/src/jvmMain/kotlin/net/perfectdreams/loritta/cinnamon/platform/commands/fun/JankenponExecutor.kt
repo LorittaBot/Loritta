@@ -1,20 +1,20 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.JankenponCommand
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.JankenponCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import kotlin.random.Random
 
-class JankenponExecutor(val random: Random, ): CommandExecutor() {
-    companion object: CommandExecutorDeclaration(JankenponExecutor::class) {
-        object Options: CommandOptions() {
+class JankenponExecutor(val random: Random, ): SlashCommandExecutor() {
+    companion object: SlashCommandExecutorDeclaration(JankenponExecutor::class) {
+        object Options: ApplicationCommandOptions() {
             val value = string("value", JankenponCommand.I18N_PREFIX.Options.Action)
                 .choice("rock", JankenponCommand.I18N_PREFIX.Rock)
                 .choice("paper", JankenponCommand.I18N_PREFIX.Paper)
@@ -25,7 +25,7 @@ class JankenponExecutor(val random: Random, ): CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val argument = args[options.value]
         val janken = Jankenpon.getJanken(argument)
 

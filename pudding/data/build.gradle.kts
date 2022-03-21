@@ -28,7 +28,7 @@ kotlin {
                 api(project(":common"))
                 
                 api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.2.1")
+                api("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.KOTLINX_DATE_TIME}")
             }
         }
     }
@@ -39,11 +39,7 @@ publishing {
         maven {
             name = "PerfectDreams"
             url = uri("https://repo.perfectdreams.net/")
-
-            credentials {
-                username = System.getProperty("USERNAME") ?: System.getenv("USERNAME")
-                password = System.getProperty("PASSWORD") ?: System.getenv("PASSWORD")
-            }
+            credentials(PasswordCredentials::class)
         }
     }
 }

@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
-import net.perfectdreams.discordinteraktions.common.components.ComponentDeclaration
-import net.perfectdreams.discordinteraktions.common.components.ComponentDeclaration.Companion.ID_REGEX
+import net.perfectdreams.discordinteraktions.common.components.ComponentExecutorDeclaration.Companion.ID_REGEX
 
 object ComponentExecutorIds {
     private val ID_REGEX = Regex("[A-z0-9]+")
@@ -18,6 +17,9 @@ object ComponentExecutorIds {
     val CHANGE_COLOR_PORTRAIT_TYPE_BUTTON_EXECUTOR = register("0006")
     val MARRIAGE_PROPOSAL_BUTTON_EXECUTOR = register("0007")
     val DIVORCE_PROPOSAL_BUTTON_EXECUTOR = register("0008")
+    val CHANGE_TRANSACTION_PAGE_BUTTON_EXECUTOR = register("0007")
+    val CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR = register("0008")
+    val START_MATCHMAKING_BUTTON_EXECUTOR = register("0009")
 
     /**
      * Verifies if the [id] matches our constraints
@@ -28,7 +30,7 @@ object ComponentExecutorIds {
      * @return the id
      */
     fun register(id: String): ComponentId {
-        require(ID_REGEX.matches(id)) { "ID must respect the ${ComponentDeclaration.ID_REGEX} regular expression!" }
+        require(ID_REGEX.matches(id)) { "ID must respect the $ID_REGEX regular expression!" }
         require(id.length == 4) { "ID must have four characters!" }
         val componentId = ComponentId(id)
         require(componentId !in registeredComponents) { "There is already an component with ID $id!" }

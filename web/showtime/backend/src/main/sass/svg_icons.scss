@@ -1,0 +1,15 @@
+.icon {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    stroke-width: 0;
+    stroke: currentColor;
+    fill: currentColor;
+
+    // To align the icon better
+    // https://blog.prototypr.io/align-svg-icons-to-text-and-say-goodbye-to-font-icons-d44b3d7b26b4
+    // https://milanaryal.com.np/how-to-align-svg-icons-to-text/
+    font-size: inherit;
+    color: inherit;
+    vertical-align: -0.125em;
+}

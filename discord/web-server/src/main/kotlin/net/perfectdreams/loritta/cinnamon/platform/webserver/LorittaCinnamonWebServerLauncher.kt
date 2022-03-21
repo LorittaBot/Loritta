@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import java.util.*
 import kotlin.concurrent.thread
 
 object LorittaCinnamonWebServerLauncher {
@@ -14,6 +15,9 @@ object LorittaCinnamonWebServerLauncher {
 
     @JvmStatic
     fun main(args: Array<String>) {
+        // https://github.com/JetBrains/Exposed/issues/1356
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaCinnamonWebServer::class, ConfigUtils.defaultConfigFileName)
         logger.info { "Loaded Loritta's configuration file" }
 
@@ -32,10 +36,10 @@ object LorittaCinnamonWebServerLauncher {
         }
 
         val services = Pudding.createPostgreSQLPudding(
-            rootConfig.services.pudding.address ?: error("Missing database address!"),
-            rootConfig.services.pudding.database ?: error("Missing database!"),
-            rootConfig.services.pudding.username ?: error("Missing database username!"),
-            rootConfig.services.pudding.password ?: error("Missing database password!")
+            rootConfig.services.pudding.address,
+            rootConfig.services.pudding.database,
+            rootConfig.services.pudding.username,
+            rootConfig.services.pudding.password
         )
 
         Runtime.getRuntime().addShutdownHook(

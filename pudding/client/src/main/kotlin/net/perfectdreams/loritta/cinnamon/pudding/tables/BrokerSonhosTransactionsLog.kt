@@ -1,16 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
-import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.postgresEnumeration
+import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
+import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import org.jetbrains.exposed.dao.id.LongIdTable
-import org.jetbrains.exposed.sql.javatime.timestamp
 
 object BrokerSonhosTransactionsLog : LongIdTable() {
-    val user = reference("user", Profiles).index()
-    val action = postgresEnumeration<BovespaBrokerService.BrokerSonhosTransactionsEntryAction>("action")
+    val timestampLog = reference("timestamp_log", SonhosTransactionsLog).index()
+    val action = postgresEnumeration<LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction>("action")
     val ticker = reference("ticker", TickerPrices)
     val sonhos = long("sonhos")
     val stockPrice = long("stock_price")
     val stockQuantity = long("stock_quantity")
-    val timestamp = timestamp("timestamp")
 }

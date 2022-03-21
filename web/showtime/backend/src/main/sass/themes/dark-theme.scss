@@ -1,0 +1,21 @@
+body {
+    &.dark {
+        color: #e1e1e1;
+        background-color: #2c2f33;
+    }
+}
+
+.dark {
+    --background-wrapper-primary: #2c2f33;
+    --background-wrapper-secondary:#23272a;
+    --background-right-sidebar: #030303;
+
+    --fancy-details-summary: #{lighten(#030303, 7%)};
+    --fancy-details-details: #{lighten(#030303, 9%)};
+
+    --text: #e8e8e8;
+
+    .dark-sweater-pose {
+        visibility: visible;
+    }
+}

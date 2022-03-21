@@ -1,0 +1,50 @@
+details.fancy-details[open] summary {
+    // background-color: #F6F6F7;
+}
+
+// Hides anything that contains "hide-details-if-open" inside of a summary when it is open
+details.fancy-details[open] .hide-details-if-open {
+    display: none;
+}
+  
+details.fancy-details:hover {
+	box-shadow: 0 5px 10px rgba(0,0,0,0.01), 0 6px 6px rgba(0,0,0,0.10);
+	transition-duration: 0.5s;
+}
+  
+details.fancy-details {
+	transition-duration: 0.5s;
+	background-color: var(--fancy-details-details);
+	border-radius: 12px;
+	overflow: hidden;
+    margin: 12px;
+    
+    > summary {
+        list-style: none;
+    }
+    
+    > summary::-webkit-details-marker {
+        display: none;
+    }
+}
+  
+details.fancy-details > summary .chevron-icon {
+	transform: rotate(0deg);
+	transition-duration: 0.5s;
+	float: right;
+}
+  
+details.fancy-details[open] > summary .chevron-icon {
+	transform: rotate(-180deg);
+}
+  
+details.fancy-details > summary {
+	cursor: pointer;
+	background-color: var(--fancy-details-summary);
+	padding: 20px;
+}
+  
+details.fancy-details .details-content {
+	// Padding is nice but we don't want to pad the top too much
+	padding: 10px 20px 20px 20px;
+}

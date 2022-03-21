@@ -9,17 +9,17 @@ import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
 
-class RoleInfoExecutor(val rest: RestClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(RoleInfoExecutor::class) {
-        object Options : CommandOptions() {
+class RoleInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(RoleInfoExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val role = role("role", ServerCommand.I18N_PREFIX.Role.Info.Options.Role)
                 .register()
         }
@@ -27,7 +27,7 @@ class RoleInfoExecutor(val rest: RestClient) : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext)
             context.fail {
                 content = context.i18nContext.get(I18nKeysData.Commands.CommandOnlyAvailableInGuilds)

@@ -55,7 +55,7 @@ send:
     description: "Envia uma mensagem através de uma webhook, a mensagem deve estar no formato JSON!"
   repost:
     description: "Envia uma mensagem através de um webhook, repostando o conteúdo de uma mensagem já existente"
-  success: "Mensagem enviada com scuesso!"
+  success: "Mensagem enviada com sucesso!"
 edit:
   simple:
     description: "Edita uma mensagem enviada através de um webhook"

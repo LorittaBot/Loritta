@@ -9,15 +9,27 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.Achievement
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
+import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
+import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.GuildProfile
+import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
+import net.perfectdreams.loritta.cinnamon.pudding.data.PatchNotesNotification
+import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
 import net.perfectdreams.loritta.cinnamon.pudding.data.Reputation
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
+import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
@@ -27,18 +39,34 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingGuildProfile
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingMarriage
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingReputation
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import org.jetbrains.exposed.sql.ResultRow
@@ -48,6 +76,7 @@ open class Service(private val pudding: Pudding) {
         pudding,
         UserProfile(
             UserId(row[Profiles.id].value.toULong()),
+            row[Profiles.settings].value,
             row[Profiles.money],
             row[Profiles.isAfk],
             row[Profiles.afkReason],
@@ -181,3 +210,106 @@ fun BackgroundVariation.Companion.fromRow(row: ResultRow): BackgroundVariation {
             crop
         )
 }
+
+fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
+    // "hasValue" does not work, because it only checks if the value is present on the table BUT it is always present! (but it is null)
+    return if (row.getOrNull(PaymentSonhosTransactionsLog.id) != null) {
+        PaymentSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            UserId(row[PaymentSonhosTransactionResults.givenBy].value),
+            UserId(row[PaymentSonhosTransactionResults.receivedBy].value),
+            row[PaymentSonhosTransactionResults.sonhos],
+        )
+    } else if (row.getOrNull(BrokerSonhosTransactionsLog.id) != null) {
+        BrokerSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[BrokerSonhosTransactionsLog.action],
+            row[BrokerSonhosTransactionsLog.ticker].value,
+            row[BrokerSonhosTransactionsLog.sonhos],
+            row[BrokerSonhosTransactionsLog.stockPrice],
+            row[BrokerSonhosTransactionsLog.stockQuantity]
+        )
+    } else if (row.getOrNull(CoinFlipBetGlobalSonhosTransactionsLog.id) != null) {
+        CoinFlipBetGlobalSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            UserId(row[CoinFlipBetGlobalMatchmakingResults.winner].value),
+            UserId(row[CoinFlipBetGlobalMatchmakingResults.loser].value),
+            row[CoinFlipBetGlobalMatchmakingResults.quantity],
+            row[CoinFlipBetGlobalMatchmakingResults.quantityAfterTax],
+            row[CoinFlipBetGlobalMatchmakingResults.tax],
+            row[CoinFlipBetGlobalMatchmakingResults.taxPercentage],
+            row[CoinFlipBetGlobalMatchmakingResults.timeOnQueue].toMillis(),
+        )
+    } else if (row.getOrNull(CoinFlipBetSonhosTransactionsLog.id) != null) {
+        CoinFlipBetSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            UserId(row[CoinFlipBetMatchmakingResults.winner].value),
+            UserId(row[CoinFlipBetMatchmakingResults.loser].value),
+            row[CoinFlipBetMatchmakingResults.quantity],
+            row[CoinFlipBetMatchmakingResults.quantityAfterTax],
+            row[CoinFlipBetMatchmakingResults.tax],
+            row[CoinFlipBetMatchmakingResults.taxPercentage]
+        )
+    } else if (row.getOrNull(SparklyPowerLSXSonhosTransactionsLog.id) != null) {
+        SparklyPowerLSXSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[SparklyPowerLSXSonhosTransactionsLog.action],
+            row[SparklyPowerLSXSonhosTransactionsLog.sonhos],
+            row[SparklyPowerLSXSonhosTransactionsLog.sparklyPowerSonhos],
+            row[SparklyPowerLSXSonhosTransactionsLog.playerName],
+            row[SparklyPowerLSXSonhosTransactionsLog.playerUniqueId].toString(),
+            row[SparklyPowerLSXSonhosTransactionsLog.exchangeRate]
+        )
+    } else if (row.getOrNull(DailyTaxSonhosTransactionsLog.id) != null) {
+        DailyTaxSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[DailyTaxSonhosTransactionsLog.sonhos],
+            row[DailyTaxSonhosTransactionsLog.maxDayThreshold],
+            row[DailyTaxSonhosTransactionsLog.minimumSonhosForTrigger]
+        )
+    } else if (row.getOrNull(SonhosBundlePurchaseSonhosTransactionsLog.id) != null) {
+        SonhosBundlePurchaseSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[SonhosBundles.sonhos]
+        )
+    } else if (row.getOrNull(DivineInterventionSonhosTransactionsLog.id) != null) {
+        DivineInterventionSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[DivineInterventionSonhosTransactionsLog.action],
+            row[DivineInterventionSonhosTransactionsLog.editedBy]?.let { UserId(it.value) },
+            row[DivineInterventionSonhosTransactionsLog.sonhos],
+            row[DivineInterventionSonhosTransactionsLog.reason]
+        )
+    } else {
+        UnknownSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+        )
+    }
+}
+
+fun Daily.Companion.fromRow(row: ResultRow) = Daily(
+    UserId(row[Dailies.receivedById]),
+    Instant.fromEpochMilliseconds(row[Dailies.receivedAt])
+)
+
+fun PatchNotesNotification.Companion.fromRow(row: ResultRow) = PatchNotesNotification(
+    row[PatchNotesNotifications.path]
+)

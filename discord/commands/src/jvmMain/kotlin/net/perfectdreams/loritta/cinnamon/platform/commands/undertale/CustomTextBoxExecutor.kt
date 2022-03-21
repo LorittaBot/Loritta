@@ -3,18 +3,18 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.undertale
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper.textBoxTextOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ColorPortraitType
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.DialogBoxType
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.TextBoxWithCustomPortraitOptionsData
 
-class CustomTextBoxExecutor(val client: GabrielaImageServerClient) : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(CustomTextBoxExecutor::class) {
-        object Options : CommandOptions() {
+class CustomTextBoxExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(CustomTextBoxExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val text = textBoxTextOption()
                 .register()
 
@@ -25,7 +25,7 @@ class CustomTextBoxExecutor(val client: GabrielaImageServerClient) : CommandExec
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
         val imageReference = args[Options.imageReference]

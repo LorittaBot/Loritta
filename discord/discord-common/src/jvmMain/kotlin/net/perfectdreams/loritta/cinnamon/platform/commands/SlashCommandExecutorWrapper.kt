@@ -1,47 +1,68 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
+import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.Snowflake
 import kotlin.streams.toList
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.api.entities.User
-import net.perfectdreams.discordinteraktions.common.commands.slash.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.context.commands.ApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.context.commands.slash.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.entities.User
+import net.perfectdreams.discordinteraktions.common.entities.UserAvatar
+import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
 import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
+import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
+import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandDeclarationBuilder
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ChannelCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptionType
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ImageReferenceCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.NullableChannelCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.NullableCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.NullableRoleCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.NullableUserCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.RoleCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.StringListCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserListCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxTaxedDirectMessage
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxWarnDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.streams.toList
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 
 /**
- * Bridge between Cinnamon's [CommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
+ * Bridge between Cinnamon's [SlashCommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
  *
  * Used for argument conversion between the two platforms
  */
 class SlashCommandExecutorWrapper(
     private val loritta: LorittaCinnamon,
     // This is only used for metrics and logs
-    private val rootDeclaration: CommandDeclarationBuilder,
-    private val declarationExecutor: CommandExecutorDeclaration,
-    private val executor: CommandExecutor,
-    private val rootSignature: Int
-) : SlashCommandExecutor() {
+    private val rootDeclaration: SlashCommandDeclarationBuilder,
+    private val declarationExecutor: SlashCommandExecutorDeclaration,
+    private val executor: SlashCommandExecutor
+) : net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor() {
     companion object {
         private val logger = KotlinLogging.logger {}
 
@@ -88,7 +109,7 @@ class SlashCommandExecutorWrapper(
         val commandLatency = timer.observeDuration()
         logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
 
-        loritta.services.executedApplicationCommandsLog.insertApplicationCommandLog(
+        loritta.services.executedInteractionsLog.insertApplicationCommandLog(
             context.sender.id.value.toLong(),
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
@@ -103,6 +124,7 @@ class SlashCommandExecutorWrapper(
         )
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     private suspend fun executeCommand(
         rootDeclarationClazzName: String?,
         executorClazzName: String?,
@@ -166,8 +188,8 @@ class SlashCommandExecutorWrapper(
             }
 
             declarationExecutor.options.arguments.forEach {
-                when (it.type) {
-                    is CommandOptionType.StringList -> {
+                when (it) {
+                    is StringListCommandOption -> {
                         // Special case: Lists
                         val listsValues = interaKTionsArgumentEntries.filter { opt -> opt.key.name.startsWith(it.name) }
                         cinnamonArgs[it] = mutableListOf<String>().also {
@@ -175,41 +197,46 @@ class SlashCommandExecutorWrapper(
                         }
                     }
 
-                    is CommandOptionType.UserList -> {
+                    is UserListCommandOption -> {
                         val listsValues = interaKTionsArgumentEntries.filter { opt -> opt.key.name.startsWith(it.name) }
                         cinnamonArgs[it] = mutableListOf<User>().also {
                             it.addAll(listsValues.map { it.value as User })
                         }
                     }
 
-                    is CommandOptionType.ImageReference -> {
+                    is ImageReferenceCommandOption -> {
                         // Special case: Image References
                         // Get the argument that matches our image reference
-                        val interaKTionArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name == it.name }
+                        val interaKTionAttachmentArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name.removeSuffix("_file") == it.name }
+                        val interaKTionAvatarLinkOrEmoteArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name.removeSuffix("_data") == it.name }
+
                         var found = false
 
-                        if (interaKTionArgument != null) {
-                            val value = interaKTionArgument.value as String
+                        // Attachments take priority
+                        if (interaKTionAttachmentArgument != null) {
+                            val attachment = (interaKTionAttachmentArgument.value as DiscordAttachment)
+                            if (attachment.filename.substringAfterLast(".").lowercase() in SUPPORTED_IMAGE_EXTENSIONS) {
+                                found = true
+                                cinnamonArgs[it] =  URLImageReference(attachment.url)
+                            }
+                        } else if (interaKTionAvatarLinkOrEmoteArgument != null) {
+                            val value = interaKTionAvatarLinkOrEmoteArgument.value as String
 
                             // Now check if it is a valid thing!
-                            // First, we will try matching via user mentions
-                            if (value.startsWith("<@") && value.endsWith(">")) {
-                                // Maybe it is a mention?
-                                val userId = value
-                                    .removePrefix("<@")
-                                    .removePrefix("!") // User has a nickname
-                                    .removeSuffix(">")
-                                    .toLongOrNull()
+                            // First, we will try matching via user mentions or user IDs
+                            val cachedUserInfo = ContextStringToUserInfoConverter.convert(
+                                cinnamonContext,
+                                value
+                            )
 
-                                if (userId != null) {
-                                    val user = context.data.resolved?.users?.get(Snowflake(userId))
-
-                                    if (user != null) {
-                                        // User avatar found! Let's use it!!
-                                        cinnamonArgs[it] = URLImageReference(user.avatar.url)
-                                        found = true
-                                    }
-                                }
+                            if (cachedUserInfo != null) {
+                                val userAvatar = UserAvatar(
+                                    cachedUserInfo.id.value,
+                                    cachedUserInfo.discriminator.toInt(),
+                                    cachedUserInfo.avatarId
+                                )
+                                cinnamonArgs[it] = URLImageReference(userAvatar.url)
+                                found = true
                             }
 
                             if (!found && value.startsWith("http")) {
@@ -275,23 +302,23 @@ class SlashCommandExecutorWrapper(
 
                         // If the value is null but it *wasn't* meant to be null, we are going to throw a exception!
                         // (This should NEVER happen!)
-                        if (interaKTionArgument?.value == null && it.type !is CommandOptionType.Nullable)
-                            throw UnsupportedOperationException("Argument ${interaKTionArgument?.key} valie is null, but the type of the argument is ${it.type}! Bug?")
+                        if (interaKTionArgument?.value == null && it !is NullableCommandOption)
+                            throw UnsupportedOperationException("Argument ${interaKTionArgument?.key} value is null, but the type of the argument is not nullable! Bug?")
 
-                        when (it.type) {
-                            is CommandOptionType.User, CommandOptionType.NullableUser -> {
+                        when (it) {
+                            is UserCommandOption, is NullableUserCommandOption -> {
                                 cinnamonArgs[it] = interaKTionArgument?.value?.let {
                                     interaKTionArgument.value
                                 }
                             }
 
-                            is CommandOptionType.Channel, CommandOptionType.NullableChannel -> {
+                            is ChannelCommandOption, is NullableChannelCommandOption -> {
                                 cinnamonArgs[it] = interaKTionArgument?.value?.let {
                                     interaKTionArgument.value
                                 }
                             }
 
-                            is CommandOptionType.Role, CommandOptionType.NullableRole -> {
+                            is RoleCommandOption, is NullableRoleCommandOption -> {
                                 cinnamonArgs[it] = interaKTionArgument?.value?.let {
                                     interaKTionArgument.value
                                 }
@@ -305,10 +332,110 @@ class SlashCommandExecutorWrapper(
                 }
             }
 
+            // TODO: Don't use GlobalScope!
+            GlobalScope.launch {
+                // Update the cached Discord users
+                // Updating in a separate task to avoid delaying the command processing too much
+                val users = mutableSetOf(context.sender)
+                users.addAll(args.types.values.filterIsInstance<User>())
+                val resolvedUsers = context.data.resolved?.users?.values
+                if (resolvedUsers != null)
+                // TODO: Maybe implement proper hash codes in the InteraKTions "User"?
+                    users.addAll(resolvedUsers.distinctBy { it.id })
+                val jobs = users
+                    .map {
+                        async {
+                            loritta.insertOrUpdateCachedUserInfo(it)
+                        }
+                    }
+
+                jobs.awaitAll()
+
+                logger.info { "Successfully updated user info cache of ${jobs.size} users!" }
+            }
+
             executor.execute(
                 cinnamonContext,
-                CommandArguments(cinnamonArgs)
+                net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments(cinnamonArgs)
             )
+
+            // Required because "Smart cast is impossible" within the scope
+            val localI18nContext = i18nContext
+            // Additional messages that must be sent after the command sends at least one message
+            // TODO: Don't use GlobalScope!!
+            GlobalScope.launch {
+                var state = context.bridge.state.value
+
+                try {
+                    withTimeout(15_000) {
+                        while (state != InteractionRequestState.ALREADY_REPLIED)
+                            state = context.bridge.state.awaitChange() // The ".awaitChange()" is cancellable
+                    }
+                } catch (e: TimeoutCancellationException) {
+                    logger.warn(e) { "Timed out while waiting for InteractionRequestState, we won't send any additional messages then..." }
+                    return@launch
+                }
+
+                // At this point, state should be "ALREADY_REPLIED"
+                val userId = UserId(context.sender.id.value)
+
+                // Website Update Message
+                val patchNotesNotifications = loritta.services.patchNotesNotifications.getUnreadPatchNotesNotificationsAndMarkAsRead(
+                    UserId(context.sender.id.value),
+                    Clock.System.now()
+                )
+
+                for (patchNote in patchNotesNotifications) {
+                    context.sendEphemeralMessage {
+                        styled(
+                            localI18nContext.get(
+                                I18nKeysData.Commands.CheckOutNews(
+                                    GACampaigns.patchNotesUrl(
+                                        loritta.config.website,
+                                        localI18nContext.get(I18nKeysData.Website.LocalePathId),
+                                        patchNote.path,
+                                        "discord",
+                                        "slash-commands",
+                                        "lori-news",
+                                        "patch-notes-notification"
+                                    )
+                                )
+                            ),
+                            Emotes.LoriSunglasses
+                        )
+                    }
+                }
+
+                // Pending Daily Tax Direct Message
+                val pendingDailyTaxDirectMessage = loritta.services.users.getAndUpdateStatePendingDailyTaxDirectMessage(
+                    userId,
+                    listOf(
+                        DailyTaxPendingDirectMessageState.PENDING,
+                        DailyTaxPendingDirectMessageState.FAILED_TO_SEND_VIA_DIRECT_MESSAGE,
+                        DailyTaxPendingDirectMessageState.SKIPPED_DIRECT_MESSAGE
+                    ),
+                    DailyTaxPendingDirectMessageState.SUCCESSFULLY_SENT_VIA_EPHEMERAL_MESSAGE
+                )
+
+                if (pendingDailyTaxDirectMessage != null) {
+                    val builder = when (pendingDailyTaxDirectMessage) {
+                        is UserDailyTaxTaxedDirectMessage -> UserUtils.buildDailyTaxMessage(
+                            localI18nContext,
+                            loritta.config.website,
+                            userId,
+                            pendingDailyTaxDirectMessage
+                        )
+                        is UserDailyTaxWarnDirectMessage -> UserUtils.buildDailyTaxMessage(
+                            localI18nContext,
+                            loritta.config.website,
+                            userId,
+                            pendingDailyTaxDirectMessage
+                        )
+                    }
+
+                    cinnamonContext.sendEphemeralMessage(builder)
+                }
+            }
 
             return CommandExecutionSuccess
         } catch (e: Throwable) {
@@ -316,7 +443,7 @@ class SlashCommandExecutorWrapper(
                 return CommandExecutionSuccess // SilentCommandExceptions should be ignored
 
             if (e is CommandException) {
-                context.sendMessage(e.builder)
+                context.sendPublicMessage(e.builder)
                 return CommandExecutionSuccess
             }
 
@@ -404,7 +531,7 @@ class SlashCommandExecutorWrapper(
     object CommandExecutionSuccess : CommandExecutionResult()
     class CommandExecutionFailure(val throwable: Throwable) : CommandExecutionResult()
 
-    override fun signature() = rootSignature
+    override fun signature() = declarationExecutor::class
 
     /**
      * Stringifies the arguments in the [types] map to its name
@@ -414,7 +541,7 @@ class SlashCommandExecutorWrapper(
      * @param types the arguments
      * @return a map with argument name -> argument value
      */
-    private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.declarations.commands.slash.options.CommandOption<*>, Any?>) = types.map { it.key.name to it.value }
+    private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.common.commands.options.CommandOption<*>, Any?>) = types.map { it.key.name to it.value }
         .toMap()
 
     private fun buildJsonWithArguments(types: Map<CommandOption<*>, Any?>) = buildJsonObject {
