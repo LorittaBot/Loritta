@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.Image
 import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
@@ -74,7 +75,10 @@ class ShipExecutor(
 
                 user1Id = result1.user.id.value.toLong()
                 user1Name = result1.user.name
-                user1AvatarUrl = result1.user.avatar.url
+                user1AvatarUrl = result1.user.avatar.cdnUrl.toUrl {
+                    this.size = Image.Size.Size128
+                    this.format = Image.Format.PNG
+                }
             }
             is StringWithImageResult -> {
                 user1Id = result1.string.hashCode().toLong()
@@ -95,7 +99,10 @@ class ShipExecutor(
 
                 user2Id = result2.user.id.value.toLong()
                 user2Name = result2.user.name
-                user2AvatarUrl = result2.user.avatar.url
+                user2AvatarUrl = result2.user.avatar.cdnUrl.toUrl {
+                    this.size = Image.Size.Size128
+                    this.format = Image.Format.PNG
+                }
             }
             is StringWithImageResult -> {
                 user2Id = result2.string.hashCode().toLong()

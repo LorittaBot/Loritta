@@ -43,6 +43,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.RoleInfoExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGlobalAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGuildProfileAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditJsonExecutor
@@ -225,6 +227,16 @@ class CommandManager(
             UserCommand,
             UserAvatarExecutor(Snowflake(discordConfig.applicationId)),
             UserBannerExecutor(rest)
+        )
+
+        commandManager.register(
+            SwitchToGuildProfileAvatarExecutor,
+            SwitchToGuildProfileAvatarExecutor(loritta, Snowflake(discordConfig.applicationId))
+        )
+
+        commandManager.register(
+            SwitchToGlobalAvatarExecutor,
+            SwitchToGlobalAvatarExecutor(loritta, Snowflake(discordConfig.applicationId))
         )
 
         commandManager.register(

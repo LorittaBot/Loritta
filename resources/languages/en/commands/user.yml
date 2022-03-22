@@ -12,6 +12,9 @@ avatar:
   kuraminhaEasterEgg: "The cutest fox... and bot, out there!"
   openAvatarInBrowser: "Open avatar in browser" # Used in a button, when clicking the button, Discord opens the user's avatar in the user's browser
 
+  viewUserGuildProfileAvatar: "View the user's guild profile avatar"
+  viewUserGlobalAvatar: "View the user's global avatar"
+
   options:
     user: "The user that you want to steal... I mean, view, their avatar (*/ω＼*)"
 
