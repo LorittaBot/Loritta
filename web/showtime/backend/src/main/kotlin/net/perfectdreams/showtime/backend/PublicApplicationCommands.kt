@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.T
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
@@ -113,6 +114,7 @@ object PublicApplicationCommands {
         InviteCommand,
         EmojiCommand,
         WebhookCommand,
+        LorittaCommand,
 
         // ===[ FUN ]===
         CoinFlipCommand,

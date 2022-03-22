@@ -46,6 +46,8 @@ class LorittaCinnamonGateway(
         net.perfectdreams.discordinteraktions.common.commands.CommandManager()
     )
 
+    override fun getCommandCount() = commandManager.commandManager.executors.size
+
     fun start() {
         runBlocking {
             val tableNames = servicesConfig.pudding.tablesAllowedToBeUpdated

@@ -5,7 +5,6 @@ import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
-import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
@@ -37,6 +36,12 @@ abstract class LorittaCinnamon(
     val random = Random(0)
 
     val rest = RestClient(discordConfig.token)
+
+    /**
+     * Gets the current registered commands count
+     */
+    // The reason this is abstract is because the CommandManager class is in the "commands" module, so we can't access it from here
+    abstract fun getCommandCount(): Int
 
     suspend fun getCachedUserInfo(userId: UserId): CachedUserInfo? {
         // First, try getting the cached user info from the database
