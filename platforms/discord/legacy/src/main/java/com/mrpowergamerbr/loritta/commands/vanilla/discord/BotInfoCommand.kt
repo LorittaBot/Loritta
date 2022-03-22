@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.Payments
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
 import java.lang.management.ManagementFactory
@@ -32,6 +33,8 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 			showExtendedInfo(context, locale)
 			return
 		}
+
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "loritta info")
 
 		val guildCount = lorittaShards.queryGuildCount()
 
