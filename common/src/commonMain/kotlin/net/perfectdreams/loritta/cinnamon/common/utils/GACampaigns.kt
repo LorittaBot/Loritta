@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.common.utils
 
+import io.ktor.http.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
@@ -88,4 +89,18 @@ object GACampaigns {
     ): String {
         return "${lorittaWebsiteUrl}$websiteLocaleId$path?utm_source=$source&utm_medium=$medium&utm_campaign=$campaignName&utm_content=$campaignContent"
     }
+
+    fun createUrlWithCampaign(
+        url: String,
+        source: String,
+        medium: String,
+        campaignName: String,
+        campaignContent: String
+    ) = URLBuilder(url)
+        .apply {
+            parameters.append("utm_source", source)
+            parameters.append("utm_medium", medium)
+            parameters.append("utm_campaign", campaignName)
+            parameters.append("utm_content", campaignContent)
+        }.build()
 }
