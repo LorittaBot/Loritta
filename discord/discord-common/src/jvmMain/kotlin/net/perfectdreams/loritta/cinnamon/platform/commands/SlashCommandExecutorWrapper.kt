@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.Image
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.TimeoutCancellationException
@@ -16,6 +17,7 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.entities.UserAvatar
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
@@ -229,12 +231,17 @@ class SlashCommandExecutorWrapper(
                             )
 
                             if (cachedUserInfo != null) {
-                                val userAvatar = UserAvatar(
-                                    cachedUserInfo.id.value,
-                                    cachedUserInfo.discriminator.toInt(),
-                                    cachedUserInfo.avatarId
-                                )
-                                cinnamonArgs[it] = URLImageReference(userAvatar.url)
+                                val icon = cachedUserInfo.avatarId?.let {
+                                    Icon.UserAvatar(
+                                        Snowflake(cachedUserInfo.id.value),
+                                        it
+                                    )
+                                } ?: Icon.DefaultUserAvatar(cachedUserInfo.discriminator.toInt())
+
+                                cinnamonArgs[it] = URLImageReference(icon.cdnUrl.toUrl {
+                                    this.format = Image.Format.PNG
+                                    this.size = Image.Size.Size128
+                                })
                                 found = true
                             }
 

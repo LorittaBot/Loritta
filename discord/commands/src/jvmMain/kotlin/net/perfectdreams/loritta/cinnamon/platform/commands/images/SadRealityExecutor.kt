@@ -1,9 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.Image
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.common.entities.UserAvatar
+import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.SadRealityRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
@@ -60,12 +61,66 @@ class SadRealityExecutor(
         val user6FromArguments = args[options.user6]
 
         val listOfUsers = mutableListOf(
-            user1FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
-            user2FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
-            user3FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
-            user4FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
-            user5FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) },
-            user6FromArguments?.let { SadRealityUser(it.id, "${it.name}#${it.discriminator}", it.avatar) }
+            user1FromArguments?.let {
+                SadRealityUser(
+                    it.id,
+                    "${it.name}#${it.discriminator}",
+                    it.avatar.cdnUrl.toUrl {
+                        this.size = Image.Size.Size128
+                        this.format = Image.Format.PNG
+                    }
+                )
+            },
+            user2FromArguments?.let {
+                SadRealityUser(
+                    it.id,
+                    "${it.name}#${it.discriminator}",
+                    it.avatar.cdnUrl.toUrl {
+                        this.size = Image.Size.Size128
+                        this.format = Image.Format.PNG
+                    }
+                )
+            },
+            user3FromArguments?.let {
+                SadRealityUser(
+                    it.id,
+                    "${it.name}#${it.discriminator}",
+                    it.avatar.cdnUrl.toUrl {
+                        this.size = Image.Size.Size128
+                        this.format = Image.Format.PNG
+                    }
+                )
+            },
+            user4FromArguments?.let {
+                SadRealityUser(
+                    it.id,
+                    "${it.name}#${it.discriminator}",
+                    it.avatar.cdnUrl.toUrl {
+                        this.size = Image.Size.Size128
+                        this.format = Image.Format.PNG
+                    }
+                )
+            },
+            user5FromArguments?.let {
+                SadRealityUser(
+                    it.id,
+                    "${it.name}#${it.discriminator}",
+                    it.avatar.cdnUrl.toUrl {
+                        this.size = Image.Size.Size128
+                        this.format = Image.Format.PNG
+                    }
+                )
+            },
+            user6FromArguments?.let {
+                SadRealityUser(
+                    it.id,
+                    "${it.name}#${it.discriminator}",
+                    it.avatar.cdnUrl.toUrl {
+                        this.size = Image.Size.Size128
+                        this.format = Image.Format.PNG
+                    }
+                )
+            }
         )
 
         var noPermissionToQuery = false
@@ -92,7 +147,21 @@ class SadRealityExecutor(
                 while (listOfUsers.filterNotNull().size != 6 && uniqueNonBotUsers.isNotEmpty()) {
                     val indexOfFirstNullEntry = listOfUsers.indexOf(null)
                     listOfUsers[indexOfFirstNullEntry] = uniqueNonBotUsers.poll()?.let {
-                        SadRealityUser(it.id, "${it.username}#${it.discriminator}", UserAvatar(it.id.value, it.discriminator.toInt(), it.avatar))
+                        SadRealityUser(
+                            it.id,
+                            "${it.username}#${it.discriminator}",
+                            (it.avatar?.let { avatarHash ->
+                                Icon.UserAvatar(
+                                    it.id,
+                                    avatarHash
+                                )
+                            } ?: Icon.DefaultUserAvatar(it.discriminator.toInt()))
+                                .cdnUrl
+                                .toUrl {
+                                    this.size = Image.Size.Size128
+                                    this.format = Image.Format.PNG
+                                }
+                        )
                     }
                 }
 
@@ -100,7 +169,21 @@ class SadRealityExecutor(
                 while (listOfUsers.filterNotNull().size != 6 && uniqueBotUsers.isNotEmpty()) {
                     val indexOfFirstNullEntry = listOfUsers.indexOf(null)
                     listOfUsers[indexOfFirstNullEntry] = uniqueBotUsers.poll()?.let {
-                        SadRealityUser(it.id, "${it.username}#${it.discriminator}", UserAvatar(it.id.value, it.discriminator.toInt(), it.avatar))
+                        SadRealityUser(
+                            it.id,
+                            "${it.username}#${it.discriminator}",
+                            (it.avatar?.let { avatarHash ->
+                                Icon.UserAvatar(
+                                    it.id,
+                                    avatarHash
+                                )
+                            } ?: Icon.DefaultUserAvatar(it.discriminator.toInt()))
+                                .cdnUrl
+                                .toUrl {
+                                    this.size = Image.Size.Size128
+                                    this.format = Image.Format.PNG
+                                }
+                        )
                     }
                 }
             } catch (e: KtorRequestException) {
@@ -163,7 +246,7 @@ class SadRealityExecutor(
                         }
                     },
                     user1.tag,
-                    URLImageData(user1.avatar.url)
+                    URLImageData(user1.avatarUrl)
                 ),
                 SadRealityRequest.SadRealityUser(
                     when (theFatherGender) {
@@ -179,7 +262,7 @@ class SadRealityExecutor(
                         }
                     },
                     user2.tag,
-                    URLImageData(user2.avatar.url),
+                    URLImageData(user2.avatarUrl),
                 ),
                 SadRealityRequest.SadRealityUser(
                     when (theBrotherGender) {
@@ -195,7 +278,7 @@ class SadRealityExecutor(
                         }
                     },
                     user3.tag,
-                    URLImageData(user3.avatar.url),
+                    URLImageData(user3.avatarUrl),
                 ),
                 SadRealityRequest.SadRealityUser(
                     when (theFirstLoverGender) {
@@ -211,7 +294,7 @@ class SadRealityExecutor(
                         }
                     },
                     user4.tag,
-                    URLImageData(user4.avatar.url),
+                    URLImageData(user4.avatarUrl),
                 ),
                 SadRealityRequest.SadRealityUser(
                     when (theBestFriendGender) {
@@ -227,7 +310,7 @@ class SadRealityExecutor(
                         }
                     },
                     user5.tag,
-                    URLImageData(user5.avatar.url),
+                    URLImageData(user5.avatarUrl),
                 ),
                 SadRealityRequest.SadRealityUser(
                     when (youGender) {
@@ -236,7 +319,7 @@ class SadRealityExecutor(
                         Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Male)
                     },
                     user6.tag,
-                    URLImageData(user6.avatar.url),
+                    URLImageData(user6.avatarUrl),
                 )
             )
         )
@@ -249,6 +332,6 @@ class SadRealityExecutor(
     data class SadRealityUser(
         val id: Snowflake,
         val tag: String,
-        val avatar: UserAvatar
+        val avatarUrl: String
     )
 }

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 
+import dev.kord.rest.Image
 import dev.kord.rest.service.RestClient
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
@@ -59,7 +60,10 @@ class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
             "$hungerGamesUrl/personalize-24.php",
             formData {
                 append("seasonname", guild.name)
-                append("logourl", if (guild.icon != null) urlIcon else context.user.avatar.url)
+                append("logourl", if (guild.icon != null) urlIcon else context.user.avatar.cdnUrl.toUrl {
+                    this.size = Image.Size.Size128
+                    this.format = Image.Format.PNG
+                })
                 append("existinglogo", "00")
 
                 for ((index, user) in users.withIndex()) {
@@ -67,7 +71,10 @@ class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
 
                     append("cusTribute$numberWithPadding", user.name)
 
-                    append("cusTribute${numberWithPadding}img", user.avatar.url)
+                    append("cusTribute${numberWithPadding}img", user.avatar.cdnUrl.toUrl {
+                        this.size = Image.Size.Size128
+                        this.format = Image.Format.PNG
+                    })
 
                     // TODO: Character Gender
                     // 0 = female
