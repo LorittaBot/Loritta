@@ -47,6 +47,8 @@ class LorittaCinnamonWebServer(
         interactions.commandManager
     )
 
+    override fun getCommandCount() = commandManager.commandManager.executors.size
+
     fun start() {
         runBlocking {
             val tableNames = servicesConfig.pudding.tablesAllowedToBeUpdated

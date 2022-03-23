@@ -38,10 +38,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.V
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ChannelInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.EmojiInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.InviteInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.LorittaInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.RoleInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGlobalAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGuildProfileAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditJsonExecutor
@@ -52,6 +55,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendR
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendSimpleExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
@@ -226,6 +230,16 @@ class CommandManager(
         )
 
         commandManager.register(
+            SwitchToGuildProfileAvatarExecutor,
+            SwitchToGuildProfileAvatarExecutor(loritta, Snowflake(discordConfig.applicationId))
+        )
+
+        commandManager.register(
+            SwitchToGlobalAvatarExecutor,
+            SwitchToGlobalAvatarExecutor(loritta, Snowflake(discordConfig.applicationId))
+        )
+
+        commandManager.register(
             ServerCommand,
             ServerIconExecutor(rest),
             ServerBannerExecutor(rest),
@@ -252,6 +266,11 @@ class CommandManager(
             WebhookEditSimpleExecutor(rest),
             WebhookEditJsonExecutor(rest),
             WebhookEditRepostExecutor(rest)
+        )
+
+        commandManager.register(
+            LorittaCommand,
+            LorittaInfoExecutor()
         )
 
         // ===[ FUN ]===

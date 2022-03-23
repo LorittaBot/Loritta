@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import org.jetbrains.exposed.sql.insertAndGetId
+import org.jetbrains.exposed.sql.select
 
 class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pudding) {
     suspend fun insertApplicationCommandLog(
@@ -69,5 +70,21 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
                 it[ExecutedComponentsLog.stacktrace] = stacktrace
             }
         }.value
+    }
+
+    suspend fun getExecutedApplicationCommands(since: Instant): Long {
+        return pudding.transaction {
+            return@transaction ExecutedApplicationCommandsLog.select {
+                ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
+            }.count()
+        }
+    }
+
+    suspend fun getUniqueUsersExecutedApplicationCommands(since: Instant): Long {
+        return pudding.transaction {
+            return@transaction ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
+                ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
+            }.groupBy(ExecutedApplicationCommandsLog.userId).count()
+        }
     }
 }
