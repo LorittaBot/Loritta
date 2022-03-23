@@ -60,6 +60,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerBuyStockExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockQuantityAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerPortfolioExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerSellStockExecutor
@@ -437,6 +438,11 @@ class CommandManager(
         commandManager.register(
             CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor,
             CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta)
+        )
+
+        commandManager.register(
+            BrokerStockQuantityAutocompleteExecutor,
+            BrokerStockQuantityAutocompleteExecutor(loritta)
         )
 
         // ===[ SOCIAL ]===

@@ -26,6 +26,7 @@ class BrokerSellStockExecutor : SlashCommandExecutor() {
                 .register()
 
             val quantity = optionalString("quantity", BrokerCommand.I18N_PREFIX.Sell.Options.Quantity.Text)
+                .autocomplete(BrokerStockQuantityAutocompleteExecutor)
                 .register()
         }
 
