@@ -2,18 +2,18 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.social.marriage
 
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.DiscordPartialEmoji
-import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds.MARRIAGE_PROPOSAL_BUTTON_EXECUTOR
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.MarryExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.MarryCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
 
-class MarriageProposalButtonClickExecutor : ButtonClickExecutor {
+class MarriageProposalButtonClickExecutor : ButtonClickWithDataExecutor {
     companion object : ButtonClickExecutorDeclaration(
         MarriageProposalButtonClickExecutor::class,
         MARRIAGE_PROPOSAL_BUTTON_EXECUTOR
@@ -36,7 +36,7 @@ class MarriageProposalButtonClickExecutor : ButtonClickExecutor {
             }
         }
 
-        val (userProfile, proposeToProfile) = MarryExecutor.canMarried(context, authorId, proposedUserId)
+        val (userProfile, proposeToProfile) = MarryExecutor.canMarry(context, authorId, proposedUserId)
 
         context.loritta.services.marriages.marry(userProfile, proposeToProfile, MarryExecutor.MARRIAGE_COST)
 

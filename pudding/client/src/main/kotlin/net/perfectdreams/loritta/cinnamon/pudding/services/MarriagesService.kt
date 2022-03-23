@@ -9,12 +9,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MarrySonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.InsertStatement
-import org.jetbrains.exposed.sql.update
 
 class MarriagesService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getMarriage(id: Long): PuddingMarriage? {
@@ -28,7 +25,7 @@ class MarriagesService(private val pudding: Pudding) : Service(pudding) {
         val userId = user.value.toLong()
 
         return pudding.transaction {
-            Marriages.select { Marriages.user1 eq userId or (Marriages.user2 eq userId) }
+            Marriages.select { Marriages.user eq userId or (Marriages.partner eq userId) }
                 .firstOrNull()
         }?.let { PuddingMarriage.fromRow(it) }
     }
@@ -46,8 +43,8 @@ class MarriagesService(private val pudding: Pudding) : Service(pudding) {
         val user2Id = user2.value.toLong()
 
         return Marriages.insert {
-                it[Marriages.user1] = user1Id
-                it[Marriages.user2] = user2Id
+                it[Marriages.user] = user1Id
+                it[Marriages.partner] = user2Id
                 it[Marriages.marriedSince] = System.currentTimeMillis()
             }
     }
@@ -71,18 +68,28 @@ class MarriagesService(private val pudding: Pudding) : Service(pudding) {
 
             val instant = Clock.System.now().toJavaInstant()
 
-            MarrySonhosTransactionsLog.insert {
-                it[MarrySonhosTransactionsLog.user] = user[Profiles.id]
-                it[MarrySonhosTransactionsLog.partner] = partner[Profiles.id]
-                it[MarrySonhosTransactionsLog.sonhos] = marriageCost
-                it[MarrySonhosTransactionsLog.timestamp] = instant
+            val partnerTransaction = SonhosTransactionsLog.insertAndGetId {
+                it[SonhosTransactionsLog.user] = partner[Profiles.id]
+                it[SonhosTransactionsLog.timestamp] = instant
+            }
+
+            val userTransaction = SonhosTransactionsLog.insertAndGetId {
+                it[SonhosTransactionsLog.user] = user[Profiles.id]
+                it[SonhosTransactionsLog.timestamp] = instant
             }
 
             MarrySonhosTransactionsLog.insert {
+                it[MarrySonhosTransactionsLog.timestampLog] = userTransaction
+                it[MarrySonhosTransactionsLog.user] = user[Profiles.id]
+                it[MarrySonhosTransactionsLog.partner] = partner[Profiles.id]
+                it[MarrySonhosTransactionsLog.sonhos] = marriageCost
+            }
+
+            MarrySonhosTransactionsLog.insert {
+                it[MarrySonhosTransactionsLog.timestampLog] = partnerTransaction
                 it[MarrySonhosTransactionsLog.user] = partner[Profiles.id]
                 it[MarrySonhosTransactionsLog.partner] = user[Profiles.id]
                 it[MarrySonhosTransactionsLog.sonhos] = marriageCost
-                it[MarrySonhosTransactionsLog.timestamp] = instant
             }
         }
     }

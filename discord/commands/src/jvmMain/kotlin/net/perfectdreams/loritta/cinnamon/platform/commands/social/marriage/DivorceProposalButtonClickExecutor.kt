@@ -7,19 +7,17 @@ import dev.kord.rest.builder.message.create.embed
 import dev.kord.rest.json.request.DMCreateRequest
 import dev.kord.rest.request.RestRequestException
 import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.api.entities.User
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.DivorceCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.buttons.ButtonClickExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.*
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
-class DivorceProposalButtonClickExecutor(val rest: RestClient) : ButtonClickExecutor {
+class DivorceProposalButtonClickExecutor(val rest: RestClient) : ButtonClickWithDataExecutor {
     companion object : ButtonClickExecutorDeclaration(
         DivorceProposalButtonClickExecutor::class,
         ComponentExecutorIds.DIVORCE_PROPOSAL_BUTTON_EXECUTOR
@@ -67,7 +65,7 @@ class DivorceProposalButtonClickExecutor(val rest: RestClient) : ButtonClickExec
                     thumbnailUrl = Emotes.LoriSob.asUrl
                 }
             }
-        } catch(_: RestRequestException) { }
+        } catch (_: RestRequestException) { }
 
         context.sendMessage {
             styled(

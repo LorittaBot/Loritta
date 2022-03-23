@@ -8,24 +8,21 @@ import net.perfectdreams.discordinteraktions.common.builder.message.allowedMenti
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.InteractionContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.MarryCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.marriage.MarriageProposalButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.marriage.ProposalData
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.platform.utils.LorittaUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 
-class MarryExecutor() : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(MarryExecutor::class) {
-        object Options : CommandOptions() {
+class MarryExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(MarryExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val user = user("user", MarryCommand.I18N_PREFIX.Options.User)
                 .register()
         }
@@ -34,7 +31,7 @@ class MarryExecutor() : CommandExecutor() {
 
         const val MARRIAGE_COST = 7_500L
 
-        suspend fun canMarried(
+        suspend fun canMarry(
             context: InteractionContext,
             senderId: Snowflake,
             proposedUserId: Snowflake
@@ -86,9 +83,9 @@ class MarryExecutor() : CommandExecutor() {
         }
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext)
-            context.fail {
+            context.failEphemerally {
                 content = context.i18nContext.get(I18nKeysData.Commands.CommandOnlyAvailableInGuilds)
             }
 
@@ -120,7 +117,7 @@ class MarryExecutor() : CommandExecutor() {
 
         context.deferChannelMessage()
 
-        canMarried(context, context.user.id, proposedUser.id)
+        canMarry(context, context.user.id, proposedUser.id)
 
         context.sendMessage {
             allowedMentions {

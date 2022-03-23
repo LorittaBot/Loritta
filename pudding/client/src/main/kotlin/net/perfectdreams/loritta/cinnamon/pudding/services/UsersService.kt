@@ -101,6 +101,19 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
         }?.let { PuddingProfileSettings.fromRow(it) }
     }
 
+    suspend fun getOrCreateProfileSettings(id: Long): PuddingProfileSettings {
+        val settings = getProfileSettings(id)
+
+        if (settings != null)
+            return settings
+
+        return UserSettings.insert {
+            it[UserSettings.id] = id
+        }.resultedValues!!.first().let {
+            PuddingProfileSettings.fromRow(it)
+        }
+    }
+
     /**
      * Gives an achievement to the user
      *
@@ -165,6 +178,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
 
         return@transaction bannedState.let {
             UserBannedState(
+                it[BannedUsers.userId],
                 it[BannedUsers.valid],
                 Instant.fromEpochMilliseconds(it[BannedUsers.bannedAt]),
                 it[BannedUsers.expiresAt]?.let { Instant.fromEpochMilliseconds(it) },

@@ -13,80 +13,11 @@ import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMess
 import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
-import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
-import net.perfectdreams.loritta.cinnamon.pudding.services.DailiesService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedApplicationCommandsLogService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedInteractionsLogService
-import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
-import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
-import net.perfectdreams.loritta.cinnamon.pudding.services.PatchNotesNotificationsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.PaymentsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ReputationsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ServersService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ShipEffectsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.SonhosService
-import net.perfectdreams.loritta.cinnamon.pudding.services.StatsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxPendingDirectMessages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
-import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.MarrySonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ReceivedPatchNotesNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.services.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.Transaction
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
@@ -107,9 +38,15 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
          * @param password     the PostgreSQL password
          * @return a [Pudding] instance backed by a PostgreSQL database
          */
-        fun createPostgreSQLPudding(address: String, databaseName: String, username: String, password: String): Pudding {
+        fun createPostgreSQLPudding(
+            address: String,
+            databaseName: String,
+            username: String,
+            password: String
+        ): Pudding {
             val hikariConfig = createHikariConfig()
-            hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${getPuddingApplicationName()}"
+            hikariConfig.jdbcUrl =
+                "jdbc:postgresql://$address/$databaseName?ApplicationName=${getPuddingApplicationName()}"
 
             hikariConfig.username = username
             hikariConfig.password = password
@@ -134,7 +71,8 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
 
             // Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
             hikariConfig.leakDetectionThreshold = 30L * 1000
-            hikariConfig.transactionIsolation = ISOLATION_LEVEL.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
+            hikariConfig.transactionIsolation =
+                ISOLATION_LEVEL.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
 
             return hikariConfig
         }
@@ -238,7 +176,6 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             InteractionsData,
             ExecutedApplicationCommandsLog,
             Reputations,
-            Dailies,
             BannedUsers,
             MarrySonhosTransactionsLog,
             ExecutedComponentsLog,
@@ -337,13 +274,16 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
     private fun Transaction.checkIfTableExists(table: Table): Boolean {
         val tableScheme = table.tableName.substringBefore('.', "").takeIf { it.isNotEmpty() }
         val schema = tableScheme?.inProperCase() ?: TransactionManager.current().connection.metadata { currentScheme }
-        val tableName = TransactionManager.current().identity(table) // Yes, because "Table.tableName" does not return the correct name...
+        val tableName = TransactionManager.current()
+            .identity(table) // Yes, because "Table.tableName" does not return the correct name...
 
-        return exec("SELECT EXISTS (\n" +
-                "   SELECT FROM information_schema.tables \n" +
-                "   WHERE  table_schema = '$schema'\n" +
-                "   AND    table_name   = '$tableName'\n" +
-                "   )") {
+        return exec(
+            "SELECT EXISTS (\n" +
+                    "   SELECT FROM information_schema.tables \n" +
+                    "   WHERE  table_schema = '$schema'\n" +
+                    "   AND    table_name   = '$tableName'\n" +
+                    "   )"
+        ) {
             it.next()
             it.getBoolean(1) // It should always be the first column, right?
         } ?: false
@@ -372,11 +312,19 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
     }
 
     // https://github.com/JetBrains/Exposed/issues/1003
-    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend org.jetbrains.exposed.sql.Transaction.() -> T): T {
+    suspend fun <T> transaction(
+        repetitions: Int = 5,
+        transactionIsolation: Int? = null,
+        statement: suspend org.jetbrains.exposed.sql.Transaction.() -> T
+    ): T {
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
-                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, database, transactionIsolation) {
+                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(
+                    Dispatchers.IO,
+                    database,
+                    transactionIsolation
+                ) {
                     statement.invoke(this)
                 }
             } catch (e: ExposedSQLException) {

@@ -15,11 +15,11 @@ object ComponentExecutorIds {
     val CHANGE_UNIVERSE_SELECT_MENU_EXECUTOR = register("0004")
     val CONFIRM_DIALOG_BOX_BUTTON_EXECUTOR = register("0005")
     val CHANGE_COLOR_PORTRAIT_TYPE_BUTTON_EXECUTOR = register("0006")
-    val MARRIAGE_PROPOSAL_BUTTON_EXECUTOR = register("0007")
-    val DIVORCE_PROPOSAL_BUTTON_EXECUTOR = register("0008")
     val CHANGE_TRANSACTION_PAGE_BUTTON_EXECUTOR = register("0007")
     val CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR = register("0008")
     val START_MATCHMAKING_BUTTON_EXECUTOR = register("0009")
+    val MARRIAGE_PROPOSAL_BUTTON_EXECUTOR = register("0010")
+    val DIVORCE_PROPOSAL_BUTTON_EXECUTOR = register("0011")
 
     /**
      * Verifies if the [id] matches our constraints

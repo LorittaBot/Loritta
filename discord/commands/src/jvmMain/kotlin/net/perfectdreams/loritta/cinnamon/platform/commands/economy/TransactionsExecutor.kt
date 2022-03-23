@@ -26,19 +26,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
-import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.data.*
 import kotlin.math.ceil
 
 class TransactionsExecutor : SlashCommandExecutor() {
@@ -557,6 +545,21 @@ class TransactionsExecutor : SlashCommandExecutor() {
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> {
                             append("${Emotes.LoriShrug} Unknown Transaction (Bug?)")
+                        }
+
+                        is MarrySonhosTransaction -> {
+                            appendMoneyLostEmoji()
+
+                            val partner = cachedUserInfos.getOrPut(transaction.partner) { loritta.getCachedUserInfo(transaction.partner) }
+                            append(
+                                i18nContext.get(
+                                    TransactionsCommand.I18N_PREFIX.Types.Marry.Lost(
+                                        transaction.sonhos,
+                                        "${partner?.name}#${partner?.discriminator}",
+                                        transaction.partner.value
+                                    )
+                                )
+                            )
                         }
                     }
                     append("\n")

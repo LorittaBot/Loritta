@@ -2,18 +2,15 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.social
 
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.declarations.CommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.RepCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.utils.LorittaUtils
 
-class RepExecutor : CommandExecutor() {
-    companion object : CommandExecutorDeclaration(RepExecutor::class) {
-        object Options : CommandOptions() {
+class RepExecutor : SlashCommandExecutor() {
+    companion object : SlashCommandExecutorDeclaration(RepExecutor::class) {
+        object Options : ApplicationCommandOptions() {
             val user = user("user", RepCommand.I18N_PREFIX.Options.User)
                 .register()
         }
@@ -21,7 +18,7 @@ class RepExecutor : CommandExecutor() {
         override val options = Options
     }
 
-    override suspend fun execute(context: ApplicationCommandContext, args: CommandArguments) {
+    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val user = args[Options.user]
 
         if (user.id == context.user.id)
@@ -40,7 +37,8 @@ class RepExecutor : CommandExecutor() {
                 )
             }
 
-        val lastReputationGiven = context.loritta.services.reputations.getLastReputationGiven(context.user.id.value.toLong())
+        val lastReputationGiven =
+            context.loritta.services.reputations.getLastReputationGiven(context.user.id.value.toLong())
 
         if (lastReputationGiven != null) {
             val diff = System.currentTimeMillis() - lastReputationGiven.receivedAt

@@ -9,6 +9,5 @@ class PuddingDaily(
 ) {
     companion object;
 
-    val receivedById by data::receivedById
     val receivedAt by data::receivedAt
 }

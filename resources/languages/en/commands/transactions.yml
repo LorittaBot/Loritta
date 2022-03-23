@@ -73,6 +73,10 @@ types:
     description: "Transactions made by Loritta's admins, \"the powers that be\""
     received: "A divine intervention gave {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
     lost: "A divine intervention removed {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+  marry:
+    title: "Casamento"
+    description: "Sonhos enviados para bancar o casamento"
+    lost: "Enviou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para casar com `{partnerTag}` (`{partnerId}`)"
 options:
   user:
     text: "The user that you want to view their transactions"

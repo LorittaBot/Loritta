@@ -148,21 +148,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinLorittaSweatshirtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.AboutMeExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOffExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOnExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.DivorceExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.GenderExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.MarryExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.RepExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AboutMeCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AfkCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.DivorceCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.GenderCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.MarryCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.RepCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.marriage.DivorceProposalButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.marriage.MarriageProposalButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.CustomTextBoxExecutor
@@ -452,14 +439,12 @@ class CommandManager(
             AchievementsExecutor.ChangeCategoryMenuExecutor(loritta)
         )
 
-        /* Need discord permissions v2
         commandManager.register(
             EditXpCommand,
             AddXpExecutor(),
             RemoveXpExecutor(),
             SetXpExecutor()
         )
-        */
 
         commandManager.register(
             AboutMeCommand,

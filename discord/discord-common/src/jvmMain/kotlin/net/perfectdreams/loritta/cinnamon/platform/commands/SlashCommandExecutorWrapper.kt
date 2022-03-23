@@ -41,6 +41,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.StringListCo
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserListCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
+import net.perfectdreams.loritta.cinnamon.platform.utils.LorittaUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
@@ -176,7 +177,7 @@ class SlashCommandExecutorWrapper(
             }
 
             // Don't let users that are banned from using Loritta
-            if (handleIfBanned(cinnamonContext))
+            if (LorittaUtils.checkIfUserIsBanned(cinnamonContext))
                 return CommandExecutionSuccess
 
             if (!rootDeclaration.allowedInPrivateChannel && guildId == null) {
@@ -486,45 +487,6 @@ class SlashCommandExecutorWrapper(
 
             return CommandExecutionFailure(e)
         }
-    }
-
-    private suspend fun handleIfBanned(context: CinnamonApplicationCommandContext): Boolean {
-        // Check if the user is banned from using Loritta
-        val userBannedState = loritta.services.users.getUserBannedState(UserId(context.user.id.value))
-
-        if (userBannedState != null) {
-            val banDateInEpochSeconds = userBannedState.bannedAt.epochSeconds
-            val expiresDateInEpochSeconds = userBannedState.expiresAt?.epochSeconds
-
-            context.sendEphemeralMessage {
-                val banAppealPageUrl = loritta.config.website + "extras/faq-loritta/loritta-ban-appeal"
-                content = context.i18nContext.get(
-                    if (expiresDateInEpochSeconds != null) {
-                        I18nKeysData.Commands.YouAreLorittaBannedTemporary(
-                            loriHmpf = Emotes.LoriHmpf,
-                            reason = userBannedState.reason,
-                            banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
-                            expiresDate = "<t:$expiresDateInEpochSeconds:R> (<t:$expiresDateInEpochSeconds:f>)",
-                            banAppealPageUrl = banAppealPageUrl,
-                            loriAmeno = Emotes.loriAmeno,
-                            loriSob = Emotes.LoriSob
-                        )
-                    } else {
-                        I18nKeysData.Commands.YouAreLorittaBannedPermanent(
-                            loriHmpf = Emotes.LoriHmpf,
-                            reason = userBannedState.reason,
-                            banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
-                            banAppealPageUrl = banAppealPageUrl,
-                            loriAmeno = Emotes.loriAmeno,
-                            loriSob = Emotes.LoriSob
-                        )
-                    }
-
-                ).joinToString("\n")
-            }
-            return true
-        }
-        return false
     }
 
     sealed class CommandExecutionResult

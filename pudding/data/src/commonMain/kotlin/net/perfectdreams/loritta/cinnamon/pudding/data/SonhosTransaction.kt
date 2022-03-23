@@ -124,3 +124,12 @@ data class UnknownSonhosTransaction(
     override val timestamp: Instant,
     override val user: UserId
 ) : SonhosTransaction()
+
+@Serializable
+data class MarrySonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val partner: UserId,
+    val sonhos: Long
+): SonhosTransaction()

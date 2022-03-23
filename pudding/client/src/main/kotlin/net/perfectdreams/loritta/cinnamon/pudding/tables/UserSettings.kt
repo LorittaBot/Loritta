@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 
 object UserSettings : LongIdTable() {
     val aboutMe = text("about_me").nullable()
-    val gender = enumeration("gender", Gender::class)
+    val gender = enumeration("gender", Gender::class).default(Gender.UNKNOWN)
     val activeProfileDesign = optReference("active_profile_design", ProfileDesigns)
     val activeBackground = optReference("active_background", Backgrounds)
     val doNotSendXpNotificationsInDm = bool("do_not_send_xp_notifications_in_dm").default(false)

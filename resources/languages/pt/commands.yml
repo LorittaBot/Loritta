@@ -36,3 +36,17 @@ commands:
     - "Se você deseja fazer um apelo do seu ban temporário, então por favor leia a nossa [página de apelo de bans]({banAppealPageUrl})! Entretanto nós recomendamos esperar o banimento expirar em vez de fazer apelo do seu ban temporário. {loriAmeno}"
     - ""
     - "*Será que é tarde demais para pedir desculpas?* {loriSob}"
+  userIsLorittaBannedPermanent:
+    - "{userMention} está **banido(a) permanentemente**! {loriHmpf}"
+    - ""
+    - "**Motivo do Banimento:**"
+    - "> {reason}"
+    - "**Banido:** {banDate}"
+    - "**Expira:** Nunca (Permanente)"
+  userIsLorittaBannedTemporary:
+    - "{userMention} está **temporariamente banido(a)**! {loriHmpf}"
+    - ""
+    - "**Motivo do Banimento:**"
+    - "> {reason}"
+    - "**Banido:** {banDate}"
+    - "**Expira:** {expiresDate}"

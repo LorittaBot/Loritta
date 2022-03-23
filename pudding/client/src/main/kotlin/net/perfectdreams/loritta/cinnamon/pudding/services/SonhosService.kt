@@ -7,24 +7,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
 import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -131,6 +114,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         if (TransactionType.DIVINE_INTERVENTION in transactionTypeFilter)
             it.leftJoin(DivineInterventionSonhosTransactionsLog)
         else it
+    }.let {
+        if (TransactionType.MARRY in transactionTypeFilter)
+            it.leftJoin(MarrySonhosTransactionsLog)
+        else it
     }
         .select {
             // Hacky!
@@ -150,6 +137,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                     TransactionType.SONHOS_BUNDLE_PURCHASE -> cond.or(SonhosBundlePurchaseSonhosTransactionsLog.id.isNotNull())
                     TransactionType.INACTIVE_DAILY_TAX -> cond.or(DailyTaxSonhosTransactionsLog.id.isNotNull())
                     TransactionType.DIVINE_INTERVENTION -> cond.or(DivineInterventionSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.MARRY -> cond.or(MarrySonhosTransactionsLog.id.isNotNull())
                 }
             }
 

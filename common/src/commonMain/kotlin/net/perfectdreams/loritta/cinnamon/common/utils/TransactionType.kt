@@ -54,5 +54,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.DivineIntervention.Title,
         I18nKeysData.Commands.Command.Transactions.Types.DivineIntervention.Description,
         Emotes.Jesus,
+    ),
+    MARRY(
+        I18nKeysData.Commands.Command.Transactions.Types.Marry.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.Marry.Description,
+        Emotes.SparklingHeart
     )
 }

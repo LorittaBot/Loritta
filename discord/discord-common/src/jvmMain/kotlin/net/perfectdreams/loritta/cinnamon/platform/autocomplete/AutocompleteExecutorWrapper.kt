@@ -31,7 +31,7 @@ sealed class AutocompleteExecutorWrapperBase<T>(
 
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
-                loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: SlashCommandExecutorWrapper.NonGuildServerConfigRoot
+                loritta.services.servers.getServerConfigRoot(guildId.value)?.data ?: SlashCommandExecutorWrapper.NonGuildServerConfigRoot
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
                 SlashCommandExecutorWrapper.NonGuildServerConfigRoot
