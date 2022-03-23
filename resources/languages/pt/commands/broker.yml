@@ -4,6 +4,7 @@ thatIsNotAnValidStockTicker: "Isso não é um símbolo de ações válido! Veja 
 staleTickerData: "Os dados do símbolo estão desatualizados! Para evitar dupes e outros problemas, sua transação de ação não foi processada, desculpe! Isto pode acontecer quando o nosso sistema está instável ou durante feriados. Tente novamente mais tarde e, se o problema persistir, então ele deve ser considerado um problema!"
 stockMarketClosed: "A bolsa de valores está fechada, volte mais tarde! Como o simulador de ações da Loritta usa dados da Bovespa, ele só está aberto de {openTime} a {closingTime} durante dias úteis!"
 description: "Compre e venda ações do mercado de ações com sonhos! Claro, você não vai ganhar ou perder dinheiro de verdade com isso, mas o sentimento triste depois de perder dinheiro é o mesmo"
+sharesCountWithPrice: "{sharesCount, plural, =0 {# ações} one {# ação} other {# ações}} ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
 info:
   description: "Mostra todas as ações do mercado de ações disponíveis que você pode comprar e vender com sonhos"
   embed:
