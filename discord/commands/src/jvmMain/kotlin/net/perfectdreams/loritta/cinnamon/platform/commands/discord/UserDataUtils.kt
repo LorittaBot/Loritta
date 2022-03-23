@@ -5,6 +5,8 @@ import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.DiscordGuildMember
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
+import dev.kord.rest.json.JsonErrorCode
+import dev.kord.rest.request.KtorRequestException
 import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -38,15 +40,19 @@ object UserDataUtils {
             // ID is not present, try pulling the user data via REST
             val guildId = decodedInteractionData.guildId
 
-            // TODO: We need to catch errors here! What if the member has left the server?
             var member: DiscordGuildMember? = null
             val user = loritta.rest.user.getUser(decodedInteractionData.viewingAvatarOfId)
 
             if (guildId != null)
-                member = loritta.rest.guild.getGuildMember(guildId, decodedInteractionData.viewingAvatarOfId)
-
+                try {
+                    member = loritta.rest.guild.getGuildMember(guildId, decodedInteractionData.viewingAvatarOfId)
+                } catch (e: KtorRequestException) {
+                    if (e.error?.code != JsonErrorCode.UnknownMember)
+                        throw e
+                }
+            
             val memberAvatarHash = member?.avatar?.value
-            // If we tried looking at the user's guild profile avatar, but it doesn't exist, fallback to global user avatar data
+            // If we tried looking at the user's guild profile avatar, but if it doesn't exist, fallback to global user avatar data
             return if (isLookingGuildProfileAvatar && memberAvatarHash != null) {
                 ViewingGuildProfileUserAvatarData(
                     user.username,
