@@ -3,7 +3,7 @@ thatIsNotAnValidStockTicker: "That is not a valid stock ticker! View all valid t
 staleTickerData: "The ticker data is stale! To avoid duping and other issues, your stock transaction wasn't processed, sorry about that! This may happen when our system is having issues or during holidays. Try again later and, if the issue persists, then it should be considered a bug!"
 stockMarketClosed: "The stock market is closed, come back later! Because Loritta's stock market simulator uses data from Bovespa, it is only open from {openTime} to {closingTime} during weekdays!"
 description: "Buy and sell stock market shares with sonhos! Of course, you won't gain or lose real money with this, but the sad feeling after losing money is the same"
-sharesCountWithPrice: "{sharesCount, plural, =0 {# stocks} one {# stock} other {# stocks}} ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+sharesCountWithPrice: "{sharesCount, plural, =0 {# shares} one {# share} other {# shares}} ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
 
 info:
   description: "Shows all available stock shares that you can buy and sell with sonhos"
