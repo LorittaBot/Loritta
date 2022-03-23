@@ -30,7 +30,10 @@ class UserAvatarExecutor(val lorittaId: Snowflake) : SlashCommandExecutor() {
 
         // TODO: Fix this workaround, it would be nice if Discord InteraKTions provided a "UserAndMember" object to us
         // (Or maybe expose it correctly?)
-        val member = context.interaKTionsContext.data.resolved?.members?.get(user.id)
+        val member = if (user == context.user && context is GuildApplicationCommandContext)
+            context.member
+        else
+            context.interaKTionsContext.data.resolved?.members?.get(user.id)
 
         val now = Clock.System.now()
 
