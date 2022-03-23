@@ -48,7 +48,7 @@ class CalculatorPreprocessAutocompleteExecutor : StringAutocompleteExecutor {
                 CalculatorCommand.I18N_PREFIX.Invalid(
                     focusedOption.value
                 )
-            ).replace("`", "") .shortenWithEllipsis(SlashCommandOptionsWrapper.MAX_OPTIONS_DESCRIPTION_LENGTH)
+            ).replace("`", "").shortenWithEllipsis(SlashCommandOptionsWrapper.MAX_OPTIONS_DESCRIPTION_LENGTH)
 
             return mapOf(
                 message to focusedOption.value
