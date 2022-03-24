@@ -4,9 +4,9 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
 
 class ArgumentReader(
     val context: ApplicationCommandContext,
-    val arguments: MutableMap<net.perfectdreams.discordinteraktions.common.commands.options.CommandOption<*>, Any?>
+    val arguments: Map<net.perfectdreams.discordinteraktions.common.commands.options.CommandOption<*>, Any?>
 ) {
     val entries = arguments.entries
 
-    fun current(name: String) = entries.firstOrNull { opt -> name == opt.key.name }?.value
+    fun getOptionValueOrNull(name: String) = entries.firstOrNull { opt -> name == opt.key.name }?.value
 }

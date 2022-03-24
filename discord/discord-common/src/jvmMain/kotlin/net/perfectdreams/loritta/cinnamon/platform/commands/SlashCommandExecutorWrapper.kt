@@ -1,49 +1,32 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
-import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.Image
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.discordinteraktions.common.entities.UserAvatar
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
-import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMessageState
 import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.*
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ChannelCommandOption
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.ArgumentReader
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.RoleCommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserCommandOption
-import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxTaxedDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxWarnDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import kotlin.streams.toList
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 
@@ -182,7 +165,7 @@ class SlashCommandExecutorWrapper(
             }
 
             if (args.types.isNotEmpty()) {
-                val argumentsReader = ArgumentReader(cinnamonContext, args.types.toMutableMap())
+                val argumentsReader = ArgumentReader(cinnamonContext, args.types)
                 declarationExecutor.options.arguments.forEach {
                     cinnamonArgs[it] = it.parse(argumentsReader)
                 }
@@ -236,10 +219,11 @@ class SlashCommandExecutorWrapper(
                 val userId = UserId(context.sender.id.value)
 
                 // Website Update Message
-                val patchNotesNotifications = loritta.services.patchNotesNotifications.getUnreadPatchNotesNotificationsAndMarkAsRead(
-                    UserId(context.sender.id.value),
-                    Clock.System.now()
-                )
+                val patchNotesNotifications =
+                    loritta.services.patchNotesNotifications.getUnreadPatchNotesNotificationsAndMarkAsRead(
+                        UserId(context.sender.id.value),
+                        Clock.System.now()
+                    )
 
                 for (patchNote in patchNotesNotifications) {
                     context.sendEphemeralMessage {
@@ -311,7 +295,8 @@ class SlashCommandExecutorWrapper(
             logger.warn(e) { "Something went wrong while executing $rootDeclarationClazzName $executorClazzName" }
 
             // If the i18nContext is not present, we will default to the default language provided
-            i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
+            i18nContext =
+                i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
 
             // Tell the user that something went *really* wrong
             // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context
@@ -397,8 +382,9 @@ class SlashCommandExecutorWrapper(
      * @param types the arguments
      * @return a map with argument name -> argument value
      */
-    private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.common.commands.options.CommandOption<*>, Any?>) = types.map { it.key.name to it.value }
-        .toMap()
+    private fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.common.commands.options.CommandOption<*>, Any?>) =
+        types.map { it.key.name to it.value }
+            .toMap()
 
     private fun buildJsonWithArguments(types: Map<CommandOption<*>, Any?>) = buildJsonObject {
         for ((option, value) in types) {

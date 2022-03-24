@@ -40,7 +40,7 @@ class StringCommandOption<T : String?>(
     choices: List<CommandChoice<String>>,
     autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<String>?
 ) : ChoiceableCommandOption<T, String>(name, description, required, choices, autoCompleteExecutorDeclaration) {
-    override suspend fun parse(reader: ArgumentReader): T = reader.current(name) as T
+    override suspend fun parse(reader: ArgumentReader): T = reader.getOptionValueOrNull(name) as T
 }
 
 // ===[ INTEGER ]===
@@ -51,7 +51,7 @@ class IntegerCommandOption<T : Long?>(
     choices: List<CommandChoice<Long>>,
     autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Long>?
 ) : ChoiceableCommandOption<T, Long>(name, description, required, choices, autoCompleteExecutorDeclaration) {
-    override suspend fun parse(reader: ArgumentReader): T = reader.current(name) as T
+    override suspend fun parse(reader: ArgumentReader): T = reader.getOptionValueOrNull(name) as T
 }
 
 // ===[ NUMBER ]===
@@ -62,31 +62,31 @@ class NumberCommandOption<T : Double?>(
     choices: List<CommandChoice<Double>>,
     autoCompleteExecutorDeclaration: AutocompleteExecutorDeclaration<Double>?
 ) : ChoiceableCommandOption<T, Double>(name, description, required, choices, autoCompleteExecutorDeclaration) {
-    override suspend fun parse(reader: ArgumentReader): T = reader.current(name) as T
+    override suspend fun parse(reader: ArgumentReader): T = reader.getOptionValueOrNull(name) as T
 }
 
 // ===[ BOOLEAN ]===
 class BooleanCommandOption<T : Boolean?>(name: String, description: StringI18nData, required: Boolean) :
     CommandOption<T>(name, description, required) {
-    override suspend fun parse(reader: ArgumentReader): T = reader.current(name) as T
+    override suspend fun parse(reader: ArgumentReader): T = reader.getOptionValueOrNull(name) as T
 }
 
 // ===[ USER ]===
 class UserCommandOption<T : User?>(name: String, description: StringI18nData, required: Boolean) :
     CommandOption<T>(name, description, required) {
-    override suspend fun parse(reader: ArgumentReader): T = reader.current(name) as T
+    override suspend fun parse(reader: ArgumentReader): T = reader.getOptionValueOrNull(name) as T
 }
 
 // ===[ CHANNEL ]===
 class ChannelCommandOption<T : Channel?>(name: String, description: StringI18nData, required: Boolean) :
     CommandOption<T>(name, description, required) {
-    override suspend fun parse(reader: ArgumentReader): T = reader.current(name) as T
+    override suspend fun parse(reader: ArgumentReader): T = reader.getOptionValueOrNull(name) as T
 }
 
 // ===[ ROLE ]===
 class RoleCommandOption<T : Role?>(name: String, description: StringI18nData, required: Boolean) :
     CommandOption<T>(name, description, required) {
-    override suspend fun parse(reader: ArgumentReader): T = reader.current(name) as T
+    override suspend fun parse(reader: ArgumentReader): T = reader.getOptionValueOrNull(name) as T
 }
 
 // Stuff that isn't present in Discord Slash Commands yet
