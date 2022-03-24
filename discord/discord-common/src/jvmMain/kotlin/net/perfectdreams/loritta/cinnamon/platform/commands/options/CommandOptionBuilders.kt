@@ -10,14 +10,16 @@ import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteExec
 sealed class CommandOptionBuilder<T, ChoiceableType>(
     val name: String,
     val description: StringI18nData,
+    val required: Boolean
 ) {
     abstract fun build(): CommandOption<T>
 }
 
 sealed class ChoiceableCommandOptionBuilder<T, ChoiceableType>(
     name: String,
-    description: StringI18nData
-) : CommandOptionBuilder<T, ChoiceableType>(name, description) {
+    description: StringI18nData,
+    required: Boolean
+) : CommandOptionBuilder<T, ChoiceableType>(name, description, required) {
     val choices: MutableList<CommandChoice<ChoiceableType>> = mutableListOf()
     var autocompleteExecutorDeclaration: AutocompleteExecutorDeclaration<ChoiceableType>? = null
 
@@ -48,131 +50,102 @@ sealed class ChoiceableCommandOptionBuilder<T, ChoiceableType>(
         return this
     }
 
-    abstract fun buildLocalizedCommandChoice(value: ChoiceableType, name: StringI18nData): LocalizedCommandChoice<ChoiceableType>
+    abstract fun buildLocalizedCommandChoice(
+        value: ChoiceableType,
+        name: StringI18nData
+    ): LocalizedCommandChoice<ChoiceableType>
+
     abstract fun buildRawCommandChoice(value: ChoiceableType, name: String): RawCommandChoice<ChoiceableType>
 }
 
 // ===[ STRING ]===
-class StringCommandOptionBuilder(name: String, description: StringI18nData) : ChoiceableCommandOptionBuilder<String, String>(name, description) {
-    override fun buildLocalizedCommandChoice(value: String, name: StringI18nData) = LocalizedStringCommandChoice(name, value)
+class StringCommandOptionBuilder<T : String?>(name: String, description: StringI18nData, required: Boolean) :
+    ChoiceableCommandOptionBuilder<T, String>(name, description, required) {
+    override fun buildLocalizedCommandChoice(value: String, name: StringI18nData) =
+        LocalizedStringCommandChoice(name, value)
+
     override fun buildRawCommandChoice(value: String, name: String) = RawStringCommandChoice(name, value)
 
-    override fun build() = StringCommandOption(
+    override fun build() = StringCommandOption<T>(
         name,
         description,
-        choices,
-        autocompleteExecutorDeclaration
-    )
-}
-
-class NullableStringCommandOptionBuilder(name: String, description: StringI18nData) : ChoiceableCommandOptionBuilder<String?, String>(name, description) {
-    override fun buildLocalizedCommandChoice(value: String, name: StringI18nData) = LocalizedStringCommandChoice(name, value)
-    override fun buildRawCommandChoice(value: String, name: String) = RawStringCommandChoice(name, value)
-
-    override fun build() = NullableStringCommandOption(
-        name,
-        description,
+        required,
         choices,
         autocompleteExecutorDeclaration
     )
 }
 
 // ===[ INTEGER ]===
-class IntegerCommandOptionBuilder(name: String, description: StringI18nData) : ChoiceableCommandOptionBuilder<Long, Long>(name, description) {
-    override fun buildLocalizedCommandChoice(value: Long, name: StringI18nData) = LocalizedIntegerCommandChoice(name, value)
+class IntegerCommandOptionBuilder<T : Long?>(name: String, description: StringI18nData, required: Boolean) :
+    ChoiceableCommandOptionBuilder<T, Long>(name, description, required) {
+    override fun buildLocalizedCommandChoice(value: Long, name: StringI18nData) =
+        LocalizedIntegerCommandChoice(name, value)
+
     override fun buildRawCommandChoice(value: Long, name: String) = RawIntegerCommandChoice(name, value)
 
-    override fun build() = IntegerCommandOption(
+    override fun build() = IntegerCommandOption<T>(
         name,
         description,
-        choices,
-        autocompleteExecutorDeclaration
-    )
-}
-
-class NullableIntegerCommandOptionBuilder(name: String, description: StringI18nData) : ChoiceableCommandOptionBuilder<Long?, Long>(name, description) {
-    override fun buildLocalizedCommandChoice(value: Long, name: StringI18nData) = LocalizedIntegerCommandChoice(name, value)
-    override fun buildRawCommandChoice(value: Long, name: String) = RawIntegerCommandChoice(name, value)
-
-    override fun build() = NullableIntegerCommandOption(
-        name,
-        description,
+        required,
         choices,
         autocompleteExecutorDeclaration
     )
 }
 
 // ===[ NUMBER ]===
-class NumberCommandOptionBuilder(name: String, description: StringI18nData) : ChoiceableCommandOptionBuilder<Double, Double>(name, description) {
-    override fun buildLocalizedCommandChoice(value: Double, name: StringI18nData) = LocalizedNumberCommandChoice(name, value)
+class NumberCommandOptionBuilder<T : Double?>(name: String, description: StringI18nData, required: Boolean) :
+    ChoiceableCommandOptionBuilder<T, Double>(name, description, required) {
+    override fun buildLocalizedCommandChoice(value: Double, name: StringI18nData) =
+        LocalizedNumberCommandChoice(name, value)
+
     override fun buildRawCommandChoice(value: Double, name: String) = RawNumberCommandChoice(name, value)
 
-    override fun build() = NumberCommandOption(
+    override fun build() = NumberCommandOption<T>(
         name,
         description,
-        choices,
-        autocompleteExecutorDeclaration
-    )
-}
-
-class NullableNumberCommandOptionBuilder(name: String, description: StringI18nData) : ChoiceableCommandOptionBuilder<Double?, Double>(name, description) {
-    override fun buildLocalizedCommandChoice(value: Double, name: StringI18nData) = LocalizedNumberCommandChoice(name, value)
-    override fun buildRawCommandChoice(value: Double, name: String) = RawNumberCommandChoice(name, value)
-
-    override fun build() = NullableNumberCommandOption(
-        name,
-        description,
+        required,
         choices,
         autocompleteExecutorDeclaration
     )
 }
 
 // ===[ BOOLEAN ]===
-class BooleanCommandOptionBuilder(name: String, description: StringI18nData) : CommandOptionBuilder<Boolean, Boolean>(name, description) {
-    override fun build() = BooleanCommandOption(name, description)
-}
-
-class NullableBooleanCommandOptionBuilder(name: String, description: StringI18nData) : CommandOptionBuilder<Boolean?, Boolean>(name, description) {
-    override fun build() = NullableBooleanCommandOption(name, description)
+class BooleanCommandOptionBuilder<T: Boolean?>(name: String, description: StringI18nData, required: Boolean) :
+    CommandOptionBuilder<T, Boolean>(name, description, required) {
+    override fun build() = BooleanCommandOption<T>(name, description, required)
 }
 
 // ===[ USER ]===
-class UserCommandOptionBuilder(name: String, description: StringI18nData) : CommandOptionBuilder<User, User>(name, description) {
-    override fun build() = UserCommandOption(name, description)
-}
-
-class NullableUserCommandOptionBuilder(name: String, description: StringI18nData) : CommandOptionBuilder<User?, User>(name, description) {
-    override fun build() = NullableUserCommandOption(name, description)
+class UserCommandOptionBuilder<T: User?>(name: String, description: StringI18nData, required: Boolean) :
+    CommandOptionBuilder<T, User>(name, description, required) {
+    override fun build() = UserCommandOption<T>(name, description, required)
 }
 
 // ===[ CHANNEL ]===
-class ChannelCommandOptionBuilder(name: String, description: StringI18nData) : CommandOptionBuilder<Channel, Channel>(name, description) {
-    override fun build() = ChannelCommandOption(name, description)
-}
-
-class NullableChannelCommandOptionBuilder(name: String, description: StringI18nData) : CommandOptionBuilder<Channel?, Channel>(name, description) {
-    override fun build() = NullableChannelCommandOption(name, description)
+class ChannelCommandOptionBuilder<T: Channel?>(name: String, description: StringI18nData, required: Boolean) :
+    CommandOptionBuilder<T, Channel>(name, description, required) {
+    override fun build() = ChannelCommandOption<T>(name, description, required)
 }
 
 // ===[ ROLE ]===
-class RoleCommandOptionBuilder(name: String, description: StringI18nData) : CommandOptionBuilder<Role, Role>(name, description) {
-    override fun build() = RoleCommandOption(name, description)
-}
-
-class NullableRoleCommandOptionBuilder(name: String, description: StringI18nData) : CommandOptionBuilder<Role?, Role>(name, description) {
-    override fun build() = NullableRoleCommandOption(name, description)
+class RoleCommandOptionBuilder<T: Role?>(name: String, description: StringI18nData, required: Boolean) :
+    CommandOptionBuilder<T, Role>(name, description, true) {
+    override fun build() = RoleCommandOption<T>(name, description, required)
 }
 
 // Stuff that isn't present in Discord Slash Commands yet
 // (After all, this CommandOptionType is based of Discord InteraKTions implementation! :3)
-class StringListCommandOptionBuilder(name: String, description: StringI18nData, val minimum: Int?, val maximum: Int?) : CommandOptionBuilder<List<String>, List<String>>(name, description) {
+class StringListCommandOptionBuilder(name: String, description: StringI18nData, val minimum: Int?, val maximum: Int?) :
+    CommandOptionBuilder<List<String>, List<String>>(name, description, true) {
     override fun build() = StringListCommandOption(name, description, minimum, maximum)
 }
 
-class UserListCommandOptionBuilder(name: String, description: StringI18nData, val minimum: Int?, val maximum: Int?) : CommandOptionBuilder<List<User>, List<User>>(name, description) {
+class UserListCommandOptionBuilder(name: String, description: StringI18nData, val minimum: Int?, val maximum: Int?) :
+    CommandOptionBuilder<List<User>, List<User>>(name, description, true) {
     override fun build() = UserListCommandOption(name, description, minimum, maximum)
 }
 
-class ImageReferenceCommandOptionBuilder(name: String, description: StringI18nData) : CommandOptionBuilder<ImageReference, ImageReference>(name, description) {
-    override fun build() = ImageReferenceCommandOption(name, description)
+class ImageReferenceCommandOptionBuilder(name: String, description: StringI18nData, required: Boolean) :
+    CommandOptionBuilder<ImageReference, ImageReference>(name, description, required) {
+    override fun build() = ImageReferenceCommandOption(name, description, required)
 }

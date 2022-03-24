@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.options
 
+import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
@@ -79,47 +80,53 @@ class SlashCommandOptionsWrapper(
                 // ===[ NORMAL ARG TYPES ]===
                 else -> {
                     val arg = when (it) {
-                        is StringCommandOption -> string(
+                        is StringCommandOption -> if (it.required) string(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 when (it) {
-                                    is LocalizedCommandChoice -> option.choice(it.value as String, i18nContext.get(it.name))
+                                    is LocalizedCommandChoice -> option.choice(
+                                        it.value as String,
+                                        i18nContext.get(it.name)
+                                    )
                                     is RawCommandChoice -> option.choice(it.value as String, it.name)
                                 }
                             }
 
                             if (it.autoCompleteExecutorDeclaration != null) {
                                 option.autocomplete(
-                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration(
-                                        it.autoCompleteExecutorDeclaration::class
-                                    ) {}
+                                    object :
+                                        net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration(
+                                            it.autoCompleteExecutorDeclaration::class
+                                        ) {}
                                 )
                             }
-                        }
-
-                        is NullableStringCommandOption -> optionalString(
+                        } else optionalString(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 when (it) {
-                                    is LocalizedCommandChoice -> option.choice(it.value as String, i18nContext.get(it.name))
+                                    is LocalizedCommandChoice -> option.choice(
+                                        it.value as String,
+                                        i18nContext.get(it.name)
+                                    )
                                     is RawCommandChoice -> option.choice(it.value as String, it.name)
                                 }
                             }
 
                             if (it.autoCompleteExecutorDeclaration != null) {
                                 option.autocomplete(
-                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration(
-                                        it.autoCompleteExecutorDeclaration::class
-                                    ) {}
+                                    object :
+                                        net.perfectdreams.discordinteraktions.common.autocomplete.StringAutocompleteExecutorDeclaration(
+                                            it.autoCompleteExecutorDeclaration::class
+                                        ) {}
                                 )
                             }
                         }
 
-                        is IntegerCommandOption -> integer(
+                        is IntegerCommandOption -> if (it.required) integer(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
@@ -132,14 +139,13 @@ class SlashCommandOptionsWrapper(
 
                             if (it.autoCompleteExecutorDeclaration != null) {
                                 option.autocomplete(
-                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration(
-                                        it.autoCompleteExecutorDeclaration::class
-                                    ) {}
+                                    object :
+                                        net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration(
+                                            it.autoCompleteExecutorDeclaration::class
+                                        ) {}
                                 )
                             }
-                        }
-
-                        is NullableIntegerCommandOption -> optionalInteger(
+                        } else optionalInteger(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
@@ -152,14 +158,15 @@ class SlashCommandOptionsWrapper(
 
                             if (it.autoCompleteExecutorDeclaration != null) {
                                 option.autocomplete(
-                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration(
-                                        it.autoCompleteExecutorDeclaration::class
-                                    ) {}
+                                    object :
+                                        net.perfectdreams.discordinteraktions.common.autocomplete.IntegerAutocompleteExecutorDeclaration(
+                                            it.autoCompleteExecutorDeclaration::class
+                                        ) {}
                                 )
                             }
                         }
 
-                        is NumberCommandOption -> number(
+                        is NumberCommandOption -> if (it.required) number(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
@@ -172,14 +179,13 @@ class SlashCommandOptionsWrapper(
 
                             if (it.autoCompleteExecutorDeclaration != null) {
                                 option.autocomplete(
-                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.NumberAutocompleteExecutorDeclaration(
-                                        it.autoCompleteExecutorDeclaration::class
-                                    ) {}
+                                    object :
+                                        net.perfectdreams.discordinteraktions.common.autocomplete.NumberAutocompleteExecutorDeclaration(
+                                            it.autoCompleteExecutorDeclaration::class
+                                        ) {}
                                 )
                             }
-                        }
-
-                        is NullableNumberCommandOption -> optionalNumber(
+                        } else optionalNumber(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         ).also { option ->
@@ -192,49 +198,42 @@ class SlashCommandOptionsWrapper(
 
                             if (it.autoCompleteExecutorDeclaration != null) {
                                 option.autocomplete(
-                                    object : net.perfectdreams.discordinteraktions.common.autocomplete.NumberAutocompleteExecutorDeclaration(
-                                        it.autoCompleteExecutorDeclaration::class
-                                    ) {}
+                                    object :
+                                        net.perfectdreams.discordinteraktions.common.autocomplete.NumberAutocompleteExecutorDeclaration(
+                                            it.autoCompleteExecutorDeclaration::class
+                                        ) {}
                                 )
                             }
                         }
 
-                        is BooleanCommandOption -> boolean(
+                        is BooleanCommandOption -> if (it.required) boolean(
+                            it.name,
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
+                        ) else optionalBoolean(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
-                        is NullableBooleanCommandOption -> optionalBoolean(
+                        is UserCommandOption -> if (it.required) user(
+                            it.name,
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
+                        ) else optionalUser(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
-                        is UserCommandOption -> user(
+                        is ChannelCommandOption -> if (it.required) channel(
+                            it.name,
+                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
+                        ) else optionalChannel(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
 
-                        is NullableUserCommandOption -> optionalUser(
+                        is RoleCommandOption -> if (it.required) role(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
-                        )
-
-                        is ChannelCommandOption -> channel(
-                            it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
-                        )
-
-                        is NullableChannelCommandOption -> optionalChannel(
-                            it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
-                        )
-
-                        is RoleCommandOption -> role(
-                            it.name,
-                            i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
-                        )
-
-                        is NullableRoleCommandOption -> optionalRole(
+                        ) else optionalRole(
                             it.name,
                             i18nContext.get(it.description).shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH)
                         )
