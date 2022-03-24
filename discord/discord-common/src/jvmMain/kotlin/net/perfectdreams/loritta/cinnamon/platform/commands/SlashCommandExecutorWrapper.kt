@@ -16,6 +16,7 @@ import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.discordinteraktions.common.entities.User
@@ -30,17 +31,11 @@ import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxPendingDirectMess
 import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ChannelCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ImageReferenceCommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.NullableChannelCommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.NullableCommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.NullableRoleCommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.NullableUserCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.RoleCommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.StringListCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserCommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.UserListCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
@@ -138,8 +133,6 @@ class SlashCommandExecutorWrapper(
         var i18nContext: I18nContext? = null
         val cinnamonContext: CinnamonApplicationCommandContext?
 
-        val interaKTionsArgumentEntries = args.types.entries
-
         try {
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
@@ -188,153 +181,10 @@ class SlashCommandExecutorWrapper(
                 return CommandExecutionSuccess
             }
 
-            declarationExecutor.options.arguments.forEach {
-                when (it) {
-                    is StringListCommandOption -> {
-                        // Special case: Lists
-                        val listsValues = interaKTionsArgumentEntries.filter { opt -> opt.key.name.startsWith(it.name) }
-                        cinnamonArgs[it] = mutableListOf<String>().also {
-                            it.addAll(listsValues.map { it.value as String })
-                        }
-                    }
-
-                    is UserListCommandOption -> {
-                        val listsValues = interaKTionsArgumentEntries.filter { opt -> opt.key.name.startsWith(it.name) }
-                        cinnamonArgs[it] = mutableListOf<User>().also {
-                            it.addAll(listsValues.map { it.value as User })
-                        }
-                    }
-
-                    is ImageReferenceCommandOption -> {
-                        // Special case: Image References
-                        // Get the argument that matches our image reference
-                        val interaKTionAttachmentArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name.removeSuffix("_file") == it.name }
-                        val interaKTionAvatarLinkOrEmoteArgument = interaKTionsArgumentEntries.firstOrNull { opt -> opt.key.name.removeSuffix("_data") == it.name }
-
-                        var found = false
-
-                        // Attachments take priority
-                        if (interaKTionAttachmentArgument != null) {
-                            val attachment = (interaKTionAttachmentArgument.value as DiscordAttachment)
-                            if (attachment.filename.substringAfterLast(".").lowercase() in SUPPORTED_IMAGE_EXTENSIONS) {
-                                found = true
-                                cinnamonArgs[it] =  URLImageReference(attachment.url)
-                            }
-                        } else if (interaKTionAvatarLinkOrEmoteArgument != null) {
-                            val value = interaKTionAvatarLinkOrEmoteArgument.value as String
-
-                            // Now check if it is a valid thing!
-                            // First, we will try matching via user mentions or user IDs
-                            val cachedUserInfo = ContextStringToUserInfoConverter.convert(
-                                cinnamonContext,
-                                value
-                            )
-
-                            if (cachedUserInfo != null) {
-                                val icon = cachedUserInfo.avatarId?.let {
-                                    Icon.UserAvatar(
-                                        Snowflake(cachedUserInfo.id.value),
-                                        it
-                                    )
-                                } ?: Icon.DefaultUserAvatar(cachedUserInfo.discriminator.toInt())
-
-                                cinnamonArgs[it] = URLImageReference(icon.cdnUrl.toUrl {
-                                    this.format = Image.Format.PNG
-                                    this.size = Image.Size.Size128
-                                })
-                                found = true
-                            }
-
-                            if (!found && value.startsWith("http")) {
-                                // It is a URL!
-                                // TODO: Use a RegEx to check if it is a valid URL
-                                cinnamonArgs[it] = URLImageReference(value)
-                                found = true
-                            }
-
-                            if (!found) {
-                                // It is a emote!
-                                // Discord emotes always starts with "<" and ends with ">"
-                                if (value.startsWith("<") && value.endsWith(">")) {
-                                    val emoteId = value.substringAfterLast(":").substringBefore(">")
-                                    cinnamonArgs[it] =
-                                        URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
-                                } else {
-                                    // If not, we are going to handle it as if it were a Unicode emoji
-                                    val emoteId = value.codePoints().toList()
-                                        .joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
-                                    cinnamonArgs[it] =
-                                        URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
-                                }
-                                found = true
-                            }
-                        }
-
-                        if (!found) {
-                            // If no image was found, we will try to find the first recent message in this chat
-                            val channelId = context.channelId
-                            val messages = loritta.rest.channel.getMessages(
-                                channelId,
-                                null,
-                                100
-                            )
-                            try {
-                                // Sort from the newest message to the oldest message
-                                val attachmentUrl = messages.sortedByDescending { it.id.timestamp }
-                                    .flatMap { it.attachments }
-                                    .firstOrNull {
-                                        // Only get filenames ending with "image" extensions
-                                        it.filename.substringAfter(".")
-                                            .lowercase() in SUPPORTED_IMAGE_EXTENSIONS
-                                    }?.url
-
-                                if (attachmentUrl != null) {
-                                    // Found a valid URL, let's go!
-                                    cinnamonArgs[it] = URLImageReference(attachmentUrl)
-                                    found = true
-                                }
-                            } catch (e: Exception) {
-                                // TODO: Catch the "permission required" exception and show a nice message
-                                e.printStackTrace()
-                            }
-                        }
-
-                        if (!found)
-                            cinnamonContext.fail(cinnamonContext.i18nContext.get(I18nKeysData.Commands.NoValidImageFound), Emotes.LoriSob)
-                    }
-
-                    else -> {
-                        val interaKTionArgument = interaKTionsArgumentEntries.firstOrNull { opt -> it.name == opt.key.name }
-
-                        // If the value is null but it *wasn't* meant to be null, we are going to throw a exception!
-                        // (This should NEVER happen!)
-                        if (interaKTionArgument?.value == null && it !is NullableCommandOption)
-                            throw UnsupportedOperationException("Argument ${interaKTionArgument?.key} value is null, but the type of the argument is not nullable! Bug?")
-
-                        when (it) {
-                            is UserCommandOption, is NullableUserCommandOption -> {
-                                cinnamonArgs[it] = interaKTionArgument?.value?.let {
-                                    interaKTionArgument.value
-                                }
-                            }
-
-                            is ChannelCommandOption, is NullableChannelCommandOption -> {
-                                cinnamonArgs[it] = interaKTionArgument?.value?.let {
-                                    interaKTionArgument.value
-                                }
-                            }
-
-                            is RoleCommandOption, is NullableRoleCommandOption -> {
-                                cinnamonArgs[it] = interaKTionArgument?.value?.let {
-                                    interaKTionArgument.value
-                                }
-                            }
-
-                            else -> {
-                                cinnamonArgs[it] = interaKTionArgument?.value
-                            }
-                        }
-                    }
+            if (args.types.isNotEmpty()) {
+                val argumentsReader = ArgumentReader(cinnamonContext, args.types.toMutableMap())
+                declarationExecutor.options.arguments.forEach {
+                    cinnamonArgs[it] = it.parse(argumentsReader)
                 }
             }
 

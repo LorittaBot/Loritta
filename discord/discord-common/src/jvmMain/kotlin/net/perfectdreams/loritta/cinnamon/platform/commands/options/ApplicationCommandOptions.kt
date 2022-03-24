@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.options
 
+import net.perfectdreams.discordinteraktions.common.entities.Channel
+import net.perfectdreams.discordinteraktions.common.entities.Role
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 
 open class ApplicationCommandOptions {
@@ -9,74 +12,88 @@ open class ApplicationCommandOptions {
 
     val arguments = mutableListOf<CommandOption<*>>()
 
-    fun string(name: String, description: StringI18nData) = StringCommandOptionBuilder(
+    fun string(name: String, description: StringI18nData) = StringCommandOptionBuilder<String>(
         name,
-        description
+        description,
+        true
     )
 
-    fun optionalString(name: String, description: StringI18nData) = NullableStringCommandOptionBuilder(
+    fun optionalString(name: String, description: StringI18nData) = StringCommandOptionBuilder<String?>(
         name,
-        description
+        description,
+        false
     )
 
-    fun integer(name: String, description: StringI18nData) = IntegerCommandOptionBuilder(
+    fun integer(name: String, description: StringI18nData) = IntegerCommandOptionBuilder<Long>(
         name,
-        description
+        description,
+        true
     )
 
-    fun optionalInteger(name: String, description: StringI18nData) = NullableIntegerCommandOptionBuilder(
+    fun optionalInteger(name: String, description: StringI18nData) = IntegerCommandOptionBuilder<Long?>(
         name,
-        description
+        description,
+        false
     )
 
-    fun number(name: String, description: StringI18nData) = NumberCommandOptionBuilder(
+    fun number(name: String, description: StringI18nData) = NumberCommandOptionBuilder<Double>(
         name,
-        description
+        description,
+        true
     )
 
-    fun optionalNumber(name: String, description: StringI18nData) = NullableNumberCommandOptionBuilder(
+    fun optionalNumber(name: String, description: StringI18nData) = NumberCommandOptionBuilder<Double?>(
         name,
-        description
+        description,
+        false
     )
 
-    fun boolean(name: String, description: StringI18nData) = BooleanCommandOptionBuilder(
+    fun boolean(name: String, description: StringI18nData) = BooleanCommandOptionBuilder<Boolean>(
         name,
-        description
+        description,
+        true
     )
 
-    fun optionalBoolean(name: String, description: StringI18nData) = NullableBooleanCommandOptionBuilder(
+    fun optionalBoolean(name: String, description: StringI18nData) = BooleanCommandOptionBuilder<Boolean?>(
         name,
-        description
+        description,
+        false
     )
 
-    fun user(name: String, description: StringI18nData) = UserCommandOptionBuilder(
+    fun user(name: String, description: StringI18nData) = UserCommandOptionBuilder<User>(
         name,
-        description
+        description,
+        true
     )
 
-    fun optionalUser(name: String, description: StringI18nData) = NullableUserCommandOptionBuilder(
+    fun optionalUser(name: String, description: StringI18nData) = UserCommandOptionBuilder<User?>(
         name,
-        description
+        description,
+        false
     )
 
-    fun channel(name: String, description: StringI18nData) = ChannelCommandOptionBuilder(
+    fun channel(name: String, description: StringI18nData) = ChannelCommandOptionBuilder<Channel>(
         name,
-        description
+        description,
+        true
     )
 
-    fun optionalChannel(name: String, description: StringI18nData) = NullableChannelCommandOptionBuilder(
+    fun optionalChannel(name: String, description: StringI18nData) = ChannelCommandOptionBuilder<Channel?>(
         name,
-        description
+        description,
+        false
     )
 
-    fun role(name: String, description: StringI18nData) = RoleCommandOptionBuilder(
+    fun role(name: String, description: StringI18nData) = RoleCommandOptionBuilder<Role>(
         name,
-        description
+        description,
+        true
     )
 
-    fun optionalRole(name: String, description: StringI18nData) = NullableRoleCommandOptionBuilder(
+    fun optionalRole(name: String, description: StringI18nData) = RoleCommandOptionBuilder<Role?>(
         name,
-        description
+        description,
+        false
     )
 
     fun stringList(name: String, description: StringI18nData, minimum: Int? = null, maximum: Int? = null) = StringListCommandOptionBuilder(
@@ -95,7 +112,8 @@ open class ApplicationCommandOptions {
 
     fun imageReference(name: String, description: StringI18nData) = ImageReferenceCommandOptionBuilder(
         name,
-        description
+        description,
+        true
     )
 
     fun <T, ChoiceableType> CommandOptionBuilder<T, ChoiceableType>.register(): CommandOption<T> {
