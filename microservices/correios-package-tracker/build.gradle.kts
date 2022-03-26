@@ -50,7 +50,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/lorittabot/daily-tax"
+        image = "ghcr.io/lorittabot/corrieos-package-tracker"
 
         auth {
             username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
