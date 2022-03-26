@@ -103,7 +103,7 @@ class TrackPackageExecutor(val client: CorreiosClient) : SlashCommandExecutor() 
             client.getPackageInfo(packageId)
         } catch (e: InvalidTrackingIdException) {
             context.failEphemerally(
-                context.i18nContext.get(PackageCommand.I18N_PREFIX.InvalidCorreiosTrackingId("AA123456785BR")),
+                context.i18nContext.get(PackageCommand.I18N_PREFIX.InvalidCorreiosTrackingId("LO400218922RI")), // While there is a "AA123456785BR" package ID example in Correios website, that's actually a (very buggy) package!
                 Emotes.LoriSob
             )
         }

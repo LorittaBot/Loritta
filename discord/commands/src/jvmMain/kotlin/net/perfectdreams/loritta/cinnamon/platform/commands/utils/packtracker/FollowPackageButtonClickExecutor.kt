@@ -38,7 +38,8 @@ class FollowPackageButtonClickExecutor(
 
         when (val firstObject = correiosResponse.objeto.first()) {
             is CorreiosFoundObjeto -> {
-                if (firstObject.events.maxByOrNull { it.criacao }!!.type == EventType.PackageDeliveredToRecipient)
+                // Some Correios' packages are super wonky and while they are marked as delivered, they have duplicate events "package delievered to recipient" events (See: AA123456785BR)
+                if (firstObject.events.any { it.type == EventType.PackageDeliveredToRecipient })
                     context.failEphemerally(
                         context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.FollowPackage.PackageAlreadyDelivered),
                         Emotes.LoriSob
