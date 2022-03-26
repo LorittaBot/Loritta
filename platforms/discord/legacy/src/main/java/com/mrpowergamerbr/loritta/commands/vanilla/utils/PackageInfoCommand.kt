@@ -9,11 +9,12 @@ import com.mrpowergamerbr.loritta.commands.vanilla.utils.PackageInfoCommand.Pack
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.correios.CorreiosResponse
 import com.mrpowergamerbr.loritta.utils.correios.EncomendaResponse
+import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import java.awt.Color
 import java.util.*
 
@@ -26,7 +27,9 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "package track")
 			val packageId = context.args[0]
+
 			try {
 				var pair = getCorreiosInfo(packageId)
 				var packageSource = CORREIOS
