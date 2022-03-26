@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.R
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
 import kotlin.random.Random
 
 class RollExecutor(val random: Random) : SlashCommandExecutor() {
@@ -75,12 +76,25 @@ class RollExecutor(val random: Random) : SlashCommandExecutor() {
             finalResult += it
         }
 
+
         if (mathematicalExpression != null) {
-            response += " = ${finalResult.toInt()} `${mathematicalExpression.trim()}"
+            try {
+                response += " = ${finalResult.toInt()} `${mathematicalExpression.trim()}"
 
-            finalResult = MathUtils.evaluate(finalResult.toString() + mathematicalExpression).toFloat()
+                finalResult = MathUtils.evaluate(finalResult.toString() + mathematicalExpression).toFloat()
 
-            response += " = ${finalResult.toInt()}`"
+                response += " = ${finalResult.toInt()}`"
+            } catch (e: Exception) {
+                // TODO: Fix stripCodeMarks
+                context.failEphemerally(
+                    context.i18nContext.get(
+                        CalculatorCommand.I18N_PREFIX.Invalid(
+                            mathematicalExpression
+                        )
+                    ),
+                    prefix = Emotes.LoriHm
+                )
+            }
         }
 
         response = if (rolledSides.size == 1 && mathematicalExpression == null) {
