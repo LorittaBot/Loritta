@@ -18,7 +18,6 @@ dependencies {
     implementation("com.zaxxer:HikariCP:${Versions.HIKARICP}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
-    implementation("dev.kord:kord-rest:${Versions.KORD}")
 
     // Logback GELF, used for Graylog logging
     implementation("de.siegmar:logback-gelf:3.0.0")
@@ -65,7 +64,7 @@ jib {
 
 tasks.withType<ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.microservice.dailytax.DailyTaxLauncher"
+        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.microservices.dailytax.DailyTaxLauncher"
     }
 }
 

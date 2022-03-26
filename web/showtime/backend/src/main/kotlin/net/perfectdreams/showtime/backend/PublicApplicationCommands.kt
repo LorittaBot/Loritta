@@ -99,6 +99,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.D
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.HelpCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.AttackOnHeartExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.AttackOnHeartCommand
@@ -169,6 +170,7 @@ object PublicApplicationCommands {
         CalculatorCommand,
         AnagramCommand,
         ChooseCommand,
+        PackageCommand,
 
         // ===[ ECONOMY ]===
         SonhosCommand,

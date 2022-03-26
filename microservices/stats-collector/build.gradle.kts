@@ -43,7 +43,7 @@ jib {
 
 tasks.withType<ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.microservice.statscollector.StatsCollectorLauncher"
+        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.microservices.statscollector.StatsCollectorLauncher"
     }
 }
 

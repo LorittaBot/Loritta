@@ -60,11 +60,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerBuyStockExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockQuantityAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerPortfolioExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerSellStockExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockQuantityAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.CoinFlipBetGlobalExecutor
@@ -185,12 +185,21 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.D
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.HelpCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.GoBackToPackageListButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.FollowPackageButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.PackageListExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.SelectPackageSelectMenuExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.TrackPackageButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.TrackPackageExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.UnfollowPackageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.AttackOnHeartExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.FansExplainingExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.AttackOnHeartCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
+import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import kotlin.system.exitProcess
 
@@ -211,6 +220,7 @@ class CommandManager(
     private val http = loritta.http
 
     private val mojangApi = MinecraftMojangAPI()
+    private val correiosClient = CorreiosClient()
 
     val commandManager = CommandRegistry(
         loritta,
@@ -398,6 +408,36 @@ class CommandManager(
         commandManager.register(CalculatorPreprocessAutocompleteExecutor, CalculatorPreprocessAutocompleteExecutor())
         commandManager.register(AnagramCommand, AnagramExecutor())
         commandManager.register(ChooseCommand, ChooseExecutor())
+        commandManager.register(
+            PackageCommand,
+            TrackPackageExecutor(correiosClient),
+            PackageListExecutor(correiosClient)
+        )
+
+        commandManager.register(
+            FollowPackageButtonClickExecutor,
+            FollowPackageButtonClickExecutor(loritta, correiosClient)
+        )
+
+        commandManager.register(
+            UnfollowPackageButtonClickExecutor,
+            UnfollowPackageButtonClickExecutor(loritta, correiosClient)
+        )
+
+        commandManager.register(
+            SelectPackageSelectMenuExecutor,
+            SelectPackageSelectMenuExecutor(loritta)
+        )
+
+        commandManager.register(
+            GoBackToPackageListButtonClickExecutor,
+            GoBackToPackageListButtonClickExecutor(loritta, correiosClient)
+        )
+
+        commandManager.register(
+            TrackPackageButtonClickExecutor,
+            TrackPackageButtonClickExecutor(loritta, correiosClient)
+        )
 
         // ===[ ECONOMY ]===
         commandManager.register(SonhosCommand, SonhosExecutor())

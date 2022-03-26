@@ -20,6 +20,11 @@ object ComponentExecutorIds {
     val START_MATCHMAKING_BUTTON_EXECUTOR = register("0009")
     val SWITCH_TO_GUILD_PROFILE_AVATAR_EXECUTOR = register("0010")
     val SWITCH_TO_GLOBAL_AVATAR_EXECUTOR = register("0011")
+    val FOLLOW_PACKAGE_BUTTON_EXECUTOR = register("0012")
+    val UNFOLLOW_PACKAGE_BUTTON_EXECUTOR = register("0013")
+    val SELECT_PACKAGE_SELECT_MENU_EXECUTOR = register("0014")
+    val GO_BACK_TO_PACKAGE_LIST_BUTTON_EXECUTOR = register("0015")
+    val TRACK_PACKAGE_BUTTON_EXECUTOR = register("0016")
 
     /**
      * Verifies if the [id] matches our constraints
