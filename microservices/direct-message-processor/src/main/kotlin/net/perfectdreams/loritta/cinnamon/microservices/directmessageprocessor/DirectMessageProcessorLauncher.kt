@@ -15,7 +15,7 @@ object DirectMessageProcessorLauncher {
         // https://github.com/JetBrains/Exposed/issues/1356
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
 
-        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(DirectMessageProcessorLauncher::class, System.getProperty("dailytax.config", "daily-tax.conf"))
+        val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(DirectMessageProcessorLauncher::class, System.getProperty("directmessageprocessor.config", "direct-message-processor.conf"))
         logger.info { "Loaded Loritta's configuration file" }
 
         val services = Pudding.createPostgreSQLPudding(
