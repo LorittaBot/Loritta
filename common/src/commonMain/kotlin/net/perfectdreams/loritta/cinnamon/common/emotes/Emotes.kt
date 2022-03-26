@@ -33,6 +33,8 @@ object Emotes {
     val LoriBanHammer = DiscordEmote(741058240455901254L, "lori_ban_hammer", false)
     val LoriKiss = DiscordEmote(950112551541289010L, "lori_kiss", false)
     val LoriSunglasses = DiscordEmote(950114031337865257, "lori_sunglasses", false)
+    val LoriBonk = DiscordEmote(956402010712834078, "lori_bonk", false)
+    val LoriCard = DiscordEmote(956402937666633769, "lori_card", false)
 
     val PantufaGaming = DiscordEmote(853048446922784819L, "pantufa_gaming", false)
 
@@ -86,12 +88,17 @@ object Emotes {
     val DollarBill = UnicodeEmote("\uD83D\uDCB5")
     val Rooster = UnicodeEmote("\uD83D\uDC13")
     val Star = UnicodeEmote("⭐")
+    val Package = UnicodeEmote("\uD83D\uDCE6")
+    val DeliveryTruck = UnicodeEmote("\uD83D\uDE9A")
+    val Dash = UnicodeEmote("\uD83D\uDCA8")
+    val Inbox = UnicodeEmote("\uD83D\uDCE5")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)
     val Twitter = DiscordEmote(552840901886738433L, "twitter", false)
     val Instagram = DiscordEmote(552841049660325908L, "instagram", false)
     val YouTube = DiscordEmote(955785841609965588, "youtube", false)
+    val Correios = DiscordEmote(375314171644084234, "correios", false)
 
     val Undertale = DiscordEmote(412576128340066304L, "undertale_heart", false)
     val Deltarune = DiscordEmote(889958066362155008L, "deltarune", false)
@@ -143,4 +150,6 @@ object Emotes {
     val Online = DiscordEmote(516265733659951104L, "online", false)
     val Idle = DiscordEmote(516265836009357322L, "idle", false)
     val DoNotDisturb = DiscordEmote(516265799338688533L, "do_not_disturb", false)
+
+    val BrasilTorcida = DiscordEmote(957311214168444968L, "brasil_torcida", true)
 }

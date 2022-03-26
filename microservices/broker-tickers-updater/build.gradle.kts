@@ -52,7 +52,7 @@ jib {
 
 tasks.withType<ShadowJar> {
     manifest {
-        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.microservice.brokertickersupdater.BrokerTickersUpdaterLauncher"
+        attributes["Main-Class"] = "net.perfectdreams.loritta.cinnamon.microservices.brokertickersupdater.BrokerTickersUpdaterLauncher"
     }
 }
 

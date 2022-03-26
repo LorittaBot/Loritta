@@ -5,6 +5,8 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.dailytax.DailyTax
+import net.perfectdreams.loritta.cinnamon.platform.utils.ImportantNotificationDatabaseMessageBuilder
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxTaxedDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxWarnDirectMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -25,6 +27,9 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
     }
 
     override suspend fun runCoroutine() {
+        // TODO: proper i18n
+        val i18nContext = m.languageManager.getI18nContextById("pt")
+
         try {
             logger.info { "Collecting tax from inactive daily users..." }
 
@@ -45,6 +50,8 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
             // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
             m.services.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
                 DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 0) { threshold, inactiveDailyUser ->
+                    logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax taxed" }
+
                     alreadyWarnedThatTheyWereTaxed.add(inactiveDailyUser.id)
 
                     Profiles.update({ Profiles.id eq inactiveDailyUser.id }) {
@@ -66,18 +73,24 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
                         it[DailyTaxSonhosTransactionsLog.tax] = threshold.tax
                     }
 
-                    m.services.users._insertPendingDailyTaxDirectMessage(
-                        UserId(inactiveDailyUser.id),
-                        UserDailyTaxTaxedDirectMessage(
-                            now,
-                            nextTrigger,
-                            inactiveDailyUser.money,
-                            inactiveDailyUser.moneyToBeRemoved,
-                            threshold.maxDayThreshold,
-                            threshold.minimumSonhosForTrigger,
-                            threshold.tax
+                    val message = ImportantNotificationDatabaseMessageBuilder().apply(
+                        UserUtils.buildDailyTaxMessage(
+                            i18nContext,
+                            m.config.loritta.website,
+                            UserId(inactiveDailyUser.id),
+                            UserDailyTaxTaxedDirectMessage(
+                                now,
+                                nextTrigger,
+                                inactiveDailyUser.money,
+                                inactiveDailyUser.moneyToBeRemoved,
+                                threshold.maxDayThreshold,
+                                threshold.minimumSonhosForTrigger,
+                                threshold.tax
+                            )
                         )
-                    )
+                    ).toMessage()
+
+                    DailyTaxUtils.insertImportantNotification(inactiveDailyUser, message)
                 }
             }
 
@@ -98,18 +111,26 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
                     DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 1) { threshold, inactiveDailyUser ->
                         // Don't warn them about the tax if they were already taxed before
                         if (inactiveDailyUser.id !in alreadyWarnedThatTheyWereTaxed && inactiveDailyUser.id !in alreadyWarnedThatTheyAreGoingToBeTaxed) {
-                            m.services.users._insertPendingDailyTaxDirectMessage(
-                                UserId(inactiveDailyUser.id),
-                                UserDailyTaxWarnDirectMessage(
-                                    plusXDaysAtMidnight,
-                                    now,
-                                    inactiveDailyUser.money,
-                                    inactiveDailyUser.moneyToBeRemoved,
-                                    threshold.maxDayThreshold,
-                                    threshold.minimumSonhosForTrigger,
-                                    threshold.tax
+                            logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax warn" }
+
+                            val message = ImportantNotificationDatabaseMessageBuilder().apply(
+                                UserUtils.buildDailyTaxMessage(
+                                    i18nContext,
+                                    m.config.loritta.website,
+                                    UserId(inactiveDailyUser.id),
+                                    UserDailyTaxWarnDirectMessage(
+                                        plusXDaysAtMidnight,
+                                        now,
+                                        inactiveDailyUser.money,
+                                        inactiveDailyUser.moneyToBeRemoved,
+                                        threshold.maxDayThreshold,
+                                        threshold.minimumSonhosForTrigger,
+                                        threshold.tax
+                                    )
                                 )
-                            )
+                            ).toMessage()
+
+                            DailyTaxUtils.insertImportantNotification(inactiveDailyUser, message)
 
                             alreadyWarnedThatTheyAreGoingToBeTaxed.add(inactiveDailyUser.id)
                         }

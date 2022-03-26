@@ -19,7 +19,6 @@ class DailyTaxTasks(private val m: DailyTax) {
 
     private val dailyTaxWarner = DailyTaxWarner(m)
     private val dailyTaxCollector = DailyTaxCollector(m)
-    private val pendingMessageProcessor = DailyTaxPendingMessageProcessor(m.config.loritta, m.services, m.rest, m.languageManager)
 
     fun start() {
         // 12 hours before
@@ -45,9 +44,6 @@ class DailyTaxTasks(private val m: DailyTax) {
             LocalTime.MIDNIGHT,
             dailyTaxCollector
         )
-
-        // Pending Message Processor
-        executorService.scheduleAtFixedRate(pendingMessageProcessor, 0, 1, TimeUnit.SECONDS)
     }
 
     private fun scheduleEveryDayAtSpecificHour(time: LocalTime, runnable: Runnable) {
