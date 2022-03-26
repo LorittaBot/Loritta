@@ -170,7 +170,7 @@ class SlashCommandExecutorWrapper(
                 return CommandExecutionSuccess
             }
 
-            if (args.types.isNotEmpty()) {
+            if (declarationExecutor.options.arguments.isNotEmpty()) {
                 val argumentsReader = ArgumentReader(cinnamonContext, args.types)
                 declarationExecutor.options.arguments.forEach {
                     cinnamonArgs[it] = it.parse(argumentsReader)
