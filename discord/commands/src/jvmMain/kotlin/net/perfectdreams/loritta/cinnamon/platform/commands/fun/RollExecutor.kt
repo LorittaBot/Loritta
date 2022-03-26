@@ -89,14 +89,21 @@ class RollExecutor(val random: Random) : SlashCommandExecutor() {
             "`${finalResult.toInt()}` **»** $response"
         }
 
-        // All the dices have the same upper bound, so it doesn't matter what dice we choose
-        val upperBound = dices.first().upperBound
+        // All the dices have the same lower and upper bound, so it doesn't matter what dice we choose
+        val firstDice = dices.first()
+        val lowerBound = firstDice.lowerBound
+        val upperBound = firstDice.upperBound
 
         context.sendMessage {
             styled(
                 context.i18nContext.get(
                     RollCommand.I18N_PREFIX.Result(
-                        diceExpression = "${dices.size}d$upperBound",
+                        // Not showing the lower bound is confusing, because the user may think that the lower bound was never recognized
+                        // So, if the lower bound is set, we will show it to the user!
+                        diceExpression = if (lowerBound != 1L)
+                            "${dices.size}d${lowerBound}..$upperBound"
+                        else
+                            "${dices.size}d$upperBound",
                         result = finalResult.toInt()
                     )
                 ),
