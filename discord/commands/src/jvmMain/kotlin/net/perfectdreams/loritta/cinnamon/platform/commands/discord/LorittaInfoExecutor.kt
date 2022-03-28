@@ -119,7 +119,7 @@ class LorittaInfoExecutor : SlashCommandExecutor() {
                     ).toString()
                 ) {
                     label = context.i18nContext.get(LorittaCommand.I18N_PREFIX.Info.Premium)
-                    loriEmoji = Emotes.LoriRich
+                    loriEmoji = Emotes.LoriCard
                 }
             }
 
