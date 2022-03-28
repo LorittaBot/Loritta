@@ -51,7 +51,7 @@ class LorittaInfoExecutor : SlashCommandExecutor() {
                     )
                 ).joinToString("\n")
 
-                image = "https://cdn.discordapp.com/attachments/297732013006389252/955575384852799548/lori_voando_no_espaco.png"
+                image = "${context.loritta.config.website}v3/assets/img/sonhos/lori_space.gif"
 
                 footer(context.i18nContext.get(LorittaCommand.I18N_PREFIX.Info.Embed.Footer("MrPowerGamerBR#4185", "https://mrpowergamerbr.com")), "https://mrpowergamerbr.com/assets/img/avatar.png")
             }
