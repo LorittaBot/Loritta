@@ -19,21 +19,21 @@ Adicionamos novos stickers e emojis no [servidor de comunidade da Loritta](https
 <div style="display: flex; justify-content: space-evenly;">
 
 <div style="text-align: center;">
-<img width="256" height="256" src="/v3/assets/img/stickers/lori_cocielo_bom_dia.png">
+<img width="256" height="256" src="/v3/assets/img/stickers/lori-cocielo-bom-dia.png">
 <div>
 <i>Artista: <a href="https://twitter.com/cookiluart_">CookiLuck</a></i>
 </div>
 </div>
 
 <div style="text-align: center;">
-<img width="256" height="256" src="/v3/assets/img/stickers/lori_fofoca.png">
+<img width="256" height="256" src="/v3/assets/img/stickers/lori-fofoca.png">
 <div>
 <i>Artista: <a href="https://twitter.com/cookiluart_">CookiLuck</a></i>
 </div>
 </div>
 
 <div style="text-align: center;">
-<img width="256" height="256" src="/v3/assets/img/emotes/lori_lick.gif">
+<img width="256" height="256" src="/v3/assets/img/emotes/lori-lick.gif">
 <div>
 <i>Artista: <a href="https://twitter.com/herocrife">Herocrife</a></i>
 </div>
