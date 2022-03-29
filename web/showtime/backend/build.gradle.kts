@@ -96,9 +96,12 @@ val annotateBundledImageAttributes = tasks.register<AnnotateImageAttributesTask>
     outputImagesInfoFile.set(file("$buildDir/generated-resources/bundled-images-attributes.json"))
 }
 
-tasks {
-    val sass = sassTask("style.scss", "style.css")
+val sass = tasks.register<SassTask>("sass-style-scss") {
+    this.inputSass.set(file("src/main/sass/style.scss"))
+    this.outputSass.set(file("$buildDir/sass/style-scss"))
+}
 
+tasks {
     processResources {
         from("../../../resources/") // Include folders from the resources root folder
 
@@ -115,7 +118,7 @@ tasks {
         }
 
         // Same thing with the SASS output
-        from(File(buildDir, "sass")) {
+        from(sass) {
             into("static/v3/assets/css/")
         }
 
