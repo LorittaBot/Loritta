@@ -152,6 +152,8 @@ body {
         // So it looks kinda wonky
         background-image: url("/v3/assets/img/website_bg.png");
         mask-image: linear-gradient(-90deg, black 0%, rgba(0, 0, 0, 0) 15%, rgba(0, 0, 0, 0) 85%, black 100%);
+        // Required for Chromium browsers
+        -webkit-mask-image: linear-gradient(-90deg, black 0%, rgba(0, 0, 0, 0) 15%, rgba(0, 0, 0, 0) 85%, black 100%);
         position: absolute;
         top: 0;
         left: 0;
