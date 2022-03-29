@@ -58,10 +58,10 @@ $min-image-stacked-width: 800px;
   // There are two variations of the background: One lighter and another darker
   // The darker one is also used in the left sidebar!
   --background-wrapper-primary: #fff;
-  --background-wrapper-secondary: #f6f8fa;
+  --background-wrapper-secondary: #f6f9fc;
 
   // Used in the right sidebar background
-  --background-right-sidebar: var(--background-wrapper-secondary);
+  --background-right-sidebar: var(--background-wrapper-primary);
 
   --fancy-details-summary: #{darken(#fcfcfc, 1.5%)};
   --fancy-details-details: #{darken(#fcfcfc, 3%)};
@@ -161,6 +161,20 @@ body {
         width: 100%;
         height: 100%;
         pointer-events: none;
+        // Make the background a bit more transparent
+        opacity: 0.5;
+
+        // Avoids the background being on top of the ads on the page (check main page and decrease the viewport)
+        @media screen and (max-width: 1070px) {
+            mask-image: linear-gradient(-90deg, black 0%, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, 0) 90%, black 100%);
+            // Required for Chromium browsers
+            -webkit-mask-image: linear-gradient(-90deg, black 0%, rgba(0, 0, 0, 0) 10%, rgba(0, 0, 0, 0) 90%, black 100%);
+        }
+
+        // If it is too smol, just hide the drawings altogether
+        @media screen and (max-width: 940px) {
+            display: none;
+        }
     }
 }
 .odd-wrapper {
