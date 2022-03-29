@@ -34,28 +34,39 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    # We will do everything on the same Gradle task to avoid Gradle executing tasks that it was already executed in a previous step
+    # (Example: Compiling everything again when publishing the Docker container"
+    - name: Build and Publish with Gradle
+      if: github.ref == 'refs/heads/cinnamon'
+      uses: gradle/gradle-build-action@v2
+      env:
+        # GitHub Actions has 7GBs of available RAM for workers, so let's bump it a bit up!
+        GRADLE_OPTS: -Xmx4096m -Xms4096m
+        ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+        ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+      with:
+        arguments: |
+          build
+          :common:publish
+          :pudding:data:publish
+          :pudding:client:publish
+          :discord:web-server:jib
+          :discord:gateway:jib
+          :web:showtime:backend:jib
+          :microservices:broker-tickers-updater:jib
+          :microservices:stats-collector:jib
+          :microservices:daily-tax:jib
+          :microservices:correios-package-tracker:jib
+          :microservices:direct-message-processor:jib
+          --scan
+
     - name: Build with Gradle
+      if: github.ref != 'refs/heads/cinnamon'
       uses: gradle/gradle-build-action@v2
       env:
         # GitHub Actions has 7GBs of available RAM for workers, so let's bump it a bit up!
         GRADLE_OPTS: -Xmx4096m -Xms4096m
       with:
-        arguments: build --scan
-
-    - name: Publish to PerfectDreams' repository
-      if: github.ref == 'refs/heads/cinnamon'
-      uses: gradle/gradle-build-action@v2
-      env:
-        GRADLE_OPTS: -Xmx4096m -Xms4096m
-        ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-        ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
-      with:
-        arguments: ":common:publish :pudding:data:publish :pudding:client:publish"
-
-    - name: Publish to Docker
-      if: github.ref == 'refs/heads/cinnamon'
-      uses: gradle/gradle-build-action@v2
-      env:
-        GRADLE_OPTS: -Xmx4096m -Xms4096m
-      with:
-        arguments: ":discord:web-server:jib :discord:gateway:jib :web:showtime:backend:jib :microservices:broker-tickers-updater:jib :microservices:stats-collector:jib :microservices:daily-tax:jib :microservices:correios-package-tracker:jib :microservices:direct-message-processor:jib"
+        arguments: |
+          build
+          --scan
