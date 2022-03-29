@@ -98,6 +98,7 @@ val annotateBundledImageAttributes = tasks.register<AnnotateImageAttributesTask>
 
 val sass = tasks.register<SassTask>("sass-style-scss") {
     this.inputSass.set(file("src/main/sass/style.scss"))
+    this.inputSassFolder.set(file("src/main/sass/"))
     this.outputSass.set(file("$buildDir/sass/style-scss"))
 }
 

@@ -3,6 +3,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.PathSensitive
@@ -38,6 +39,11 @@ abstract class SassTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:InputFile
     abstract val inputSass: RegularFileProperty
+
+    // Actually this is not used, but it is used to trigger a rebuild if any of the files were changed
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    @get:InputDirectory
+    abstract val inputSassFolder: DirectoryProperty
 
     @get:OutputDirectory
     abstract val outputSass: DirectoryProperty
