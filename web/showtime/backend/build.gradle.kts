@@ -110,7 +110,7 @@ tasks {
         dependsOn(annotateBundledImageAttributes)
 
         // Copy the output from the frontend task to the backend resources
-        from(jsBrowserProductionWebpack) {
+        from(jsBrowserProductionWebpack.destinationDirectory) {
             into("static/v3/assets/js/")
         }
 
