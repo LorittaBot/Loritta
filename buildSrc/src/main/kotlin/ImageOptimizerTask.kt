@@ -6,6 +6,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.FileType
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.provider.ListProperty
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.Internal
@@ -23,6 +24,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
+@CacheableTask
 abstract class ImageOptimizerTask : DefaultTask() {
     companion object {
         // https://medium.com/hceverything/applying-srcset-choosing-the-right-sizes-for-responsive-images-at-different-breakpoints-a0433450a4a3
@@ -55,8 +57,7 @@ abstract class ImageOptimizerTask : DefaultTask() {
 
     @Internal
     val executor = Executors.newFixedThreadPool(4)
-
-
+    
     // TODO: we could use Gradle's WorkerExecutor stuff, but it is sooo confusing (example: you can't share the ImageInfo list) that I ended up not using it
     @TaskAction
     fun execute(inputChanges: InputChanges) {

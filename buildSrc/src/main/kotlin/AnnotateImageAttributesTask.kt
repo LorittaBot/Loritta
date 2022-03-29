@@ -4,6 +4,7 @@ import kotlinx.serialization.json.Json
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
@@ -18,6 +19,7 @@ import javax.imageio.ImageIO
 /**
  * Reads image files and writes their attributes (path, width, height, file size) to a JSON file
  */
+@CacheableTask
 abstract class AnnotateImageAttributesTask : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     @get:InputDirectory
