@@ -16,7 +16,7 @@ title: "Rolêzinho com a Loritta - 01/04/2022"
 
 Adicionamos novos stickers e emojis no [servidor de comunidade da Loritta](https://discord.gg/lori)!
 
-<div style="display: flex; justify-content: space-evenly;">
+<div style="display: flex; justify-content: space-evenly; flex-wrap: wrap;">
 
 <div style="text-align: center;">
 <img width="256" height="256" src="/v3/assets/img/stickers/lori-cocielo-bom-dia.png">
