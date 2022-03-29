@@ -46,7 +46,7 @@ Adicionamos novos stickers e emojis no [servidor de comunidade da Loritta](https
 
 E atualizamos o nosso banner para esta arte do yafyr ([Twitter](https://twitter.com/yafyr), [Instagram](https://instagram.com/yafyr))!
 
-<img src="/v3/assets/img/sonhos/lori_space.gif" style="max-height: 50vh;
+<img src="/v3/assets/img/sonhos/lori-space.gif" style="max-height: 50vh;
 width: auto;
 margin: auto;
 text-align: center;

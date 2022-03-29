@@ -14,7 +14,7 @@ Aproveitamos e colocamos um pouco da ✨ lore da Lori ✨ no comando. As estatí
 
 A arte foi feita pelo yafyr ([Twitter](https://twitter.com/yafyr), [Instagram](https://instagram.com/yafyr))!
 
-<img src="/v3/assets/img/sonhos/lori_space.gif" style="max-height: 50vh;
+<img src="/v3/assets/img/sonhos/lori-space.gif" style="max-height: 50vh;
 width: auto;
 margin: auto;
 text-align: center;
