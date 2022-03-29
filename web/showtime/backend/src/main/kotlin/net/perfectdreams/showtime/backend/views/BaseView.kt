@@ -171,7 +171,7 @@ window["nitroAds"] = window["nitroAds"] || {
         meta("description", content = locale["website.genericDescription"])
 
         // Used for Discord Embeds
-        meta("theme-color", "#00c1df")
+        meta("theme-color", "#29a6fe")
 
         // Used in Twitter
         meta(name = "twitter:card", content = "summary")
