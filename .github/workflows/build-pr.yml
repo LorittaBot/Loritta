@@ -1,14 +1,7 @@
-name: Continuous Integration
+name: Pull Request Continuous Integration
 
-# Controls when the action will run. Triggers the workflow on push to the "cinnamon" branch.
-on:
-  push:
-    branches:
-      - cinnamon
-
-env:
-  DOCKER_USERNAME: "${{ github.actor }}"
-  DOCKER_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
+# Controls when the action will run. Triggers the workflow on pull request.
+on: [ pull_request ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -39,25 +32,12 @@ jobs:
 
     # We will do everything on the same Gradle task to avoid Gradle executing tasks that it was already executed in a previous step
     # (Example: Compiling everything again when publishing the Docker container"
-    - name: Build and Publish with Gradle
+    - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       env:
         # GitHub Actions has 7GBs of available RAM for workers, so let's bump it a bit up!
         GRADLE_OPTS: -Xmx4096m -Xms4096m
-        ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
-        ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
       with:
         arguments: |
           build
-          :common:publish
-          :pudding:data:publish
-          :pudding:client:publish
-          :discord:web-server:jib
-          :discord:gateway:jib
-          :web:showtime:backend:jib
-          :microservices:broker-tickers-updater:jib
-          :microservices:stats-collector:jib
-          :microservices:daily-tax:jib
-          :microservices:correios-package-tracker:jib
-          :microservices:direct-message-processor:jib
           --scan
