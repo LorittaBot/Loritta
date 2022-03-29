@@ -19,8 +19,10 @@ class PatchNotesNotificationsService(private val pudding: Pudding) : Service(pud
         currentTime: Instant
     ): List<PatchNotesNotification> {
         return pudding.transaction {
+            val jInstant = currentTime.toJavaInstant()
+
             val receivedPatchNotesResultRows = PatchNotesNotifications.select {
-                PatchNotesNotifications.expiresAt greater currentTime.toJavaInstant() and (PatchNotesNotifications.id notInSubQuery ReceivedPatchNotesNotifications.slice(ReceivedPatchNotesNotifications.patchNotesNotification).select { ReceivedPatchNotesNotifications.user eq user.value.toLong() })
+                PatchNotesNotifications.submittedAt lessEq jInstant and (PatchNotesNotifications.expiresAt greater jInstant) and (PatchNotesNotifications.id notInSubQuery ReceivedPatchNotesNotifications.slice(ReceivedPatchNotesNotifications.patchNotesNotification).select { ReceivedPatchNotesNotifications.user eq user.value.toLong() })
             }.orderBy(PatchNotesNotifications.submittedAt, SortOrder.DESC)
                 .toList() // We call to list here because every time you call "receivedPatchNotes" it would execute a new query
 
