@@ -43,10 +43,10 @@ class BlogView(
             posts.forEachIndexed { index, it ->
                 div(classes = if (index % 2 == 0) "odd-wrapper" else "even-wrapper") {
                     if (index != 0)
-                    classes = classes + "wobbly-bg"
+                        classes = classes + "wobbly-bg"
 
-                    div(classes = "media") {
-                        div(classes = "media-body") {
+                    div(classes = "post-wrapper") {
+                        div(classes = "post-content") {
                             div {
                                 val localizedContent = it.getLocalizedVersion(languageId)
 
@@ -57,13 +57,13 @@ class BlogView(
                                 }
 
                                 /* val time = it.metadata.parsedDate?.toInstant()?.atZone(ZoneId.of("America/Sao_Paulo"))
-                                if (time != null) {
-                                    span {
-                                        +"${time.dayOfMonth.toString().padStart(2, '0')}/${
-                                            time.monthValue.toString().padStart(2, '0')
-                                        }/${time.year}"
-                                    }
-                                } */
+                            if (time != null) {
+                                span {
+                                    +"${time.dayOfMonth.toString().padStart(2, '0')}/${
+                                        time.monthValue.toString().padStart(2, '0')
+                                    }/${time.year}"
+                                }
+                            } */
 
                                 div {
                                     unsafe {

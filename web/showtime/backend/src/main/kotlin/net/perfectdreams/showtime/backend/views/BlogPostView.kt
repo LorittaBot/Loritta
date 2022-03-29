@@ -203,66 +203,68 @@ class BlogPostView(
     override fun DIV.generateContent() {
         innerContent {
             div(classes = "odd-wrapper") {
-                div(classes = "media") {
-                    div(classes = "media-body") {
-                        h1 {
-                            +localizedContent.metadata.title
-                        }
+                div(classes = "post-wrapper") {
+                    div(classes = "post-content") {
+                        div {
+                            h1 {
+                                +localizedContent.metadata.title
+                            }
 
-                        unsafe {
-                            raw(parseContent(showtimeBackend, locale, localizedContent.content))
-                        }
+                            unsafe {
+                                raw(parseContent(showtimeBackend, locale, localizedContent.content))
+                            }
 
-                        hr {}
+                            hr {}
 
-                        // Put an ad at the end of the blog post
-                        adWrapper(iconManager) {
-                            // Desktop Large
-                            generateNitroPayAd(
-                                "end-of-blog-post-large",
-                                listOf(
-                                    NitroPayAdSize(
-                                        728,
-                                        90
+                            // Put an ad at the end of the blog post
+                            adWrapper(iconManager) {
+                                // Desktop Large
+                                generateNitroPayAd(
+                                    "end-of-blog-post-large",
+                                    listOf(
+                                        NitroPayAdSize(
+                                            728,
+                                            90
+                                        ),
+                                        NitroPayAdSize(
+                                            970,
+                                            90
+                                        ),
+                                        NitroPayAdSize(
+                                            970,
+                                            250
+                                        )
                                     ),
-                                    NitroPayAdSize(
-                                        970,
-                                        90
-                                    ),
-                                    NitroPayAdSize(
-                                        970,
-                                        250
-                                    )
-                                ),
-                                mediaQuery = NitroPayAdGenerator.DESKTOP_LARGE_AD_MEDIA_QUERY
-                            )
+                                    mediaQuery = NitroPayAdGenerator.DESKTOP_LARGE_AD_MEDIA_QUERY
+                                )
 
-                            generateNitroPayAd(
-                                "end-of-blog-post-desktop",
-                                listOf(
-                                    NitroPayAdSize(
-                                        728,
-                                        90
-                                    )
-                                ),
-                                mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_DESKTOP_MEDIA_QUERY
-                            )
-
-                            // We don't do tablet here because there isn't any sizes that would fit a tablet comfortably
-                            generateNitroPayAd(
-                                "end-of-blog-post-phone",
-                                listOf(
-                                    NitroPayAdSize(
-                                        300,
-                                        250
+                                generateNitroPayAd(
+                                    "end-of-blog-post-desktop",
+                                    listOf(
+                                        NitroPayAdSize(
+                                            728,
+                                            90
+                                        )
                                     ),
-                                    NitroPayAdSize(
-                                        320,
-                                        50
-                                    )
-                                ),
-                                mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_PHONE_MEDIA_QUERY
-                            )
+                                    mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_DESKTOP_MEDIA_QUERY
+                                )
+
+                                // We don't do tablet here because there isn't any sizes that would fit a tablet comfortably
+                                generateNitroPayAd(
+                                    "end-of-blog-post-phone",
+                                    listOf(
+                                        NitroPayAdSize(
+                                            300,
+                                            250
+                                        ),
+                                        NitroPayAdSize(
+                                            320,
+                                            50
+                                        )
+                                    ),
+                                    mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_PHONE_MEDIA_QUERY
+                                )
+                            }
                         }
                     }
                 }
