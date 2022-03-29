@@ -37,7 +37,7 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: build
+        arguments: build --scan
 
     - name: Publish to PerfectDreams' repository
       if: github.ref == 'refs/heads/cinnamon'
