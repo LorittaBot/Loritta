@@ -57,7 +57,7 @@ abstract class ImageOptimizerTask : DefaultTask() {
 
     @Internal
     val executor = Executors.newFixedThreadPool(4)
-    
+
     // TODO: we could use Gradle's WorkerExecutor stuff, but it is sooo confusing (example: you can't share the ImageInfo list) that I ended up not using it
     @TaskAction
     fun execute(inputChanges: InputChanges) {

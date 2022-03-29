@@ -11,6 +11,7 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import org.gradle.work.InputChanges
+import java.io.IOException
 import java.nio.file.Files
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.stream.Collectors
@@ -47,19 +48,24 @@ abstract class AnnotateImageAttributesTask : DefaultTask() {
                 val relativeFile = it.relativeTo(sourceImagesDirectory)
 
                 val fileSize = it.length()
-                val image = ImageIO.read(it)
+                val (width, height) = try {
+                    SimpleImageInfo(it).let { Pair(it.width, it.height) }
+                } catch (e: IOException) {
+                    println("Failed to read image ${relativeFile.toString().replace("\\", "/")} with SimpleImageInfo! Reading with ImageIO instead...")
+                    ImageIO.read(it).let { Pair(it.width, it.height) }
+                }
 
                 logger.quiet(
                     "File ${
                         relativeFile.toString().replace("\\", "/")
-                    } is ${image.width}x${image.height} and it is $fileSize bytes"
+                    } is ${width}x${height} and it is $fileSize bytes"
                 )
 
                 list.add(
                     ImageInfo(
                         relativeFile.toString().replace("\\", "/"),
-                        image.width,
-                        image.height,
+                        width,
+                        height,
                         fileSize,
                         listOf()
                     )
