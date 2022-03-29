@@ -75,7 +75,7 @@ class BlogView(
                                         }
 
                                         if (localizedContent.content.contains("{{ read_more }}")) {
-                                            div {
+                                            div(classes = "read-more") {
                                                 imgSrcSetFromResources(
                                                     "/v3/assets/img/emotes/lori-zap.png",
                                                     "1.5em"
