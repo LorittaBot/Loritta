@@ -1,6 +1,7 @@
 package net.perfectdreams.showtime.backend.utils
 
 import kotlinx.html.DIV
+import kotlinx.html.FlowOrInteractiveOrPhrasingContent
 import kotlinx.html.IMG
 import kotlinx.html.div
 import kotlinx.html.fieldSet
@@ -9,7 +10,7 @@ import kotlinx.html.img
 import kotlinx.html.legend
 import kotlinx.html.style
 
-fun DIV.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Unit = {}) {
+fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Unit = {}) {
     val imageInfo = ImageUtils.optimizedImagesInfoWithVariants.firstOrNull { it.path.removePrefix("static") == path }
 
     if (imageInfo != null) {
@@ -24,7 +25,7 @@ fun DIV.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Uni
     } else error("Missing ImageInfo for \"$path\"!")
 }
 
-fun DIV.imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(path: String, sizes: String, block: IMG.() -> Unit = {}) {
+fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(path: String, sizes: String, block: IMG.() -> Unit = {}) {
     try {
         imgSrcSetFromResources(path, sizes, block)
     } catch (e: Exception) {
@@ -53,7 +54,7 @@ fun DIV.imgSrcSet(path: String, fileName: String, sizes: String, max: Int, min: 
     )
 }
 
-fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.() -> Unit = {})  {
+fun FlowOrInteractiveOrPhrasingContent.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.() -> Unit = {})  {
     img(src = filePath) {
         style = "width: auto;"
         attributes["sizes"] = sizes

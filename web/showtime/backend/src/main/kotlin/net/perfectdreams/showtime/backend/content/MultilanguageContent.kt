@@ -22,6 +22,7 @@ data class MultilanguageContent(
     data class ContentMetadata(
         val date: String? = null,
         val tags: List<String> = listOf(),
+        val imageUrl: String? = null,
         val thumbnailUrl: String? = null,
         val hidden: Boolean = false
     )

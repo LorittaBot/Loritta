@@ -22,6 +22,8 @@ import kotlinx.html.unsafe
 import kotlinx.html.visit
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 abstract class BaseView(
     val showtimeBackend: ShowtimeBackend,
@@ -181,7 +183,20 @@ window["nitroAds"] = window["nitroAds"] || {
         meta(content = locale["website.genericDescription"]) { attributes["property"] = "og:description" }
         meta(content = getTitle()) { attributes["property"] = "og:title" }
         meta(content = "600") { attributes["property"] = "og:ttl" }
-        meta(content = "https://loritta.website/assets/img/loritta_gabizinha_v1.png") { attributes["property"] = "og:image" }
+
+        val imageUrl = getImageUrl()
+        if (imageUrl != null) {
+            meta(content = "${showtimeBackend.rootConfig.loritta.website}$imageUrl") { attributes["property"] = "og:image" }
+            meta(name = "twitter:card", content = "summary_large_image")
+        } else {
+            meta(content = "https://loritta.website/assets/img/loritta_gabizinha_v1.png") { attributes["property"] = "og:image" }
+        }
+
+
+        val pubDate = getPublicationDate()
+        if (pubDate != null) {
+            meta(name = "pubdate", content = DateTimeFormatter.ISO_INSTANT.format(pubDate).toString())
+        }
     }
 
     abstract fun HTML.generateBody()
@@ -213,4 +228,7 @@ window["nitroAds"] = window["nitroAds"] || {
         // https://stackoverflow.com/questions/10808109/script-tag-async-defer
         script(src = src) { defer = true  }
     }
+
+    open fun getImageUrl(): String? = null
+    open fun getPublicationDate(): Instant? = null
 }
