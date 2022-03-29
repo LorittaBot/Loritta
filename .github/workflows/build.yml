@@ -36,6 +36,9 @@ jobs:
 
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
+      env:
+        # GitHub Actions has 7GBs of available RAM for workers, so let's bump it a bit up!
+        GRADLE_OPTS: -Xmx4096m -Xms4096m
       with:
         arguments: build --scan
 
@@ -43,6 +46,7 @@ jobs:
       if: github.ref == 'refs/heads/cinnamon'
       uses: gradle/gradle-build-action@v2
       env:
+        GRADLE_OPTS: -Xmx4096m -Xms4096m
         ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
         ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
       with:
@@ -51,5 +55,7 @@ jobs:
     - name: Publish to Docker
       if: github.ref == 'refs/heads/cinnamon'
       uses: gradle/gradle-build-action@v2
+      env:
+        GRADLE_OPTS: -Xmx4096m -Xms4096m
       with:
         arguments: ":discord:web-server:jib :discord:gateway:jib :web:showtime:backend:jib :microservices:broker-tickers-updater:jib :microservices:stats-collector:jib :microservices:daily-tax:jib :microservices:correios-package-tracker:jib :microservices:direct-message-processor:jib"
