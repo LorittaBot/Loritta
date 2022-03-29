@@ -57,11 +57,11 @@ $min-image-stacked-width: 800px;
 :root {
   // There are two variations of the background: One lighter and another darker
   // The darker one is also used in the left sidebar!
-  --background-wrapper-primary: #f3f3f4;
-  --background-wrapper-secondary: #ebebeb;
+  --background-wrapper-primary: #fff;
+  --background-wrapper-secondary: #f6f8fa;
 
   // Used in the right sidebar background
-  --background-right-sidebar: #fcfcfc;
+  --background-right-sidebar: var(--background-wrapper-secondary);
 
   --fancy-details-summary: #{darken(#fcfcfc, 1.5%)};
   --fancy-details-details: #{darken(#fcfcfc, 3%)};
