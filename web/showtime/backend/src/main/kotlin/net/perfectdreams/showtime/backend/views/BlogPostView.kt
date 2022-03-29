@@ -23,6 +23,7 @@ import net.perfectdreams.showtime.backend.utils.adWrapper
 import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.utils.innerContent
+import org.jsoup.Jsoup
 import java.io.File
 
 class BlogPostView(
@@ -54,6 +55,145 @@ class BlogPostView(
             "lori_rage" to "lori-rage.png",
             "lori_clown" to "lori-clown.png"
         )
+
+        fun parseContent(showtimeBackend: ShowtimeBackend, locale: BaseLocale, content: String): String {
+            var markdown = content
+                .replace("{{ locale_path }}", locale.path)
+                .replace(
+                    "{{ loritta_friday }}",
+                    createHTML().div {
+                        style = "text-align: center;"
+
+                        div {
+                            style = "font-size: 1.3em;"
+                            + "Mais uma sexta-feira, mais um..."
+                        }
+                        div(classes = "has-rainbow-text") {
+                            style = "font-size: 1.7em; font-weight: bold;"
+                            +"Rolêzinho com a Loritta!"
+                        }
+                        div {
+                            i {
+                                +"O rolêzinho para saber sobre tudo e mais um pouco que aconteceu nessa semana na LorittaLand!"
+                            }
+                        }
+                    }
+                )
+                .replace("{{ in_content_ad }}", createHTML().div {
+                    adWrapper(showtimeBackend.svgIconManager) {
+                        // Desktop Large
+                        generateNitroPayAd(
+                            "blog-post-large",
+                            listOf(
+                                NitroPayAdSize(
+                                    728,
+                                    90
+                                ),
+                                NitroPayAdSize(
+                                    970,
+                                    90
+                                ),
+                                NitroPayAdSize(
+                                    970,
+                                    250
+                                )
+                            ),
+                            mediaQuery = NitroPayAdGenerator.DESKTOP_LARGE_AD_MEDIA_QUERY
+                        )
+
+                        generateNitroPayAd(
+                            "blog-post-desktop",
+                            listOf(
+                                NitroPayAdSize(
+                                    728,
+                                    90
+                                )
+                            ),
+                            mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_DESKTOP_MEDIA_QUERY
+                        )
+
+                        // We don't do tablet here because there isn't any sizes that would fit a tablet comfortably
+                        generateNitroPayAd(
+                            "blog-post-phone",
+                            listOf(
+                                NitroPayAdSize(
+                                    300,
+                                    250
+                                ),
+                                NitroPayAdSize(
+                                    320,
+                                    50
+                                )
+                            ),
+                            mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_PHONE_MEDIA_QUERY
+                        )
+                    }
+                })
+                .replace("{{ read_more }}", "")
+
+            for ((emote, emoteFile) in VALID_EMOTES) {
+                markdown = markdown.replace(
+                    ":$emote:",
+                    createHTML().span {
+                        imgSrcSetFromResources(
+                            "/v3/assets/img/emotes/$emoteFile",
+                            "1.5em"
+                        ) {
+                            classes = setOf("inline-emoji")
+                        }
+                    }
+                )
+            }
+
+            val wikilinksRegex = Regex("\\[\\[([A-z0-9/-]+)]]")
+
+            wikilinksRegex.findAll(markdown)
+                .forEach {
+                    val post = showtimeBackend.loadMultilanguageSourceContentsFromFolder(File(ShowtimeBackend.contentFolder, "${it.groupValues[1]}.post"))
+
+                    if (post != null) {
+                        markdown = markdown.replace(
+                            it.groupValues[0],
+                            "[${post.getLocalizedVersion("pt").metadata.title}](/${locale.path}${post.path})"
+                        )
+                    }
+                }
+
+            val raw = showtimeBackend.renderer.render(
+                showtimeBackend.parser.parse(markdown)
+            )
+
+            val document = Jsoup.parse(raw)
+
+            document
+                .body()
+                .apply {
+                    getElementsByTag("img-resources")
+                        .forEach {
+                            it.replaceWith(
+                                document.parser().parseFragmentInput(
+                                    createHTML()
+                                        .span {
+                                            imgSrcSetFromResources(
+                                                it.attr("src"),
+                                                it.attr("sizes")
+                                            ) {
+                                                it.attributes().forEach { attribute ->
+                                                    if (attribute.key != "src" && attribute.key != "sizes") {
+                                                        attributes[attribute.key] = attribute.value
+                                                    }
+                                                }
+                                            }
+                                        },
+                                    it,
+                                    document.baseUri()
+                                )[0]
+                            )
+                        }
+                }
+
+            return document.toString()
+        }
     }
 
     override val hasDummyNavbar = true
@@ -69,113 +209,8 @@ class BlogPostView(
                             +localizedContent.metadata.title
                         }
 
-                        var markdown = localizedContent.content
-                            .replace("{{ locale_path }}", locale.path)
-                            .replace(
-                                "{{ loritta_friday }}",
-                                createHTML().div {
-                                    style = "text-align: center;"
-
-                                    div {
-                                        style = "font-size: 1.3em;"
-                                        + "Mais uma sexta-feira, mais um..."
-                                    }
-                                    div(classes = "has-rainbow-text") {
-                                        style = "font-size: 1.7em; font-weight: bold;"
-                                        +"Rolêzinho com a Loritta!"
-                                    }
-                                    div {
-                                        i {
-                                            +"O rolêzinho para saber sobre tudo e mais um pouco que aconteceu nessa semana na LorittaLand!"
-                                        }
-                                    }
-                                }
-                            )
-                            .replace("{{ in_content_ad }}", createHTML().div {
-                                adWrapper(iconManager) {
-                                    // Desktop Large
-                                    generateNitroPayAd(
-                                        "blog-post-large",
-                                        listOf(
-                                            NitroPayAdSize(
-                                                728,
-                                                90
-                                            ),
-                                            NitroPayAdSize(
-                                                970,
-                                                90
-                                            ),
-                                            NitroPayAdSize(
-                                                970,
-                                                250
-                                            )
-                                        ),
-                                        mediaQuery = NitroPayAdGenerator.DESKTOP_LARGE_AD_MEDIA_QUERY
-                                    )
-
-                                    generateNitroPayAd(
-                                        "blog-post-desktop",
-                                        listOf(
-                                            NitroPayAdSize(
-                                                728,
-                                                90
-                                            )
-                                        ),
-                                        mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_DESKTOP_MEDIA_QUERY
-                                    )
-
-                                    // We don't do tablet here because there isn't any sizes that would fit a tablet comfortably
-                                    generateNitroPayAd(
-                                        "blog-post-phone",
-                                        listOf(
-                                            NitroPayAdSize(
-                                                300,
-                                                250
-                                            ),
-                                            NitroPayAdSize(
-                                                320,
-                                                50
-                                            )
-                                        ),
-                                        mediaQuery = NitroPayAdGenerator.RIGHT_SIDEBAR_PHONE_MEDIA_QUERY
-                                    )
-                                }
-                            })
-
-                        for ((emote, emoteFile) in VALID_EMOTES) {
-                            markdown = markdown.replace(
-                                ":$emote:",
-                                createHTML().span {
-                                    imgSrcSetFromResources(
-                                        "/v3/assets/img/emotes/$emoteFile",
-                                        "1.5em"
-                                    ) {
-                                        classes = setOf("inline-emoji")
-                                    }
-                                }
-                            )
-                        }
-
-                        val wikilinksRegex = Regex("\\[\\[([A-z0-9/-]+)]]")
-
-                        wikilinksRegex.findAll(markdown)
-                            .forEach {
-                                val post = showtimeBackend.loadMultilanguageSourceContentsFromFolder(File(ShowtimeBackend.contentFolder, "${it.groupValues[1]}.post"))
-
-                                if (post != null) {
-                                    markdown = markdown.replace(
-                                        it.groupValues[0],
-                                        "[${post.getLocalizedVersion("pt").metadata.title}](/${locale.path}${post.path})"
-                                    )
-                                }
-                            }
-
-                        val raw = showtimeBackend.renderer.render(
-                            showtimeBackend.parser.parse(markdown)
-                        )
-
                         unsafe {
-                            raw(raw)
+                            raw(parseContent(showtimeBackend, locale, localizedContent.content))
                         }
 
                         hr {}

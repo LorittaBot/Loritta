@@ -10,7 +10,9 @@ max-width: 100%;">
 
 Adicionamos o `/loritta info`, um comando para você ver estatísticas sobre a Loritta e informações rápidas sobre ela, com o objetivo de substituir o antigo `+botinfo`.
 
-Aproveitamos e colocamos um pouco da ✨ lore da Lori ✨ no comando. As estatísticas de comandos e usuários estão baixas no comando pois ele só mostra comandos executados via slash commands.
+{{ read_more }}
+
+Aproveitamos e colocamos um pouco da ✨ lore da Lori ✨ no comando. As estatísticas de comandos e usuários estão baixas no comando, pois ele só mostra comandos executados via slash commands.
 
 A arte foi feita pelo yafyr ([Twitter](https://twitter.com/yafyr), [Instagram](https://instagram.com/yafyr))!
 

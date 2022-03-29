@@ -5,3 +5,5 @@ website:
     viewLegacyCommands: "View Message Commands list (old)"
     welcomeToMyCommandListIntro:
       - "Welcome to my command list! Here you can see information, explanations, examples and more about the commands I have."
+  blog:
+    keepReading: "Read more!"

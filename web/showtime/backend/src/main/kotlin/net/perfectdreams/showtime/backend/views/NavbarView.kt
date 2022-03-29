@@ -122,6 +122,8 @@ abstract class NavbarView(
 
                         div(classes = "entry") {
                             a(classes = "blog", href = "$base/blog") {
+                                attributes["data-preload-link"] = "true"
+
                                 iconManager.newspaper.apply(this)
 
                                 +" Blog"

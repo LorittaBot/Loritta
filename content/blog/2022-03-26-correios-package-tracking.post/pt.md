@@ -3,6 +3,8 @@ title: "Rastreie e receba notificações sobre seus pacotes dos Correios + Mudan
 ---
 Ansioso pela sua compra que você fez só porque o Velho da Havan está querendo meter mais imposto em importações? Agora você pode usar `/package track` para rastrear as suas encomendas dos Correios como você pode pedir para a Loritta te notificar quando tiver atualizações sobre ela!
 
+{{ read_more }}
+
 Sim, as imagens atuais são temporárias, eu mesmo que fiz elas. :lori_kiss:
 
 ![https://cdn.discordapp.com/attachments/302976807135739916/957361429600673872/DiscordCanary_mS1xckxQJH.png](https://cdn.discordapp.com/attachments/302976807135739916/957361429600673872/DiscordCanary_mS1xckxQJH.png)
