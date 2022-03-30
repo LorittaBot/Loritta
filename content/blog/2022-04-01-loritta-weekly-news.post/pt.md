@@ -6,7 +6,7 @@ title: "Rolêzinho com a Loritta - 01/04/2022"
 * [[/blog/2022-03-28-loritta-info-stats]]
   * `/loritta info`, agora contendo 20% mais conteúdo sobre o ✨ lore da Lori ✨
 * [[/blog/2022-03-26-loritta-reference-sheet-anasmak]]
-  * Novo ano, novo eu.
+  * Novo ano, novo eu. :lori_kiss:
 * [[/blog/2022-03-26-correios-package-tracking]]
   * `/package track` é perfeito para você rastrear as várias bugigangas que você comprou no Shopee depois que o Velho da Havan decidiu que a vida de Brasileiro tava fácil demais.
 * [[/blog/2022-03-24-lori-emojis-stariaat]]
