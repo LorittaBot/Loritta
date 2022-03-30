@@ -2,6 +2,7 @@ package net.perfectdreams.showtime.backend.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import kotlinx.html.DIV
+import kotlinx.html.a
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
@@ -25,6 +26,10 @@ import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.utils.innerContent
 import org.jsoup.Jsoup
 import java.io.File
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
 
 class BlogPostView(
     showtimeBackend: ShowtimeBackend,
@@ -206,8 +211,24 @@ class BlogPostView(
                 div(classes = "post-wrapper") {
                     div(classes = "post-content") {
                         div {
-                            h1 {
-                                +localizedContent.metadata.title
+                            div(classes = "post-header") {
+                                a(href = "/${locale.path}${localizedContent.path}") {
+                                    h1 {
+                                        +localizedContent.metadata.title
+                                    }
+                                }
+
+                                val time = content.metadata.parsedDate?.toInstant()?.atZone(ZoneId.of("America/Sao_Paulo"))
+                                if (time != null) {
+                                    div(classes = "post-info") {
+                                        val f: DateTimeFormatter = DateTimeFormatter
+                                            .ofLocalizedDate(FormatStyle.FULL)
+                                            .withLocale(Locale.forLanguageTag(i18nContext.language.info.formattingLanguageId))
+                                        val output = time.toLocalDate().format(f)
+
+                                        +output
+                                    }
+                                }
                             }
 
                             unsafe {

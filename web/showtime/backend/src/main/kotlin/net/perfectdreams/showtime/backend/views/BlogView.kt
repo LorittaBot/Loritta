@@ -14,6 +14,11 @@ import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.content.parsedDate
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.utils.innerContent
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
+import java.util.*
+
 
 class BlogView(
     showtimeBackend: ShowtimeBackend,
@@ -50,20 +55,25 @@ class BlogView(
                             div {
                                 val localizedContent = it.getLocalizedVersion(languageId)
 
-                                a(href = "/${locale.path}${it.path}") {
-                                    h1 {
-                                        +localizedContent.metadata.title
+                                div(classes = "post-header") {
+                                    a(href = "/${locale.path}${it.path}") {
+                                        h1 {
+                                            +localizedContent.metadata.title
+                                        }
+                                    }
+
+                                    val time = it.metadata.parsedDate?.toInstant()?.atZone(ZoneId.of("America/Sao_Paulo"))
+                                    if (time != null) {
+                                        div(classes = "post-info") {
+                                            val f: DateTimeFormatter = DateTimeFormatter
+                                                .ofLocalizedDate(FormatStyle.FULL)
+                                                .withLocale(Locale.forLanguageTag(i18nContext.language.info.formattingLanguageId))
+                                            val output = time.toLocalDate().format(f)
+
+                                            +output
+                                        }
                                     }
                                 }
-
-                                /* val time = it.metadata.parsedDate?.toInstant()?.atZone(ZoneId.of("America/Sao_Paulo"))
-                            if (time != null) {
-                                span {
-                                    +"${time.dayOfMonth.toString().padStart(2, '0')}/${
-                                        time.monthValue.toString().padStart(2, '0')
-                                    }/${time.year}"
-                                }
-                            } */
 
                                 div {
                                     unsafe {
