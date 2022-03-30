@@ -18,11 +18,13 @@ import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.content.ContentBase
 import net.perfectdreams.showtime.backend.content.MultilanguageContent
 import net.perfectdreams.showtime.backend.content.parsedDate
+import net.perfectdreams.showtime.backend.utils.DiscordInviteWrapper.lorittaCommunityServerInvite
 import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
 import net.perfectdreams.showtime.backend.utils.NitroPayAdSize
 import net.perfectdreams.showtime.backend.utils.adWrapper
 import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResourcesOrFallbackToImgIfNotPresent
 import net.perfectdreams.showtime.backend.utils.innerContent
 import org.jsoup.Jsoup
 import java.io.File
@@ -58,10 +60,11 @@ class BlogPostView(
             "lori_zap" to "lori-zap.png",
             "lori_nem_ligo" to "lori-nem-ligo.png",
             "lori_rage" to "lori-rage.png",
-            "lori_clown" to "lori-clown.png"
+            "lori_clown" to "lori-clown.png",
+            "lori_lick" to "lori-lick.gif"
         )
 
-        fun parseContent(showtimeBackend: ShowtimeBackend, locale: BaseLocale, content: String): String {
+        fun parseContent(showtimeBackend: ShowtimeBackend, locale: BaseLocale, i18nContext: I18nContext, content: String): String {
             var markdown = content
                 .replace("{{ locale_path }}", locale.path)
                 .replace(
@@ -134,13 +137,25 @@ class BlogPostView(
                         )
                     }
                 })
+                .replace(
+                    "{{ lori_support_invite }}",
+                    createHTML().span {
+                        lorittaCommunityServerInvite(i18nContext)
+                    }
+                )
+                .replace(
+                    "{{ lori_community_invite }}",
+                    createHTML().span {
+                        lorittaCommunityServerInvite(i18nContext)
+                    }
+                )
                 .replace("{{ read_more }}", "")
 
             for ((emote, emoteFile) in VALID_EMOTES) {
                 markdown = markdown.replace(
                     ":$emote:",
                     createHTML().span {
-                        imgSrcSetFromResources(
+                        imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(
                             "/v3/assets/img/emotes/$emoteFile",
                             "1.5em"
                         ) {
@@ -232,7 +247,7 @@ class BlogPostView(
                             }
 
                             unsafe {
-                                raw(parseContent(showtimeBackend, locale, localizedContent.content))
+                                raw(parseContent(showtimeBackend, locale, i18nContext, localizedContent.content))
                             }
 
                             hr {}

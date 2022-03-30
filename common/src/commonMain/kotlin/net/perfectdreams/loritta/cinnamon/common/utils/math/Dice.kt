@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.common.utils.math
 
-class Dice(
+data class Dice(
     val lowerBound: Long,
     val upperBound: Long
 ) {

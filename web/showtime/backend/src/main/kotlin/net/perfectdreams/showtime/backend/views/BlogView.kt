@@ -81,6 +81,7 @@ class BlogView(
                                             BlogPostView.parseContent(
                                                 showtimeBackend,
                                                 locale,
+                                                i18nContext,
                                                 localizedContent.content
                                                     .substringBefore("{{ read_more }}")
                                             )
@@ -95,7 +96,6 @@ class BlogView(
                                             ) {
                                                 classes = setOf("inline-emoji")
                                             }
-
 
                                             a(href = "/${locale.path}${it.path}") {
                                                 +" ${i18nContext.get(I18nKeysData.Website.Blog.KeepReading)} »"

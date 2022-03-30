@@ -1,4 +1,6 @@
 $primary-color: #29a6fe;
+$min-reading-width: 1260px;
+$min-image-stacked-width: 800px;
 
 // Lovely Style
 @import 'lovely-style/reset';
@@ -14,6 +16,8 @@ $primary-color: #29a6fe;
 @import 'lovely-style/fancy-hr';
 
 @import 'components/fancy-bullet-points';
+@import 'components/discord-invite-wrapper';
+@import 'components/support-invites-wrapper';
 @import 'header';
 @import 'effects';
 @import 'discord/discord_style_v2_edits';
@@ -49,9 +53,6 @@ $primary-color: #29a6fe;
 
 @include import-font-lato();
 @include import-font-oswald();
-
-$min-reading-width: 1260px;
-$min-image-stacked-width: 800px;
 
 // COLOR VARIABLES, USED IN CONTAINERS AND STUFF
 // Themes should override those variables!
