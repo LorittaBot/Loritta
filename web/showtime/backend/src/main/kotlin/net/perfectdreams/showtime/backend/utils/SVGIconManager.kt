@@ -53,6 +53,7 @@ class SVGIconManager(val showtime: ShowtimeBackend) {
     val dizzy = register("dizzy", "fontawesome5/solid/dizzy.svg")
     val cogs = register("cogs", "fontawesome5/solid/cogs.svg")
     val plus = register("plus", "fontawesome5/solid/plus.svg")
+    val bullhorn = register("bullhorn", "fontawesome5/solid/bullhorn.svg")
 
     val smallDiamond = register("small-diamond", "twemoji-master/1f539.svg", SVGOptions.REMOVE_FILLS)
 

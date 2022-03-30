@@ -63,6 +63,7 @@ abstract class NavbarView(
                     id = "navigation-bar"
 
                     div(classes = "left-side-entries") {
+                        // Loritta Logo/Home Page
                         div(classes = "entry loritta-navbar-logo") {
                             a(classes = "home-page", href = "$base/") {
                                 attributes["data-preload-link"] = "true"
@@ -72,6 +73,7 @@ abstract class NavbarView(
                             }
                         }
 
+                        // Support
                         div(classes = "entry") {
                             a(classes = "support", href = "$base/support") {
                                 attributes["data-preload-link"] = "true"
@@ -82,6 +84,7 @@ abstract class NavbarView(
                             }
                         }
 
+                        // Commands
                         div(classes = "entry") {
                             a(classes = "commands", href = "$base/commands/slash") {
                                 attributes["data-preload-link"] = "true"
@@ -92,41 +95,45 @@ abstract class NavbarView(
                             }
                         }
 
-                        div(classes = "entry") {
-                            a(classes = "fan-arts", href = "https://fanarts.perfectdreams.net/") {
-                                iconManager.paintBrush.apply(this)
-
-                                +" Fan Arts"
-                            }
-                        }
-
+                        // Premium
                         div(classes = "entry") {
                             a(classes = "donate", href = "$base/donate") {
                                 // attributes["data-preload-link"] = "true"
 
-                                iconManager.gift.apply(this)
+                                iconManager.sparkles.apply(this)
 
                                 +" Premium"
                             }
                         }
 
+                        // Wiki
                         div(classes = "entry") {
                             a(classes = "extras", href = "$base/extras") {
                                 attributes["data-preload-link"] = "true"
 
-                                iconManager.star.apply(this)
+                                iconManager.book.apply(this)
 
                                 +" Wiki"
                             }
                         }
 
+                        // Blog
                         div(classes = "entry") {
                             a(classes = "blog", href = "$base/blog") {
                                 attributes["data-preload-link"] = "true"
 
-                                iconManager.newspaper.apply(this)
+                                iconManager.bullhorn.apply(this)
 
                                 +" Blog"
+                            }
+                        }
+
+                        // Fan Arts
+                        div(classes = "entry") {
+                            a(classes = "fan-arts", href = "https://fanarts.perfectdreams.net/") {
+                                iconManager.paintBrush.apply(this)
+
+                                +" Fan Arts"
                             }
                         }
 
