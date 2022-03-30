@@ -22,6 +22,7 @@
     .discord-server-details {
         display: flex;
         gap: 1em;
+        align-items: center;
 
         .discord-server-icon {
             flex-shrink: 0;
@@ -64,6 +65,8 @@
             padding-right: 1em;
             height: 40px;
             transition-duration: 0.5s;
+            // Makes the button not do a line break if the text is "Juntar-se"
+            flex-shrink: 0;
 
             &:hover {
                 background-color: #2d7d47;
