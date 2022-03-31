@@ -18,7 +18,7 @@ class PatchNotesNotificationsService(private val pudding: Pudding) : Service(pud
      * Gets unread patch notes notifications and marks them as read
      *
      * Only patch notes that are between [PatchNotesNotifications.broadcastAfter] and [PatchNotesNotifications.expiresAt] are considered active and will be retrieved.
-     * 
+     *
      * @param user        the user ID
      * @param currentTime the current time
      * @return a list of all unread patch notes notifications
