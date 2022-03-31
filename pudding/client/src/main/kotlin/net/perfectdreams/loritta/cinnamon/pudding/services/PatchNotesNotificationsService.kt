@@ -14,6 +14,15 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
 class PatchNotesNotificationsService(private val pudding: Pudding) : Service(pudding) {
+    /**
+     * Gets unread patch notes notifications and marks them as read
+     *
+     * Only patch notes that are between [PatchNotesNotifications.broadcastAfter] and [PatchNotesNotifications.expiresAt] are considered active and will be retrieved.
+     * 
+     * @param user        the user ID
+     * @param currentTime the current time
+     * @return a list of all unread patch notes notifications
+     */
     suspend fun getUnreadPatchNotesNotificationsAndMarkAsRead(
         user: UserId,
         currentTime: Instant
@@ -22,8 +31,8 @@ class PatchNotesNotificationsService(private val pudding: Pudding) : Service(pud
             val jInstant = currentTime.toJavaInstant()
 
             val receivedPatchNotesResultRows = PatchNotesNotifications.select {
-                PatchNotesNotifications.submittedAt lessEq jInstant and (PatchNotesNotifications.expiresAt greater jInstant) and (PatchNotesNotifications.id notInSubQuery ReceivedPatchNotesNotifications.slice(ReceivedPatchNotesNotifications.patchNotesNotification).select { ReceivedPatchNotesNotifications.user eq user.value.toLong() })
-            }.orderBy(PatchNotesNotifications.submittedAt, SortOrder.DESC)
+                PatchNotesNotifications.broadcastAfter lessEq jInstant and (PatchNotesNotifications.expiresAt greater jInstant) and (PatchNotesNotifications.id notInSubQuery ReceivedPatchNotesNotifications.slice(ReceivedPatchNotesNotifications.patchNotesNotification).select { ReceivedPatchNotesNotifications.user eq user.value.toLong() })
+            }.orderBy(PatchNotesNotifications.broadcastAfter, SortOrder.DESC)
                 .toList() // We call to list here because every time you call "receivedPatchNotes" it would execute a new query
 
             var profile: PuddingUserProfile
