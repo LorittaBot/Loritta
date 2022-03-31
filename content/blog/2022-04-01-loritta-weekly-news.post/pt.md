@@ -16,6 +16,8 @@ title: "Rolêzinho com a Loritta - 01/04/2022"
 * [[/blog/2022-03-22-guild-profiles-avatar]]
   * Visualize o avatar que a sua crush colocou no seu servidor pelo `/user avatar`, sem precisar de uma lupa!
 
+{{ read_more }}
+
 Adicionamos novos stickers e emojis no [servidor de comunidade da Loritta](https://discord.gg/lori)!
 
 <div style="display: flex; justify-content: space-evenly; flex-wrap: wrap;">

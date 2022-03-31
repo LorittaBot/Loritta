@@ -1,6 +1,7 @@
 package net.perfectdreams.showtime.backend.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.datetime.toJavaInstant
 import kotlinx.html.DIV
 import kotlinx.html.a
 import kotlinx.html.classes
@@ -17,7 +18,6 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
 import net.perfectdreams.showtime.backend.content.ContentBase
 import net.perfectdreams.showtime.backend.content.MultilanguageContent
-import net.perfectdreams.showtime.backend.content.parsedDate
 import net.perfectdreams.showtime.backend.utils.DiscordInviteWrapper.lorittaCommunityServerInvite
 import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
 import net.perfectdreams.showtime.backend.utils.NitroPayAdSize
@@ -233,7 +233,7 @@ class BlogPostView(
                                     }
                                 }
 
-                                val time = content.metadata.parsedDate?.toInstant()?.atZone(ZoneId.of("America/Sao_Paulo"))
+                                val time = content.metadata.date.toJavaInstant().atZone(ZoneId.of("America/Sao_Paulo"))
                                 if (time != null) {
                                     div(classes = "post-info") {
                                         val f: DateTimeFormatter = DateTimeFormatter
@@ -308,6 +308,6 @@ class BlogPostView(
         }
     }
 
-    override fun getPublicationDate() = content.metadata.parsedDate?.toInstant()
+    override fun getPublicationDate() = content.metadata.date.toJavaInstant()
     override fun getImageUrl() = content.metadata.imageUrl
 }

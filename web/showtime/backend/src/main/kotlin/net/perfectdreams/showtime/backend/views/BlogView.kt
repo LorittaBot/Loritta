@@ -1,6 +1,7 @@
 package net.perfectdreams.showtime.backend.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.datetime.toJavaInstant
 import kotlinx.html.DIV
 import kotlinx.html.a
 import kotlinx.html.classes
@@ -11,7 +12,6 @@ import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.showtime.backend.ShowtimeBackend
-import net.perfectdreams.showtime.backend.content.parsedDate
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
 import net.perfectdreams.showtime.backend.utils.innerContent
 import java.time.ZoneId
@@ -41,8 +41,8 @@ class BlogView(
         val languageId = showtimeBackend.languageManager.getIdByI18nContext(i18nContext)
 
         val posts = showtimeBackend.loadSourceContentsFromFolder("blog")
-            .sortedByDescending { it.metadata.parsedDate }
-            .filterNot { it.metadata.hidden }
+            .sortedByDescending { it.metadata.date }
+            .filter { it.shouldBeDisplayedInPostList() }
 
         innerContent {
             posts.forEachIndexed { index, it ->
@@ -62,7 +62,7 @@ class BlogView(
                                         }
                                     }
 
-                                    val time = it.metadata.parsedDate?.toInstant()?.atZone(ZoneId.of("America/Sao_Paulo"))
+                                    val time = it.metadata.date.toJavaInstant().atZone(ZoneId.of("America/Sao_Paulo"))
                                     if (time != null) {
                                         div(classes = "post-info") {
                                             val f: DateTimeFormatter = DateTimeFormatter
