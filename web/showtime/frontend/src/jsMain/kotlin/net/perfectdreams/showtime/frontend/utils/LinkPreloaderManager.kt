@@ -4,6 +4,7 @@ import io.ktor.client.request.*
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.sync.withLock
+import kotlinx.dom.removeClass
 import net.perfectdreams.showtime.frontend.ShowtimeFrontend
 import net.perfectdreams.showtime.frontend.utils.extensions.onClick
 import net.perfectdreams.showtime.frontend.utils.extensions.select
@@ -17,10 +18,10 @@ import org.w3c.dom.url.URL
 
 class LinkPreloaderManager(val showtime: ShowtimeFrontend) {
     companion object {
-        private val PRELOAD_LINK_ATTRIBUTE = "data-preload-link"
-        private val PRELOAD_LINK_ACTIVE_ATTRIBUTE = "data-preload-link-activated"
-        private val PRELOAD_PERSIST_ATTRIBUTE = "data-preload-persist"
-        private val PRELOAD_KEEP_SCROLL = "data-preload-keep-scroll"
+        private const val PRELOAD_LINK_ATTRIBUTE = "data-preload-link"
+        private const val PRELOAD_LINK_ACTIVE_ATTRIBUTE = "data-preload-link-activated"
+        private const val PRELOAD_PERSIST_ATTRIBUTE = "data-preload-persist"
+        private const val PRELOAD_KEEP_SCROLL = "data-preload-keep-scroll"
     }
 
     fun setupLinkPreloader() {
@@ -64,6 +65,11 @@ class LinkPreloaderManager(val showtime: ShowtimeFrontend) {
             println("Going to load $pageUrl")
 
             showtime.launchGlobal {
+                // Close navbar if it is open, this avoids the user clicking on something and wondering "but where is the new content?"
+                val navbar = document.select<Element?>("#navigation-bar")
+                navbar?.removeClass("expanded")
+                document.body!!.style.overflowY = ""
+
                 // Start progress indicator
                 showtime.startFakeProgressIndicator()
 
