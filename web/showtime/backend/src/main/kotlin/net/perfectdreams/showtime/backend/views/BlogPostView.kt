@@ -227,7 +227,7 @@ class BlogPostView(
                     div(classes = "post-content") {
                         div {
                             div(classes = "post-header") {
-                                a(href = "/${locale.path}${localizedContent.path}") {
+                                a(href = "/${locale.path}${content.path}") {
                                     h1 {
                                         +localizedContent.metadata.title
                                     }

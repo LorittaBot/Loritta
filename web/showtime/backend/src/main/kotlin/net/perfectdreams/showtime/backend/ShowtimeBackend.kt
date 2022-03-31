@@ -447,12 +447,13 @@ class ShowtimeBackend(
                     val (languageId, i18nContext) = languageManager.languageContexts.entries.first { (languageId, i18nContext) -> it.nameWithoutExtension == languageId }
 
                     // woo hacks
-                    when (languageId) {
+                    val legacyLocaleId = when (languageId) {
                         "en" -> "us"
                         "pt" -> "br"
+                        else -> error("Unsupported language ID: $languageId")
                     }
 
-                    it.nameWithoutExtension to ContentBase.fromFile(it, "/$languageId$path")
+                    it.nameWithoutExtension to ContentBase.fromFile(it, "/$legacyLocaleId$path")
                 }
         )
     }
