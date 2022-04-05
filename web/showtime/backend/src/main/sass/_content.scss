@@ -1,3 +1,7 @@
 #content {
-    flex: 1 // Required for the sticky footer
+    flex: 1; // Required for the sticky footer
+
+    // Required so our inner-content grows, so pages with small content won't have their background "broken"
+    display: flex;
+    flex-direction: column;
 }

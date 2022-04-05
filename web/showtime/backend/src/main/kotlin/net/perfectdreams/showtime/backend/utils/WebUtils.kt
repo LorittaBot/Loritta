@@ -117,9 +117,7 @@ fun DIV.innerContent(block: DIV.() -> (Unit)) = div {
 
     div(classes = "background-overlay") {}
 
-    div {
-        block.invoke(this)
-    }
+    block.invoke(this)
 }
 
 /* fun DIV.generateNitroPayAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, callback: (NitroPayAdDisplay) -> (Boolean)) {
