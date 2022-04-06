@@ -309,20 +309,22 @@ class StaffView(
 
                                             if (rawAboutMe != null) {
                                                 // It says that it is unneeded but everytime that I remove it, it complains, smh
-                                                val aboutMe = rawAboutMe!!
+                                                val aboutMe = rawAboutMe
 
                                                 // We will split the string into two sections:
                                                 // - String
                                                 // - Discord Emote
                                                 val sections = mutableListOf<AboutMeSection>()
                                                 val matches = DiscordRegexes.DiscordEmote.findAll(aboutMe).toList()
+                                                var lastMatchedCharacterIndex = 0
+
                                                 for (match in matches) {
                                                     sections.add(AboutMeText(aboutMe.substring(0 until match.range.first)))
                                                     sections.add(AboutMeDiscordEmote(match.groupValues[2]))
-                                                    if (matches.indexOf(match) == matches.size - 1) {
-                                                        sections.add(AboutMeText(aboutMe.substring(match.range.last + 1 until aboutMe.length)))
-                                                    }
+                                                    lastMatchedCharacterIndex = match.range.last + 1
                                                 }
+
+                                                sections.add(AboutMeText(aboutMe.substring(lastMatchedCharacterIndex until aboutMe.length)))
 
                                                 div(classes = "staff-description") {
                                                     for (section in sections) {
