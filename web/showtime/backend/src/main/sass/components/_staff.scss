@@ -72,6 +72,8 @@
                 -webkit-box-orient: vertical;
                 overflow: hidden;
                 line-break: auto;
+                // Chromium browsers have a different thickness for some reason, Firefox seems to use 0.5px
+                text-decoration-thickness: 0.5px;
             }
 
             .staff-song {
