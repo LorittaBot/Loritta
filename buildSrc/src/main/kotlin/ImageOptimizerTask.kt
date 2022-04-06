@@ -9,20 +9,21 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
-import org.gradle.api.tasks.Internal
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.submit
 import org.gradle.work.ChangeType
 import org.gradle.work.Incremental
 import org.gradle.work.InputChanges
+import org.gradle.workers.WorkerExecutor
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+import javax.inject.Inject
+
 
 @CacheableTask
 abstract class ImageOptimizerTask : DefaultTask() {
@@ -55,12 +56,16 @@ abstract class ImageOptimizerTask : DefaultTask() {
     @get:Input
     abstract val imagesOptimizationSettings: ListProperty<ImageOptimizationSettings>
 
-    @Internal
-    val executor = Executors.newFixedThreadPool(4)
+    @get:Inject
+    abstract val workerExecutor: WorkerExecutor
 
     // TODO: we could use Gradle's WorkerExecutor stuff, but it is sooo confusing (example: you can't share the ImageInfo list) that I ended up not using it
     @TaskAction
     fun execute(inputChanges: InputChanges) {
+        println("temp is $temporaryDir")
+
+        val workQueue = workerExecutor.noIsolation()
+
         val outputImagesInfoFile = outputImagesInfoFile.get().asFile
         val targetFolder = outputImagesDirectory.asFile.get()
         val pngQuantPath = findPngQuantCommandPath()
@@ -76,8 +81,8 @@ abstract class ImageOptimizerTask : DefaultTask() {
             else "Executing non-incrementally"
         )
 
-        inputChanges.getFileChanges(sourceImagesDirectory).forEach { change ->
-            if (change.fileType == FileType.DIRECTORY) return@forEach
+        inputChanges.getFileChanges(sourceImagesDirectory).forEachIndexed { index, change ->
+            if (change.fileType == FileType.DIRECTORY) return@forEachIndexed
 
             println("${change.changeType}: ${change.normalizedPath}")
             val targetFile = outputImagesDirectory.file(change.normalizedPath).get().asFile
@@ -93,24 +98,27 @@ abstract class ImageOptimizerTask : DefaultTask() {
 
                 list.removeIf { it.path == targetFileRelativeToTheBaseFolder.toString().replace("\\", "/") }
             } else {
-                executor.submit(
-                    GenerateOptimizedImage(
-                        change.file,
-                        targetFile,
-                        targetFolder,
-                        pngQuantPath,
-                        gifsiclePath,
-                        list
-                    )
-                )
+                workQueue.submit(GenerateOptimizedImage::class) {
+                    this.fileIndex.set(index)
+                    this.sourceFile.set(change.file)
+                    this.targetFile.set(targetFile)
+                    this.targetFolder.set(targetFolder)
+                    this.temporaryFolder.set(temporaryDir)
+                    this.pngQuantPathString.set(pngQuantPath)
+                    this.gifsiclePathString.set(gifsiclePath)
+                }
             }
         }
 
-        executor.shutdown()
-        executor.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS)
+        workQueue.await()
+
+        // Now we need to load all JSON files in the temporary directory and append them all into a single list
+        val imagesInfo = temporaryDir.listFiles().flatMap {
+            Json.decodeFromString(ListSerializer(ImageInfo.serializer()), it.readText())
+        }
 
         outputImagesInfoFile
-            .writeText(Json.encodeToString(ListSerializer(ImageInfo.serializer()), list))
+            .writeText(Json.encodeToString(ListSerializer(ImageInfo.serializer()), imagesInfo))
     }
 
     private fun findPngQuantCommandPath() = findAppCommandPath("pngquant")

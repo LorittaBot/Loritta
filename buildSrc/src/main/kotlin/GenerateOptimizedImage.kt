@@ -1,24 +1,29 @@
-
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
+import org.gradle.workers.WorkAction
 import java.awt.Image
 import java.awt.image.BufferedImage
 import java.io.File
-import java.util.concurrent.CopyOnWriteArrayList
 import javax.imageio.ImageIO
 
-class GenerateOptimizedImage(
-    val sourceFile: File,
-    val targetFile: File,
-    val targetFolder: File,
-    val pngQuantPathString: String,
-    val gifsiclePathString: String,
-    val imagesInfo: CopyOnWriteArrayList<ImageInfo>,
-) : Runnable {
-    override fun run() {
+abstract class GenerateOptimizedImage : WorkAction<GenerateOptimizedImageParameters> {
+    override fun execute() {
+        val fileIndex = parameters.fileIndex.get()
+        val sourceFile = parameters.sourceFile.get().asFile
+        val temporaryFolder = parameters.temporaryFolder.get().asFile
+        val targetFile = parameters.targetFile.get().asFile
+        val targetFolder = parameters.targetFolder.get().asFile
+        val pngQuantPathString = parameters.pngQuantPathString.get()
+        val gifsiclePathString = parameters.gifsiclePathString.get()
+
         try {
+            temporaryFolder.mkdirs()
             targetFile.parentFile.mkdirs()
+
             val targetFileRelativeToTheBaseFolder = targetFile.relativeTo(targetFolder)
 
             val imageType = sourceFile.extension
+            val imagesInfo = mutableListOf<ImageInfo>()
 
             when (imageType) {
                 "png" -> {
@@ -30,7 +35,7 @@ class GenerateOptimizedImage(
                     // Copy current image as is
                     sourceFile.copyTo(targetFile, true)
 
-                    optimizePNG(targetFile)
+                    optimizePNG(pngQuantPathString, targetFile)
 
                     val variations = mutableListOf<ImageInfo>()
 
@@ -58,7 +63,7 @@ class GenerateOptimizedImage(
                             downscaledImageFile
                         )
 
-                        optimizePNG(downscaledImageFile)
+                        optimizePNG(pngQuantPathString, downscaledImageFile)
 
                         variations.add(
                             ImageInfo(
@@ -91,7 +96,7 @@ class GenerateOptimizedImage(
                     // Copy current image as is
                     sourceFile.copyTo(targetFile, true)
 
-                    optimizeGIF(targetFile, targetFile)
+                    optimizeGIF(gifsiclePathString, targetFile, targetFile)
 
                     val variations = mutableListOf<ImageInfo>()
 
@@ -105,8 +110,8 @@ class GenerateOptimizedImage(
                             targetFile.nameWithoutExtension + "_${newWidth}w.${targetFile.extension}"
                         )
 
-                        resizeGIF(sourceFile, downscaledImageFile, newWidth, newHeight)
-                        optimizeGIF(downscaledImageFile, downscaledImageFile)
+                        resizeGIF(gifsiclePathString, sourceFile, downscaledImageFile, newWidth, newHeight)
+                        optimizeGIF(gifsiclePathString, downscaledImageFile, downscaledImageFile)
 
                         variations.add(
                             ImageInfo(
@@ -136,12 +141,18 @@ class GenerateOptimizedImage(
                     sourceFile.copyTo(targetFile, true)
                 }
             }
+
+            // Yes, this is the "correct" way to do this
+            // It is weird, but it works... so, umm... yay?
+            // https://discuss.gradle.org/t/returning-data-from-a-gradle-workaction/32850
+            File(temporaryFolder, "$fileIndex.json")
+                .writeText(Json.encodeToString(ListSerializer(ImageInfo.serializer()), imagesInfo))
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
     }
 
-    private fun optimizePNG(file: File) {
+    private fun optimizePNG(pngQuantPathString: String, file: File) {
         val originalFileSize = file.length()
 
         // https://stackoverflow.com/questions/39894913/how-do-i-get-the-best-png-compression-with-gulp-imagemin-plugins
@@ -176,7 +187,7 @@ class GenerateOptimizedImage(
         println("Successfully optimized ${file.name}! $originalFileSize -> $newFileSize")
     }
 
-    private fun resizeGIF(file: File, output: File, width: Int, height: Int) {
+    private fun resizeGIF(gifsiclePathString: String, file: File, output: File, width: Int, height: Int) {
         val proc = ProcessBuilder(
             gifsiclePathString,
             "--resize",
@@ -198,7 +209,7 @@ class GenerateOptimizedImage(
         println("Successfully resized ${file.name}!")
     }
 
-    private fun optimizeGIF(file: File, output: File) {
+    private fun optimizeGIF(gifsiclePathString: String, file: File, output: File) {
         val proc = ProcessBuilder(
             gifsiclePathString,
             "-O3",
