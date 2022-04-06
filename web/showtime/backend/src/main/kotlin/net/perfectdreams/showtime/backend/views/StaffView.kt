@@ -318,15 +318,26 @@ class StaffView(
                                                         // - String
                                                         // - Discord Emote
                                                         val sections = mutableListOf<AboutMeSection>()
-                                                        val matches =
-                                                            DiscordRegexes.DiscordEmote.findAll(aboutMe).toList()
+                                                        val matches = DiscordRegexes.DiscordEmote.findAll(aboutMe).toList()
+                                                        var firstMatchedCharacterIndex = 0
                                                         var lastMatchedCharacterIndex = 0
 
                                                         for (match in matches) {
-                                                            sections.add(AboutMeText(aboutMe.substring(0 until match.range.first)))
-                                                            sections.add(AboutMeDiscordEmote(match.groupValues[2]))
+                                                            sections.add(AboutMeText(aboutMe.substring(firstMatchedCharacterIndex until match.range.first)))
+                                                            val animated = match.groupValues[1] == "a"
+                                                            val emoteName = match.groupValues[2]
+                                                            val emoteId = match.groupValues[3]
+                                                            if (WebEmotes.emotes.contains(emoteName)) {
+                                                                sections.add(AboutMeLorittaWebsiteEmote(emoteName))
+                                                            } else {
+                                                                sections.add(AboutMeDiscordEmote(emoteId, animated))
+                                                            }
+
                                                             lastMatchedCharacterIndex = match.range.last + 1
+                                                            firstMatchedCharacterIndex = lastMatchedCharacterIndex
                                                         }
+
+                                                        println(sections)
 
                                                         sections.add(
                                                             AboutMeText(
@@ -338,18 +349,16 @@ class StaffView(
 
                                                         for (section in sections) {
                                                             when (section) {
-                                                                is AboutMeDiscordEmote -> {
-                                                                    // Is it a known emote?
-                                                                    if (WebEmotes.emotes.contains(section.emoteName)) {
-                                                                        // It is!
-                                                                        imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(
-                                                                            "/v3/assets/img/emotes/${WebEmotes.emotes[section.emoteName]}",
-                                                                            "1.5em"
-                                                                        ) {
-                                                                            classes = setOf("inline-emoji")
-                                                                        }
+                                                                is AboutMeLorittaWebsiteEmote -> {
+                                                                    imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(
+                                                                        "/v3/assets/img/emotes/${WebEmotes.emotes[section.emoteFile]}",
+                                                                        "1.5em"
+                                                                    ) {
+                                                                        classes = setOf("inline-emoji")
                                                                     }
-                                                                    // If it is unknown, then just strip it from the about me
+                                                                }
+                                                                is AboutMeDiscordEmote -> {
+                                                                    img(src = "https://cdn.discordapp.com/emojis/${section.emoteId}.${if (section.animated) "gif" else "webp"}?size=48&quality=lossless", classes = "inline-emoji")
                                                                 }
                                                                 is AboutMeText -> +section.text
                                                             }
@@ -374,5 +383,6 @@ class StaffView(
 
     sealed class AboutMeSection
     data class AboutMeText(val text: String) : AboutMeSection()
-    data class AboutMeDiscordEmote(val emoteName: String) : AboutMeSection()
+    data class AboutMeLorittaWebsiteEmote(val emoteFile: String) : AboutMeSection()
+    data class AboutMeDiscordEmote(val emoteId: String, val animated: Boolean) : AboutMeSection()
 }
