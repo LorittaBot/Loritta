@@ -52,6 +52,7 @@ class StaffView(
                     socialNetworks.add(GitHubSocialNetwork("MrPowerGamerBR"))
                     socialNetworks.add(WebsiteSocialNetwork("https://mrpowergamerbr.com/"))
                     socialNetworks.add(YouTubeSocialNetwork("UC-eeXSRZ8cO-i2NZYrWGDnQ"))
+                    socialNetworks.add(RedditSocialNetwork("MrPowerGamerBR"))
                 }
             }
 
@@ -89,6 +90,11 @@ class StaffView(
 
                 user("PeterStark000") {
                     socialNetworks.add(DiscordSocialNetwork(Snowflake(361977144445763585)))
+                    socialNetworks.add(GitHubSocialNetwork("PeterStark000"))
+                    socialNetworks.add(TwitterSocialNetwork("PeterStark000"))
+                    socialNetworks.add(YouTubeSocialNetwork("UCcTTEVAyQ_xnfopzewr-5MA"))
+                    socialNetworks.add(RedditSocialNetwork("PeterStark000"))
+                    socialNetworks.add(LastFmSocialNetwork("PeterStark000"))
                 }
 
                 user("Kaike Carlos") {
@@ -129,11 +135,15 @@ class StaffView(
         class YouTubeSocialNetwork(
             val handle: String
         ) : StaffSocialNetwork()
+        class RedditSocialNetwork(
+            val handle: String
+        ) : StaffSocialNetwork()
 
         private val socialNetworkSortOrder = listOf(
             DiscordSocialNetwork::class,
             WebsiteSocialNetwork::class,
             TwitterSocialNetwork::class,
+            RedditSocialNetwork::class,
             YouTubeSocialNetwork::class,
             GitHubSocialNetwork::class,
             LastFmSocialNetwork::class,
@@ -274,6 +284,13 @@ class StaffView(
                                                                 title = "GitHub"
 
                                                                 iconManager.github.apply(this)
+                                                            }
+                                                        }
+                                                        is RedditSocialNetwork -> {
+                                                            a(href = "https://www.reddit.com/u/${socialNetwork.handle}", target = "_blank") {
+                                                                title = "Reddit"
+
+                                                                iconManager.reddit.apply(this)
                                                             }
                                                         }
                                                     }
