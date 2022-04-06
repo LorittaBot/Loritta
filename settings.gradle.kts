@@ -11,26 +11,27 @@ rootProject.name = "cinnamon-parent"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            version("kotlin", "1.6.20")
-            version("kotlinx-serialization", "1.3.2")
-            version("ktor", "1.6.7")
-            version("jib", "3.2.1")
-            version("exposed", "0.37.3")
+            val kotlin = version("kotlin", "1.6.20")
+            val kotlinXSerialization = version("kotlinx-serialization", "1.3.2")
+            val ktor = version("ktor", "1.6.7")
+            val jib = version("jib", "3.2.1")
+            val exposed = version("exposed", "0.37.3")
+            val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
 
-            alias("kotlinx-coroutines-core").to("org.jetbrains.kotlinx", "kotlinx-coroutines-core").version("1.6.1")
-            alias("kotlin-logging").to("io.github.microutils", "kotlin-logging").version("2.1.21")
+            library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version("1.6.1")
+            library("kotlin-logging", "io.github.microutils", "kotlin-logging").version("2.1.21")
 
-            alias("kotlinx-serialization-core").to("org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef("kotlinx-serialization")
-            alias("kotlinx-serialization-json").to("org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef("kotlinx-serialization")
-            alias("kotlinx-serialization-protobuf").to("org.jetbrains.kotlinx", "kotlinx-serialization-protobuf").versionRef("kotlinx-serialization")
-            alias("kotlinx-serialization-hocon").to("org.jetbrains.kotlinx", "kotlinx-serialization-hocon").versionRef("kotlinx-serialization")
-            alias("ktor-client-core").to("io.ktor", "ktor-client-core").versionRef("ktor")
+            library("kotlinx-serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef(kotlinXSerialization)
+            library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinXSerialization)
+            library("kotlinx-serialization-protobuf", "org.jetbrains.kotlinx", "kotlinx-serialization-protobuf").versionRef(kotlinXSerialization)
+            library("kotlinx-serialization-hocon", "org.jetbrains.kotlinx", "kotlinx-serialization-hocon").versionRef(kotlinXSerialization)
+            library("ktor-client-core", "io.ktor", "ktor-client-core").versionRef(ktor)
 
-            alias("exposed-core").to("org.jetbrains.exposed", "exposed-core").versionRef("exposed")
-            alias("exposed-jdbc").to("org.jetbrains.exposed", "exposed-jdbc").versionRef("exposed")
-            alias("exposed-javatime").to("org.jetbrains.exposed", "exposed-java-time").versionRef("exposed")
+            library("exposed-core", "org.jetbrains.exposed", "exposed-core").versionRef(exposed)
+            library("exposed-jdbc", "org.jetbrains.exposed", "exposed-jdbc").versionRef(exposed)
+            library("exposed-javatime", "org.jetbrains.exposed", "exposed-java-time").versionRef(exposed)
 
-            alias("hikaricp").to("com.zaxxer", "HikariCP").version("5.0.1")
+            library("hikaricp", "com.zaxxer", "HikariCP").version("5.0.1")
         }
     }
 }

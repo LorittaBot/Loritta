@@ -1,7 +1,7 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
-    id("net.perfectdreams.i18nhelper.plugin") version Versions.I18N_HELPER
+    id("net.perfectdreams.i18nhelper.plugin") version libs.versions.i18nhelper
     id("maven-publish")
 }
 
@@ -99,7 +99,7 @@ kotlin {
                 // Used to serialize state on components
                 api(libs.kotlinx.serialization.protobuf)
                 api(libs.ktor.client.core)
-                api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
+                api("net.perfectdreams.i18nhelper:core:${libs.versions.i18nhelper.get()}")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.KOTLINX_DATE_TIME}")
 
                 // Used for Math stuff
@@ -122,7 +122,7 @@ kotlin {
                 implementation("org.yaml:snakeyaml:1.30")
 
                 // Internationalization
-                api("net.perfectdreams.i18nhelper.formatters:icu-messageformat-jvm:${Versions.I18N_HELPER}")
+                api("net.perfectdreams.i18nhelper.formatters:icu-messageformat-jvm:${libs.versions.i18nhelper.get()}")
                 implementation("com.charleskorn.kaml:kaml:0.38.0")
                 implementation("com.ibm.icu:icu4j:70.1")
 
