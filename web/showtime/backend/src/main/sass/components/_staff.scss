@@ -8,6 +8,11 @@
     width: 100%;
     flex-direction: column;
 
+    // Padding to avoid it being cramped on smol screens
+    @media screen and (max-width: 400px) {
+        margin: 90%;
+    }
+
     p {
         max-width: 60em;
         margin-left: auto;
@@ -63,6 +68,7 @@
             }
 
             .staff-description {
+                text-align: center;
                 text-decoration: underline dotted #fe8129;
                 // https://css-tricks.com/almanac/properties/l/line-clamp/
                 // Clamp the song to only one line
