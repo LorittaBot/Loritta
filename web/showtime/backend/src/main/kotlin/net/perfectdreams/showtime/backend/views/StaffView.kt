@@ -4,6 +4,7 @@ import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import dev.kord.common.entity.Snowflake
 import kotlinx.html.DIV
 import kotlinx.html.a
+import kotlinx.html.br
 import kotlinx.html.classes
 import kotlinx.html.div
 import kotlinx.html.h1
@@ -93,7 +94,7 @@ class StaffView(
                 }
 
                 user("nathaan") {
-                      socialNetworks.add(DiscordSocialNetwork(Snowflake(437731723350900739)))
+                    socialNetworks.add(DiscordSocialNetwork(Snowflake(437731723350900739)))
                 }
             }
 
@@ -309,41 +310,52 @@ class StaffView(
 
                                             if (rawAboutMe != null) {
                                                 // It says that it is unneeded but everytime that I remove it, it complains, smh
-                                                val aboutMe = rawAboutMe
-
-                                                // We will split the string into two sections:
-                                                // - String
-                                                // - Discord Emote
-                                                val sections = mutableListOf<AboutMeSection>()
-                                                val matches = DiscordRegexes.DiscordEmote.findAll(aboutMe).toList()
-                                                var lastMatchedCharacterIndex = 0
-
-                                                for (match in matches) {
-                                                    sections.add(AboutMeText(aboutMe.substring(0 until match.range.first)))
-                                                    sections.add(AboutMeDiscordEmote(match.groupValues[2]))
-                                                    lastMatchedCharacterIndex = match.range.last + 1
-                                                }
-
-                                                sections.add(AboutMeText(aboutMe.substring(lastMatchedCharacterIndex until aboutMe.length)))
+                                                val splitAboutMe = rawAboutMe.split("\n")
 
                                                 div(classes = "staff-description") {
-                                                    for (section in sections) {
-                                                        when (section) {
-                                                            is AboutMeDiscordEmote -> {
-                                                                // Is it a known emote?
-                                                                if (WebEmotes.emotes.contains(section.emoteName)) {
-                                                                    // It is!
-                                                                    imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(
-                                                                        "/v3/assets/img/emotes/${WebEmotes.emotes[section.emoteName]}",
-                                                                        "1.5em"
-                                                                    ) {
-                                                                        classes = setOf("inline-emoji")
-                                                                    }
-                                                                }
-                                                                // If it is unknown, then just strip it from the about me
-                                                            }
-                                                            is AboutMeText -> + section.text
+                                                    for (aboutMe in splitAboutMe) {
+                                                        // We will split the string into two sections:
+                                                        // - String
+                                                        // - Discord Emote
+                                                        val sections = mutableListOf<AboutMeSection>()
+                                                        val matches =
+                                                            DiscordRegexes.DiscordEmote.findAll(aboutMe).toList()
+                                                        var lastMatchedCharacterIndex = 0
+
+                                                        for (match in matches) {
+                                                            sections.add(AboutMeText(aboutMe.substring(0 until match.range.first)))
+                                                            sections.add(AboutMeDiscordEmote(match.groupValues[2]))
+                                                            lastMatchedCharacterIndex = match.range.last + 1
                                                         }
+
+                                                        sections.add(
+                                                            AboutMeText(
+                                                                aboutMe.substring(
+                                                                    lastMatchedCharacterIndex until aboutMe.length
+                                                                )
+                                                            )
+                                                        )
+
+                                                        for (section in sections) {
+                                                            when (section) {
+                                                                is AboutMeDiscordEmote -> {
+                                                                    // Is it a known emote?
+                                                                    if (WebEmotes.emotes.contains(section.emoteName)) {
+                                                                        // It is!
+                                                                        imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(
+                                                                            "/v3/assets/img/emotes/${WebEmotes.emotes[section.emoteName]}",
+                                                                            "1.5em"
+                                                                        ) {
+                                                                            classes = setOf("inline-emoji")
+                                                                        }
+                                                                    }
+                                                                    // If it is unknown, then just strip it from the about me
+                                                                }
+                                                                is AboutMeText -> +section.text
+                                                            }
+                                                        }
+
+                                                        br {}
                                                     }
                                                 }
                                             }
