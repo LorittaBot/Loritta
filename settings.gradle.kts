@@ -8,8 +8,6 @@ pluginManagement {
 
 rootProject.name = "cinnamon-parent"
 
-enableFeaturePreview("VERSION_CATALOGS")
-
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
