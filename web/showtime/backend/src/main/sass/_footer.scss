@@ -12,6 +12,9 @@ footer {
     background-color: #29a6fe;
     color: white;
     padding: 16px 72px;
+    @media screen and (max-width: 400px) {
+        padding: 1em 2em;
+    }
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
     // If this isn't here, on phones with touch enabled (wtf) the div overflows for some reason.
     overflow: hidden;
@@ -40,6 +43,7 @@ footer {
         display: flex;
         justify-content: space-around;
         flex-direction: row;
+        gap: 1em;
 
         h1, h2, h3 {
             font-size: 1.25em;
