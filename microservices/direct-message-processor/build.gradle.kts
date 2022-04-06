@@ -63,8 +63,4 @@ tasks {
     processResources {
         from("../../resources/") // Include folders from the resources root folder
     }
-
-    build {
-        dependsOn(shadowJar)
-    }
 }
