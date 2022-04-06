@@ -18,6 +18,7 @@ import kotlinx.html.style
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.dokyo.elements.HomeElements
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.showtime.backend.ShowtimeBackend
 import java.time.LocalDate
 
@@ -314,6 +315,9 @@ abstract class NavbarView(
                                 }
                                 a(href = "$base/daily") {
                                     +"Daily"
+                                }
+                                a(href = "$base/staff") {
+                                    +i18nContext.get(I18nKeysData.Website.Staff.Title)
                                 }
                                 a(href = "$base/extras/faq-loritta/about-loritta-bot") {
                                     attributes["data-preload-link"] = "true"

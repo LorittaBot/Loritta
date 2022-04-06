@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.S
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import kotlin.math.absoluteValue
@@ -290,7 +291,6 @@ class ShipExecutor(
     class ShipDiscordMentionInputConverter {
         // From JDA
         private val userRegex = Regex("<@!?(\\d+)>")
-        private val emoteRegex = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
 
         suspend fun convert(context: ApplicationCommandContext, input: String): ShipExecutor.ConverterResult {
             // Check for user mention
@@ -303,7 +303,7 @@ class ShipExecutor(
             }
 
             // Check for emote mention
-            val emoteMatch = emoteRegex.matchEntire(input)
+            val emoteMatch = DiscordRegexes.DiscordEmote.matchEntire(input)
             if (emoteMatch != null) {
                 val isAnimated = emoteMatch.groupValues[1].isNotEmpty()
                 val extension = if (isAnimated) "gif" else "png"

@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordRegexes
 import kotlin.streams.toList
 
 class EmojiInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
@@ -26,9 +27,6 @@ class EmojiInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
         }
 
         override val options = Options
-
-        // TODO: Move to an constant, this is also used by the ShipDiscordMentionInputConverter class
-        private val emoteRegex = Regex("<(a)?:([a-zA-Z0-9_]+):([0-9]+)>")
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
@@ -92,7 +90,7 @@ class EmojiInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
             return
         }
 
-        val discordEmoji = emoteRegex.find(emojiContent)
+        val discordEmoji = DiscordRegexes.DiscordEmote.find(emojiContent)
 
         if (discordEmoji != null) {
             // "If the group in the regular expression is optional and there were no match captured by that group,

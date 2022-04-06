@@ -54,7 +54,8 @@ class SVGIconManager(val showtime: ShowtimeBackend) {
     val cogs = register("cogs", "fontawesome5/solid/cogs.svg")
     val plus = register("plus", "fontawesome5/solid/plus.svg")
     val bullhorn = register("bullhorn", "fontawesome5/solid/bullhorn.svg")
-
+    val music = register("music", "fontawesome5/solid/music.svg")
+    val headphones = register("headphones", "fontawesome5/solid/headphones.svg")
     val smallDiamond = register("small-diamond", "twemoji-master/1f539.svg", SVGOptions.REMOVE_FILLS)
 
     // https://thenounproject.com/ahmadpp4/collection/emoticons/
@@ -67,6 +68,7 @@ class SVGIconManager(val showtime: ShowtimeBackend) {
     val twitter = register("twitter", "fontawesome5/brands/twitter.svg")
     val github = register("github", "fontawesome5/brands/github.svg")
     val youtube = register("youtube", "fontawesome5/brands/youtube.svg")
+    val lastfm = register("lastfm", "fontawesome5/brands/lastfm.svg")
 
     /**
      * Loads and registers a SVG with [name] and [path]

@@ -8,6 +8,7 @@ import net.perfectdreams.showtime.backend.routes.HomeRoute
 import net.perfectdreams.showtime.backend.routes.LegacyCommandsRedirectRoute
 import net.perfectdreams.showtime.backend.routes.LegacyCommandsRoute
 import net.perfectdreams.showtime.backend.routes.PremiumRoute
+import net.perfectdreams.showtime.backend.routes.StaffRoute
 import net.perfectdreams.showtime.backend.routes.SupportRoute
 
 object DefaultRoutes {
@@ -20,6 +21,7 @@ object DefaultRoutes {
         PremiumRoute(showtime),
         ExtrasRoute(showtime),
         BlogRoute(showtime),
-        BlogPostRoute(showtime)
+        BlogPostRoute(showtime),
+        StaffRoute(showtime)
     )
 }

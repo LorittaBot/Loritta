@@ -21,6 +21,7 @@ import net.perfectdreams.showtime.backend.content.MultilanguageContent
 import net.perfectdreams.showtime.backend.utils.DiscordInviteWrapper.lorittaCommunityServerInvite
 import net.perfectdreams.showtime.backend.utils.NitroPayAdGenerator
 import net.perfectdreams.showtime.backend.utils.NitroPayAdSize
+import net.perfectdreams.showtime.backend.utils.WebEmotes
 import net.perfectdreams.showtime.backend.utils.adWrapper
 import net.perfectdreams.showtime.backend.utils.generateNitroPayAd
 import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
@@ -49,21 +50,6 @@ class BlogPostView(
     path
 ) {
     companion object {
-        private val VALID_EMOTES = mapOf(
-            "lori_sunglasses" to "lori-sunglasses.png",
-            "lori_sob" to "lori-sob.png",
-            "lori_kiss" to "lori-kiss.png",
-            "lori_hm" to "lori-hm.png",
-            "lori_bonk" to "lori-bonk.png",
-            "lori_card" to "lori-card.png",
-            "lori_what" to "lori-what.png",
-            "lori_zap" to "lori-zap.png",
-            "lori_nem_ligo" to "lori-nem-ligo.png",
-            "lori_rage" to "lori-rage.png",
-            "lori_clown" to "lori-clown.png",
-            "lori_lick" to "lori-lick.gif"
-        )
-
         fun parseContent(showtimeBackend: ShowtimeBackend, locale: BaseLocale, i18nContext: I18nContext, content: String): String {
             var markdown = content
                 .replace("{{ locale_path }}", locale.path)
@@ -151,7 +137,7 @@ class BlogPostView(
                 )
                 .replace("{{ read_more }}", "")
 
-            for ((emote, emoteFile) in VALID_EMOTES) {
+            for ((emote, emoteFile) in WebEmotes.emotes) {
                 markdown = markdown.replace(
                     ":$emote:",
                     createHTML().span {
