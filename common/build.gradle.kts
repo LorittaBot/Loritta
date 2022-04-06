@@ -92,12 +92,13 @@ kotlin {
             dependencies {
                 // API = We want to allow dependencies to access those classes
                 api(kotlin("stdlib-common"))
-                api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
-                api("io.github.microutils:kotlin-logging:2.0.6")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
-                api("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:${Versions.KOTLINX_SERIALIZATION}")
-                api("io.ktor:ktor-client-core:${Versions.KTOR}")
+                api(libs.kotlinx.coroutines.core)
+                api(libs.kotlin.logging)
+                api(libs.kotlinx.serialization.core)
+                api(libs.kotlinx.serialization.json)
+                // Used to serialize state on components
+                api(libs.kotlinx.serialization.protobuf)
+                api(libs.ktor.client.core)
                 api("net.perfectdreams.i18nhelper:core:${Versions.I18N_HELPER}")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.KOTLINX_DATE_TIME}")
 
@@ -115,7 +116,7 @@ kotlin {
                 api("com.github.ben-manes.caffeine:caffeine:3.0.1")
 
                 // Used for config
-                api("org.jetbrains.kotlinx:kotlinx-serialization-hocon:${Versions.KOTLINX_SERIALIZATION}")
+                api(libs.kotlinx.serialization.hocon)
 
                 // Used for the LocaleManager
                 implementation("org.yaml:snakeyaml:1.30")

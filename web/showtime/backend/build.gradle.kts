@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
-    id("com.google.cloud.tools.jib") version Versions.JIB
+    id("com.google.cloud.tools.jib") version libs.versions.jib
 }
 
 group = "net.perfectdreams.showtime"
@@ -15,7 +15,6 @@ dependencies {
 
     // Logging Stuff
     implementation("ch.qos.logback:logback-classic:1.3.0-alpha14")
-    implementation("io.github.microutils:kotlin-logging:2.1.21")
 
     // Ktor
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
@@ -23,10 +22,6 @@ dependencies {
 
     // KotlinX HTML
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
-
-    // KotlinX Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-hocon:${Versions.KOTLINX_SERIALIZATION}")
 
     implementation("org.jsoup:jsoup:1.14.3")
 

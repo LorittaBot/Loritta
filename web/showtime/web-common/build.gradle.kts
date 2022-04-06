@@ -28,21 +28,19 @@ kotlin {
         commonMain {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-html:0.7.3")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
-                api("io.github.microutils:kotlin-logging:2.1.21")
+                api(libs.kotlinx.serialization.json)
+                api(libs.kotlin.logging)
             }
         }
 
         jvm().compilations["main"].defaultSourceSet {
             dependencies {
-                api("io.github.microutils:kotlin-logging-jvm:2.1.21")
             }
         }
 
         js().compilations["main"].defaultSourceSet {
             dependencies {
                 implementation(npm("buffer", "5.6.1"))
-                api("io.github.microutils:kotlin-logging-js:2.1.21")
             }
         }
 

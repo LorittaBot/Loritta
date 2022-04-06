@@ -5,19 +5,17 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow") version "5.2.0"
-    id("com.google.cloud.tools.jib") version Versions.JIB
+    id("com.google.cloud.tools.jib") version libs.versions.jib
 }
 
 dependencies {
     implementation(project(":pudding:client"))
     implementation("net.perfectdreams.tradingviewscraper:TradingViewScraper:0.0.7-20211213.140733-2")
-    implementation("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
-    implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
-    implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.javatime)
     implementation("pw.forst", "exposed-upsert", "1.1.0")
     implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
-    api("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
 
     // Logback GELF, used for Graylog logging
     implementation("de.siegmar:logback-gelf:3.0.0")

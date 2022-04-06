@@ -28,8 +28,7 @@ kotlin {
         val jsMain by getting {
             dependencies {
                 implementation("org.jetbrains.kotlinx:kotlinx-html-js:0.7.3")
-                implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
-                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:${Versions.KOTLINX_SERIALIZATION}")
+                implementation(libs.ktor.client.core)
             }
         }
     }

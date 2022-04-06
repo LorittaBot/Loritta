@@ -26,9 +26,6 @@ kotlin {
                 // API = We want to allow dependencies to access those classes
                 api(kotlin("stdlib-common"))
                 api(project(":common"))
-                
-                api("org.jetbrains.kotlinx:kotlinx-serialization-core:${Versions.KOTLINX_SERIALIZATION}")
-                api("org.jetbrains.kotlinx:kotlinx-datetime:${Versions.KOTLINX_DATE_TIME}")
             }
         }
     }

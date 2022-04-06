@@ -12,11 +12,11 @@ dependencies {
     api(project(":pudding:data"))
 
     // Databases
-    implementation("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
-    implementation("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
-    implementation("org.jetbrains.exposed:exposed-java-time:${Versions.EXPOSED}")
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.javatime)
     implementation("org.postgresql:postgresql:42.2.23")
-    implementation("com.zaxxer:HikariCP:${Versions.HIKARICP}")
+    implementation(libs.hikaricp)
     implementation("pw.forst", "exposed-upsert", "1.1.0")
     implementation("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.0.0")
     implementation("net.perfectdreams.exposedpowerutils:postgres-java-time:1.0.0")

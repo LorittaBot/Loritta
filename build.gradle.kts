@@ -1,8 +1,8 @@
 plugins {
     // It needs to be in here to avoid a "Failed to apply plugin class 'org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin'."
-    kotlin("multiplatform") version Versions.KOTLIN apply false
-    kotlin("jvm") version Versions.KOTLIN apply false
-    kotlin("plugin.serialization") version Versions.KOTLIN apply false
+    kotlin("multiplatform") version libs.versions.kotlin apply false
+    kotlin("jvm") version libs.versions.kotlin apply false
+    kotlin("plugin.serialization") version libs.versions.kotlin apply false
 }
 
 allprojects {

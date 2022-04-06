@@ -14,8 +14,6 @@ dependencies {
     api("net.perfectdreams.discordinteraktions:common:${Versions.DISCORD_INTERAKTIONS}")
 
     // Used to serialize state on components
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-protobuf:${Versions.KOTLINX_SERIALIZATION}")
-    // Used to serialize state on components
     implementation("io.github.netvl.ecoji:ecoji:1.0.0")
 
     // We want to use Kord REST on our project too!

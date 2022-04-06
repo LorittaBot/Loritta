@@ -5,7 +5,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("com.github.johnrengelman.shadow") version "5.2.0"
-    id("com.google.cloud.tools.jib") version Versions.JIB
+    id("com.google.cloud.tools.jib") version libs.versions.jib
 }
 
 dependencies {
