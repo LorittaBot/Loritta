@@ -19,7 +19,6 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.*
 
-
 class BlogView(
     showtimeBackend: ShowtimeBackend,
     websiteTheme: WebsiteTheme,

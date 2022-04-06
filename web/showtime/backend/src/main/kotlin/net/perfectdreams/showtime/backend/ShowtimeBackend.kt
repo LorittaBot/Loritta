@@ -23,13 +23,16 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordOAuth2AuthorizationURL
+import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.showtime.backend.content.ContentBase
 import net.perfectdreams.showtime.backend.content.MultilanguageContent
 import net.perfectdreams.showtime.backend.routes.LocalizedRoute
 import net.perfectdreams.showtime.backend.utils.HttpRedirectException
+import net.perfectdreams.showtime.backend.utils.LastFmTracker
 import net.perfectdreams.showtime.backend.utils.ResourcesUtils
 import net.perfectdreams.showtime.backend.utils.SVGIconManager
+import net.perfectdreams.showtime.backend.utils.ShowtimeBackendTasks
 import net.perfectdreams.showtime.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.showtime.backend.utils.config.RootConfig
 import net.perfectdreams.showtime.backend.utils.redirect
@@ -41,7 +44,8 @@ import java.util.*
 
 class ShowtimeBackend(
     val rootConfig: RootConfig,
-    val languageManager: LanguageManager
+    val languageManager: LanguageManager,
+    val pudding: Pudding
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -77,7 +81,11 @@ class ShowtimeBackend(
         ContentType.Video.Any
     )
 
+    var lastFmStaffData: Map<String, LastFmTracker.LastFmUserInfo>? = null
+
     fun start() {
+        ShowtimeBackendTasks(this).start()
+
         val routes = DefaultRoutes.defaultRoutes(this)
 
         val server = embeddedServer(Netty, port = 8080) {

@@ -12,3 +12,24 @@ website:
     lorittaSupportServerDetails: "Need help? Then join our support server!"
     lorittaCommunityServerDetails: "Loritta's community server!"
     join: "Join" #Join the server, same string used when someone sends a invite to you in chat
+  staff:
+    title: "Our Team"
+    description:
+      - "Behind Loritta there are several people who work hard for her to achieve her dream of being a famous digital influencer who wants to make the world a better place."
+      - "Let's go behind the scenes to meet the people who shape transform and transform our beloved Loritta!"
+    lorittaCreator:
+      title: "Loritta's Creator"
+    lorittaBodyguard:
+      title: "Loritta's Bodyguard (Moderator)"
+      description:
+        - "It is impossible for a single person to moderate a gigantic community like Loritta's, so we need help from reliable people."
+        - "Loritta's Bodyguards moderate and manage Loritta's servers, protect Loritta from malicious people, help users with questions, and much more!"
+    lorittaSupport:
+      title: "Loritta's Support"
+      description:
+        - "There is no point in having an innovative bot if people can't solve their questions and problems."
+        - "Loritta's Support listens and solves users' problems, so that the user focuses on improving their server instead of wasting time looking for solutions on the internet."
+    socialNetworks:
+      personalWebsite: "Personal Website"
+      currentlyListening: "The song that the user is currently listening to"
+      topSongInTheLast7Days: "The user's most played song in the last 7 days"
