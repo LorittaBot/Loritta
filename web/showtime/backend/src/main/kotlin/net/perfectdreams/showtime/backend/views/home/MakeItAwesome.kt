@@ -17,7 +17,7 @@ fun DIV.makeItAwesome(showtimeBackend: ShowtimeBackend, locale: BaseLocale, sect
         }
 
         a(classes = "add-me button pink shadow big", href = showtimeBackend.addBotUrl.toString()) {
-            style = "font-size: 1.5em;"
+            style = "font-size: 1.5em; width: fit-content; margin: auto;"
 
             showtimeBackend.svgIconManager.plus.apply(this)
 
