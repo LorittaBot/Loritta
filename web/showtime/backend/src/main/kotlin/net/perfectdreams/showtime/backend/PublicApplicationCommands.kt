@@ -102,9 +102,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.M
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.AttackOnHeartExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.GigaChadExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.AttackOnHeartCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
 import kotlin.reflect.KClass
 
 object PublicApplicationCommands {
@@ -161,6 +163,7 @@ object PublicApplicationCommands {
         CarlyAaahCommand,
         AttackOnHeartCommand,
         FansExplainingCommand,
+        GigaChadCommand,
 
         // ===[ UTILS ]===
         HelpCommand,
@@ -351,6 +354,10 @@ object PublicApplicationCommands {
 
         command(ToBeContinuedExecutor::class) {
             + ImageUrl("/v3/assets/img/commands/to_be_continued.png")
+        }
+
+        command(GigaChadExecutor::class) {
+            + VideoUrl("/v3/assets/img/commands/gigachad.mp4")
         }
     }
 

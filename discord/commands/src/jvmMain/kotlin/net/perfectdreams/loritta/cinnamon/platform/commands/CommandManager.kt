@@ -186,8 +186,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.H
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.GoBackToPackageListButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.FollowPackageButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.GoBackToPackageListButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.PackageListExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.SelectPackageSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.TrackPackageButtonClickExecutor
@@ -196,9 +196,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.Un
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.AttackOnHeartExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.FansExplainingExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.GigaChadExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.AttackOnHeartCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import kotlin.system.exitProcess
@@ -398,6 +400,7 @@ class CommandManager(
         commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(gabrielaImageServerClient))
         commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(gabrielaImageServerClient))
         commandManager.register(FansExplainingCommand, FansExplainingExecutor(gabrielaImageServerClient))
+        commandManager.register(GigaChadCommand, GigaChadExecutor(gabrielaImageServerClient))
 
         // ===[ UTILS ]===
         commandManager.register(HelpCommand, HelpExecutor())
