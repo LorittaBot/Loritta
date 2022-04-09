@@ -99,6 +99,7 @@ object Emotes {
     val Instagram = DiscordEmote(552841049660325908L, "instagram", false)
     val YouTube = DiscordEmote(955785841609965588, "youtube", false)
     val Correios = DiscordEmote(375314171644084234, "correios", false)
+    val TikTok = DiscordEmote(962362827891417189, "tiktok", false)
 
     val Undertale = DiscordEmote(412576128340066304L, "undertale_heart", false)
     val Deltarune = DiscordEmote(889958066362155008L, "deltarune", false)

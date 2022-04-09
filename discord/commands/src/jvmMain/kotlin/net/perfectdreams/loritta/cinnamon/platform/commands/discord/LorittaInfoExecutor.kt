@@ -139,6 +139,11 @@ class LorittaInfoExecutor : SlashCommandExecutor() {
                     loriEmoji = Emotes.YouTube
                 }
 
+                linkButton("https://www.tiktok.com/@lorittamorenittabot") {
+                    label = "TikTok"
+                    loriEmoji = Emotes.TikTok
+                }
+
                 linkButton("https://github.com/LorittaBot") {
                     label = "GitHub"
                     loriEmoji = Emotes.GitHub
