@@ -70,6 +70,7 @@ class SVGIconManager(val showtime: ShowtimeBackend) {
     val youtube = register("youtube", "fontawesome5/brands/youtube.svg")
     val lastfm = register("lastfm", "fontawesome5/brands/lastfm.svg")
     val reddit = register("reddit", "fontawesome5/brands/reddit.svg")
+    val tiktok = register("tiktok", "fontawesome5/brands/tiktok.svg")
 
     /**
      * Loads and registers a SVG with [name] and [path]

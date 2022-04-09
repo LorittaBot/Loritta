@@ -278,6 +278,10 @@ abstract class NavbarView(
                                 iconManager.youtube.apply(this)
                             }
 
+                            a(href = "https://www.tiktok.com/@lorittamorenittabot") {
+                                iconManager.tiktok.apply(this)
+                            }
+
                             a(href = "https://github.com/LorittaBot") {
                                 iconManager.github.apply(this)
                             }
