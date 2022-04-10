@@ -34,3 +34,23 @@ website:
       personalWebsite: "Website Pessoal"
       currentlyListening: "A música que o usuário está escutando no momento"
       topSongInTheLast7Days: "A música que o usuário mais escutou nos últimos 7 dias"
+  contact:
+    title: "Fale Conosco"
+    description:
+      - "Você quer conversar com a gente? Então vamos bater um papo! Talvez poderemos te ajudar... ou talvez você possa nos ajudar! {loriSunglasses}"
+      - "A Loritta é muito tímida... então não fique surpreso se não for ela que está respondendo às suas mensagens. {loriZap}"
+    support:
+      title: "Ajuda & Suporte"
+      visitOurSupportPageIf: "Visite a nossa página de suporte se você..."
+      supportReasons:
+        - "Tem dúvidas ou problemas e precisa de ajuda"
+        - "Tem problemas relacionados a pagamentos e precisa de ajuda"
+        - "Quer fazer uma denúncia sobre um usuário"
+        - "Deseja fazer um apelo para ser desbanido"
+    businessContact:
+      title: "Contato Comercial"
+      sendAnEmailIf: "Envie um e-mail se você..."
+      businessContactReasons:
+        - "Deseja fazer uma parceria comercial com Loritta"
+        - "Qualquer outra coisa que não se encaixa em nosso servidor de suporte"
+      businessContactTip: "Se você acha que o e-mail é muito \"formal\", então não se preocupe, nós também achamos. Se você preferir, você também pode entrar em contato conosco através do nosso servidor de suporte, mesmo que seja relacionado a negócios!"
