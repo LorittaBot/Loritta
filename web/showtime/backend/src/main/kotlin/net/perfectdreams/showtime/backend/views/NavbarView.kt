@@ -320,6 +320,9 @@ abstract class NavbarView(
                                 a(href = "$base/daily") {
                                     +"Daily"
                                 }
+                                a(href = "$base/contact") {
+                                    +i18nContext.get(I18nKeysData.Website.Contact.Title)
+                                }
                                 a(href = "$base/staff") {
                                     +i18nContext.get(I18nKeysData.Website.Staff.Title)
                                 }
