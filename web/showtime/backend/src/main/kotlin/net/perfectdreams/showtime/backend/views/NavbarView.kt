@@ -320,12 +320,6 @@ abstract class NavbarView(
                                 a(href = "$base/daily") {
                                     +"Daily"
                                 }
-                                a(href = "$base/contact") {
-                                    +i18nContext.get(I18nKeysData.Website.Contact.Title)
-                                }
-                                a(href = "$base/staff") {
-                                    +i18nContext.get(I18nKeysData.Website.Staff.Title)
-                                }
                                 a(href = "$base/extras/faq-loritta/about-loritta-bot") {
                                     attributes["data-preload-link"] = "true"
                                     +"Sobre a Loritta (Bot)"
@@ -346,6 +340,12 @@ abstract class NavbarView(
                                 }
                                 a(href = "$base/blog") {
                                     +"Blog"
+                                }
+                                a(href = "$base/contact") {
+                                    +i18nContext.get(I18nKeysData.Website.Contact.Title)
+                                }
+                                a(href = "$base/staff") {
+                                    +i18nContext.get(I18nKeysData.Website.Staff.Title)
                                 }
                                 // TODO: Fix
                                 /* a(href = "https://produto.mercadolivre.com.br/MLB-1366127151-caneca-pster-da-loritta-morenitta-novembro-2019-_JM?quantity=1") {
