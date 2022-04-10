@@ -33,3 +33,23 @@ website:
       personalWebsite: "Personal Website"
       currentlyListening: "The song that the user is currently listening to"
       topSongInTheLast7Days: "The user's most played song in the last 7 days"
+  contact:
+    title: "Contact Us"
+    description:
+      - "Do you want to talk with us? Then let's get in touch! Maybe we can help you... or maybe you can help us! {loriSunglasses}"
+      - "Loritta is very shy... so don't be surprised if it isn't her that is replying to your messages. {loriZap}"
+    support:
+      title: "Help & Support"
+      visitOurSupportPageIf: "Visit our support page if you..."
+      supportReasons:
+        - "Have questions or problems and you need help"
+        - "Have payment related issues and you need help"
+        - "Want to make a report about a user"
+        - "Want to make a ban appeal"
+    businessContact:
+      title: "Business Contact"
+      sendAnEmailIf: "Send an email if you..."
+      businessContactReasons:
+        - "Want to do a business partnership with Loritta"
+        - "Anything else that doesn't fit our support server"
+      businessContactTip: "If you think that email is too \"formal\" for you, then don't worry, we also think that too. If you prefer, you can also contact us via our support server, even if it is business related!"
