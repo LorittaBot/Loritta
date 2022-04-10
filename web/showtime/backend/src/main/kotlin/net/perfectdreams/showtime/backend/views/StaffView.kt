@@ -113,6 +113,14 @@ class StaffView(
                     socialNetworks.add(TwitterSocialNetwork("JvGm45"))
                     socialNetworks.add(GitHubSocialNetwork("JvGm45"))
                 }
+                
+                user("victor.") {
+                    socialNetworks.add(DiscordSocialNetwork(Snowflake(236167700777271297)))
+                    socialNetworks.add(TwitterSocialNetwork("brviictoor"))
+                    socialNetworks.add(GitHubSocialNetwork("hechfx"))
+                    socialNetworks.add(LastFmSocialNetwork("brviictoor"))
+                    socialNetworks.add(WebsiteSocialNetwork("https://br-victor.space"))
+                }
             }
         }
 
