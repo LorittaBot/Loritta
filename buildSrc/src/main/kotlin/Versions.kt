@@ -1,6 +1,6 @@
 object Versions {
     const val LORITTA = "2021-SNAPSHOT"
-    const val PUDDING = "0.0.2-20220312.190907-190"
+    const val PUDDING = "0.0.2-20220412.025256-316"
     const val KOTLIN = "1.6.20-M1"
     const val KTOR = "1.6.7"
     const val JDA = "4.3.0_324"
