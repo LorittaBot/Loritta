@@ -51,15 +51,6 @@ class SlashCommandExecutorWrapper(
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        private val SUPPORTED_IMAGE_EXTENSIONS = listOf(
-            "png",
-            "jpg",
-            "jpeg",
-            "bmp",
-            "tiff",
-            "gif"
-        )
-
         val NonGuildServerConfigRoot = ServerConfigRoot(
             0u,
             "pt",
@@ -135,14 +126,7 @@ class SlashCommandExecutorWrapper(
                 NonGuildServerConfigRoot
             }
 
-            // Patches and workarounds!!!
-            val localeId = when (serverConfig.localeId) {
-                "default" -> "pt"
-                "en-us" -> "en"
-                else -> serverConfig.localeId
-            }
-
-            i18nContext = loritta.languageManager.getI18nContextById(localeId)
+            i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
 
             cinnamonContext = if (context is GuildApplicationCommandContext) {
                 CinnamonGuildApplicationCommandContext(

@@ -84,6 +84,22 @@ class LanguageManager(
     }
 
     /**
+     * Gets the I18nContext by its legacy (Loritta Legacy's "BaseLocale") locale ID.
+     *
+     * @param localeId the legacy's locale ID
+     * @return         the context, if the language doesn't exist, the context of the default language will be loaded
+     * @see            I18nContext
+     */
+    fun getI18nContextByLegacyLocaleId(localeId: String) = getI18nContextById(
+        // Patches and workarounds!!!
+        when (localeId) {
+            "default" -> "pt"
+            "en-us" -> "en"
+            else -> defaultLanguageId
+        }
+    )
+
+    /**
      * Gets the ID of an I18nContext, if the ID doesn't exist, the default context ID ([defaultLanguageId]) will be used
      *
      * @param languageId the context of the language

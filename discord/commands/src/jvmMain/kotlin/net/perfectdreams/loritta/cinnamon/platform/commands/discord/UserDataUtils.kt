@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.data.SingleUserCom
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.NotableUserIds
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import kotlin.time.Duration.Companion.minutes
 
 object UserDataUtils {
@@ -105,12 +106,11 @@ object UserDataUtils {
             }
             is ViewingGlobalUserAvatarData -> {
                 avatarHash = data.userAvatarId
-                userAvatar = if (avatarHash != null) {
-                    Icon.UserAvatar(
-                        interactionData.viewingAvatarOfId,
-                        avatarHash
-                    )
-                } else Icon.DefaultUserAvatar(userDiscriminator)
+                userAvatar = UserUtils.createUserAvatarOrDefaultUserAvatar(
+                    interactionData.viewingAvatarOfId,
+                    avatarHash,
+                    userDiscriminator
+                )
             }
         }
 

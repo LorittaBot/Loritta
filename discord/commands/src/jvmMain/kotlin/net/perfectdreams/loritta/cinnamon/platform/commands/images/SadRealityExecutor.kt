@@ -4,7 +4,6 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
-import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.SadRealityRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
@@ -18,6 +17,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import java.util.*
 
@@ -150,12 +150,11 @@ class SadRealityExecutor(
                         SadRealityUser(
                             it.id,
                             "${it.username}#${it.discriminator}",
-                            (it.avatar?.let { avatarHash ->
-                                Icon.UserAvatar(
-                                    it.id,
-                                    avatarHash
-                                )
-                            } ?: Icon.DefaultUserAvatar(it.discriminator.toInt()))
+                            UserUtils.createUserAvatarOrDefaultUserAvatar(
+                                it.id,
+                                it.avatar,
+                                it.discriminator
+                            )
                                 .cdnUrl
                                 .toUrl {
                                     this.size = Image.Size.Size128
@@ -172,12 +171,11 @@ class SadRealityExecutor(
                         SadRealityUser(
                             it.id,
                             "${it.username}#${it.discriminator}",
-                            (it.avatar?.let { avatarHash ->
-                                Icon.UserAvatar(
-                                    it.id,
-                                    avatarHash
-                                )
-                            } ?: Icon.DefaultUserAvatar(it.discriminator.toInt()))
+                            UserUtils.createUserAvatarOrDefaultUserAvatar(
+                                it.id,
+                                it.avatar,
+                                it.discriminator
+                            )
                                 .cdnUrl
                                 .toUrl {
                                     this.size = Image.Size.Size128

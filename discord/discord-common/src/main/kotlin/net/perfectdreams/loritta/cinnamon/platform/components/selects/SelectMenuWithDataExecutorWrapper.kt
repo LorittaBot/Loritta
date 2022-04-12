@@ -57,14 +57,7 @@ class SelectMenuWithDataExecutorWrapper(
                 SlashCommandExecutorWrapper.NonGuildServerConfigRoot
             }
 
-            // Patches and workarounds!!!
-            val localeId = when (serverConfig.localeId) {
-                "default" -> "pt"
-                "en-us" -> "en"
-                else -> serverConfig.localeId
-            }
-
-            i18nContext = loritta.languageManager.getI18nContextById(localeId)
+            i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
 
             // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
             cinnamonContext = if (guildId != null) {

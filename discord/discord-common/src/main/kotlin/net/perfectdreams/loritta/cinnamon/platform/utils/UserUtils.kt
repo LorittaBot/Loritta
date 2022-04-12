@@ -7,6 +7,7 @@ import dev.kord.rest.json.request.MultipartMessageCreateRequest
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
@@ -18,6 +19,31 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 object UserUtils {
     private val logger = KotlinLogging.logger {}
+
+    /**
+     * Creates a [Icon.UserAvatar] from the [userId] and [avatar]. If the [avatar] is null, a [Icon.DefaultUserAvatar] is created based on the [discriminator].
+     *
+     * @param userId        the user's ID
+     * @param avatar        the user's avatar hash
+     * @param discriminator the user's discriminator
+     */
+    fun createUserAvatarOrDefaultUserAvatar(userId: Snowflake, avatar: String?, discriminator: String) = createUserAvatarOrDefaultUserAvatar(userId, avatar, discriminator.toInt())
+
+    /**
+     * Creates a [Icon.UserAvatar] from the [userId] and [avatar]. If the [avatar] is null, a [Icon.DefaultUserAvatar] is created based on the [discriminator].
+     *
+     * @param userId        the user's ID
+     * @param avatar        the user's avatar hash
+     * @param discriminator the user's discriminator
+     */
+    fun createUserAvatarOrDefaultUserAvatar(userId: Snowflake, avatar: String?, discriminator: Int) = if (avatar != null) {
+        Icon.UserAvatar(
+            userId,
+            avatar
+        )
+    } else {
+        Icon.DefaultUserAvatar(discriminator)
+    }
 
     /**
      * Sends the [builder] message to the [userId] via the user's direct message channel.
