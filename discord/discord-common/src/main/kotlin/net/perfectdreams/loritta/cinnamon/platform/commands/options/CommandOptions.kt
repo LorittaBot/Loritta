@@ -136,6 +136,12 @@ class ImageReferenceCommandOption(name: String, description: StringI18nData, req
 
             if (attachment.contentType.value in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES)
                 return URLImageReference(attachment.url)
+
+            // This ain't an image dawg! Because the user explicitly provided the image, then let's fail
+            reader.context.fail(
+                reader.context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound),
+                Emotes.LoriSob
+            )
         } else if (interaKTionAvatarLinkOrEmoteArgument != null) {
             val value = interaKTionAvatarLinkOrEmoteArgument.value as String
 
