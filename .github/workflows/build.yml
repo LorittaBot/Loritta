@@ -54,10 +54,11 @@ jobs:
           :pudding:client:publish
           :discord:web-server:jib
           :discord:gateway:jib
-          :web:showtime:backend:jib
           :microservices:broker-tickers-updater:jib
           :microservices:stats-collector:jib
           :microservices:daily-tax:jib
           :microservices:correios-package-tracker:jib
           :microservices:direct-message-processor:jib
+          :microservices:discord-gateway-events-processor:jib
+          :web:showtime:backend:jib
           --scan
