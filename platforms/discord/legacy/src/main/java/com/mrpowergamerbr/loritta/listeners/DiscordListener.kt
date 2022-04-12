@@ -294,6 +294,10 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 			}
 		}
 
+		// Processed in another application, so we won't process it here
+		if (loritta.enableGatewayEventRelayer)
+			return
+
 		GlobalScope.launch {
 			if (e.isFromType(ChannelType.TEXT)) {
 				try {
