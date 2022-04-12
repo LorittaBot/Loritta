@@ -4,7 +4,6 @@ import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
 import net.perfectdreams.discordinteraktions.common.entities.Channel
-import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.discordinteraktions.common.entities.Role
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
@@ -14,6 +13,7 @@ import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import kotlin.streams.toList
 
 abstract class CommandOption<T>(
@@ -157,12 +157,11 @@ class ImageReferenceCommandOption(name: String, description: StringI18nData, req
             )
 
             if (cachedUserInfo != null) {
-                val icon = cachedUserInfo.avatarId?.let {
-                    Icon.UserAvatar(
-                        Snowflake(cachedUserInfo.id.value),
-                        it
-                    )
-                } ?: Icon.DefaultUserAvatar(cachedUserInfo.discriminator.toInt())
+                val icon = UserUtils.createUserAvatarOrDefaultUserAvatar(
+                    Snowflake(cachedUserInfo.id.value),
+                    cachedUserInfo.avatarId,
+                    cachedUserInfo.discriminator
+                )
 
                 return URLImageReference(icon.cdnUrl.toUrl {
                     this.format = Image.Format.PNG
