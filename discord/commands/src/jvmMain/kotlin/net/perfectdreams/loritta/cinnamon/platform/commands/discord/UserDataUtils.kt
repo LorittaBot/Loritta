@@ -106,7 +106,7 @@ object UserDataUtils {
             }
             is ViewingGlobalUserAvatarData -> {
                 avatarHash = data.userAvatarId
-                userAvatar = UserUtils.convertUserAvatarToIcon(
+                userAvatar = UserUtils.createUserAvatarOrDefaultUserAvatar(
                     interactionData.viewingAvatarOfId,
                     avatarHash,
                     userDiscriminator
