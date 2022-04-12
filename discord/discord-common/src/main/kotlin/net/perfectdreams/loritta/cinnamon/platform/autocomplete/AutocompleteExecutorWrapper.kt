@@ -37,14 +37,7 @@ sealed class AutocompleteExecutorWrapperBase<T>(
                 SlashCommandExecutorWrapper.NonGuildServerConfigRoot
             }
 
-            // Patches and workarounds!!!
-            val localeId = when (serverConfig.localeId) {
-                "default" -> "pt"
-                "en-us" -> "en"
-                else -> serverConfig.localeId
-            }
-
-            val i18nContext = loritta.languageManager.getI18nContextById(localeId)
+            val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
             val cinnamonContext = net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteContext(
                 loritta,
