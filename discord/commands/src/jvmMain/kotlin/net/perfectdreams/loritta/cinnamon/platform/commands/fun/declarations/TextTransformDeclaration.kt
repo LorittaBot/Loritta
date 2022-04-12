@@ -4,14 +4,14 @@ import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextClapExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextLowercaseExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextMockExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextQualityExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextUppercaseExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextVaporQualityExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextVaporwaveExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TextVemDeZapExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextClapExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextLowercaseExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextMockExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextQualityExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextUppercaseExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVaporQualityExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVaporwaveExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVemDeZapExecutor
 
 object TextTransformDeclaration : SlashCommandDeclarationWrapper {
     const val VEMDEZAP_LOCALE_PREFIX = "commands.command.vemdezap"

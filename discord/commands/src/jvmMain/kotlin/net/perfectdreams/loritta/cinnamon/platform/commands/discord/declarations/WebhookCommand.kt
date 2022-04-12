@@ -4,12 +4,12 @@ import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditJsonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditRepostExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookEditSimpleExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendJsonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendRepostExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.WebhookSendSimpleExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditJsonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditRepostExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditSimpleExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookSendJsonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookSendRepostExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookSendSimpleExecutor
 
 object WebhookCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Webhook

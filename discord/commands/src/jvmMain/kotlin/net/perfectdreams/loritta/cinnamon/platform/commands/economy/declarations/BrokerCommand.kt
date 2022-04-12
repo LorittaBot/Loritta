@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.economy.declaration
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerBuyStockExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerPortfolioExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerSellStockExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.BrokerStockInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerBuyStockExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerPortfolioExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerSellStockExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerStockInfoExecutor
 
 object BrokerCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Broker
