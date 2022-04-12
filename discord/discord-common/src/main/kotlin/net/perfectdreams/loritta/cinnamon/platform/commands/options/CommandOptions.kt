@@ -12,6 +12,7 @@ import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
 import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.utils.ContentTypeUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import kotlin.streams.toList
@@ -123,17 +124,6 @@ class UserListCommandOption(
 
 class ImageReferenceCommandOption(name: String, description: StringI18nData, required: Boolean) :
     CommandOption<ImageReference>(name, description, required) {
-    companion object {
-        private val SUPPORTED_IMAGE_EXTENSIONS = listOf(
-            "png",
-            "jpg",
-            "jpeg",
-            "bmp",
-            "tiff",
-            "gif"
-        )
-    }
-
     override suspend fun parse(reader: ArgumentReader): ImageReference {
         val interaKTionAttachmentArgument =
             reader.entries.firstOrNull { opt -> opt.key.name.removeSuffix("_file") == name }
@@ -143,9 +133,9 @@ class ImageReferenceCommandOption(name: String, description: StringI18nData, req
         // Attachments take priority
         if (interaKTionAttachmentArgument != null) {
             val attachment = (interaKTionAttachmentArgument.value as DiscordAttachment)
-            if (attachment.filename.substringAfterLast(".")
-                    .lowercase() in SUPPORTED_IMAGE_EXTENSIONS
-            ) return URLImageReference(attachment.url)
+
+            if (attachment.contentType.value in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES)
+                return URLImageReference(attachment.url)
         } else if (interaKTionAvatarLinkOrEmoteArgument != null) {
             val value = interaKTionAvatarLinkOrEmoteArgument.value as String
 
@@ -200,8 +190,7 @@ class ImageReferenceCommandOption(name: String, description: StringI18nData, req
                 .flatMap { it.attachments }
                 .firstOrNull {
                     // Only get filenames ending with "image" extensions
-                    it.filename.substringAfter(".")
-                        .lowercase() in SUPPORTED_IMAGE_EXTENSIONS
+                    it.contentType.value in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES
                 }?.url
 
             if (attachmentUrl != null) {
