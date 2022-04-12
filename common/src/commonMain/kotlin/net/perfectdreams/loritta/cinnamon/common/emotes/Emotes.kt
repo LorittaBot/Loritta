@@ -35,6 +35,9 @@ object Emotes {
     val LoriSunglasses = DiscordEmote(950114031337865257, "lori_sunglasses", false)
     val LoriBonk = DiscordEmote(956402010712834078, "lori_bonk", false)
     val LoriCard = DiscordEmote(956402937666633769, "lori_card", false)
+    val LoriLick = DiscordEmote(957368372025262120L, "lori_lick", true)
+    val LoriZap = DiscordEmote(956404868417990776L, "lori_zap", false)
+    val LoriFlushed = DiscordEmote(732706868224327702L, "lori_flushed", false)
 
     val PantufaGaming = DiscordEmote(853048446922784819L, "pantufa_gaming", false)
 
@@ -92,6 +95,7 @@ object Emotes {
     val DeliveryTruck = UnicodeEmote("\uD83D\uDE9A")
     val Dash = UnicodeEmote("\uD83D\uDCA8")
     val Inbox = UnicodeEmote("\uD83D\uDCE5")
+    val FileFolder = UnicodeEmote("\uD83D\uDCC1")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)

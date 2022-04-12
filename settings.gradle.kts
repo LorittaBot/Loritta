@@ -58,6 +58,7 @@ include(":microservices:stats-collector")
 include(":microservices:direct-message-processor")
 include(":microservices:daily-tax")
 include(":microservices:correios-package-tracker")
+include(":microservices:discord-gateway-events-processor")
 
 // ===[ WEB ]===
 include(":web:showtime:web-common")

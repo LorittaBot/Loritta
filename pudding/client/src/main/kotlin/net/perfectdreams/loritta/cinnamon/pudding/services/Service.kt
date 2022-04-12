@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
+import net.perfectdreams.loritta.cinnamon.pudding.data.MiscellaneousConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.PatchNotesNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
@@ -26,6 +27,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
@@ -47,6 +49,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
@@ -57,6 +60,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSon
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import org.jetbrains.exposed.sql.ResultRow
@@ -114,7 +118,9 @@ open class Service(private val pudding: Pudding) {
         pudding,
         ServerConfigRoot(
             row[ServerConfigs.id].value.toULong(),
-            row[ServerConfigs.localeId]
+            row[ServerConfigs.localeId],
+            row[ServerConfigs.starboardConfig]?.value,
+            row[ServerConfigs.miscellaneousConfig]?.value
         )
     )
 
@@ -266,4 +272,15 @@ fun Daily.Companion.fromRow(row: ResultRow) = Daily(
 
 fun PatchNotesNotification.Companion.fromRow(row: ResultRow) = PatchNotesNotification(
     row[PatchNotesNotifications.path]
+)
+
+fun StarboardConfig.Companion.fromRow(row: ResultRow) = StarboardConfig(
+    row[StarboardConfigs.enabled],
+    row[StarboardConfigs.starboardChannelId].toULong(),
+    row[StarboardConfigs.requiredStars]
+)
+
+fun MiscellaneousConfig.Companion.fromRow(row: ResultRow) = MiscellaneousConfig(
+    row[MiscellaneousConfigs.enableBomDiaECia],
+    row[MiscellaneousConfigs.enableQuirky],
 )

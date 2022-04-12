@@ -51,7 +51,12 @@ class SlashCommandExecutorWrapper(
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        val NonGuildServerConfigRoot = ServerConfigRoot(0u, "pt")
+        val NonGuildServerConfigRoot = ServerConfigRoot(
+            0u,
+            "pt",
+            null,
+            null
+        )
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
