@@ -92,6 +92,7 @@ object Emotes {
     val DeliveryTruck = UnicodeEmote("\uD83D\uDE9A")
     val Dash = UnicodeEmote("\uD83D\uDCA8")
     val Inbox = UnicodeEmote("\uD83D\uDCE5")
+    val FileFolder = UnicodeEmote("\uD83D\uDCC1")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)

@@ -60,7 +60,11 @@ class SlashCommandExecutorWrapper(
             "gif"
         )
 
-        val NonGuildServerConfigRoot = ServerConfigRoot(0u, "pt")
+        val NonGuildServerConfigRoot = ServerConfigRoot(
+            0u,
+            "pt",
+            null
+        )
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {

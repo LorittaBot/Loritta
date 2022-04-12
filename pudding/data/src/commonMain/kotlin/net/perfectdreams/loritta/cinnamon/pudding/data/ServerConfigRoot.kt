@@ -5,5 +5,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ServerConfigRoot(
     val id: ULong,
-    val localeId: String
+    val localeId: String,
+    val starboardConfigId: Long?
 )

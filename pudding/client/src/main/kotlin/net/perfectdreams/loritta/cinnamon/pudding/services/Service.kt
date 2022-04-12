@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
@@ -57,6 +58,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSon
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import org.jetbrains.exposed.sql.ResultRow
@@ -114,7 +116,8 @@ open class Service(private val pudding: Pudding) {
         pudding,
         ServerConfigRoot(
             row[ServerConfigs.id].value.toULong(),
-            row[ServerConfigs.localeId]
+            row[ServerConfigs.localeId],
+            row[ServerConfigs.starboardConfig]?.value
         )
     )
 
@@ -266,4 +269,10 @@ fun Daily.Companion.fromRow(row: ResultRow) = Daily(
 
 fun PatchNotesNotification.Companion.fromRow(row: ResultRow) = PatchNotesNotification(
     row[PatchNotesNotifications.path]
+)
+
+fun StarboardConfig.Companion.fromRow(row: ResultRow) = StarboardConfig(
+    row[StarboardConfigs.enabled],
+    row[StarboardConfigs.starboardChannelId].toULong(),
+    row[StarboardConfigs.requiredStars]
 )
