@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils.config
+package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig

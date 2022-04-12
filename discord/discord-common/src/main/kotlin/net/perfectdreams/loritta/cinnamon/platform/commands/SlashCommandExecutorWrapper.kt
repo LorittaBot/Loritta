@@ -54,6 +54,7 @@ class SlashCommandExecutorWrapper(
         val NonGuildServerConfigRoot = ServerConfigRoot(
             0u,
             "pt",
+            null,
             null
         )
     }

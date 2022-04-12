@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
+import net.perfectdreams.loritta.cinnamon.pudding.data.MiscellaneousConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.PatchNotesNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
@@ -48,6 +49,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
@@ -117,7 +119,8 @@ open class Service(private val pudding: Pudding) {
         ServerConfigRoot(
             row[ServerConfigs.id].value.toULong(),
             row[ServerConfigs.localeId],
-            row[ServerConfigs.starboardConfig]?.value
+            row[ServerConfigs.starboardConfig]?.value,
+            row[ServerConfigs.miscellaneousConfig]?.value
         )
     )
 
@@ -275,4 +278,9 @@ fun StarboardConfig.Companion.fromRow(row: ResultRow) = StarboardConfig(
     row[StarboardConfigs.enabled],
     row[StarboardConfigs.starboardChannelId].toULong(),
     row[StarboardConfigs.requiredStars]
+)
+
+fun MiscellaneousConfig.Companion.fromRow(row: ResultRow) = MiscellaneousConfig(
+    row[MiscellaneousConfigs.enableBomDiaECia],
+    row[MiscellaneousConfigs.enableQuirky],
 )

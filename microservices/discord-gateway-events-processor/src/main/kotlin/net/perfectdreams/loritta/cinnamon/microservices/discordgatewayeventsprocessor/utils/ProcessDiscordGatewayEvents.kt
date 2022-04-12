@@ -1,9 +1,11 @@
-package net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils
+package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils
 
-import dev.kord.common.entity.Snowflake
+import dev.kord.gateway.ChannelCreate
 import dev.kord.gateway.Event
 import dev.kord.gateway.MessageReactionAdd
 import dev.kord.gateway.MessageReactionRemove
+import dev.kord.gateway.MessageReactionRemoveAll
+import dev.kord.gateway.MessageReactionRemoveEmoji
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
@@ -13,7 +15,8 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.StarboardModule
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordGatewayEvents
 
@@ -74,41 +77,54 @@ class ProcessDiscordGatewayEvents(
                         )
 
                         when (discordEvent) {
+                            // ===[ REACTIONS ]===
                             is MessageReactionAdd -> {
-                                logger.info { "Someone added a reaction! ${discordEvent.reaction.userId} ${discordEvent.reaction.emoji} ${discordEvent.reaction.messageId}" }
-                                // TODO: Don't use GlobalScope
-                                if (discordEvent.reaction.guildId.value == Snowflake(268353819409252352L)) {
-                                    repeat(5) {
-                                        GlobalScope.launch {
-                                            // test crash
-                                            m.starboardModule.handleStarboardReaction(
-                                                discordEvent.reaction.channelId,
-                                                discordEvent.reaction.guildId.value ?: return@launch,
-                                                discordEvent.reaction.messageId,
-                                                discordEvent.reaction.emoji
-                                            )
-                                        }
-                                    }
-                                } else {
-                                    GlobalScope.launch {
-                                        // test crash
-                                        m.starboardModule.handleStarboardReaction(
-                                            discordEvent.reaction.channelId,
-                                            discordEvent.reaction.guildId.value ?: return@launch,
-                                            discordEvent.reaction.messageId,
-                                            discordEvent.reaction.emoji
-                                        )
-                                    }
+                                GlobalScope.launch {
+                                    m.starboardModule.handleStarboardReaction(
+                                        discordEvent.reaction.guildId.value ?: return@launch,
+                                        discordEvent.reaction.channelId,
+                                        discordEvent.reaction.messageId,
+                                        discordEvent.reaction.emoji.name
+                                    )
                                 }
                             }
                             is MessageReactionRemove -> {
-                                logger.info { "Someone removed a reaction! ${discordEvent.reaction.userId} ${discordEvent.reaction.emoji} ${discordEvent.reaction.messageId}" }
                                 GlobalScope.launch {
                                     m.starboardModule.handleStarboardReaction(
-                                        discordEvent.reaction.channelId,
                                         discordEvent.reaction.guildId.value ?: return@launch,
+                                        discordEvent.reaction.channelId,
                                         discordEvent.reaction.messageId,
-                                        discordEvent.reaction.emoji
+                                        discordEvent.reaction.emoji.name
+                                    )
+                                }
+                            }
+                            is MessageReactionRemoveEmoji -> {
+                                GlobalScope.launch {
+                                    m.starboardModule.handleStarboardReaction(
+                                        discordEvent.reaction.guildId,
+                                        discordEvent.reaction.channelId,
+                                        discordEvent.reaction.messageId,
+                                        discordEvent.reaction.emoji.name
+                                    )
+                                }
+                            }
+                            is MessageReactionRemoveAll -> {
+                                GlobalScope.launch {
+                                    m.starboardModule.handleStarboardReaction(
+                                        discordEvent.reactions.guildId.value ?: return@launch,
+                                        discordEvent.reactions.channelId,
+                                        discordEvent.reactions.messageId,
+                                        StarboardModule.STAR_REACTION // We only want the code to check if it should be removed from the starboard
+                                    )
+                                }
+                            }
+
+                            // ===[ CHANNEL CREATE ]===
+                            is ChannelCreate -> {
+                                GlobalScope.launch {
+                                    m.addFirstToNewChannelsModule.handleFirst(
+                                        discordEvent.channel.guildId.value ?: return@launch, // Pretty sure that this cannot be null here
+                                        discordEvent.channel.id
                                     )
                                 }
                             }

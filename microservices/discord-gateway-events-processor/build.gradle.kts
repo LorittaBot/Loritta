@@ -47,7 +47,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/lorittabot/direct-message-processor"
+        image = "ghcr.io/lorittabot/discord-gateway-events-processor"
 
         auth {
             username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")

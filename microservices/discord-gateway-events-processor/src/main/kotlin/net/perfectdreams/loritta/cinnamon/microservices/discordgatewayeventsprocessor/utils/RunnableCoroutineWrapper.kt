@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils
+package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils
 
 import kotlinx.coroutines.runBlocking
 

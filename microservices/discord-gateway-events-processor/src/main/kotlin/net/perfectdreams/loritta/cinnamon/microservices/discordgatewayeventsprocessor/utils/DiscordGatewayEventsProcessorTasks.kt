@@ -1,10 +1,10 @@
-package net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils
+package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import java.util.concurrent.Executors
 
-class DirectMessageProcessorTasks(private val m: DiscordGatewayEventsProcessor) {
+class DiscordGatewayEventsProcessorTasks(private val m: DiscordGatewayEventsProcessor) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
