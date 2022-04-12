@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.StringAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.StringAutocompleteExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandOptionsWrapper
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
 
@@ -21,13 +22,13 @@ class BrokerStockQuantityAutocompleteExecutor(val loritta: LorittaCinnamon) : St
 
         val quantity = NumberUtils.convertShortenedNumberToLong(context.i18nContext, currentInput) ?: return mapOf(
             context.i18nContext.get(
-                I18nKeysData.Innercommands.InvalidNumber(currentInput)
+                I18nKeysData.Commands.InvalidNumber(currentInput)
             ).replace("`", "").shortenWithEllipsis(SlashCommandOptionsWrapper.MAX_OPTIONS_DESCRIPTION_LENGTH) to "invalid_number"
         )
 
         return mapOf(
             context.i18nContext.get(
-                I18nKeysData.Innercommands.Innercommand.Innerbroker.SharesCountWithPrice(
+                BrokerCommand.I18N_PREFIX.SharesCountWithPrice(
                     quantity,
                     quantity * tickerInfo.value
                 )

@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
@@ -17,9 +18,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 class BrokerBuyStockExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(BrokerBuyStockExecutor::class) {
         object Options : ApplicationCommandOptions() {
-            val ticker = string("ticker",
-                I18nKeysData.Innercommands.Innercommand.Innerbroker.Innerbuy.Inneroptions.Innerticker.Text
-            )
+            val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Buy.Options.Ticker.Text)
                 .also {
                     LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
                         it.choice(tickerId.lowercase(), "$tickerTitle ($tickerId)")
@@ -27,9 +26,7 @@ class BrokerBuyStockExecutor : SlashCommandExecutor() {
                 }
                 .register()
 
-            val quantity = optionalString("quantity",
-                I18nKeysData.Innercommands.Innercommand.Innerbroker.Innerbuy.Inneroptions.Innerquantity.Text
-            )
+            val quantity = optionalString("quantity", BrokerCommand.I18N_PREFIX.Buy.Options.Quantity.Text)
                 .autocomplete(BrokerStockQuantityAutocompleteExecutor)
                 .register()
         }
@@ -45,11 +42,11 @@ class BrokerBuyStockExecutor : SlashCommandExecutor() {
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
-            context.failEphemerally(context.i18nContext.get(I18nKeysData.Innercommands.Innercommand.Innerbroker.ThatIsNotAnValidStockTicker))
+            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker))
 
         val quantity = NumberUtils.convertShortenedNumberToLong(context.i18nContext, quantityAsString) ?: context.failEphemerally(
             context.i18nContext.get(
-                I18nKeysData.Innercommands.InvalidNumber(quantityAsString)
+                I18nKeysData.Commands.InvalidNumber(quantityAsString)
             )
         )
 
@@ -63,17 +60,17 @@ class BrokerBuyStockExecutor : SlashCommandExecutor() {
             context.failEphemerally(
                 context.i18nContext.get(
                     when (quantity) {
-                        0L -> I18nKeysData.Innercommands.Innercommand.Innerbroker.Innerbuy.TryingToBuyZeroShares
-                        else -> I18nKeysData.Innercommands.Innercommand.Innerbroker.Innerbuy.TryingToBuyLessThanZeroShares
+                        0L -> BrokerCommand.I18N_PREFIX.Buy.TryingToBuyZeroShares
+                        else -> BrokerCommand.I18N_PREFIX.Buy.TryingToBuyLessThanZeroShares
                     }
                 )
             )
         } catch (e: BovespaBrokerService.StaleTickerDataException) {
-            context.failEphemerally(context.i18nContext.get(I18nKeysData.Innercommands.Innercommand.Innerbroker.StaleTickerData))
+            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.StaleTickerData))
         } catch (e: BovespaBrokerService.OutOfSessionException) {
             context.failEphemerally(
                 context.i18nContext.get(
-                    I18nKeysData.Innercommands.Innercommand.Innerbroker.StockMarketClosed(
+                    BrokerCommand.I18N_PREFIX.StockMarketClosed(
                         LorittaBovespaBrokerUtils.TIME_OPEN_DISCORD_TIMESTAMP,
                         LorittaBovespaBrokerUtils.TIME_CLOSING_DISCORD_TIMESTAMP
                     )
@@ -82,7 +79,7 @@ class BrokerBuyStockExecutor : SlashCommandExecutor() {
         } catch (e: BovespaBrokerService.NotEnoughSonhosException) {
             context.failEphemerally {
                 styled(
-                    context.i18nContext.get(I18nKeysData.Innercommands.Innercommand.Innerbroker.Innerbuy.YouDontHaveEnoughSonhos),
+                    context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.YouDontHaveEnoughSonhos),
                     Emotes.LoriSob
                 )
 
@@ -97,7 +94,7 @@ class BrokerBuyStockExecutor : SlashCommandExecutor() {
         } catch (e: BovespaBrokerService.TooManySharesException) {
             context.failEphemerally(
                 context.i18nContext.get(
-                    I18nKeysData.Innercommands.Innercommand.Innerbroker.Innerbuy.TooManyShares(
+                    BrokerCommand.I18N_PREFIX.Buy.TooManyShares(
                         LorittaBovespaBrokerUtils.MAX_STOCK_SHARES_PER_USER
                     )
                 )
@@ -106,7 +103,7 @@ class BrokerBuyStockExecutor : SlashCommandExecutor() {
 
         context.sendEphemeralReply(
             context.i18nContext.get(
-                I18nKeysData.Innercommands.Innercommand.Innerbroker.Innerbuy.SuccessfullyBought(
+                BrokerCommand.I18N_PREFIX.Buy.SuccessfullyBought(
                     sharesCount = boughtQuantity,
                     ticker = tickerId,
                     price = value

@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
@@ -16,9 +17,7 @@ import kotlin.math.abs
 class BrokerSellStockExecutor : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration(BrokerSellStockExecutor::class) {
         object Options : ApplicationCommandOptions() {
-            val ticker = string("ticker",
-                I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.Inneroptions.Innerticker.Text
-            )
+            val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Sell.Options.Ticker.Text)
                 .also {
                     LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
                         it.choice(tickerId.lowercase(), "$tickerTitle ($tickerId)")
@@ -26,9 +25,7 @@ class BrokerSellStockExecutor : SlashCommandExecutor() {
                 }
                 .register()
 
-            val quantity = optionalString("quantity",
-                I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.Inneroptions.Innerquantity.Text
-            )
+            val quantity = optionalString("quantity", BrokerCommand.I18N_PREFIX.Sell.Options.Quantity.Text)
                 .autocomplete(BrokerStockQuantityAutocompleteExecutor)
                 .register()
         }
@@ -44,14 +41,14 @@ class BrokerSellStockExecutor : SlashCommandExecutor() {
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
-            context.failEphemerally(context.i18nContext.get(I18nKeysData.Innercommands.Innercommand.Innerbroker.ThatIsNotAnValidStockTicker))
+            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker))
 
         val quantity = if (quantityAsString == "all") {
             context.loritta.services.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
                 .firstOrNull { it.ticker == tickerId }
                 ?.count ?: context.failEphemerally(
                 context.i18nContext.get(
-                    I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.YouDontHaveAnySharesInThatTicker(
+                    BrokerCommand.I18N_PREFIX.Sell.YouDontHaveAnySharesInThatTicker(
                         tickerId
                     )
                 )
@@ -59,7 +56,7 @@ class BrokerSellStockExecutor : SlashCommandExecutor() {
         } else {
             NumberUtils.convertShortenedNumberToLong(context.i18nContext, quantityAsString) ?: context.failEphemerally(
                 context.i18nContext.get(
-                    I18nKeysData.Innercommands.InvalidNumber(quantityAsString)
+                    I18nKeysData.Commands.InvalidNumber(quantityAsString)
                 )
             )
         }
@@ -74,17 +71,17 @@ class BrokerSellStockExecutor : SlashCommandExecutor() {
             context.failEphemerally(
                 context.i18nContext.get(
                     when (quantity) {
-                        0L -> I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.TryingToSellZeroShares
-                        else -> I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.TryingToSellLessThanZeroShares
+                        0L -> BrokerCommand.I18N_PREFIX.Sell.TryingToSellZeroShares
+                        else -> BrokerCommand.I18N_PREFIX.Sell.TryingToSellLessThanZeroShares
                     }
                 )
             )
         } catch (e: BovespaBrokerService.StaleTickerDataException) {
-            context.failEphemerally(context.i18nContext.get(I18nKeysData.Innercommands.Innercommand.Innerbroker.StaleTickerData))
+            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.StaleTickerData))
         } catch (e: BovespaBrokerService.OutOfSessionException) {
             context.failEphemerally(
                 context.i18nContext.get(
-                    I18nKeysData.Innercommands.Innercommand.Innerbroker.StockMarketClosed(
+                    BrokerCommand.I18N_PREFIX.StockMarketClosed(
                         LorittaBovespaBrokerUtils.TIME_OPEN_DISCORD_TIMESTAMP,
                         LorittaBovespaBrokerUtils.TIME_CLOSING_DISCORD_TIMESTAMP
                     )
@@ -93,7 +90,7 @@ class BrokerSellStockExecutor : SlashCommandExecutor() {
         } catch (e: BovespaBrokerService.NotEnoughSharesException) {
             context.failEphemerally(
                 context.i18nContext.get(
-                    I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.YouDontHaveEnoughStocks(
+                    BrokerCommand.I18N_PREFIX.Sell.YouDontHaveEnoughStocks(
                         e.currentBoughtSharesCount,
                         tickerId
                     )
@@ -107,18 +104,18 @@ class BrokerSellStockExecutor : SlashCommandExecutor() {
 
         context.sendEphemeralReply(
             context.i18nContext.get(
-                I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.SuccessfullySold(
+                BrokerCommand.I18N_PREFIX.Sell.SuccessfullySold(
                     soldQuantity,
                     tickerId,
                     when {
                         isNeutralProfit -> {
                             context.i18nContext.get(
-                                I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.SuccessfullySoldNeutral
+                                BrokerCommand.I18N_PREFIX.Sell.SuccessfullySoldNeutral
                             )
                         }
                         isPositiveProfit -> {
                             context.i18nContext.get(
-                                I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.SuccessfullySoldProfit(
+                                BrokerCommand.I18N_PREFIX.Sell.SuccessfullySoldProfit(
                                     abs(earnings),
                                     abs(profit)
                                 )
@@ -126,7 +123,7 @@ class BrokerSellStockExecutor : SlashCommandExecutor() {
                         }
                         else -> {
                             context.i18nContext.get(
-                                I18nKeysData.Innercommands.Innercommand.Innerbroker.Innersell.SuccessfullySoldLoss(
+                                BrokerCommand.I18N_PREFIX.Sell.SuccessfullySoldLoss(
                                     abs(earnings),
                                     abs(profit)
                                 )
