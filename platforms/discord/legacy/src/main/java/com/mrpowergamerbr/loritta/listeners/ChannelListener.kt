@@ -10,6 +10,10 @@ import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
 
 class ChannelListener(val loritta: Loritta) : ListenerAdapter() {
 	override fun onTextChannelCreate(event: TextChannelCreateEvent) {
+		// Processed in another application, so we won't process it here
+		if (loritta.enableGatewayEventRelayer)
+			return
+
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 			val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(com.mrpowergamerbr.loritta.utils.loritta, ServerConfig::miscellaneousConfig)
