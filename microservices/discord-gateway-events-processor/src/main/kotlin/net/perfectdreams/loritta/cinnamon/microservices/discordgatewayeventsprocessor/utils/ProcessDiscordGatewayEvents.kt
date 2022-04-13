@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils
 
+import dev.kord.common.entity.ChannelType
 import dev.kord.gateway.ChannelCreate
 import dev.kord.gateway.Event
 import dev.kord.gateway.MessageReactionAdd
@@ -121,11 +122,15 @@ class ProcessDiscordGatewayEvents(
 
                             // ===[ CHANNEL CREATE ]===
                             is ChannelCreate -> {
+                                // This should only be sent in a guild text channel
+                                if (discordEvent.channel.type == ChannelType.GuildText) {
                                 GlobalScope.launch {
-                                    m.addFirstToNewChannelsModule.handleFirst(
-                                        discordEvent.channel.guildId.value ?: return@launch, // Pretty sure that this cannot be null here
-                                        discordEvent.channel.id
-                                    )
+                                        m.addFirstToNewChannelsModule.handleFirst(
+                                            discordEvent.channel.guildId.value
+                                                ?: return@launch, // Pretty sure that this cannot be null here
+                                            discordEvent.channel.id
+                                        )
+                                    }
                                 }
                             }
                             else -> {}
