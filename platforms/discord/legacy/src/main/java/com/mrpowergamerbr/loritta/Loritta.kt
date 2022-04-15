@@ -176,7 +176,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
 	var messageListener = MessageListener(this)
 	var voiceChannelListener = VoiceChannelListener(this)
-	var channelListener = ChannelListener(this)
 	var discordMetricsListener = DiscordMetricsListener(this)
 	val gatewayRelayerListener = GatewayEventRelayerListener(this)
 	var builder: DefaultShardManagerBuilder
@@ -197,12 +196,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 		.build<Long, Optional<CachedUserInfo>>()
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
-
-	// This is like a bad way to implement a feature flag, but idk
-	val enableGatewayEventRelayer = if (config.loritta.environment == EnvironmentType.PRODUCTION)
-		instanceConfig.loritta.currentClusterId == 13L
-	else
-		true
 
 	init {
 		LorittaLauncher.loritta = this
@@ -247,10 +240,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 			.setStatus(discordConfig.discord.status)
 			.setBulkDeleteSplittingEnabled(false)
 			.setHttpClientBuilder(okHttpBuilder)
-			.apply {
-				if (enableGatewayEventRelayer)
-					setRawEventsEnabled(true)
-			}
+			.setRawEventsEnabled(true)
 			.setActivityProvider {
 				// Before we updated the status every 60s and rotated between a list of status
 				// However this causes issues, Discord blocks all gateway events until the status is
@@ -270,7 +260,6 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 				eventLogListener,
 				messageListener,
 				voiceChannelListener,
-				channelListener,
 				discordMetricsListener,
 				gatewayRelayerListener
 			)

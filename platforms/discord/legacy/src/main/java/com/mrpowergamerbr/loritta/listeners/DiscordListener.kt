@@ -293,25 +293,6 @@ class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
 				}
 			}
 		}
-
-		// Processed in another application, so we won't process it here
-		if (loritta.enableGatewayEventRelayer)
-			return
-
-		GlobalScope.launch {
-			if (e.isFromType(ChannelType.TEXT)) {
-				try {
-					// Starboard
-					val config = loritta.getOrCreateServerConfig(e.guild.idLong, true)
-					val starboardConfig = config.getCachedOrRetreiveFromDatabase<StarboardConfig?>(ServerConfig::starboardConfig)
-
-					if (starboardConfig != null && starboardConfig.enabled)
-						StarboardModule.handleStarboardReaction(e, starboardConfig)
-				} catch (exception: Exception) {
-					logger.error("[${e.guild.name}] Starboard ${e.member?.user?.name}", exception)
-				}
-			}
-		}
 	}
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
