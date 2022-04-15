@@ -25,7 +25,9 @@ kotlin {
             dependencies {
                 implementation(kotlin("stdlib-common"))
                 implementation(project(":common-legacy"))
-                api("net.perfectdreams.loritta.cinnamon.pudding:data:${Versions.PUDDING}")
+                api("net.perfectdreams.loritta.cinnamon.pudding:data:${Versions.PUDDING}") {
+                    exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7
+                }
             }
         }
 

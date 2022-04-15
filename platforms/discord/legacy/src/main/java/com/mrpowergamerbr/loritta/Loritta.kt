@@ -13,7 +13,6 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.listeners.ChannelListener
 import com.mrpowergamerbr.loritta.listeners.DiscordListener
 import com.mrpowergamerbr.loritta.listeners.DiscordMetricsListener
 import com.mrpowergamerbr.loritta.listeners.EventLogListener
