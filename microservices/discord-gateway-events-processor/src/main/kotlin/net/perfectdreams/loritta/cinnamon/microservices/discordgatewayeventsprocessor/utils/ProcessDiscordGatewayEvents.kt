@@ -41,7 +41,7 @@ class ProcessDiscordGatewayEvents(
                 val connection = pudding.hikariDataSource.connection
                 connection.use {
                     val selectStatement =
-                        it.prepareStatement("""SELECT id, "type", payload FROM ${DiscordGatewayEvents.tableName} ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 10;""")
+                        it.prepareStatement("""SELECT id, "type", payload FROM ${DiscordGatewayEvents.tableName} ORDER BY id FOR UPDATE SKIP LOCKED LIMIT ${m.config.eventsPerBatch};""")
                     val rs = selectStatement.executeQuery()
 
                     var count = 0
