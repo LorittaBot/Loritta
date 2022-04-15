@@ -127,7 +127,7 @@ class SlashCommandExecutorWrapper(
                 NonGuildServerConfigRoot
             }
 
-            i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
+            i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
             cinnamonContext = if (context is GuildApplicationCommandContext) {
                 CinnamonGuildApplicationCommandContext(
