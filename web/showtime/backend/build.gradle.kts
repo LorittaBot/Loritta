@@ -18,7 +18,10 @@ dependencies {
 
     // Ktor
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
-    implementation("io.ktor:ktor-html-builder:${Versions.KTOR}")
+    implementation("io.ktor:ktor-server-html-builder:${Versions.KTOR}")
+    implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
+    implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
+    implementation("io.ktor:ktor-server-status-pages:${Versions.KTOR}")
 
     // KotlinX HTML
     implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.7.3")
@@ -30,7 +33,7 @@ dependencies {
     implementation("com.charleskorn.kaml:kaml:0.36.0")
 
     // Sequins
-    api("net.perfectdreams.sequins.ktor:base-route:1.0.2")
+    api("net.perfectdreams.sequins.ktor:base-route:1.0.4")
 
     api("commons-codec:commons-codec:1.15")
 

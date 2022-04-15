@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.microservices.brokertickersupdater
 
 import io.ktor.client.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -27,9 +28,10 @@ class BrokerTickersUpdater(val config: RootConfig, val services: Pudding, val ht
     val cachedValues = mutableMapOf<String, CachedTickerValues>()
 
     fun start() {
-        val result = runBlocking { http.get<String>("https://br.tradingview.com/quote_token/") {
+        val result = runBlocking { http.get("https://br.tradingview.com/quote_token/") {
             header("Cookie", "sessionid=${config.tradingViewSessionId};")
-        }.removePrefix("\"")
+        }.bodyAsText()
+            .removePrefix("\"")
             .removeSuffix("\"") }
 
         val _tradingApi = TradingViewAPI(result)

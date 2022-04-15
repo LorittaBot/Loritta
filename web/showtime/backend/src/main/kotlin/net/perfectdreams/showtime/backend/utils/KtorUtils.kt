@@ -1,6 +1,6 @@
 package net.perfectdreams.showtime.backend.utils
 
-import io.ktor.request.*
+import io.ktor.server.request.*
 import net.perfectdreams.dokyo.WebsiteTheme
 
 class HttpRedirectException(val location: String, val permanent: Boolean = false) : RuntimeException()

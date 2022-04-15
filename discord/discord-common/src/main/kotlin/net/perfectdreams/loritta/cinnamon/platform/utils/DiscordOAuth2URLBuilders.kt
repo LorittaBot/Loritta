@@ -8,8 +8,8 @@ import io.ktor.http.*
 fun DiscordOAuth2AuthorizationURL(
     parameters: ParametersBuilder.() -> (Unit)
 ) = URLBuilder(
-    URLProtocol.HTTPS,
+    protocol = URLProtocol.HTTPS,
     host = "discord.com",
-    encodedPath = "/oauth2/authorize",
-    parameters = ParametersBuilder().apply(parameters)
+    pathSegments = listOf("oauth2", "authorize"),
+    parameters = ParametersBuilder().apply(parameters).build()
 ).build()

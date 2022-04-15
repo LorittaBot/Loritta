@@ -1,8 +1,8 @@
 package net.perfectdreams.showtime.backend.routes
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
-import io.ktor.application.*
-import io.ktor.request.*
+import io.ktor.server.application.*
+import io.ktor.server.request.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.showtime.backend.ShowtimeBackend

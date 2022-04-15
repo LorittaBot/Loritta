@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.webserver.webserver.routes.api.v1.cinnamon
 
-import io.ktor.application.*
-import io.ktor.response.*
+import io.ktor.server.application.*
+import io.ktor.server.response.*
 import io.prometheus.client.CollectorRegistry
 import io.prometheus.client.exporter.common.TextFormat
 import kotlinx.coroutines.Dispatchers

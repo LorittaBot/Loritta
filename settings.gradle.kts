@@ -13,7 +13,7 @@ dependencyResolutionManagement {
         create("libs") {
             val kotlin = version("kotlin", "1.6.20")
             val kotlinXSerialization = version("kotlinx-serialization", "1.3.2")
-            val ktor = version("ktor", "1.6.7")
+            val ktor = version("ktor", "2.0.0")
             val jib = version("jib", "3.2.1")
             val exposed = version("exposed", "0.37.3")
             val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")

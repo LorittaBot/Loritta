@@ -41,7 +41,7 @@ class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
         val hungerGamesUrl = "https://brantsteele.net/hungergames"
 
         // First we load the "disclaimer" page to get the cookie
-        val disclaimer = context.loritta.http.get<HttpResponse>("$hungerGamesUrl/disclaimer.php")
+        val disclaimer = context.loritta.http.get("$hungerGamesUrl/disclaimer.php")
 
         // The PHPSESSID cookie seems to be always the last one (after the __cfuid cookie)
         // So we get the content after PHPSESSID= but before the ;, getting only the ID
@@ -49,14 +49,14 @@ class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
             .substringAfter("PHPSESSID=")
             .substringBefore(";")
 
-        context.loritta.http.get<HttpResponse>("$hungerGamesUrl/agree.php") {
+        context.loritta.http.get("$hungerGamesUrl/agree.php") {
             header("Cookie", "PHPSESSID=$phpSessId")
         }
 
         val extension = if (guild.icon?.startsWith("a_") == true) "gif" else "png"
         val urlIcon = "https://cdn.discordapp.com/icons/${guild.id.value}/${guild.icon}.$extension?size=2048"
 
-        context.loritta.http.submitFormWithBinaryData<HttpResponse>(
+        context.loritta.http.submitFormWithBinaryData(
             "$hungerGamesUrl/personalize-24.php",
             formData {
                 append("seasonname", guild.name)
@@ -100,12 +100,12 @@ class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
         }
 
         // Try going to the save page
-        val result3 = context.loritta.http.get<HttpResponse>("$hungerGamesUrl/save.php") {
+        val result3 = context.loritta.http.get("$hungerGamesUrl/save.php") {
             header("Cookie", "PHPSESSID=$phpSessId")
         }
 
         // Get the season URL, it is inside of the #content element in a <a> tag
-        val jsoup = Jsoup.parse(result3.readText())
+        val jsoup = Jsoup.parse(result3.bodyAsText())
 
         val saveLink = jsoup.getElementById("content")
             .getElementsByTag("a")

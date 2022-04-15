@@ -248,8 +248,8 @@ class ShowtimeFrontend {
      * Requests the logged in user via "/api/v1/users/@me" and calls [updateLoggedInUser] if the request succeeds.
      */
     suspend fun loadLoggedInUser() {
-        val httpResponse = http.get<HttpResponse>("${window.location.origin}/api/v1/users/@me")
-        val payload = httpResponse.readText()
+        val httpResponse = http.get("${window.location.origin}/api/v1/users/@me")
+        val payload = httpResponse.bodyAsText()
 
         println(payload)
 

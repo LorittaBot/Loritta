@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.cinnamon.platform.webserver.webserver
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
-import io.ktor.application.*
 import io.ktor.client.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.webserver.DefaultInteractionRequestHandler
 import net.perfectdreams.discordinteraktions.webserver.installDiscordInteractions

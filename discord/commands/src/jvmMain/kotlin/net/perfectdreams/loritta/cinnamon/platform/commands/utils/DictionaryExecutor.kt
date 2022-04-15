@@ -39,7 +39,7 @@ class DictionaryExecutor(val http: HttpClient) : SlashCommandExecutor() {
         val language = args[options.language]
         val wordToBeSearched = args[options.word]
 
-        val httpResponse = http.get<HttpResponse>(
+        val httpResponse = http.get(
             "https://www.dicio.com.br/pesquisa.php?q=${
                 URLEncoder.encode(
                     wordToBeSearched,
@@ -54,7 +54,7 @@ class DictionaryExecutor(val http: HttpClient) : SlashCommandExecutor() {
                 Emotes.Error
             )
 
-        val response = httpResponse.readText()
+        val response = httpResponse.bodyAsText()
 
         var jsoup = Jsoup.parse(response)
 
@@ -72,7 +72,7 @@ class DictionaryExecutor(val http: HttpClient) : SlashCommandExecutor() {
             val linkElement = resultadosLi.getElementsByClass("_sugg").first()
             val link = linkElement.attr("href")
 
-            val httpRequest2 = http.get<HttpResponse>("https://www.dicio.com.br$link")
+            val httpRequest2 = http.get("https://www.dicio.com.br$link")
 
             // This should *never* happen because we are getting it directly from the search results, but...
             if (httpRequest2.status == HttpStatusCode.NotFound)
@@ -81,7 +81,7 @@ class DictionaryExecutor(val http: HttpClient) : SlashCommandExecutor() {
                     Emotes.Error
                 )
 
-            val response2 = httpRequest2.readText()
+            val response2 = httpRequest2.bodyAsText()
 
             jsoup = Jsoup.parse(response2)
         }

@@ -2,8 +2,8 @@ package net.perfectdreams.showtime.backend.routes
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
 import com.typesafe.config.ConfigFactory
-import io.ktor.application.*
-import io.ktor.html.*
+import io.ktor.server.application.*
+import io.ktor.server.html.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig

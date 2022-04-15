@@ -1,6 +1,7 @@
 package net.perfectdreams.showtime.frontend.utils
 
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.coroutines.sync.withLock
@@ -78,7 +79,7 @@ class LinkPreloaderManager(val showtime: ShowtimeFrontend) {
 
                 // Switch page
                 // We need to rebuild the URL from scratch, if we just do a "pageUrl" request, it won't add the port for some reason
-                val content = ShowtimeFrontend.http.get<String>(location.protocol + "//" + location.host + pageUrl) {
+                val content = ShowtimeFrontend.http.get(location.protocol + "//" + location.host + pageUrl) {
                     header("Link-Preload", true)
                 }
 
@@ -95,7 +96,7 @@ class LinkPreloaderManager(val showtime: ShowtimeFrontend) {
 
                 // We need to create a dummy element to append our inner HTML
                 val dummyElement = document.createElement("html")
-                dummyElement.innerHTML = content
+                dummyElement.innerHTML = content.bodyAsText()
 
                 // Await until preLoad is done to continue
                 preparePreLoadJob.await()

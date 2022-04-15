@@ -3,8 +3,11 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.options
 import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.utils.I18nContextUtils
 
 /**
  * Bridge between Cinnamon's [CommandOptions] and Discord InteraKTions' [CommandOptions].
@@ -13,7 +16,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
  */
 class SlashCommandOptionsWrapper(
     declarationExecutor: SlashCommandExecutorDeclaration,
-    i18nContext: I18nContext
+    private val languageManager: LanguageManager,
+    private val i18nContext: I18nContext
 ) : ApplicationCommandOptions() {
     companion object {
         const val MAX_OPTIONS_DESCRIPTION_LENGTH = 100
@@ -33,12 +37,14 @@ class SlashCommandOptionsWrapper(
 
                     repeat(requiredOptions) { _ ->
                         user("${it.name}$idx", i18nContext.get(it.description))
+                            .descriptionLocalizations(createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.description))
                             .register()
                         idx++
                     }
 
                     repeat(optionalOptions) { _ ->
                         optionalUser("${it.name}$idx", i18nContext.get(it.description))
+                            .descriptionLocalizations(createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.description))
                             .register()
                         idx++
                     }
@@ -52,12 +58,14 @@ class SlashCommandOptionsWrapper(
 
                     repeat(requiredOptions) { _ ->
                         string("${it.name}$idx", i18nContext.get(it.description))
+                            .descriptionLocalizations(createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.description))
                             .register()
                         idx++
                     }
 
                     repeat(optionalOptions) { _ ->
                         optionalString("${it.name}$idx", i18nContext.get(it.description))
+                            .descriptionLocalizations(createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.description))
                             .register()
                         idx++
                     }
@@ -88,7 +96,8 @@ class SlashCommandOptionsWrapper(
                                 when (it) {
                                     is LocalizedCommandChoice -> option.choice(
                                         it.value as String,
-                                        i18nContext.get(it.name)
+                                        i18nContext.get(it.name),
+                                        createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.name)
                                     )
                                     is RawCommandChoice -> option.choice(it.value as String, it.name)
                                 }
@@ -110,7 +119,8 @@ class SlashCommandOptionsWrapper(
                                 when (it) {
                                     is LocalizedCommandChoice -> option.choice(
                                         it.value as String,
-                                        i18nContext.get(it.name)
+                                        i18nContext.get(it.name),
+                                        createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.name)
                                     )
                                     is RawCommandChoice -> option.choice(it.value as String, it.name)
                                 }
@@ -132,7 +142,11 @@ class SlashCommandOptionsWrapper(
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 when (it) {
-                                    is LocalizedCommandChoice -> option.choice(it.value, i18nContext.get(it.name))
+                                    is LocalizedCommandChoice -> option.choice(
+                                        it.value,
+                                        i18nContext.get(it.name),
+                                        createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.name)
+                                    )
                                     is RawCommandChoice -> option.choice(it.value, it.name)
                                 }
                             }
@@ -151,7 +165,11 @@ class SlashCommandOptionsWrapper(
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 when (it) {
-                                    is LocalizedCommandChoice -> option.choice(it.value, i18nContext.get(it.name))
+                                    is LocalizedCommandChoice -> option.choice(
+                                        it.value,
+                                        i18nContext.get(it.name),
+                                        createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.name)
+                                    )
                                     is RawCommandChoice -> option.choice(it.value, it.name)
                                 }
                             }
@@ -172,7 +190,11 @@ class SlashCommandOptionsWrapper(
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 when (it) {
-                                    is LocalizedCommandChoice -> option.choice(it.value, i18nContext.get(it.name))
+                                    is LocalizedCommandChoice -> option.choice(
+                                        it.value,
+                                        i18nContext.get(it.name),
+                                        createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.name)
+                                    )
                                     is RawCommandChoice -> option.choice(it.value, it.name)
                                 }
                             }
@@ -191,7 +213,11 @@ class SlashCommandOptionsWrapper(
                         ).also { option ->
                             it.choices.take(25).forEach {
                                 when (it) {
-                                    is LocalizedCommandChoice -> option.choice(it.value, i18nContext.get(it.name))
+                                    is LocalizedCommandChoice -> option.choice(
+                                        it.value,
+                                        i18nContext.get(it.name),
+                                        createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.name)
+                                    )
                                     is RawCommandChoice -> option.choice(it.value, it.name)
                                 }
                             }
@@ -241,9 +267,13 @@ class SlashCommandOptionsWrapper(
                         else -> throw UnsupportedOperationException("Unsupported option type ${it::class}")
                     }
 
-                    arg.register()
+                    arg
+                        .descriptionLocalizations(createLocalizedStringMapExcludingDefaultLocaleAndShorten(it.description))
+                        .register()
                 }
             }
         }
     }
+
+    private fun createLocalizedStringMapExcludingDefaultLocaleAndShorten(i18nKey: StringI18nData) = I18nContextUtils.createLocalizedStringMapExcludingDefaultLocale(languageManager, i18nContext, i18nKey).map { it.key to it.value.shortenWithEllipsis(MAX_OPTIONS_DESCRIPTION_LENGTH) }.toMap()
 }

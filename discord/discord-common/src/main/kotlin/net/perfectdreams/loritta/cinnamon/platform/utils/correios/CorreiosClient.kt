@@ -34,17 +34,20 @@ class CorreiosClient : Closeable {
                 throw InvalidTrackingIdException(trackingId)
 
         // Eu encontrei a API REST do Correios usando engenharia reversa(tm) no SRO Mobile
-        val httpResponse = http.post<HttpResponse>("http://webservice.correios.com.br/service/rest/rastro/rastroMobile") {
+        val httpResponse = http.post("http://webservice.correios.com.br/service/rest/rastro/rastroMobile") {
             userAgent("Dalvik/2.1.0 (Linux; U; Android 7.1.2; MotoG3-TE Build/NJH47B)")
             accept(ContentType.Application.Json)
+
             // Não importa qual é o usuário/senha/token, ele sempre retorna algo válido
-            body = TextContent(
-                "<rastroObjeto><usuario>LorittaBot</usuario><senha>LorittaSuperFofa</senha><tipo>L</tipo><resultado>T</resultado>${trackingIds.joinToString(prefix = "<objetos>", postfix = "</objetos>", separator = "")}<lingua>101</lingua><token>Loritta-Discord</token></rastroObjeto>",
-                ContentType.Application.Xml
+            setBody(
+                TextContent(
+                    "<rastroObjeto><usuario>LorittaBot</usuario><senha>LorittaSuperFofa</senha><tipo>L</tipo><resultado>T</resultado>${trackingIds.joinToString(prefix = "<objetos>", postfix = "</objetos>", separator = "")}<lingua>101</lingua><token>Loritta-Discord</token></rastroObjeto>",
+                    ContentType.Application.Xml
+                )
             )
         }
 
-        val r = httpResponse.readText()
+        val r = httpResponse.bodyAsText()
         return Json.decodeFromString(r)
     }
 

@@ -35,11 +35,11 @@ class StatsCollector(val config: RootConfig, val services: Pudding, val http: Ht
 
     suspend fun getLorittaLegacyStatusFromAllClusters() = config.lorittaLegacyClusterUrls.map {
         try {
-            val response = http.get<HttpResponse>("$it/api/v1/loritta/status") {
+            val response = http.get("$it/api/v1/loritta/status") {
                 userAgent("Loritta Cinnamon Stats Collector")
             }
 
-            val body = response.readText()
+            val body = response.bodyAsText()
 
             val data = Json.decodeFromString<LorittaLegacyStatusResponse>(body)
             logger.info { "Successfully retrieved data from Cluster ${data.id} (${data.name})!" }

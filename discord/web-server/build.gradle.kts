@@ -16,7 +16,7 @@ dependencies {
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
 
     // Sequins
-    api("net.perfectdreams.sequins.ktor:base-route:1.0.2")
+    api("net.perfectdreams.sequins.ktor:base-route:1.0.4")
 
     // Logging
     api("ch.qos.logback:logback-classic:1.3.0-alpha14")

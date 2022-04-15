@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
+import dev.kord.common.Locale
 import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
@@ -9,6 +10,7 @@ import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclara
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.slashCommand
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteExecutor
@@ -35,6 +37,7 @@ import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitExecutorDec
 import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitWithDataExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.modals.components.ModalComponentsWrapper
+import net.perfectdreams.loritta.cinnamon.platform.utils.I18nContextUtils
 
 class CommandRegistry(
     val loritta: LorittaCinnamon,
@@ -86,8 +89,8 @@ class CommandRegistry(
         modalSubmitExecutors.add(executor)
     }
 
-    suspend fun convertToInteraKTions(locale: I18nContext) {
-        convertCommandsToInteraKTions(locale)
+    suspend fun convertToInteraKTions(defaultLocale: I18nContext) {
+        convertCommandsToInteraKTions(defaultLocale)
         convertSelectMenusToInteraKTions()
         convertButtonsToInteraKTions()
         convertAutocompleteToInteraKTions()
@@ -102,14 +105,14 @@ class CommandRegistry(
         }
     }
 
-    private fun convertCommandsToInteraKTions(locale: I18nContext) {
+    private fun convertCommandsToInteraKTions(defaultLocale: I18nContext) {
         for (declaration in declarations) {
             val declarationExecutor = declaration.executor
 
             val (declaration, executors) = convertCommandDeclarationToInteraKTions(
                 declaration,
                 declarationExecutor,
-                locale
+                defaultLocale
             )
 
             interaKTionsManager.register(
@@ -252,14 +255,14 @@ class CommandRegistry(
     private fun convertCommandDeclarationToInteraKTions(
         declaration: SlashCommandDeclarationBuilder,
         declarationExecutor: SlashCommandExecutorDeclaration?,
-        locale: I18nContext
+        defaultLocale: I18nContext
     ): Pair<SlashCommandDeclarationWrapper, List<SlashCommandExecutor>> {
         val executors = mutableListOf<SlashCommandExecutor>()
 
         val declaration = convertCommandDeclarationToSlashCommand(
             declaration,
             declarationExecutor,
-            locale,
+            defaultLocale,
             executors
         )
 
@@ -274,7 +277,7 @@ class CommandRegistry(
     fun convertCommandDeclarationToSlashCommand(
         declaration: SlashCommandDeclarationBuilder,
         declarationExecutor: SlashCommandExecutorDeclaration?,
-        locale: I18nContext,
+        defaultLocale: I18nContext,
         createdExecutors: MutableList<SlashCommandExecutor>
     ): SlashCommandDeclaration {
         if (declarationExecutor != null) {
@@ -291,7 +294,8 @@ class CommandRegistry(
             // Register all the command options with Discord InteraKTions
             val interaKTionsOptions = SlashCommandOptionsWrapper(
                 declarationExecutor,
-                locale
+                loritta.languageManager,
+                defaultLocale
             )
 
             val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration(declarationExecutor::class) {
@@ -300,35 +304,38 @@ class CommandRegistry(
 
             createdExecutors.add(interaKTionsExecutor)
 
-            return slashCommand(declaration.labels.first(), buildDescription(locale, declaration)) {
+            return slashCommand(declaration.labels.first(), buildDescription(defaultLocale, declaration)) {
                 this.executor = interaKTionsExecutorDeclaration
+                this.descriptionLocalizations = createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration)
 
                 if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty())
                     logger.warn { "Executor ${executor::class.simpleName} is set to ${declaration.labels.first()}'s root, but the command has subcommands and/or subcommand groups! Due to Discord's limitations the root command won't be usable!" }
 
-                addSubcommandGroups(declaration, createdExecutors, locale)
+                addSubcommandGroups(defaultLocale, declaration, createdExecutors, defaultLocale)
 
                 for (subcommand in declaration.subcommands) {
                     subcommands.add(
                         convertCommandDeclarationToSlashCommand(
                             subcommand,
                             subcommand.executor!!,
-                            locale,
+                            defaultLocale,
                             createdExecutors
                         )
                     )
                 }
             }
         } else {
-            return slashCommand(declaration.labels.first(), buildDescription(locale, declaration)) {
-                addSubcommandGroups(declaration, createdExecutors, locale)
+            return slashCommand(declaration.labels.first(), buildDescription(defaultLocale, declaration)) {
+                this.descriptionLocalizations = createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration)
+
+                addSubcommandGroups(defaultLocale, declaration, createdExecutors, defaultLocale)
 
                 for (subcommand in declaration.subcommands) {
                     subcommands.add(
                         convertCommandDeclarationToSlashCommand(
                             subcommand,
                             subcommand.executor,
-                            locale,
+                            defaultLocale,
                             createdExecutors
                         )
                     )
@@ -337,9 +344,11 @@ class CommandRegistry(
         }
     }
 
-    private fun net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationBuilder.addSubcommandGroups(declaration: SlashCommandDeclarationBuilder, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
+    private fun net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationBuilder.addSubcommandGroups(defaultLocale: I18nContext, declaration: SlashCommandDeclarationBuilder, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
         for (group in declaration.subcommandGroups) {
             subcommandGroup(group.labels.first(), i18nContext.get(declaration.description).shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH)) {
+                this.descriptionLocalizations = createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration)
+
                 for (subcommand in group.subcommands) {
                     subcommands.add(
                         convertCommandDeclarationToSlashCommand(
@@ -354,7 +363,7 @@ class CommandRegistry(
         }
     }
 
-    fun buildDescription(i18nContext: I18nContext, declaration: SlashCommandDeclarationBuilder) = buildString {
+    private fun buildDescription(i18nContext: I18nContext, declaration: SlashCommandDeclarationBuilder) = buildString {
         // It looks like this
         // "「Emoji Category」 Description"
         append("「")
@@ -386,4 +395,21 @@ class CommandRegistry(
         // append(" ")
         append(i18nContext.get(declaration.description))
     }.shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH)
+
+    /**
+     * Creates a map containing all translated strings of [i18nKey], excluding the [defaultLocale].
+     *
+     * @param defaultLocale the default locale used when creating the slash commands, this won't be present in the map.
+     * @param i18nKey the key
+     */
+    private fun createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale: I18nContext, builder: SlashCommandDeclarationBuilder) = mutableMapOf<Locale, String>().apply {
+        // We will ignore the default i18nContext because that would be redundant
+        for ((languageId, i18nContext) in loritta.languageManager.languageContexts.filter { it.value != defaultLocale }) {
+            if (i18nContext.language.textBundle.strings.containsKey(builder.description.key.key)) {
+                val kordLocale = I18nContextUtils.convertLanguageIdToKordLocale(languageId)
+                if (kordLocale != null)
+                    this[kordLocale] = buildDescription(i18nContext, builder)
+            }
+        }
+    }
 }

@@ -21,13 +21,15 @@ class TopggStatsSender(
     }
 
     override suspend fun send(guildCount: Long) {
-        val result = http.post<HttpResponse>("https://top.gg/api/bots/$clientId/stats") {
+        val result = http.post("https://top.gg/api/bots/$clientId/stats") {
             header("Authorization", token)
             accept(ContentType.Application.Json)
-            body = TextContent(Json.encodeToString(UpdateBotStatsRequest(guildCount)), ContentType.Application.Json)
+            setBody(
+                TextContent(Json.encodeToString(UpdateBotStatsRequest(guildCount)), ContentType.Application.Json)
+            )
         }
 
-        val response = result.readText()
+        val response = result.bodyAsText()
         logger.info { "top.gg response: $response"}
 
         if (!result.status.isSuccess())

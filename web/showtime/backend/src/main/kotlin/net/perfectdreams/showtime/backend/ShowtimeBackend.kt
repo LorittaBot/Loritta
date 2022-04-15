@@ -6,15 +6,19 @@ import com.vladsch.flexmark.ext.tables.TablesExtension
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.MutableDataSet
-import io.ktor.application.*
-import io.ktor.features.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.ktor.server.engine.*
+import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.cachingheaders.*
+import io.ktor.server.plugins.compression.*
+import io.ktor.server.plugins.statuspages.*
 import io.ktor.util.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -94,7 +98,7 @@ class ShowtimeBackend(
 
             // Enables caching for the specified types in the typesToCache list
             install(CachingHeaders) {
-                options { outgoingContent ->
+                options { call, outgoingContent ->
                     val contentType = outgoingContent.contentType
                     if (contentType != null) {
                         val contentTypeWithoutParameters = contentType.withoutParameters()
@@ -109,7 +113,7 @@ class ShowtimeBackend(
             }
 
             install(StatusPages) {
-                exception<HttpRedirectException> { e ->
+                exception<HttpRedirectException> { call, e ->
                     call.respondRedirect(e.location, permanent = e.permanent)
                 }
             }
