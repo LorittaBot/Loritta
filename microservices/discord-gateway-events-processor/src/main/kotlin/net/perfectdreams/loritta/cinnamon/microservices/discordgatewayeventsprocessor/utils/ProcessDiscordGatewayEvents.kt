@@ -30,12 +30,13 @@ class ProcessDiscordGatewayEvents(
 ) : Runnable {
     companion object {
         private val logger = KotlinLogging.logger {}
+        private val json = Json { ignoreUnknownKeys = true }
     }
 
     override fun run() {
         while (true) {
             try {
-                // logger.debug { "Processing gateway events in the queue..." }
+                logger.debug { "Processing gateway events in the queue..." }
 
                 val connection = pudding.hikariDataSource.connection
                 connection.use {
@@ -56,7 +57,7 @@ class ProcessDiscordGatewayEvents(
                             .jsonObject
 
                         // Using decodeFromJsonElement crashes with "Index -1 out of bounds for length 0", why?
-                        val discordEvent = Json { ignoreUnknownKeys = true }.decodeFromString(
+                        val discordEvent = json.decodeFromString(
                             Event.DeserializationStrategy,
                             buildJsonObject {
                                 gatewayPayloadStuff["op"]?.let {
@@ -138,7 +139,7 @@ class ProcessDiscordGatewayEvents(
 
                         count++
 
-                        // logger.info { "Processed event $type (${discordEvent!!::class})" }
+                        logger.debug { "Processed event $type (${discordEvent!!::class})" }
                         processedRows.add(id)
                     }
 
@@ -149,7 +150,7 @@ class ProcessDiscordGatewayEvents(
 
                     it.commit()
 
-                    // logger.info { "Successfully processed $count Discord gateway events! (${processedRows})" }
+                    logger.debug { "Successfully processed $count Discord gateway events! (${processedRows})" }
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Something went wrong while polling pending Discord gateway events!" }
