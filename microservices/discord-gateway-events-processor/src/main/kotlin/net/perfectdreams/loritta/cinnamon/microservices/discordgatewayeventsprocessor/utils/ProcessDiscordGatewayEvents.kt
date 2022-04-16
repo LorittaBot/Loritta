@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.StarboardModule
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordGatewayEvents
+import java.sql.Connection
 
 /**
  * Processes correios pending messages from our message queue.
@@ -40,6 +41,9 @@ class ProcessDiscordGatewayEvents(
 
                 val connection = pudding.hikariDataSource.connection
                 connection.use {
+                    // We don't care about repeatable reads
+                    it.transactionIsolation = Connection.TRANSACTION_READ_COMMITTED
+
                     val selectStatement =
                         it.prepareStatement("""SELECT id, "type", payload FROM ${DiscordGatewayEvents.tableName} ORDER BY id FOR UPDATE SKIP LOCKED LIMIT ${m.config.eventsPerBatch};""")
                     val rs = selectStatement.executeQuery()
