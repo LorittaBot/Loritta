@@ -44,7 +44,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransa
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordGatewayEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
@@ -266,8 +265,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             TrackedCorreiosPackages,
             UsersFollowingCorreiosPackages,
             TrackedCorreiosPackagesEvents,
-            PendingImportantNotifications,
-            DiscordGatewayEvents
+            PendingImportantNotifications
         )
 
         if (schemas.isNotEmpty())

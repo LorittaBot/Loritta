@@ -1,11 +1,18 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
+import com.rabbitmq.client.Channel
+import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Snowflake
+import dev.kord.gateway.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 
-class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) {
+class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule(RABBITMQ_QUEUE) {
     companion object {
+        const val RABBITMQ_QUEUE = "first-on-new-channels-module"
+
         private val FUNNY_FIRST_EMOJIS = listOf(
             Emotes.LoriCoffee,
             Emotes.LoriHappy,
@@ -18,6 +25,29 @@ class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) 
             Emotes.LoriLick,
             Emotes.LoriFlushed
         )
+    }
+
+    override fun setupQueueBinds(channel: Channel) {
+        channel.queueBindToModuleQueue("event.channel-create")
+    }
+
+    override fun processEvent(event: Event) {
+        when (event) {
+            // ===[ CHANNEL CREATE ]===
+            is ChannelCreate -> {
+                // This should only be sent in a guild text channel
+                if (event.channel.type == ChannelType.GuildText) {
+                    GlobalScope.launch {
+                        m.addFirstToNewChannelsModule.handleFirst(
+                            event.channel.guildId.value
+                                ?: return@launch, // Pretty sure that this cannot be null here
+                            event.channel.id
+                        )
+                    }
+                }
+            }
+            else -> {}
+        }
     }
 
     suspend fun handleFirst(

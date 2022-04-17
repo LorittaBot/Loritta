@@ -1,11 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.rabbitmq.client.Channel
 import dev.kord.common.Color
 import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.MessageStickerType
 import dev.kord.common.entity.Reaction
 import dev.kord.common.entity.Snowflake
+import dev.kord.gateway.*
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.builder.message.create.actionRow
@@ -14,6 +16,8 @@ import dev.kord.rest.builder.message.modify.UserMessageModifyBuilder
 import dev.kord.rest.builder.message.modify.actionRow
 import dev.kord.rest.builder.message.modify.embed
 import dev.kord.rest.request.KtorRequestException
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.utils.author
@@ -35,8 +39,9 @@ import java.sql.Connection
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class StarboardModule(private val m: DiscordGatewayEventsProcessor) {
+class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule(RABBITMQ_QUEUE) {
     companion object {
+        const val RABBITMQ_QUEUE = "starboard-module"
         const val STAR_REACTION = "⭐"
         private val logger = KotlinLogging.logger {}
     }
@@ -48,6 +53,60 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) {
             .build<Snowflake, Boolean>()
             .asMap()
     )
+
+    override fun setupQueueBinds(channel: Channel) {
+        channel.queueBindToModuleQueue("event.message-reaction-add")
+        channel.queueBindToModuleQueue("event.message-reaction-remove")
+        channel.queueBindToModuleQueue("event.message-reaction-remove-emoji")
+        channel.queueBindToModuleQueue("event.message-reaction-all")
+    }
+
+    override fun processEvent(event: Event) {
+        when (event) {
+            // ===[ REACTIONS ]===
+            is MessageReactionAdd -> {
+                GlobalScope.launch {
+                    handleStarboardReaction(
+                        event.reaction.guildId.value ?: return@launch,
+                        event.reaction.channelId,
+                        event.reaction.messageId,
+                        event.reaction.emoji.name
+                    )
+                }
+            }
+            is MessageReactionRemove -> {
+                GlobalScope.launch {
+                    handleStarboardReaction(
+                        event.reaction.guildId.value ?: return@launch,
+                        event.reaction.channelId,
+                        event.reaction.messageId,
+                        event.reaction.emoji.name
+                    )
+                }
+            }
+            is MessageReactionRemoveEmoji -> {
+                GlobalScope.launch {
+                    handleStarboardReaction(
+                        event.reaction.guildId,
+                        event.reaction.channelId,
+                        event.reaction.messageId,
+                        event.reaction.emoji.name
+                    )
+                }
+            }
+            is MessageReactionRemoveAll -> {
+                GlobalScope.launch {
+                    handleStarboardReaction(
+                        event.reactions.guildId.value ?: return@launch,
+                        event.reactions.channelId,
+                        event.reactions.messageId,
+                        STAR_REACTION // We only want the code to check if it should be removed from the starboard
+                    )
+                }
+            }
+            else -> {}
+        }
+    }
 
     suspend fun handleStarboardReaction(
         guildId: Snowflake,
