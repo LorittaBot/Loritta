@@ -452,7 +452,7 @@ class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: Genera
 			)
 		}
 
-		TrinketsStuff.updateTrinkets(pudding)
+		// TrinketsStuff.updateTrinkets(pudding)
 	}
 
 	fun startWebServer() {

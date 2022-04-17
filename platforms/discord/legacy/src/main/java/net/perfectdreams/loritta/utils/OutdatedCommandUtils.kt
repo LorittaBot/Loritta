@@ -32,7 +32,7 @@ object OutdatedCommandUtils {
     }
 
     /**
-     * This checks if the outdated command warning should be sent or not, based on the amount of days between now and the day where the
+     * This checks if the outdated command warning should be sent or not, based on the amount of days between now and the deadline date
      */
     private fun shouldSendOutdatedCommandWarning(): Boolean {
         val now = Instant.now()
