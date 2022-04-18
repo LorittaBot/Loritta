@@ -11,7 +11,7 @@ class ShipEffectsService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getShipEffectsForUser(user: UserId): List<PuddingShipEffect> {
         val userId = user.value.toLong()
 
-        val effects = pudding.transaction {
+        val effects = pudding.transactionOrUseThreadLocalTransaction {
             ShipEffects.select {
                 (ShipEffects.user1Id eq userId) or (ShipEffects.user2Id eq userId)
             }.toList()

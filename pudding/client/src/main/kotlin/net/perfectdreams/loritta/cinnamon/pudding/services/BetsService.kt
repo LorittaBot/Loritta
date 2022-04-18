@@ -32,7 +32,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         quantities: List<Long>,
         cutoff: kotlinx.datetime.Instant = kotlinx.datetime.Instant.DISTANT_PAST
     ): Map<Long, CoinFlipBetGlobalMatchmakingQuantityStats> {
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             _cleanUpMatchmakingQueue()
 
             val javaCutoff = cutoff.toJavaInstant()
@@ -53,7 +53,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                 CoinFlipBetGlobalMatchmakingQueue.quantity inList quantities
             }.groupBy(CoinFlipBetGlobalMatchmakingQueue.quantity)
 
-            return@transaction quantities.associateWith {
+            return@transactionOrUseThreadLocalTransaction quantities.associateWith {
                 CoinFlipBetGlobalMatchmakingQuantityStats(
                     averageTimeOnQueueData.firstOrNull { row -> row[CoinFlipBetGlobalMatchmakingResults.quantity] == it }
                         ?.getOrNull(avgTimeOnQueueField)?.toLong()?.let {
@@ -73,7 +73,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         quantities: List<Long>,
         cutoff: kotlinx.datetime.Instant = kotlinx.datetime.Instant.DISTANT_PAST
     ): Map<Long, UserSpecificCoinFlipBetGlobalMatchmakingQuantityStats> {
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             _cleanUpMatchmakingQueue()
 
             val javaCutoff = cutoff.toJavaInstant()
@@ -98,7 +98,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                 CoinFlipBetGlobalMatchmakingQueue.quantity inList quantities and (CoinFlipBetGlobalMatchmakingQueue.user eq userId.value.toLong())
             }.groupBy(CoinFlipBetGlobalMatchmakingQueue.quantity)
 
-            return@transaction quantities.associateWith {
+            return@transactionOrUseThreadLocalTransaction quantities.associateWith {
                 UserSpecificCoinFlipBetGlobalMatchmakingQuantityStats(
                     averageTimeOnQueueData.firstOrNull { row -> row[CoinFlipBetGlobalMatchmakingResults.quantity] == it }
                         ?.getOrNull(avgTimeOnQueueField)?.toLong()?.let {
@@ -120,7 +120,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     ): UserCoinFlipBetGlobalStats {
         val userAsLong = userId.value.toLong()
 
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             _cleanUpMatchmakingQueue()
 
             val sumField = CoinFlipBetGlobalMatchmakingResults.quantity.sum()
@@ -142,7 +142,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                 (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.firstOrNull()?.getOrNull(sumField) ?: 0L
 
-            return@transaction UserCoinFlipBetGlobalStats(
+            return@transactionOrUseThreadLocalTransaction UserCoinFlipBetGlobalStats(
                 winCount,
                 lostCount,
                 winSum,
@@ -156,7 +156,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     ): Int {
         val userAsLong = userId.value.toLong()
 
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
                 (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong)
             }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
@@ -170,7 +170,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                 streakCount++
             }
 
-            return@transaction streakCount
+            return@transactionOrUseThreadLocalTransaction streakCount
         }
     }
 
@@ -179,7 +179,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
     ): Int {
         val userAsLong = userId.value.toLong()
 
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             val userMatchmakingData = CoinFlipBetGlobalMatchmakingResults.slice(CoinFlipBetGlobalMatchmakingResults.winner, CoinFlipBetGlobalMatchmakingResults.loser, CoinFlipBetGlobalMatchmakingResults.timestamp).select {
                 (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) or (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong)
             }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
@@ -193,7 +193,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                 streakCount++
             }
 
-            return@transaction streakCount
+            return@transactionOrUseThreadLocalTransaction streakCount
         }
     }
 
@@ -201,7 +201,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         userId: UserId,
         quantity: Long
     ): Boolean {
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             _cleanUpMatchmakingQueue()
 
             CoinFlipBetGlobalMatchmakingQueue.deleteWhere {
@@ -216,7 +216,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         userLanguage: String,
         quantity: Long
     ): List<CoinFlipGlobalMatchmakingResult> {
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             val now = Instant.now()
             _cleanUpMatchmakingQueue()
 
@@ -230,7 +230,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
             }.count()
 
             if (selfUserMatchmakingQueueCount != 0L)
-                return@transaction results.apply { add(AlreadyInQueueResult()) }
+                return@transactionOrUseThreadLocalTransaction results.apply { add(AlreadyInQueueResult()) }
 
             // If not, we are going to check if there is anyone else on the matchmaking queue that isn't ourselves...
             val anotherUserMatchmakingData = CoinFlipBetGlobalMatchmakingQueue.select {
@@ -241,7 +241,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
             val profile = pudding.users._getOrCreateUserProfile(userId)
 
             if (quantity > profile.money)
-                return@transaction results.apply { add(YouDontHaveEnoughSonhosToBetResult()) }
+                return@transactionOrUseThreadLocalTransaction results.apply { add(YouDontHaveEnoughSonhosToBetResult()) }
 
             if (anotherUserMatchmakingData != null) {
                 // Check if both users have enough sonhos
@@ -487,7 +487,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     if (giveOutFiveHundredMatchesAchievementToLoser)
                         giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_PROFESSIONAL)
 
-                    return@transaction results
+                    return@transactionOrUseThreadLocalTransaction results
                 }
             }
 
@@ -500,7 +500,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                 it[CoinFlipBetGlobalMatchmakingQueue.expiresAt] = now.plusMillis(300_000)
             }
 
-            return@transaction results.apply { add(AddedToQueueResult()) }
+            return@transactionOrUseThreadLocalTransaction results.apply { add(AddedToQueueResult()) }
         }
     }
 

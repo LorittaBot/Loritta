@@ -42,7 +42,7 @@ class BetsServiceTest {
             pudding.users.getOrCreateUserProfile(user2Id)
 
             // Update users to have 100 sonhos
-            pudding.transaction {
+            pudding.transactionOrUseThreadLocalTransaction {
                 Profiles.update {
                     it[Profiles.money] = 100
                 }
@@ -70,7 +70,7 @@ class BetsServiceTest {
             require(resultUser2.any { it is BetsService.SelfUserAchievementResult }) { "There isn't a SelfUserAchievementResult in resultUser2's result list!" }
 
             // At this point, a match should have happened, let's check!
-            pudding.transaction {
+            pudding.transactionOrUseThreadLocalTransaction {
                 val matchesCount = CoinFlipBetGlobalMatchmakingResults.selectAll().count()
                 val sonhosTransactionsCount = SonhosTransactionsLog.selectAll().count()
                 val coinFlipTransactionsCount = CoinFlipBetGlobalSonhosTransactionsLog.selectAll().count()
@@ -102,7 +102,7 @@ class BetsServiceTest {
             pudding.users.getOrCreateUserProfile(user2Id)
 
             // Update users to have 100 sonhos and to be premium users
-            pudding.transaction {
+            pudding.transactionOrUseThreadLocalTransaction {
                 Profiles.update {
                     it[Profiles.money] = 100
                 }
@@ -145,7 +145,7 @@ class BetsServiceTest {
             )
 
             // At this point, a match should have happened, let's check!
-            pudding.transaction {
+            pudding.transactionOrUseThreadLocalTransaction {
                 val matchmakingResult = CoinFlipBetGlobalMatchmakingResults.selectAll().limit(1).first()
                 require(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.quantityAfterTax] == 100L) { "Quantity After Tax should be 100 but it is ${matchmakingResult[CoinFlipBetMatchmakingResults.quantityAfterTax]}!" }
                 require(matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage] == 0.0) { "Tax percentage should be 0.0 but it is ${matchmakingResult[CoinFlipBetGlobalMatchmakingResults.taxPercentage]}!" }

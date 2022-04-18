@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.select
 import kotlin.math.ceil
 
 class PaymentsService(private val pudding: Pudding) : Service(pudding) {
-    suspend fun getActiveMoneyFromDonations(userId: UserId) = pudding.transaction {
+    suspend fun getActiveMoneyFromDonations(userId: UserId) = pudding.transactionOrUseThreadLocalTransaction {
         _getActiveMoneyFromDonations(userId)
     }
 

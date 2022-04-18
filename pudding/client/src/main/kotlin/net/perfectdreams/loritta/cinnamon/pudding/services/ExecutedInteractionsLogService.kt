@@ -25,7 +25,7 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
         latency: Double,
         stacktrace: String?
     ): Long {
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             ExecutedApplicationCommandsLog.insertAndGetId {
                 it[ExecutedApplicationCommandsLog.userId] = userId
                 it[ExecutedApplicationCommandsLog.guildId] = guildId
@@ -55,7 +55,7 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
         latency: Double,
         stacktrace: String?
     ): Long {
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             ExecutedComponentsLog.insertAndGetId {
                 it[ExecutedComponentsLog.userId] = userId
                 it[ExecutedComponentsLog.guildId] = guildId
@@ -73,16 +73,16 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
     }
 
     suspend fun getExecutedApplicationCommands(since: Instant): Long {
-        return pudding.transaction {
-            return@transaction ExecutedApplicationCommandsLog.select {
+        return pudding.transactionOrUseThreadLocalTransaction {
+            return@transactionOrUseThreadLocalTransaction ExecutedApplicationCommandsLog.select {
                 ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
             }.count()
         }
     }
 
     suspend fun getUniqueUsersExecutedApplicationCommands(since: Instant): Long {
-        return pudding.transaction {
-            return@transaction ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
+        return pudding.transactionOrUseThreadLocalTransaction {
+            return@transactionOrUseThreadLocalTransaction ExecutedApplicationCommandsLog.slice(ExecutedApplicationCommandsLog.userId).select {
                 ExecutedApplicationCommandsLog.sentAt greaterEq since.toJavaInstant()
             }.groupBy(ExecutedApplicationCommandsLog.userId).count()
         }

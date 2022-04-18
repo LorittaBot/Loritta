@@ -16,7 +16,7 @@ class InteractionsDataService(private val pudding: Pudding) : Service(pudding) {
         interactionId: Long
     ): JsonObject? {
         return Json.parseToJsonElement(
-            pudding.transaction {
+            pudding.transactionOrUseThreadLocalTransaction {
                 InteractionsData.select {
                     InteractionsData.id eq interactionId
                 }.firstOrNull()
@@ -27,7 +27,7 @@ class InteractionsDataService(private val pudding: Pudding) : Service(pudding) {
     suspend fun deleteInteractionData(
         interactionId: Long
     ) {
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             InteractionsData.deleteWhere {
                 InteractionsData.id eq interactionId
             }
@@ -39,7 +39,7 @@ class InteractionsDataService(private val pudding: Pudding) : Service(pudding) {
         addedAt: Instant,
         expiresAt: Instant
     ): Long {
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             InteractionsData.insertAndGetId {
                 it[InteractionsData.data] = data.toString()
                 it[InteractionsData.addedAt] = addedAt.toJavaInstant()

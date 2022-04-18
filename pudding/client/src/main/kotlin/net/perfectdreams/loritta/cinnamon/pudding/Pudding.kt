@@ -85,6 +85,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransaction
 import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 
@@ -94,6 +95,8 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
         private val ISOLATION_LEVEL =
             IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
+
+        val TRANSACTION_THREAD_LOCAL = ThreadLocal<Transaction>()
 
         /**
          * Creates a Pudding instance backed by a PostgreSQL database
@@ -365,12 +368,28 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
         return createTableSuffixed + indicesDDL + alter
     }
 
+    /**
+     * Creates a suspendable transaction or, if there is a active transaction present in the [TRANSACTION_THREAD_LOCAL], it will be reused instead of creating a new transaction.
+     */
+    suspend fun <T> transactionOrUseThreadLocalTransaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend org.jetbrains.exposed.sql.Transaction.() -> T): T {
+        val activeTransaction = TRANSACTION_THREAD_LOCAL.get()
+        return if (activeTransaction != null)
+            TRANSACTION_THREAD_LOCAL.get().suspendedTransaction(Dispatchers.IO, statement)
+        else
+            transaction(repetitions, transactionIsolation, statement)
+    }
+
     // https://github.com/JetBrains/Exposed/issues/1003
     suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend org.jetbrains.exposed.sql.Transaction.() -> T): T {
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
-                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, database, transactionIsolation) {
+                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(
+                    Dispatchers.IO,
+                    database,
+                    transactionIsolation
+                ) {
+                    TRANSACTION_THREAD_LOCAL.set(this)
                     statement.invoke(this)
                 }
             } catch (e: ExposedSQLException) {

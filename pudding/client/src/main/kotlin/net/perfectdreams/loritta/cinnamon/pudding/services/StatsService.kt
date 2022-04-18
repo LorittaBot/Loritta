@@ -13,7 +13,7 @@ class StatsService(private val pudding: Pudding) : Service(pudding) {
         guildCount: Long,
         time: Instant
     ) {
-        pudding.transaction {
+        pudding.transactionOrUseThreadLocalTransaction {
             GuildCountStats.insert {
                 it[GuildCountStats.timestamp] = time.toJavaInstant()
                 it[GuildCountStats.guildCount] = guildCount
@@ -22,7 +22,7 @@ class StatsService(private val pudding: Pudding) : Service(pudding) {
     }
 
     suspend fun getGuildCount(): Long {
-        return pudding.transaction {
+        return pudding.transactionOrUseThreadLocalTransaction {
             GuildCountStats.slice(GuildCountStats.guildCount).selectAll()
                 .orderBy(GuildCountStats.timestamp, SortOrder.DESC)
                 .limit(1)

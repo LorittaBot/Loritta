@@ -132,18 +132,18 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         // Before we were using PostgreSQL's advisory locks, however for some reason all connections got exausted after a while (maybe a connection leak? however there weren't any active transactions in the database)? Super weird issue
         // So for now we are relying on Kotlin Coroutines' mutexes, the issue with this is that it won't scale if we increase the number of replicas
         mutexes.getOrPut(lockKey) { Mutex() }.withLock {
-            m.services.transaction {
-                val serverConfig = m.services.serverConfigs._getServerConfigRoot(guildId.value) ?: return@transaction
-                val starboardConfig = serverConfig._getStarboardConfig() ?: return@transaction
+            m.services.transactionOrUseThreadLocalTransaction {
+                val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value) ?: return@transactionOrUseThreadLocalTransaction
+                val starboardConfig = serverConfig.getStarboardConfig() ?: return@transactionOrUseThreadLocalTransaction
                 val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
                 val starboardId = starboardConfig.starboardChannelId
                 // Ignore if someone is trying to be "haha i'm so funni" trying to add stars to the starboard channel
                 if (starboardId == channelId.value)
-                    return@transaction
+                    return@transactionOrUseThreadLocalTransaction
 
                 if (Snowflake(starboardConfig.starboardChannelId) in failedToSendMessageChannels)
-                    return@transaction
+                    return@transactionOrUseThreadLocalTransaction
 
                 logger.info { "Getting Starboard Message of $messageId in the database..." }
 
@@ -161,7 +161,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
                 } catch (e: KtorRequestException) {
                     logger.warn(e) { "Failed to get message $messageId" }
                     failedToSendMessageChannels.add(channelId)
-                    return@transaction
+                    return@transactionOrUseThreadLocalTransaction
                 }
 
                 // Maybe null if there isn't any reactions in the message
@@ -191,7 +191,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
                     } catch (e: KtorRequestException) {
                         logger.warn(e) { "Failed to delete message ${starboardMessageFromDatabase[StarboardMessages.embedId]}" }
                     }
-                    return@transaction
+                    return@transactionOrUseThreadLocalTransaction
                 }
 
                 if (starReaction != null) {
@@ -214,7 +214,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
                         } catch (e: KtorRequestException) {
                             logger.warn(e) { "Failed to edit starboard message $embedId in channel ${starboardConfig.starboardChannelId}" }
                             failedToSendMessageChannels.add(Snowflake(starboardId))
-                            return@transaction
+                            return@transactionOrUseThreadLocalTransaction
                         }
                     } else if (starReactionCount >= starboardConfig.requiredStars) {
                         logger.info { "Starboard message for $messageId is not present in the database..." }
@@ -225,7 +225,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
                         // TODO: Caching
                         val channel = m.rest.channel.getChannel(channelId)
                         if (channel.nsfw.discordBoolean)
-                            return@transaction
+                            return@transactionOrUseThreadLocalTransaction
 
                         val newMessage = try {
                             m.rest.channel.createMessage(
@@ -240,7 +240,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
                         } catch (e: KtorRequestException) {
                             logger.warn(e) { "Failed to send starboard message in channel ${starboardConfig.starboardChannelId}" }
                             failedToSendMessageChannels.add(Snowflake(starboardId))
-                            return@transaction
+                            return@transactionOrUseThreadLocalTransaction
                         }
 
                         StarboardMessages.insert {
