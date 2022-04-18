@@ -8,7 +8,7 @@ plugins {
 
 dependencies {
     implementation(project(":pudding:client"))
-    implementation("net.perfectdreams.tradingviewscraper:TradingViewScraper:0.0.9")
+    implementation("net.perfectdreams.tradingviewscraper:TradingViewScraper:0.0.10")
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
     implementation(libs.exposed.javatime)
