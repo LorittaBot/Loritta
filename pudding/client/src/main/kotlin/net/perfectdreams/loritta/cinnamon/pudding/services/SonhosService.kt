@@ -39,7 +39,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
      */
     suspend fun getSonhosRankPositionBySonhos(sonhos: Long): Long {
         // TODO: This is not a *good* way to get an user's ranking if there are duplicates, maybe use DENSE_RANK? https://www.postgresqltutorial.com/postgresql-dense_rank-function/
-        val position = pudding.transactionOrUseThreadLocalTransaction {
+        val position = pudding.transaction {
             Profiles.select { Profiles.money greaterEq sonhos }
                 .count()
         }
@@ -50,7 +50,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getUserTotalTransactions(
         userId: UserId,
         transactionTypeFilter: List<TransactionType>
-    ) = pudding.transactionOrUseThreadLocalTransaction {
+    ) = pudding.transaction {
         userTransactionQuery(userId, transactionTypeFilter).count()
     }
 
@@ -60,7 +60,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
         limit: Int,
         offset: Long
     ): List<SonhosTransaction> {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             userTransactionQuery(userId, transactionTypeFilter)
                 .orderBy(SonhosTransactionsLog.id, SortOrder.DESC)
                 .limit(limit, offset)
@@ -164,7 +164,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
      * @return the last received daily reward, if it exists
      */
     suspend fun getUserLastDailyRewardReceived(userId: UserId, afterTime: kotlinx.datetime.Instant): Daily? {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             _getUserLastDailyRewardReceived(userId, afterTime)
         }
     }

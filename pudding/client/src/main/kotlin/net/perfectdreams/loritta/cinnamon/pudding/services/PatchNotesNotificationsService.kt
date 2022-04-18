@@ -27,7 +27,7 @@ class PatchNotesNotificationsService(private val pudding: Pudding) : Service(pud
         user: UserId,
         currentTime: Instant
     ): List<PatchNotesNotification> {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             val jInstant = currentTime.toJavaInstant()
 
             val receivedPatchNotesResultRows = PatchNotesNotifications.select {
@@ -48,7 +48,7 @@ class PatchNotesNotificationsService(private val pudding: Pudding) : Service(pud
                 }
             }
 
-            return@transactionOrUseThreadLocalTransaction receivedPatchNotesResultRows.map { PatchNotesNotification.fromRow(it) }
+            return@transaction receivedPatchNotesResultRows.map { PatchNotesNotification.fromRow(it) }
         }
     }
 }

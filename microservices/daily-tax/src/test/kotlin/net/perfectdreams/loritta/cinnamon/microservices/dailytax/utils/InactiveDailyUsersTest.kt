@@ -38,7 +38,7 @@ class InactiveDailyUsersTest {
             pudding.users.getOrCreateUserProfile(essentialPlanUserId)
             pudding.users.getOrCreateUserProfile(completePlanUserId)
 
-            pudding.transactionOrUseThreadLocalTransaction {
+            pudding.transaction {
                 // Update users to have sonhos
                 Profiles.update({ Profiles.id eq nonPremiumUserId.value.toLong() }) {
                     it[money] = 100000

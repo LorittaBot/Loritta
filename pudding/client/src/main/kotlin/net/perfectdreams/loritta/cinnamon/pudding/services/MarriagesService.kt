@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.select
 
 class MarriagesService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getMarriage(id: Long): PuddingMarriage? {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             Marriages.select { Marriages.id eq id }
                 .firstOrNull()
         }?.let { PuddingMarriage.fromRow(it) }
@@ -18,7 +18,7 @@ class MarriagesService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getMarriageByUser(user: UserId): PuddingMarriage? {
         val userId = user.value.toLong()
 
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             Marriages.select { Marriages.user1 eq userId or (Marriages.user2 eq userId) }
                 .firstOrNull()
         }?.let { PuddingMarriage.fromRow(it) }

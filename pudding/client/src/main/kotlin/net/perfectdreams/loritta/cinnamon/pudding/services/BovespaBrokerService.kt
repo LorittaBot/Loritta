@@ -36,7 +36,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
      *
      * @return a list of all tickers
      */
-    suspend fun getAllTickers() = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun getAllTickers() = pudding.transaction {
         TickerPrices.select { TickerPrices.enabled eq true }
             .map {
                 BrokerTickerInformation(
@@ -54,7 +54,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
      *
      * @return a list of all tickers
      */
-    suspend fun getTicker(tickerId: String) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun getTicker(tickerId: String) = pudding.transaction {
         TickerPrices.select { TickerPrices.ticker eq tickerId }
             .limit(1)
             .firstOrNull()
@@ -74,7 +74,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
      *
      * @return a list of all tickers
      */
-    suspend fun getUserBoughtStocks(userId: Long) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun getUserBoughtStocks(userId: Long) = pudding.transaction {
         val stockCount = BoughtStocks.ticker.count()
         val sumPrice = BoughtStocks.price.sum()
         val averagePrice = BoughtStocks.price.avg()
@@ -109,7 +109,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
         if (0 >= quantity)
             throw TransactionActionWithLessThanOneShareException()
 
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             val tickerInformation = _getTicker(tickerId)
 
             val valueOfStock = LorittaBovespaBrokerUtils.convertToBuyingPrice(tickerInformation.value)
@@ -166,7 +166,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
 
             logger.info { "User $userId bought $quantity $tickerId for $howMuchValue" }
 
-            return@transactionOrUseThreadLocalTransaction BoughtSharesResponse(
+            return@transaction BoughtSharesResponse(
                 tickerId,
                 quantity,
                 howMuchValue
@@ -188,7 +188,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
         if (0 >= quantity)
             throw TransactionActionWithLessThanOneShareException()
 
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             val tickerInformation = _getTicker(tickerId)
 
             checkIfTickerIsInactive(tickerInformation)
@@ -244,7 +244,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
 
             logger.info { "User $userId sold $quantity $tickerId for $howMuchWillBePaidToTheUser" }
 
-            return@transactionOrUseThreadLocalTransaction SoldSharesResponse(
+            return@transaction SoldSharesResponse(
                 tickerId,
                 quantity,
                 howMuchWillBePaidToTheUser,

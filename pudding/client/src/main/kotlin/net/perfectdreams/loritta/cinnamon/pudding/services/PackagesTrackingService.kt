@@ -15,7 +15,7 @@ import java.time.Instant
 
 class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
     suspend fun trackCorreiosPackage(user: UserId, trackingId: String) {
-        pudding.transactionOrUseThreadLocalTransaction {
+        pudding.transaction {
             var trackingPackageEntryId = TrackedCorreiosPackages.select { TrackedCorreiosPackages.trackingId eq trackingId }
                 .limit(1)
                 .firstOrNull()
@@ -46,11 +46,11 @@ class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
     }
 
     suspend fun untrackCorreiosPackage(user: UserId, trackingId: String) {
-        pudding.transactionOrUseThreadLocalTransaction {
+        pudding.transaction {
             val trackingPackageEntryId: EntityID<Long> = TrackedCorreiosPackages.select { TrackedCorreiosPackages.trackingId eq trackingId }
                 .limit(1)
                 .firstOrNull()
-                ?.getOrNull(TrackedCorreiosPackages.id) ?: return@transactionOrUseThreadLocalTransaction
+                ?.getOrNull(TrackedCorreiosPackages.id) ?: return@transaction
 
             UsersFollowingCorreiosPackages.deleteWhere {
                 UsersFollowingCorreiosPackages.user eq user.value.toLong() and (UsersFollowingCorreiosPackages.trackedPackage eq trackingPackageEntryId)
@@ -67,13 +67,13 @@ class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
         }
     }
 
-    suspend fun getTrackedCorreiosPackagesByUser(user: UserId) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun getTrackedCorreiosPackagesByUser(user: UserId) = pudding.transaction {
         UsersFollowingCorreiosPackages.innerJoin(TrackedCorreiosPackages).select {
             UsersFollowingCorreiosPackages.user eq user.value.toLong() and (TrackedCorreiosPackages.delivered eq false and (TrackedCorreiosPackages.unknownPackage eq false))
         }.map { it[TrackedCorreiosPackages.trackingId] }
     }
 
-    suspend fun getCorreiosPackageEvents(trackingId: String) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun getCorreiosPackageEvents(trackingId: String) = pudding.transaction {
         TrackedCorreiosPackagesEvents.select { TrackedCorreiosPackagesEvents.trackingId eq trackingId }
             .map { it[TrackedCorreiosPackagesEvents.event] }
     }

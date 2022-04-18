@@ -22,7 +22,7 @@ class AutoExpireInteractionsData(private val pudding: Pudding) : Runnable {
             val now = Instant.now()
 
             val count = runBlocking {
-                pudding.transactionOrUseThreadLocalTransaction {
+                pudding.transaction {
                     InteractionsData.deleteWhere {
                         InteractionsData.expiresAt less now
                     }

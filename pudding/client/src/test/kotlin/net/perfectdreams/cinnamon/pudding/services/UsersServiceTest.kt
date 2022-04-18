@@ -54,7 +54,7 @@ class UsersServiceTest {
 
             require(results.count { it == true } == 1) { "There is more than one successful achievement!" }
 
-            val count = pudding.transactionOrUseThreadLocalTransaction {
+            val count = pudding.transaction {
                 UserAchievements.selectAll().count()
             }
 

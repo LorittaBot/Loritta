@@ -9,13 +9,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNul
 import org.jetbrains.exposed.sql.select
 
 class BackgroundsService(private val pudding: Pudding) : Service(pudding) {
-    suspend fun getBackground(internalName: String) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun getBackground(internalName: String) = pudding.transaction {
         Backgrounds.selectFirstOrNull {
             Backgrounds.internalName eq internalName
         }?.let { PuddingBackground.fromRow(it) }
     }
 
-    suspend fun getBackgroundVariations(internalName: String) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun getBackgroundVariations(internalName: String) = pudding.transaction {
         BackgroundVariations
             .select { BackgroundVariations.background eq internalName }
             .map { BackgroundVariation.fromRow(it) }

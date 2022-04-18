@@ -56,7 +56,7 @@ class PartitionCreator(private val pudding: Pudding) : Runnable {
         val endMonth = endOfTheMonth.monthValue.toString().padStart(2, '0')
         val endDay = endOfTheMonth.dayOfMonth.toString().padStart(2, '0')
 
-        pudding.transactionOrUseThreadLocalTransaction {
+        pudding.transaction {
             exec("CREATE TABLE IF NOT EXISTS executedapplicationcommandslog_y${beginningYear}m$beginningMonth PARTITION OF executedapplicationcommandslog FOR VALUES FROM ('$beginningYear-$beginningMonth-$beginningDay') TO ('$endYear-$endMonth-$endDay');")
             exec("CREATE TABLE IF NOT EXISTS executedcomponentslog_y${beginningYear}m$beginningMonth PARTITION OF executedcomponentslog FOR VALUES FROM ('$beginningYear-$beginningMonth-$beginningDay') TO ('$endYear-$endMonth-$endDay');")
         }

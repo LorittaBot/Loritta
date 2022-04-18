@@ -36,7 +36,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @param  id the profile's ID
      * @return the user profile
      */
-    suspend fun getOrCreateUserProfile(id: UserId) = pudding.transactionOrUseThreadLocalTransaction { _getOrCreateUserProfile(id) }
+    suspend fun getOrCreateUserProfile(id: UserId) = pudding.transaction { _getOrCreateUserProfile(id) }
 
     /**
      * Gets a [PuddingUserProfile], if the profile doesn't exist, then null is returned
@@ -45,11 +45,11 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @return the user profile or null if it doesn't exist
      */
     suspend fun getUserProfile(id: UserId): PuddingUserProfile? {
-        return pudding.transactionOrUseThreadLocalTransaction { _getUserProfile(id) }
+        return pudding.transaction { _getUserProfile(id) }
     }
 
     internal suspend fun _getUserProfile(id: UserId): PuddingUserProfile? {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             Profiles.select { Profiles.id eq id.value.toLong() }
                 .firstOrNull()
         }?.let { PuddingUserProfile.fromRow(it) }
@@ -91,7 +91,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @return the user settings or null if it doesn't exist
      */
     suspend fun getProfileSettings(id: Long): PuddingProfileSettings? {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             UserSettings.select { UserSettings.id eq id }
                 .firstOrNull()
         }?.let { PuddingProfileSettings.fromRow(it) }
@@ -105,13 +105,13 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @return if true, the achievement was successfully given, if false, the user already has the achievement
      */
     suspend fun giveAchievement(id: UserId, type: AchievementType, achievedAt: Instant): Boolean {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             val alreadyHasAchievement = UserAchievements.select {
                 UserAchievements.user eq id.value.toLong() and (UserAchievements.type eq type)
             }.firstOrNull() != null
 
             if (alreadyHasAchievement)
-                return@transactionOrUseThreadLocalTransaction false
+                return@transaction false
 
             UserAchievements.insert {
                 it[UserAchievements.user] = id.value.toLong()
@@ -119,7 +119,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
                 it[UserAchievements.achievedAt] = achievedAt.toJavaInstant()
             }
 
-            return@transactionOrUseThreadLocalTransaction true
+            return@transaction true
         }
     }
 
@@ -130,7 +130,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @return the achievement list
      */
     suspend fun getUserAchievements(id: UserId): List<PuddingAchievement> {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             UserAchievements.select {
                 UserAchievements.user eq id.value.toLong()
             }.map { PuddingAchievement.fromRow(it) }
@@ -143,7 +143,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @param id the user's ID
      * @return the user banned state or null if it doesn't exist
      */
-    suspend fun getUserBannedState(id: UserId) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun getUserBannedState(id: UserId) = pudding.transaction {
         val bannedState = BannedUsers.select {
             BannedUsers.userId eq id.value.toLong() and
                     (BannedUsers.valid eq true) and
@@ -157,9 +157,9 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
 
         }
             .orderBy(BannedUsers.bannedAt, SortOrder.DESC)
-            .firstOrNull() ?: return@transactionOrUseThreadLocalTransaction null
+            .firstOrNull() ?: return@transaction null
 
-        return@transactionOrUseThreadLocalTransaction bannedState.let {
+        return@transaction bannedState.let {
             UserBannedState(
                 it[BannedUsers.valid],
                 Instant.fromEpochMilliseconds(it[BannedUsers.bannedAt]),
@@ -176,10 +176,10 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @param userId the user's ID
      * @return the cached user info or null if it doesn't exist
      */
-    suspend fun getCachedUserInfoById(userId: UserId) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun getCachedUserInfoById(userId: UserId) = pudding.transaction {
         val info = CachedDiscordUsers.select {
             CachedDiscordUsers.id eq userId.value.toLong()
-        }.limit(1).firstOrNull() ?: return@transactionOrUseThreadLocalTransaction null
+        }.limit(1).firstOrNull() ?: return@transaction null
 
         CachedUserInfo(
             UserId(info[CachedDiscordUsers.id].value),
@@ -204,7 +204,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
         name: String,
         discriminator: String,
         avatarId: String?
-    ) = pudding.transactionOrUseThreadLocalTransaction {
+    ) = pudding.transaction {
         val info = CachedDiscordUsers.select {
             CachedDiscordUsers.id eq userId.value.toLong()
         }.limit(1).firstOrNull()
@@ -230,7 +230,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     suspend fun getCachedDiscordDirectMessageChannel(id: UserId): Long? {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             CachedDiscordUsersDirectMessageChannels.select { CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong() }
                 .limit(1)
                 .firstOrNull()
@@ -238,7 +238,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     suspend fun insertOrUpdateCachedDiscordDirectMessageChannel(id: UserId, channelId: Long) {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             val info = CachedDiscordUsersDirectMessageChannels.select {
                 CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong()
             }.limit(1).firstOrNull()
@@ -257,14 +257,14 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     suspend fun deleteCachedDiscordDirectMessageChannel(id: UserId) {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             CachedDiscordUsersDirectMessageChannels.deleteWhere {
                 CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong()
             }
         }
     }
 
-    suspend fun insertSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun insertSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
         _insertSkipUserDailyTaxDirectMessageEntry(userId)
     }
 
@@ -275,7 +275,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
         }
     }
 
-    suspend fun deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
         _deleteSkipUserDailyTaxDirectMessageEntry(userId)
     }
 
@@ -293,7 +293,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
         findState: List<PendingImportantNotificationState>,
         newState: PendingImportantNotificationState
     ): String? {
-        return pudding.transactionOrUseThreadLocalTransaction {
+        return pudding.transaction {
             val dataResult = PendingImportantNotifications.select {
                 PendingImportantNotifications.userId eq userId.value.toLong() and (PendingImportantNotifications.state inList findState)
             }.limit(1)

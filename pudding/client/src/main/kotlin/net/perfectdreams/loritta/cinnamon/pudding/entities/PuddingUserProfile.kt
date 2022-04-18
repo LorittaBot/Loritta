@@ -33,7 +33,7 @@ class PuddingUserProfile(
 
     suspend fun getRankPositionInSonhosRanking() = pudding.sonhos.getSonhosRankPositionBySonhos(money)
 
-    suspend fun enableAfk(reason: String? = null) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun enableAfk(reason: String? = null) = pudding.transaction {
         Profiles.update({ Profiles.id eq this@PuddingUserProfile.id.value.toLong() }) {
             it[isAfk] = true
             it[afkReason] = reason
@@ -41,7 +41,7 @@ class PuddingUserProfile(
     }
 
 
-    suspend fun disableAfk() = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun disableAfk() = pudding.transaction {
         Profiles.update({ Profiles.id eq this@PuddingUserProfile.id.value.toLong() }) {
             it[isAfk] = false
             it[afkReason] = null

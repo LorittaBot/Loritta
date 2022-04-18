@@ -16,7 +16,7 @@ class PuddingProfileSettings(
     val aboutMe by data::aboutMe
     val gender by data::gender
 
-    suspend fun setGender(gender: Gender) = pudding.transactionOrUseThreadLocalTransaction {
+    suspend fun setGender(gender: Gender) = pudding.transaction {
         UserSettings.update({ UserSettings.id eq this@PuddingProfileSettings.id.value.toLong() }) {
             it[UserSettings.gender] = gender
         }
