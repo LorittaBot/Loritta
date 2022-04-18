@@ -18,6 +18,8 @@ import dev.kord.rest.builder.message.modify.embed
 import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.utils.author
@@ -53,6 +55,10 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
             .build<Snowflake, Boolean>()
             .asMap()
     )
+    private val mutexes = Caffeine.newBuilder()
+        .expireAfterAccess(60, TimeUnit.SECONDS)
+        .build<Long, Mutex>()
+        .asMap()
 
     override fun setupQueueBinds(channel: Channel) {
         channel.queueBindToModuleQueue("event.message-reaction-add")
@@ -118,135 +124,130 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         if (emojiName != STAR_REACTION)
             return
 
-        val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value) ?: return
-        val starboardConfig = serverConfig.getStarboardConfig() ?: return
-        val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
-
-        val starboardId = starboardConfig.starboardChannelId
-        // Ignore if someone is trying to be "haha i'm so funni" trying to add stars to the starboard channel
-        if (starboardId == channelId.value)
-            return
-
         val lockKey = UUID.nameUUIDFromBytes("starboard-message:$guildId:$channelId:$messageId".toByteArray(Charsets.UTF_8))
             .mostSignificantBits
 
-        if (Snowflake(starboardConfig.starboardChannelId) in failedToSendMessageChannels)
-            return
+        logger.info { "Creating lock $lockKey for Starboard Message ${messageId}..." }
 
-        // Now we are going to do everything within the transaction, to avoid multiple threads trying to update the same message at the same time
-        // We don't need to care about having repeatable reads because we are handling locks at the application level
-        // However we want to read data that was already commited by a different transaction
-        m.services.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
-            logger.info { "Trying to hold advisory lock for message ${messageId}..." }
+        // Before we were using PostgreSQL's advisory locks, however for some reason all connections got exausted after a while (maybe a connection leak? however there weren't any active transactions in the database)? Super weird issue
+        // So for now we are relying on Kotlin Coroutines' mutexes, the issue with this is that it won't scale if we increase the number of replicas
+        mutexes.getOrPut(lockKey) { Mutex() }.withLock {
+            m.services.transaction {
+                val serverConfig = m.services.serverConfigs._getServerConfigRoot(guildId.value) ?: return@transaction
+                val starboardConfig = serverConfig._getStarboardConfig() ?: return@transaction
+                val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-            // TODO: If multiple users are reacting at the same time, batch them and edit the message every X seconds
-            // This is blocks if a lock is held
-            exec("SELECT pg_try_advisory_xact_lock($lockKey) AS \"was_unlocked\", pg_advisory_xact_lock($lockKey);") {
-                while (it.next()) {
-                    logger.info { "Was $messageId locked before? ${it.getBoolean("was_unlocked")}" }
+                val starboardId = starboardConfig.starboardChannelId
+                // Ignore if someone is trying to be "haha i'm so funni" trying to add stars to the starboard channel
+                if (starboardId == channelId.value)
+                    return@transaction
+
+                if (Snowflake(starboardConfig.starboardChannelId) in failedToSendMessageChannels)
+                    return@transaction
+
+                logger.info { "Getting Starboard Message of $messageId in the database..." }
+
+                // Get if the current message is already sent in the starboard
+                val starboardMessageFromDatabase = StarboardMessages.select {
+                    StarboardMessages.guildId eq guildId.value.toLong() and (StarboardMessages.messageId eq messageId.value.toLong())
                 }
-            }
+                    .limit(1)
+                    .firstOrNull()
 
-            // Get if the current message is already sent in the starboard
-            val starboardMessageFromDatabase = StarboardMessages.select {
-                StarboardMessages.guildId eq guildId.value.toLong() and (StarboardMessages.messageId eq messageId.value.toLong())
-            }
-                .limit(1)
-                .firstOrNull()
+                logger.info { "Does message $messageId have a message in the database? ${starboardMessageFromDatabase != null}" }
 
-            logger.info { "Does message $messageId have a message in the database? ${starboardMessageFromDatabase != null}" }
-
-            val reactedMessage = try {
-                m.rest.channel.getMessage(channelId, messageId)
-            } catch (e: KtorRequestException) {
-                logger.warn(e) { "Failed to get message $messageId" }
-                failedToSendMessageChannels.add(channelId)
-                return@transaction
-            }
-
-            // Maybe null if there isn't any reactions in the message
-            val reactionList = reactedMessage.reactions.value
-
-            // The star may be missing if there isn't any reactions in the message
-            val starReaction = reactionList?.firstOrNull { it.emoji.name == STAR_REACTION }
-
-            val starReactionCount = starReaction?.count ?: 0
-
-            logger.info { "Current Star Reaction Count for message $messageId: $starReactionCount" }
-
-            if (starboardMessageFromDatabase != null && starboardConfig.requiredStars > starReactionCount) {
-                logger.info { "Starboard message for $messageId is present in the database, but it is below the required stars threshold! Deleting message..." }
-
-                // Star Reaction is less than the required star count, delete the starboard message and from the database
-                StarboardMessages.deleteWhere {
-                    StarboardMessages.id eq starboardMessageFromDatabase[StarboardMessages.id]
-                }
-
-                // Bye starboard message!
-                try {
-                    m.rest.channel.deleteMessage(
-                        Snowflake(starboardId),
-                        Snowflake(starboardMessageFromDatabase[StarboardMessages.embedId])
-                    )
+                val reactedMessage = try {
+                    m.rest.channel.getMessage(channelId, messageId)
                 } catch (e: KtorRequestException) {
-                    logger.warn(e) { "Failed to delete message ${starboardMessageFromDatabase[StarboardMessages.embedId]}" }
+                    logger.warn(e) { "Failed to get message $messageId" }
+                    failedToSendMessageChannels.add(channelId)
+                    return@transaction
                 }
-                return@transaction
-            }
 
-            if (starReaction != null) {
-                if (starboardMessageFromDatabase != null) {
-                    logger.info { "Starboard message for $messageId is present in the database!" }
+                // Maybe null if there isn't any reactions in the message
+                val reactionList = reactedMessage.reactions.value
 
-                    val embedId = starboardMessageFromDatabase[StarboardMessages.embedId]
+                // The star may be missing if there isn't any reactions in the message
+                val starReaction = reactionList?.firstOrNull { it.emoji.name == STAR_REACTION }
 
+                val starReactionCount = starReaction?.count ?: 0
+
+                logger.info { "Current Star Reaction Count for message $messageId: $starReactionCount" }
+
+                if (starboardMessageFromDatabase != null && starboardConfig.requiredStars > starReactionCount) {
+                    logger.info { "Starboard message for $messageId is present in the database, but it is below the required stars threshold! Deleting message..." }
+
+                    // Star Reaction is less than the required star count, delete the starboard message and from the database
+                    StarboardMessages.deleteWhere {
+                        StarboardMessages.id eq starboardMessageFromDatabase[StarboardMessages.id]
+                    }
+
+                    // Bye starboard message!
                     try {
-                        m.rest.channel.editMessage(
+                        m.rest.channel.deleteMessage(
                             Snowflake(starboardId),
-                            Snowflake(embedId),
-                            modifyStarboardMessage(
-                                i18nContext,
-                                guildId,
-                                reactedMessage,
-                                starReaction
-                            )
+                            Snowflake(starboardMessageFromDatabase[StarboardMessages.embedId])
                         )
                     } catch (e: KtorRequestException) {
-                        logger.warn(e) { "Failed to edit starboard message $embedId in channel ${starboardConfig.starboardChannelId}" }
-                        failedToSendMessageChannels.add(Snowflake(starboardId))
-                        return@transaction
+                        logger.warn(e) { "Failed to delete message ${starboardMessageFromDatabase[StarboardMessages.embedId]}" }
                     }
-                } else if (starReactionCount >= starboardConfig.requiredStars) {
-                    logger.info { "Starboard message for $messageId is not present in the database..." }
+                    return@transaction
+                }
 
-                    // Message doesn't exist on the database, and we have enough stars to create the message! Create and send...
+                if (starReaction != null) {
+                    if (starboardMessageFromDatabase != null) {
+                        logger.info { "Starboard message for $messageId is present in the database!" }
 
-                    // Don't send messages to the starboard if the source channel is NSFW
-                    // TODO: Caching
-                    val channel = m.rest.channel.getChannel(channelId)
-                    if (channel.nsfw.discordBoolean)
-                        return@transaction
+                        val embedId = starboardMessageFromDatabase[StarboardMessages.embedId]
 
-                    val newMessage = try {
-                        m.rest.channel.createMessage(
-                            Snowflake(starboardId),
-                            createStarboardMessage(
-                                i18nContext,
-                                guildId,
-                                reactedMessage,
-                                starReaction
+                        try {
+                            m.rest.channel.editMessage(
+                                Snowflake(starboardId),
+                                Snowflake(embedId),
+                                modifyStarboardMessage(
+                                    i18nContext,
+                                    guildId,
+                                    reactedMessage,
+                                    starReaction
+                                )
                             )
-                        )
-                    } catch (e: KtorRequestException) {
-                        logger.warn(e) { "Failed to send starboard message in channel ${starboardConfig.starboardChannelId}" }
-                        failedToSendMessageChannels.add(Snowflake(starboardId))
-                        return@transaction
-                    }
+                        } catch (e: KtorRequestException) {
+                            logger.warn(e) { "Failed to edit starboard message $embedId in channel ${starboardConfig.starboardChannelId}" }
+                            failedToSendMessageChannels.add(Snowflake(starboardId))
+                            return@transaction
+                        }
+                    } else if (starReactionCount >= starboardConfig.requiredStars) {
+                        logger.info { "Starboard message for $messageId is not present in the database..." }
 
-                    StarboardMessages.insert {
-                        it[StarboardMessages.guildId] = guildId.value.toLong()
-                        it[StarboardMessages.messageId] = reactedMessage.id.value.toLong()
-                        it[StarboardMessages.embedId] = newMessage.id.value.toLong()
+                        // Message doesn't exist on the database, and we have enough stars to create the message! Create and send...
+
+                        // Don't send messages to the starboard if the source channel is NSFW
+                        // TODO: Caching
+                        val channel = m.rest.channel.getChannel(channelId)
+                        if (channel.nsfw.discordBoolean)
+                            return@transaction
+
+                        val newMessage = try {
+                            m.rest.channel.createMessage(
+                                Snowflake(starboardId),
+                                createStarboardMessage(
+                                    i18nContext,
+                                    guildId,
+                                    reactedMessage,
+                                    starReaction
+                                )
+                            )
+                        } catch (e: KtorRequestException) {
+                            logger.warn(e) { "Failed to send starboard message in channel ${starboardConfig.starboardChannelId}" }
+                            failedToSendMessageChannels.add(Snowflake(starboardId))
+                            return@transaction
+                        }
+
+                        StarboardMessages.insert {
+                            it[StarboardMessages.guildId] = guildId.value.toLong()
+                            it[StarboardMessages.messageId] = reactedMessage.id.value.toLong()
+                            it[StarboardMessages.embedId] = newMessage.id.value.toLong()
+                        }
                     }
                 }
             }
