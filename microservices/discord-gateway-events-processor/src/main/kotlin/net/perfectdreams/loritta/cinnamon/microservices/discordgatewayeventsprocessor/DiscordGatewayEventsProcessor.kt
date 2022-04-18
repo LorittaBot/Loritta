@@ -1,13 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor
 
 import com.rabbitmq.client.BuiltinExchangeType
-import com.rabbitmq.client.Connection
 import com.rabbitmq.client.ConnectionFactory
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AddFirstToNewChannelsModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.StarboardModule
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.ProcessDiscordGatewayEvents
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 
