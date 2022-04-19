@@ -36,7 +36,7 @@ class DiscordGatewayEventsProcessor(
         val channel = connection.createChannel()
 
         // Setup the exchange
-        channel.exchangeDeclare(RABBITMQ_EXCHANGE_NAME, BuiltinExchangeType.TOPIC, true)
+        channel.exchangeDeclare(RABBITMQ_EXCHANGE_NAME, BuiltinExchangeType.TOPIC)
 
         starboardModule.setupConsumer(channel)
         addFirstToNewChannelsModule.setupConsumer(channel)
