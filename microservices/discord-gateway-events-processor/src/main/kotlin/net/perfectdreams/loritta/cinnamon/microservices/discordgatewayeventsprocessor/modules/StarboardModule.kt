@@ -37,7 +37,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import java.sql.Connection
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -61,10 +60,10 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         .asMap()
 
     override fun setupQueueBinds(channel: Channel) {
-        channel.queueBindToModuleQueue("event.message-reaction-add")
-        channel.queueBindToModuleQueue("event.message-reaction-remove")
-        channel.queueBindToModuleQueue("event.message-reaction-remove-emoji")
-        channel.queueBindToModuleQueue("event.message-reaction-all")
+        channel.queueDeclareAndBindToModuleQueue("event.message-reaction-add")
+        channel.queueDeclareAndBindToModuleQueue("event.message-reaction-remove")
+        channel.queueDeclareAndBindToModuleQueue("event.message-reaction-remove-emoji")
+        channel.queueDeclareAndBindToModuleQueue("event.message-reaction-all")
     }
 
     override fun processEvent(event: Event) {

@@ -28,7 +28,7 @@ class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) 
     }
 
     override fun setupQueueBinds(channel: Channel) {
-        channel.queueBindToModuleQueue("event.channel-create")
+        channel.queueDeclareAndBindToModuleQueue("event.channel-create")
     }
 
     override fun processEvent(event: Event) {

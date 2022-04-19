@@ -38,9 +38,12 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
     }
 
     /**
-     * Helper method to bind a queue using [Channel.queueBind], providing [rabbitMQQueue] as the queue and [DiscordGatewayEventsProcessor.RABBITMQ_EXCHANGE_NAME] as the exchange name
+     * Helper method to declare a queue using [Channel.queueDeclare] and bind a queue using [Channel.queueBind], providing [rabbitMQQueue] as the queue and [DiscordGatewayEventsProcessor.RABBITMQ_EXCHANGE_NAME] as the exchange name
      *
      * @see Channel.queueBind
      */
-    fun Channel.queueBindToModuleQueue(routingKey: String): AMQP.Queue.BindOk = this.queueBind(rabbitMQQueue, DiscordGatewayEventsProcessor.RABBITMQ_EXCHANGE_NAME, routingKey)
+    fun Channel.queueDeclareAndBindToModuleQueue(routingKey: String): AMQP.Queue.BindOk {
+        this.queueDeclare(rabbitMQQueue, true, false, false, mapOf())
+        return this.queueBind(rabbitMQQueue, DiscordGatewayEventsProcessor.RABBITMQ_EXCHANGE_NAME, routingKey)
+    }
 }
