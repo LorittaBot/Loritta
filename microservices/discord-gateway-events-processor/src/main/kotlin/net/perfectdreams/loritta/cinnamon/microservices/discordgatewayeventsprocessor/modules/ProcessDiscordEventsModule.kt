@@ -20,7 +20,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
      * Setups a RabbitMQ consumer for this module on the [channel]
      */
     fun setupConsumer(channel: Channel) {
-        channel.queueDeclare(rabbitMQQueue, false, false, false, null)
+        channel.queueDeclare(rabbitMQQueue, true, false, false, null)
         setupQueueBinds(channel)
 
         channel.basicConsume(
