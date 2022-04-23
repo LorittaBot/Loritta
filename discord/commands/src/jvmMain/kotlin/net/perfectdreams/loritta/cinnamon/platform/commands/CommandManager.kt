@@ -168,24 +168,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.Ch
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ChangeUniverseSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ConfirmDialogBoxButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.PortraitSelectMenuExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.AnagramExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorPreprocessAutocompleteExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ChooseExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.DictionaryExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ECBManager
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.HelpExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.MoneyExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.colorinfo.DecimalColorInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.colorinfo.HexColorInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.colorinfo.RgbColorInfoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.morse.MorseFromExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.morse.MorseToExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.AnagramCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.ChooseCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.DictionaryCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.HelpCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.FollowPackageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.GoBackToPackageListButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.PackageListExecutor
@@ -440,6 +429,13 @@ class CommandManager(
         commandManager.register(
             TrackPackageButtonClickExecutor,
             TrackPackageButtonClickExecutor(loritta, correiosClient)
+        )
+
+        commandManager.register(
+            ColorInfoCommand,
+            RgbColorInfoExecutor(gabrielaImageServerClient),
+            HexColorInfoExecutor(gabrielaImageServerClient),
+            DecimalColorInfoExecutor(gabrielaImageServerClient)
         )
 
         // ===[ ECONOMY ]===
