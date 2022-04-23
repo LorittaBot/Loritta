@@ -17,9 +17,11 @@ fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromResources(path: String, size
         imgSrcSet(
             imageInfo.path.removePrefix("static"),
             sizes,
-            imageInfo.variations!!.joinToString(", ") {
-                "${it.path.removePrefix("static")} ${it.width}w"
-            },
+            (
+                    imageInfo.variations!!.map {
+                        "${it.path.removePrefix("static")} ${it.width}w"
+                    } + "${imageInfo.path.removePrefix("static")} ${imageInfo.width}w"
+                    ).joinToString(", "),
             block
         )
     } else error("Missing ImageInfo for \"$path\"!")
