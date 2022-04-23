@@ -1,1 +1,28 @@
 ---
+description: "Mostra detalhes sobre uma cor"
+analogous: "Análogas"
+complementary: "Complementárias"
+shades: "Tons Escuros"
+tints: "Tons Claros"
+triadic: "Triádica"
+rgbColorInfo:
+  description: "Mostra detalhes sobre uma cor em formato RGB"
+  invalidColor: "Cor RGB inválida! Valores de cor RGB devem estar entre 0 e 255."
+  options:
+    red:
+      text: "Quantidade de Vermelho na Cor (no formato (R, G, B), é o primeiro número)"
+    green:
+      text: "Quantidade de Verde na Cor (no formato (R, G, B), é o segundo número)"
+    blue:
+      text: "Quantidade de Azul na Cor (no formato (R, G, B), é o terceiro número)"
+hexColorInfo:
+  description: "Mostra detalhes sobre uma cor em formato hexadecimal"
+  invalidColor: "Cor hexadecimal inválida! Cores hexadecimais precisam estar no formato `#rrggbb`."
+  options:
+    hex:
+      text: "Cor no formato Hexadecimal (Exemplo: \"#29a6fe\")"
+decimalColorInfo:
+  description: "Mostra detalhes sobre uma cor em formato decimal"
+  options:
+    decimal:
+      text: "Cor em formato decimal (Exemplo: \"-14047490\")"
