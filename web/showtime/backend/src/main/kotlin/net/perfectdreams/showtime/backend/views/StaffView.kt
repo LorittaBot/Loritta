@@ -79,6 +79,7 @@ class StaffView(
                 user("DanielaGC_") {
                     socialNetworks.add(DiscordSocialNetwork(Snowflake(395788326835322882)))
                     socialNetworks.add(TwitterSocialNetwork("DanielaGC_0"))
+                    socialNetworks.add(LastFmSocialNetwork("DanielaGC_0"))
                     socialNetworks.add(GitHubSocialNetwork("DanielaGC"))
                 }
 
@@ -119,7 +120,6 @@ class StaffView(
                     socialNetworks.add(TwitterSocialNetwork("brviictoor"))
                     socialNetworks.add(GitHubSocialNetwork("hechfx"))
                     socialNetworks.add(LastFmSocialNetwork("brviictoor"))
-                    socialNetworks.add(WebsiteSocialNetwork("https://br-victor.space"))
                 }
             }
         }
