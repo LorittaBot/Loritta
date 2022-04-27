@@ -55,7 +55,7 @@ class ButtonClickWithDataExecutorWrapper(
                 SlashCommandExecutorWrapper.NonGuildServerConfigRoot
             }
 
-            i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
+            i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
             // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
             cinnamonContext = if (guildId != null) {
@@ -99,7 +99,7 @@ class ButtonClickWithDataExecutorWrapper(
             logger.warn(e) { "Something went wrong while executing this executor!" } // TODO: Better logs
 
             // If the i18nContext is not present, we will default to the default language provided
-            i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
+            i18nContext = i18nContext ?: loritta.languageManager.getI18nContextByLegacyLocaleId(loritta.languageManager.defaultLanguageId)
 
             // Tell the user that something went *really* wrong
             // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context

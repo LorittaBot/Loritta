@@ -55,7 +55,7 @@ class ModalSubmitWithDataExecutorWrapper(
                 SlashCommandExecutorWrapper.NonGuildServerConfigRoot
             }
 
-            i18nContext = loritta.languageManager.getI18nContextById(serverConfig.localeId)
+            i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
             // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
             cinnamonContext = if (guildId != null) {
