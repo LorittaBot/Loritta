@@ -3,6 +3,7 @@ package net.perfectdreams.randomroleplaypictures.backend.routes
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
+import io.ktor.server.util.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -12,8 +13,8 @@ import net.perfectdreams.sequins.ktor.BaseRoute
 
 class HugPicturesRoute : BaseRoute("/api/v1/pictures/hug") {
     override suspend fun onRequest(call: ApplicationCall) {
-        val gender1 = Gender.MALE
-        val gender2 = Gender.MALE
+        val gender1 = Gender.valueOf(call.parameters.getOrFail("gender1"))
+        val gender2 = Gender.valueOf(call.parameters.getOrFail("gender2"))
 
         // Time to filter the pictures!
         val filteredPictures = RoleplayPictures.hugPictures.pictures
