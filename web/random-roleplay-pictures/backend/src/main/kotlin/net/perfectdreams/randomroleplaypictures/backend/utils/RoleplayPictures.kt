@@ -4,7 +4,9 @@ import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 
 object RoleplayPictures {
     val hugPictures = pictures {
-        picture("/assets/img/hug/male_x_male/hug_0.gif", MaleXMaleGenderMatchType)
+        picture("/assets/img/hug/male_x_female/hug-1.gif", MaleXFemaleGenderMatchType)
+
+        picture("/assets/img/hug/male-x-male/hug-1.gif", MaleXMaleGenderMatchType)
     }
 
     private fun pictures(group: RoleplayPicturesBuilder.() -> (Unit)): RoleplayPicturesBuilder {
