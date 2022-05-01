@@ -106,9 +106,7 @@ class StaffView(
                     socialNetworks.add(DiscordSocialNetwork(Snowflake(437731723350900739)))
                     socialNetworks.add(TwitterSocialNetwork("oRafa_e"))
                 }
-            }
-
-            group(I18nKeysData.Website.Staff.LorittaSupport.Title, I18nKeysData.Website.Staff.LorittaSupport.Description) {
+                
                 user("JvGm45") {
                     socialNetworks.add(DiscordSocialNetwork(Snowflake(197308318119755776)))
                     socialNetworks.add(TwitterSocialNetwork("JvGm45"))
@@ -121,6 +119,10 @@ class StaffView(
                     socialNetworks.add(GitHubSocialNetwork("hechfx"))
                     socialNetworks.add(LastFmSocialNetwork("brviictoor"))
                 }
+            }
+
+            group(I18nKeysData.Website.Staff.LorittaSupport.Title, I18nKeysData.Website.Staff.LorittaSupport.Description) {
+                // No one here... yet :(
             }
         }
 
