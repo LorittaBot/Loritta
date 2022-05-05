@@ -11,11 +11,11 @@ rootProject.name = "cinnamon-parent"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val kotlin = version("kotlin", "1.6.20")
+            val kotlin = version("kotlin", "1.6.21")
             val kotlinXSerialization = version("kotlinx-serialization", "1.3.2")
             val ktor = version("ktor", "2.0.0")
             val jib = version("jib", "3.2.1")
-            val exposed = version("exposed", "0.37.3")
+            val exposed = version("exposed", "0.38.2")
             val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
 
             library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version("1.6.1")
