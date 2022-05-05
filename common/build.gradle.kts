@@ -127,7 +127,7 @@ kotlin {
                 implementation("com.ibm.icu:icu4j:70.1")
 
                 // Used by Minecraft related commands
-                api("net.perfectdreams.minecraftmojangapi:minecraft-mojang-api:0.0.1-SNAPSHOT")
+                api("net.perfectdreams.minecraftmojangapi:minecraft-mojang-api:0.0.2")
 
                 // Gabriela Image Server
                 api("net.perfectdreams.gabrielaimageserver:client:2.0.9")
