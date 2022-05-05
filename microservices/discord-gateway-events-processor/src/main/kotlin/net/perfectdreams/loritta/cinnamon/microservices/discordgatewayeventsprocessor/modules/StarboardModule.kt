@@ -7,7 +7,11 @@ import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.MessageStickerType
 import dev.kord.common.entity.Reaction
 import dev.kord.common.entity.Snowflake
-import dev.kord.gateway.*
+import dev.kord.gateway.Event
+import dev.kord.gateway.MessageReactionAdd
+import dev.kord.gateway.MessageReactionRemove
+import dev.kord.gateway.MessageReactionRemoveAll
+import dev.kord.gateway.MessageReactionRemoveEmoji
 import dev.kord.rest.builder.message.EmbedBuilder
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.builder.message.create.actionRow
@@ -16,8 +20,6 @@ import dev.kord.rest.builder.message.modify.UserMessageModifyBuilder
 import dev.kord.rest.builder.message.modify.actionRow
 import dev.kord.rest.builder.message.modify.embed
 import dev.kord.rest.request.KtorRequestException
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Instant
@@ -37,7 +39,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import java.sql.Connection
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -67,48 +68,40 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         channel.queueBindToModuleQueue("event.message-reaction-all")
     }
 
-    override fun processEvent(event: Event) {
+    override suspend fun processEvent(event: Event) {
         when (event) {
             // ===[ REACTIONS ]===
             is MessageReactionAdd -> {
-                GlobalScope.launch {
-                    handleStarboardReaction(
-                        event.reaction.guildId.value ?: return@launch,
-                        event.reaction.channelId,
-                        event.reaction.messageId,
-                        event.reaction.emoji.name
-                    )
-                }
+                handleStarboardReaction(
+                    event.reaction.guildId.value ?: return,
+                    event.reaction.channelId,
+                    event.reaction.messageId,
+                    event.reaction.emoji.name
+                )
             }
             is MessageReactionRemove -> {
-                GlobalScope.launch {
-                    handleStarboardReaction(
-                        event.reaction.guildId.value ?: return@launch,
-                        event.reaction.channelId,
-                        event.reaction.messageId,
-                        event.reaction.emoji.name
-                    )
-                }
+                handleStarboardReaction(
+                    event.reaction.guildId.value ?: return,
+                    event.reaction.channelId,
+                    event.reaction.messageId,
+                    event.reaction.emoji.name
+                )
             }
             is MessageReactionRemoveEmoji -> {
-                GlobalScope.launch {
-                    handleStarboardReaction(
-                        event.reaction.guildId,
-                        event.reaction.channelId,
-                        event.reaction.messageId,
-                        event.reaction.emoji.name
-                    )
-                }
+                handleStarboardReaction(
+                    event.reaction.guildId,
+                    event.reaction.channelId,
+                    event.reaction.messageId,
+                    event.reaction.emoji.name
+                )
             }
             is MessageReactionRemoveAll -> {
-                GlobalScope.launch {
-                    handleStarboardReaction(
-                        event.reactions.guildId.value ?: return@launch,
-                        event.reactions.channelId,
-                        event.reactions.messageId,
-                        STAR_REACTION // We only want the code to check if it should be removed from the starboard
-                    )
-                }
+                handleStarboardReaction(
+                    event.reactions.guildId.value ?: return,
+                    event.reactions.channelId,
+                    event.reactions.messageId,
+                    STAR_REACTION // We only want the code to check if it should be removed from the starboard
+                )
             }
             else -> {}
         }
