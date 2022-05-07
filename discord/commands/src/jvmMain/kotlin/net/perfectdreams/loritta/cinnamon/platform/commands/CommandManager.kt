@@ -152,8 +152,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinLorittaSweatshirtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHeadPatExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHighFiveExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHugExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.declarations.RoleplayCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHeadPatButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHighFiveButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHugButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOffExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOnExecutor
@@ -209,6 +214,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
+import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import kotlin.system.exitProcess
 
 class CommandManager(
@@ -229,6 +235,7 @@ class CommandManager(
 
     private val mojangApi = MinecraftMojangAPI()
     private val correiosClient = CorreiosClient()
+    private val randomRoleplayPicturesClient = RandomRoleplayPicturesClient("http://local-power.perfectdreams.systems/")
 
     val commandManager = CommandRegistry(
         loritta,
@@ -563,7 +570,24 @@ class CommandManager(
         // ===[ ROLEPLAY ]===
         commandManager.register(
             RoleplayCommand,
-            RoleplayHugExecutor()
+            RoleplayHugExecutor(randomRoleplayPicturesClient),
+            RoleplayHeadPatExecutor(randomRoleplayPicturesClient),
+            RoleplayHighFiveExecutor(randomRoleplayPicturesClient)
+        )
+
+        commandManager.register(
+            RetributeHugButtonExecutor,
+            RetributeHugButtonExecutor(randomRoleplayPicturesClient)
+        )
+
+        commandManager.register(
+            RetributeHeadPatButtonExecutor,
+            RetributeHeadPatButtonExecutor(randomRoleplayPicturesClient)
+        )
+
+        commandManager.register(
+            RetributeHighFiveButtonExecutor,
+            RetributeHighFiveButtonExecutor(randomRoleplayPicturesClient)
         )
 
         // Validate if we don't have more commands than Discord allows
