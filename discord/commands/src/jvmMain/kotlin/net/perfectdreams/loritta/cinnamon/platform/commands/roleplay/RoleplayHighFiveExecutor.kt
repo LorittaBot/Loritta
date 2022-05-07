@@ -1,19 +1,19 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.roleplay
 
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHugButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHighFiveButtonExecutor
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
-class RoleplayHugExecutor(
+class RoleplayHighFiveExecutor(
     client: RandomRoleplayPicturesClient,
 ) : RoleplayPictureExecutor(
     client,
     { gender1, gender2 ->
-        hug(gender1, gender2)
+        highFive(gender1, gender2)
     },
-    RetributeHugButtonExecutor.Companion
+    RetributeHighFiveButtonExecutor.Companion
 ) {
-    companion object : SlashCommandExecutorDeclaration(RoleplayHugExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration(RoleplayHighFiveExecutor::class) {
         override val options = RoleplayPictureExecutor.Companion.Options
     }
 }
