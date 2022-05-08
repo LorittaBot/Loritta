@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
 
 class MoneyExecutor(val ecbManager: ECBManager) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(MoneyExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val from = string("from", MoneyCommand.I18N_PREFIX.Options.From)
                 .also {

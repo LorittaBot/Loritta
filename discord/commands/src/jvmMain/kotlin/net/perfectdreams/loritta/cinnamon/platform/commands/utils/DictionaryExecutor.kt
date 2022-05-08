@@ -19,7 +19,7 @@ import org.jsoup.Jsoup
 import java.net.URLEncoder
 
 class DictionaryExecutor(val http: HttpClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(DictionaryExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val language = string("language", DictionaryCommand.I18N_PREFIX.Options.Language)
                 .also {

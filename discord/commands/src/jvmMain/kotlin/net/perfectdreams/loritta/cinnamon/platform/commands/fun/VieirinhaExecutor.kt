@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class VieirinhaExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(VieirinhaExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             // Unused because... well, we don't need it :P
             val question = string("question", VieirinhaCommand.I18N_PREFIX.Options.Question)

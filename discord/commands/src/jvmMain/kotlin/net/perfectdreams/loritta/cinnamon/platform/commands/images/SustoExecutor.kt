@@ -12,7 +12,7 @@ class SustoExecutor(
     { client.images.loriScared(it) },
     "loritta_susto.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(SustoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.AnagramCommand
 
 class AnagramExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(AnagramExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val text = string("text", AnagramCommand.I18N_PREFIX.Options.Text)
                 .register()

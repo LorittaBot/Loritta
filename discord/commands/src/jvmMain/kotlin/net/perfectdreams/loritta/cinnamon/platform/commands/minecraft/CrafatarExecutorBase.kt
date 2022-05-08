@@ -13,7 +13,7 @@ open class CrafatarExecutorBase(
     val type: String,
     val mojang: MinecraftMojangAPI
 ) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(CrafatarExecutorBase::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val username = string("player_name", MinecraftCommand.I18N_CATEGORY_PREFIX.Options.PlayerNameJavaEdition)
                 .register()

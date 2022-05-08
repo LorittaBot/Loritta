@@ -33,7 +33,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 
 class AchievementsExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(AchievementsExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         suspend fun createMessage(
             loritta: LorittaCinnamon,
             user: User,

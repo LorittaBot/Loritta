@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.C
 import java.awt.Color
 
 class HexColorInfoExecutor(client: GabrielaImageServerClient) : ColorInfoExecutor(client) {
-    companion object : SlashCommandExecutorDeclaration(HexColorInfoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val hex = string(
                 "hex",

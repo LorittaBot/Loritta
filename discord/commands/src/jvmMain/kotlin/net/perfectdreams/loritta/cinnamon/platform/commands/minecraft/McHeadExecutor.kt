@@ -7,7 +7,7 @@ class McHeadExecutor(mojang: MinecraftMojangAPI) : CrafatarExecutorBase(
     "renders/head",
     mojang
 ) {
-    companion object : SlashCommandExecutorDeclaration(McHeadExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = CrafatarExecutorBase.options
     }
 }

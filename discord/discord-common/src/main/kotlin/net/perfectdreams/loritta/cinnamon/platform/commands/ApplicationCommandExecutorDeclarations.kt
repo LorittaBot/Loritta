@@ -1,15 +1,21 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
+import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 
 // The "parent" is Any to avoid issues with anonymous classes
 // When using anonymous classes, you can use another type to match declarations
-sealed class ApplicationCommandExecutorDeclaration(val parent: Any)
+sealed class ApplicationCommandExecutorDeclaration(var parent: Any? = null) {
+    init {
+        if (parent == null)
+            parent = CommandDeclarationUtils.getParentClass(this)
+    }
+}
 
-open class SlashCommandExecutorDeclaration(parent: Any) : ApplicationCommandExecutorDeclaration(parent) {
+open class SlashCommandExecutorDeclaration(parent: Any? = null) : ApplicationCommandExecutorDeclaration(parent) {
     open val options: ApplicationCommandOptions = ApplicationCommandOptions.NO_OPTIONS
 }
 
-open class UserCommandExecutorDeclaration(parent: Any) : ApplicationCommandExecutorDeclaration(parent)
+open class UserCommandExecutorDeclaration(parent: Any? = null) : ApplicationCommandExecutorDeclaration(parent)
 
-open class MessageCommandExecutorDeclaration(parent: Any) : ApplicationCommandExecutorDeclaration(parent)
+open class MessageCommandExecutorDeclaration(parent: Any? = null) : ApplicationCommandExecutorDeclaration(parent)

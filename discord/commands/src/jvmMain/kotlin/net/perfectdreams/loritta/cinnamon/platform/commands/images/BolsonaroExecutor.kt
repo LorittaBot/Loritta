@@ -12,7 +12,7 @@ class BolsonaroExecutor(
     { client.images.bolsonaro(it) },
     "bolsonaro_tv.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(BolsonaroExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

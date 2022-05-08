@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class TextClapExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TextClapExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val text = string("text", TextTransformDeclaration.I18N_PREFIX.Clap.Options.Text(TextTransformDeclaration.CLAP_EMOJI))
                 .register()

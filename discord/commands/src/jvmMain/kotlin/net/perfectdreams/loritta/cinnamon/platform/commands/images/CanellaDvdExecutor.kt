@@ -12,7 +12,7 @@ class CanellaDvdExecutor(
     { client.images.canellaDvd(it) },
     "canella_dvd.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(CanellaDvdExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

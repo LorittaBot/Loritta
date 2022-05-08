@@ -12,7 +12,7 @@ class LoriAtaExecutor(
     { client.images.loriAta(it) },
     "lori_ata.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(LoriAtaExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

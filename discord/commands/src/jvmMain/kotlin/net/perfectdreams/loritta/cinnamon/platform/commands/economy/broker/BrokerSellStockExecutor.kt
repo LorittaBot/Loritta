@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import kotlin.math.abs
 
 class BrokerSellStockExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(BrokerSellStockExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Sell.Options.Ticker.Text)
                 .also {

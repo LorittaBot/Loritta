@@ -12,7 +12,7 @@ class NichijouYuukoPaperExecutor(
     { client.images.nichijouYuukoPaper(it) },
     "nichijou_yuuko_paper.gif"
 ) {
-    companion object : SlashCommandExecutorDeclaration(NichijouYuukoPaperExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

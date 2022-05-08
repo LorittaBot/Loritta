@@ -12,7 +12,7 @@ import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import java.util.*
 
 class McSkinExecutor(val mojang: MinecraftMojangAPI) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(McSkinExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val username = string("player_name", MinecraftCommand.I18N_CATEGORY_PREFIX.Options.PlayerNameJavaEdition)
                 .register()

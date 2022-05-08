@@ -48,7 +48,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.math.ceil
 
 class TransactionsExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TransactionsExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val user = optionalUser("user", TransactionsCommand.I18N_PREFIX.Options.User.Text)
                 .register()

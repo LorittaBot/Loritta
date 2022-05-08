@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordRegexes
 import kotlin.streams.toList
 
 class EmojiInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(EmojiInfoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val emoji = string("emoji", EmojiCommand.I18N_PREFIX.Info.Options.Emoji)
                 .register()

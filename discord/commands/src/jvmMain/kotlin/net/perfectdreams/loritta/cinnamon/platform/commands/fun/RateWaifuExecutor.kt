@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserName
 import kotlin.random.Random
 
 class RateWaifuExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(RateWaifuExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val waifu = string("waifu", RateCommand.I18N_PREFIX.WaifuHusbando.Options.Waifu)
                 .register()

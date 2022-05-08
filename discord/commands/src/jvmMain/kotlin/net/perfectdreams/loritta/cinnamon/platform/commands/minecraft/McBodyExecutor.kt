@@ -7,7 +7,7 @@ class McBodyExecutor(mojang: MinecraftMojangAPI) : CrafatarExecutorBase(
     "renders/body",
     mojang
 ) {
-    companion object : SlashCommandExecutorDeclaration(McBodyExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = CrafatarExecutorBase.options
     }
 }

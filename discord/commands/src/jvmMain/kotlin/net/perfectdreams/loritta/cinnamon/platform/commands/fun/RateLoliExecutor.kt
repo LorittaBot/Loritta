@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 
 class RateLoliExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(RateLoliExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             // Yes, this is meant to be unused
             val loli = string("loli", RateCommand.I18N_PREFIX.Loli.Options.Loli)
