@@ -63,7 +63,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                 }
             },
             CancelCallback {
-
+                logger.warn { "Consumer has been cancelled unexpectedly! $it" }
             }
         )
     }
@@ -91,7 +91,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
 
             val diff = System.currentTimeMillis() - start
             if (diff >= 60_000) {
-                logger.warn { "Message Coroutine $job took too long to process! ${diff}ms" }
+                logger.warn { "Coroutine $job took too long to process! ${diff}ms" }
             }
         }
     }
