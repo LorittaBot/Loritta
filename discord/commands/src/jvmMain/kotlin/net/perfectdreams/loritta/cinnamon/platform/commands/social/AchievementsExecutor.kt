@@ -158,7 +158,7 @@ class AchievementsExecutor : SlashCommandExecutor() {
     }
 
     class ChangeCategoryMenuExecutor(val loritta: LorittaCinnamon) : SelectMenuWithDataExecutor {
-        companion object : SelectMenuExecutorDeclaration(ChangeCategoryMenuExecutor::class, ComponentExecutorIds.CHANGE_CATEGORY_MENU_EXECUTOR)
+        companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_CATEGORY_MENU_EXECUTOR)
 
         override suspend fun onSelect(
             user: User,

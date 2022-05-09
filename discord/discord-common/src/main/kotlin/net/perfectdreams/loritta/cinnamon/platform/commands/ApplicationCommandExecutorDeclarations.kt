@@ -3,8 +3,13 @@ package net.perfectdreams.loritta.cinnamon.platform.commands
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 
-// The "parent" is Any to avoid issues with anonymous classes
-// When using anonymous classes, you can use another type to match declarations
+/**
+ * The [parent] is Any? to avoid issues with anonymous classes
+ *
+ * When using anonymous classes, you can use another type to match declarations
+ *
+ * If [parent] is null when the class is initialized, the declaration will try to find the parent by using Reflection!
+ */
 sealed class ApplicationCommandExecutorDeclaration(var parent: Any? = null) {
     init {
         if (parent == null)

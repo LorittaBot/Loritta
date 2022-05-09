@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDat
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 
 class SwitchToGuildProfileAvatarExecutor(val loritta: LorittaCinnamon, val lorittaId: Snowflake) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(SwitchToGuildProfileAvatarExecutor::class, ComponentExecutorIds.SWITCH_TO_GUILD_PROFILE_AVATAR_EXECUTOR)
+    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.SWITCH_TO_GUILD_PROFILE_AVATAR_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         val decodedInteractionData = context.decodeViaComponentDataUtilsAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>(data)

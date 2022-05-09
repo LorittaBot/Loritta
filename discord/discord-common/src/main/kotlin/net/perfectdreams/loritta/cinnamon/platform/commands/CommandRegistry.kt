@@ -95,10 +95,10 @@ class CommandRegistry(
         convertModalSubmitToInteraKTions()
 
         if (loritta.interactionsConfig.registerGlobally) {
-            interaKTionsRegistry.updateAllGlobalCommands()
+            // interaKTionsRegistry.updateAllGlobalCommands()
         } else {
             for (guildId in loritta.interactionsConfig.guildsToBeRegistered) {
-                interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId))
+                // interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId))
             }
         }
     }

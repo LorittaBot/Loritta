@@ -15,7 +15,7 @@ class ChangeColorPortraitTypeButtonClickExecutor(
     val loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
 ) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(ChangeColorPortraitTypeButtonClickExecutor::class, ComponentExecutorIds.CHANGE_COLOR_PORTRAIT_TYPE_BUTTON_EXECUTOR)
+    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.CHANGE_COLOR_PORTRAIT_TYPE_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         // We will already defer to avoid issues
