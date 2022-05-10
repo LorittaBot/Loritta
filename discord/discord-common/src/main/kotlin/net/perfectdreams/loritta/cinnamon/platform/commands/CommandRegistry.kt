@@ -360,28 +360,9 @@ class CommandRegistry(
         // It looks like this
         // "「Emoji Category」 Description"
         append("「")
-        // Unicode emojis reflecting every category
-        val emoji = when (declaration.category) {
-            CommandCategory.FUN -> "\uD83D\uDE02"
-            CommandCategory.IMAGES -> "\uD83D\uDDBC️"
-            CommandCategory.MINECRAFT -> "⛏️"
-            CommandCategory.POKEMON -> TODO()
-            CommandCategory.UNDERTALE -> "❤️"
-            CommandCategory.ROBLOX -> TODO()
-            CommandCategory.ANIME -> TODO()
-            CommandCategory.DISCORD -> "\uD83E\uDD19"
-            CommandCategory.MISC -> "\uD83E\uDDF6"
-            CommandCategory.MODERATION -> TODO()
-            CommandCategory.UTILS -> "\uD83D\uDEE0️"
-            CommandCategory.SOCIAL -> "\uD83D\uDDE3️"
-            CommandCategory.ACTION -> TODO()
-            CommandCategory.ECONOMY -> "\uD83D\uDCB8"
-            CommandCategory.VIDEOS -> "\uD83C\uDFAC"
-            CommandCategory.FORTNITE -> TODO()
-            CommandCategory.MAGIC -> TODO()
-        }
-        append(emoji)
-        append(" ")
+        // Before we had unicode emojis reflecting each category, but the emojis look super ugly on Windows 10
+        // https://cdn.discordapp.com/attachments/297732013006389252/973613713456250910/unknown.png
+        // So we removed it ;)
         append(declaration.category.getLocalizedName(i18nContext))
         append("」")
         // Looks better without this whitespace
