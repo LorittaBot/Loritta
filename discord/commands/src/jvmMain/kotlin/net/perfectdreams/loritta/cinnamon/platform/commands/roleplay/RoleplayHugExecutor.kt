@@ -11,9 +11,10 @@ class RoleplayHugExecutor(
     { gender1, gender2 ->
         hug(gender1, gender2)
     },
-    RetributeHugButtonExecutor.Companion
+    RetributeHugButtonExecutor.Companion,
+    RoleplayUtils.HUG_ATTRIBUTES
 ) {
-    companion object : SlashCommandExecutorDeclaration(RoleplayHugExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = RoleplayPictureExecutor.Companion.Options
     }
 }
