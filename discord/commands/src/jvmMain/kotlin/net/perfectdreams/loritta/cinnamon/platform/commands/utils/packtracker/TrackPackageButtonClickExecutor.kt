@@ -18,10 +18,7 @@ class TrackPackageButtonClickExecutor(
     val loritta: LorittaCinnamon,
     val client: CorreiosClient
 ) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(
-        TrackPackageButtonClickExecutor::class,
-        ComponentExecutorIds.TRACK_PACKAGE_BUTTON_EXECUTOR
-    )
+    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.TRACK_PACKAGE_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()

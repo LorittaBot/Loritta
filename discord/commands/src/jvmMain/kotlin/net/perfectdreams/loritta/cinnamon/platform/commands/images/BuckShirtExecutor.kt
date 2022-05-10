@@ -12,7 +12,7 @@ class BuckShirtExecutor(
     { client.images.buckShirt(it) },
     "buck_shirt.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(BuckShirtExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

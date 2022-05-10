@@ -12,7 +12,7 @@ class LoriDrakeExecutor(
     { client.images.loriDrake(it) },
     "lori_drake.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(LoriDrakeExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = TwoImagesOptions
     }
 }

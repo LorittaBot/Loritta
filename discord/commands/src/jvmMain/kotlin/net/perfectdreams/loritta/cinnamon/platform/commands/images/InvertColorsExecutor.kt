@@ -12,7 +12,7 @@ class InvertColorsExecutor(
     { client.images.invertColors(it) },
     "invert.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(InvertColorsExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

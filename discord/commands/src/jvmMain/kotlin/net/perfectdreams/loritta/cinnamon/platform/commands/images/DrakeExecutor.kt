@@ -12,7 +12,7 @@ class DrakeExecutor(
     { client.images.drake(it) },
     "drake.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(DrakeExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = TwoImagesOptions
     }
 }

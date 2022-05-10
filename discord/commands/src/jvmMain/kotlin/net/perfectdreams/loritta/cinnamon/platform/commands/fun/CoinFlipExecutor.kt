@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import kotlin.random.Random
 
 class CoinFlipExecutor(val random: Random) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(CoinFlipExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val isTails = random.nextBoolean()

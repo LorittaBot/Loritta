@@ -28,7 +28,7 @@ class ShipExecutor(
     val client: GabrielaImageServerClient,
     val lorittaId: Snowflake
 ) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(ShipExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val user1 = string("user1", ShipCommand.I18N_PREFIX.Options.User1)
                 .register()

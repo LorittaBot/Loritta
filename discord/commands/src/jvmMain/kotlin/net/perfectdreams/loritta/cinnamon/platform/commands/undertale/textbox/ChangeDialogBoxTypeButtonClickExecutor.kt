@@ -15,7 +15,7 @@ class ChangeDialogBoxTypeButtonClickExecutor(
     val loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
 ) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(ChangeDialogBoxTypeButtonClickExecutor::class, ComponentExecutorIds.CHANGE_DIALOG_BOX_TYPE_BUTTON_EXECUTOR)
+    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.CHANGE_DIALOG_BOX_TYPE_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         // We will already defer to avoid issues

@@ -17,7 +17,7 @@ class ChangeUniverseSelectMenuExecutor(
     val loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
 ) : SelectMenuWithDataExecutor {
-    companion object : SelectMenuExecutorDeclaration(ChangeUniverseSelectMenuExecutor::class, ComponentExecutorIds.CHANGE_UNIVERSE_SELECT_MENU_EXECUTOR)
+    companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_UNIVERSE_SELECT_MENU_EXECUTOR)
 
     override suspend fun onSelect(
         user: User,

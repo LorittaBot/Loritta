@@ -12,7 +12,7 @@ class GetOverHereExecutor(
     { client.images.getOverHere(it) },
     "get_over_here.gif"
 ) {
-    companion object : SlashCommandExecutorDeclaration(GetOverHereExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

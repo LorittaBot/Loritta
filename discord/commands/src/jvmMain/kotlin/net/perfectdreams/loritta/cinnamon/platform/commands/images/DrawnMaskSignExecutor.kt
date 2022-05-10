@@ -12,7 +12,7 @@ class DrawnMaskSignExecutor(
     { client.images.drawnMaskSign(it) },
     "drawn_mask_sign.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(DrawnMaskSignExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

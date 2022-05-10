@@ -12,7 +12,7 @@ class LoriSignExecutor(
     { client.images.loriSign(it) },
     "lori_sign.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(LoriSignExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

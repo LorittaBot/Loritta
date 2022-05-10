@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class BemBoladaExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(BemBoladaExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     // TODO: Localization
     private val bemBoladas = listOf("Eu morava em uma ilha e me mudei para outra.\n\nNão é um trocadilho, é uma troca de ilha.",

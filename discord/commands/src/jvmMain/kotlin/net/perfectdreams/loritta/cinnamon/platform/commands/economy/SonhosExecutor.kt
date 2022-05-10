@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.getUserProfile
 
 class SonhosExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(SonhosExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val user = optionalUser("user", SonhosCommand.I18N_PREFIX.Options.User)
                 .register()

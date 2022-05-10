@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
 
 class RoleInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(RoleInfoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val role = role("role", ServerCommand.I18N_PREFIX.Role.Info.Options.Role)
                 .register()

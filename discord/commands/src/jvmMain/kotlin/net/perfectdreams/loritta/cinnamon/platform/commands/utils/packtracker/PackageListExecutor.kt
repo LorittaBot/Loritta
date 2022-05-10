@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class PackageListExecutor(val client: CorreiosClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(PackageListExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         fun createMessage(i18nContext: I18nContext, trackingIds: List<String>): suspend MessageBuilder.() -> (Unit) = {
             embed {
                 title = i18nContext.get(PackageCommand.I18N_PREFIX.List.FollowedPackages)

@@ -10,10 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 class StartCoinFlipGlobalBetMatchmakingButtonClickExecutor(
     val loritta: LorittaCinnamon
 ) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(
-        StartCoinFlipGlobalBetMatchmakingButtonClickExecutor::class,
-        ComponentExecutorIds.START_MATCHMAKING_BUTTON_EXECUTOR
-    )
+    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.START_MATCHMAKING_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()

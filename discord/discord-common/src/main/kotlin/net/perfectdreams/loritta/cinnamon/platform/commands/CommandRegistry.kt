@@ -6,11 +6,9 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.commands.slashCommand
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDeclaration
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteExecutor
@@ -97,10 +95,10 @@ class CommandRegistry(
         convertModalSubmitToInteraKTions()
 
         if (loritta.interactionsConfig.registerGlobally) {
-            interaKTionsRegistry.updateAllGlobalCommands(true)
+            interaKTionsRegistry.updateAllGlobalCommands()
         } else {
             for (guildId in loritta.interactionsConfig.guildsToBeRegistered) {
-                interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId), true)
+                interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId))
             }
         }
     }
@@ -115,10 +113,7 @@ class CommandRegistry(
                 defaultLocale
             )
 
-            interaKTionsManager.register(
-                declaration,
-                *executors.toTypedArray()
-            )
+            interaKTionsManager.register(declaration, *executors.toTypedArray())
         }
     }
 
@@ -256,7 +251,7 @@ class CommandRegistry(
         declaration: SlashCommandDeclarationBuilder,
         declarationExecutor: SlashCommandExecutorDeclaration?,
         defaultLocale: I18nContext
-    ): Pair<SlashCommandDeclarationWrapper, List<SlashCommandExecutor>> {
+    ): Pair<SlashCommandDeclaration, MutableList<SlashCommandExecutor>> {
         val executors = mutableListOf<SlashCommandExecutor>()
 
         val declaration = convertCommandDeclarationToSlashCommand(
@@ -267,9 +262,7 @@ class CommandRegistry(
         )
 
         return Pair(
-            object: SlashCommandDeclarationWrapper {
-                override fun declaration() = declaration
-            },
+            declaration,
             executors
         )
     }
@@ -280,6 +273,26 @@ class CommandRegistry(
         defaultLocale: I18nContext,
         createdExecutors: MutableList<SlashCommandExecutor>
     ): SlashCommandDeclaration {
+        val label = declaration.labels.first()
+        val description = buildDescription(defaultLocale, declaration)
+        val localizedDescriptions = createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration)
+        val subcommands = declaration.subcommands.map {
+            convertCommandDeclarationToSlashCommand(
+                it,
+                it.executor!!,
+                defaultLocale,
+                createdExecutors
+            )
+        }
+        val subcommandGroups = declaration.subcommandGroups.map {
+            convertSubcommandGroupToSlashCommand(
+                defaultLocale,
+                it,
+                createdExecutors,
+                defaultLocale
+            )
+        }
+
         if (declarationExecutor != null) {
             val executor = executors.firstOrNull { declarationExecutor.parent == it::class }
                 ?: throw UnsupportedOperationException("The command executor ${declarationExecutor.parent} wasn't found! Did you register the command executor?")
@@ -304,63 +317,43 @@ class CommandRegistry(
 
             createdExecutors.add(interaKTionsExecutor)
 
-            return slashCommand(declaration.labels.first(), buildDescription(defaultLocale, declaration)) {
-                this.executor = interaKTionsExecutorDeclaration
-                this.descriptionLocalizations = createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration)
-
-                if (declaration.subcommands.isNotEmpty() || declaration.subcommandGroups.isNotEmpty())
-                    logger.warn { "Executor ${executor::class.simpleName} is set to ${declaration.labels.first()}'s root, but the command has subcommands and/or subcommand groups! Due to Discord's limitations the root command won't be usable!" }
-
-                addSubcommandGroups(defaultLocale, declaration, createdExecutors, defaultLocale)
-
-                for (subcommand in declaration.subcommands) {
-                    subcommands.add(
-                        convertCommandDeclarationToSlashCommand(
-                            subcommand,
-                            subcommand.executor!!,
-                            defaultLocale,
-                            createdExecutors
-                        )
-                    )
-                }
-            }
+            return SlashCommandDeclaration(
+                label,
+                null,
+                description,
+                localizedDescriptions,
+                interaKTionsExecutorDeclaration,
+                subcommands,
+                subcommandGroups
+            )
         } else {
-            return slashCommand(declaration.labels.first(), buildDescription(defaultLocale, declaration)) {
-                this.descriptionLocalizations = createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration)
-
-                addSubcommandGroups(defaultLocale, declaration, createdExecutors, defaultLocale)
-
-                for (subcommand in declaration.subcommands) {
-                    subcommands.add(
-                        convertCommandDeclarationToSlashCommand(
-                            subcommand,
-                            subcommand.executor,
-                            defaultLocale,
-                            createdExecutors
-                        )
-                    )
-                }
-            }
+            return SlashCommandDeclaration(
+                label,
+                null,
+                description,
+                localizedDescriptions,
+                null,
+                subcommands,
+                subcommandGroups
+            )
         }
     }
 
-    private fun net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclarationBuilder.addSubcommandGroups(defaultLocale: I18nContext, declaration: SlashCommandDeclarationBuilder, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext) {
-        for (group in declaration.subcommandGroups) {
-            subcommandGroup(group.labels.first(), i18nContext.get(declaration.description).shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH)) {
-                this.descriptionLocalizations = createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration)
-
-                for (subcommand in group.subcommands) {
-                    subcommands.add(
-                        convertCommandDeclarationToSlashCommand(
-                            subcommand,
-                            subcommand.executor!!,
-                            i18nContext,
-                            createdExecutors
-                        )
-                    )
-                }
+    private fun convertSubcommandGroupToSlashCommand(defaultLocale: I18nContext, declaration: SlashCommandDeclarationBuilder, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext): SlashCommandGroupDeclaration {
+        return SlashCommandGroupDeclaration(
+            declaration.labels.first(),
+            null,
+            defaultLocale.get(declaration.description).shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH),
+            createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration),
+            declaration.subcommands.map {
+                convertCommandDeclarationToSlashCommand(
+                    it,
+                    it.executor!!,
+                    i18nContext,
+                    createdExecutors
+                )
             }
-        }
+        )
     }
 
     private fun buildDescription(i18nContext: I18nContext, declaration: SlashCommandDeclarationBuilder) = buildString {

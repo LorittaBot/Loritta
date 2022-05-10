@@ -12,7 +12,7 @@ class MarkMetaExecutor(
     { client.images.markMeta(it) },
     "mark_meta.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(MarkMetaExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

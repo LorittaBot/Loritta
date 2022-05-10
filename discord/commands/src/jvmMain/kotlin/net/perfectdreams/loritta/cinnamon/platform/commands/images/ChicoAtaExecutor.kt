@@ -12,7 +12,7 @@ class ChicoAtaExecutor(
     { client.images.chicoAta(it) },
     "chico_ata.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(ChicoAtaExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

@@ -12,7 +12,7 @@ class StudiopolisTvExecutor(
     { client.images.studiopolisTv(it) },
     "studiopolis_tv.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(StudiopolisTvExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

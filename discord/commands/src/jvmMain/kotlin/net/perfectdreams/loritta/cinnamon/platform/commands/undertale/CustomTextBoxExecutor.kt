@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.Di
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.TextBoxWithCustomPortraitOptionsData
 
 class CustomTextBoxExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(CustomTextBoxExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val text = textBoxTextOption()
                 .register()

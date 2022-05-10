@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class TioDoPaveExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TioDoPaveExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         // TODO: Localization
         // https://www.reddit.com/r/tiodopave/top/?sort=top&t=all&count=375&after=t3_666izg
         val PIADAS = listOf(

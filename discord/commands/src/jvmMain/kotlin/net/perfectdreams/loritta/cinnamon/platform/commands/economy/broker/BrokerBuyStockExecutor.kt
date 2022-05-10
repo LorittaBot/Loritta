@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 
 class BrokerBuyStockExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(BrokerBuyStockExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Buy.Options.Ticker.Text)
                 .also {

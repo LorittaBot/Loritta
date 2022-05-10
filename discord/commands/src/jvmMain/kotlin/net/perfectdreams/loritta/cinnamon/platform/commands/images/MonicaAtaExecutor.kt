@@ -12,7 +12,7 @@ class MonicaAtaExecutor(
     { client.images.monicaAta(it) },
     "ata.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(MonicaAtaExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

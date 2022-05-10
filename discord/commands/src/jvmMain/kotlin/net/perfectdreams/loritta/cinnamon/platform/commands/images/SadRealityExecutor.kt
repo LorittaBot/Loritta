@@ -26,7 +26,7 @@ class SadRealityExecutor(
     val client: GabrielaImageServerClient,
     val lorittaId: Snowflake
 ) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(SadRealityExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val user1 = optionalUser("user1", SadRealityCommand.I18N_PREFIX.Options.User1.Text(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female))
                 .register()

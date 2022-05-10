@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class FaustaoExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(FaustaoExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     // TODO: Localization
     private val frases = listOf(

@@ -12,7 +12,7 @@ class AttackOnHeartExecutor(
     { client.videos.attackOnHeart(it) },
     "attack_on_heart.mp4"
 ) {
-    companion object : SlashCommandExecutorDeclaration(AttackOnHeartExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

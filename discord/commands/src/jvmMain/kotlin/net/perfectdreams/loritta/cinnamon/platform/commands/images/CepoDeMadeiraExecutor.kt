@@ -12,7 +12,7 @@ class CepoDeMadeiraExecutor(
     { client.images.cepoDeMadeira(it) },
     "cepo_de_madeira.gif"
 ) {
-    companion object : SlashCommandExecutorDeclaration(CepoDeMadeiraExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }
