@@ -18,7 +18,7 @@ enum class CommandCategory(val localizedName: StringI18nData, val localizedDescr
     MODERATION(I18nKeysData.Commands.Category.Moderation.Name, I18nKeysData.Commands.Category.Moderation.Description),
     UTILS(I18nKeysData.Commands.Category.Utils.Name, I18nKeysData.Commands.Category.Utils.Description),
     SOCIAL(I18nKeysData.Commands.Category.Social.Name, I18nKeysData.Commands.Category.Social.Description),
-    ACTION(I18nKeysData.Commands.Category.Action.Name, I18nKeysData.Commands.Category.Action.Description),
+    ROLEPLAY(I18nKeysData.Commands.Category.Roleplay.Name, I18nKeysData.Commands.Category.Roleplay.Description),
     ECONOMY(I18nKeysData.Commands.Category.Economy.Name, I18nKeysData.Commands.Category.Economy.Description),
     VIDEOS(I18nKeysData.Commands.Category.Videos.Name, I18nKeysData.Commands.Category.Videos.Description),
     FORTNITE(I18nKeysData.Commands.Category.Fortnite.Name, I18nKeysData.Commands.Category.Fortnite.Description),

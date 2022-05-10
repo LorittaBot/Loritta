@@ -5,11 +5,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayUti
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
-class RetributeHugButtonExecutor(
+class RetributeAttackButtonExecutor(
     client: RandomRoleplayPicturesClient
 ) : RetributePictureExecutor(
     client,
-    RoleplayUtils.HUG_ATTRIBUTES
+    RoleplayUtils.ATTACK_ATTRIBUTES
 ) {
-    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.RETRIBUTE_HUG_BUTTON_EXECUTOR)
+    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.RETRIBUTE_ATTACK_BUTTON_EXECUTOR)
 }

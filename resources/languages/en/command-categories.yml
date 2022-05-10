@@ -85,8 +85,8 @@ commands:
         - "Getting rich in real life is super hard... so why not get rich here?"
         - "Commands related to sonhos, my currency!"
 
-    action:
-      name: "Actions"
+    roleplay:
+      name: "Roleplay"
       description:
         - "Kisses, slaps, hugs and cuddles!"
         - "Having trouble expressing what you're really feeling and need a GIF to help? No problem, I have a folder with a bunch of cool reactions for you to use!"
