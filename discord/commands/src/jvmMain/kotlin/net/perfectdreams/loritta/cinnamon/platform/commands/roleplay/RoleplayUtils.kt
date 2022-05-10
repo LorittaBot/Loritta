@@ -5,41 +5,92 @@ import dev.kord.common.entity.ButtonStyle
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeAttackButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeDanceButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHeadPatButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHighFiveButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHugButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeRoleplayData
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeSlapButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.source.SourcePictureExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserId
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
-import net.perfectdreams.randomroleplaypictures.common.data.api.PictureResponse
 import net.perfectdreams.randomroleplaypictures.common.data.api.PictureSource
 
 object RoleplayUtils {
     val HUG_ATTRIBUTES = RoleplayActionAttributes(
+        { gender1, gender2 ->
+            hug(gender1, gender2)
+        },
+        RetributeHugButtonExecutor,
+        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Hug.Response(user1Mention, user2Mention) },
         Color(255, 141, 230),
         Emotes.Blush
     )
 
-    val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
-        Color(165, 255, 76),
-        Emotes.LoriHi
-    )
-
     val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
+        { gender1, gender2 ->
+            headPat(gender1, gender2)
+        },
+        RetributeHeadPatButtonExecutor,
+        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Headpat.Response(user1Mention, user2Mention) },
         Color(156, 39, 176),
         Emotes.LoriPat
     )
 
+    val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
+        { gender1, gender2 ->
+            highFive(gender1, gender2)
+        },
+        RetributeHighFiveButtonExecutor,
+        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Highfive.Response(user1Mention, user2Mention) },
+        Color(165, 255, 76),
+        Emotes.LoriHi
+    )
+
+    val SLAP_ATTRIBUTES = RoleplayActionAttributes(
+        { gender1, gender2 ->
+            slap(gender1, gender2)
+        },
+        RetributeSlapButtonExecutor,
+        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Slap.Response(user1Mention, user2Mention) },
+        Color(244, 67, 54),
+        Emotes.LoriHi // TODO: Emoji
+    )
+
+    val ATTACK_ATTRIBUTES = RoleplayActionAttributes(
+        { gender1, gender2 ->
+            attack(gender1, gender2)
+        },
+        RetributeAttackButtonExecutor,
+        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Attack.Response(user1Mention, user2Mention) },
+        Color(244, 67, 54),
+        Emotes.LoriHi // TODO: Emoji
+    )
+
+    val DANCE_ATTRIBUTES = RoleplayActionAttributes(
+        { gender1, gender2 ->
+            dance(gender1, gender2)
+        },
+        RetributeDanceButtonExecutor,
+        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Dance.Response(user1Mention, user2Mention) },
+        Color(244, 67, 54), // TODO: Color
+        Emotes.LoriHi // TODO: Emoji
+    )
+
     suspend fun roleplayStuff(
         loritta: LorittaCinnamon,
+        i18nContext: I18nContext,
         data: RetributeRoleplayData,
         client: RandomRoleplayPicturesClient,
-        block: suspend RandomRoleplayPicturesClient.(net.perfectdreams.randomroleplaypictures.common.Gender, net.perfectdreams.randomroleplaypictures.common.Gender) -> (PictureResponse),
-        retributionExecutorDeclaration: ButtonClickExecutorDeclaration,
         roleplayActionAttributes: RoleplayActionAttributes
     ): MessageCreateBuilder.() -> (Unit) {
         val (_, giver, receiver) = data
@@ -47,7 +98,7 @@ object RoleplayUtils {
         val gender1 = loritta.services.users.getOrCreateUserProfile(UserId(giver)).getProfileSettings().gender
         val gender2 = loritta.services.users.getOrCreateUserProfile(UserId(receiver)).getProfileSettings().gender
 
-        val result = block.invoke(
+        val result = roleplayActionAttributes.actionBlock.invoke(
             client,
             when (gender1) {
                 Gender.MALE -> net.perfectdreams.randomroleplaypictures.common.Gender.MALE
@@ -65,7 +116,7 @@ object RoleplayUtils {
 
         return {
             embed {
-                description = "${roleplayActionAttributes.embedEmoji} <@${giver.value}> -> <@${receiver.value}>"
+                description = "${roleplayActionAttributes.embedEmoji} **${i18nContext.get(roleplayActionAttributes.embedResponse.invoke(mentionUser(giver), mentionUser(receiver)))}**"
 
                 image = client.baseUrl + "/img/$picturePath"
 
@@ -76,7 +127,7 @@ object RoleplayUtils {
                 interactiveButton(
                     ButtonStyle.Primary,
                     "Retribuir",
-                    retributionExecutorDeclaration,
+                    roleplayActionAttributes.retributionButtonDeclaration,
                     ComponentDataUtils.encode(
                         RetributeRoleplayData(
                             receiver,

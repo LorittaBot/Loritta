@@ -6,14 +6,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeRoleplayData
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.AnagramCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
-import net.perfectdreams.randomroleplaypictures.common.data.api.PictureResponse
 
 abstract class RoleplayPictureExecutor(
     private val client: RandomRoleplayPicturesClient,
-    private val block: suspend RandomRoleplayPicturesClient.(net.perfectdreams.randomroleplaypictures.common.Gender, net.perfectdreams.randomroleplaypictures.common.Gender) -> (PictureResponse),
-    private val retributionButtonDeclaration: ButtonClickExecutorDeclaration,
     private val attributes: RoleplayActionAttributes
 ) : SlashCommandExecutor() {
     companion object {
@@ -31,15 +27,14 @@ abstract class RoleplayPictureExecutor(
         context.sendMessage(
             RoleplayUtils.roleplayStuff(
                 context.loritta,
+                context.i18nContext,
                 RetributeRoleplayData(
                     context.user.id,
                     context.user.id,
                     receiver.id
                 ),
                 client,
-                block,
-                retributionButtonDeclaration,
-                attributes,
+                attributes
             )
         )
     }

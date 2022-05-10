@@ -1,0 +1,17 @@
+hug:
+  response: "{giver} abraçou {receiver}!"
+
+headpat:
+  response: "{giver} fez cafuné em {receiver}!"
+
+highfive:
+  response: "{giver} mandou um toca aqui para {receiver}!"
+
+slap:
+  response: "{giver} deu um tapa em {receiver}!"
+
+attack:
+  response: "{giver} atacou {receiver}!"
+
+dance:
+  response: "{giver} dançou com {receiver}!"

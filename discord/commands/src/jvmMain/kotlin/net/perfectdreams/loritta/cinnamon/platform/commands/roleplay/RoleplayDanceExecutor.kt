@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.roleplay
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
-class RoleplayHugExecutor(
+class RoleplayDanceExecutor(
     client: RandomRoleplayPicturesClient,
 ) : RoleplayPictureExecutor(
     client,
-    RoleplayUtils.HUG_ATTRIBUTES
+    RoleplayUtils.DANCE_ATTRIBUTES
 ) {
     companion object : SlashCommandExecutorDeclaration() {
         override val options = RoleplayPictureExecutor.Companion.Options
