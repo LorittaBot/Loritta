@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class AfkOffExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(AfkOffExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val profile = context.loritta.services.users.getUserProfile(UserId(context.user.id.value))

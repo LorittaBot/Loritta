@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class AfkOnExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(AfkOnExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val reason = optionalString("reason", AfkCommand.I18N_PREFIX.On.Options.Reason)
                 .register()

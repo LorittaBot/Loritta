@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import kotlin.random.Random
 
 class JankenponExecutor(val random: Random, ): SlashCommandExecutor() {
-    companion object: SlashCommandExecutorDeclaration(JankenponExecutor::class) {
+    companion object: SlashCommandExecutorDeclaration() {
         object Options: ApplicationCommandOptions() {
             val value = string("value", JankenponCommand.I18N_PREFIX.Options.Action)
                 .choice("rock", JankenponCommand.I18N_PREFIX.Rock)

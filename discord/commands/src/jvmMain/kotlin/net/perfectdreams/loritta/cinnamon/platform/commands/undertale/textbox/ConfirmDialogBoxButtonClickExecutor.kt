@@ -12,7 +12,7 @@ class ConfirmDialogBoxButtonClickExecutor(
     val loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
 ) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(ConfirmDialogBoxButtonClickExecutor::class, ComponentExecutorIds.CONFIRM_DIALOG_BOX_BUTTON_EXECUTOR)
+    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.CONFIRM_DIALOG_BOX_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         // We only want to "confirm" the user input (for roleplaying purposes, to avoid filling the chat with a lot of messages)

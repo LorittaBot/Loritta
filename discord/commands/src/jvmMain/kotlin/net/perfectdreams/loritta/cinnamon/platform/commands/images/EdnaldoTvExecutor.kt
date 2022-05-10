@@ -12,7 +12,7 @@ class EdnaldoTvExecutor(
     { client.images.ednaldoTv(it) },
     "ednaldo_tv.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(EdnaldoTvExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

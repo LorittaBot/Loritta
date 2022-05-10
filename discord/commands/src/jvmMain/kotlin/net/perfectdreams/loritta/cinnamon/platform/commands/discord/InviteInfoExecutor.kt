@@ -21,7 +21,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
 
 class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(InviteInfoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val invite = string("invite", InviteCommand.I18N_PREFIX.Info.Options.Invite)
                 .register()

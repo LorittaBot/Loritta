@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 
 class CancelledExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(CancelledExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val user = user("user", CancelledCommand.I18N_PREFIX.Options.User)
                 .register()

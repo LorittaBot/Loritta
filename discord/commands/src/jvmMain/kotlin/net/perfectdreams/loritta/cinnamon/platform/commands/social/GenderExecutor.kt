@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.getOrCreateUserProfile
 
 class GenderExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(GenderExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options: ApplicationCommandOptions() {
             val gender = string("gender", GenderCommand.I18N_PREFIX.Options.Gender)
                 .choice("female", GenderCommand.I18N_PREFIX.Female)

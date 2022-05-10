@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.C
 import kotlin.random.Random
 
 class RollExecutor(val random: Random) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(RollExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val dices = optionalString("dices", RollCommand.I18N_PREFIX.Options.Dices)
                 .register()

@@ -33,7 +33,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import kotlin.time.Duration.Companion.hours
 
 class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(CoinFlipBetGlobalExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val quantity = string("quantity", BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Text)
                 .autocomplete(CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor)

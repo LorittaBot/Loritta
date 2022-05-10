@@ -12,7 +12,7 @@ class ArtExecutor(
     { client.images.art(it) },
     "art.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(ArtExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

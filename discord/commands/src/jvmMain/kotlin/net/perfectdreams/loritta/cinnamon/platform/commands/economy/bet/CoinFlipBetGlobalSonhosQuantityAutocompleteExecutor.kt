@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.time.Duration.Companion.minutes
 
 class CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(val loritta: LorittaCinnamon) : StringAutocompleteExecutor {
-    companion object : StringAutocompleteExecutorDeclaration(CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor::class)
+    companion object : StringAutocompleteExecutorDeclaration()
 
     override suspend fun onAutocomplete(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
         val currentInput = focusedOption.value

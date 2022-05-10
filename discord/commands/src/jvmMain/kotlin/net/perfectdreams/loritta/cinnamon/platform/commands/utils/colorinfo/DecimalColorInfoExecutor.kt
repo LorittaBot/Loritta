@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.C
 import java.awt.Color
 
 class DecimalColorInfoExecutor(client: GabrielaImageServerClient) : ColorInfoExecutor(client) {
-    companion object : SlashCommandExecutorDeclaration(DecimalColorInfoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val decimal = integer(
                 "decimal",

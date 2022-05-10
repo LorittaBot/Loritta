@@ -12,7 +12,7 @@ class BobBurningPaperExecutor(
     { client.images.bobBurningPaper(it) },
     "bobfire.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(BobBurningPaperExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

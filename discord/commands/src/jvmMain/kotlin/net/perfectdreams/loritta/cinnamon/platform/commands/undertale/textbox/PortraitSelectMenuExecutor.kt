@@ -15,7 +15,7 @@ class PortraitSelectMenuExecutor(
     val loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
 ) : SelectMenuWithDataExecutor {
-    companion object : SelectMenuExecutorDeclaration(PortraitSelectMenuExecutor::class, ComponentExecutorIds.PORTRAIT_SELECT_MENU_EXECUTOR)
+    companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.PORTRAIT_SELECT_MENU_EXECUTOR)
 
     override suspend fun onSelect(
         user: User,

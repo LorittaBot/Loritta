@@ -18,7 +18,7 @@ import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import java.util.*
 
 class McSkinLorittaSweatshirtExecutor(val client: GabrielaImageServerClient, val mojang: MinecraftMojangAPI) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(McSkinLorittaSweatshirtExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val skin = string("skin", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.Skin.Text)
                 .register()

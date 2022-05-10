@@ -12,7 +12,7 @@ class BolsoFrameExecutor(
     { client.images.bolsoFrame(it) },
     "bolsoframe.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(BolsoFrameExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

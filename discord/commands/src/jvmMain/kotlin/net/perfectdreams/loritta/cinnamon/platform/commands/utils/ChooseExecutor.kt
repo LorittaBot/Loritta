@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.ChooseCommand
 
 class ChooseExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(ChooseExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val choices = stringList(
                 "choice",

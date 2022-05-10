@@ -29,10 +29,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 class SelectPackageSelectMenuExecutor(
     val loritta: LorittaCinnamon
 ) : SelectMenuWithDataExecutor {
-    companion object : SelectMenuExecutorDeclaration(
-        SelectPackageSelectMenuExecutor::class,
-        ComponentExecutorIds.SELECT_PACKAGE_SELECT_MENU_EXECUTOR
-    )
+    companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.SELECT_PACKAGE_SELECT_MENU_EXECUTOR)
 
     override suspend fun onSelect(
         user: User,

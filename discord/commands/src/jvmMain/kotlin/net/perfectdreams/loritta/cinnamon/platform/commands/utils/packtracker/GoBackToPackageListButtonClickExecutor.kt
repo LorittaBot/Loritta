@@ -16,10 +16,7 @@ class GoBackToPackageListButtonClickExecutor(
     val loritta: LorittaCinnamon,
     val correios: CorreiosClient
 ) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(
-        GoBackToPackageListButtonClickExecutor::class,
-        ComponentExecutorIds.GO_BACK_TO_PACKAGE_LIST_BUTTON_EXECUTOR
-    )
+    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.GO_BACK_TO_PACKAGE_LIST_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()

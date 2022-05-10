@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerTickerInformation
 
 class BrokerInfoExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(BrokerInfoExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because this sometimes takes too long

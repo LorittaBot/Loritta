@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserNameConverter
 
 class RateHusbandoExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(RateHusbandoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val husbando = string("husbando", RateCommand.I18N_PREFIX.WaifuHusbando.Options.Husbando)
                 .register()

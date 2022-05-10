@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import org.jsoup.Jsoup
 
 class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(HungerGamesExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val users = userList("user", HungerGamesCommand.I18N_PREFIX.Options.Users, 24, 24)
                 .register()

@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
 
 class MorseToExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(MorseToExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val textArgument = string("text", MorseCommand.I18N_PREFIX.Options.FromTextToMorse)
                 .register()

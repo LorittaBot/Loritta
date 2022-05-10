@@ -12,7 +12,7 @@ class CarlyAaahExecutor(
     { client.videos.carlyAaah(it) },
     "carly_aaah.mp4"
 ) {
-    companion object : SlashCommandExecutorDeclaration(CarlyAaahExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

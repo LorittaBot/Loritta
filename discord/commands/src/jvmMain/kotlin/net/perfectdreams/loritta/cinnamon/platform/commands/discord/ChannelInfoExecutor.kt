@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
 
 class ChannelInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(ChannelInfoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val channel = optionalChannel("channel", ServerCommand.I18N_PREFIX.Channel.Info.Options.Channel)
                 .register()

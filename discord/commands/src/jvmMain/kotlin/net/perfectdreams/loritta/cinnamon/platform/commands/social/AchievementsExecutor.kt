@@ -33,7 +33,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 
 class AchievementsExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(AchievementsExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         suspend fun createMessage(
             loritta: LorittaCinnamon,
             user: User,
@@ -158,7 +158,7 @@ class AchievementsExecutor : SlashCommandExecutor() {
     }
 
     class ChangeCategoryMenuExecutor(val loritta: LorittaCinnamon) : SelectMenuWithDataExecutor {
-        companion object : SelectMenuExecutorDeclaration(ChangeCategoryMenuExecutor::class, ComponentExecutorIds.CHANGE_CATEGORY_MENU_EXECUTOR)
+        companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_CATEGORY_MENU_EXECUTOR)
 
         override suspend fun onSelect(
             user: User,

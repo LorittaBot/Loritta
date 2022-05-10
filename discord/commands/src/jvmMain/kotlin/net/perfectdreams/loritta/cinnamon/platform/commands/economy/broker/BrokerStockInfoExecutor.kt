@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class BrokerStockInfoExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(BrokerStockInfoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Stock.Options.Ticker.Text)
                 .also {
