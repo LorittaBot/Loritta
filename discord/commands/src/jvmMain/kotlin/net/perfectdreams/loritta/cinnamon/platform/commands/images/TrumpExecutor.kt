@@ -12,7 +12,7 @@ class TrumpExecutor(
     { client.images.trump(it) },
     "trump.gif"
 ) {
-    companion object : SlashCommandExecutorDeclaration(TrumpExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = TwoImagesOptions
     }
 }

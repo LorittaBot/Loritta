@@ -12,7 +12,7 @@ class KnuxThrowExecutor(
     { client.images.knucklesThrow(it) },
     "knux_throw.gif"
 ) {
-    companion object : SlashCommandExecutorDeclaration(KnuxThrowExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

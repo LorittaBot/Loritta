@@ -11,10 +11,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithData
 class ChangeTransactionFilterSelectMenuExecutor(
     val loritta: LorittaCinnamon
 ) : SelectMenuWithDataExecutor {
-    companion object : SelectMenuExecutorDeclaration(
-        ChangeTransactionFilterSelectMenuExecutor::class,
-        ComponentExecutorIds.CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR
-    )
+    companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR)
 
     override suspend fun onSelect(
         user: User,

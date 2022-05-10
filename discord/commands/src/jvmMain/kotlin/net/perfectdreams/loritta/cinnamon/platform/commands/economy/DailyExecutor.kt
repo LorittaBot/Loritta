@@ -26,7 +26,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 class DailyExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(DailyExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally()

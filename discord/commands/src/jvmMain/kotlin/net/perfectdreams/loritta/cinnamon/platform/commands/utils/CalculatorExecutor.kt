@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
 
 class CalculatorExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(CalculatorExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val expression = string("expression", CalculatorCommand.I18N_PREFIX.Options.Expression)
                 .autocomplete(CalculatorPreprocessAutocompleteExecutor)

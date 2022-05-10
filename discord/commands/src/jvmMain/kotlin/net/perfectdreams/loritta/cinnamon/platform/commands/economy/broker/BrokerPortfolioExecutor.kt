@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class BrokerPortfolioExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(BrokerPortfolioExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()

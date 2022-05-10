@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class TextVaporwaveExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TextVaporwaveExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val text = string("text", TextTransformDeclaration.I18N_PREFIX.Vaporwave.Description)
                 .register()

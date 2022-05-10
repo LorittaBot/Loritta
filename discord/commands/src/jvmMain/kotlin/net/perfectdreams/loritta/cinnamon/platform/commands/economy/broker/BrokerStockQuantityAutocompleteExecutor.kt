@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
 
 class BrokerStockQuantityAutocompleteExecutor(val loritta: LorittaCinnamon) : StringAutocompleteExecutor {
-    companion object : StringAutocompleteExecutorDeclaration(BrokerStockQuantityAutocompleteExecutor::class)
+    companion object : StringAutocompleteExecutorDeclaration()
 
     override suspend fun onAutocomplete(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
         val currentInput = focusedOption.value

@@ -12,7 +12,7 @@ class WolverineFrameExecutor(
     { client.images.wolverineFrame(it) },
     "wolverine_frame.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(WolverineFrameExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

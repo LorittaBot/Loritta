@@ -12,7 +12,7 @@ class EdnaldoBandeiraExecutor(
     { client.images.ednaldoBandeira(it) },
     "ednaldo_bandeira.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(EdnaldoBandeiraExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

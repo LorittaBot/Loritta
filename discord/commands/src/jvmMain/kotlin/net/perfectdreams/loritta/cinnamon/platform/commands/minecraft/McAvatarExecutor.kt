@@ -7,7 +7,7 @@ class McAvatarExecutor(mojang: MinecraftMojangAPI) : CrafatarExecutorBase(
     "avatars",
     mojang
 ) {
-    companion object : SlashCommandExecutorDeclaration(McAvatarExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = CrafatarExecutorBase.options
     }
 }

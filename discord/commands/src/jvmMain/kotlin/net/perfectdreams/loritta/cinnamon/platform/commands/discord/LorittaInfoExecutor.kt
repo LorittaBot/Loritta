@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import java.time.Instant
 
 class LorittaInfoExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(LorittaInfoExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()

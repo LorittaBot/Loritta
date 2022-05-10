@@ -16,7 +16,7 @@ class ChangeCharacterSelectMenuExecutor(
     val loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
 ) : SelectMenuWithDataExecutor {
-    companion object : SelectMenuExecutorDeclaration(ChangeCharacterSelectMenuExecutor::class, ComponentExecutorIds.CHANGE_TOBY_CHARACTER_MENU_EXECUTOR)
+    companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_TOBY_CHARACTER_MENU_EXECUTOR)
 
     override suspend fun onSelect(user: User, context: ComponentContext, data: String, values: List<String>) {
         // We will already defer to avoid issues

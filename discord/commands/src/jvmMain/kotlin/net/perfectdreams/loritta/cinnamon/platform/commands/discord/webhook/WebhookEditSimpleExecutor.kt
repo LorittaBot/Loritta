@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 
 class WebhookEditSimpleExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(WebhookEditSimpleExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val webhookUrl = string("webhook_url", WebhookCommand.I18N_PREFIX.Options.WebhookUrl.Text)
                 .register()

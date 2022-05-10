@@ -12,7 +12,7 @@ class BriggsCoverExecutor(
     { client.images.briggsCover(it) },
     "briggs_capa.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(BriggsCoverExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

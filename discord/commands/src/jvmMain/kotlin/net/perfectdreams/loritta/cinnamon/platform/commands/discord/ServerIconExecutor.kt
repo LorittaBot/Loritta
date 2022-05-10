@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 
 class ServerIconExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(ServerIconExecutor::class)
+    companion object : SlashCommandExecutorDeclaration()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext)

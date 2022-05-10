@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class MemeMakerExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(MemeMakerExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val line1 = string("line1", MemeMakerCommand.I18N_PREFIX.Options.Line1)
                 .register()

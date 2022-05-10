@@ -12,7 +12,7 @@ class GessyAtaExecutor(
     { client.images.gessyAta(it) },
     "gessy_ata.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(GessyAtaExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

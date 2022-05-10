@@ -183,14 +183,16 @@ class ImageReferenceCommandOption(name: String, description: StringI18nData, req
                 URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
             }
         }
+
         // If no image was found, we will try to find the first recent message in this chat
         val channelId = reader.context.interaKTionsContext.channelId
-        val messages = reader.context.loritta.rest.channel.getMessages(
-            channelId,
-            null,
-            100
-        )
         try {
+            val messages = reader.context.loritta.rest.channel.getMessages(
+                channelId,
+                null,
+                100
+            )
+            
             // Sort from the newest message to the oldest message
             val attachmentUrl = messages.sortedByDescending { it.id.timestamp }
                 .flatMap { it.attachments }

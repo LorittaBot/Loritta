@@ -12,7 +12,7 @@ class RomeroBrittoExecutor(
     { client.images.romeroBritto(it) },
     "romero_britto.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(RomeroBrittoExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

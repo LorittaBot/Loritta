@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import kotlin.time.Duration.Companion.minutes
 
 class UserAvatarExecutor(val lorittaId: Snowflake) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(UserAvatarExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val user = optionalUser("user", UserCommand.I18N_PREFIX.Avatar.Options.User)
                 .register()

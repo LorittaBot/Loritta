@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.HelpCommand
 
 class HelpExecutor: SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(HelpExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions()
 
         override val options = Options

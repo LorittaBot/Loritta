@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 
 class McUUIDExecutor(val mojang: MinecraftMojangAPI) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(McUUIDExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val username = string("player_name", MinecraftCommand.I18N_CATEGORY_PREFIX.Options.PlayerNameJavaEdition)
                 .register()

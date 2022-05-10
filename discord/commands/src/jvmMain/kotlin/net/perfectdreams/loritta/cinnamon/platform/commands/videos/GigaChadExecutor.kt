@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
 
 class GigaChadExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(GigaChadExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val averageFanText = string("average_fan_text", GigaChadCommand.I18N_PREFIX.Options.AverageFanText)
                 .register()

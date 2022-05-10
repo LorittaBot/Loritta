@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 
 class FansExplainingExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(FansExplainingExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val section1Line1 = string("section1_line1", FansExplainingCommand.I18N_PREFIX.Options.Section1Line1)
                 .register()

@@ -12,7 +12,7 @@ class RipTvExecutor(
     { client.images.ripTv(it) },
     "rip_tv.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(RipTvExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

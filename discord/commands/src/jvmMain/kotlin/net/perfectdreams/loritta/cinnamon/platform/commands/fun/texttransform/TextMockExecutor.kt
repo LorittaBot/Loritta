@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import kotlin.random.Random
 
 class TextMockExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TextMockExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val text = string("text", TextTransformDeclaration.I18N_PREFIX.Mock.Description)
                 .register()

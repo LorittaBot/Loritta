@@ -28,7 +28,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class TrackPackageExecutor(val client: CorreiosClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TrackPackageExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val trackingId = string("tracking_id", PackageCommand.I18N_PREFIX.Track.Options.TrackingId.Text)
                 .register()

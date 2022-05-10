@@ -12,7 +12,7 @@ class PassingPaperExecutor(
     { client.images.passingPaper(it) },
     "passing_paper.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(PassingPaperExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import java.util.*
 
 class McOfflineUUIDExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(McOfflineUUIDExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val username = string("player_name", MinecraftCommand.I18N_CATEGORY_PREFIX.Options.PlayerNameJavaEdition)
                 .register()

@@ -12,7 +12,7 @@ class ToBeContinuedExecutor(
     { client.images.toBeContinued(it) },
     "to_be_continued.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(ToBeContinuedExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }

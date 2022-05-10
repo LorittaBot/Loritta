@@ -12,7 +12,7 @@ class BolsoDrakeExecutor(
     { client.images.bolsoDrake(it) },
     "bolso_drake.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(BolsoDrakeExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = TwoImagesOptions
     }
 }

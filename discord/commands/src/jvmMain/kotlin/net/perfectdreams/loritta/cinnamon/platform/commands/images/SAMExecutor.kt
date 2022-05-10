@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class SAMExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(SAMExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val type = string("type", BRMemesCommand.I18N_PREFIX.Sam.Options.Type)
                 .choice("1", BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam1)

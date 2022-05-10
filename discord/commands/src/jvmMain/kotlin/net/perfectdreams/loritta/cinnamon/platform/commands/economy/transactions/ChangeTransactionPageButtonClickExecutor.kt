@@ -10,10 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 class ChangeTransactionPageButtonClickExecutor(
     val loritta: LorittaCinnamon
 ) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(
-        ChangeTransactionPageButtonClickExecutor::class,
-        ComponentExecutorIds.CHANGE_TRANSACTION_PAGE_BUTTON_EXECUTOR
-    )
+    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.CHANGE_TRANSACTION_PAGE_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()

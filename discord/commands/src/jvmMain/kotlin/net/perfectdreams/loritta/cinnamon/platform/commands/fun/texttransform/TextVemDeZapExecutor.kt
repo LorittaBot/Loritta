@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import kotlin.random.Random
 
 class TextVemDeZapExecutor(val random: Random) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TextVemDeZapExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val mood = string("mood", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Text)
                 .choice("happy", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy)

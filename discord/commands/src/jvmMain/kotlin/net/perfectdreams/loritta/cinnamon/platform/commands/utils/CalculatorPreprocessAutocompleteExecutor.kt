@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
 
 class CalculatorPreprocessAutocompleteExecutor : StringAutocompleteExecutor {
-    companion object : StringAutocompleteExecutorDeclaration(CalculatorPreprocessAutocompleteExecutor::class)
+    companion object : StringAutocompleteExecutorDeclaration()
 
     override suspend fun onAutocomplete(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
         val expression = focusedOption.value

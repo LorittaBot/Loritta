@@ -49,7 +49,7 @@ import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
 class TextBoxExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration(TextBoxExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
             val text = textBoxTextOption()
                 .register()

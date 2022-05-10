@@ -12,7 +12,7 @@ class PepeDreamExecutor(
     { client.images.pepeDream(it) },
     "pepe_dream.png"
 ) {
-    companion object : SlashCommandExecutorDeclaration(PepeDreamExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = SingleImageOptions
     }
 }
