@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute
 
 import net.perfectdreams.discordinteraktions.common.entities.User
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayActionAttributes
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayUtils
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
@@ -11,7 +12,8 @@ import net.perfectdreams.randomroleplaypictures.common.data.api.PictureResponse
 abstract class RetributePictureExecutor(
     private val client: RandomRoleplayPicturesClient,
     private val block: suspend RandomRoleplayPicturesClient.(net.perfectdreams.randomroleplaypictures.common.Gender, net.perfectdreams.randomroleplaypictures.common.Gender) -> (PictureResponse),
-    private val retributionButtonDeclaration: ButtonClickExecutorDeclaration
+    private val retributionButtonDeclaration: ButtonClickExecutorDeclaration,
+    private val attributes: RoleplayActionAttributes,
 ) : ButtonClickWithDataExecutor {
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         val retributionData = context.decodeViaComponentDataUtilsAndRequireUserToMatch<RetributeRoleplayData>(data)
@@ -24,7 +26,8 @@ abstract class RetributePictureExecutor(
                 retributionData,
                 client,
                 block,
-                retributionButtonDeclaration
+                retributionButtonDeclaration,
+                attributes
             )
         )
     }

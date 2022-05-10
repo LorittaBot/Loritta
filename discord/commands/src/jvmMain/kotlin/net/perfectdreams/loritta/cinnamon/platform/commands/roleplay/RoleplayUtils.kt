@@ -1,26 +1,46 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.roleplay
 
+import dev.kord.common.Color
 import dev.kord.common.entity.ButtonStyle
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeRoleplayData
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.source.SourcePictureExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserId
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import net.perfectdreams.randomroleplaypictures.common.data.api.PictureResponse
+import net.perfectdreams.randomroleplaypictures.common.data.api.PictureSource
 
 object RoleplayUtils {
+    val HUG_ATTRIBUTES = RoleplayActionAttributes(
+        Color(255, 141, 230),
+        Emotes.Blush
+    )
+
+    val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
+        Color(165, 255, 76),
+        Emotes.LoriHi
+    )
+
+    val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
+        Color(156, 39, 176),
+        Emotes.LoriPat
+    )
+
     suspend fun roleplayStuff(
         loritta: LorittaCinnamon,
         data: RetributeRoleplayData,
         client: RandomRoleplayPicturesClient,
         block: suspend RandomRoleplayPicturesClient.(net.perfectdreams.randomroleplaypictures.common.Gender, net.perfectdreams.randomroleplaypictures.common.Gender) -> (PictureResponse),
-        retributionExecutorDeclaration: ButtonClickExecutorDeclaration
+        retributionExecutorDeclaration: ButtonClickExecutorDeclaration,
+        roleplayActionAttributes: RoleplayActionAttributes
     ): MessageCreateBuilder.() -> (Unit) {
         val (_, giver, receiver) = data
 
@@ -41,11 +61,15 @@ object RoleplayUtils {
             }
         )
 
+        val (picturePath, pictureSource) = result
+
         return {
             embed {
-                description = "<@${giver.value}> -> <@${receiver.value}>"
+                description = "${roleplayActionAttributes.embedEmoji} <@${giver.value}> -> <@${receiver.value}>"
 
-                image = client.baseUrl + "/img/${result.path}"
+                image = client.baseUrl + "/img/$picturePath"
+
+                color = roleplayActionAttributes.embedColor
             }
 
             actionRow {
@@ -61,6 +85,23 @@ object RoleplayUtils {
                         )
                     )
                 )
+
+                if (pictureSource != null) {
+                    interactiveButton(
+                        ButtonStyle.Secondary,
+                        "Fonte",
+                        SourcePictureExecutor,
+                        ComponentDataUtils.encode<PictureSource>(pictureSource)
+                    )
+                } else {
+                    interactionButton(
+                        ButtonStyle.Secondary,
+                        "dummy"
+                    ) {
+                        label = "Fonte"
+                        disabled = true
+                    }
+                }
             }
         }
     }

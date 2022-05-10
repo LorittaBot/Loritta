@@ -11,9 +11,10 @@ class RoleplayHeadPatExecutor(
     { gender1, gender2 ->
         headPat(gender1, gender2)
     },
-    RetributeHeadPatButtonExecutor.Companion
+    RetributeHeadPatButtonExecutor.Companion,
+    RoleplayUtils.HEAD_PAT_ATTRIBUTES
 ) {
-    companion object : SlashCommandExecutorDeclaration(RoleplayHeadPatExecutor::class) {
+    companion object : SlashCommandExecutorDeclaration() {
         override val options = RoleplayPictureExecutor.Companion.Options
     }
 }

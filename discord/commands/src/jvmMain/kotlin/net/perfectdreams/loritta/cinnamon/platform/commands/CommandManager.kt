@@ -159,6 +159,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.declaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHeadPatButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHighFiveButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHugButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.source.SourcePictureExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOffExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOnExecutor
@@ -588,6 +589,11 @@ class CommandManager(
         commandManager.register(
             RetributeHighFiveButtonExecutor,
             RetributeHighFiveButtonExecutor(randomRoleplayPicturesClient)
+        )
+
+        commandManager.register(
+            SourcePictureExecutor,
+            SourcePictureExecutor()
         )
 
         // Validate if we don't have more commands than Discord allows

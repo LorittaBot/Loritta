@@ -28,6 +28,7 @@ object ComponentExecutorIds {
     val RETRIBUTE_HUG_BUTTON_EXECUTOR = register("0017")
     val RETRIBUTE_HEAD_PAT_BUTTON_EXECUTOR = register("0018")
     val RETRIBUTE_HIGH_FIVE_BUTTON_EXECUTOR = register("0019")
+    val SOURCE_PICTURE_EXECUTOR = register("0020")
 
     /**
      * Verifies if the [id] matches our constraints
