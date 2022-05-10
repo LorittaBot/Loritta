@@ -50,8 +50,13 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                 if (discordEvent != null) {
                     if (16 >= activeEvents.size) {
                         launchedEvents++
-                        launchEventJob("Event ${discordEvent::class.simpleName} for $thisClass") {
-                            processEvent(discordEvent)
+                        val coroutineName = "Event ${discordEvent::class.simpleName} for $thisClass"
+                        launchEventJob(coroutineName) {
+                            try {
+                                processEvent(discordEvent)
+                            } catch (e: Throwable) {
+                                logger.warn(e) { "Something went wrong while trying to process $coroutineName! We are going to ignore it and ack the message, to avoid an acknowledgement timeout..." }
+                            }
 
                             channel.basicAck(message.envelope.deliveryTag, false)
                         }
@@ -60,6 +65,9 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                         logger.warn { "There are more than $MAX_ACTIVE_EVENTS_THRESHOLD active events! We will nack the event and requeue them... ($activeEvents)" }
                         channel.basicNack(message.envelope.deliveryTag, false, true)
                     }
+                } else {
+                    logger.warn { "Unknown Discord event received! We are going to ack the event just so it goes away... kthxbye!" }
+                    channel.basicAck(message.envelope.deliveryTag, false)
                 }
             },
             CancelCallback {
