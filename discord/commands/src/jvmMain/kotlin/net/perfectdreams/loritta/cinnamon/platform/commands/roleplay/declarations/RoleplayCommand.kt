@@ -4,12 +4,7 @@ import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayAttackExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayDanceExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHeadPatExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHighFiveExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHugExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplaySlapExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.*
 
 object RoleplayCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Anagram
@@ -17,6 +12,10 @@ object RoleplayCommand : SlashCommandDeclarationWrapper {
     override fun declaration() = slashCommand(listOf("roleplay"), CommandCategory.UTILS, I18N_PREFIX.Description) {
         subcommand(listOf("hug"), TodoFixThisData) {
             executor = RoleplayHugExecutor
+        }
+
+        subcommand(listOf("kiss"), TodoFixThisData) {
+            executor = RoleplayKissExecutor
         }
 
         subcommand(listOf("slap"), TodoFixThisData) {

@@ -15,3 +15,6 @@ attack:
 
 dance:
   response: "{giver} dançou com {receiver}!"
+
+kiss:
+  response: "{giver} beijou {receiver}!"

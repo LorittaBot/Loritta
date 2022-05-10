@@ -11,13 +11,7 @@ import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeAttackButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeDanceButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHeadPatButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHighFiveButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHugButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeRoleplayData
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeSlapButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.source.SourcePictureExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
@@ -27,9 +21,7 @@ import net.perfectdreams.randomroleplaypictures.common.data.api.PictureSource
 
 object RoleplayUtils {
     val HUG_ATTRIBUTES = RoleplayActionAttributes(
-        { gender1, gender2 ->
-            hug(gender1, gender2)
-        },
+        RandomRoleplayPicturesClient::hug,
         RetributeHugButtonExecutor,
         { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Hug.Response(user1Mention, user2Mention) },
         Color(255, 141, 230),
@@ -37,9 +29,7 @@ object RoleplayUtils {
     )
 
     val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
-        { gender1, gender2 ->
-            headPat(gender1, gender2)
-        },
+        RandomRoleplayPicturesClient::headPat,
         RetributeHeadPatButtonExecutor,
         { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Headpat.Response(user1Mention, user2Mention) },
         Color(156, 39, 176),
@@ -47,9 +37,7 @@ object RoleplayUtils {
     )
 
     val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
-        { gender1, gender2 ->
-            highFive(gender1, gender2)
-        },
+        RandomRoleplayPicturesClient::highFive,
         RetributeHighFiveButtonExecutor,
         { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Highfive.Response(user1Mention, user2Mention) },
         Color(165, 255, 76),
@@ -57,9 +45,7 @@ object RoleplayUtils {
     )
 
     val SLAP_ATTRIBUTES = RoleplayActionAttributes(
-        { gender1, gender2 ->
-            slap(gender1, gender2)
-        },
+        RandomRoleplayPicturesClient::slap,
         RetributeSlapButtonExecutor,
         { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Slap.Response(user1Mention, user2Mention) },
         Color(244, 67, 54),
@@ -67,9 +53,7 @@ object RoleplayUtils {
     )
 
     val ATTACK_ATTRIBUTES = RoleplayActionAttributes(
-        { gender1, gender2 ->
-            attack(gender1, gender2)
-        },
+        RandomRoleplayPicturesClient::attack,
         RetributeAttackButtonExecutor,
         { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Attack.Response(user1Mention, user2Mention) },
         Color(244, 67, 54),
@@ -77,13 +61,19 @@ object RoleplayUtils {
     )
 
     val DANCE_ATTRIBUTES = RoleplayActionAttributes(
-        { gender1, gender2 ->
-            dance(gender1, gender2)
-        },
+        RandomRoleplayPicturesClient::dance,
         RetributeDanceButtonExecutor,
         { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Dance.Response(user1Mention, user2Mention) },
         Color(244, 67, 54), // TODO: Color
         Emotes.LoriHi // TODO: Emoji
+    )
+
+    val KISS_ATTRIBUTES = RoleplayActionAttributes(
+        RandomRoleplayPicturesClient::kiss,
+        RetributeKissButtonExecutor,
+        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Kiss.Response(user1Mention, user2Mention) },
+        Color(244, 67, 54), // TODO: Color
+        Emotes.LoriKiss
     )
 
     suspend fun roleplayStuff(
