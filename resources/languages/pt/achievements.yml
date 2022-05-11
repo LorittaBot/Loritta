@@ -15,6 +15,9 @@ achievements:
     broker:
       title: "Simulador do Mercado de Ações da Loritta"
       description: "Faça o seu sentimento triste depois de perder sonhos sumir com conquistas! Eles não trarão seus sonhos ou suas ações de volta, mas pelo menos elas são show de bola! Conquistas relacionadas ao comando `{command}`" #This references the "/broker" description
+    roleplay:
+      title: "Roleplay"
+      description: "Beijos, tapas, abraços e carinhos são legais... mas por que não apimentá-los com algumas conquistas? Conquistas relacionadas ao comando `{command}`" #This references the Roleplay category description
     generic:
       description: "Conquistas relacionadas ao comando `{command}`" #This is a generic description for achievements that do not have a custom description
     miscellaneous:
@@ -88,3 +91,19 @@ achievements:
     onePlusOneCalculation:
       title: "Eu só queria ter certeza que eu estava certo!"
       description: "Calcule o cálculo mais fácil do mundo, sóóóóóó para ter certeza de que a matemática não mudou da noite para o dia"
+    #===[ ROLEPLAY ]===
+    receivedFirstKiss:
+      title: "Meu primeiro beijo!"
+      description: "Recebeu seu primeiro beijo"
+    gaveFirstKiss:
+      title: "Roubei um Beijo"
+      description: "Deu seu primeiro beijo"
+    triedKissingLoritta:
+      title: "Eu não sou tão carente assim, sabia??"
+      description: "Loritta rejeitou seu beijo"
+    triedHurtingLoritta:
+      title: "Por que você tentou me machucar??"
+      description: "Tentou bater ou atacar a Loritta"
+    grassCutter:
+      title: "Talarico"
+      description: "Beijou alguém que está casado, eita!"
