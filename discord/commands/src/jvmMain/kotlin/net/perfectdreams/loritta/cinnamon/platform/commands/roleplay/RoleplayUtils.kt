@@ -88,6 +88,13 @@ object RoleplayUtils {
         Emotes.LoriKiss
     )
 
+    val RETRIBUTABLE_ACTIONS_BY_LORITTA_EASTER_EGG = listOf(
+        HUG_ATTRIBUTES,
+        HEAD_PAT_ATTRIBUTES,
+        HIGH_FIVE_ATTRIBUTES,
+        DANCE_ATTRIBUTES
+    )
+
     suspend fun handleRoleplayMessage(
         loritta: LorittaCinnamon,
         i18nContext: I18nContext,
@@ -104,58 +111,111 @@ object RoleplayUtils {
         // However it doesn't really matter, does it? ;P
         //
         // Easter eggs to specific actions
-        // ===[ KISS ]===
-        if (roleplayActionAttributes == KISS_ATTRIBUTES) {
-            if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
-                return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA))) {
-                    styled(
-                        i18nContext.get(I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseLori),
-                        Emotes.LoriBonk
-                    )
+        when (roleplayActionAttributes) {
+            // ===[ KISS ]===
+            KISS_ATTRIBUTES -> {
+                if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                    return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA))) {
+                        styled(
+                            i18nContext.get(I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseLori),
+                            Emotes.LoriBonk
+                        )
+                    }
+                }
+
+                if (receiver == giver) {
+                    embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseSelf(giverMention) }
+                } else {
+                    val giverMarriage = loritta.services.marriages.getMarriageByUser(UserId(giver))
+                    val receiverMarriage = loritta.services.marriages.getMarriageByUser(UserId(receiver))
+
+                    // "Talarico é o cara que cobiça a mulher do próximo e as vezes até dos amigos."
+                    // "Grass cutter"/"Grass cutter" in english
+                    if (receiverMarriage != null && giverMarriage?.id != receiverMarriage.id) {
+                        // Talarico achievement
+                        achievements.add(AchievementTarget(giver, AchievementType.GRASS_CUTTER))
+                    }
+
+                    achievements.add(AchievementTarget(giver, AchievementType.GAVE_FIRST_KISS))
+                    achievements.add(AchievementTarget(receiver, AchievementType.RECEIVED_FIRST_KISS))
                 }
             }
 
-            val giverMarriage = loritta.services.marriages.getMarriageByUser(UserId(giver))
-            val receiverMarriage = loritta.services.marriages.getMarriageByUser(UserId(receiver))
+            // ===[ SLAP ]===
+            SLAP_ATTRIBUTES -> {
+                if (giver == receiver) {
+                    embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Slap.ResponseSelf(giverMention) }
+                } else if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                    val oldGiver = giver
+                    val oldReceiver = receiver
 
-            // "Talarico é o cara que cobiça a mulher do próximo e as vezes até dos amigos."
-            // "Grass cutter"/"Grass cutter" in english
-            if (receiverMarriage != null && giverMarriage?.id != receiverMarriage.id) {
-                // Talarico achievement
-                achievements.add(AchievementTarget(giver, AchievementType.GRASS_CUTTER))
+                    receiver = oldGiver
+                    giver = oldReceiver
+
+                    embedResponse = I18nKeysData.Commands.Command.Roleplay.Slap::ResponseLori
+
+                    achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
+                }
             }
 
-            achievements.add(AchievementTarget(giver, AchievementType.GAVE_FIRST_KISS))
-            achievements.add(AchievementTarget(receiver, AchievementType.RECEIVED_FIRST_KISS))
-        }
+            // ===[ ATTACK ]===
+            ATTACK_ATTRIBUTES -> {
+                if (giver == receiver) {
+                    embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Attack.ResponseSelf(giverMention) }
+                } else if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                    val oldGiver = giver
+                    val oldReceiver = receiver
 
-        // ===[ SLAP ]===
-        if (roleplayActionAttributes == SLAP_ATTRIBUTES) {
-            if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
-                val oldGiver = giver
-                val oldReceiver = receiver
+                    receiver = oldGiver
+                    giver = oldReceiver
 
-                receiver = oldGiver
-                giver = oldReceiver
+                    embedResponse = I18nKeysData.Commands.Command.Roleplay.Attack::ResponseLori
 
-                embedResponse = I18nKeysData.Commands.Command.Roleplay.Slap::ResponseLori
-
-                achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
+                    achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
+                }
             }
-        }
 
-        // ===[ ATTACK ]===
-        if (roleplayActionAttributes == ATTACK_ATTRIBUTES) {
-            if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
-                val oldGiver = giver
-                val oldReceiver = receiver
+            // ===[ HUG ]===
+            HUG_ATTRIBUTES -> {
+                if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                    embedResponse = I18nKeysData.Commands.Command.Roleplay.Hug::ResponseLori
+                } else if (giver == receiver) {
+                    // If the giver is the same as the receiver, let's switch it to Loritta hugging the user
+                    giver = Snowflake(loritta.discordConfig.applicationId)
 
-                receiver = oldGiver
-                giver = oldReceiver
+                    embedResponse = I18nKeysData.Commands.Command.Roleplay.Hug::ResponseSelfLori
+                }
+            }
 
-                embedResponse = I18nKeysData.Commands.Command.Roleplay.Attack::ResponseLori
+            // ===[ HEAD PAT ]===
+            HEAD_PAT_ATTRIBUTES -> {
+                if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                    embedResponse = I18nKeysData.Commands.Command.Roleplay.Headpat::ResponseLori
+                } else if (giver == receiver) {
+                    // If the giver is the same as the receiver, let's switch it to Loritta hugging the user
+                    giver = Snowflake(loritta.discordConfig.applicationId)
 
-                achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
+                    embedResponse = I18nKeysData.Commands.Command.Roleplay.Headpat::ResponseSelfLori
+                }
+            }
+
+            // ===[ HIGH FIVE ]===
+            HIGH_FIVE_ATTRIBUTES -> {
+                if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                    embedResponse = I18nKeysData.Commands.Command.Roleplay.Highfive::ResponseLori
+                } else if (giver == receiver) {
+                    // If the giver is the same as the receiver, let's switch it to Loritta hugging the user
+                    giver = Snowflake(loritta.discordConfig.applicationId)
+
+                    embedResponse = I18nKeysData.Commands.Command.Roleplay.Highfive::ResponseSelfLori
+                }
+            }
+
+            // ===[ DANCE ]===
+            DANCE_ATTRIBUTES -> {
+                if (giver == receiver) {
+                    embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Dance.ResponseSelf(giverMention) }
+                }
             }
         }
 
@@ -209,7 +269,9 @@ object RoleplayUtils {
                             data.combo + 1
                         )
                     )
-                )
+                ) {
+                    loriEmoji = roleplayActionAttributes.embedEmoji
+                }
 
                 if (pictureSource != null) {
                     interactiveButton(
