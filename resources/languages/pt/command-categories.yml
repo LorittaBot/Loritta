@@ -71,11 +71,6 @@ commands:
       description:
         - "Ficar rico na vida real é super difícil... então por que você não tenta ficar rico na minha economia?"
         - "Comandos relacionados com sonhos, a minha moeda!"
-    action:
-      name: "Ações"
-      description:
-        - "Beijos, tapas, abraços e carinhos!"
-        - "Está com dificuldade para expressar o que você realmente está sentido e precisa de uma GIF para ajudar? Sem problemas, eu tenho uma pasta com várias reações legais para você usar!"
     magic:
       name: "Mágica"
       description:
