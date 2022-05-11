@@ -238,7 +238,7 @@ object RoleplayUtils {
 
         val (picturePath, pictureSource) = result
 
-        return RoleplayResponse(listOf()) {
+        return RoleplayResponse(achievements) {
             embed {
                 description = buildString {
                     if (data.combo >= 3) {
