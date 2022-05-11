@@ -46,6 +46,6 @@ class RateLoliExecutor() : SlashCommandExecutor() {
             )
         }
 
-        context.giveAchievement(AchievementType.WEIRDO)
+        context.giveAchievementAndNotify(AchievementType.WEIRDO)
     }
 }

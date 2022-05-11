@@ -14,6 +14,9 @@ achievements:
     broker:
       title: "Loritta's Stock Market Simulator"
       description: "Make your sad feeling after losing sonhos go away with achievements! They won't bring your sonhos or your stock shares back, but they are sure nice to have! Achievements related to the `{command}` command" # This references the "/broker" description
+    roleplay:
+      title: "Roleplay"
+      description: "Kisses, slaps, hugs and cuddles are fun... but why not spice them up with a bit of achievements? Achievements related to the `{command}` command" #This references the Roleplay category description
     generic:
       description: "Achievements related to the `{command}` command" # This is a generic description for achievements that do not have a custom description
     miscellaneous:
@@ -93,3 +96,24 @@ achievements:
     onePlusOneCalculation:
       title: "I just wanted to be sure that I was right!"
       description: "Calculate the world's easiest calculation, juuuust to be sure that math didn't change overnight"
+
+    # ===[ ROLEPLAY ]===
+    receivedFirstKiss:
+      title: "My first kiss!"
+      description: "Received your first kiss"
+
+    gaveFirstKiss:
+      title: "Stole a Kiss"
+      description: "Gave your first kiss"
+
+    triedKissingLoritta:
+      title: "I'm not that needy, you know??"
+      description: "Loritta rejected your kiss"
+
+    triedHurtingLoritta:
+      title: "Why did you try to hurt me??"
+      description: "Tried slapping or attacking Loritta"
+
+    grassCutter:
+      title: "Grass Cutter"
+      description: "Kissed someone that was married, whoops!"

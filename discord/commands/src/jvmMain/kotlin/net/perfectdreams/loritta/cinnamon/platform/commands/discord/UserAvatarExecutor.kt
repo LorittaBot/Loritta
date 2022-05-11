@@ -70,6 +70,6 @@ class UserAvatarExecutor(val lorittaId: Snowflake) : SlashCommandExecutor() {
         }
 
         if (user.id == context.user.id)
-            context.giveAchievement(AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE)
+            context.giveAchievementAndNotify(AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE)
     }
 }

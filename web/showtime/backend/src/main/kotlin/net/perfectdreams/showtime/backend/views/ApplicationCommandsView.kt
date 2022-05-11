@@ -273,8 +273,8 @@ class ApplicationCommandsView(
         )
 
         generateCategoryInfo(
-            CommandCategory.ACTION,
-            filterByCategory == CommandCategory.ACTION,
+            CommandCategory.ROLEPLAY,
+            filterByCategory == CommandCategory.ROLEPLAY,
             "/v3/assets/img/categories/hug.png",
             "(max-width: 1366px) 250px"
         )
@@ -622,7 +622,7 @@ class ApplicationCommandsView(
         CommandCategory.MODERATION -> Color(240, 71, 71)
         // Roblox Logo Color
         CommandCategory.ROBLOX -> Color(226, 35, 26)
-        CommandCategory.ACTION -> Color(243, 118, 166)
+        CommandCategory.ROLEPLAY -> Color(243, 118, 166)
         CommandCategory.UTILS -> Color(113, 147, 188)
         // Grass Block
         CommandCategory.MINECRAFT -> Color(124, 87, 58)
