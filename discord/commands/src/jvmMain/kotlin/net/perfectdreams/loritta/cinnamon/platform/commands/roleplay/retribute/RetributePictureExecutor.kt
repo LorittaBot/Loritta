@@ -5,6 +5,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayAct
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayUtils
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
+import net.perfectdreams.loritta.cinnamon.platform.utils.AchievementUtils
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserId
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
 abstract class RetributePictureExecutor(
@@ -16,14 +18,21 @@ abstract class RetributePictureExecutor(
 
         context.deferChannelMessage()
 
-        context.sendMessage(
-            RoleplayUtils.roleplayStuff(
-                context.loritta,
-                context.i18nContext,
-                retributionData,
-                client,
-                attributes
-            )
+        val (achievementTargets, message) = RoleplayUtils.handleRoleplayMessage(
+            context.loritta,
+            context.i18nContext,
+            retributionData,
+            client,
+            attributes
         )
+
+        context.sendMessage(message)
+
+        for ((achievementReceiver, achievement) in achievementTargets) {
+            if (context.user.id == achievementReceiver)
+                context.giveAchievementAndNotify(achievement)
+            else
+                AchievementUtils.giveAchievementToUser(context.loritta, UserId(achievementReceiver), achievement)
+        }
     }
 }

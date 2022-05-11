@@ -8,5 +8,6 @@ import net.perfectdreams.loritta.cinnamon.platform.components.data.SingleUserCom
 data class RetributeRoleplayData(
     override val userId: Snowflake,
     val giver: Snowflake,
-    val receiver: Snowflake
+    val receiver: Snowflake,
+    val combo: Int
 ) : SingleUserComponentData

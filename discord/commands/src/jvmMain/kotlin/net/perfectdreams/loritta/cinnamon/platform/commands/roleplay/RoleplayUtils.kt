@@ -2,18 +2,30 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.roleplay
 
 import dev.kord.common.Color
 import dev.kord.common.entity.ButtonStyle
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.declarations.RoleplayCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeAttackButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeDanceButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHeadPatButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHighFiveButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHugButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeKissButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeRoleplayData
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeSlapButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.source.SourcePictureExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
+import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserId
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
@@ -23,7 +35,7 @@ object RoleplayUtils {
     val HUG_ATTRIBUTES = RoleplayActionAttributes(
         RandomRoleplayPicturesClient::hug,
         RetributeHugButtonExecutor,
-        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Hug.Response(user1Mention, user2Mention) },
+        I18nKeysData.Commands.Command.Roleplay.Hug::Response,
         Color(255, 141, 230),
         Emotes.Blush
     )
@@ -31,7 +43,7 @@ object RoleplayUtils {
     val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
         RandomRoleplayPicturesClient::headPat,
         RetributeHeadPatButtonExecutor,
-        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Headpat.Response(user1Mention, user2Mention) },
+        I18nKeysData.Commands.Command.Roleplay.Headpat::Response,
         Color(156, 39, 176),
         Emotes.LoriPat
     )
@@ -39,7 +51,7 @@ object RoleplayUtils {
     val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
         RandomRoleplayPicturesClient::highFive,
         RetributeHighFiveButtonExecutor,
-        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Highfive.Response(user1Mention, user2Mention) },
+        I18nKeysData.Commands.Command.Roleplay.Highfive::Response,
         Color(165, 255, 76),
         Emotes.LoriHi
     )
@@ -47,43 +59,105 @@ object RoleplayUtils {
     val SLAP_ATTRIBUTES = RoleplayActionAttributes(
         RandomRoleplayPicturesClient::slap,
         RetributeSlapButtonExecutor,
-        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Slap.Response(user1Mention, user2Mention) },
+        I18nKeysData.Commands.Command.Roleplay.Slap::Response,
         Color(244, 67, 54),
-        Emotes.LoriHi // TODO: Emoji
+        Emotes.LoriPunch
     )
 
     val ATTACK_ATTRIBUTES = RoleplayActionAttributes(
         RandomRoleplayPicturesClient::attack,
         RetributeAttackButtonExecutor,
-        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Attack.Response(user1Mention, user2Mention) },
+        I18nKeysData.Commands.Command.Roleplay.Attack::Response,
         Color(244, 67, 54),
-        Emotes.LoriHi // TODO: Emoji
+        Emotes.LoriRage
     )
 
     val DANCE_ATTRIBUTES = RoleplayActionAttributes(
         RandomRoleplayPicturesClient::dance,
         RetributeDanceButtonExecutor,
-        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Dance.Response(user1Mention, user2Mention) },
-        Color(244, 67, 54), // TODO: Color
-        Emotes.LoriHi // TODO: Emoji
+        I18nKeysData.Commands.Command.Roleplay.Dance::Response,
+        Color(255, 152, 0),
+        Emotes.Dancer
     )
 
     val KISS_ATTRIBUTES = RoleplayActionAttributes(
         RandomRoleplayPicturesClient::kiss,
         RetributeKissButtonExecutor,
-        { user1Mention, user2Mention -> I18nKeysData.Commands.Command.Roleplay.Kiss.Response(user1Mention, user2Mention) },
-        Color(244, 67, 54), // TODO: Color
+        I18nKeysData.Commands.Command.Roleplay.Kiss::Response,
+        Color(233, 30, 99),
         Emotes.LoriKiss
     )
 
-    suspend fun roleplayStuff(
+    suspend fun handleRoleplayMessage(
         loritta: LorittaCinnamon,
         i18nContext: I18nContext,
         data: RetributeRoleplayData,
         client: RandomRoleplayPicturesClient,
         roleplayActionAttributes: RoleplayActionAttributes
-    ): MessageCreateBuilder.() -> (Unit) {
-        val (_, giver, receiver) = data
+    ): RoleplayResponse {
+        var (_, giver, receiver) = data
+        var embedResponse = roleplayActionAttributes.embedResponse
+
+        val achievements = mutableListOf<AchievementTarget>()
+
+        // I will be honest, this is kind of a hack
+        // However it doesn't really matter, does it? ;P
+        //
+        // Easter eggs to specific actions
+        // ===[ KISS ]===
+        if (roleplayActionAttributes == KISS_ATTRIBUTES) {
+            if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA))) {
+                    styled(
+                        i18nContext.get(I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseLori),
+                        Emotes.LoriBonk
+                    )
+                }
+            }
+
+            val giverMarriage = loritta.services.marriages.getMarriageByUser(UserId(giver))
+            val receiverMarriage = loritta.services.marriages.getMarriageByUser(UserId(receiver))
+
+            // "Talarico é o cara que cobiça a mulher do próximo e as vezes até dos amigos."
+            // "Grass cutter"/"Grass cutter" in english
+            if (receiverMarriage != null && giverMarriage?.id != receiverMarriage.id) {
+                // Talarico achievement
+                achievements.add(AchievementTarget(giver, AchievementType.GRASS_CUTTER))
+            }
+
+            achievements.add(AchievementTarget(giver, AchievementType.GAVE_FIRST_KISS))
+            achievements.add(AchievementTarget(receiver, AchievementType.RECEIVED_FIRST_KISS))
+        }
+
+        // ===[ SLAP ]===
+        if (roleplayActionAttributes == SLAP_ATTRIBUTES) {
+            if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                val oldGiver = giver
+                val oldReceiver = receiver
+
+                receiver = oldGiver
+                giver = oldReceiver
+
+                embedResponse = I18nKeysData.Commands.Command.Roleplay.Slap::ResponseLori
+
+                achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
+            }
+        }
+
+        // ===[ ATTACK ]===
+        if (roleplayActionAttributes == ATTACK_ATTRIBUTES) {
+            if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                val oldGiver = giver
+                val oldReceiver = receiver
+
+                receiver = oldGiver
+                giver = oldReceiver
+
+                embedResponse = I18nKeysData.Commands.Command.Roleplay.Attack::ResponseLori
+
+                achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
+            }
+        }
 
         val gender1 = loritta.services.users.getOrCreateUserProfile(UserId(giver)).getProfileSettings().gender
         val gender2 = loritta.services.users.getOrCreateUserProfile(UserId(receiver)).getProfileSettings().gender
@@ -104,9 +178,18 @@ object RoleplayUtils {
 
         val (picturePath, pictureSource) = result
 
-        return {
+        return RoleplayResponse(listOf()) {
             embed {
-                description = "${roleplayActionAttributes.embedEmoji} **${i18nContext.get(roleplayActionAttributes.embedResponse.invoke(mentionUser(giver), mentionUser(receiver)))}**"
+                description = buildString {
+                    if (data.combo >= 3) {
+                        append("**_[COMBO ${data.combo}X]_**")
+                        append(" ")
+                    }
+
+                    append(roleplayActionAttributes.embedEmoji.toString())
+                    append(" ")
+                    append("**${i18nContext.get(embedResponse.invoke(mentionUser(giver), mentionUser(receiver)))}**")
+                }
 
                 image = client.baseUrl + "/img/$picturePath"
 
@@ -116,13 +199,14 @@ object RoleplayUtils {
             actionRow {
                 interactiveButton(
                     ButtonStyle.Primary,
-                    "Retribuir",
+                    i18nContext.get(RoleplayCommand.I18N_PREFIX.Retribute),
                     roleplayActionAttributes.retributionButtonDeclaration,
                     ComponentDataUtils.encode(
                         RetributeRoleplayData(
                             receiver,
                             receiver,
-                            giver
+                            giver,
+                            data.combo + 1
                         )
                     )
                 )
@@ -130,20 +214,33 @@ object RoleplayUtils {
                 if (pictureSource != null) {
                     interactiveButton(
                         ButtonStyle.Secondary,
-                        "Fonte",
+                        i18nContext.get(RoleplayCommand.I18N_PREFIX.PictureSource),
                         SourcePictureExecutor,
                         ComponentDataUtils.encode<PictureSource>(pictureSource)
-                    )
+                    ) {
+                        loriEmoji = Emotes.LoriReading
+                    }
                 } else {
                     interactionButton(
                         ButtonStyle.Secondary,
                         "dummy"
                     ) {
-                        label = "Fonte"
+                        label = i18nContext.get(RoleplayCommand.I18N_PREFIX.PictureSource)
                         disabled = true
+                        loriEmoji = Emotes.LoriReading
                     }
                 }
             }
         }
     }
+
+    data class RoleplayResponse(
+        val achievements: List<AchievementTarget>,
+        val builder: MessageCreateBuilder.() -> (Unit)
+    )
+
+    data class AchievementTarget(
+        val target: Snowflake,
+        val achievement: AchievementType
+    )
 }

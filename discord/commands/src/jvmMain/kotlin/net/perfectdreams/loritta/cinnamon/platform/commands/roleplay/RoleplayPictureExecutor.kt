@@ -6,6 +6,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationC
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeRoleplayData
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.AnagramCommand
+import net.perfectdreams.loritta.cinnamon.platform.utils.AchievementUtils
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserId
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
 abstract class RoleplayPictureExecutor(
@@ -24,18 +26,26 @@ abstract class RoleplayPictureExecutor(
 
         val receiver = args[Options.user]
 
-        context.sendMessage(
-            RoleplayUtils.roleplayStuff(
-                context.loritta,
-                context.i18nContext,
-                RetributeRoleplayData(
-                    context.user.id,
-                    context.user.id,
-                    receiver.id
-                ),
-                client,
-                attributes
-            )
+        val (achievementTargets, message) = RoleplayUtils.handleRoleplayMessage(
+            context.loritta,
+            context.i18nContext,
+            RetributeRoleplayData(
+                context.user.id,
+                context.user.id,
+                receiver.id,
+                1
+            ),
+            client,
+            attributes
         )
+
+        context.sendMessage(message)
+
+        for ((achievementReceiver, achievement) in achievementTargets) {
+            if (context.user.id == achievementReceiver)
+                context.giveAchievementAndNotify(achievement)
+            else
+                AchievementUtils.giveAchievementToUser(context.loritta, UserId(achievementReceiver), achievement)
+        }
     }
 }

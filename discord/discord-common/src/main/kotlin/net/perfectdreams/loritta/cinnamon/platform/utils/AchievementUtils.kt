@@ -15,12 +15,35 @@ object AchievementUtils {
     /**
      * Gives an achievement to the [user] if they don't have it yet.
      *
-     * If the user receives an achievement, they will receive an ephemeral message talking about the new achievement.
+     * If the user receives an achievement, this method will return true, if else, false.
+     *
+     * This won't notify the user about the achievement, if you want the user to be notified, please see [giveAchievementToUserAndNotifyThem]
      *
      * @param type       what achievement should be given
      * @param achievedAt when the achievement was achieved, default is now
      */
     suspend fun giveAchievementToUser(
+        loritta: LorittaCinnamon,
+        userId: UserId,
+        type: AchievementType,
+        achievedAt: Instant = Clock.System.now()
+    ): Boolean {
+        val profile = loritta.services.users.getOrCreateUserProfile(userId)
+        return profile.giveAchievement(
+            type,
+            achievedAt
+        )
+    }
+
+    /**
+     * Gives an achievement to the [user] if they don't have it yet.
+     *
+     * If the user receives an achievement, they will receive an ephemeral message talking about the new achievement.
+     *
+     * @param type       what achievement should be given
+     * @param achievedAt when the achievement was achieved, default is now
+     */
+    suspend fun giveAchievementToUserAndNotifyThem(
         loritta: LorittaCinnamon,
         context: BarebonesInteractionContext,
         i18nContext: I18nContext,

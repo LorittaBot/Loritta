@@ -1,20 +1,33 @@
+retribute: "Retribute" #Retribute this Action Button
+pictureSource: "Picture Source" #Source of the Action's Picture
+
 hug:
-  response: "{giver} abraçou {receiver}!"
+  description: "Hug a user"
+  response: "{giver} hugged {receiver}!"
 
 headpat:
-  response: "{giver} fez cafuné em {receiver}!"
+  description: "Pet a user"
+  response: "{giver} petted {receiver}!"
 
 highfive:
-  response: "{giver} mandou um toca aqui para {receiver}!"
+  description: "High five a user"
+  response: "{giver} high fived {receiver}!"
 
 slap:
-  response: "{giver} deu um tapa em {receiver}!"
+  description: "Slap a user"
+  response: "{giver} slapped {receiver}!"
+  responseLori: "Wow, how dare you try to hit me! {giver} slapped {receiver}!"
 
 attack:
+  description: "Attack a user"
   response: "{giver} atacou {receiver}!"
+  responseLori: "Wow, how dare you try to attack me! {giver} attacked {receiver}!"
 
 dance:
-  response: "{giver} dançou com {receiver}!"
+  description: "Dance with a user"
+  response: "{giver} danced with {receiver}!"
 
 kiss:
-  response: "{giver} beijou {receiver}!"
+  description: "Kiss a user"
+  response: "{giver} kissed {receiver}!"
+  responseLori: "Nah, quero te beijar não... mas eu ainda gosto de você como um amigue!"

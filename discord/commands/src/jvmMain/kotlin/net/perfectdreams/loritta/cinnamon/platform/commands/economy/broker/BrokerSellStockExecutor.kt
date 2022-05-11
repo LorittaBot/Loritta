@@ -140,8 +140,8 @@ class BrokerSellStockExecutor : SlashCommandExecutor() {
         )
 
         if (isPositiveProfit)
-            context.giveAchievement(AchievementType.STONKS)
+            context.giveAchievementAndNotify(AchievementType.STONKS)
         if (isNegativeProfit)
-            context.giveAchievement(AchievementType.NOT_STONKS)
+            context.giveAchievementAndNotify(AchievementType.NOT_STONKS)
     }
 }

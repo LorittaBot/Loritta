@@ -189,9 +189,9 @@ class RateWaifuExecutor() : SlashCommandExecutor() {
             )
 
             if (isLoritta)
-                context.giveAchievement(AchievementType.INFLATED_EGO)
+                context.giveAchievementAndNotify(AchievementType.INFLATED_EGO)
             if (isGroovy)
-                context.giveAchievement(AchievementType.PRESS_PLAY_TO_PAY_RESPECTS)
+                context.giveAchievementAndNotify(AchievementType.PRESS_PLAY_TO_PAY_RESPECTS)
         }
     }
 
