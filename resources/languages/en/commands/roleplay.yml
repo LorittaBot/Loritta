@@ -4,30 +4,40 @@ pictureSource: "Picture Source" #Source of the Action's Picture
 hug:
   description: "Hug a user"
   response: "{giver} hugged {receiver}!"
+  responseSelfLori: "Awww... are you feeling lonely? Here, {giver} hugged {receiver}!"
+  responseLori: "Awww, thank you! {giver} hugged {receiver}!"
 
 headpat:
   description: "Pet a user"
   response: "{giver} petted {receiver}!"
+  responseSelfLori: "I don't think that petting yourself feels nice... Here, {giver} petted {receiver}!"
+  responseLori: "Awww, thank you! {giver} petted {receiver}!"
 
 highfive:
   description: "High five a user"
   response: "{giver} high fived {receiver}!"
+  responseSelfLori: "How can you high five yourself? Here, {giver} high fived {receiver}!"
+  responseLori: "Let's go! {giver} high fived {receiver}!"
 
 slap:
   description: "Slap a user"
   response: "{giver} slapped {receiver}!"
   responseLori: "Wow, how dare you try to hit me! {giver} slapped {receiver}!"
+  responseSelf: "{giver} slapped... themselves?!"
 
 attack:
   description: "Attack a user"
-  response: "{giver} atacou {receiver}!"
+  response: "{giver} attacked {receiver}!"
   responseLori: "Wow, how dare you try to attack me! {giver} attacked {receiver}!"
+  responseSelf: "{giver} attacked... themselves?!"
 
 dance:
   description: "Dance with a user"
   response: "{giver} danced with {receiver}!"
+  responseSelf: "{giver} danced with... themselves?!"
 
 kiss:
   description: "Kiss a user"
   response: "{giver} kissed {receiver}!"
-  responseLori: "Nah, quero te beijar não... mas eu ainda gosto de você como um amigue!"
+  responseLori: "Nah, I don't wanna kiss you... but I still like you as a friend!"
+  responseSelf: "{giver} kissed... themselves?!"
