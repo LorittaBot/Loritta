@@ -25,6 +25,14 @@ object ComponentExecutorIds {
     val SELECT_PACKAGE_SELECT_MENU_EXECUTOR = register("0014")
     val GO_BACK_TO_PACKAGE_LIST_BUTTON_EXECUTOR = register("0015")
     val TRACK_PACKAGE_BUTTON_EXECUTOR = register("0016")
+    val RETRIBUTE_HUG_BUTTON_EXECUTOR = register("0017")
+    val RETRIBUTE_HEAD_PAT_BUTTON_EXECUTOR = register("0018")
+    val RETRIBUTE_HIGH_FIVE_BUTTON_EXECUTOR = register("0019")
+    val SOURCE_PICTURE_EXECUTOR = register("0020")
+    val RETRIBUTE_SLAP_BUTTON_EXECUTOR = register("0021")
+    val RETRIBUTE_ATTACK_BUTTON_EXECUTOR = register("0022")
+    val RETRIBUTE_DANCE_BUTTON_EXECUTOR = register("0023")
+    val RETRIBUTE_KISS_BUTTON_EXECUTOR = register("0024")
 
     /**
      * Verifies if the [id] matches our constraints

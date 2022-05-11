@@ -66,7 +66,7 @@ class CalculatorExecutor() : SlashCommandExecutor() {
             )
 
             if (expression.replace(" ", "") == "1+1")
-                context.giveAchievement(AchievementType.ONE_PLUS_ONE_CALCULATION)
+                context.giveAchievementAndNotify(AchievementType.ONE_PLUS_ONE_CALCULATION)
         } catch (e: Exception) {
             // TODO: Fix stripCodeMarks
             context.failEphemerally(

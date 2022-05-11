@@ -217,7 +217,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
 
                         val otherUserI18nContext = context.loritta.languageManager.getI18nContextById(result.language)
 
-                        AchievementUtils.giveAchievementToUser(
+                        AchievementUtils.giveAchievementToUserAndNotifyThem(
                             context.loritta,
                             net.perfectdreams.loritta.cinnamon.platform.BarebonesInteractionContext(otherUserContext),
                             otherUserI18nContext,
@@ -226,7 +226,7 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                         )
                     }
                     is BetsService.SelfUserAchievementResult -> {
-                        context.giveAchievement(result.achievementType)
+                        context.giveAchievementAndNotify(result.achievementType)
                     }
                 }
             }

@@ -26,6 +26,6 @@ open class InteractionContext(
      * @param type       what achievement should be given
      * @param achievedAt when the achievement was achieved, default is now
      */
-    suspend fun giveAchievement(type: AchievementType, achievedAt: Instant = Clock.System.now())
-            = AchievementUtils.giveAchievementToUser(loritta, this, i18nContext, UserId(user.id.value), type, achievedAt)
+    suspend fun giveAchievementAndNotify(type: AchievementType, achievedAt: Instant = Clock.System.now())
+            = AchievementUtils.giveAchievementToUserAndNotifyThem(loritta, this, i18nContext, UserId(user.id.value), type, achievedAt)
 }
