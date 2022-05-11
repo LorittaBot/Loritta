@@ -146,6 +146,8 @@ object RoleplayUtils {
                 if (giver == receiver) {
                     embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Slap.ResponseSelf(giverMention) }
                 } else if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                    achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
+
                     val oldGiver = giver
                     val oldReceiver = receiver
 
@@ -153,8 +155,6 @@ object RoleplayUtils {
                     giver = oldReceiver
 
                     embedResponse = I18nKeysData.Commands.Command.Roleplay.Slap::ResponseLori
-
-                    achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
                 }
             }
 
@@ -163,6 +163,8 @@ object RoleplayUtils {
                 if (giver == receiver) {
                     embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Attack.ResponseSelf(giverMention) }
                 } else if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                    achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
+
                     val oldGiver = giver
                     val oldReceiver = receiver
 
@@ -170,8 +172,6 @@ object RoleplayUtils {
                     giver = oldReceiver
 
                     embedResponse = I18nKeysData.Commands.Command.Roleplay.Attack::ResponseLori
-
-                    achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
                 }
             }
 
