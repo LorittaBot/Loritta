@@ -93,14 +93,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AfkCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.AnagramCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.ChooseCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.DictionaryCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.HelpCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.AttackOnHeartExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.GigaChadExecutor
@@ -175,6 +168,7 @@ object PublicApplicationCommands {
         AnagramCommand,
         ChooseCommand,
         PackageCommand,
+        ColorInfoCommand,
 
         // ===[ ECONOMY ]===
         SonhosCommand,
