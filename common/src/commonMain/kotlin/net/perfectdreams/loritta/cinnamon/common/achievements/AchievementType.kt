@@ -116,5 +116,36 @@ enum class AchievementType(
         AchievementCategory.MISCELLANEOUS,
         I18nKeysData.Achievements.Achievement.OnePlusOneCalculation.Title,
         I18nKeysData.Achievements.Achievement.OnePlusOneCalculation.Description
-    )
+    ),
+
+    // ===[ ROLEPLAY ]===
+    RECEIVED_FIRST_KISS(
+        AchievementCategory.ROLEPLAY,
+        I18nKeysData.Achievements.Achievement.ReceivedFirstKiss.Title,
+        I18nKeysData.Achievements.Achievement.ReceivedFirstKiss.Description
+    ),
+
+    GAVE_FIRST_KISS(
+        AchievementCategory.ROLEPLAY,
+        I18nKeysData.Achievements.Achievement.GaveFirstKiss.Title,
+        I18nKeysData.Achievements.Achievement.GaveFirstKiss.Description
+    ),
+
+    TRIED_KISSING_LORITTA(
+        AchievementCategory.ROLEPLAY,
+        I18nKeysData.Achievements.Achievement.TriedKissingLoritta.Title,
+        I18nKeysData.Achievements.Achievement.TriedKissingLoritta.Description
+    ),
+
+    TRIED_HURTING_LORITTA(
+        AchievementCategory.ROLEPLAY,
+        I18nKeysData.Achievements.Achievement.TriedHurtingLoritta.Title,
+        I18nKeysData.Achievements.Achievement.TriedHurtingLoritta.Description
+    ),
+
+    GRASS_CUTTER(
+        AchievementCategory.ROLEPLAY,
+        I18nKeysData.Achievements.Achievement.GrassCutter.Title,
+        I18nKeysData.Achievements.Achievement.GrassCutter.Description
+    ),
 }

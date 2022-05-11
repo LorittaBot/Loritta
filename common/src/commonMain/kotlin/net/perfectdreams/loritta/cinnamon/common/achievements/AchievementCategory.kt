@@ -36,6 +36,12 @@ enum class AchievementCategory(
         Emotes.LoriStonks,
         Color(23, 62, 163)
     ),
+    ROLEPLAY(
+        I18nKeysData.Achievements.Category.Roleplay.Title,
+        I18nKeysData.Achievements.Category.Roleplay.Description("/roleplay"),
+        Emotes.LoriKiss,
+        Color(255, 141, 230),
+    ),
     MISCELLANEOUS(
         I18nKeysData.Achievements.Category.Miscellaneous.Title,
         I18nKeysData.Achievements.Category.Miscellaneous.Description,

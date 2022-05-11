@@ -266,21 +266,21 @@ class ShipExecutor(
         }
 
         if (isNatural && isNatural100Ship)
-            context.giveAchievement(AchievementType.NATURAL_100_SHIP)
+            context.giveAchievementAndNotify(AchievementType.NATURAL_100_SHIP)
         if (isNatural && isNatural0Ship)
-            context.giveAchievement(AchievementType.NATURAL_0_SHIP)
+            context.giveAchievementAndNotify(AchievementType.NATURAL_0_SHIP)
         if (isNatural && isNatural69Ship)
-            context.giveAchievement(AchievementType.NATURAL_69_SHIP)
+            context.giveAchievementAndNotify(AchievementType.NATURAL_69_SHIP)
         if (isMarried)
-            context.giveAchievement(AchievementType.MARRIED_SHIP)
+            context.giveAchievementAndNotify(AchievementType.MARRIED_SHIP)
         if (isLoveYourself && isShipWithTheSelfUser)
-            context.giveAchievement(AchievementType.LOVE_YOURSELF)
+            context.giveAchievementAndNotify(AchievementType.LOVE_YOURSELF)
         if (hasShipEffects)
-            context.giveAchievement(AchievementType.FISHY_SHIP)
+            context.giveAchievementAndNotify(AchievementType.FISHY_SHIP)
         if (isLoritta && isShipWithTheSelfUser && !isLorittaWithShipEffects)
-            context.giveAchievement(AchievementType.FRIENDZONED_BY_LORITTA)
+            context.giveAchievementAndNotify(AchievementType.FRIENDZONED_BY_LORITTA)
         if (isLorittaWithShipEffects && isShipWithTheSelfUser)
-            context.giveAchievement(AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
+            context.giveAchievementAndNotify(AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
     }
 
     sealed class ConverterResult
