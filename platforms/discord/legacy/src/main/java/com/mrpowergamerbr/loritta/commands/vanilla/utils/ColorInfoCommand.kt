@@ -2,6 +2,7 @@ package com.mrpowergamerbr.loritta.commands.vanilla.utils
 
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
+import com.mrpowergamerbr.loritta.utils.ColorUtils
 import com.mrpowergamerbr.loritta.utils.Constants
 import com.mrpowergamerbr.loritta.utils.drawText
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -13,6 +14,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.ColorUtils
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
@@ -29,6 +31,8 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "colorinfo")
+
 			val input = context.args.joinToString(" ")
 			val color = ColorUtils.getColorFromString(input)
 
