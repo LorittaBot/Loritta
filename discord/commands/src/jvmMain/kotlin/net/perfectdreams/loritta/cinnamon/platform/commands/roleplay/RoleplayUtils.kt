@@ -238,6 +238,10 @@ object RoleplayUtils {
 
         val (picturePath, pictureSource) = result
 
+        val pictureSourceData = if (pictureSource != null)
+            loritta.encodeDataForComponentOrStoreInDatabase<PictureSource>(pictureSource)
+        else null
+
         return RoleplayResponse(achievements) {
             embed {
                 description = buildString {
@@ -273,12 +277,12 @@ object RoleplayUtils {
                     loriEmoji = roleplayActionAttributes.embedEmoji
                 }
 
-                if (pictureSource != null) {
+                if (pictureSourceData != null) {
                     interactiveButton(
                         ButtonStyle.Secondary,
                         i18nContext.get(RoleplayCommand.I18N_PREFIX.PictureSource),
                         SourcePictureExecutor,
-                        ComponentDataUtils.encode<PictureSource>(pictureSource)
+                        pictureSourceData
                     ) {
                         loriEmoji = Emotes.LoriReading
                     }

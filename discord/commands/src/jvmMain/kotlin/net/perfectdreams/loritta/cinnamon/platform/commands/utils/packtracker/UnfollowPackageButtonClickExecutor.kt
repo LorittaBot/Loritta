@@ -23,7 +23,7 @@ class UnfollowPackageButtonClickExecutor(
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()
-        val decoded = context.decodeViaComponentDataUtilsAndRequireUserToMatch<UnfollowPackageData>(data)
+        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<UnfollowPackageData>(data)
 
         loritta.services.packagesTracking.untrackCorreiosPackage(
             UserId(user.id.value),

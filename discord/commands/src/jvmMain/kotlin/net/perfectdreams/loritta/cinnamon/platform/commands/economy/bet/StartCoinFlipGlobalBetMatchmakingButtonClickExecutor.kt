@@ -15,7 +15,7 @@ class StartCoinFlipGlobalBetMatchmakingButtonClickExecutor(
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()
 
-        val decoded = context.decodeViaComponentDataUtilsAndRequireUserToMatch<CoinFlipBetGlobalStartMatchmakingData>(data)
+        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<CoinFlipBetGlobalStartMatchmakingData>(data)
 
         CoinFlipBetGlobalExecutor.addToMatchmakingQueue(
             context,

@@ -167,7 +167,7 @@ class AchievementsExecutor : SlashCommandExecutor() {
             values: List<String>
         ) {
             // Yes, this is unused because we haven't implemented buttons yet :(
-            val deserialized = context.decodeViaComponentDataUtilsAndRequireUserToMatch<ChangeCategoryData>(data)
+            val deserialized = context.decodeDataFromComponentAndRequireUserToMatch<ChangeCategoryData>(data)
 
             val newCategory = values.first()
             val achievements = loritta.services.users.getUserAchievements(user)

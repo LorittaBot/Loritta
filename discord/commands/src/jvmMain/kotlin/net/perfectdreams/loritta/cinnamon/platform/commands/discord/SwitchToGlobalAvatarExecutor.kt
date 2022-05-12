@@ -12,7 +12,7 @@ class SwitchToGlobalAvatarExecutor(val loritta: LorittaCinnamon, val lorittaId: 
     companion object : ButtonClickExecutorDeclaration(SwitchToGlobalAvatarExecutor::class, ComponentExecutorIds.SWITCH_TO_GLOBAL_AVATAR_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
-        val decodedInteractionData = context.decodeViaComponentDataUtilsAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>(data)
+        val decodedInteractionData = context.decodeDataFromComponentAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>(data)
         val data = UserDataUtils.getInteractionDataOrRetrieveViaRestIfItDoesNotExist(
             loritta,
             decodedInteractionData,

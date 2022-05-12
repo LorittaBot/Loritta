@@ -22,7 +22,7 @@ class ChangeColorPortraitTypeButtonClickExecutor(
         // Also because we want to edit the message with a file... later!
         context.deferUpdateMessage()
 
-        val (_, type, interactionDataId) = context.decodeViaComponentDataUtilsAndRequireUserToMatch<SelectColorPortraitTypeData>(data)
+        val (_, type, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectColorPortraitTypeData>(data)
 
         val textBoxOptionsData = TextBoxHelper.getInteractionDataAndFailIfItDoesNotExist(context, interactionDataId)
 

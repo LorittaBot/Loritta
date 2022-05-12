@@ -28,7 +28,7 @@ class FollowPackageButtonClickExecutor(
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()
 
-        val decoded = context.decodeViaComponentDataUtilsAndRequireUserToMatch<FollowPackageData>(data)
+        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<FollowPackageData>(data)
 
         // Check if the package is already delivered and, if it is, don't allow the user to track it!
         val correiosResponse = correios.getPackageInfo(decoded.trackingId)

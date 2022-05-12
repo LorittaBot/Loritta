@@ -29,7 +29,7 @@ class ChangeUniverseSelectMenuExecutor(
         // Also because we want to edit the message with a file... later!
         context.deferUpdateMessage()
 
-        val (_, interactionDataId) = context.decodeViaComponentDataUtilsAndRequireUserToMatch<SelectGenericData>(data)
+        val (_, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>(data)
 
         val textBoxOptionsData = TextBoxHelper.getInteractionDataAndFailIfItDoesNotExist(context, interactionDataId)
 

@@ -14,7 +14,7 @@ abstract class RetributePictureExecutor(
     private val attributes: RoleplayActionAttributes,
 ) : ButtonClickWithDataExecutor {
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
-        val retributionData = context.decodeViaComponentDataUtilsAndRequireUserToMatch<RetributeRoleplayData>(data)
+        val retributionData = context.decodeDataFromComponentAndRequireUserToMatch<RetributeRoleplayData>(data)
 
         context.deferChannelMessage()
 

@@ -20,7 +20,7 @@ class GoBackToPackageListButtonClickExecutor(
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()
-        context.decodeViaComponentDataUtilsAndRequireUserToMatch<BarebonesSingleUserComponentData>(data)
+        context.decodeDataFromComponentAndRequireUserToMatch<BarebonesSingleUserComponentData>(data)
 
         val packageIds = context.loritta.services.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
 

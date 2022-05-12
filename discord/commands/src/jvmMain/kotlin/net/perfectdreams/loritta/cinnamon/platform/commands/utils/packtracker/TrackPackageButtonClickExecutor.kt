@@ -22,7 +22,7 @@ class TrackPackageButtonClickExecutor(
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         context.deferUpdateMessage()
-        val (userId, trackingId) = context.decodeViaComponentDataUtilsAndRequireUserToMatch<TrackPackageData>(data)
+        val (userId, trackingId) = context.decodeDataFromComponentAndRequireUserToMatch<TrackPackageData>(data)
 
         val correiosResponse = try {
             client.getPackageInfo(trackingId)

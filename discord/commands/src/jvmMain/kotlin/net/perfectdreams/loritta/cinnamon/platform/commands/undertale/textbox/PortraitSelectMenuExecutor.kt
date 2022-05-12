@@ -28,7 +28,7 @@ class PortraitSelectMenuExecutor(
         context.deferUpdateMessage()
 
         // Yes, this is unused because we haven't implemented buttons yet :(
-        val (_, interactionDataId) = context.decodeViaComponentDataUtilsAndRequireUserToMatch<SelectGenericData>(data)
+        val (_, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>(data)
 
         val textBoxOptionsData = TextBoxHelper.getInteractionDataAndFailIfItDoesNotExist(context, interactionDataId)
 

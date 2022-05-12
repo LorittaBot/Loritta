@@ -22,7 +22,7 @@ class ChangeDialogBoxTypeButtonClickExecutor(
         // Also because we want to edit the message with a file... later!
         context.deferUpdateMessage()
 
-        val (_, type, interactionDataId) = context.decodeViaComponentDataUtilsAndRequireUserToMatch<SelectDialogBoxTypeData>(data)
+        val (_, type, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectDialogBoxTypeData>(data)
 
         val textBoxOptionsData = TextBoxHelper.getInteractionDataAndFailIfItDoesNotExist(context, interactionDataId)
 

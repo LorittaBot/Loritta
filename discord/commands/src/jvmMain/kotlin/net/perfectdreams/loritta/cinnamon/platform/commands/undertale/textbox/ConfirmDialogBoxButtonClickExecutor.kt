@@ -19,7 +19,7 @@ class ConfirmDialogBoxButtonClickExecutor(
         // so we will just keep the file but remove the components
         //
         // We could also use ephemeral messages, but nah, sometimes people *want* to show it off to other people without confirming
-        val decoded = context.decodeViaComponentDataUtilsAndRequireUserToMatch<SelectGenericData>(data)
+        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>(data)
 
         loritta.services.interactionsData.deleteInteractionData(decoded.interactionDataId)
 
