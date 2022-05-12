@@ -336,10 +336,10 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 	private suspend fun checkIfOtherAccountIsOldEnough(context: CommandContext, target: User): Boolean {
 		val epochMillis = target.timeCreated.toEpochSecond() * 1000
 
-		if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 7 dias
+		if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 14 dias
 			context.reply(
 					LorittaReply(
-							context.locale["commands.command.pay.otherAccountIsTooNew", target.asMention, 7] + " ${Emotes.LORI_CRYING}",
+							context.locale["commands.command.pay.otherAccountIsTooNew", target.asMention, 14] + " ${Emotes.LORI_CRYING}",
 							Constants.ERROR
 					)
 			)

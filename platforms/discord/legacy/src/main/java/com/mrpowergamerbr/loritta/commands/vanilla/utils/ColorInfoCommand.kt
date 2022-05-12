@@ -12,7 +12,6 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.utils.ColorUtils
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import java.awt.Color
@@ -34,7 +33,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "colorinfo")
 
 			val input = context.args.joinToString(" ")
-			val color = ColorUtils.getColorFromString(input)
+			val color = net.perfectdreams.loritta.utils.ColorUtils.getColorFromString(input)
 
 			if (color == null) { // Cor inválida!
 				context.reply(
