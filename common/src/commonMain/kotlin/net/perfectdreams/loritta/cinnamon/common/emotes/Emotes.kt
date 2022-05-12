@@ -40,6 +40,7 @@ object Emotes {
     val LoriFlushed = DiscordEmote(732706868224327702L, "lori_flushed", false)
     val LoriHi = DiscordEmote(972187812554211418L, "lori_hi", false)
     val LoriPunch = DiscordEmote(731871119400894525L, "lori_fight", true)
+    val LoriSleeping = DiscordEmote(964701978091470919L, "lori_zz", false)
 
     val PantufaGaming = DiscordEmote(853048446922784819L, "pantufa_gaming", false)
 
