@@ -4,7 +4,6 @@ import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.LorittaLauncher
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.locale.Gender
 import com.mrpowergamerbr.loritta.utils.onReactionAdd
 import com.mrpowergamerbr.loritta.utils.removeAllFunctions
@@ -13,15 +12,17 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.Command
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandContext
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.commands.actions.modern.impl.AttackCommand
 import net.perfectdreams.loritta.commands.actions.modern.impl.KissCommand
 import net.perfectdreams.loritta.commands.actions.modern.impl.SlapCommand
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -47,6 +48,8 @@ abstract class ActionCommand(loritta: LorittaDiscord, labels: List<String>): Dis
 
             executesDiscord {
                 if (args.isEmpty()) return@executesDiscord explain()
+                
+                OutdatedCommandUtils.sendOutdatedCommandMessage(this, this.locale, "roleplay ${labels.first()}")
 
                 it.handle(this, user, userOrFail(0).toJDA())
             }
