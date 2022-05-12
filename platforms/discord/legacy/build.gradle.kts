@@ -50,9 +50,17 @@ dependencies {
     api("org.jetbrains.exposed:exposed-dao:${Versions.EXPOSED}")
     api("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
     api("pw.forst:exposed-upsert:1.1.0")
-    api("net.perfectdreams.loritta.cinnamon:common:${Versions.PUDDING}")
-    api("net.perfectdreams.loritta.cinnamon.pudding:data:${Versions.PUDDING}")
-    api("net.perfectdreams.loritta.cinnamon.pudding:client:${Versions.PUDDING}")
+    api("net.perfectdreams.loritta.cinnamon:common:${Versions.PUDDING}") {
+        exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7
+    }
+    api("net.perfectdreams.loritta.cinnamon.pudding:data:${Versions.PUDDING}") {
+        exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7
+    }
+    api("net.perfectdreams.loritta.cinnamon.pudding:client:${Versions.PUDDING}") {
+        exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7
+    }
+
+    implementation("com.rabbitmq:amqp-client:5.14.2")
 
     // DreamStorageService
     api("net.perfectdreams.dreamstorageservice:client:2.0.0-SNAPSHOT")

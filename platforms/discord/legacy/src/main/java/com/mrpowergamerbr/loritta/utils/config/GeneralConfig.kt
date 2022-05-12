@@ -10,6 +10,7 @@ class GeneralConfig(
 		val loritta: LorittaConfig,
 		val clusters: List<LorittaClusterConfig>,
 		val database: DatabaseConfig,
+		val rabbitMQ: RabbitMQConfig,
 		val connectionManager: ConnectionManagerConfig,
 		val perfectPayments: PerfectPaymentsConfig,
 		val parallaxCodeServer: ParallaxCodeServerConfig,
