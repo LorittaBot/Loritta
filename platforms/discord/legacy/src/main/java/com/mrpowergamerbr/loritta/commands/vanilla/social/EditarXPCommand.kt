@@ -3,13 +3,14 @@ package com.mrpowergamerbr.loritta.commands.vanilla.social
 import com.mrpowergamerbr.loritta.commands.AbstractCommand
 import com.mrpowergamerbr.loritta.commands.CommandContext
 import com.mrpowergamerbr.loritta.utils.Constants
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import com.mrpowergamerbr.loritta.utils.extensions.retrieveMemberOrNull
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp", "setxp"), category = CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.editxp.description")
@@ -43,7 +44,9 @@ class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp", "setxp"), c
 				return
 			}
 
-			val userData = context.config.getUserData(user.idLong)
+			// We will only set that the guild is in the guild if the member is *actually* in the guild
+			// This fixes a bug that a user could edit XP of users that weren't in the server just to put a dumb badge on their profile
+			val userData = context.config.getUserData(user.idLong, context.guild.retrieveMemberOrNull(user) != null)
 
 			loritta.newSuspendedTransaction {
 				userData.xp = newXp

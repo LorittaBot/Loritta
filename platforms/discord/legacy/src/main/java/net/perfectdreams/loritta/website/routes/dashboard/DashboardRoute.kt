@@ -1,22 +1,25 @@
 package net.perfectdreams.loritta.website.routes.dashboard
 
 import com.mrpowergamerbr.loritta.dao.ServerConfig
+import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.utils.GuildLorittaUser
 import com.mrpowergamerbr.loritta.utils.LorittaPermission
 import com.mrpowergamerbr.loritta.utils.LorittaUser
 import com.mrpowergamerbr.loritta.utils.extensions.await
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.mrpowergamerbr.loritta.website.evaluate
-import io.ktor.application.ApplicationCall
+import io.ktor.application.*
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.update
 import kotlin.collections.set
 
 class DashboardRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard") {
@@ -29,6 +32,19 @@ class DashboardRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRou
 		variables["settings"] = settings
 
 		val userGuilds = discordAuth.getUserGuilds()
+		val userGuildsIds = userGuilds.map { it.id.toLong() }
+
+		// Update if the user is in a guild or not based on the retrieved guilds
+		loritta.newSuspendedTransaction {
+			GuildProfiles.update({ (GuildProfiles.userId eq lorittaProfile.id.value) and (GuildProfiles.guildId inList userGuildsIds) }) {
+				it[GuildProfiles.isInGuild] = true
+			}
+
+			GuildProfiles.update({ (GuildProfiles.userId eq lorittaProfile.id.value) and (GuildProfiles.guildId notInList userGuildsIds) }) {
+				it[GuildProfiles.isInGuild] = false
+			}
+		}
+
 		val serverConfigs = loritta.newSuspendedTransaction {
 			ServerConfig.find { ServerConfigs.id inList userGuilds.map { it.id.toLong() } }
 					.toList()

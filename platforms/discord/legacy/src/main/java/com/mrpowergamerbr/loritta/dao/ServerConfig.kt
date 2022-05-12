@@ -16,7 +16,15 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.dao.servers.moduleconfigs.*
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.AutoroleConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.EconomyConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.EventLogConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.InviteBlockerConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.LevelConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.MiscellaneousConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.ModerationConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.StarboardConfig
+import net.perfectdreams.loritta.dao.servers.moduleconfigs.WelcomerConfig
 import org.jetbrains.exposed.dao.Entity
 import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
@@ -108,7 +116,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 
 	fun getActiveDonationKeysValueNested() = getActiveDonationKeysNested().sumByDouble { it.value }
 
-	suspend fun getUserData(id: Long): GuildProfile {
+	suspend fun getUserData(id: Long, isInGuild: Boolean = true): GuildProfile {
 		val t = this
 		val mutex = creatingGuildUserProfileMutexes.getOrPut(id) { Mutex() }
 
@@ -120,7 +128,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 					this.money = BigDecimal(0)
 					this.quickPunishment = false
 					this.xp = 0
-					this.isInGuild = true
+					this.isInGuild = isInGuild
 				}
 			}
 		}
