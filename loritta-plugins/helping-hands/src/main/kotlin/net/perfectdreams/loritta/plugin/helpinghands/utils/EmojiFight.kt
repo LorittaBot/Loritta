@@ -208,6 +208,12 @@ class EmojiFight(
                 // If the user didn't get daily today, they can't participate in the event
                 if (AccountUtils.getUserTodayDailyReward(profile) == null)
                     return false
+
+                val epochMillis = user.timeCreated.toEpochSecond() * 1000
+
+                // Don't allow users to bet if they are recent accounts
+                if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) // 14 dias
+                    return false
             }
 
             val randomEmote = availableEmotes.random()

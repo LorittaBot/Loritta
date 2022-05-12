@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.plugin.helpinghands.commands
 import com.mrpowergamerbr.loritta.utils.Constants
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.plugin.helpinghands.HelpingHandsPlugin
@@ -76,6 +77,20 @@ class EmojiFightBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComm
 			// Only allow users to participate in a emoji fight bet if the user got their daily reward today
 			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
 					?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
+
+			// Self user check
+			run {
+				val epochMillis = user.timeCreated.toEpochSecond() * 1000
+
+				// Don't allow users to bet if they are recent accounts
+				if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) // 14 dias
+					fail(
+						LorittaReply(
+							locale["commands.command.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
+							Constants.ERROR
+						)
+					)
+			}
 
 			val maxPlayersInEvent = (
 					(this.args.getOrNull(1) ?.toIntOrNull() ?: EmojiFight.DEFAULT_MAX_PLAYER_COUNT)

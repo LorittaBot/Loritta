@@ -144,6 +144,34 @@ class CoinFlipBetCommand(val plugin: HelpingHandsPlugin) : DiscordAbstractComman
 			if (number > invitedUserProfile.money || bannedState != null)
 				fail(locale["commands.command.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
 
+			// Self user check
+			run {
+				val epochMillis = user.timeCreated.toEpochSecond() * 1000
+
+				// Don't allow users to bet if they are recent accounts
+				if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) // 14 dias
+					fail(
+						LorittaReply(
+							locale["commands.command.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
+							Constants.ERROR
+						)
+					)
+			}
+
+			// Invited user check
+			run {
+				val epochMillis = invitedUser.timeCreated.toEpochSecond() * 1000
+
+				// Don't allow users to bet if they are recent accounts
+				if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) // 14 dias
+					fail(
+						LorittaReply(
+							locale["commands.command.pay.otherAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
+							Constants.ERROR
+						)
+					)
+			}
+
 			// Only allow users to participate in a coin flip bet if the user got their daily reward today
 			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
 				?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
