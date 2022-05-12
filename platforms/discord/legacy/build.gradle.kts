@@ -52,12 +52,15 @@ dependencies {
     api("pw.forst:exposed-upsert:1.1.0")
     api("net.perfectdreams.loritta.cinnamon:common:${Versions.PUDDING}") {
         exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7
+        exclude(group = "net.perfectdreams.minecraftmojangapi")
     }
     api("net.perfectdreams.loritta.cinnamon.pudding:data:${Versions.PUDDING}") {
         exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7
+        exclude(group = "net.perfectdreams.minecraftmojangapi")
     }
     api("net.perfectdreams.loritta.cinnamon.pudding:client:${Versions.PUDDING}") {
         exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7
+        exclude(group = "net.perfectdreams.minecraftmojangapi")
     }
 
     implementation("com.rabbitmq:amqp-client:5.14.2")
