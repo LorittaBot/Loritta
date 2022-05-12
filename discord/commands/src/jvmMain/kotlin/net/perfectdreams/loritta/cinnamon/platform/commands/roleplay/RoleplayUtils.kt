@@ -6,6 +6,7 @@ import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
@@ -258,6 +259,8 @@ object RoleplayUtils {
                 image = client.baseUrl + "/img/$picturePath"
 
                 color = roleplayActionAttributes.embedColor
+
+                footer(picturePath)
             }
 
             actionRow {
