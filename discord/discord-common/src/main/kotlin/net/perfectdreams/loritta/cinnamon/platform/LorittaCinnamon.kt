@@ -26,7 +26,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.random.Random
 import kotlin.time.Duration.Companion.minutes
-import kotlin.time.Duration.Companion.seconds
 
 /**
  * Represents a Loritta Morenitta (Cinnamon) implementation.
