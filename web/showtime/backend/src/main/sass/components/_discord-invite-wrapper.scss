@@ -8,6 +8,10 @@
     transition-duration: 1.0s;
     width: fit-content;
 
+    .dark & {
+        background-color: #2f3136;
+    }
+
     &:hover {
         transform: scale(1.02);
         box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
