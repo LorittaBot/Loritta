@@ -173,10 +173,12 @@ class SlashCommandExecutorWrapper(
                 val users = mutableSetOf(context.sender)
                 users.addAll(args.types.values.filterIsInstance<User>())
                 val resolvedUsers = context.data.resolved?.users?.values
+
                 if (resolvedUsers != null)
-                // TODO: Maybe implement proper hash codes in the InteraKTions "User"?
-                    users.addAll(resolvedUsers.distinctBy { it.id })
+                    users.addAll(resolvedUsers)
+
                 val jobs = users
+                    .distinctBy { it.id } // TODO: Maybe implement proper hash codes in the InteraKTions "User"?
                     .map {
                         async {
                             loritta.insertOrUpdateCachedUserInfo(it)
