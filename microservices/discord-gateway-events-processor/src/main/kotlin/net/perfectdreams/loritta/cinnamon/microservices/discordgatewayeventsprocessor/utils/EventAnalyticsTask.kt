@@ -15,6 +15,6 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
     }
 
     private fun printStats(module: ProcessDiscordEventsModule) {
-        logger.info { "Module ${module::class.simpleName} stats: ${module.activeEvents.size} active events; launched events: ${module.launchedEvents}; discarded events: ${module.discardedEvents}; ${module.activeEvents}" }
+        logger.info { "Module ${module::class.simpleName} stats: ${module.activeEvents.size} active events; launched events: ${module.launchedEvents}; consumer restarts: ${module.consumerRestarts}; ${module.activeEvents}" }
     }
 }
