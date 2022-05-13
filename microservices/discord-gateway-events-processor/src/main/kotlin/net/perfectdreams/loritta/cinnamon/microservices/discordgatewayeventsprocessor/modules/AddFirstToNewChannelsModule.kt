@@ -36,7 +36,7 @@ class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) 
             is ChannelCreate -> {
                 // This should only be sent in a guild text channel
                 if (event.channel.type == ChannelType.GuildText) {
-                    m.addFirstToNewChannelsModule.handleFirst(
+                    handleFirst(
                         event.channel.guildId.value ?: return, // Pretty sure that this cannot be null here
                         event.channel.id
                     )
