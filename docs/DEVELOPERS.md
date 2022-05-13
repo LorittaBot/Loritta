@@ -85,7 +85,7 @@ docker exec rabbitmq rabbitmqctl add_vhost loritta
 Because we aren't using the default RabbitMQ virtual host, we need to create a user.
 
 ```bash
-docker exec rabbitmqctl add_user loritta insertnicepasswordhere
+docker exec rabbitmq rabbitmqctl add_user loritta insertnicepasswordhere
 ```
 
 Our newly created user does not have permission to read our virtual host... So let's grant permission to it!
