@@ -24,10 +24,11 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
         const val MAX_ACTIVE_EVENTS_THRESHOLD = 16
     }
 
+    val clazzName = this::class.simpleName
     val activeEvents = ConcurrentLinkedQueue<Job>()
     var launchedEvents = 0
     var consumerRestarts = 0
-    var mutex = Mutex()
+    val mutex = Mutex()
     var moduleConsumerTag: String? = null
 
     abstract suspend fun processEvent(event: Event)
@@ -48,8 +49,6 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
     }
 
     private fun startConsumingMessages(channel: Channel): String {
-        val thisClass = this::class.simpleName
-
         consumerRestarts++
         return channel.basicConsume(
             rabbitMQQueue,
@@ -58,7 +57,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                 val discordEvent = KordDiscordEventUtils.parseEventFromJsonString(message.body.toString(Charsets.UTF_8))
                 if (discordEvent != null) {
                     launchedEvents++
-                    val coroutineName = "Event ${discordEvent::class.simpleName} for $thisClass"
+                    val coroutineName = "Event ${discordEvent::class.simpleName} for $clazzName"
                     launchEventJob(channel, coroutineName) {
                         try {
                             processEvent(discordEvent)
@@ -102,7 +101,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                 activeEvents.add(job)
                 if (moduleConsumerTag != null && activeEvents.size >= MAX_ACTIVE_EVENTS_THRESHOLD) {
                     // Too many events, let's cancel our consumer
-                    logger.warn { "There are more than $MAX_ACTIVE_EVENTS_THRESHOLD active events! We will cancel our consumer and resume it after we get our active events below the $MAX_ACTIVE_EVENTS_THRESHOLD threshold..." }
+                    logger.warn { "There are more than $MAX_ACTIVE_EVENTS_THRESHOLD active events in $clazzName! We will cancel our consumer and resume it after we get our active events below the $MAX_ACTIVE_EVENTS_THRESHOLD threshold..." }
                     channel.basicCancel(moduleConsumerTag)
                     moduleConsumerTag = null
                 }
@@ -120,7 +119,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                         mutex.withLock {
                             val activeEvents = activeEvents.size
                             if (moduleConsumerTag == null && MAX_ACTIVE_EVENTS_THRESHOLD > activeEvents) {
-                                logger.info { "There are less than $MAX_ACTIVE_EVENTS_THRESHOLD active events (active events: $activeEvents)! We will restart the consumer..." }
+                                logger.info { "There are less than $MAX_ACTIVE_EVENTS_THRESHOLD active events (active events: $activeEvents) in $clazzName! We will restart the consumer..." }
                                 moduleConsumerTag = startConsumingMessages(channel)
                             }
                         }
