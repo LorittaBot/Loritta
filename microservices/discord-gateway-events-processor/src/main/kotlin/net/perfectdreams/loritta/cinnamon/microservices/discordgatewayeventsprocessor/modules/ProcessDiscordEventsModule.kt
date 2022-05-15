@@ -15,6 +15,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.KordDiscordEventUtils
+import java.time.Instant
 import java.util.concurrent.ConcurrentLinkedQueue
 
 abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
@@ -30,6 +31,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
     var consumerRestarts = 0
     val mutex = Mutex()
     var moduleConsumerTag: String? = null
+    var lastMessageReceivedAt: Instant? = null
 
     abstract suspend fun processEvent(event: Event)
 
@@ -45,8 +47,9 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
         val args = mapOf(
             "x-max-length" to "10000" // Max 10k messages per queue
         )
-        
+
         channel.queueDeclare(rabbitMQQueue, true, false, false, args)
+        channel.basicQos(MAX_ACTIVE_EVENTS_THRESHOLD, false) // MAX_ACTIVE_EVENTS_THRESHOLD prefetch per channel, to avoid overloading the service
         setupQueueBinds(channel)
 
         moduleConsumerTag = startConsumingMessages(channel)
@@ -62,6 +65,8 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                 val discordEvent = KordDiscordEventUtils.parseEventFromJsonString(message.body.toString(Charsets.UTF_8))
                 if (discordEvent != null) {
                     launchedEvents++
+                    lastMessageReceivedAt = Instant.now()
+
                     val coroutineName = "Event ${discordEvent::class.simpleName} for $clazzName"
                     launchEventJob(channel, coroutineName) {
                         try {
