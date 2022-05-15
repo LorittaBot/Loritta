@@ -42,7 +42,11 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
      * Setups a RabbitMQ consumer for this module on the [channel]
      */
     fun setupConsumer(channel: Channel) {
-        channel.queueDeclare(rabbitMQQueue, true, false, false, null)
+        val args = mapOf(
+            "x-max-length" to "10000" // Max 10k messages per queue
+        )
+        
+        channel.queueDeclare(rabbitMQQueue, true, false, false, args)
         setupQueueBinds(channel)
 
         moduleConsumerTag = startConsumingMessages(channel)
