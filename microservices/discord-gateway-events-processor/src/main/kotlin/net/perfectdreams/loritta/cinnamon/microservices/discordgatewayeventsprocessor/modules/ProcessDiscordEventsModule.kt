@@ -119,19 +119,19 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                 // added to the list, causing leaks.
                 // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
                 job.invokeOnCompletion {
-                    activeEvents.remove(job)
-
-                    val diff = System.currentTimeMillis() - start
-                    if (diff >= 60_000) {
-                        logger.warn { "Coroutine $job took too long to process! ${diff}ms" }
-                    }
-
                     // Because we will execute in another coroutine, there *shouldn't* be a deadlock
                     GlobalScope.launch {
                         mutex.withLock {
-                            val activeEvents = activeEvents.size
-                            if (moduleConsumerTag == null && MAX_ACTIVE_EVENTS_THRESHOLD > activeEvents) {
-                                logger.info { "There are less than $MAX_ACTIVE_EVENTS_THRESHOLD active events (active events: $activeEvents) in $clazzName! We will restart the consumer..." }
+                            activeEvents.remove(job)
+
+                            val diff = System.currentTimeMillis() - start
+                            if (diff >= 60_000) {
+                                logger.warn { "Coroutine $job took too long to process! ${diff}ms" }
+                            }
+
+                            val activeEventsCount = activeEvents.size
+                            if (moduleConsumerTag == null && MAX_ACTIVE_EVENTS_THRESHOLD > activeEventsCount) {
+                                logger.info { "There are less than $MAX_ACTIVE_EVENTS_THRESHOLD active events (active events: $activeEventsCount) in $clazzName! We will restart the consumer..." }
                                 moduleConsumerTag = startConsumingMessages(channel)
                             }
                         }
