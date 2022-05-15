@@ -50,7 +50,8 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
 
     private fun startConsumingMessages(channel: Channel): String {
         consumerRestarts++
-        return channel.basicConsume(
+        logger.info { "Starting consumer for $clazzName, the consumer has been started $consumerRestarts times!" }
+        val consumerTag = channel.basicConsume(
             rabbitMQQueue,
             false,
             DeliverCallback { consumerTag, message ->
@@ -76,6 +77,8 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                 logger.warn { "Consumer has been cancelled unexpectedly! $it" }
             }
         )
+        logger.info { "Successfully created consumer for $clazzName! The consumer tag is $consumerTag" }
+        return consumerTag
     }
 
     /**
@@ -95,9 +98,6 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
         // We need to launch because we need to lock to avoid registering two channel consumers
         GlobalScope.launch {
             mutex.withLock {
-                // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
-                // added to the list, causing leaks.
-                // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
                 activeEvents.add(job)
                 if (moduleConsumerTag != null && activeEvents.size >= MAX_ACTIVE_EVENTS_THRESHOLD) {
                     // Too many events, let's cancel our consumer
@@ -106,6 +106,9 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                     moduleConsumerTag = null
                 }
 
+                // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
+                // added to the list, causing leaks.
+                // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
                 job.invokeOnCompletion {
                     activeEvents.remove(job)
 
@@ -114,7 +117,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                         logger.warn { "Coroutine $job took too long to process! ${diff}ms" }
                     }
 
-                    // Because we will execute in another coroutine, there won't be a deadlock
+                    // Because we will execute in another coroutine, there *shouldn't* be a deadlock
                     GlobalScope.launch {
                         mutex.withLock {
                             val activeEvents = activeEvents.size
