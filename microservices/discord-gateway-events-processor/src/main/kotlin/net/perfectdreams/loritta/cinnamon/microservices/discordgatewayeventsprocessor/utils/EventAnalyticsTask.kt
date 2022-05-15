@@ -15,6 +15,6 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
     }
 
     private fun printStats(module: ProcessDiscordEventsModule) {
-        logger.info { "Module ${module::class.simpleName} stats: ${module.activeEvents.size} active events; launched events: ${module.launchedEvents}; consumer restarts: ${module.consumerRestarts}; consumer tag: ${module.moduleConsumerTag}; is consumer mutex locked? ${module.mutex.isLocked}; last event received at: ${module.lastMessageReceivedAt}; ${module.activeEvents}" }
+        logger.info { "Module ${module::class.simpleName} stats: ${module.activeEvents.size} active events; launched events: ${module.launchedEvents}; consumer tag: ${module.moduleConsumerTag}; last event received at: ${module.lastMessageReceivedAt}; ${module.activeEvents}" }
     }
 }

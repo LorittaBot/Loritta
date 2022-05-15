@@ -10,8 +10,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.KordDiscordEventUtils
@@ -28,8 +26,6 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
     val clazzName = this::class.simpleName
     val activeEvents = ConcurrentLinkedQueue<Job>()
     var launchedEvents = 0
-    var consumerRestarts = 0
-    val mutex = Mutex()
     var moduleConsumerTag: String? = null
     var lastMessageReceivedAt: Instant? = null
 
@@ -56,8 +52,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
     }
 
     private fun startConsumingMessages(channel: Channel): String {
-        consumerRestarts++
-        logger.info { "Starting consumer for $clazzName, the consumer has been started $consumerRestarts times!" }
+        logger.info { "Starting consumer for $clazzName..." }
         val consumerTag = channel.basicConsume(
             rabbitMQQueue,
             false,
@@ -68,7 +63,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
                     lastMessageReceivedAt = Instant.now()
 
                     val coroutineName = "Event ${discordEvent::class.simpleName} for $clazzName"
-                    launchEventJob(channel, coroutineName) {
+                    launchEventJob(coroutineName) {
                         try {
                             processEvent(discordEvent)
                         } catch (e: Throwable) {
@@ -97,46 +92,22 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
      */
     fun Channel.queueBindToModuleQueue(routingKey: String): AMQP.Queue.BindOk = this.queueBind(rabbitMQQueue, DiscordGatewayEventsProcessor.RABBITMQ_EXCHANGE_NAME, routingKey)
 
-    fun launchEventJob(channel: Channel, coroutineName: String, block: suspend CoroutineScope.() -> Unit) {
+    fun launchEventJob(coroutineName: String, block: suspend CoroutineScope.() -> Unit) {
         val start = System.currentTimeMillis()
         val job = GlobalScope.launch(
             CoroutineName(coroutineName),
             block = block
         )
 
-        // We need to launch because we need to lock to avoid registering two channel consumers
-        GlobalScope.launch {
-            mutex.withLock {
-                activeEvents.add(job)
-                if (moduleConsumerTag != null && activeEvents.size >= MAX_ACTIVE_EVENTS_THRESHOLD) {
-                    // Too many events, let's cancel our consumer
-                    logger.warn { "There are more than $MAX_ACTIVE_EVENTS_THRESHOLD active events in $clazzName! We will cancel our consumer and resume it after we get our active events below the $MAX_ACTIVE_EVENTS_THRESHOLD threshold..." }
-                    channel.basicCancel(moduleConsumerTag)
-                    moduleConsumerTag = null
-                }
+        // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
+        // added to the list, causing leaks.
+        // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
+        job.invokeOnCompletion {
+            activeEvents.remove(job)
 
-                // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
-                // added to the list, causing leaks.
-                // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
-                job.invokeOnCompletion {
-                    // Because we will execute in another coroutine, there *shouldn't* be a deadlock
-                    GlobalScope.launch {
-                        mutex.withLock {
-                            activeEvents.remove(job)
-
-                            val diff = System.currentTimeMillis() - start
-                            if (diff >= 60_000) {
-                                logger.warn { "Coroutine $job took too long to process! ${diff}ms" }
-                            }
-
-                            val activeEventsCount = activeEvents.size
-                            if (moduleConsumerTag == null && MAX_ACTIVE_EVENTS_THRESHOLD > activeEventsCount) {
-                                logger.info { "There are less than $MAX_ACTIVE_EVENTS_THRESHOLD active events (active events: $activeEventsCount) in $clazzName! We will restart the consumer..." }
-                                moduleConsumerTag = startConsumingMessages(channel)
-                            }
-                        }
-                    }
-                }
+            val diff = System.currentTimeMillis() - start
+            if (diff >= 60_000) {
+                logger.warn { "Coroutine $job took too long to process! ${diff}ms" }
             }
         }
     }
