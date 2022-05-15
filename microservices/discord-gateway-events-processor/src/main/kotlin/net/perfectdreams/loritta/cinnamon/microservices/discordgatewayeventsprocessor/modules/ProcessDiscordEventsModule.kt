@@ -45,7 +45,7 @@ abstract class ProcessDiscordEventsModule(private val rabbitMQQueue: String) {
      */
     fun setupConsumer(channel: Channel) {
         val args = mapOf(
-            "x-max-length" to "10000" // Max 10k messages per queue
+            "x-max-length" to 10000 // Max 10k messages per queue
         )
 
         channel.queueDeclare(rabbitMQQueue, true, false, false, args)
