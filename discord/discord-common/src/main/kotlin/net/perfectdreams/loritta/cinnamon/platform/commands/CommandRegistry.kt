@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.Locale
-import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
@@ -95,10 +94,10 @@ class CommandRegistry(
         convertModalSubmitToInteraKTions()
 
         if (loritta.interactionsConfig.registerGlobally) {
-            interaKTionsRegistry.updateAllGlobalCommands()
+            // interaKTionsRegistry.updateAllGlobalCommands()
         } else {
             for (guildId in loritta.interactionsConfig.guildsToBeRegistered) {
-                interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId))
+                // interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId))
             }
         }
     }
