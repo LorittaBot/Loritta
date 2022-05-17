@@ -16,6 +16,7 @@ import kotlinx.serialization.json.JsonObject
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
+import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
@@ -23,6 +24,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.declarations.RobloxCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
@@ -43,14 +45,17 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()
 
+        val username = args[Options.username]
         val userProfileRequest = http.get("https://www.roblox.com/users/profile") {
-            parameter("username", args[Options.username])
+            parameter("username", username)
         }
 
-        if (userProfileRequest.status == HttpStatusCode.NotFound) {
-            // Unknown user
-            return
-        }
+        // Unknown user
+        if (userProfileRequest.status == HttpStatusCode.NotFound)
+            context.fail(
+                prefix = Emotes.Error,
+                content = context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.UnknownPlayer(username))
+            )
 
         val userId = userProfileRequest.request.url.toString().split("/").getOrNull(4)
             ?.toLongOrNull() ?: error("Couldn't find the User ID")
@@ -199,37 +204,33 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
             jobs.awaitAll()
         }
 
-        /* println("User ID: $userId")
-        println("Is Roblox premium? $isRobloxPremium")
-        println("Fav conatiners: $favoriteGamesContainer")
-        println("Avatar Body: ${avatarBodyImageUrl.await()}")
-        println("User data: ${userData.await()}")
-        println("Badges: ${userBadges.await()}")
-        println("User Friends: ${userFriends.await()}")
-        println("Friends count: $friendsCount")
-        println("Followers count: $followersCount")
-        println("Followings count: $followingsCount") */
-
         val baos = ByteArrayOutputStream()
         ImageIO.write(bufferedImage, "png", baos)
         val bais = baos.toByteArray().inputStream()
 
         context.sendMessage {
             embed {
-                title = "<:roblox_logo:412576693803286528> ${if (isRobloxPremium) ("premium ") else ""}${userData.name}"
+                title = buildString {
+                    this.append(Emotes.Roblox.toString())
+                    if (isRobloxPremium) {
+                        this.append(Emotes.RobloxPremium)
+                        this.append(" ")
+                    }
+                    this.append(userData.name)
+                }
                 url = "https://roblox.com/users/${userId}/profile"
 
                 if (userData.description.isNotBlank()) {
                     description = userData.description
                 }
 
-                field("\uD83D\uDCBB Roblox ID", "`${userId.toString()}`", true)
-                field("\uD83D\uDCC5 Join Date", "<t:${userData.created.epochSeconds}:F>", true)
+                field("\uD83D\uDCBB ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.RobloxId)}", "`$userId`", true)
+                field("\uD83D\uDCC5 ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.JoinDate)}", "<t:${userData.created.epochSeconds}:F>", true)
                 field(
-                    "\uD83D\uDE4B Social",
-                    """🐾 **Following:** $followingsCount
-                        |🤩 **Followers:** $followersCount
-                        |😎 **Friends:** $friendsCount
+                    "\uD83D\uDE4B ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.Social)}",
+                    """🐾 **${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.Following)}:** $followingsCount
+                        |🤩 **${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.Followers)}:** $followersCount
+                        |😎 **${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.Friends)}:** $friendsCount
                     """.trimMargin(),
                     true
                 )
@@ -252,14 +253,13 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
                         }
                     }
 
-                    field("\uD83D\uDD79️ Favorite Games", builder, false)
+                    field("\uD83D\uDD79️ ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.FavoriteGames)}", builder, false)
                 }
 
 
                 thumbnailUrl = avatarBodyImageUrl
                 image = "attachment://roblox.png"
 
-                // TODO: image
                 color = LorittaColors.LorittaRed.toKordColor() // TODO: Roblox color
             }
 

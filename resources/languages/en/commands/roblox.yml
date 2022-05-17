@@ -1,0 +1,10 @@
+user:
+  description: "Mostra informações sobre um usuário do ROBLOX"
+  unknownPlayer: "`{playerName}` is not a valid ROBLOX player!"
+  robloxId: "Roblox ID"
+  joinDate: "Join Date"
+  social: "Social"
+  following: "Following"
+  followers: "Followers"
+  friends: "Friends"
+  favoriteGames: "Favorite Games"
