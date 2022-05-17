@@ -264,20 +264,32 @@ object RoleplayUtils {
             }
 
             actionRow {
-                interactiveButton(
-                    ButtonStyle.Primary,
-                    i18nContext.get(RoleplayCommand.I18N_PREFIX.Retribute),
-                    roleplayActionAttributes.retributionButtonDeclaration,
-                    ComponentDataUtils.encode(
-                        RetributeRoleplayData(
-                            receiver,
-                            receiver,
-                            giver,
-                            data.combo + 1
+                if (giver != receiver) {
+                    interactiveButton(
+                        ButtonStyle.Primary,
+                        i18nContext.get(RoleplayCommand.I18N_PREFIX.Retribute),
+                        roleplayActionAttributes.retributionButtonDeclaration,
+                        ComponentDataUtils.encode(
+                            RetributeRoleplayData(
+                                receiver,
+                                receiver,
+                                giver,
+                                data.combo + 1
+                            )
                         )
-                    )
-                ) {
-                    loriEmoji = roleplayActionAttributes.embedEmoji
+                    ) {
+                        loriEmoji = roleplayActionAttributes.embedEmoji
+                    }
+                } else {
+                    // Don't let someone retribute their own action
+                    interactionButton(
+                        ButtonStyle.Primary,
+                        "dummy-retribution"
+                    ) {
+                        label = i18nContext.get(RoleplayCommand.I18N_PREFIX.Retribute)
+                        disabled = true
+                        loriEmoji = roleplayActionAttributes.embedEmoji
+                    }
                 }
 
                 if (pictureSourceData != null) {
