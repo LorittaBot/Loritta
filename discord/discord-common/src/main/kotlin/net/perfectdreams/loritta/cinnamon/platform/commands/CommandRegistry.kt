@@ -9,6 +9,7 @@ import net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclara
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandGroupDeclaration
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteExecutor
@@ -36,6 +37,7 @@ import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitWithDataExe
 import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitWithDataExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.modals.components.ModalComponentsWrapper
 import net.perfectdreams.loritta.cinnamon.platform.utils.I18nContextUtils
+import kotlin.reflect.KClass
 
 class CommandRegistry(
     val loritta: LorittaCinnamon,
@@ -47,8 +49,8 @@ class CommandRegistry(
         private const val MAX_COMMAND_DESCRIPTION_LENGTH = 100
     }
 
-    val declarations = mutableListOf<SlashCommandDeclarationBuilder>()
-    val executors = mutableListOf<net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor>()
+    val declarationWrappers = mutableListOf<ApplicationCommandDeclarationWrapper>()
+    val executors = mutableListOf<ApplicationCommandExecutor>()
 
     val selectMenusDeclarations = mutableListOf<SelectMenuExecutorDeclaration>()
     val selectMenusExecutors = mutableListOf<SelectMenuBaseExecutor>()
@@ -62,8 +64,13 @@ class CommandRegistry(
     val modalSubmitDeclarations = mutableListOf<ModalSubmitExecutorDeclaration>()
     val modalSubmitExecutors = mutableListOf<ModalSubmitWithDataExecutor>()
 
-    fun register(declaration: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper, vararg executors: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor) {
-        declarations.add(declaration.declaration())
+    fun register(declaration: SlashCommandDeclarationWrapper, vararg executors: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor) {
+        declarationWrappers.add(declaration)
+        this.executors.addAll(executors)
+    }
+
+    fun register(declaration: UserCommandDeclarationWrapper, vararg executors: UserCommandExecutor) {
+        declarationWrappers.add(declaration)
         this.executors.addAll(executors)
     }
 
@@ -104,16 +111,32 @@ class CommandRegistry(
     }
 
     private fun convertCommandsToInteraKTions(defaultLocale: I18nContext) {
-        for (declaration in declarations) {
-            val declarationExecutor = declaration.executor
+        for (declarationWrapper in declarationWrappers) {
+            when (declarationWrapper) {
+                is SlashCommandDeclarationWrapper -> {
+                    val declaration = declarationWrapper.declaration()
 
-            val (declaration, executors) = convertCommandDeclarationToInteraKTions(
-                declaration,
-                declarationExecutor,
-                defaultLocale
-            )
+                    val (interaKTionsDeclaration, executor) = convertCommandDeclarationToInteraKTions(
+                        declarationWrapper::class,
+                        declaration,
+                        declaration.executor,
+                        defaultLocale
+                    )
 
-            interaKTionsManager.register(declaration, *executors.toTypedArray())
+                    interaKTionsManager.register(interaKTionsDeclaration, *executor.toTypedArray())
+                }
+                is UserCommandDeclarationWrapper -> {
+                    val declaration = declarationWrapper.declaration()
+
+                    val (interaKTionsDeclaration, executor) = convertUserCommandDeclarationToInteraKTions(
+                        declarationWrapper::class,
+                        declaration,
+                        declaration.executor
+                    )
+
+                    interaKTionsManager.register(interaKTionsDeclaration, executor)
+                }
+            }
         }
     }
 
@@ -247,14 +270,45 @@ class CommandRegistry(
         }
     }
 
+    private fun convertUserCommandDeclarationToInteraKTions(
+        rootDeclarationClazz: KClass<*>,
+        declaration: UserCommandDeclaration,
+        declarationExecutor: UserCommandExecutorDeclaration
+    ): Pair<net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration, UserCommandExecutorWrapper> {
+        val executor = this.executors.firstOrNull { declarationExecutor.parent == it::class }
+            ?: throw UnsupportedOperationException("The command executor ${declarationExecutor.parent} wasn't found! Did you register the command executor?")
+
+        val interaKTionsExecutor = UserCommandExecutorWrapper(
+            loritta,
+            rootDeclarationClazz,
+            declarationExecutor,
+            executor as net.perfectdreams.loritta.cinnamon.platform.commands.UserCommandExecutor
+        )
+
+        val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutorDeclaration(declarationExecutor::class) {}
+
+        val interaKTionsDeclaration = net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration(
+            declaration.name,
+            mapOf(),
+            interaKTionsExecutorDeclaration
+        )
+
+        return Pair(
+            interaKTionsDeclaration,
+            interaKTionsExecutor
+        )
+    }
+
     private fun convertCommandDeclarationToInteraKTions(
-        declaration: SlashCommandDeclarationBuilder,
+        rootDeclarationClazz: KClass<*>,
+        declaration: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclaration,
         declarationExecutor: SlashCommandExecutorDeclaration?,
         defaultLocale: I18nContext
     ): Pair<SlashCommandDeclaration, MutableList<SlashCommandExecutor>> {
         val executors = mutableListOf<SlashCommandExecutor>()
 
         val declaration = convertCommandDeclarationToSlashCommand(
+            rootDeclarationClazz,
             declaration,
             declarationExecutor,
             defaultLocale,
@@ -268,16 +322,18 @@ class CommandRegistry(
     }
 
     fun convertCommandDeclarationToSlashCommand(
-        declaration: SlashCommandDeclarationBuilder,
+        rootDeclarationClazz: KClass<*>,
+        declaration: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclaration,
         declarationExecutor: SlashCommandExecutorDeclaration?,
         defaultLocale: I18nContext,
         createdExecutors: MutableList<SlashCommandExecutor>
     ): SlashCommandDeclaration {
-        val label = declaration.labels.first()
-        val description = buildDescription(defaultLocale, declaration)
-        val localizedDescriptions = createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration)
+        val label = declaration.name
+        val description = buildDescription(defaultLocale, declaration.description, declaration.category)
+        val localizedDescriptions = createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration.description, declaration.category)
         val subcommands = declaration.subcommands.map {
             convertCommandDeclarationToSlashCommand(
+                rootDeclarationClazz,
                 it,
                 it.executor!!,
                 defaultLocale,
@@ -286,7 +342,9 @@ class CommandRegistry(
         }
         val subcommandGroups = declaration.subcommandGroups.map {
             convertSubcommandGroupToSlashCommand(
+                rootDeclarationClazz,
                 defaultLocale,
+                declaration,
                 it,
                 createdExecutors,
                 defaultLocale
@@ -299,9 +357,9 @@ class CommandRegistry(
 
             val interaKTionsExecutor = SlashCommandExecutorWrapper(
                 loritta,
-                declaration,
+                rootDeclarationClazz,
                 declarationExecutor,
-                executor
+                executor as net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
             )
 
             // Register all the command options with Discord InteraKTions
@@ -339,14 +397,22 @@ class CommandRegistry(
         }
     }
 
-    private fun convertSubcommandGroupToSlashCommand(defaultLocale: I18nContext, declaration: SlashCommandDeclarationBuilder, createdExecutors: MutableList<SlashCommandExecutor>, i18nContext: I18nContext): SlashCommandGroupDeclaration {
+    private fun convertSubcommandGroupToSlashCommand(
+        rootDeclarationClazz: KClass<*>,
+        defaultLocale: I18nContext,
+        rootDeclaration: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclaration,
+        declaration: net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandGroupDeclaration,
+        createdExecutors: MutableList<SlashCommandExecutor>,
+        i18nContext: I18nContext
+    ): SlashCommandGroupDeclaration {
         return SlashCommandGroupDeclaration(
-            declaration.labels.first(),
+            declaration.name,
             null,
             defaultLocale.get(declaration.description).shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH),
-            createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration),
+            createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale, declaration.description, rootDeclaration.category),
             declaration.subcommands.map {
                 convertCommandDeclarationToSlashCommand(
+                    rootDeclarationClazz,
                     it,
                     it.executor!!,
                     i18nContext,
@@ -356,18 +422,18 @@ class CommandRegistry(
         )
     }
 
-    private fun buildDescription(i18nContext: I18nContext, declaration: SlashCommandDeclarationBuilder) = buildString {
+    private fun buildDescription(i18nContext: I18nContext, description: StringI18nData, category: CommandCategory) = buildString {
         // It looks like this
         // "「Emoji Category」 Description"
         append("「")
         // Before we had unicode emojis reflecting each category, but the emojis look super ugly on Windows 10
         // https://cdn.discordapp.com/attachments/297732013006389252/973613713456250910/unknown.png
         // So we removed it ;)
-        append(declaration.category.getLocalizedName(i18nContext))
+        append(category.getLocalizedName(i18nContext))
         append("」")
         // Looks better without this whitespace
         // append(" ")
-        append(i18nContext.get(declaration.description))
+        append(i18nContext.get(description))
     }.shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH)
 
     /**
@@ -376,13 +442,13 @@ class CommandRegistry(
      * @param defaultLocale the default locale used when creating the slash commands, this won't be present in the map.
      * @param i18nKey the key
      */
-    private fun createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale: I18nContext, builder: SlashCommandDeclarationBuilder) = mutableMapOf<Locale, String>().apply {
+    private fun createLocalizedDescriptionMapExcludingDefaultLocale(defaultLocale: I18nContext, description: StringI18nData, category: CommandCategory) = mutableMapOf<Locale, String>().apply {
         // We will ignore the default i18nContext because that would be redundant
         for ((languageId, i18nContext) in loritta.languageManager.languageContexts.filter { it.value != defaultLocale }) {
-            if (i18nContext.language.textBundle.strings.containsKey(builder.description.key.key)) {
+            if (i18nContext.language.textBundle.strings.containsKey(description.key.key)) {
                 val kordLocale = I18nContextUtils.convertLanguageIdToKordLocale(languageId)
                 if (kordLocale != null)
-                    this[kordLocale] = buildDescription(i18nContext, builder)
+                    this[kordLocale] = buildDescription(i18nContext, description, category)
             }
         }
     }

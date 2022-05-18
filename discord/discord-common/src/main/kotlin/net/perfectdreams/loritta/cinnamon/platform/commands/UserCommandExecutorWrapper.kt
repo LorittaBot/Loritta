@@ -16,7 +16,7 @@ import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -27,7 +27,6 @@ import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ArgumentReader
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.platform.utils.ImportantNotificationDatabaseMessage
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
@@ -38,17 +37,17 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext as CinnamonGuildApplicationCommandContext
 
 /**
- * Bridge between Cinnamon's [SlashCommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
+ * Bridge between Cinnamon's [UserCommandExecutor] and Discord InteraKTions' [UserCommandExecutor].
  *
  * Used for argument conversion between the two platforms
  */
-class SlashCommandExecutorWrapper(
+class UserCommandExecutorWrapper(
     private val loritta: LorittaCinnamon,
     // This is only used for metrics and logs
-    private val rootDeclarationClass: KClass<*>,
-    private val declarationExecutor: SlashCommandExecutorDeclaration,
-    private val executor: SlashCommandExecutor
-) : net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor() {
+    private val rootDeclarationClazz: KClass<*>,
+    private val declarationExecutor: UserCommandExecutorDeclaration,
+    private val executor: UserCommandExecutor
+) : net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor() {
     companion object {
         private val logger = KotlinLogging.logger {}
 
@@ -60,13 +59,15 @@ class SlashCommandExecutorWrapper(
         )
     }
 
-    val rootDeclarationClazzName = rootDeclarationClass.simpleName
-
-    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val stringifiedArgumentNames = stringifyArgumentNames(args.types)
+    override suspend fun execute(
+        context: ApplicationCommandContext,
+        targetUser: User,
+        targetMember: InteractionMember?
+    ) {
+        val rootDeclarationClazzName = rootDeclarationClazz.simpleName
         val executorClazzName = executor::class.simpleName
 
-        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames" }
+        logger.info { "(${context.sender.id.value}) $executor" }
 
         val timer = Prometheus.EXECUTED_COMMAND_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
@@ -80,9 +81,9 @@ class SlashCommandExecutorWrapper(
             rootDeclarationClazzName,
             executorClazzName,
             context,
-            args,
-            cinnamonArgs,
-            guildId
+            guildId,
+            targetUser,
+            targetMember
         )
 
         var stacktrace: String? = null
@@ -90,14 +91,14 @@ class SlashCommandExecutorWrapper(
             stacktrace = result.throwable.stackTraceToString()
 
         val commandLatency = timer.observeDuration()
-        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
+        logger.info { "(${context.sender.id.value}) $executor - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
 
         loritta.services.executedInteractionsLog.insertApplicationCommandLog(
             context.sender.id.value.toLong(),
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
             Clock.System.now(),
-            ApplicationCommandType.CHAT_INPUT,
+            ApplicationCommandType.USER,
             rootDeclarationClazzName!!,
             executorClazzName!!,
             buildJsonWithArguments(cinnamonArgs),
@@ -112,9 +113,9 @@ class SlashCommandExecutorWrapper(
         rootDeclarationClazzName: String?,
         executorClazzName: String?,
         context: ApplicationCommandContext,
-        args: SlashCommandArguments,
-        cinnamonArgs: MutableMap<CommandOption<*>, Any?>,
-        guildId: Snowflake?
+        guildId: Snowflake?,
+        targetUser: User,
+        targetMember: InteractionMember?
     ): CommandExecutionResult {
         // These variables are used in the catch { ... } block, to make our lives easier
         var i18nContext: I18nContext? = null
@@ -153,19 +154,11 @@ class SlashCommandExecutorWrapper(
             if (handleIfBanned(cinnamonContext))
                 return CommandExecutionSuccess
 
-            if (declarationExecutor.options.arguments.isNotEmpty()) {
-                val argumentsReader = ArgumentReader(cinnamonContext, args.types)
-                declarationExecutor.options.arguments.forEach {
-                    cinnamonArgs[it] = it.parse(argumentsReader)
-                }
-            }
-
             // TODO: Don't use GlobalScope!
             GlobalScope.launch {
                 // Update the cached Discord users
                 // Updating in a separate task to avoid delaying the command processing too much
                 val users = mutableSetOf(context.sender)
-                users.addAll(args.types.values.filterIsInstance<User>())
                 val resolvedUsers = context.data.resolved?.users?.values
 
                 if (resolvedUsers != null)
@@ -186,7 +179,8 @@ class SlashCommandExecutorWrapper(
 
             executor.execute(
                 cinnamonContext,
-                net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments(cinnamonArgs)
+                targetUser,
+                targetMember
             )
 
             // Required because "Smart cast is impossible" within the scope

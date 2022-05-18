@@ -1,8 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
-import net.perfectdreams.discordinteraktions.common.commands.MessageCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutorDeclaration
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 
 /**
@@ -15,6 +12,7 @@ sealed class ApplicationCommandDeclaration(
 class SlashCommandDeclaration(
     name: String,
     val description: StringI18nData,
+    val category: CommandCategory,
     val executor: SlashCommandExecutorDeclaration? = null,
     val subcommands: List<SlashCommandDeclaration>,
     val subcommandGroups: List<SlashCommandGroupDeclaration>

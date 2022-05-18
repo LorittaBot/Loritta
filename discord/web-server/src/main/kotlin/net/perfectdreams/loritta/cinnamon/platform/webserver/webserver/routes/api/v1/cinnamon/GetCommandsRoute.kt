@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaCinnamonWebServer
 import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.InteractionCommand
 import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.InteractionCommandGroup
@@ -14,18 +15,18 @@ class GetCommandsRoute(val m: LorittaCinnamonWebServer) : BaseRoute("/api/v1/cin
     override suspend fun onRequest(call: ApplicationCall) {
         call.respondText(
             Json.encodeToString(
-                m.commandManager.commandManager.declarations.map {
+                m.commandManager.commandManager.declarationWrappers.filterIsInstance<SlashCommandDeclarationWrapper>().map { it.declaration() }.map {
                     InteractionCommand(
-                        it.labels,
+                        listOf(it.name),
                         it.description,
                         it.category,
                         it.executor?.parent?.let { m.commandManager.commandManager.executors.first { executor -> executor::class == it }::class.simpleName }?.toString(),
                         it.subcommandGroups.map {
                             InteractionCommandGroup(
-                                it.labels,
+                                listOf(it.name),
                                 it.subcommands.map {
                                     InteractionCommand(
-                                        it.labels,
+                                        listOf(it.name),
                                         it.description,
                                         it.category,
                                         it.executor?.parent?.let { m.commandManager.commandManager.executors.first { executor -> executor::class == it }::class.simpleName }?.toString(),
@@ -37,7 +38,7 @@ class GetCommandsRoute(val m: LorittaCinnamonWebServer) : BaseRoute("/api/v1/cin
                         },
                         it.subcommands.map {
                             InteractionCommand(
-                                it.labels,
+                                listOf(it.name),
                                 it.description,
                                 it.category,
                                 it.executor?.parent?.let { m.commandManager.commandManager.executors.first { executor -> executor::class == it }::class.simpleName }?.toString(),

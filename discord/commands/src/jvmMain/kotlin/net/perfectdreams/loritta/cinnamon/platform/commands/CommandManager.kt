@@ -48,11 +48,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGlob
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGuildProfileAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ViewAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ViewAvatarCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditRepostExecutor
@@ -640,12 +642,12 @@ class CommandManager(
         )
 
         // Validate if we don't have more commands than Discord allows
-        if (commandManager.declarations.size > 100) {
-            logger.error { "Currently there are ${commandManager.declarations.size} root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
+        if (commandManager.declarationWrappers.size > 100) {
+            logger.error { "Currently there are ${commandManager.declarationWrappers.size} root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
             exitProcess(1)
         }
 
-        logger.info { "Total Root Commands: ${commandManager.declarations.size}/100" }
+        logger.info { "Total Root Commands: ${commandManager.declarationWrappers.size}/100" }
 
         commandManager.convertToInteraKTions(
             loritta.languageManager.getI18nContextById("en")
