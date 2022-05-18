@@ -213,9 +213,10 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
                 title = buildString {
                     this.append(Emotes.Roblox.toString())
                     if (isRobloxPremium) {
-                        this.append(Emotes.RobloxPremium)
                         this.append(" ")
+                        this.append(Emotes.RobloxPremium)
                     }
+                    this.append(" ")
                     this.append(userData.name)
                 }
                 url = "https://roblox.com/users/${userId}/profile"
