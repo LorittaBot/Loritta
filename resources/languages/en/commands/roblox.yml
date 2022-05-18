@@ -1,6 +1,6 @@
 user:
   description: "Shows information about a ROBLOX user"
-  unknownPlayer: "`{playerName}` is not a valid ROBLOX user!"
+  unknownPlayer: "Sorry, but I couldn't find a ROBLOX user named `{playerName}`..."
   robloxId: "Roblox ID"
   joinDate: "Join Date"
   social: "Social"
@@ -15,7 +15,7 @@ user:
 
 game:
   description: "Shows information about a ROBLOX experience"
-  unknownGame: "`{gameName}` is not a valid ROBLOX experience!"
+  unknownGame: "Sorry, but I couldn't find a ROBLOX experience named `{gameName}`..."
   robloxId: "Place ID"
   favorite: "Favorites"
   likes: "Likes"
