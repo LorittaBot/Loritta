@@ -35,7 +35,7 @@ import javax.imageio.ImageIO
 class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
-            val username = string("player_name", MinecraftCommand.I18N_CATEGORY_PREFIX.Options.PlayerNameJavaEdition)
+            val username = string("username", RobloxCommand.I18N_PREFIX.User.Options.Username.Text)
                 .register()
         }
 
@@ -58,7 +58,7 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
             )
 
         val userId = userProfileRequest.request.url.toString().split("/").getOrNull(4)
-            ?.toLongOrNull() ?: error("Couldn't find the User ID")
+            ?.toLongOrNull() ?: error("Couldn't find the User ID") // This should never happen unless if Roblox changes where the ID is in the URL
 
         val body = userProfileRequest.bodyAsText()
 
@@ -126,7 +126,7 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
         val userBadges = userBadgesJob.await()
         val userAssets = userAssetsJob.await()
 
-        val bufferedImage = BufferedImage(333, 220, BufferedImage.TYPE_INT_ARGB)
+        val bufferedImage = BufferedImage(333, 165, BufferedImage.TYPE_INT_ARGB)
         val graphics = bufferedImage.createGraphics()
 
         run {
@@ -260,7 +260,7 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
                 thumbnailUrl = avatarBodyImageUrl
                 image = "attachment://roblox.png"
 
-                color = LorittaColors.LorittaRed.toKordColor() // TODO: Roblox color
+                color = LorittaColors.RobloxRed.toKordColor()
             }
 
             addFile("roblox.png", bais)

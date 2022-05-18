@@ -153,6 +153,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinLorittaSweatshirtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.RobloxGameExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.RobloxUserExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.declarations.RobloxCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayAttackExecutor
@@ -634,7 +635,8 @@ class CommandManager(
         // ===[ ROBLOX ]===
         commandManager.register(
             RobloxCommand,
-            RobloxUserExecutor(http)
+            RobloxUserExecutor(http),
+            RobloxGameExecutor(http)
         )
 
         // Validate if we don't have more commands than Discord allows

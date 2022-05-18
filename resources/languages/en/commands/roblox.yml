@@ -1,6 +1,6 @@
 user:
-  description: "Mostra informações sobre um usuário do ROBLOX"
-  unknownPlayer: "`{playerName}` is not a valid ROBLOX player!"
+  description: "Shows information about a ROBLOX user"
+  unknownPlayer: "`{playerName}` is not a valid ROBLOX user!"
   robloxId: "Roblox ID"
   joinDate: "Join Date"
   social: "Social"
@@ -8,3 +8,25 @@ user:
   followers: "Followers"
   friends: "Friends"
   favoriteGames: "Favorite Games"
+
+  options:
+    username:
+      text: "The name of the user that you want to find their information"
+
+game:
+  description: "Shows information about a ROBLOX experience"
+  unknownGame: "`{gameName}` is not a valid ROBLOX experience!"
+  robloxId: "Place ID"
+  favorite: "Favorites"
+  likes: "Likes"
+  dislikes: "Dislikes"
+  playing: "Playing"
+  visits: "Visits"
+  createdAt: "Created At"
+  lastUpdated: "Last Updated"
+  maxPlayers: "Max Players"
+  genre: "Genre"
+
+  options:
+    game:
+      text: "The name of the experience that you want to find its information"
