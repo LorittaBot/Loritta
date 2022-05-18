@@ -153,9 +153,24 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinLorittaSweatshirtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.RobloxGameExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.RobloxUserExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.declarations.RobloxCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayAttackExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayDanceExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHeadPatExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHighFiveExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHugExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayKissExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplaySlapExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.declarations.RoleplayCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeAttackButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeDanceButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHeadPatButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHighFiveButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHugButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeKissButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeSlapButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.source.SourcePictureExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOffExecutor
@@ -615,6 +630,13 @@ class CommandManager(
         commandManager.register(
             SourcePictureExecutor,
             SourcePictureExecutor()
+        )
+
+        // ===[ ROBLOX ]===
+        commandManager.register(
+            RobloxCommand,
+            RobloxUserExecutor(http),
+            RobloxGameExecutor(http)
         )
 
         // Validate if we don't have more commands than Discord allows
