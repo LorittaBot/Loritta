@@ -198,7 +198,7 @@ class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
         val requestId: String,
         val errorCode: Int,
         val errorMessage: String,
-        val targetId: Int,
+        val targetId: Long,
         val state: String,
         val imageUrl: String
     )
