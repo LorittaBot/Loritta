@@ -48,13 +48,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGlob
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGuildProfileAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ViewAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ViewAvatarCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditRepostExecutor
