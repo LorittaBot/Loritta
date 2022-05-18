@@ -120,7 +120,7 @@ class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
                 title = "${Emotes.Roblox} $gameName"
                 url = "https://www.roblox.com/games/$gameId"
                 description = gameDescription.shortenWithEllipsis(1_000)
-                field("\uD83D\uDCBB ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.RobloxId)}", placeId, true)
+                field("\uD83D\uDCBB ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.PlaceId)}", placeId, true)
                 field("\uD83E\uDD29 ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Favorite)}", favoriteCount, true)
                 field("\uD83D\uDC4D ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Likes)}", upvotes.toString(), true)
                 field("\uD83D\uDC4E ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Dislikes)}", downvotes.toString(), true)
