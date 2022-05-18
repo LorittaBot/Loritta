@@ -6,6 +6,9 @@ hug:
   response: "{giver} abraçou {receiver}!"
   responseSelfLori: "Awww... você tá se sentindo sozinho? Tome, {giver} abraçou {receiver}!"
   responseLori: "Awww, obrigada! {giver} abraçou {receiver}!"
+  options:
+    user:
+      text: "O usuário que você deseja abraçar"
 headpat:
   description: "Faça cafuné em um usuário"
   response: "{giver} fez cafuné em {receiver}!"
