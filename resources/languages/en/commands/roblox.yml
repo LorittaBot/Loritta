@@ -1,7 +1,7 @@
 user:
   description: "Shows information about a ROBLOX user"
   unknownPlayer: "Sorry, but I couldn't find a ROBLOX user named `{playerName}`..."
-  robloxId: "Roblox ID"
+  userId: "User ID"
   joinDate: "Join Date"
   social: "Social"
   following: "Following"
