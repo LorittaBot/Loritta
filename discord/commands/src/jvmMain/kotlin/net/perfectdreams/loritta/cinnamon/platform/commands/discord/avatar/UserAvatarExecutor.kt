@@ -1,40 +1,24 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord
+package net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
+import net.perfectdreams.discordinteraktions.common.entities.Member
+import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import kotlin.time.Duration.Companion.minutes
 
-class UserAvatarExecutor(val lorittaId: Snowflake) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val user = optionalUser("user", UserCommand.I18N_PREFIX.Avatar.Options.User)
-                .register()
-        }
-
-        override val options = Options
-    }
-
-    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val user = args[Options.user] ?: context.user
-
-        // TODO: Fix this workaround, it would be nice if Discord InteraKTions provided a "UserAndMember" object to us
-        // (Or maybe expose it correctly?)
-        val member = if (user == context.user && context is GuildApplicationCommandContext)
-            context.member
-        else
-            context.interaKTionsContext.data.resolved?.members?.get(user.id)
-
+interface UserAvatarExecutor {
+    suspend fun handleAvatarCommand(
+        context: ApplicationCommandContext,
+        lorittaId: Snowflake,
+        user: User,
+        member: Member?
+    ) {
         val now = Clock.System.now()
 
         val data = UserDataUtils.ViewingGlobalUserAvatarData(

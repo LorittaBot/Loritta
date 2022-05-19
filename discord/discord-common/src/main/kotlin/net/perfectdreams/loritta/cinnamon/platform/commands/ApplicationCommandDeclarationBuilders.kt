@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
-import dev.kord.common.Locale
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 
 fun slashCommand(
@@ -50,13 +49,11 @@ class SlashCommandGroupDeclarationBuilder(val labels: List<String>, val descript
 }
 
 // ===[ USER COMMANDS ]===
-fun userCommand(name: String, executor: UserCommandExecutorDeclaration): UserCommandDeclaration {
+fun userCommand(name: StringI18nData, executor: UserCommandExecutorDeclaration): UserCommandDeclaration {
     return UserCommandDeclarationBuilder(name, executor).build()
 }
 
-class UserCommandDeclarationBuilder(val name: String, val executor: UserCommandExecutorDeclaration) {
-    var nameLocalizations: Map<Locale, String>? = null
-
+class UserCommandDeclarationBuilder(val name: StringI18nData, val executor: UserCommandExecutorDeclaration) {
     fun build(): UserCommandDeclaration {
         return UserCommandDeclaration(
             name,

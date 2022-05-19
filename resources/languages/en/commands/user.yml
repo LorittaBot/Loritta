@@ -14,6 +14,7 @@ avatar:
 
   viewUserGuildProfileAvatar: "View the user's guild profile avatar"
   viewUserGlobalAvatar: "View the user's global avatar"
+  viewAvatar: "View avatar" #Shown when right-clicking a user
 
   options:
     user: "The user that you want to steal... I mean, view, their avatar (*/ω＼*)"

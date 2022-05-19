@@ -56,7 +56,8 @@ class SlashCommandConverter(
                     val (interaKTionsDeclaration, executor) = convertUserCommandDeclarationToInteraKTions(
                         declarationWrapper::class,
                         declaration,
-                        declaration.executor
+                        declaration.executor,
+                        defaultLocale
                     )
 
                     interaKTionsManager.register(interaKTionsDeclaration, executor)
@@ -191,7 +192,8 @@ class SlashCommandConverter(
     private fun convertUserCommandDeclarationToInteraKTions(
         rootDeclarationClazz: KClass<*>,
         declaration: UserCommandDeclaration,
-        declarationExecutor: UserCommandExecutorDeclaration
+        declarationExecutor: UserCommandExecutorDeclaration,
+        defaultLocale: I18nContext,
     ): Pair<net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration, UserCommandExecutorWrapper> {
         val executor = this.executors.firstOrNull { declarationExecutor.parent == it::class }
             ?: throw UnsupportedOperationException("The command executor ${declarationExecutor.parent} wasn't found! Did you register the command executor?")
@@ -206,8 +208,8 @@ class SlashCommandConverter(
         val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutorDeclaration(declarationExecutor::class) {}
 
         val interaKTionsDeclaration = net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration(
-            declaration.name,
-            mapOf(),
+            defaultLocale.get(declaration.name),
+            createLocalizedStringMapExcludingDefaultLocale(defaultLocale, declaration.name),
             interaKTionsExecutorDeclaration
         )
 
@@ -230,6 +232,23 @@ class SlashCommandConverter(
         // append(" ")
         append(i18nContext.get(description))
     }.shortenWithEllipsis(MAX_COMMAND_DESCRIPTION_LENGTH)
+
+    /**
+     * Creates a map containing all translated strings of [i18nKey], excluding the [defaultLocale].
+     *
+     * @param defaultLocale the default locale used when creating the slash commands, this won't be present in the map.
+     * @param i18nKey the key
+     */
+    private fun createLocalizedStringMapExcludingDefaultLocale(defaultLocale: I18nContext, key: StringI18nData) = mutableMapOf<Locale, String>().apply {
+        // We will ignore the default i18nContext because that would be redundant
+        for ((languageId, i18nContext) in loritta.languageManager.languageContexts.filter { it.value != defaultLocale }) {
+            if (i18nContext.language.textBundle.strings.containsKey(key.key.key)) {
+                val kordLocale = I18nContextUtils.convertLanguageIdToKordLocale(languageId)
+                if (kordLocale != null)
+                    this[kordLocale] = i18nContext.get(key)
+            }
+        }
+    }
 
     /**
      * Creates a map containing all translated strings of [i18nKey], excluding the [defaultLocale].

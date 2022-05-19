@@ -44,14 +44,16 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.RoleInfoExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGlobalAvatarExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.SwitchToGuildProfileAvatarExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGlobalAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGuildProfileAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.UserAvatarSlashExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.UserAvatarUserExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserAvatarUserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditJsonExecutor
@@ -264,8 +266,13 @@ class CommandManager(
         // ===[ DISCORD ]===
         commandManager.register(
             UserCommand,
-            UserAvatarExecutor(Snowflake(discordConfig.applicationId)),
+            UserAvatarSlashExecutor(Snowflake(discordConfig.applicationId)),
             UserBannerExecutor(rest)
+        )
+
+        commandManager.register(
+            UserAvatarUserCommand,
+            UserAvatarUserExecutor(Snowflake(discordConfig.applicationId))
         )
 
         commandManager.register(

@@ -2,11 +2,11 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.discord.declaration
 
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.UserCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ViewAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.UserAvatarUserExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.userCommand
 
-object ViewAvatarCommand : UserCommandDeclarationWrapper {
+object UserAvatarUserCommand : UserCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.User
 
-    override fun declaration() = userCommand("Ver Avatar", ViewAvatarExecutor)
+    override fun declaration() = userCommand(I18N_PREFIX.Avatar.ViewAvatar, UserAvatarUserExecutor)
 }

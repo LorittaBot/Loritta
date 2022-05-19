@@ -5,31 +5,29 @@ import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 /**
  * Base class of every application declaration, because all interactions share a [name]
  */
-sealed class ApplicationCommandDeclaration(
-    val name: String
-)
+sealed class ApplicationCommandDeclaration
 
 class SlashCommandDeclaration(
-    name: String,
+    val name: String,
     val description: StringI18nData,
     val category: CommandCategory,
     val executor: SlashCommandExecutorDeclaration? = null,
     val subcommands: List<SlashCommandDeclaration>,
     val subcommandGroups: List<SlashCommandGroupDeclaration>
-) : ApplicationCommandDeclaration(name)
+) : ApplicationCommandDeclaration()
 
 class SlashCommandGroupDeclaration(
-    name: String,
+    val name: String,
     val description: StringI18nData,
     val subcommands: List<SlashCommandDeclaration>
-) : ApplicationCommandDeclaration(name)
+) : ApplicationCommandDeclaration()
 
 class UserCommandDeclaration(
-    name: String,
+    val name: StringI18nData,
     val executor: UserCommandExecutorDeclaration // User/Message commands always requires an executor, that's why it is not nullable!
-) : ApplicationCommandDeclaration(name)
+) : ApplicationCommandDeclaration()
 
 class MessageCommandDeclaration(
-    name: String,
+    val name: String,
     val executor: MessageCommandExecutorDeclaration // User/Message commands always requires an executor, that's why it is not nullable!
-) : ApplicationCommandDeclaration(name)
+) : ApplicationCommandDeclaration()

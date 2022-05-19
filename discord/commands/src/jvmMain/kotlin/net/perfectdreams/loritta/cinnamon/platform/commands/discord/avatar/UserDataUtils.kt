@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord
+package net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar
 
 import dev.kord.common.Color
 import dev.kord.common.entity.ButtonStyle
@@ -21,7 +21,6 @@ import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.components.data.SingleUserComponentData
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
@@ -51,7 +50,7 @@ object UserDataUtils {
                     if (e.error?.code != JsonErrorCode.UnknownMember)
                         throw e
                 }
-            
+
             val memberAvatarHash = member?.avatar?.value
             // If we tried looking at the user's guild profile avatar, but if it doesn't exist, fallback to global user avatar data
             return if (isLookingGuildProfileAvatar && memberAvatarHash != null) {
@@ -122,32 +121,32 @@ object UserDataUtils {
                 // Specific User Avatar Easter Egg Texts
                 val easterEggFooterTextKey = when {
                     // Easter Egg: Looking up yourself
-                    interactionData.userId == interactionData.viewingAvatarOfId -> UserCommand.I18N_PREFIX.Avatar.YourselfEasterEgg
+                    interactionData.userId == interactionData.viewingAvatarOfId -> I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.YourselfEasterEgg
 
                     // Easter Egg: Loritta/Application ID
                     // TODO: Show who made the fan art during the Fan Art Extravaganza
-                    userId == lorittaId -> UserCommand.I18N_PREFIX.Avatar.LorittaEasterEgg
+                    userId == lorittaId -> I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.LorittaEasterEgg
 
                     // Easter Egg: Pantufa
-                    userId == NotableUserIds.PANTUFA -> UserCommand.I18N_PREFIX.Avatar.PantufaEasterEgg
+                    userId == NotableUserIds.PANTUFA -> I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.PantufaEasterEgg
 
                     // Easter Egg: Gabriela
-                    userId == NotableUserIds.GABRIELA -> UserCommand.I18N_PREFIX.Avatar.GabrielaEasterEgg
+                    userId == NotableUserIds.GABRIELA -> I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.GabrielaEasterEgg
 
                     // Easter Egg: Carl-bot
-                    userId == NotableUserIds.CARLBOT -> UserCommand.I18N_PREFIX.Avatar.CarlbotEasterEgg
+                    userId == NotableUserIds.CARLBOT -> I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.CarlbotEasterEgg
 
                     // Easter Egg: Dank Memer
-                    userId == NotableUserIds.DANK_MEMER -> UserCommand.I18N_PREFIX.Avatar.DankMemerEasterEgg
+                    userId == NotableUserIds.DANK_MEMER -> I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.DankMemerEasterEgg
 
                     // Easter Egg: Mantaro
-                    userId == NotableUserIds.MANTARO -> UserCommand.I18N_PREFIX.Avatar.MantaroEasterEgg
+                    userId == NotableUserIds.MANTARO -> I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.MantaroEasterEgg
 
                     // Easter Egg: Erisly
-                    userId == NotableUserIds.ERISLY -> UserCommand.I18N_PREFIX.Avatar.ErislyEasterEgg
+                    userId == NotableUserIds.ERISLY -> I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ErislyEasterEgg
 
                     // Easter Egg: Kuraminha
-                    userId == NotableUserIds.KURAMINHA -> UserCommand.I18N_PREFIX.Avatar.KuraminhaEasterEgg
+                    userId == NotableUserIds.KURAMINHA -> I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.KuraminhaEasterEgg
 
                     // Nothing else, just use null
                     else -> null
@@ -171,7 +170,7 @@ object UserDataUtils {
                     linkButton(
                         url = imageUrl
                     ) {
-                        label = i18nContext.get(I18nKeysData.Commands.Command.User.Avatar.OpenAvatarInBrowser)
+                        label = i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.OpenAvatarInBrowser)
                     }
 
                     // Additional avatar switch buttons, if needed
@@ -199,7 +198,7 @@ object UserDataUtils {
                                     .copy(interactionDataId = id)
                             )
                         ) {
-                            label = i18nContext.get(UserCommand.I18N_PREFIX.Avatar.ViewUserGlobalAvatar)
+                            label = i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGlobalAvatar)
                         }
                     } else if (memberAvatarId != null) {
                         // If the user is currently viewing the user's avatar, and the user has a guild profile avatar, add a button to switch to the guild profile avatar
@@ -224,7 +223,7 @@ object UserDataUtils {
                                     .copy(interactionDataId = id)
                             )
                         ) {
-                            label = i18nContext.get(UserCommand.I18N_PREFIX.Avatar.ViewUserGuildProfileAvatar)
+                            label = i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGuildProfileAvatar)
                         }
                     }
                 }

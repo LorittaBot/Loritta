@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord
+package net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar
 
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.entities.User
@@ -8,8 +8,12 @@ import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecuto
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 
-class SwitchToGlobalAvatarExecutor(val loritta: LorittaCinnamon, val lorittaId: Snowflake) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(SwitchToGlobalAvatarExecutor::class, ComponentExecutorIds.SWITCH_TO_GLOBAL_AVATAR_EXECUTOR)
+class SwitchToGlobalAvatarExecutor(val loritta: LorittaCinnamon, val lorittaId: Snowflake) :
+    ButtonClickWithDataExecutor {
+    companion object : ButtonClickExecutorDeclaration(
+        SwitchToGlobalAvatarExecutor::class,
+        ComponentExecutorIds.SWITCH_TO_GLOBAL_AVATAR_EXECUTOR
+    )
 
     override suspend fun onClick(user: User, context: ComponentContext, data: String) {
         val decodedInteractionData = context.decodeDataFromComponentAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>(data)
