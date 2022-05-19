@@ -15,6 +15,6 @@ class UserAvatarUserExecutor(val lorittaId: Snowflake) : UserCommandExecutor(), 
         targetUser: User,
         targetMember: InteractionMember?
     ) {
-        handleAvatarCommand(context, lorittaId, targetUser, targetMember)
+        handleAvatarCommand(context, lorittaId, targetUser, targetMember, true)
     }
 }

@@ -17,7 +17,8 @@ interface UserAvatarExecutor {
         context: ApplicationCommandContext,
         lorittaId: Snowflake,
         user: User,
-        member: Member?
+        member: Member?,
+        isEphemeral: Boolean,
     ) {
         val now = Clock.System.now()
 
@@ -49,9 +50,14 @@ interface UserAvatarExecutor {
             data
         )
 
-        context.sendMessage {
-            message()
-        }
+        if (isEphemeral)
+            context.sendEphemeralMessage {
+                message()
+            }
+        else
+            context.sendMessage {
+                message()
+            }
 
         if (user.id == context.user.id)
             context.giveAchievementAndNotify(AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE)

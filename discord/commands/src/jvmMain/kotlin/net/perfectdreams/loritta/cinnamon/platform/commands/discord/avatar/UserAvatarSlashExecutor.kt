@@ -29,6 +29,6 @@ class UserAvatarSlashExecutor(val lorittaId: Snowflake) : SlashCommandExecutor()
         else
             context.interaKTionsContext.data.resolved?.members?.get(user.id)
 
-        handleAvatarCommand(context, lorittaId, user, member)
+        handleAvatarCommand(context, lorittaId, user, member, false)
     }
 }
