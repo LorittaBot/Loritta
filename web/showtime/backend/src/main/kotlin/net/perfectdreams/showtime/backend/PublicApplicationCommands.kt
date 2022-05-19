@@ -3,6 +3,7 @@ package net.perfectdreams.showtime.backend
 import kotlinx.serialization.Serializable
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
+import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationBuilder
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
@@ -93,7 +94,15 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AfkCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.AnagramCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.ChooseCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.ColorInfoCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.DictionaryCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.HelpCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.AttackOnHeartExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.GigaChadExecutor
@@ -395,18 +404,18 @@ object PublicApplicationCommands {
     /**
      * Converts a [SlashCommandDeclarationBuilder] to [InteractionCommand]
      */
-    private fun convertToData(declaration: SlashCommandDeclarationBuilder): InteractionCommand {
+    private fun convertToData(declaration: SlashCommandDeclaration): InteractionCommand {
         return InteractionCommand(
-            declaration.labels.first(),
+            declaration.name,
             declaration.description,
             declaration.category,
             (declaration.executor?.parent as KClass<*>?)?.simpleName,
             declaration.subcommandGroups.map {
                 InteractionCommandGroup(
-                    it.labels.first(),
+                    it.name,
                     it.subcommands.map {
                         InteractionCommand(
-                            it.labels.first(),
+                            it.name,
                             it.description,
                             it.category,
                             (it.executor?.parent as KClass<*>?)?.simpleName,
