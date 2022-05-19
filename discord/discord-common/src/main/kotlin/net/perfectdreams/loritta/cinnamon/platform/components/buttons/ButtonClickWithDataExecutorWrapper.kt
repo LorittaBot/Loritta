@@ -11,9 +11,9 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandException
+import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.SilentCommandException
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
@@ -49,10 +49,10 @@ class ButtonClickWithDataExecutorWrapper(
         try {
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
-                loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: SlashCommandExecutorWrapper.NonGuildServerConfigRoot
+                loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: CommandExecutorWrapper.NonGuildServerConfigRoot
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
-                SlashCommandExecutorWrapper.NonGuildServerConfigRoot
+                CommandExecutorWrapper.NonGuildServerConfigRoot
             }
 
             i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
