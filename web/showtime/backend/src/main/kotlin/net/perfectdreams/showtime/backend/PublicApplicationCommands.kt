@@ -89,6 +89,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.TrumpCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.WolverineFrameCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.declarations.RobloxCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.declarations.RoleplayCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AfkCommand
@@ -191,7 +192,10 @@ object PublicApplicationCommands {
         UndertaleCommand,
 
         // ===[ ROLEPLAY ]===
-        RoleplayCommand
+        RoleplayCommand,
+
+        // ===[ ROBLOX ]===
+        RobloxCommand
     ).map { it.declaration() }
 
     val dataDeclarations = cinnamonDeclarations.map { convertToData(it) }
