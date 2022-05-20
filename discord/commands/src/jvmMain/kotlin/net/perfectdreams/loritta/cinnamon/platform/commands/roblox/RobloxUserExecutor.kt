@@ -254,7 +254,9 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
                         }
                     }
 
-                    field("\uD83D\uDD79️ ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.FavoriteGames)}", builder, false)
+                    // The user may not have any favorite games!
+                    if (builder.isNotBlank())
+                        field("\uD83D\uDD79️ ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.FavoriteGames)}", builder, false)
                 }
 
 
