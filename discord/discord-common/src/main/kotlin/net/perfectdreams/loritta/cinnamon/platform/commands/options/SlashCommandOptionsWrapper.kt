@@ -70,7 +70,18 @@ class SlashCommandOptionsWrapper(
                         idx++
                     }
                 }
+
                 is ImageReferenceCommandOption -> {
+                    // For image references we can accept multiple types
+                    // (User Avatar, Link, Emote, etc)
+                    // Can be required because this doesn't require optional arguments (compared to ImageReferenceOrAttachmentCommandOption)
+                    string(
+                        it.name + "_data",
+                        "User, URL or Emote"
+                    ).register()
+                }
+
+                is ImageReferenceOrAttachmentCommandOption -> {
                     // For image references we can accept multiple types
                     // (User Avatar, Link, Emote, etc)
                     // Can't be required because some commands do use optional arguments before this (example: /meme)

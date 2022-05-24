@@ -94,5 +94,42 @@ class CommandRegistry(
                 interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId))
             }
         }
+
+        logger.info { "Command Character Usage:" }
+        interaKTionsManager.applicationCommandsDeclarations
+            .filterIsInstance<net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration>()
+            .forEach {
+                var sum = 0
+
+                sum += it.name.length
+                sum += it.description.length
+
+                sum += it.executor?.options?.arguments?.sumOf {
+                    it.name.length + it.description.length
+                } ?: 0
+
+                it.subcommands.forEach {
+                    sum += it.name.length
+                    sum += it.description.length
+                    sum += it.executor?.options?.arguments?.sumOf {
+                        it.name.length + it.description.length
+                    } ?: 0
+                }
+
+                it.subcommandGroups.forEach {
+                    sum += it.name.length
+                    sum += it.description.length
+
+                    it.subcommands.forEach {
+                        sum += it.name.length
+                        sum += it.description.length
+                        sum += it.executor?.options?.arguments?.sumOf {
+                            it.name.length + it.description.length
+                        } ?: 0
+                    }
+                }
+
+                logger.info { "${it.name}: $sum/4000" }
+            }
     }
 }

@@ -125,6 +125,60 @@ class UserListCommandOption(
 class ImageReferenceCommandOption(name: String, description: StringI18nData, required: Boolean) :
     CommandOption<ImageReference>(name, description, required) {
     override suspend fun parse(reader: ArgumentReader): ImageReference {
+        val interaKTionAvatarLinkOrEmoteArgument = reader.entries.firstOrNull { opt -> opt.key.name.removeSuffix("_data") == name }
+
+        if (interaKTionAvatarLinkOrEmoteArgument != null) {
+            val value = interaKTionAvatarLinkOrEmoteArgument.value as String
+
+            // Now check if it is a valid thing!
+            // First, we will try matching via user mentions or user IDs
+            val cachedUserInfo = ContextStringToUserInfoConverter.convert(
+                reader.context,
+                value
+            )
+
+            if (cachedUserInfo != null) {
+                val icon = UserUtils.createUserAvatarOrDefaultUserAvatar(
+                    Snowflake(cachedUserInfo.id.value),
+                    cachedUserInfo.avatarId,
+                    cachedUserInfo.discriminator
+                )
+
+                return URLImageReference(icon.cdnUrl.toUrl {
+                    this.format = Image.Format.PNG
+                    this.size = Image.Size.Size128
+                })
+            }
+
+            if (value.startsWith("http")) {
+                // It is a URL!
+                // TODO: Use a RegEx to check if it is a valid URL
+                return URLImageReference(value)
+            }
+
+            // It is a emote!
+            // Discord emotes always starts with "<" and ends with ">"
+            return if (value.startsWith("<") && value.endsWith(">")) {
+                val emoteId = value.substringAfterLast(":").substringBefore(">")
+                URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
+            } else {
+                // If not, we are going to handle it as if it were a Unicode emoji
+                val emoteId = value.codePoints().toList()
+                    .joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
+                URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
+            }
+        }
+
+        reader.context.fail(
+            reader.context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound),
+            Emotes.LoriSob
+        )
+    }
+}
+
+class ImageReferenceOrAttachmentCommandOption(name: String, description: StringI18nData, required: Boolean) :
+    CommandOption<ImageReference>(name, description, required) {
+    override suspend fun parse(reader: ArgumentReader): ImageReference {
         val interaKTionAttachmentArgument =
             reader.entries.firstOrNull { opt -> opt.key.name.removeSuffix("_file") == name }
         val interaKTionAvatarLinkOrEmoteArgument =

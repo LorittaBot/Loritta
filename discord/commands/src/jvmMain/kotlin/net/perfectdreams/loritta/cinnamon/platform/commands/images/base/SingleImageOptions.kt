@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 
 object SingleImageOptions : ApplicationCommandOptions() {
-    val imageReference = imageReference(
+    val imageReference = imageReferenceOrAttachment(
         "image",
         I18nKeysData.Commands.Category.Images.Options.Image
     ).register()

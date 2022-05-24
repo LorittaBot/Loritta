@@ -21,7 +21,7 @@ class MemeMakerExecutor(val client: GabrielaImageServerClient) : SlashCommandExe
             val line2 = optionalString("line2", MemeMakerCommand.I18N_PREFIX.Options.Line2)
                 .register()
 
-            val imageReference = imageReference("image", I18nKeysData.Commands.Category.Images.Options.Image)
+            val imageReference = imageReferenceOrAttachment("image", I18nKeysData.Commands.Category.Images.Options.Image)
                 .register()
         }
 

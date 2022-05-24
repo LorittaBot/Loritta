@@ -116,6 +116,12 @@ open class ApplicationCommandOptions {
         true
     )
 
+    fun imageReferenceOrAttachment(name: String, description: StringI18nData) = ImageReferenceOrAttachmentCommandOptionBuilder(
+        name,
+        description,
+        true
+    )
+
     fun <T, ChoiceableType> CommandOptionBuilder<T, ChoiceableType>.register(): CommandOption<T> {
         if (arguments.any { it.name == this.name })
             throw IllegalArgumentException("Duplicate argument \"${this.name}\"!")

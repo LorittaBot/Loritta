@@ -18,7 +18,7 @@ class CustomTextBoxExecutor(val client: GabrielaImageServerClient) : SlashComman
             val text = textBoxTextOption()
                 .register()
 
-            val imageReference = imageReference("image", TodoFixThisData)
+            val imageReference = imageReferenceOrAttachment("image", TodoFixThisData)
                 .register()
         }
 

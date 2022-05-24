@@ -149,3 +149,8 @@ class ImageReferenceCommandOptionBuilder(name: String, description: StringI18nDa
     CommandOptionBuilder<ImageReference, ImageReference>(name, description, required) {
     override fun build() = ImageReferenceCommandOption(name, description, required)
 }
+
+class ImageReferenceOrAttachmentCommandOptionBuilder(name: String, description: StringI18nData, required: Boolean) :
+    CommandOptionBuilder<ImageReference, ImageReference>(name, description, required) {
+    override fun build() = ImageReferenceOrAttachmentCommandOption(name, description, required)
+}

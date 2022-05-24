@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.entity.Snowflake
+import io.ktor.client.*
+import io.ktor.client.plugins.*
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
@@ -221,10 +223,13 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.Tr
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.UnfollowPackageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.AttackOnHeartExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.ChavesCocieloExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.ChavesOpeningExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.FansExplainingExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.GigaChadExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.AttackOnHeartCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.ChavesCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
@@ -244,7 +249,17 @@ class CommandManager(
     private val servicesConfig = loritta.servicesConfig
     private val rest = loritta.rest
 
-    private val gabrielaImageServerClient = GabrielaImageServerClient(loritta.servicesConfig.gabrielaImageServer.url, loritta.http)
+    private val gabrielaImageServerClient = GabrielaImageServerClient(
+        loritta.servicesConfig.gabrielaImageServer.url,
+        HttpClient {
+            // Increase the default timeout for image generation, because some video generations may take too long to be generated
+            install(HttpTimeout) {
+                this.socketTimeoutMillis = 60_000
+                this.requestTimeoutMillis = 60_000
+                this.connectTimeoutMillis = 60_000
+            }
+        }
+    )
     private val random = loritta.random
     private val http = loritta.http
 
@@ -402,7 +417,7 @@ class CommandManager(
             SAMExecutor(gabrielaImageServerClient),
             CepoDeMadeiraExecutor(gabrielaImageServerClient),
             RomeroBrittoExecutor(gabrielaImageServerClient),
-            BriggsCoverExecutor(gabrielaImageServerClient)
+            BriggsCoverExecutor(gabrielaImageServerClient),
         )
 
         commandManager.register(BuckShirtCommand, BuckShirtExecutor(gabrielaImageServerClient))
@@ -434,6 +449,11 @@ class CommandManager(
         commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(gabrielaImageServerClient))
         commandManager.register(FansExplainingCommand, FansExplainingExecutor(gabrielaImageServerClient))
         commandManager.register(GigaChadCommand, GigaChadExecutor(gabrielaImageServerClient))
+        commandManager.register(
+            ChavesCommand,
+            ChavesOpeningExecutor(gabrielaImageServerClient),
+            ChavesCocieloExecutor(gabrielaImageServerClient)
+        )
 
         // ===[ UTILS ]===
         commandManager.register(HelpCommand, HelpExecutor())

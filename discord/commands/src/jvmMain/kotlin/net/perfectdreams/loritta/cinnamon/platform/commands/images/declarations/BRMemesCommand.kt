@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.LoriAtaExecut
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.MonicaAtaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.RomeroBrittoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.SAMExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.ChavesOpeningExecutor
 
 object BRMemesCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Brmemes

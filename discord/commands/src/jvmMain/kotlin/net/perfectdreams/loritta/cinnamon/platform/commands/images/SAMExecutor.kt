@@ -20,7 +20,7 @@ class SAMExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor(
                 .choice("3", BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam3)
                 .register()
 
-            val imageReference = imageReference("image", BRMemesCommand.I18N_PREFIX.Sam.Options.Image)
+            val imageReference = imageReferenceOrAttachment("image", BRMemesCommand.I18N_PREFIX.Sam.Options.Image)
                 .register()
         }
 

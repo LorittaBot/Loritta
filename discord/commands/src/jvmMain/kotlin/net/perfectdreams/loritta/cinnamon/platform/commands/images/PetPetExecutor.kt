@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommand
 class PetPetExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
-            val imageReference = imageReference("image", I18nKeysData.Commands.Category.Images.Options.Image)
+            val imageReference = imageReferenceOrAttachment("image", I18nKeysData.Commands.Category.Images.Options.Image)
                 .register()
 
             val squish = optionalNumber("squish", PetPetCommand.I18N_PREFIX.Options.Squish.Text)
