@@ -13,6 +13,7 @@ avatar:
   openAvatarInBrowser: "Abrir avatar no navegador" #Used in a button, when clicking the button, Discord opens the user's avatar in the user's browser
   viewUserGuildProfileAvatar: "Ver o avatar do perfil do usuário no servidor"
   viewUserGlobalAvatar: "Ver o avatar global do usuário"
+  viewAvatar: "Ver avatar" #Shown when right-clicking a user
   options:
     user: "O usuário que você deseja roubar... Quero dizer, ver o avatar (*/ω＼*)"
 banner:
