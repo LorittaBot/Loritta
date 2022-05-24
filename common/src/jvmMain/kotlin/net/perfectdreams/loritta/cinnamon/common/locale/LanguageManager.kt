@@ -180,53 +180,57 @@ class LanguageManager(
             if (it.isDirectory())
                 loadLanguage(id, it, strings, lists)
             else {
-                val yaml = snakeYaml.load<Map<String, Any>>(Files.readString(it))
-                    .toMutableMap()
+                val map = snakeYaml.load<Map<String, Any>?>(Files.readString(it))
 
-                // Does exactly what the variable says: Only matches single quotes (') that do not have a slash (\) preceding it
-                // Example: It's me, Mario!
-                // But if there is a slash preceding it...
-                // Example: \'{@user}\'
-                // It won't match!
-                val singleQuotesWithoutSlashPrecedingItRegex = Regex("(?<!(?:\\\\))'")
+                // A YAML with only "---", returns null
+                if (map != null) {
+                    val yaml = map.toMutableMap()
 
-                fun transformIntoFlatMap(map: MutableMap<String, Any>, prefix: String) {
-                    map.forEach { (key, value) ->
-                        if (value is Map<*, *>) {
-                            transformIntoFlatMap(value as MutableMap<String, Any>, "$prefix$key.")
-                        } else {
-                            if (value is List<*>) {
-                                lists[prefix + key] = try {
-                                    (value as List<String>).map {
-                                        it.replace(
+                    // Does exactly what the variable says: Only matches single quotes (') that do not have a slash (\) preceding it
+                    // Example: It's me, Mario!
+                    // But if there is a slash preceding it...
+                    // Example: \'{@user}\'
+                    // It won't match!
+                    val singleQuotesWithoutSlashPrecedingItRegex = Regex("(?<!(?:\\\\))'")
+
+                    fun transformIntoFlatMap(map: MutableMap<String, Any>, prefix: String) {
+                        map.forEach { (key, value) ->
+                            if (value is Map<*, *>) {
+                                transformIntoFlatMap(value as MutableMap<String, Any>, "$prefix$key.")
+                            } else {
+                                if (value is List<*>) {
+                                    lists[prefix + key] = try {
+                                        (value as List<String>).map {
+                                            it.replace(
+                                                singleQuotesWithoutSlashPrecedingItRegex,
+                                                "''"
+                                            ) // Escape single quotes
+                                                .replace("\\'", "'") // Replace \' with '
+                                        }
+                                    } catch (e: ClassCastException) {
+                                        // A LinkedHashMap does match the "is List<*>" check, but it fails when we cast the subtype to String
+                                        // If that happens, we will just ignore the exception and use the raw "value" list.
+                                        (value as List<String>)
+                                    }
+                                } else if (value is String) {
+                                    strings[prefix + key] =
+                                        value.replace(
                                             singleQuotesWithoutSlashPrecedingItRegex,
                                             "''"
                                         ) // Escape single quotes
                                             .replace("\\'", "'") // Replace \' with '
-                                    }
-                                } catch (e: ClassCastException) {
-                                    // A LinkedHashMap does match the "is List<*>" check, but it fails when we cast the subtype to String
-                                    // If that happens, we will just ignore the exception and use the raw "value" list.
-                                    (value as List<String>)
-                                }
-                            } else if (value is String) {
-                                strings[prefix + key] =
-                                    value.replace(
-                                        singleQuotesWithoutSlashPrecedingItRegex,
-                                        "''"
-                                    ) // Escape single quotes
-                                        .replace("\\'", "'") // Replace \' with '
-                            } else if (value == null) {
-                                // Let's pretend this never happened
-                            } else throw IllegalArgumentException("Invalid object type detected in YAML! $value")
+                                } else if (value == null) {
+                                    // Let's pretend this never happened
+                                } else throw IllegalArgumentException("Invalid object type detected in YAML! $value")
+                            }
                         }
                     }
-                }
 
-                if (it.parent.name == "commands") {
-                    transformIntoFlatMap(yaml, "commands.command.${it.nameWithoutExtension}.")
-                } else {
-                    transformIntoFlatMap(yaml, "")
+                    if (it.parent.name == "commands") {
+                        transformIntoFlatMap(yaml, "commands.command.${it.nameWithoutExtension}.")
+                    } else {
+                        transformIntoFlatMap(yaml, "")
+                    }
                 }
             }
         }
