@@ -109,6 +109,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.GigaChadExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.AttackOnHeartCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.ChavesCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
 import kotlin.reflect.KClass
@@ -167,6 +168,7 @@ object PublicApplicationCommands {
         AttackOnHeartCommand,
         FansExplainingCommand,
         GigaChadCommand,
+        ChavesCommand,
 
         // ===[ UTILS ]===
         HelpCommand,
