@@ -130,7 +130,6 @@ object PublicApplicationCommands {
         SummonCommand,
         VieirinhaCommand,
         RollCommand,
-        HelpCommand,
         TextTransformDeclaration,
         JankenponCommand,
         HungerGamesCommand,
