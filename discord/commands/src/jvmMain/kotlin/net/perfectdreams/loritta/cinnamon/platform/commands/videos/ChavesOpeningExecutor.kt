@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.videos
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.ChavesOpeningRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
+import net.perfectdreams.gabrielaimageserver.exceptions.InvalidChavesOpeningTextException
+import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
@@ -52,35 +54,42 @@ class ChavesOpeningExecutor(val client: GabrielaImageServerClient) : SlashComman
         val chaves = args[options.chavesImage]
         val showName = args[options.showName]
 
-        val result = client.handleExceptions(context) {
-            client.videos.chavesOpening(
-                ChavesOpeningRequest(
-                    URLImageData(
-                        chiquinha.url
-                    ),
-                    URLImageData(
-                        girafales.url
-                    ),
-                    URLImageData(
-                        bruxa.url
-                    ),
-                    URLImageData(
-                        quico.url
-                    ),
-                    URLImageData(
-                        florinda.url
-                    ),
-                    URLImageData(
-                        madruga.url
-                    ),
-                    URLImageData(
-                        barriga.url
-                    ),
-                    URLImageData(
-                        chaves.url
-                    ),
-                    showName
+        val result = try {
+            client.handleExceptions(context) {
+                client.videos.chavesOpening(
+                    ChavesOpeningRequest(
+                        URLImageData(
+                            chiquinha.url
+                        ),
+                        URLImageData(
+                            girafales.url
+                        ),
+                        URLImageData(
+                            bruxa.url
+                        ),
+                        URLImageData(
+                            quico.url
+                        ),
+                        URLImageData(
+                            florinda.url
+                        ),
+                        URLImageData(
+                            madruga.url
+                        ),
+                        URLImageData(
+                            barriga.url
+                        ),
+                        URLImageData(
+                            chaves.url
+                        ),
+                        showName
+                    )
                 )
+            }
+        } catch (e: InvalidChavesOpeningTextException) {
+            context.fail(
+                context.i18nContext.get(ChavesCommand.I18N_PREFIX.Opening.InvalidShowName),
+                Emotes.LoriSob
             )
         }
 

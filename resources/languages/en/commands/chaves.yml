@@ -1,6 +1,7 @@
 description: "Commands related to Chespirito's beloved series, El Chavo del Ocho!" #This can be changed to reference Chavo's intro music track or any of Chavo's catchphrases
 opening:
   description: "Make an edit with SBT's Brazilian opening of El Chavo del Ocho!" #This can be changed to reference Chavo's intro music track or any of Chavo's catchphrases
+  invalidShowName: "Sorry, but I wasn't able to render your show name... if your show name has emojis, please remove them! Rendering emojis is hard..."
   options:
     showName:
       text: "The name of the show that will be shown at the end of the opening"
