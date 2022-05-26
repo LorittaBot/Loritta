@@ -27,6 +27,7 @@ import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
@@ -414,7 +415,7 @@ interface UserInfoExecutor {
         if (applicationInfoResponse.status != HttpStatusCode.OK)
             return null
 
-        return Json { ignoreUnknownKeys = true }.decodeFromString(applicationInfoResponse.bodyAsText())
+        return JsonIgnoreUnknownKeys.decodeFromString(applicationInfoResponse.bodyAsText())
     }
 
     @kotlinx.serialization.Serializable
