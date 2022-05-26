@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.MessageTargetType
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGlobalAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGuildProfileAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.UserDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
@@ -290,7 +291,7 @@ interface UserInfoExecutor {
                             context.user.id,
                             user.id,
                             (context as? GuildApplicationCommandContext)?.guildId,
-                            if (isEphemeral) MessageTargetType.SEND_MESSAGE_EPHEMERAL else MessageTargetType.SEND_MESSAGE_PUBLIC,
+                            MessageTargetType.SEND_MESSAGE_EPHEMERAL,
                             globalInteractionId
                         )
                     )
@@ -316,13 +317,13 @@ interface UserInfoExecutor {
 
                     interactiveButton(
                         ButtonStyle.Primary,
-                        SwitchToGlobalAvatarExecutor,
+                        SwitchToGuildProfileAvatarExecutor,
                         ComponentDataUtils.encode(
                             UserDataUtils.SwitchAvatarInteractionIdData(
                                 context.user.id,
                                 user.id,
                                 (context as? GuildApplicationCommandContext)?.guildId,
-                                if (isEphemeral) MessageTargetType.SEND_MESSAGE_EPHEMERAL else MessageTargetType.SEND_MESSAGE_PUBLIC,
+                                MessageTargetType.SEND_MESSAGE_EPHEMERAL,
                                 localInteractionId
                             )
                         )
