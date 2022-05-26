@@ -1,18 +1,18 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.discord.info
 
 import io.ktor.client.*
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 class UserInfoSlashExecutor(override val http: HttpClient) : SlashCommandExecutor(), UserInfoExecutor {
     companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
-            val user = optionalUser("user", TodoFixThisData)
+            val user = optionalUser("user", UserCommand.I18N_PREFIX.Info.Options.User.Text)
                 .register()
         }
 

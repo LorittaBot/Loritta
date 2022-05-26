@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
@@ -11,8 +10,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.info.UserInf
 object UserCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.User
 
-    override fun declaration() = slashCommand(listOf("user"), CommandCategory.DISCORD, I18N_PREFIX.Info.ViewUserInfo) {
-        subcommand(listOf("avatar"), TodoFixThisData) {
+    override fun declaration() = slashCommand(listOf("user"), CommandCategory.DISCORD, I18N_PREFIX.Description) {
+        subcommand(listOf("avatar"), I18N_PREFIX.Info.ViewUserInfo) {
             executor = UserAvatarSlashExecutor
         }
 

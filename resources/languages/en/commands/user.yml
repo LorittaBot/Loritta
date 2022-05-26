@@ -1,3 +1,5 @@
+description: "Commands related to Discord users"
+
 avatar:
   description: "Shows your, or another user's, profile avatar"
 
@@ -72,3 +74,6 @@ info:
 
   viewUserInfo: "View info" #Shown when right-clicking a user
 
+  options:
+    user:
+      text: "The user that you want to see information about them"
