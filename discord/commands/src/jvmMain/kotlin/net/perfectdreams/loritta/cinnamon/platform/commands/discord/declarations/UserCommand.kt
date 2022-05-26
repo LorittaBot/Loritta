@@ -11,11 +11,11 @@ object UserCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.User
 
     override fun declaration() = slashCommand(listOf("user"), CommandCategory.DISCORD, I18N_PREFIX.Description) {
-        subcommand(listOf("avatar"), I18N_PREFIX.Info.ViewUserInfo) {
+        subcommand(listOf("avatar"), I18N_PREFIX.Avatar.Description) {
             executor = UserAvatarSlashExecutor
         }
 
-        subcommand(listOf("info"), I18N_PREFIX.Avatar.Description) {
+        subcommand(listOf("info"), I18N_PREFIX.Info.ViewUserInfo) {
             executor = UserInfoSlashExecutor
         }
 
