@@ -36,7 +36,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         when (event) {
             is GuildCreate -> {
                 logger.info { "Howdy ${event.guild.id} (${event.guild.name})! Is unavailable? ${event.guild.unavailable}" }
-                createOrUpdateRoleBulk(event.guild.id, event.guild.roles)
+                createUpdateAndDeleteRolesBulk(event.guild.id, event.guild.roles)
             }
             is GuildRoleCreate -> {
                 createOrUpdateRole(event.role.guildId, event.role.role)
@@ -58,10 +58,16 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }
     }
 
-    private suspend fun createOrUpdateRoleBulk(guildId: Snowflake, roles: List<DiscordRole>) {
+    private suspend fun createUpdateAndDeleteRolesBulk(guildId: Snowflake, roles: List<DiscordRole>) {
         m.services.transaction {
+            // Create or update all
             for (role in roles) {
                 _createOrUpdateRole(guildId, role)
+            }
+
+            // Then delete roles that weren't present in the GuildCreate event
+            DiscordGuildRoles.deleteWhere {
+                DiscordGuildRoles.guildId eq guildId.toLong() and (DiscordGuildRoles.roleId notInList roles.map { it.id.toLong() })
             }
         }
     }
