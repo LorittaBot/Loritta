@@ -6,16 +6,21 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.UserAvatarSlashExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.info.UserInfoSlashExecutor
 
 object UserCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.User
 
-    override fun declaration() = slashCommand(listOf("user"), CommandCategory.DISCORD, TodoFixThisData) {
-        subcommand(listOf("avatar"), I18nKeysData.Commands.Command.User.Avatar.Description) {
+    override fun declaration() = slashCommand(listOf("user"), CommandCategory.DISCORD, I18N_PREFIX.Info.ViewUserInfo) {
+        subcommand(listOf("avatar"), TodoFixThisData) {
             executor = UserAvatarSlashExecutor
         }
 
-        subcommand(listOf("banner"), I18nKeysData.Commands.Command.User.Banner.Description) {
+        subcommand(listOf("info"), I18N_PREFIX.Avatar.Description) {
+            executor = UserInfoSlashExecutor
+        }
+
+        subcommand(listOf("banner"), I18N_PREFIX.Banner.Description) {
             executor = UserBannerExecutor
         }
     }

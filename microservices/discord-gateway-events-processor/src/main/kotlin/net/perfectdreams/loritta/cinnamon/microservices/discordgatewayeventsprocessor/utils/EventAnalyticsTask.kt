@@ -12,6 +12,7 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
     override fun run() {
         printStats(m.starboardModule)
         printStats(m.addFirstToNewChannelsModule)
+        printStats(m.discordCacheModule)
     }
 
     private fun printStats(module: ProcessDiscordEventsModule) {

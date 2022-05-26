@@ -41,9 +41,11 @@ object Emotes {
     val LoriHi = DiscordEmote(972187812554211418L, "lori_hi", false)
     val LoriPunch = DiscordEmote(731871119400894525L, "lori_fight", true)
     val LoriSleeping = DiscordEmote(964701978091470919L, "lori_zz", false)
+    val LoriAngel = DiscordEmote(964701052324675622L, "lori_angel", false)
 
     val PantufaGaming = DiscordEmote(853048446922784819L, "pantufa_gaming", false)
 
+    val CheckMark = UnicodeEmote("✅")
     val Error = DiscordEmote(412585701054611458L, "error", false)
 
     val CoinHeads = DiscordEmote(412586256409559041, "cara", false)
@@ -142,7 +144,9 @@ object Emotes {
     val UndertaleAsgoreNeutral = DiscordEmote(890641728313368596L, "ut_asgore_neutral", false)
     val UndertaleAsrielNeutral = DiscordEmote(890641811771646015L, "ut_asriel_neutral", false)
 
-    val BotTag = DiscordEmote(516314838541008906L, "bot", false)
+    val BotTag = DiscordEmote(979198875556532224L, "bot", false)
+    val VerifiedBotTag = DiscordEmote(979198875040624691L, "verified_bot", false)
+    val VerifiedSystemTag = DiscordEmote(979199657546772520L, "verified_system", false)
     val WumpusBasic = DiscordEmote(516315292821880832L, "wumpus_basic", false)
     val DiscordEmployee = DiscordEmote(718883109428396114L, "discord_staff", false)
     val DiscordPartner = DiscordEmote(776925307269283862L, "discord_partner", false)
@@ -154,6 +158,7 @@ object Emotes {
     val EarlySupporter = DiscordEmote(718884313290113095L, "early_supporter", false)
     val BugHunterLevel2 = DiscordEmote(776924915055722507L, "bug_hunter_lvl_2", false)
     val VerifiedBotDeveloper = DiscordEmote(718883878378668112L, "verified_developer", false)
+    val Http = DiscordEmote(979202576878829628L, "http", false)
 
     val ChevronLeft = DiscordEmote(930922528715722782L, "chevron_left", false)
     val ChevronRight = DiscordEmote(930922702011773038L, "chevron_right", false)

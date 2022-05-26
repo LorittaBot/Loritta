@@ -24,6 +24,11 @@ dependencies {
     api("io.prometheus:simpleclient_hotspot:${Versions.PROMETHEUS}")
     api("io.prometheus:simpleclient_common:${Versions.PROMETHEUS}")
 
+    // Databases
+    implementation(libs.exposed.core)
+    implementation(libs.exposed.jdbc)
+    implementation(libs.exposed.javatime)
+
     // Logback GELF, used for Graylog logging
     implementation("de.siegmar:logback-gelf:3.0.0")
 

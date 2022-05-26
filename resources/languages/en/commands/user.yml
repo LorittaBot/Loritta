@@ -28,3 +28,47 @@ banner:
 
   options:
     user: "The user that you want to steal... I mean, view, their banner (*/ω＼*)"
+
+info:
+  infoAboutTheUser: "User Information"
+  infoAboutTheMember: "Member Information"
+  infoAboutTheApplication: "Application Information"
+  interestingTidbits: "Interesting Tidbits"
+
+  user:
+    discordId: "Discord ID"
+    discordTag: "Discord Tag"
+    accountCreationDate: "Account Creation Date"
+
+  member:
+    accountJoinDate: "Account Join Date"
+    timedOutUntil: "Timed Out Until"
+    # The member isn't able to talk in the server? Ask them to check if their device's clock is correct
+    timeoutTip: "The member can't talk on the server? Ask him to check that their device's clock is correct!"
+    boostingSince: "Boosting the server since"
+    highestRole: "Highest role"
+    completedMembershipScreening: "Completed Membership Screening"
+    isTimedOut: "Timed Out"
+    memberPermissions: "Member Permissions"
+    roles: "Roles"
+    permissions: "Permissions"
+
+  application:
+    supportGuildId: "Support Server ID"
+    tags: "Tags"
+    slug: "Slug" #Slug in a SEO context, not the animal
+    addToServer: "Add to Server"
+    termsOfService: "Terms of Service"
+    privacyPolicy: "Privacy Policy"
+
+    public: "Public"
+    requiresOAuth2CodeGrant: "Requires OAuth2 Code Grant"
+    usesInteractionsOverHttp: "Uses Interactions over HTTP"
+    intentGatewayPresences: "Gateway Presences Intent"
+    intentGuildMembers: "Guild Members Intent"
+    intentMessageContent: "Message Content Intent"
+    publicKey: "Public Key for HTTP Requests Verification"
+    noMatchingApplicationFound: "I could not find the application information of this bot... Probably the bot was created so long ago that the application ID differs from the bot ID! (Yeah... back in the day it worked like that)"
+
+  viewUserInfo: "View info" #Shown when right-clicking a user
+

@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 
 fun UserId(snowflake: Snowflake) = UserId(snowflake.value)
+fun Snowflake.toLong() = this.value.toLong()
 
 suspend fun UsersService.getUserProfile(user: User) = getUserProfile(UserId(user.id.value))
 suspend fun UsersService.getOrCreateUserProfile(user: User) = getOrCreateUserProfile(UserId(user.id.value))

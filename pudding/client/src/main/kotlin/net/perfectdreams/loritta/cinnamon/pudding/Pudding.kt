@@ -76,6 +76,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
@@ -265,7 +266,8 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             TrackedCorreiosPackages,
             UsersFollowingCorreiosPackages,
             TrackedCorreiosPackagesEvents,
-            PendingImportantNotifications
+            PendingImportantNotifications,
+            DiscordGuildRoles
         )
 
         if (schemas.isNotEmpty())
