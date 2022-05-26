@@ -1,4 +1,5 @@
 ---
+description: "Comandos relacionados a usuários do Discord"
 avatar:
   description: "Mostra o avatar do seu perfil ou o avatar do perfil de outro usuário"
   yourselfEasterEgg: "Apesar de tudo, ainda é você."
@@ -46,6 +47,8 @@ info:
     permissions: "Permissões"
   application:
     supportGuildId: "ID do Servidor de Suporte"
+    tags: "Marcadores"
+    slug: "Slug" #Slug in a SEO context, not the animal
     addToServer: "Adicionar ao Servidor"
     termsOfService: "Termos de Serviço"
     privacyPolicy: "Política de Privacidade"
@@ -58,3 +61,6 @@ info:
     publicKey: "Chave Pública de Verificação de Requisições HTTP"
     noMatchingApplicationFound: "Eu não consegui encontrar as informações do aplicativo deste bot... Provavelmente o bot foi criado a tanto tempo, que o ID do aplicativo difere do ID do bot! (É... antigamente era assim)"
   viewUserInfo: "Ver informações" #Shown when right-clicking a user
+  options:
+    user:
+      text: "O usuário que você quer ver informações sobre"
