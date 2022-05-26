@@ -13,6 +13,7 @@ import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AddFirstToNewChannelsModule
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.DiscordCacheModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.StarboardModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.DiscordGatewayEventsProcessorTasks
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
@@ -31,6 +32,7 @@ class DiscordGatewayEventsProcessor(
     val rest = RestClient(config.discord.token)
     val starboardModule = StarboardModule(this)
     val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)
+    val discordCacheModule = DiscordCacheModule(this)
     val tasks = DiscordGatewayEventsProcessorTasks(this)
 
     fun start() {
@@ -110,6 +112,7 @@ class DiscordGatewayEventsProcessor(
 
         starboardModule.setupConsumer(channel)
         addFirstToNewChannelsModule.setupConsumer(channel)
+        discordCacheModule.setupConsumer(channel)
 
         tasks.start()
     }

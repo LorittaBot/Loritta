@@ -239,6 +239,7 @@ object UserDataUtils {
         override val userId: Snowflake,
         val viewingAvatarOfId: Snowflake,
         val guildId: Snowflake?,
+        val targetType: MessageTargetType,
         val interactionDataId: Long
     ) : SingleUserComponentData
 

@@ -6,7 +6,6 @@ import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
 import kotlinx.datetime.Clock
-import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
@@ -16,6 +15,7 @@ import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordCacheService
 import net.perfectdreams.loritta.cinnamon.platform.utils.StoredGenericInteractionData
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.DiscordInteractionsConfig
@@ -44,8 +44,8 @@ abstract class LorittaCinnamon(
 ) {
     // TODO: *Really* set a random seed
     val random = Random(0)
-
     val rest = RestClient(discordConfig.token)
+    val cache = DiscordCacheService(services)
 
     /**
      * Gets the current registered commands count
@@ -110,7 +110,6 @@ abstract class LorittaCinnamon(
     /**
      * Encodes the [data] to fit on a button. If it doesn't fit in a button, a [StoredGenericInteractionData] will be encoded instead and the data will be stored on the database.
      */
-    @OptIn(ExperimentalSerializationApi::class)
     suspend inline fun <reified T> encodeDataForComponentOrStoreInDatabase(data: T): String {
         val encoded = ComponentDataUtils.encode(data)
 
@@ -144,7 +143,6 @@ abstract class LorittaCinnamon(
      *
      * This should be used in conjuction with [encodeDataForComponentOrStoreInDatabase]
      */
-    @OptIn(ExperimentalSerializationApi::class)
     suspend inline fun <reified T> decodeDataFromComponentOrFromDatabase(data: String): T? {
         val genericInteractionData = try {
             ComponentDataUtils.decode<StoredGenericInteractionData>(data)

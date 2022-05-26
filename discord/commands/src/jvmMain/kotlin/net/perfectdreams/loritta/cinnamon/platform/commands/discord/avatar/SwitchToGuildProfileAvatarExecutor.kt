@@ -35,8 +35,16 @@ class SwitchToGuildProfileAvatarExecutor(val loritta: LorittaCinnamon, val lorit
             newData
         )
 
-        context.updateMessage {
-            message()
+        when (decodedInteractionData.targetType) {
+            MessageTargetType.SEND_MESSAGE_PUBLIC -> context.sendMessage {
+                message()
+            }
+            MessageTargetType.SEND_MESSAGE_EPHEMERAL -> context.sendEphemeralMessage {
+                message()
+            }
+            MessageTargetType.EDIT_MESSAGE -> context.updateMessage {
+                message()
+            }
         }
     }
 }

@@ -57,7 +57,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserAvatarUserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserInfoUserCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.info.ShowGuildMemberPermissionsExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.info.UserInfoSlashExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.info.UserInfoUserExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditJsonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditRepostExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditSimpleExecutor
@@ -282,6 +286,7 @@ class CommandManager(
         commandManager.register(
             UserCommand,
             UserAvatarSlashExecutor(Snowflake(discordConfig.applicationId)),
+            UserInfoSlashExecutor(http),
             UserBannerExecutor(rest)
         )
 
@@ -298,6 +303,16 @@ class CommandManager(
         commandManager.register(
             SwitchToGlobalAvatarExecutor,
             SwitchToGlobalAvatarExecutor(loritta, Snowflake(discordConfig.applicationId))
+        )
+
+        commandManager.register(
+            UserInfoUserCommand,
+            UserInfoUserExecutor(http)
+        )
+
+        commandManager.register(
+            ShowGuildMemberPermissionsExecutor,
+            ShowGuildMemberPermissionsExecutor()
         )
 
         commandManager.register(

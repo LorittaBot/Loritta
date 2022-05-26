@@ -45,6 +45,7 @@ interface UserAvatarExecutor {
                 context.user.id,
                 user.id,
                 (context as? GuildApplicationCommandContext)?.guildId,
+                MessageTargetType.EDIT_MESSAGE,
                 id
             ),
             data
