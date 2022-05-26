@@ -32,6 +32,8 @@ banner:
     user: "The user that you want to steal... I mean, view, their banner (*/ω＼*)"
 
 info:
+  description: "Shows your, or another user's, Discord account information"
+
   infoAboutTheUser: "User Information"
   infoAboutTheMember: "Member Information"
   infoAboutTheApplication: "Application Information"

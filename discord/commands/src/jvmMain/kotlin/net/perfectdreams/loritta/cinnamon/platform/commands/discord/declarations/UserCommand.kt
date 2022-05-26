@@ -15,7 +15,7 @@ object UserCommand : SlashCommandDeclarationWrapper {
             executor = UserAvatarSlashExecutor
         }
 
-        subcommand(listOf("info"), I18N_PREFIX.Info.ViewUserInfo) {
+        subcommand(listOf("info"), I18N_PREFIX.Info.Description) {
             executor = UserInfoSlashExecutor
         }
 
