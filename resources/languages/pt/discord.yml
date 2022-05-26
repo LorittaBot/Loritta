@@ -1,7 +1,7 @@
 ---
 permissions:
   createInstantInvite: "Criar um convite instantâneo"
-  kickMembers: "Expulsar memberos"
+  kickMembers: "Expulsar membros"
   banMembers: "Banir membros"
   administrator: "Administrador"
   manageChannels: "Gerenciar canais"
