@@ -20,14 +20,24 @@ object OutdatedCommandUtils {
     private val MESSAGE_INTENT_DEADLINE = ZonedDateTime.of(2022, 8, 31, 0, 0, 0, 0, ZONE_UTC)
     private val OUTDATED_COMMAND_WARNING_DEADLINE = MESSAGE_INTENT_DEADLINE.minusDays(7L)
 
-    suspend fun sendOutdatedCommandMessage(context: CommandContext, locale: BaseLocale, slashCommandName: String) {
-        if (shouldSendOutdatedCommandWarning())
+    suspend fun sendOutdatedCommandMessage(
+        context: CommandContext,
+        locale: BaseLocale,
+        slashCommandName: String,
+        alwaysSendOutdatedCommandWarning: Boolean = false
+    ) {
+        if (alwaysSendOutdatedCommandWarning || shouldSendOutdatedCommandWarning())
             context.sendMessage(buildEmbed(locale, slashCommandName))
     }
 
-    suspend fun sendOutdatedCommandMessage(context: net.perfectdreams.loritta.api.commands.CommandContext, locale: BaseLocale, slashCommandName: String) {
+    suspend fun sendOutdatedCommandMessage(
+        context: net.perfectdreams.loritta.api.commands.CommandContext,
+        locale: BaseLocale,
+        slashCommandName: String,
+        alwaysSendOutdatedCommandWarning: Boolean = false
+    ) {
         context as DiscordCommandContext
-        if (shouldSendOutdatedCommandWarning())
+        if (alwaysSendOutdatedCommandWarning || shouldSendOutdatedCommandWarning())
             context.sendMessage(buildEmbed(locale, slashCommandName))
     }
 

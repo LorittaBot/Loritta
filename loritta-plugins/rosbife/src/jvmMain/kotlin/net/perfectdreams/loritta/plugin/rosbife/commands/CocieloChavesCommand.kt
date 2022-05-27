@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstrac
 import net.perfectdreams.loritta.plugin.rosbife.RosbifePlugin
 import net.perfectdreams.loritta.plugin.rosbife.commands.base.imageData
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
@@ -32,6 +33,8 @@ class CocieloChavesCommand(m: RosbifePlugin) : DiscordAbstractCommandBase(
 		localizedExamples("commands.command.cocielochaves.examples")
 
 		executesDiscord {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "chaves cocielo")
+
 			val mutex = heavyGenerationMutexMap.getOrPut(this.guild.idLong) { Mutex() }
 
 			if (mutex.isLocked)

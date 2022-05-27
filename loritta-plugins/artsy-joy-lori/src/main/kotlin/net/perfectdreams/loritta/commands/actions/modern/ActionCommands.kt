@@ -48,7 +48,7 @@ abstract class ActionCommand(loritta: LorittaDiscord, labels: List<String>): Dis
 
             executesDiscord {
                 if (args.isEmpty()) return@executesDiscord explain()
-                
+
                 OutdatedCommandUtils.sendOutdatedCommandMessage(this, this.locale, "roleplay ${labels.first()}")
 
                 it.handle(this, user, userOrFail(0).toJDA())
