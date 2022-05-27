@@ -54,11 +54,7 @@ interface UserInfoExecutor {
     ) {
         val now = Clock.System.now()
 
-        // Hack!
-        val publicFlags = (user as KordUser).handle.publicFlags
-            .value
-
-        val flags = publicFlags?.flags ?: emptyList()
+        val flags = user.publicFlags
         val flagsToEmotes = flags.mapNotNull {
             when (it) {
                 UserFlag.DiscordEmployee -> Emotes.DiscordEmployee
