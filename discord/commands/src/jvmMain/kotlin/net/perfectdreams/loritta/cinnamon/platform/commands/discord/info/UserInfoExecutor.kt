@@ -25,7 +25,6 @@ import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
