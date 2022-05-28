@@ -19,10 +19,18 @@ class McSkinExecutor(val mojang: MinecraftMojangAPI) : SlashCommandExecutor() {
         }
 
         override val options = Options
+
+        val VALID_NAME_REGEX = Regex("[a-zA-Z0-9_]{2,16}")
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val player = args[Options.username]
+        if (!player.matches(VALID_NAME_REGEX))
+            context.failEphemerally(
+                prefix = Emotes.Error,
+                content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.InvalidPlayerName(player))
+            )
+
         val profile = mojang.getUserProfileFromName(player) ?: context.failEphemerally(
             prefix = Emotes.Error,
             content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(player))

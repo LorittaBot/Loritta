@@ -24,6 +24,7 @@ commands:
         - "Minecraft is one of the most iconic games ever, and did you know that without it... maybe I wouldn't even exist?"
         - "Commands related to Minecraft."
       unknownPlayer: "`{playerName}` is not a valid Minecraft: Java Edition player!"
+      invalidPlayerName: "Sorry, but `{playerName}` doesn't look like a valid Minecraft: Java Edition player name!"
       options:
         playerNameJavaEdition: "The player's account name in Minecraft: Java Edition"
 

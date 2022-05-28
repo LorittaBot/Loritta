@@ -22,6 +22,12 @@ class McUUIDExecutor(val mojang: MinecraftMojangAPI) : SlashCommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val player = args[Options.username]
 
+        if (!player.matches(McSkinExecutor.VALID_NAME_REGEX))
+            context.failEphemerally(
+                prefix = Emotes.Error,
+                content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.InvalidPlayerName(player))
+            )
+
         val onlineUniqueId = mojang.getUniqueId(player) ?: context.failEphemerally(
             prefix = Emotes.Error,
             content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(player))

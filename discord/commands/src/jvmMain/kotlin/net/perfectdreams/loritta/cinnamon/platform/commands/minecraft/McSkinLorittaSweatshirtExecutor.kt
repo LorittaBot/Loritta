@@ -43,6 +43,12 @@ class McSkinLorittaSweatshirtExecutor(val client: GabrielaImageServerClient, val
         val imageData = if (URLUtils.isValidHttpOrHttpsURL(playerNameOrUrl)) {
             URLImageData(playerNameOrUrl)
         } else {
+            if (!playerNameOrUrl.matches(McSkinExecutor.VALID_NAME_REGEX))
+                context.failEphemerally(
+                    prefix = Emotes.Error,
+                    content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.InvalidPlayerName(playerNameOrUrl))
+                )
+
             val profile = mojang.getUserProfileFromName(playerNameOrUrl) ?: context.failEphemerally(
                 prefix = Emotes.Error,
                 content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(playerNameOrUrl))
