@@ -85,7 +85,7 @@ class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
         )
 
         val firstMediaInfo = mediaResponse.data.firstOrNull {
-            it.approved && it.assetTypeId == 1 /* 1 = image */
+            it.approved && it.assetTypeId == 1 /* 1 = image */ && it.imageId != null
         }
 
         val thumbnail = if (firstMediaInfo != null) {
@@ -100,7 +100,7 @@ class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
                                         // And yes, this is required
                                         "${firstMediaInfo.imageId}::Asset:768x432:png:regular",
                                         "Asset",
-                                        firstMediaInfo.imageId,
+                                        firstMediaInfo.imageId!!, // Should NEVER be null here!
                                         "",
                                         "png",
                                         "768x432"
@@ -212,7 +212,7 @@ class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
     data class RobloxMediaItem(
         val assetTypeId: Int,
         val assetType: String,
-        val imageId: Long,
+        val imageId: Long?,
         val videoHash: String?,
         val videoTitle: String?,
         val approved: Boolean
