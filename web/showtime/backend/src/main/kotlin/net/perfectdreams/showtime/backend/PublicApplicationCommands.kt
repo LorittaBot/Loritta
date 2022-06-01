@@ -106,6 +106,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.M
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.AttackOnHeartExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.ChavesCocieloExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.ChavesOpeningExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.GigaChadExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.AttackOnHeartCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
@@ -370,6 +372,14 @@ object PublicApplicationCommands {
 
         command(GigaChadExecutor::class) {
             + VideoUrl("/v3/assets/img/commands/gigachad.mp4")
+        }
+
+        command(ChavesCocieloExecutor::class) {
+            + VideoUrl("/v3/assets/img/commands/cocielo_chaves.mp4")
+        }
+
+        command(ChavesOpeningExecutor::class) {
+            + VideoUrl("/v3/assets/img/commands/chaves_opening.mp4")
         }
     }
 
