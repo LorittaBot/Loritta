@@ -60,7 +60,8 @@ open class ComponentContext(
             )
         }
 
-        if (interaKTionsContext.wasInitiallyDeferredEphemerally || interaKTionsContext.bridge.state.value == InteractionRequestState.NOT_REPLIED_YET)
+        // We also check for "Deferred Update Message" because we can actually reply with an ephemeral message even if it was marked as a update message
+        if (interaKTionsContext.wasInitiallyDeferredEphemerally || interaKTionsContext.bridge.state.value == InteractionRequestState.NOT_REPLIED_YET || interaKTionsContext.bridge.state.value == InteractionRequestState.DEFERRED_UPDATE_MESSAGE)
             failEphemerally(b)
         else
             fail(b)
