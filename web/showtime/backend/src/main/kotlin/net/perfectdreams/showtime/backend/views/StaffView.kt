@@ -359,7 +359,8 @@ class StaffView(
                                                             val animated = match.groupValues[1] == "a"
                                                             val emoteName = match.groupValues[2]
                                                             val emoteId = match.groupValues[3]
-                                                            if (WebEmotes.emotes.contains(emoteName)) {
+                                                            // TODO: Fix this! Because we migrated the emotes to Ethereal, this won't work correctly anymore
+                                                            if (false && WebEmotes.emotes.contains(emoteName)) {
                                                                 sections.add(AboutMeLorittaWebsiteEmote(emoteName))
                                                             } else {
                                                                 sections.add(AboutMeDiscordEmote(emoteId, animated))
@@ -368,8 +369,6 @@ class StaffView(
                                                             lastMatchedCharacterIndex = match.range.last + 1
                                                             firstMatchedCharacterIndex = lastMatchedCharacterIndex
                                                         }
-
-                                                        println(sections)
 
                                                         sections.add(
                                                             AboutMeText(
