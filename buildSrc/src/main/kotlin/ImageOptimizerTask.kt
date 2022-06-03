@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import javax.inject.Inject
 
 
-// @CacheableTask
+@CacheableTask
 abstract class ImageOptimizerTask : DefaultTask() {
     companion object {
         // https://medium.com/hceverything/applying-srcset-choosing-the-right-sizes-for-responsive-images-at-different-breakpoints-a0433450a4a3
