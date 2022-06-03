@@ -10,7 +10,7 @@ Esse changelog é em homenagem às clássicas séries feitas pelo Chespirito, am
 Eu tive essa ideia pois nas [minhas livestreams na Twitch](https://twitch.tv/mrpowergamerbr) estavam usando o [Falatron](https://falatron.com) com as vozes dos personagens do Chaves e me lembrou a clássica abertura do Chaves no SBT! E isso me fez pensar "Nossa, essa abertura daria um bom comando para a Loritta!"
 
 <div style="text-align: center">
-<video style="aspect-ratio: 1 / 1;" controls="controls"><source src="/v3/assets/img/commands/chaves_opening.mp4" type="video/mp4"></video>
+<video style="aspect-ratio: 1 / 1;" controls="controls"><source src="{{ ethereal_gambi_url }}/loritta/commands/chaves-opening.mp4" type="video/mp4"></video>
 </div>
 
 {{ read_more }}

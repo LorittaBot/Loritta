@@ -14,7 +14,7 @@ Também adicionamos mais informações sobre usuários e membros, com curiosidad
 * E muito mais! :lori_sunglasses:
 
 <div style="text-align: center;">
-<img-resources src="/v3/assets/posts/2022-05-26-check-users-userinfo/userinfo-member.png" sizes="50vw" style="width: 100%; max-width: 20em;"></img-resources>
+<img-ethereal src="/loritta/posts/2022-05-26-check-users-userinfo/userinfo-member.png" sizes="50vw" style="width: 100%; max-width: 20em;"></img-ethereal>
 </div>
 
 {{ read_more }}
@@ -22,11 +22,11 @@ Também adicionamos mais informações sobre usuários e membros, com curiosidad
 Se você está vendo informações sobre um usuário que é um bot, a Loritta irá mostrar várias informações e curiosidades interessantíssimas sobre ele! :lori_zap:
 
 <div style="text-align: center;">
-<img-resources src="/v3/assets/posts/2022-05-26-check-users-userinfo/userinfo-mantaro.png" sizes="50vw" style="width: 100%; max-width: 20em;"></img-resources>
+<img-ethereal src="/loritta/posts/2022-05-26-check-users-userinfo/userinfo-mantaro.png" sizes="50vw" style="width: 100%; max-width: 20em;"></img-ethereal>
 </div>
 
 Precisando ver informações sobre um meliante no chat, mas está com preguiça de trocar de canal, mas, ao mesmo tempo, não quer causar furdúncio no chat ao ver as informações? Então clique com botão direito no usuário e clique para ver as informações sobre ele! Não se preocupe, a resposta será visível apenas para você. :lori_peace:
 
 <div style="text-align: center;">
-<img-resources src="/v3/assets/posts/2022-05-26-check-users-userinfo/userinfo-apps.png" sizes="50vw" style="width: 100%; max-width: 20em;"></img-resources>
+<img-ethereal src="/loritta/posts/2022-05-26-check-users-userinfo/userinfo-apps.png" sizes="50vw" style="width: 100%; max-width: 20em;"></img-ethereal>
 </div>

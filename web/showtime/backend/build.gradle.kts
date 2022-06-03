@@ -35,6 +35,8 @@ dependencies {
     // Sequins
     api("net.perfectdreams.sequins.ktor:base-route:1.0.4")
 
+    implementation("net.perfectdreams.etherealgambi:client:1.0.0")
+
     api("commons-codec:commons-codec:1.15")
 
     api("com.vladsch.flexmark:flexmark-all:0.64.0")

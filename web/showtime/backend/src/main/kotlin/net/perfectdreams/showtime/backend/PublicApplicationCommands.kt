@@ -6,15 +6,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationBuilder
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.JankenponCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SummonCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand
@@ -26,6 +17,15 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.DailyCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.JankenponCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SummonCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BobBurningPaperExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BolsoDrakeExecutor
@@ -379,7 +379,7 @@ object PublicApplicationCommands {
         }
 
         command(ChavesOpeningExecutor::class) {
-            + VideoUrl("/v3/assets/img/commands/chaves_opening.mp4")
+            + VideoUrl("https://assets.perfectdreams.media/loritta/commands/chaves-opening.mp4")
         }
     }
 

@@ -1,6 +1,7 @@
 package net.perfectdreams.showtime.backend.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.toJavaInstant
 import kotlinx.html.DIV
 import kotlinx.html.a
@@ -12,7 +13,9 @@ import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.showtime.backend.ShowtimeBackend
-import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.showtime.backend.content.ContentBase
+import net.perfectdreams.showtime.backend.content.MultilanguageContent
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromEtherealGambi
 import net.perfectdreams.showtime.backend.utils.innerContent
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -24,7 +27,8 @@ class BlogView(
     websiteTheme: WebsiteTheme,
     locale: BaseLocale,
     i18nContext: I18nContext,
-    path: String
+    path: String,
+    val posts: List<Post>
 ) : NavbarView(
     showtimeBackend,
     websiteTheme,
@@ -37,14 +41,11 @@ class BlogView(
     override fun getTitle() = "Blog"
 
     override fun DIV.generateContent() {
-        val languageId = showtimeBackend.languageManager.getIdByI18nContext(i18nContext)
-
-        val posts = showtimeBackend.loadSourceContentsFromFolder("blog")
-            .sortedByDescending { it.metadata.date }
-            .filter { it.shouldBeDisplayedInPostList() }
-
         innerContent {
             posts.forEachIndexed { index, it ->
+                val multilanguageContent = it.multilanguageContent
+                val localizedContent = it.localizedContent
+
                 div(classes = if (index % 2 == 0) "odd-wrapper" else "even-wrapper") {
                     if (index != 0)
                         classes = classes + "wobbly-bg"
@@ -52,16 +53,14 @@ class BlogView(
                     div(classes = "post-wrapper") {
                         div(classes = "post-content") {
                             div {
-                                val localizedContent = it.getLocalizedVersion(languageId)
-
                                 div(classes = "post-header") {
-                                    a(href = "/${locale.path}${it.path}") {
+                                    a(href = localizedContent.path) {
                                         h1 {
                                             +localizedContent.metadata.title
                                         }
                                     }
 
-                                    val time = it.metadata.date.toJavaInstant().atZone(ZoneId.of("America/Sao_Paulo"))
+                                    val time = multilanguageContent.metadata.date.toJavaInstant().atZone(ZoneId.of("America/Sao_Paulo"))
                                     if (time != null) {
                                         div(classes = "post-info") {
                                             val f: DateTimeFormatter = DateTimeFormatter
@@ -76,27 +75,22 @@ class BlogView(
 
                                 div {
                                     unsafe {
-                                        raw(
-                                            BlogPostView.parseContent(
-                                                showtimeBackend,
-                                                locale,
-                                                i18nContext,
-                                                localizedContent.content
-                                                    .substringBefore("{{ read_more }}")
-                                            )
-                                        )
+                                        raw(it.parsedContent.substringBefore("{{ read_more }}"))
                                     }
 
                                     if (localizedContent.content.contains("{{ read_more }}")) {
                                         div(classes = "read-more") {
-                                            imgSrcSetFromResources(
-                                                "/v3/assets/img/emotes/lori-zap.png",
+                                            imgSrcSetFromEtherealGambi(
+                                                showtimeBackend,
+                                                // TODO: Fix this SUPER HACK:tm: - (However do we really care about this? While it does suspend, it should be 99,99% of the times in memory, right)
+                                                runBlocking { showtimeBackend.getOrRetrieveImageInfo("loritta/emotes/lori-zap")!! },
+                                                "png",
                                                 "1.5em"
                                             ) {
                                                 classes = setOf("inline-emoji")
                                             }
 
-                                            a(href = "/${locale.path}${it.path}") {
+                                            a(href = localizedContent.path) {
                                                 +" ${i18nContext.get(I18nKeysData.Website.Blog.KeepReading)} »"
                                             }
                                         }
@@ -109,4 +103,10 @@ class BlogView(
             }
         }
     }
+
+    data class Post(
+        val multilanguageContent: MultilanguageContent,
+        val localizedContent: ContentBase,
+        val parsedContent: String
+    )
 }

@@ -2,7 +2,7 @@
 title: "Comandos de Roleplay, agora disponíveis via Slash Commands!"
 ---
 <div style="text-align: center;">
-<img-resources src="/v3/assets/posts/2022-05-11-roleplay-commands/roleplay-highfive.png" sizes="50vw" style="width: 100%; max-width: 20em;"></img-resources>
+<img-ethereal src="/loritta/posts/2022-05-11-roleplay-commands/roleplay-highfive.png" sizes="50vw" style="width: 100%; max-width: 20em;"></img-ethereal>
 </div>
 
 Migramos os comandos de roleplay da Loritta (`+hug`, `+kiss`, etc) para slash commands (`/roleplay hug`, `/roleplay kiss`, etc)! :lori_hi:

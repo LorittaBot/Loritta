@@ -8,5 +8,6 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.config.PuddingConfig
 data class RootConfig(
     val loritta: LorittaConfig,
     val discord: LorittaDiscordConfig,
+    val etherealGambi: EtherealGambiConfig,
     val pudding: PuddingConfig
 )
