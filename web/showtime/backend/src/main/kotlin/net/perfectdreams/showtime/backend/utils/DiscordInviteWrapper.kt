@@ -9,9 +9,10 @@ import kotlinx.html.div
 import kotlinx.html.img
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.showtime.backend.ShowtimeBackend
 
 object DiscordInviteWrapper {
-    fun FlowContent.lorittaSupportServerInvite(i18nContext: I18nContext) = discordInvite(
+    fun FlowContent.lorittaSupportServerInvite(showtimeBackend: ShowtimeBackend, i18nContext: I18nContext) = discordInvite(
         i18nContext,
         "/v3/assets/img/server-icons/loritta-support-64.gif",
         "Loritta's Support \uD83C\uDF07\uD83C\uDF03",
@@ -31,7 +32,7 @@ object DiscordInviteWrapper {
         "https://discord.gg/loritta"
     )
 
-    fun FlowContent.lorittaCommunityServerInvite(i18nContext: I18nContext) = discordInvite(
+    fun FlowContent.lorittaCommunityServerInvite(showtimeBackend: ShowtimeBackend, i18nContext: I18nContext) = discordInvite(
         i18nContext,
         "/v3/assets/img/server-icons/loritta-community-64.gif",
         "Apartamento da Loritta \uD83C\uDF07\uD83C\uDF03",

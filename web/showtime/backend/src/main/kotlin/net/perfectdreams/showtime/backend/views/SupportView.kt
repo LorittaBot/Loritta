@@ -77,7 +77,7 @@ class SupportView(
                         }
 
                         div(classes = "discord-support-invite-wrapper") {
-                            lorittaSupportServerInvite(i18nContext)
+                            lorittaSupportServerInvite(showtimeBackend, i18nContext)
                         }
                     }
 
@@ -95,7 +95,7 @@ class SupportView(
                         }
 
                         div(classes = "discord-support-invite-wrapper") {
-                            lorittaCommunityServerInvite(i18nContext)
+                            lorittaCommunityServerInvite(showtimeBackend, i18nContext)
                         }
                     }
                 }

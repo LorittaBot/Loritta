@@ -96,13 +96,13 @@ object ContentParser {
             .replace(
                 "{{ lori_support_invite }}",
                 createHTML().span {
-                    lorittaCommunityServerInvite(i18nContext)
+                    lorittaCommunityServerInvite(showtimeBackend, i18nContext)
                 }
             )
             .replace(
                 "{{ lori_community_invite }}",
                 createHTML().span {
-                    lorittaCommunityServerInvite(i18nContext)
+                    lorittaCommunityServerInvite(showtimeBackend, i18nContext)
                 }
             )
             .replace("{{ read_more }}", "")
