@@ -1,6 +1,7 @@
 package net.perfectdreams.showtime.backend.views
 
 import com.mrpowergamerbr.loritta.utils.locale.BaseLocale
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.DIV
 import kotlinx.html.a
 import kotlinx.html.classes
@@ -16,7 +17,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeys
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.showtime.backend.ShowtimeBackend
-import net.perfectdreams.showtime.backend.utils.imgSrcSetFromResources
+import net.perfectdreams.showtime.backend.utils.imgSrcSetFromEtherealGambi
 import net.perfectdreams.showtime.backend.utils.innerContent
 
 class ContactView(
@@ -65,16 +66,22 @@ class ContactView(
 
                                         if (isControl && ch == '}') {
                                             if (stringBuilder.toString() == "loriSunglasses") {
-                                                imgSrcSetFromResources(
-                                                    "/v3/assets/img/emotes/lori-sunglasses.png",
+                                                imgSrcSetFromEtherealGambi(
+                                                    showtimeBackend,
+                                                    // TODO: Fix this SUPER HACK:tm: - (However do we really care about this? While it does suspend, it should be 99,99% of the times in memory, right)
+                                                    runBlocking { showtimeBackend.getOrRetrieveImageInfo("loritta/emotes/lori-sunglasses")!! },
+                                                    "png",
                                                     "1.5em"
                                                 ) {
                                                     classes = setOf("inline-emoji")
                                                 }
                                             }
                                             if (stringBuilder.toString() == "loriZap") {
-                                                imgSrcSetFromResources(
-                                                    "/v3/assets/img/emotes/lori-zap.png",
+                                                imgSrcSetFromEtherealGambi(
+                                                    showtimeBackend,
+                                                    // TODO: Fix this SUPER HACK:tm: - (However do we really care about this? While it does suspend, it should be 99,99% of the times in memory, right)
+                                                    runBlocking { showtimeBackend.getOrRetrieveImageInfo("loritta/emotes/lori-zap")!! },
+                                                    "png",
                                                     "1.5em"
                                                 ) {
                                                     classes = setOf("inline-emoji")

@@ -1,5 +1,6 @@
 package net.perfectdreams.showtime.backend.utils
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.DIV
 import kotlinx.html.FlowContent
 import kotlinx.html.a
@@ -15,8 +16,11 @@ object DiscordInviteWrapper {
         "/v3/assets/img/server-icons/loritta-support-64.gif",
         "Loritta's Support \uD83C\uDF07\uD83C\uDF03",
         {
-            imgSrcSetFromResources(
-                "/v3/assets/img/emotes/lori-sunglasses.png",
+            imgSrcSetFromEtherealGambi(
+                showtimeBackend,
+                // TODO: Fix this SUPER HACK:tm: - (However do we really care about this? While it does suspend, it should be 99,99% of the times in memory, right)
+                runBlocking { showtimeBackend.getOrRetrieveImageInfo("loritta/emotes/lori-sunglasses")!! },
+                "png",
                 "1.5em"
             ) {
                 classes = setOf("inline-emoji")
@@ -32,8 +36,11 @@ object DiscordInviteWrapper {
         "/v3/assets/img/server-icons/loritta-community-64.gif",
         "Apartamento da Loritta \uD83C\uDF07\uD83C\uDF03",
         {
-            imgSrcSetFromResources(
-                "/v3/assets/img/emotes/lori-kiss.png",
+            imgSrcSetFromEtherealGambi(
+                showtimeBackend,
+                // TODO: Fix this SUPER HACK:tm: - (However do we really care about this? While it does suspend, it should be 99,99% of the times in memory, right)
+                runBlocking { showtimeBackend.getOrRetrieveImageInfo("loritta/emotes/lori-kiss")!! },
+                "png",
                 "1.5em"
             ) {
                 classes = setOf("inline-emoji")
