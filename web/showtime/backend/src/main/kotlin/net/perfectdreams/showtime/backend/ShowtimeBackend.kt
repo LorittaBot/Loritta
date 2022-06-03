@@ -6,24 +6,27 @@ import com.vladsch.flexmark.ext.tables.TablesExtension
 import com.vladsch.flexmark.html.HtmlRenderer
 import com.vladsch.flexmark.parser.Parser
 import com.vladsch.flexmark.util.data.MutableDataSet
-import io.ktor.server.application.*
-import io.ktor.server.plugins.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
+import io.ktor.server.plugins.*
 import io.ktor.server.plugins.cachingheaders.*
 import io.ktor.server.plugins.compression.*
 import io.ktor.server.plugins.statuspages.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.ktor.util.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
+import net.perfectdreams.etherealgambi.client.EtherealGambiClient
+import net.perfectdreams.etherealgambi.data.api.responses.ImageVariantsResponse
 import net.perfectdreams.loritta.api.utils.format
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordOAuth2AuthorizationURL
@@ -45,6 +48,7 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.*
+import java.util.concurrent.ConcurrentHashMap
 
 class ShowtimeBackend(
     val rootConfig: RootConfig,
@@ -86,6 +90,8 @@ class ShowtimeBackend(
     )
 
     var lastFmStaffData: Map<String, LastFmTracker.LastFmUserInfo>? = null
+    val etherealGambiClient = EtherealGambiClient(rootConfig.etherealGambi.url)
+    val cachedImageInformations = ConcurrentHashMap<String, ImageVariantsResponse>()
 
     fun start() {
         ShowtimeBackendTasks(this).start()
@@ -226,6 +232,27 @@ class ShowtimeBackend(
             }
         }
         server.start(true)
+    }
+
+    suspend fun getOrRetrieveImageInfo(path: String): ImageVariantsResponse? {
+        return getOrRetrieveImageInfos(path)[path]
+    }
+
+    suspend fun getOrRetrieveImageInfos(vararg paths: String): Map<String, ImageVariantsResponse> {
+        val cachedImageInfos = mutableMapOf<String, ImageVariantsResponse>()
+        for (path in paths) {
+            val imageVariants = cachedImageInformations[path]
+            if (imageVariants != null)
+                cachedImageInfos[path] = imageVariants
+        }
+        val notCachedPaths = paths.filter { !cachedImageInfos.containsKey(it) }
+        if (notCachedPaths.isNotEmpty()) {
+            logger.info { "Loading $notCachedPaths image information from EtherealGambi..." }
+            val new = etherealGambiClient.getImageInfo(*notCachedPaths.toTypedArray())
+            cachedImageInformations.putAll(new)
+            cachedImageInfos.putAll(new)
+        }
+        return cachedImageInfos
     }
 
     /**

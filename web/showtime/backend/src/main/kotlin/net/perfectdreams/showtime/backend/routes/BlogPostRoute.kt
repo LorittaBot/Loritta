@@ -6,6 +6,7 @@ import io.ktor.server.html.*
 import net.perfectdreams.dokyo.RoutePath
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.showtime.backend.ShowtimeBackend
+import net.perfectdreams.showtime.backend.utils.ContentParser
 import net.perfectdreams.showtime.backend.utils.userTheme
 import net.perfectdreams.showtime.backend.views.BlogPostView
 import java.io.File
@@ -38,7 +39,13 @@ class BlogPostRoute(val showtime: ShowtimeBackend) : LocalizedRoute(showtime, Ro
                 i18nContext,
                 "/",
                 post,
-                localizedPost
+                localizedPost,
+                ContentParser.parseContent(
+                    showtime,
+                    locale,
+                    i18nContext,
+                    localizedPost.content
+                )
             ).generateHtml()
         )
     }

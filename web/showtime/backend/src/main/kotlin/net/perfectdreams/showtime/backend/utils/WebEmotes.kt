@@ -13,6 +13,10 @@ object WebEmotes {
         "lori_nem_ligo" to "lori-nem-ligo.png",
         "lori_rage" to "lori-rage.png",
         "lori_clown" to "lori-clown.png",
-        "lori_lick" to "lori-lick.gif"
+        "lori_lick" to "lori-lick.gif",
+        "lori_hi" to "lori-hi.png",
+        "lori_pensando_muito" to "lori-pensando-muito.gif",
+        "lori_demon" to "lori-demon.png",
+        "lori_peace" to "lori-peace.png"
     )
 }

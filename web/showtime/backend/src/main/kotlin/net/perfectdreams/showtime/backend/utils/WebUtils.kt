@@ -9,6 +9,10 @@ import kotlinx.html.id
 import kotlinx.html.img
 import kotlinx.html.legend
 import kotlinx.html.style
+import net.perfectdreams.etherealgambi.data.DefaultImageVariantPreset
+import net.perfectdreams.etherealgambi.data.ScaleDownToWidthImageVariantPreset
+import net.perfectdreams.etherealgambi.data.api.responses.ImageVariantsResponse
+import net.perfectdreams.showtime.backend.ShowtimeBackend
 
 fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromResources(path: String, sizes: String, block: IMG.() -> Unit = {}) {
     val imageInfo = ImageUtils.optimizedImagesInfoWithVariants.firstOrNull { it.path.removePrefix("static") == path }
@@ -25,6 +29,24 @@ fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromResources(path: String, size
             block
         )
     } else error("Missing ImageInfo for \"$path\"!")
+}
+
+fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromEtherealGambi(m: ShowtimeBackend, variantInfo: ImageVariantsResponse, extension: String, sizes: String, block: IMG.() -> Unit = {}) {
+    val defaultVariant = variantInfo.variants.first { it.preset is DefaultImageVariantPreset }
+    val scaleDownVariants = variantInfo.variants.filter { it.preset is ScaleDownToWidthImageVariantPreset }
+
+    val imageUrls = (
+            scaleDownVariants.map {
+                "${m.etherealGambiClient.baseUrl}/${it.urlWithoutExtension}.$extension ${(it.preset as ScaleDownToWidthImageVariantPreset).width}w"
+            } + "${m.etherealGambiClient.baseUrl}/${defaultVariant.urlWithoutExtension}.$extension ${variantInfo.imageInfo.width}w"
+            ).joinToString(", ")
+
+    imgSrcSet(
+        "${m.etherealGambiClient.baseUrl}/${defaultVariant.urlWithoutExtension}.$extension",
+        sizes,
+        imageUrls,
+        block
+    )
 }
 
 fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(path: String, sizes: String, block: IMG.() -> Unit = {}) {

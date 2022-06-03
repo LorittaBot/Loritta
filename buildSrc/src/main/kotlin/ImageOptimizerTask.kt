@@ -59,11 +59,8 @@ abstract class ImageOptimizerTask : DefaultTask() {
     @get:Inject
     abstract val workerExecutor: WorkerExecutor
 
-    // TODO: we could use Gradle's WorkerExecutor stuff, but it is sooo confusing (example: you can't share the ImageInfo list) that I ended up not using it
     @TaskAction
     fun execute(inputChanges: InputChanges) {
-        println("temp is $temporaryDir")
-
         val workQueue = workerExecutor.noIsolation()
 
         val outputImagesInfoFile = outputImagesInfoFile.get().asFile
