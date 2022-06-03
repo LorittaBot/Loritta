@@ -48,7 +48,6 @@ class CorreiosClient : Closeable {
         }
 
         val r = httpResponse.bodyAsText()
-        println(r)
         return Json.decodeFromString(r)
     }
 
