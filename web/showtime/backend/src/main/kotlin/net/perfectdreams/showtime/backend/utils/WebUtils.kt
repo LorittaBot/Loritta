@@ -44,9 +44,11 @@ fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromEtherealGambi(m: ShowtimeBac
     imgSrcSet(
         "${m.etherealGambiClient.baseUrl}/${defaultVariant.urlWithoutExtension}.$extension",
         sizes,
-        imageUrls,
-        block
-    )
+        imageUrls
+    ) {
+        block()
+        style += "aspect-ratio: ${variantInfo.imageInfo.width}/${variantInfo.imageInfo.height}"
+    }
 }
 
 fun FlowOrInteractiveOrPhrasingContent.imgSrcSetFromResourcesOrFallbackToImgIfNotPresent(path: String, sizes: String, block: IMG.() -> Unit = {}) {

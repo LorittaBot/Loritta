@@ -20,7 +20,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.*
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -68,6 +67,8 @@ class ShowtimeBackend(
     // Markdown
     val options = MutableDataSet()
         .set(Parser.EXTENSIONS, listOf(TablesExtension.create(), StrikethroughExtension.create()))
+        .set(HtmlRenderer.GENERATE_HEADER_ID, true)
+        .set(HtmlRenderer.RENDER_HEADER_ID, true)
     val parser = Parser.builder(options).build()
     val renderer = HtmlRenderer.builder(options).build()
     val svgIconManager = SVGIconManager(this)

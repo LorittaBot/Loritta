@@ -7,10 +7,12 @@ website:
       - "Welcome to my command list! Here you can see information, explanations, examples and more about the commands I have."
   blog:
     keepReading: "Read more!"
+    keepReadingFeature: "Learn more about this"
   discordInvite:
     title: "You've been invited to join a server" #Same string used when someone sends a invite to you in chat
     lorittaSupportServerDetails: "Need help? Then join our support server!"
     lorittaCommunityServerDetails: "Loritta's community server!"
+    sparklyPowerServerDetails: "Loritta's Minecraft Survival Server!"
     join: "Join" #Join the server, same string used when someone sends a invite to you in chat
   staff:
     title: "Our Team"
