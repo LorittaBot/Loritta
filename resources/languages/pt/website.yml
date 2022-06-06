@@ -8,10 +8,12 @@ website:
       - "Boas-vindas a minha lista de comandos! Aqui você poderá ver as informações, explicações, exemplos e muito mais sobre todos os comandos que eu tenho."
   blog:
     keepReading: "Continue lendo!"
+    keepReadingFeature: "Continuar lendo sobre isto"
   discordInvite:
     title: "Você foi convidado(a) a entrar em um servidor" #Same string used when someone sends a invite to you in chat
     lorittaSupportServerDetails: "Precisa de ajuda? Então junte-se ao nosso servidor de suporte!"
     lorittaCommunityServerDetails: "Servidor da comunidade de fãs da Loritta!"
+    sparklyPowerServerDetails: "Servidor de Minecraft da Loritta!"
     join: "Juntar-se" #Join the server, same string used when someone sends a invite to you in chat
   staff:
     title: "Nossa Equipe"
