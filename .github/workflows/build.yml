@@ -61,4 +61,5 @@ jobs:
           :microservices:direct-message-processor:jib
           :microservices:discord-gateway-events-processor:jib
           :web:showtime:backend:jib
+          :web:dashboard:backend:jib
           --scan
