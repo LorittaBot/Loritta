@@ -151,6 +151,9 @@ kotlin {
         js().compilations["main"].defaultSourceSet {
             dependencies {
                 api(kotlin("stdlib-js"))
+
+                // Internationalization
+                api("net.perfectdreams.i18nhelper.formatters:intl-messageformat-js:${libs.versions.i18nhelper.get()}")
             }
         }
     }

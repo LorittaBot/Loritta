@@ -190,6 +190,25 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     /**
+     * Gets [name]#[discriminator]'s cached user info from the database if it is present
+     *
+     * @param userId the user's ID
+     * @return the cached user info or null if it doesn't exist
+     */
+    suspend fun getCachedUserInfoByNameAndDiscriminator(name: String, discriminator: String) = pudding.transaction {
+        val info = CachedDiscordUsers.select {
+            CachedDiscordUsers.name eq name and (CachedDiscordUsers.discriminator eq discriminator)
+        }.limit(1).firstOrNull() ?: return@transaction null
+
+        CachedUserInfo(
+            UserId(info[CachedDiscordUsers.id].value),
+            info[CachedDiscordUsers.name],
+            info[CachedDiscordUsers.discriminator],
+            info[CachedDiscordUsers.avatarId]
+        )
+    }
+
+    /**
      * Inserts or updates [userId]'s cached user info
      *
      * The cached user info can be retrieved with [getCachedUserInfoById], avoiding Discord API calls just to pull user information
