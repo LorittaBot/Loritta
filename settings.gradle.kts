@@ -2,6 +2,7 @@ pluginManagement {
     repositories {
         // I don't know why but if "gradlePluginPortal()" is before our custom Maven repo, the i18nHelper plugin isn't found
         maven("https://repo.perfectdreams.net/")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         gradlePluginPortal()
     }
 }
@@ -58,7 +59,12 @@ include(":microservices:daily-tax")
 include(":microservices:correios-package-tracker")
 include(":microservices:discord-gateway-events-processor")
 
-// ===[ WEB ]===
+// ===[ SHOWTIME ]===
 include(":web:showtime:web-common")
 include(":web:showtime:backend")
 include(":web:showtime:frontend")
+
+// ===[ DASHBOARD ]===
+include(":web:dashboard:common")
+include(":web:dashboard:backend")
+include(":web:dashboard:frontend")

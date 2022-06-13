@@ -1,0 +1,29 @@
+@use "../placeholders/reset-button-styling";
+
+.discord-button {
+    @extend %reset-button-styling;
+    color: white;
+    font-weight: bold;
+    border-radius: 3px;
+    padding: 0.5em 1em 0.5em 1em;
+    transition-duration: 0.25s;
+    opacity: 1;
+
+    &.success {
+        background-color: #298546;
+
+        &:hover {
+            background-color: darken(#298546, 10%);
+        }
+    }
+
+    &:disabled {
+        background-color: #757575;
+        opacity: 0.7;
+        cursor: not-allowed;
+
+        &:hover {
+            background-color: darken(#757575, 10%);
+        }
+    }
+}

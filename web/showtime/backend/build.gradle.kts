@@ -105,6 +105,7 @@ val sass = tasks.register<SassTask>("sass-style-scss") {
 tasks {
     processResources {
         from("../../../resources/") // Include folders from the resources root folder
+        from("../../resources/") // Include folders from the resources web folder
 
         // We need to wait until the JS build finishes and the SASS files are generated
         dependsOn(jsBrowserProductionWebpack)
