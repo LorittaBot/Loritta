@@ -328,7 +328,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         }
 
         color = Color(255, 255, (255 - (count * 15)).coerceAtLeast(0))
-        timestamp = Instant.parse(message.timestamp)
+        timestamp = message.timestamp
     }
 
     private fun getStarEmojiForReactionCount(count: Int) = when {
