@@ -1,7 +1,8 @@
-package net.perfectdreams.loritta.cinnamon.pudding.tables
+package net.perfectdreams.loritta.cinnamon.pudding.tables.transactions
 
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object SparklyPowerLSXSonhosTransactionsLog : LongIdTable() {

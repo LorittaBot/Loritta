@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.DivineInterventionSonhosTransactionTransformer
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.EmojiFightBetSonhosTransactionTransformer
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.PaymentSonhosTransactionTransformer
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.ShipEffectSonhosTransactionTransformer
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.SonhosBundlePurchaseSonhosTransactionTransformer
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.SparklyPowerLSXSonhosTransactionTransformer
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.UnknownSonhosTransactionTransformer
@@ -40,6 +41,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffectSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
@@ -255,6 +257,9 @@ class TransactionsExecutor : SlashCommandExecutor() {
 
                         // ===[ DIVINE INTERVENTION ]===
                         is DivineInterventionSonhosTransaction -> DivineInterventionSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
+                        // ===[ SHIP EFFECT ]===
+                        is ShipEffectSonhosTransaction -> ShipEffectSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         // This should never happen because we do a left join with a "isNotNull" check
                         is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)

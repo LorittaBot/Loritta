@@ -1,5 +1,7 @@
-package net.perfectdreams.loritta.cinnamon.pudding.tables
+package net.perfectdreams.loritta.cinnamon.pudding.tables.transactions
 
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object PaymentSonhosTransactionsLog : LongIdTable() {

@@ -35,6 +35,11 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.HomeBroker.Description,
         Emotes.LoriStonks,
     ),
+    SHIP_EFFECT(
+        I18nKeysData.Commands.Command.Transactions.Types.ShipEffect.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.ShipEffect.Description,
+        Emotes.LoriHeart,
+    ),
     SPARKLYPOWER_LSX(
         I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Title,
         I18nKeysData.Commands.Command.Transactions.Types.SparklyPowerLsx.Description,

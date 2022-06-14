@@ -1,6 +1,7 @@
 plugins {
     kotlin("multiplatform")
     kotlin("plugin.serialization")
+    id("io.github.turansky.kfc.latest-webpack")
 }
 
 group = "net.perfectdreams.showtime"

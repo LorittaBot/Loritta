@@ -55,6 +55,10 @@ types:
     lostTaxed: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (value after taxes: {quantityAfterTax}) to `{winnerTag}`'s {emojiFightEmoji} (`{winnerId}`) in sonhos emoji fight bets"
     won: "Received {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (no taxes!) from {userInEmojiFight,plural, =0 {# users} one {# user} other {# users}} in sonhos emoji fight bets because they all feared the mighty {emojiFightEmoji}"
     lost: "Paid {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} sonhos (no taxes!) to `{winnerTag}`'s {emojiFightEmoji} (`{winnerId}`) in sonhos emoji fight bets"
+  shipEffect:
+    title: "Ship Bribery"
+    description: "Transactions related to bribing the oracle of love"
+    boughtShipEffect: "Bribed the oracle of love with {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
   sparklyPowerLsx:
     title: "SparklyPower Sonhos Exchange"
     description: "Transactions related to SparklyPower, Loritta's Minecraft Server"

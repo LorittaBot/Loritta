@@ -9,10 +9,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerTickerInformation
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.avg

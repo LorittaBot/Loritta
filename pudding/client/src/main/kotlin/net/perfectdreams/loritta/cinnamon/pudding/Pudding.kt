@@ -33,30 +33,23 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
@@ -66,10 +59,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.ReceivedPatchNotesNotif
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents
@@ -77,6 +68,16 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.EmojiFightSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ExecutedApplicationCommandsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.PaymentSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ShipEffectSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
@@ -267,7 +268,8 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             UsersFollowingCorreiosPackages,
             TrackedCorreiosPackagesEvents,
             PendingImportantNotifications,
-            DiscordGuildRoles
+            DiscordGuildRoles,
+            ShipEffectSonhosTransactionsLog
         )
 
         if (schemas.isNotEmpty())

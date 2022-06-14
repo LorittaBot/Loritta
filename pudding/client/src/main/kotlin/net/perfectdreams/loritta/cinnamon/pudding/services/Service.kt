@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
+import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffectSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
@@ -40,29 +41,30 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundlePurchaseSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SparklyPowerLSXSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.PaymentSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ShipEffectSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SparklyPowerLSXSonhosTransactionsLog
 import org.jetbrains.exposed.sql.ResultRow
 
 open class Service(private val pudding: Pudding) {
@@ -255,6 +257,13 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[DivineInterventionSonhosTransactionsLog.editedBy]?.let { UserId(it.value) },
             row[DivineInterventionSonhosTransactionsLog.sonhos],
             row[DivineInterventionSonhosTransactionsLog.reason]
+        )
+    } else if (row.getOrNull(ShipEffectSonhosTransactionsLog.id) != null) {
+        ShipEffectSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[ShipEffectSonhosTransactionsLog.sonhos]
         )
     } else {
         UnknownSonhosTransaction(

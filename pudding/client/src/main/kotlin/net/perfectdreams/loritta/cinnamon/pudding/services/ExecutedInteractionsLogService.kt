@@ -6,8 +6,8 @@ import kotlinx.serialization.json.JsonObject
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedApplicationCommandsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ExecutedApplicationCommandsLog
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 

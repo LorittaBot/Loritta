@@ -119,6 +119,14 @@ data class DivineInterventionSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
+data class ShipEffectSonhosTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val sonhos: Long
+) : SonhosTransaction()
+
+@Serializable
 data class UnknownSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,
