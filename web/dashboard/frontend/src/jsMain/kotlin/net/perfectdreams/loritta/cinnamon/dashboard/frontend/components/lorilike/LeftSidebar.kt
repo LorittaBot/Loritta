@@ -11,7 +11,9 @@ import org.jetbrains.compose.web.dom.Nav
 @Composable
 fun LeftSidebar(
     isSidebarOpen: MutableState<Boolean>,
-    entries: @Composable () -> (Unit)
+    top: @Composable () -> (Unit) = {},
+    bottom: @Composable () -> (Unit) = {},
+    entries: @Composable () -> (Unit) = {}
 ) {
     Nav(attrs = {
         id("left-sidebar")
@@ -20,9 +22,13 @@ fun LeftSidebar(
         else
             classes("is-closed")
     }) {
+        top.invoke()
+
         Div(attrs = { classes("entries") }) {
             entries.invoke()
         }
+
+        bottom.invoke()
     }
 
     Nav(attrs = { id("mobile-left-sidebar")}) {

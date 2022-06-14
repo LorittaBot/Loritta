@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash
 
 import androidx.compose.runtime.Composable
+import kotlinx.datetime.Clock
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.InlineNullableUserDisplay
@@ -21,7 +22,7 @@ fun ActiveShipEffects(
         Text("Subornos Ativos")
     }
 
-    when (val state = screen.activeShipEffects) {
+    when (val state = screen.shipEffects) {
         is State.Failure -> {}
         is State.Loading -> {
             LoadingSection(i18nContext)
@@ -32,7 +33,7 @@ fun ActiveShipEffects(
                     classes("cards")
                 }
             ) {
-                for (effect in state.value.effects.sortedByDescending { it.expiresAt }) {
+                for (effect in state.value.effects.filter { it.expiresAt > Clock.System.now() } .sortedByDescending { it.expiresAt }) {
                     Div(
                         attrs = {
                             classes("card")

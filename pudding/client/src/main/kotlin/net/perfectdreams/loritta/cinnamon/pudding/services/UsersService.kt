@@ -48,7 +48,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
         return pudding.transaction { _getUserProfile(id) }
     }
 
-    internal suspend fun _getUserProfile(id: UserId): PuddingUserProfile? {
+    suspend fun _getUserProfile(id: UserId): PuddingUserProfile? {
         return pudding.transaction {
             Profiles.select { Profiles.id eq id.value.toLong() }
                 .firstOrNull()

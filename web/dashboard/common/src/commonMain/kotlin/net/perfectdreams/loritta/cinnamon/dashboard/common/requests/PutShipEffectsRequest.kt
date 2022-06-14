@@ -7,4 +7,4 @@ import net.perfectdreams.loritta.cinnamon.dashboard.common.ShipPercentage
 data class PutShipEffectsRequest(
     val receivingEffectUserId: Long,
     val percentage: ShipPercentage
-)
+) : LorittaRequest()

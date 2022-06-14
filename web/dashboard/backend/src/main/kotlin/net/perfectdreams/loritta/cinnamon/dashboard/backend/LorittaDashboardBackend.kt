@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.HomeRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.GetLanguageInfoRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetSearchUserRoute
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetSelfUserInfoRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.GetShipEffectsRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users.PutShipEffectsRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.WebsiteAssetsHashManager
@@ -30,6 +31,7 @@ class LorittaDashboardBackend(
         HomeRoute(this),
 
         // ===[ API ]===
+        GetSelfUserInfoRoute(this),
         GetShipEffectsRoute(this),
         PutShipEffectsRoute(this),
         GetSearchUserRoute(this),

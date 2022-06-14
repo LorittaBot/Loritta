@@ -8,4 +8,4 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
 class GetShipEffectsResponse(
     val effects: List<ShipEffect>,
     val resolvedUsers: List<CachedUserInfo>
-)
+) : LorittaResponse()

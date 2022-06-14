@@ -11,8 +11,11 @@
 @use "components/loading-section";
 @use "components/discord-button";
 @use "components/cards";
+@use "components/modal";
 @use "placeholders/reset-link-styling";
 @use "placeholders/reset-button-styling";
+
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
 
 $loritta-blue: #29a6fe;
 $mobile-version: 1279px;
@@ -246,6 +249,7 @@ nav#left-sidebar {
             > img {
                 // Avatar Icon
                 height: 32px;
+                width: 32px;
                 border-radius: 50%;
             }
 

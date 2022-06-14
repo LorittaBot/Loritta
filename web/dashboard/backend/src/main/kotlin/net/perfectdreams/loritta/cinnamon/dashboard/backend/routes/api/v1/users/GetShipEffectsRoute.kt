@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.RequiresAPIDiscordLoginRoute
-import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondJson
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondLoritta
 import net.perfectdreams.loritta.cinnamon.dashboard.common.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetShipEffectsResponse
 import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
@@ -20,7 +20,6 @@ class GetShipEffectsRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginR
     ) {
         val shipEffects = m.pudding.transaction {
             ShipEffects.select {
-                // TODO: Get ID from authenticated request
                 ShipEffects.buyerId eq userIdentification.id.toLong()
             }.map { row ->
                 ShipEffect(
@@ -38,7 +37,7 @@ class GetShipEffectsRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginR
             .distinct()
             .mapNotNull { m.pudding.users.getCachedUserInfoById(it) }
 
-        call.respondJson(
+        call.respondLoritta(
             GetShipEffectsResponse(
                 shipEffects,
                 resolvedUsers

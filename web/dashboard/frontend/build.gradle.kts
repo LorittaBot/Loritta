@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.2.0-alpha01-dev709"
+    id("org.jetbrains.compose") version "0.0.0-on_kotlin_1.7.0-rc-dev705"
 }
 
 repositories {
@@ -22,6 +22,7 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(libs.ktor.client.core)
                 implementation(project(":web:dashboard:common"))
+                implementation(libs.ktor.client.js)
             }
 
             resources.srcDir("../../resources/") // Include folders from the resources web folder

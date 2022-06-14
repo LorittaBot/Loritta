@@ -5,16 +5,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import io.ktor.client.request.*
-import kotlinx.browser.window
+import kotlinx.datetime.Clock
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.common.ShipPercentage
-import net.perfectdreams.loritta.cinnamon.dashboard.common.requests.PutShipEffectsRequest
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordUserInput
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.FieldLabel
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.setJsonBody
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.disabled
@@ -150,7 +148,19 @@ fun ShipEffectsOverview(
                             disabled()
                         else {
                             onClick {
-                                screen.launch {
+                                val activeShipEffects = (screen.shipEffects as? State.Success)?.value
+                                    ?.effects?.filter { it.expiresAt > Clock.System.now() }
+
+                                // Does the user already have an active ship effect for the same user + percentage?
+                                val showWarningModal = activeShipEffects?.any { it.user2 == _user.id && shipPercentage.percentage == it.editedShipValue }
+
+                                if (showWarningModal == true) {
+                                    screen.openShipEffectPurchaseWarning(_user, shipPercentage)
+                                } else {
+                                    screen.openConfirmShipEffectPurchaseModal(_user, shipPercentage)
+                                }
+
+                                /* screen.launch {
                                     m.http.put("${window.location.origin}/api/v1/users/ship-effects") {
                                         setJsonBody(
                                             PutShipEffectsRequest(
@@ -159,7 +169,7 @@ fun ShipEffectsOverview(
                                             )
                                         )
                                     }
-                                }
+                                } */
                             }
                         }
                     }) {

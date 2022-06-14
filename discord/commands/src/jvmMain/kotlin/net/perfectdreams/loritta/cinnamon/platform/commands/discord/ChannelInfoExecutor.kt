@@ -166,6 +166,7 @@ class ChannelInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
                         }
                     }
                 }
+                else -> {} // For now let's ignore them
             }
 
             if (channel.rateLimitPerUser.value != null)
@@ -174,7 +175,7 @@ class ChannelInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
                         ServerCommand.I18N_PREFIX.Channel.Info.Text.SlowMode
                     )
                     val rateLimitPerUser = channel.rateLimitPerUser.value
-                    value = if (rateLimitPerUser == 0 || rateLimitPerUser == null)
+                    value = if (rateLimitPerUser?.inWholeSeconds == 0L || rateLimitPerUser == null)
                         context.i18nContext.get(I18nKeys.Common.Disabled)
                     else
                         context.i18nContext.get(

@@ -10,8 +10,13 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.dashboard.common.LorittaJsonWebSession
+import net.perfectdreams.loritta.cinnamon.dashboard.common.requests.LorittaRequest
+import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.LorittaResponse
 
 suspend inline fun <reified T> ApplicationCall.receiveAndDecodeJson() = Json.decodeFromString<T>(receiveText())
+
+suspend inline fun <reified T : LorittaRequest> ApplicationCall.receiveAndDecodeRequest(): T
+        = Json.decodeFromString<LorittaRequest>(receiveText()) as T
 
 suspend fun ApplicationCall.respondJson(
     text: String,
@@ -24,6 +29,13 @@ suspend inline fun <reified T> ApplicationCall.respondJson(
     status: HttpStatusCode? = null,
     noinline configure: OutgoingContent.() -> Unit = {}
 ) = respondText(Json.encodeToString(serializableObject), ContentType.Application.Json, status, configure)
+
+suspend inline fun <reified T : LorittaResponse> ApplicationCall.respondLoritta(
+    serializableObject: T,
+    status: HttpStatusCode? = null,
+    noinline configure: OutgoingContent.() -> Unit = {}
+) = respondText(Json.encodeToString<LorittaResponse>(serializableObject), ContentType.Application.Json, status, configure)
+
 
 var ApplicationCall.lorittaSession: LorittaJsonWebSession
     get() {

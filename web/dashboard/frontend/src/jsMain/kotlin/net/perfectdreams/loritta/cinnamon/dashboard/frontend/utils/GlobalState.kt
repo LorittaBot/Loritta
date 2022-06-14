@@ -1,10 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils
 
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.browser.window
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Deferred
@@ -16,42 +18,42 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.formatters.IntlMFFormatter
+import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetUserIdentificationResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class GlobalState(val m: LorittaDashboardFrontend) {
-    var userInfo by mutableStateOf<State<CachedUserInfo>>(State.Loading())
+    private var userInfoState = mutableStateOf<State<GetUserIdentificationResponse>>(State.Loading())
+    var userInfo by userInfoState
     var i18nContext by mutableStateOf<State<I18nContext>>(State.Loading())
     var isSidebarOpenState = mutableStateOf(false)
     var isSidebarOpen by isSidebarOpenState
+    var activeModal by mutableStateOf<Modal?>(null)
 
     private val jobs = mutableListOf<Job>()
 
     suspend fun updateSelfUserInfo() {
-        // TODO: real query
-        userInfo = State.Success(
-            CachedUserInfo(
-                UserId(0),
-                "owo",
-                "4185",
-                null
-            )
-        )
+        m.makeApiRequestAndUpdateState(userInfoState, HttpMethod.Get, "/api/v1/users/@me")
     }
 
     suspend fun updateI18nContext() {
-        // TODO: real query
-        GlobalScope.async {
-            val result = m.http.get("${window.location.origin}/api/v1/languages/pt").bodyAsText()
+        val result = m.http.get("${window.location.origin}/api/v1/languages/pt").bodyAsText()
 
-            val i18nContext = I18nContext(
-                IntlMFFormatter(),
-                Json.decodeFromString(result)
-            )
+        val i18nContext = I18nContext(
+            IntlMFFormatter(),
+            Json.decodeFromString(result)
+        )
 
-            this@GlobalState.i18nContext = State.Success(i18nContext)
-        }
+        this@GlobalState.i18nContext = State.Success(i18nContext)
+    }
+
+    fun openModal(
+        body: @Composable () -> (Unit),
+        vararg buttons: @Composable () -> (Unit)
+    ) {
+        activeModal = Modal(
+            body,
+            buttons.toMutableList()
+        )
     }
 
     fun launch(block: suspend CoroutineScope.() -> Unit): Job {

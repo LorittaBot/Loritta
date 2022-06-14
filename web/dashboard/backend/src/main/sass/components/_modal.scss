@@ -1,0 +1,29 @@
+.modal-wrapper {
+    position: fixed;
+    background-color: #000000a1;
+    width: 100vw;
+    height: 100vh;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .modal {
+        background-color: white;
+        box-shadow: 0px 0px 10px #00000059;
+        border-radius: 7px;
+        overflow: hidden;
+
+        .content {
+            padding: 1em;
+        }
+
+        .buttons-wrapper {
+            padding: 1em;
+            background-color: #d8d8dc;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1em;
+        }
+    }
+}
