@@ -1,0 +1,21 @@
+---
+website:
+  dashboard:
+    localePathId: "pt" #The locale ID that is prefixed on every localized page path, example: "/pt/commands/"
+    loading: "Carregando..."
+    modal:
+      close: "Fechar"
+    purchaseModal:
+      title: "Confirmar Compra"
+      purchase: "Comprar"
+      description:
+        - "Você quer pagar {price,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para comprar?"
+        - "Atualmente você tem {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}!"
+    youDontHaveEnoughSonhosModal:
+      title: "Você não tem sonhos suficientes!"
+      description: "LorittaLand não é uma caridade. Sem dinheiro, sem frufrus para você! Você precisa ter {sonhos, plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para comprar isto."
+    discordUserInput:
+      tip: "Preencha com a tag do usuário (exemplo: MrPowerGamerBR#4185) ou com o ID do usuário (exemplo: 123170274651668480)"
+      unknownUser: "Usuário desconhecido! Verifique se você copiou a tag do usuário corretamente ou, se ainda não estiver funcionando, tente usar o ID do usuário!"
+      invalidDiscriminator: "Isso é um usuário *mágico*? Porque ele tem um discriminador inválido!"
+      missingDiscriminator: "Cadê o Discriminador? O discriminador é a seção após o nome do usuário (exemplo: #4185)" #4185)"
