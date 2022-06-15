@@ -102,7 +102,7 @@ class LorittaDashboardBackend(
 
                             val locale = languageManager.getI18nContextById(localeId)
 
-                            call.respondRedirect("/${locale.get(I18nKeysData.Website.LocalePathId)}${call.request.uri}")
+                            call.respondRedirect("/${locale.get(I18nKeysData.Website.Dashboard.LocalePathId)}${call.request.uri}")
                             return@get
                         }
                     }
