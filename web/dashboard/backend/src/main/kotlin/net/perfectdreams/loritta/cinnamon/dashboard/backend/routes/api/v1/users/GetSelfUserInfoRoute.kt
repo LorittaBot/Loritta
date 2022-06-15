@@ -26,7 +26,7 @@ class GetSelfUserInfoRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLogin
                 userIdentification.discriminator,
                 userIdentification.avatar,
                 sonhos?.money ?: 0L,
-                premiumPlan.hasDailyInactivityTax
+                premiumPlan.displayAds
             )
         )
     }

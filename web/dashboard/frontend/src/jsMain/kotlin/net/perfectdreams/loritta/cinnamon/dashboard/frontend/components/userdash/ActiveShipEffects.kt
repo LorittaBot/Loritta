@@ -35,8 +35,7 @@ fun ActiveShipEffects(
             ) {
                 val activeShipEffects = state.value.effects.filter { it.expiresAt > Clock.System.now() }.sortedByDescending { it.expiresAt }
                 if (activeShipEffects.isNotEmpty()) {
-                    for (effect in state.value.effects.filter { it.expiresAt > Clock.System.now() }
-                        .sortedByDescending { it.expiresAt }) {
+                    for (effect in activeShipEffects) {
                         Div(
                             attrs = {
                                 classes("card")
