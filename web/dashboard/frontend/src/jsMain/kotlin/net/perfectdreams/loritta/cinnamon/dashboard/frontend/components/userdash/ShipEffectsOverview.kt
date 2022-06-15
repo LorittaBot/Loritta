@@ -9,21 +9,31 @@ import kotlinx.datetime.Clock
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.common.ShipPercentage
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.AppendControlAsIsResult
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.ComposableFunctionResult
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordUserInput
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.FieldLabel
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedFieldLabel
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedH1
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedH2
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.TextReplaceControls
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.appendAsFormattedText
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.AdSidebar
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrapper
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrappers
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeys
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.attributes.max
 import org.jetbrains.compose.web.attributes.min
 import org.jetbrains.compose.web.css.textAlign
-import org.jetbrains.compose.web.dom.Aside
 import org.jetbrains.compose.web.dom.Button
+import org.jetbrains.compose.web.dom.Code
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.H1
-import org.jetbrains.compose.web.dom.H2
 import org.jetbrains.compose.web.dom.Hr
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Input
@@ -49,91 +59,84 @@ fun ShipEffectsOverview(
                     }
                 }
             ) {
-                Img(src = "https://cdn.discordapp.com/attachments/393332226881880074/985702962653429790/loritta_cupido.png") {
-                    attr("height", "300")
+                Img("https://assets.perfectdreams.media/loritta/ship/loritta.png") {
+                    attr("width", "300")
                 }
 
-                H1 {
-                    Text("Editar os valores do Ship")
-                }
+                LocalizedH1(i18nContext, I18nKeysData.Website.Dashboard.ShipEffects.Title)
             }
 
             Div {
-                P {
-                    Text("Mudar os valores do oráculo do amor não é fácil, o oráculo não gosta quando as pessoas acham que o valor dado pelo +ship está errado, afinal, o valor está certo! Você que está querendo trocar o impossivel...")
-                }
-                P {
-                    Text("Mas é claro, nada que um pouco de sonhos não mude o oráculo de ideia, né? Por apenas 3000 sonhos, você pode convencer o oráculo que *talvez* ele esteja errado... Mas cuidado, o oráculo só irá aceitar a sua oferenda por uma semana, após uma semana, você deverá dar a oferenda de novo!")
-                }
-                P {
-                    Text("(Sim, o oráculo sou eu)")
+                for (str in i18nContext.language
+                    .textBundle
+                    .lists
+                    .getValue(I18nKeys.Website.Dashboard.ShipEffects.Description.key)
+                ) {
+                    P {
+                        TextReplaceControls(
+                            str,
+                            appendAsFormattedText(i18nContext, mapOf("sonhos" to 3_000)),
+                        ) {
+                            when (it) {
+                                "shipCommand" -> {
+                                    ComposableFunctionResult {
+                                        Code {
+                                            Text("/ship")
+                                        }
+                                    }
+                                }
+                                else -> AppendControlAsIsResult
+                            }
+                        }
+                    }
                 }
             }
 
             Hr {}
-            H2 {
-                Text("Subornar o Oráculo")
-            }
+
+            LocalizedH2(i18nContext, I18nKeysData.Website.Dashboard.ShipEffects.Bribe.Title)
 
             var user by remember { mutableStateOf<CachedUserInfo?>(null) }
             var shipPercentageValue by remember { mutableStateOf(100) }
 
-            Div(
-                attrs = {
-                    classes("field-wrappers")
-                }
-            ) {
-                Div(
-                    attrs = {
-                        classes("field-wrapper")
-                    }
-                ) {
-                    Div {
-                        FieldLabel("Usuário que receberá o feitiço do seu suborno", "effect-user")
+            FieldWrappers {
+                FieldWrapper {
+                    LocalizedFieldLabel(i18nContext, I18nKeysData.Website.Dashboard.ShipEffects.Bribe.UserThatWillReceiveTheEffect, "effect-user")
 
-                        DiscordUserInput(
-                            m,
-                            i18nContext,
-                            screen,
-                            {
-                                id("effect-user")
-                            }
-                        ) {
-                            user = it
+                    DiscordUserInput(
+                        m,
+                        i18nContext,
+                        screen,
+                        {
+                            id("effect-user")
+                        }
+                    ) {
+                        user = it
+                    }
+                }
+
+                FieldWrapper {
+                    LocalizedFieldLabel(i18nContext, I18nKeysData.Website.Dashboard.ShipEffects.Bribe.NewShipPercentage, "ship-percentage")
+
+                    Input(
+                        InputType.Number
+                    ) {
+                        id("ship-percentage")
+                        min("0")
+                        max("100")
+
+                        value(shipPercentageValue)
+                        onInput {
+                            shipPercentageValue = it.value?.toInt() ?: 100
                         }
                     }
+
+                    Text("%")
                 }
 
-                Div(
-                    attrs = {
-                        classes("field-wrapper")
-                    }
-                ) {
-                    Div {
-                        FieldLabel("Nova porcentagem do ship", "ship-percentage")
+                val userIdentification = LocalUserIdentification.current
 
-                        Input(
-                            InputType.Number
-                        ) {
-                            id("ship-percentage")
-                            min("0")
-                            max("100")
-
-                            value(shipPercentageValue)
-                            onInput {
-                                shipPercentageValue = it.value?.toInt() ?: 100
-                            }
-                        }
-
-                        Text("%")
-                    }
-                }
-
-                Div(
-                    attrs = {
-                        classes("field-wrapper")
-                    }
-                ) {
+                FieldWrapper {
                     Button(attrs = {
                         classes("discord-button", "success")
 
@@ -148,6 +151,11 @@ fun ShipEffectsOverview(
                             disabled()
                         else {
                             onClick {
+                                if (3000 > userIdentification.money) {
+                                    screen.openNotEnoughSonhosModal(i18nContext, 3000)
+                                    return@onClick
+                                }
+
                                 val activeShipEffects = (screen.shipEffects as? State.Success)?.value
                                     ?.effects?.filter { it.expiresAt > Clock.System.now() }
 
@@ -155,21 +163,10 @@ fun ShipEffectsOverview(
                                 val showWarningModal = activeShipEffects?.any { it.user2 == _user.id && shipPercentage.percentage == it.editedShipValue }
 
                                 if (showWarningModal == true) {
-                                    screen.openShipEffectPurchaseWarning(_user, shipPercentage)
+                                    screen.openShipEffectPurchaseWarning(i18nContext, _user, shipPercentage)
                                 } else {
-                                    screen.openConfirmShipEffectPurchaseModal(_user, shipPercentage)
+                                    screen.openConfirmShipEffectPurchaseModal(i18nContext, _user, shipPercentage)
                                 }
-
-                                /* screen.launch {
-                                    m.http.put("${window.location.origin}/api/v1/users/ship-effects") {
-                                        setJsonBody(
-                                            PutShipEffectsRequest(
-                                                _user.id.value.toLong(),
-                                                shipPercentage
-                                            )
-                                        )
-                                    }
-                                } */
                             }
                         }
                     }) {
@@ -184,7 +181,5 @@ fun ShipEffectsOverview(
         }
     }
 
-    Aside(attrs = { id("sidebar-ad") }) {
-
-    }
+    AdSidebar()
 }

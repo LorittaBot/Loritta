@@ -17,6 +17,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.Screen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import org.jetbrains.compose.web.attributes.InputType
@@ -42,7 +43,7 @@ fun DiscordUserInput(
     ) {
         attrsScope.invoke(this)
 
-        placeholder("Preencha com a Tag do Usuário (exemplo: MrPowerGamerBR#4185) ou ID do Usuário (exemplo: 123170274651668480)")
+        placeholder(i18nContext.get(I18nKeysData.Website.Dashboard.DiscordUserInput.Tip))
 
         onInput {
             // Validate input
@@ -72,13 +73,10 @@ fun DiscordUserInput(
                     }
 
                     if (response.status == HttpStatusCode.NotFound) {
-                        println("Usuário desconhecido!")
                         queriedUserResult.invoke(null)
                         state = DiscordUserInputState.UnknownUser
                     } else {
                         val foundUser = Json.decodeFromString<CachedUserInfo>(response.bodyAsText())
-                        println("Usuário... conhecido!")
-                        println(foundUser)
 
                         val success = DiscordUserInputState.Success(foundUser)
                         state = success
@@ -107,7 +105,7 @@ fun DiscordUserInput(
                 ValidationMessageWithIcon(
                     ValidationMessageStatus.ERROR,
                     SVGIconManager.exclamationTriangle,
-                    "Usuário desconhecido!"
+                    I18nKeysData.Website.Dashboard.DiscordUserInput.UnknownUser
                 )
             }
         }
@@ -118,9 +116,9 @@ fun DiscordUserInput(
             when (parseResult) {
                 is DiscordUserInputResult.DiscordIdInput -> error("This should never happen!")
                 is DiscordUserInputResult.DiscordTagInput -> error("This should never happen!")
-                DiscordUserInputResult.Empty -> "Preencha com a Tag do Usuário (exemplo: MrPowerGamerBR#4185) ou ID do Usuário (exemplo: 123170274651668480)"
-                DiscordUserInputResult.InvalidDiscriminator -> "Discriminator inválido!!"
-                DiscordUserInputResult.MissingDiscriminator -> "Cadê o discriminador nn sei"
+                DiscordUserInputResult.Empty -> I18nKeysData.Website.Dashboard.DiscordUserInput.Tip
+                DiscordUserInputResult.InvalidDiscriminator -> I18nKeysData.Website.Dashboard.DiscordUserInput.InvalidDiscriminator
+                DiscordUserInputResult.MissingDiscriminator -> I18nKeysData.Website.Dashboard.DiscordUserInput.MissingDiscriminator
             }
         )
     }
@@ -132,25 +130,31 @@ sealed class DiscordUserInputResult {
             if (input.isBlank())
                 return Empty
 
-            val valueAsLong = input.toLongOrNull()
-            if (valueAsLong == null) {
-                val discriminator = input.substringAfter("#", missingDelimiterValue = "")
+            val trimmedInput = input.trim() // The user may have copied the text with spaces, so let's remove it
+                .replace("@", "") // Usernames cannot have @, so let's remove it
 
-                if (discriminator.isBlank()) {
+            val valueAsLong = trimmedInput.toLongOrNull()
+            if (valueAsLong == null) {
+                val split = trimmedInput.split("#")
+                if (split.size != 2)
+                    return MissingDiscriminator
+
+                val (name, discriminator) = split
+                val trimmedName = name.trim()
+                val trimmedDiscriminator = discriminator.trim()
+
+                if (trimmedDiscriminator.isBlank()) {
                     return MissingDiscriminator
                 }
 
-                if (discriminator.length != 4)
+                if (trimmedDiscriminator.length != 4)
                     return InvalidDiscriminator
 
-                val discriminatorAsInt = discriminator.toIntOrNull()
+                val discriminatorAsInt = trimmedDiscriminator.toIntOrNull()
                 if (discriminatorAsInt == null || discriminatorAsInt !in 1..9999)
                     return InvalidDiscriminator
 
-                return DiscordTagInput(
-                    input
-                        .removePrefix("@")
-                ) // If there is a "@" in the beginning, the user may have inserted it by mistake
+                return DiscordTagInput("${trimmedName}#${trimmedDiscriminator}")
             }
 
             return DiscordIdInput(UserId(valueAsLong))

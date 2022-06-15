@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components
+package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue

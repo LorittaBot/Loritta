@@ -1,5 +1,8 @@
 @charset "utf-8";
 
+$loritta-blue: #29a6fe;
+$mobile-version: 1279px;
+
 @use "spa-loading";
 @use "components/fan-art-card";
 @use "components/pagination";
@@ -9,6 +12,7 @@
 @use "components/fan-art-overview-tags";
 @use "components/inline-user-display";
 @use "components/loading-section";
+@use "components/empty-section";
 @use "components/discord-button";
 @use "components/cards";
 @use "components/modal";
@@ -16,9 +20,6 @@
 @use "placeholders/reset-button-styling";
 
 @import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
-
-$loritta-blue: #29a6fe;
-$mobile-version: 1279px;
 
 @mixin bp($point) {
     @if $point == 'small' {
@@ -35,6 +36,7 @@ $mobile-version: 1279px;
 
 body {
     margin: 0;
+    color: #333333;
 }
 
 * {
@@ -290,6 +292,7 @@ section#right-sidebar {
         max-width: 70em;
         margin-left: auto;
         margin-right: auto;
+        line-height: 1.58;
 
         hr {
             box-sizing: content-box;
@@ -300,7 +303,7 @@ section#right-sidebar {
     }
 }
 
-aside#sidebar-ad {
+aside#that-wasnt-very-cash-money-of-you {
     width: 160px;
     max-width: 160px;
     min-width: 160px;
@@ -370,5 +373,6 @@ input {
     .icon {
         width: 1em;
         height: 1em;
+        display: flex;
     }
 }

@@ -3,20 +3,23 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdas
 import androidx.compose.runtime.Composable
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetUserIdentificationResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordAvatar
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.SidebarCategory
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.SidebarEntry
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.SidebarEntryScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.LeftSidebar
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarCategory
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarDivider
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarEntryLink
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import org.jetbrains.compose.web.dom.Div
-import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun UserLeftSidebar(
     m: LorittaDashboardFrontend
 ) {
+    val spicyInfo = (m.globalState.spicyInfo as State.Success).value // At this point it should never be non-success
+
     LeftSidebar(
         m.globalState.isSidebarOpenState,
         bottom = {
@@ -24,65 +27,32 @@ fun UserLeftSidebar(
                 val userIdentification = (m.globalState.userInfo as? State.Success<GetUserIdentificationResponse>)?.value
 
                 if (userIdentification != null) {
-                    Div(attrs = { classes("user-info") }) {
-                        DiscordAvatar(userIdentification.id, userIdentification.discriminator, userIdentification.avatarId) {
-                            attr("width", "24")
-                            attr("height", "24")
-                        }
-
-                        Div(attrs = { classes("user-tag") }) {
-                            Div(attrs = { classes("name") }) {
-                                Text(userIdentification.username)
-                            }
-
-                            Div(attrs = { classes("discriminator") }) {
-                                Text("#${userIdentification.discriminator}")
-                            }
-                        }
-                    }
+                    UserInfoSidebar(userIdentification)
                 }
             }
         }
     ) {
-        Div(attrs = {
-            onClick {
-                // m.routingManager.switchToUserOverview()
-            }
-        }) {
-            SidebarEntry(SVGIconManager.cogs, "Meus Servidores")
-        }
+        SidebarEntryLink(SVGIconManager.cogs, "${spicyInfo.legacyDashboardUrl}/dashboard", "Meus Servidores")
 
         SidebarDivider()
 
         SidebarCategory("Configurações do Usuário") {
-            SidebarEntry(SVGIconManager.idCard, "Layout de Perfil")
-
-            SidebarEntry(SVGIconManager.images, "Backgrounds")
-
-            SidebarEntry(SVGIconManager.heart, "Editar valores do Ship")
+            SidebarEntryLink(SVGIconManager.idCard, "${spicyInfo.legacyDashboardUrl}/user/@me/dashboard/profiles", "Layout de Perfil")
+            SidebarEntryLink(SVGIconManager.images, "${spicyInfo.legacyDashboardUrl}/user/@me/dashboard/backgrounds", "Backgrounds")
+            SidebarEntryScreen(m, SVGIconManager.heart, I18nKeysData.Website.Dashboard.ShipEffects.Title) {
+                ShipEffectsScreen(m)
+            }
         }
 
         SidebarDivider()
 
         SidebarCategory("Miscelânea") {
-            SidebarEntry(SVGIconManager.moneyBillWave, "Daily")
-
-            SidebarEntry(SVGIconManager.store, "Loja Diária")
-
-            SidebarEntry(SVGIconManager.shoppingCart, "Lojinha de Sonhos")
-
-            SidebarEntry(SVGIconManager.asterisk, "Diretrizes da Comunidade")
+            SidebarEntryLink(SVGIconManager.moneyBillWave, "${spicyInfo.legacyDashboardUrl}/daily", "Daily")
+            SidebarEntryLink(SVGIconManager.store, "${spicyInfo.legacyDashboardUrl}/user/@me/dashboard/daily-shop", "Loja Diária")
+            SidebarEntryLink(SVGIconManager.shoppingCart, "${spicyInfo.legacyDashboardUrl}/user/@me/dashboard/bundles", "Lojinha de Sonhos")
+            SidebarEntryLink(SVGIconManager.asterisk, "${spicyInfo.legacyDashboardUrl}/guidelines", "Diretrizes da Comunidade")
         }
 
         // SidebarEntry("Sair")
     }
-    /* Div(attrs = { id("left-sidebar") }) {
-        Div(attrs = { classes("entries") }) {
-
-        }
-
-        Div(attrs = { classes("left-sidebar-user-info") }) {
-
-        }
-    } */
 }

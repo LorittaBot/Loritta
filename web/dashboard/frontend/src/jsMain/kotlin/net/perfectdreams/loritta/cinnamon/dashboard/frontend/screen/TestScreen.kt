@@ -1,3 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen
 
-class TestScreen : Screen()
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
+
+class TestScreen(m: LorittaDashboardFrontend) : Screen(m)

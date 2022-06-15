@@ -8,5 +8,7 @@ data class GetUserIdentificationResponse(
     val id: UserId,
     val username: String,
     val discriminator: String,
-    val avatarId: String?
+    val avatarId: String?,
+    val money: Long,
+    val displayAds: Boolean,
 ) : LorittaResponse()

@@ -20,6 +20,7 @@ object SVGIconManager {
     val store by lazy { register(svgStore, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val shoppingCart by lazy { register(svgShoppingCart, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
     val asterisk by lazy { register(svgAsterisk, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
+    val star by lazy { register(svgStar, SVGOptions.ADD_CURRENT_COLOR_FILLS) }
 
     /**
      * Loads and registers a SVG with [name] and [path]
@@ -116,3 +117,7 @@ external val svgShoppingCart: dynamic
 @JsModule("./icons/fontawesome5/solid/asterisk.svg")
 @JsNonModule
 external val svgAsterisk: dynamic
+
+@JsModule("./icons/fontawesome5/solid/star.svg")
+@JsNonModule
+external val svgStar: dynamic

@@ -8,6 +8,7 @@ data class RootConfig(
     val sessionName: String,
     val sessionDomain: String,
     val unauthorizedRedirectUrl: String,
+    val legacyDashboardUrl: String,
     val userAuthenticationOverride: UserAuthenticationOverrideConfig,
     val pudding: PuddingConfig
 )

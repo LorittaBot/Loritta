@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users
 
 import io.ktor.server.application.*
+import net.perfectdreams.loritta.cinnamon.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondLoritta
@@ -13,12 +14,19 @@ class GetSelfUserInfoRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLogin
         call: ApplicationCall,
         userIdentification: LorittaJsonWebSession.UserIdentification
     ) {
+        val userId = UserId(userIdentification.id.toLong())
+
+        val sonhos = m.pudding.users.getUserProfile(userId)
+        val premiumPlan = UserPremiumPlans.getPlanFromValue(m.pudding.payments.getActiveMoneyFromDonations(userId))
+
         call.respondLoritta(
             GetUserIdentificationResponse(
                 UserId(userIdentification.id.toLong()),
                 userIdentification.username,
                 userIdentification.discriminator,
-                userIdentification.avatar
+                userIdentification.avatar,
+                sonhos?.money ?: 0L,
+                premiumPlan.hasDailyInactivityTax
             )
         )
     }
