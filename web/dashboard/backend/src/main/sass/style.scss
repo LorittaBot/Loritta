@@ -282,6 +282,11 @@ section#right-sidebar {
     // 50px = Navbar
     height: calc(100vh - 50px);
 
+    @media (max-width: 500px) {
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+
     // We don't need to reserve the 50px if we aren't showing the navbar!
     @include bp('medium') {
         height: 100vh;
