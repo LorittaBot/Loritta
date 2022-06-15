@@ -1,0 +1,23 @@
+---
+website:
+  dashboard:
+    shipEffects:
+      title: "Editar valores do Ship"
+      description:
+        - "Mudar os valores do oráculo do amor não é fácil, o oráculo não gosta quando as pessoas questionam valor dado pelo {shipCommand}, afinal, o valor está certo! Você que está querendo distorcer a realidade..."
+        - "Mas é claro, nada que um pouco de sonhos não mude o oráculo de ideia, né? Por apenas {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}, você pode convencer o oráculo que *talvez* ele esteja errado... Mas cuidado, o oráculo só irá aceitar a sua oferenda por uma semana, após uma semana, você deverá dar a sua oferenda novamente!"
+        - "(Sim, o oráculo sou eu)"
+      bribe:
+        title: "Subornar o Oráculo"
+        userThatWillReceiveTheEffect: "Usuário que receberá o feitiço do seu suborno"
+        newShipPercentage: "Nova porcentagem do ship"
+      activeEffects:
+        title: "Subornos Ativos"
+      similarActiveEffect:
+        title: "Você já tem um suborno similar!"
+        description: "Você já tem um suborno similar ativo, então eu decidi te avisar para evitar que você gaste sonhos sem querer! Mas se mesmo assim você quiser subornar, quem sou eu para te impedir, né?"
+        continue: "Você não é a minha mãe!"
+      effectApplied:
+        title: "Oráculo Subornado, Efeito Ativado"
+        description: "O Oráculo do Amor aceitou a sua oferenda e aplicou o feitiço na relação entre vocês dois!"
+        thanksLoveOracle: "Obrigado Lori... quer dizer, Oráculo do Amor"
