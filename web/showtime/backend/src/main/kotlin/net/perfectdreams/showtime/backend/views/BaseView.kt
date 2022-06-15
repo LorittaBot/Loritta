@@ -147,7 +147,7 @@ window["nitroAds"] = window["nitroAds"] || {
             deferredScript("https://s.nitropay.com/ads-595.js")
 
             // App itself
-            deferredScript("/v3/assets/js/frontend.js?hash=${assetHash("/assets/js/frontend.js")}")
+            deferredScript("/v3/assets/js/showtime-frontend.js?hash=${assetHash("/assets/js/showtime-frontend.js")}")
 
             for ((websiteLocaleId, localeName) in listOf("br" to "pt-BR", "us" to "en", "es" to "es", "pt" to "pt")) {
                 link {

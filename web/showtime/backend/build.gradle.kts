@@ -70,7 +70,7 @@ jib {
     }
 }
 
-val jsBrowserProductionWebpack = tasks.getByPath(":web:showtime:frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+val jsBrowserProductionWebpack = tasks.getByPath(":web:showtime:showtime-frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 // Optimize image assets
 val optimizeImageAssets = tasks.register<ImageOptimizerTask>("optimizeImageAssets") {

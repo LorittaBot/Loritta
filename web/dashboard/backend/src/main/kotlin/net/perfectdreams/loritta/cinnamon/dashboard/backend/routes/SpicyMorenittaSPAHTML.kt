@@ -35,7 +35,7 @@ fun galleryOfDreamsSpaHtml(
         metaBlock.invoke(this)
 
         styleLink("/assets/css/style.css?hash=${m.hashManager.getAssetHash("/assets/css/style.css")}")
-        script(src = "/assets/js/frontend.js?hash=${m.hashManager.getAssetHash("/assets/js/frontend.js")}") {
+        script(src = "/assets/js/spicy-frontend.js?hash=${m.hashManager.getAssetHash("/assets/js/spicy-frontend.js")}") {
             defer = true // Only execute after the page has been parsed
         }
 

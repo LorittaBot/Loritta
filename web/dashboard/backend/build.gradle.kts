@@ -50,7 +50,7 @@ jib {
     }
 }
 
-val jsBrowserProductionWebpack = tasks.getByPath(":web:dashboard:frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
+val jsBrowserProductionWebpack = tasks.getByPath(":web:dashboard:spicy-frontend:jsBrowserProductionWebpack") as org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpack
 
 val sass = tasks.register<SassTask>("sass-style-scss") {
     this.inputSass.set(file("src/main/sass/style.scss"))

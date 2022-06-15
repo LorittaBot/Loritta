@@ -64,9 +64,9 @@ include(":microservices:discord-gateway-events-processor")
 // ===[ SHOWTIME ]===
 include(":web:showtime:web-common")
 include(":web:showtime:backend")
-include(":web:showtime:frontend")
+include(":web:showtime:showtime-frontend")
 
 // ===[ DASHBOARD ]===
 include(":web:dashboard:common")
 include(":web:dashboard:backend")
-include(":web:dashboard:frontend")
+include(":web:dashboard:spicy-frontend")
