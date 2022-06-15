@@ -56,6 +56,10 @@ types:
     lostTaxed: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (valor após taxado: {quantityAfterTax}) para o {emojiFightEmoji} de `{winnerTag}` (`{winnerId}`) em uma apostas de sonhos em rinha de emojis"
     won: "Recebeu {quantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) de {userInEmojiFight,plural, =0 {# usuários} one {# usuário} other {# usuários}} em uma rinha de emoji pois todos temeram o poderoso {emojiFightEmoji}"
     lost: "Pagou {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} (sem taxa!) para o {emojiFightEmoji} de `{winnerTag}` (`{winnerId}`) em uma apostas de sonhos em rinha de emojis"
+  shipEffect:
+    title: "Subornos de Ship"
+    description: "Transações relacionadas com subornos ao oráculo do amor"
+    boughtShipEffect: "Subornou o oráculo do amor com {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
   sparklyPowerLsx:
     title: "Câmbio de Sonhos no SparklyPower"
     description: "Transações relacionadas ao SparklyPower, o Servidor de Minecraft da Loritta"
