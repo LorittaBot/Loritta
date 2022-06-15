@@ -22,6 +22,7 @@ commands:
         - "O Minecraft é um dos jogos mais marcantes de todos os tempos, e você sabia que sem ele... talvez eu nem existiria?"
         - "Comandos relacionados ao Minecraft."
       unknownPlayer: "`{playerName}` não é um jogador de Minecraft: Java Edition válido!"
+      invalidPlayerName: "Desculpe, mas `{playerName}` não parece um nome válido de Minecraft: Java Edition!"
       options:
         playerNameJavaEdition: "O nome da conta do jogador no Minecraft: Java Edition"
     pokemon:
