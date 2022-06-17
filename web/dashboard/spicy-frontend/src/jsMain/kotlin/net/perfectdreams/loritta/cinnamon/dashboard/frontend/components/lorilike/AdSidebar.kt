@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFro
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalI18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.NitroPayUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import org.jetbrains.compose.web.css.textAlign
 import org.jetbrains.compose.web.dom.Aside
@@ -19,7 +20,19 @@ fun AdSidebar(m: LorittaDashboardFrontend) {
 
     if (userInfo.displayAds) {
         // https://knowyourmeme.com/memes/that-wasnt-very-cash-money-of-you
-        Aside(attrs = { id("that-wasnt-very-cash-money-of-you") }) {}
+        Aside(attrs = { id("that-wasnt-very-cash-money-of-you") }) {
+            Div(attrs = {
+                id("ad-123")
+
+                ref { htmlDivElement ->
+                    NitroPayUtils.createAd(htmlDivElement, 160, 600)
+
+                    onDispose {
+                        // add clean up code here
+                    }
+                }
+            }) {}
+        }
     } else {
         Aside(attrs = { id("loritta-snug") }) {
             Img(src = "https://assets.perfectdreams.media/loritta/loritta-snuggle.png") {
