@@ -25,8 +25,6 @@ import org.jetbrains.compose.web.css.textAlign
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Hr
 import org.jetbrains.compose.web.dom.Img
-import org.jetbrains.compose.web.dom.P
-import org.jetbrains.compose.web.dom.Text
 
 @Composable
 fun SonhosShopOverview(
@@ -91,70 +89,34 @@ fun SonhosShopOverview(
 
         FAQWrapper(i18nContext) {
             FancyDetails(
-                summary = {
-                    Text("Por que é possível comprar sonhos?")
-                }
-            ) {
-                P {
-                    Text("Eu sei, é chato você poder comprar sonhos sendo que outras pessoas podem não ter dinheiro para comprar sonhos.")
-                }
-                P {
-                    Text("Mas a gente precisa de dinheiro para sustentar a Loritta!")
-                }
-                P {
-                    Text("E além disso, você acaba ajudando um projeto brasileiro a continuar firme e forte!")
-                }
-            }
+                i18nContext,
+                title = I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyCanIBuySonhos.Title,
+                description = I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyCanIBuySonhos.Description
+            )
 
             FancyDetails(
-                summary = {
-                    Text("Quanto tempo demora para receber os sonhos?")
-                }
-            ) {
-                P {
-                    Text("Depende da sua forma de pagamento! Algumas formas de pagamento, como cartão de crédito e Pix levam menos de uma hora, enquanto outras levam dias, como boleto.")
-                }
-            }
+                i18nContext,
+                title = I18nKeysData.Website.Dashboard.SonhosShop.Faq.HowMuchTimeItTakesToReceiveTheSonhos.Title,
+                description = I18nKeysData.Website.Dashboard.SonhosShop.Faq.HowMuchTimeItTakesToReceiveTheSonhos.Description
+            )
 
             FancyDetails(
-                summary = {
-                    Text("Eu preciso fazer algo após comprar para receber os sonhos?")
-                }
-            ) {
-                P {
-                    Text("Não! Você irá automaticamente receber os sonhos na sua conta quando o pagamento for aprovado.")
-                }
-            }
+                i18nContext,
+                title = I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyNotBuyWithThirdParties.Title,
+                description = I18nKeysData.Website.Dashboard.SonhosShop.Faq.WhyNotBuyWithThirdParties.Description
+            )
 
             FancyDetails(
-                summary = {
-                    Text("Por que eu deveria comprar na loja oficial?")
-                }
-            ) {
-                P {
-                    Text("Pois é proibido comprar de terceiros oxente.")
-                }
-            }
+                i18nContext,
+                title = I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIUseMyParentsCard.Title,
+                description = I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIUseMyParentsCard.Description
+            )
 
             FancyDetails(
-                summary = {
-                    Text("Posso comprar com o cartão dos meus pais?")
-                }
-            ) {
-                P {
-                    Text("Você só pode usar um meio de pagamento que você esteja autorizado para usar. Usar o cartão dos outros é feio, é fraude e você poderá ser banido!")
-                }
-            }
-
-            FancyDetails(
-                summary = {
-                    Text("Posso ter reembolso dos sonhos que eu comprei?")
-                }
-            ) {
-                P {
-                    Text("Não, pois é um produto digital.")
-                }
-            }
+                i18nContext,
+                title = I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIGetARefund.Title,
+                description = I18nKeysData.Website.Dashboard.SonhosShop.Faq.CanIGetARefund.Description
+            )
         }
     }
 

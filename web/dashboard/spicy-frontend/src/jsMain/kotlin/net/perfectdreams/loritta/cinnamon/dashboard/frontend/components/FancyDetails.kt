@@ -2,6 +2,8 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components
 
 import androidx.compose.runtime.Composable
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Details
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Summary
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -9,6 +11,8 @@ import org.jetbrains.compose.web.css.lineHeight
 import org.jetbrains.compose.web.dom.AttrBuilderContext
 import org.jetbrains.compose.web.dom.ContentBuilder
 import org.jetbrains.compose.web.dom.Div
+import org.jetbrains.compose.web.dom.P
+import org.jetbrains.compose.web.dom.Text
 import org.w3c.dom.HTMLElement
 
 @Composable
@@ -57,6 +61,26 @@ fun FancyDetails(
             }
         ) {
             details?.invoke(this)
+        }
+    }
+)
+
+@Composable
+fun FancyDetails(
+    i18nContext: I18nContext,
+    attrs: AttrBuilderContext<HTMLElement>? = null,
+    title: StringI18nData,
+    description: ListI18nData
+) = FancyDetails(
+    attrs,
+    {
+        LocalizedText(i18nContext, title)
+    },
+    {
+        for (text in i18nContext.get(description)) {
+            P {
+                Text(text)
+            }
         }
     }
 )

@@ -3,6 +3,10 @@
     gap: 1em;
     grid-template-columns: 1fr 1fr 1fr;
 
+    @media (max-width: 800px) {
+        grid-template-columns: 1fr;
+    }
+
     .sonhos-bundle {
         background-color: #f3f3f4;
         display: flex;
@@ -22,6 +26,7 @@
             justify-content: center;
             animation: 2.5s linear infinite alternate glow-animation;
             padding-top: 10px;
+            overflow: hidden; // Required to avoid the buttons being unclickable due to the image size
 
             img {
                 width: 100%;
