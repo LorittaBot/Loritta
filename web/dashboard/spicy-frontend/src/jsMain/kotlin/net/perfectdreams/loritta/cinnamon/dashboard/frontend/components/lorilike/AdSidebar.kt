@@ -17,7 +17,7 @@ import org.jetbrains.compose.web.dom.Text
 fun AdSidebar(m: LorittaDashboardFrontend) {
     val userInfo = LocalUserIdentification.current
 
-    if (false && userInfo.displayAds) {
+    if (userInfo.displayAds) {
         // https://knowyourmeme.com/memes/that-wasnt-very-cash-money-of-you
         Aside(attrs = { id("that-wasnt-very-cash-money-of-you") }) {}
     } else {
