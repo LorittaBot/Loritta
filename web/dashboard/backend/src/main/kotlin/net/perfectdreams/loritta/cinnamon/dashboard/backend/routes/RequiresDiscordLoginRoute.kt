@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes
 
 import io.ktor.server.application.*
 import io.ktor.server.response.*
+import io.ktor.server.sessions.*
 import mu.KotlinLogging
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
@@ -45,6 +46,8 @@ abstract class RequiresDiscordLoginRoute(m: LorittaDashboardBackend, path: Strin
             val userIdentification = LorittaWebSession(m, session).getUserIdentification(call, true)
 
             if (discordAuth == null || userIdentification == null) {
+                logger.info { "Clearing any set sessions and redirecting request to unauthorized redirect URL... Is Discord Auth null? ${discordAuth != null}; Is User Identification null? ${userIdentification != null}" }
+                call.sessions.clear<LorittaJsonWebSession>()
                 call.respondRedirect(m.config.unauthorizedRedirectUrl)
                 return
             }
