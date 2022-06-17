@@ -7,7 +7,6 @@ website:
       close: "Fechar"
     purchaseModal:
       title: "Confirmar Compra"
-      purchase: "Comprar"
       description:
         - "Você quer pagar {price,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para comprar?"
         - "Atualmente você tem {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}!"
