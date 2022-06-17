@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash
+package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.shipeffects
 
 import androidx.compose.runtime.Composable
 import kotlinx.datetime.Clock

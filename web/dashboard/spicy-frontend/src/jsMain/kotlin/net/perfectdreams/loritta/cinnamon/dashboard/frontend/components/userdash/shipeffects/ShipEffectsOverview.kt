@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash
+package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.shipeffects
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,15 +11,20 @@ import net.perfectdreams.loritta.cinnamon.dashboard.common.ShipPercentage
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.AppendControlAsIsResult
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.ComposableFunctionResult
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButtonType
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordUserInput
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedFieldLabel
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedH1
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedH2
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedText
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.TextReplaceControls
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.appendAsFormattedText
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.AdSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrapper
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrappers
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserLeftSidebar
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserRightSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
@@ -31,7 +36,6 @@ import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.attributes.max
 import org.jetbrains.compose.web.attributes.min
 import org.jetbrains.compose.web.css.textAlign
-import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Code
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Hr
@@ -137,9 +141,7 @@ fun ShipEffectsOverview(
                 val userIdentification = LocalUserIdentification.current
 
                 FieldWrapper {
-                    Button(attrs = {
-                        classes("discord-button", "success")
-
+                    DiscordButton(DiscordButtonType.SUCCESS, attrs = {
                         val _user = user
                         val shipPercentage = try {
                             ShipPercentage(shipPercentageValue)
@@ -170,7 +172,7 @@ fun ShipEffectsOverview(
                             }
                         }
                     }) {
-                        Text("Comprar")
+                        LocalizedText(m.globalState, I18nKeysData.Website.Dashboard.PurchaseModal.Buy)
                     }
                 }
             }
@@ -181,5 +183,5 @@ fun ShipEffectsOverview(
         }
     }
 
-    AdSidebar()
+    AdSidebar(m)
 }

@@ -5,8 +5,10 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaWebSession
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.TemmieDiscordAuth
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.lorittaSession
-import net.perfectdreams.loritta.cinnamon.dashboard.common.LorittaJsonWebSession
 import net.perfectdreams.sequins.ktor.BaseRoute
 
 abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path: String) : BaseRoute(path) {
@@ -14,12 +16,17 @@ abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path
         private val logger = KotlinLogging.logger {}
     }
 
-    abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, userIdentification: LorittaJsonWebSession.UserIdentification)
+    abstract suspend fun onAuthenticatedRequest(
+        call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification
+    )
 
     override suspend fun onRequest(call: ApplicationCall) {
         if (m.config.userAuthenticationOverride.enabled) {
             onAuthenticatedRequest(
                 call,
+                TemmieDiscordAuth("dummy", "dummy", "dummy", "dummy", listOf()),
                 LorittaJsonWebSession.UserIdentification(
                     m.config.userAuthenticationOverride.id.toString(),
                     m.config.userAuthenticationOverride.name,
@@ -34,10 +41,11 @@ abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path
         } else {
             // TODO: Fix and improve
             val session = call.lorittaSession
+            val webSession = LorittaWebSession(m, session)
+            val discordAuth = webSession.getDiscordAuthFromJson()
+            val userIdentification = LorittaWebSession(m, session).getUserIdentification(call, true)
 
-            val userIdentification = session.getUserIdentification(true)
-
-            if (userIdentification == null) {
+            if (discordAuth == null || userIdentification == null) {
                 call.respondText("", status = HttpStatusCode.Unauthorized)
                 return
             }
@@ -55,7 +63,7 @@ abstract class RequiresAPIDiscordLoginRoute(val m: LorittaDashboardBackend, path
                 )
             ) */
 
-            onAuthenticatedRequest(call, userIdentification)
+            onAuthenticatedRequest(call, discordAuth, userIdentification)
         }
     }
 }

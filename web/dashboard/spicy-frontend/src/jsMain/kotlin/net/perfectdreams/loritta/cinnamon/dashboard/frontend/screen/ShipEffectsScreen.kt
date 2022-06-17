@@ -11,12 +11,14 @@ import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetShipEffe
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.PutShipEffectsResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButtonType
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedText
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import org.jetbrains.compose.web.css.textAlign
-import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.Text
@@ -24,6 +26,9 @@ import org.jetbrains.compose.web.dom.Text
 class ShipEffectsScreen(m: LorittaDashboardFrontend) : Screen(m) {
     var shipEffectsState = mutableStateOf<State<GetShipEffectsResponse>>(State.Loading())
     var shipEffects by shipEffectsState
+
+    override fun createPath() = ScreenPath.ShipEffectsScreenPath
+    override fun createTitle() = I18nKeysData.Website.Dashboard.ShipEffects.Title
 
     override fun onLoad() {
         launch {
@@ -45,10 +50,9 @@ class ShipEffectsScreen(m: LorittaDashboardFrontend) : Screen(m) {
                 CloseModalButton(m.globalState)
             },
             {
-                Button(
+                DiscordButton(
+                    DiscordButtonType.SUCCESS,
                     attrs = {
-                        classes("discord-button", "success")
-
                         onClick {
                             openConfirmShipEffectPurchaseModal(i18nContext, user, shipPercentage)
                         }

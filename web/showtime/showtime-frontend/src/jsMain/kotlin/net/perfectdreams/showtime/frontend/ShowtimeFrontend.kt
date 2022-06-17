@@ -54,6 +54,7 @@ class ShowtimeFrontend {
 
     fun start() {
         KotlinLoggingConfiguration.LOG_LEVEL = KotlinLoggingLevel.DEBUG
+        logger.debug { "Howdy from Kotlin ${KotlinVersion.CURRENT}! :3" }
 
         document.addEventListener("DOMContentLoaded", {
             logger.debug { "DOM loaded" }

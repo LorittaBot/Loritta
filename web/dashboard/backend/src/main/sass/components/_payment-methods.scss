@@ -1,0 +1,35 @@
+.payment-methods-wrapper {
+    display: flex;
+    gap: 1em;
+    flex-direction: column;
+    border-radius: 3px;
+    padding: 1em;
+    border: 1px solid #e1e1e4;
+
+    .payment-methods-title {
+        margin: 0;
+        text-align: center;
+        font-size: 1.5em;
+        color: #29a6fe;
+        font-weight: bold;
+    }
+
+    .payment-methods {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        font-weight: bold;
+        gap: 1em;
+
+        .payment-method {
+            display: flex;
+            flex-direction: column;
+            text-align: center;
+            font-weight: bold;
+
+            img {
+                max-width: 100%;
+                height: 2em;
+            }
+        }
+    }
+}

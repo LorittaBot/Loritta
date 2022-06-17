@@ -1,0 +1,3 @@
+package net.perfectdreams.loritta.cinnamon.dashboard.common.responses
+
+sealed interface PostSonhosBundlesResponse

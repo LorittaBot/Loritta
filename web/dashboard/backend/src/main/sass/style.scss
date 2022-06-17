@@ -16,10 +16,14 @@ $mobile-version: 1279px;
 @use "components/discord-button";
 @use "components/cards";
 @use "components/modal";
+@use "components/sonhos-bundles";
+@use "components/fancy-bullet-points";
+@use "components/fancy-details";
+@use "components/payment-methods";
 @use "placeholders/reset-link-styling";
 @use "placeholders/reset-button-styling";
 
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Pacifico&display=swap');
 
 @mixin bp($point) {
     @if $point == 'small' {
@@ -45,6 +49,8 @@ body {
 
 h1, h2, h3, h4, h5 {
     color: $loritta-blue;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
 }
 
 h1 {
@@ -305,6 +311,11 @@ section#right-sidebar {
             border: 0;
             height: 1px;
         }
+
+        .hero-image {
+            height: 300px;
+            mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+        }
     }
 }
 
@@ -320,6 +331,40 @@ aside#that-wasnt-very-cash-money-of-you {
     @include bp('medium') {
         display: flex;
     }
+}
+
+aside#loritta-snug {
+    position: fixed;
+    bottom: 0;
+    height: 75px;
+    width: 100vw;
+    display: none;
+    justify-content: flex-end;
+    align-items: flex-end;
+    pointer-events: none;
+
+    @include bp('medium') {
+        display: flex;
+    }
+
+    img {
+        height: 100%;
+        width: auto;
+        margin-right: 2em;
+        cursor: pointer;
+        pointer-events: visible;
+        animation: 4s ease-in-out infinite loritta-breathing-animation alternate;
+        transform-origin: bottom;
+    }
+}
+
+@keyframes loritta-breathing-animation {
+  0% {
+    transform: scaleX(100%) scaleY(95%);
+  }
+  100% {
+    transform: scaleX(100%) scaleY(100%);
+  }
 }
 
 input {

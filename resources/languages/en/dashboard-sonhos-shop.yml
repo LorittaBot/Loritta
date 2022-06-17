@@ -1,0 +1,5 @@
+website:
+  dashboard:
+    sonhosShop:
+      title: "Sonhos Shop"
+      bundleTitle: "{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}"

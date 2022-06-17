@@ -22,9 +22,13 @@ dependencies {
     implementation("io.ktor:ktor-server-status-pages:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-cors:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-sessions:${Versions.KTOR}")
+    implementation("io.ktor:ktor-client-cio:${Versions.KTOR}")
 
     // Sequins
     implementation("net.perfectdreams.sequins.ktor:base-route:1.0.4")
+
+    // Kord Common, we use it for model classes
+    implementation("dev.kord:kord-common:${Versions.KORD}")
 
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)

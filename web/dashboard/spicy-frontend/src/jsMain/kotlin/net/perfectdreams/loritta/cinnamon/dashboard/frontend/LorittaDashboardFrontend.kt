@@ -15,9 +15,10 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.common.requests.LorittaRequest
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.LorittaResponse
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.ShipEffectsOverview
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.shipeffects.ShipEffectsOverview
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.sonhosshop.SonhosShopOverview
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.TestScreen
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.SonhosShopScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.GlobalState
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalI18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalSpicyInfo
@@ -26,10 +27,11 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.RoutingManage
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.loggerClassName
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.setJsonBody
-import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 import org.jetbrains.compose.web.renderComposable
+import org.w3c.dom.COMPLETE
+import org.w3c.dom.DocumentReadyState
 import org.w3c.dom.HTMLDivElement
 
 class LorittaDashboardFrontend {
@@ -47,84 +49,106 @@ class LorittaDashboardFrontend {
     fun start() {
         logger.info { "Howdy from Kotlin ${KotlinVersion.CURRENT}! :3" }
 
-        globalState.launch { globalState.updateSelfUserInfo() }
-        globalState.launch { globalState.updateSpicyInfo() }
-        globalState.launch { globalState.updateI18nContext() }
+        globalState.launch {
+            globalState.launch { globalState.updateSelfUserInfo() }
+            globalState.launch { globalState.updateSpicyInfo() }
 
-        routingManager.switch(ShipEffectsScreen(this))
+            // We need to get it in this way, because we want to get the i18nContext for the routing manager
+            val i18nContext = globalState.retrieveI18nContext()
+            globalState.i18nContext = State.Success(i18nContext)
 
-        document.addEventListener("DOMContentLoaded", {
-            renderComposable(rootElementId = "root") {
-                val userInfo = globalState.userInfo
-                val i18nContext = globalState.i18nContext
-                val spicyInfo = globalState.spicyInfo
+            // Switch based on the path
+            routingManager.switchBasedOnPath(i18nContext, "/${window.location.pathname.split("/").drop(2).joinToString("/")}", false)
 
-                if (userInfo !is State.Success || i18nContext !is State.Success || spicyInfo !is State.Success) {
-                    Text("Loading...")
-                } else {
-                    CompositionLocalProvider(LocalI18nContext provides i18nContext.value) {
-                        CompositionLocalProvider(LocalUserIdentification provides userInfo.value) {
-                            CompositionLocalProvider(LocalSpicyInfo provides spicyInfo.value) {
-                                // Fade out the single page application loading wrapper...
-                                spaLoadingWrapper?.addClass("loaded")
+            window.onpopstate = {
+                // TODO: We need to get the current i18nContext state from the globalState
+                routingManager.switchBasedOnPath(i18nContext, "/${(it.state as String).split("/").drop(2).joinToString("/")}", true)
+            }
 
-                                Div(attrs = { id("wrapper") }) {
-                                    // Wrapped in a div to only trigger a recomposition within this div when a modal is updated
-                                    Div {
-                                        val activeModal = globalState.activeModal
+            runOnDOMLoaded {
+                logger.info { "DOM has been loaded! Mounting Jetpack Compose Web..." }
 
-                                        if (activeModal != null) {
-                                            // Open modal if there is one present
+                renderApp()
+            }
+        }
+    }
+
+    fun renderApp() {
+        renderComposable(rootElementId = "root") {
+            val userInfo = globalState.userInfo
+            val spicyInfo = globalState.spicyInfo
+            val i18nContext = globalState.i18nContext
+
+            if (userInfo !is State.Success || i18nContext !is State.Success || spicyInfo !is State.Success) {
+                Text("Loading...")
+            } else {
+                CompositionLocalProvider(LocalI18nContext provides i18nContext.value) {
+                    CompositionLocalProvider(LocalUserIdentification provides userInfo.value) {
+                        CompositionLocalProvider(LocalSpicyInfo provides spicyInfo.value) {
+                            // Fade out the single page application loading wrapper...
+                            spaLoadingWrapper?.addClass("loaded")
+
+                            Div(attrs = { id("wrapper") }) {
+                                // Wrapped in a div to only trigger a recomposition within this div when a modal is updated
+                                Div {
+                                    val activeModal = globalState.activeModal
+
+                                    if (activeModal != null) {
+                                        // Open modal if there is one present
+                                        Div(attrs = {
+                                            classes("modal-wrapper")
+
+                                            onClick {
+                                                // Close modal when clicking outside of the screen
+                                                globalState.activeModal = null
+                                            }
+                                        }) {
                                             Div(attrs = {
-                                                classes("modal-wrapper")
+                                                classes("modal")
 
                                                 onClick {
-                                                    // Close modal when clicking outside of the screen
-                                                    globalState.activeModal = null
+                                                    // Don't propagate the click to the modal wrapper
+                                                    it.stopPropagation()
                                                 }
                                             }) {
-                                                Div(attrs = {
-                                                    classes("modal")
-
-                                                    onClick {
-                                                        // Don't propagate the click to the modal wrapper
-                                                        it.stopPropagation()
-                                                    }
-                                                }) {
-                                                    Div(attrs = { classes("content") }) {
-                                                        Div(attrs = { classes("title") }) {
-                                                            Text(activeModal.title)
-                                                        }
-
-                                                        activeModal.body.invoke()
+                                                Div(attrs = { classes("content") }) {
+                                                    Div(attrs = { classes("title") }) {
+                                                        Text(activeModal.title)
                                                     }
 
-                                                    Div(attrs = { classes("buttons-wrapper") }) {
-                                                        activeModal.buttons.forEach {
-                                                            it.invoke()
-                                                        }
+                                                    activeModal.body.invoke()
+                                                }
+
+                                                Div(attrs = { classes("buttons-wrapper") }) {
+                                                    activeModal.buttons.forEach {
+                                                        it.invoke()
                                                     }
                                                 }
                                             }
                                         }
                                     }
+                                }
 
-                                    when (val screen = routingManager.screenState) {
-                                        is ShipEffectsScreen -> {
-                                            ShipEffectsOverview(this@LorittaDashboardFrontend, screen, i18nContext.value)
-                                        }
-                                        is TestScreen -> {
-                                            Button(attrs = {
-                                                onClick {
-                                                    routingManager.switch(ShipEffectsScreen(this@LorittaDashboardFrontend))
-                                                }
-                                            }) {
-                                                Text("OwO")
-                                            }
-                                        }
-                                        else -> {
-                                            Text("I don't know how to handle screen $screen!")
-                                        }
+                                when (val screen = routingManager.screenState) {
+                                    is ShipEffectsScreen -> {
+                                        ShipEffectsOverview(
+                                            this@LorittaDashboardFrontend,
+                                            screen,
+                                            i18nContext.value
+                                        )
+                                    }
+                                    is SonhosShopScreen -> {
+                                        SonhosShopOverview(
+                                            this@LorittaDashboardFrontend,
+                                            screen,
+                                            i18nContext.value
+                                        )
+                                    }
+                                    else -> {
+                                        Text("I don't know how to handle screen $screen")
+                                        if (screen != null)
+                                            Text(" (${screen::class})")
+                                        Text("!")
                                     }
                                 }
                             }
@@ -132,7 +156,18 @@ class LorittaDashboardFrontend {
                     }
                 }
             }
-        })
+        }
+    }
+
+    // https://stackoverflow.com/a/59220393/7271796
+    private fun runOnDOMLoaded(block: () -> (Unit)) {
+        if (document.readyState == DocumentReadyState.COMPLETE) {
+            // already fired, so run logic right away
+            block.invoke()
+        } else {
+            // not fired yet, so let's listen for the event
+            window.addEventListener("DOMContentLoaded", { block.invoke() });
+        }
     }
 
     suspend fun makeApiRequest(method: HttpMethod, path: String): LorittaResponse {
@@ -144,6 +179,13 @@ class LorittaDashboardFrontend {
 
     suspend fun putLorittaRequest(path: String, request: LorittaRequest): LorittaResponse {
         val body = http.put("${window.location.origin}$path") {
+            setJsonBody(request)
+        }.bodyAsText()
+        return Json.decodeFromString(body)
+    }
+
+    suspend fun postLorittaRequest(path: String, request: LorittaRequest): LorittaResponse {
+        val body = http.post("${window.location.origin}$path") {
             setJsonBody(request)
         }.bodyAsText()
         return Json.decodeFromString(body)

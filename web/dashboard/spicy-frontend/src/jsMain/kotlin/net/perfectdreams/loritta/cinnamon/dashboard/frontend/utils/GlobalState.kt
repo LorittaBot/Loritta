@@ -18,11 +18,12 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.Language
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.i18nhelper.formatters.IntlMFFormatter
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetSpicyInfoResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetUserIdentificationResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
 
 class GlobalState(val m: LorittaDashboardFrontend) {
     private var userInfoState = mutableStateOf<State<GetUserIdentificationResponse>>(State.Loading())
@@ -45,15 +46,20 @@ class GlobalState(val m: LorittaDashboardFrontend) {
     }
 
     suspend fun updateI18nContext() {
+        val i18nContext = retrieveI18nContext()
+        this@GlobalState.i18nContext = State.Success(i18nContext)
+    }
+
+    suspend fun retrieveI18nContext(): I18nContext {
         val languageId = window.location.pathname.split("/")[1]
         val result = m.http.get("${window.location.origin}/api/v1/languages/$languageId").bodyAsText()
 
-        val i18nContext = I18nContext(
-            IntlMFFormatter(),
+        val language = Json.decodeFromString<Language>(result)
+
+        return I18nContext(
+            IntlMFFormatter(language.info.formattingLanguageId),
             Json.decodeFromString(result)
         )
-
-        this@GlobalState.i18nContext = State.Success(i18nContext)
     }
 
     fun openModal(
@@ -85,6 +91,17 @@ class GlobalState(val m: LorittaDashboardFrontend) {
         }
     }
 
+    fun openCloseOnlyModal(
+        title: StringI18nData,
+        body: @Composable () -> (Unit)
+    ) = openModal(
+        title,
+        body,
+        {
+            CloseModalButton(this)
+        }
+    )
+
     fun openModal(
         title: String,
         body: @Composable () -> (Unit),
@@ -96,6 +113,17 @@ class GlobalState(val m: LorittaDashboardFrontend) {
             buttons.toMutableList()
         )
     }
+
+    fun openCloseOnlyModal(
+        title: String,
+        body: @Composable () -> (Unit)
+    ) = openModal(
+        title,
+        body,
+        {
+            CloseModalButton(this)
+        }
+    )
 
     fun launch(block: suspend CoroutineScope.() -> Unit): Job {
         val job = GlobalScope.launch(block = block)

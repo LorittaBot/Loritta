@@ -9,7 +9,6 @@ import io.ktor.server.sessions.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.cinnamon.dashboard.common.LorittaJsonWebSession
 import net.perfectdreams.loritta.cinnamon.dashboard.common.requests.LorittaRequest
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.LorittaResponse
 

@@ -3,63 +3,47 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import kotlinx.browser.document
+import kotlinx.browser.window
+import mu.KotlinLogging
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.Screen
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
 class RoutingManager(private val m: LorittaDashboardFrontend) {
+    companion object {
+        private val logger = KotlinLogging.loggerClassName(RoutingManager::class)
+    }
+
     var screenState by mutableStateOf<Screen?>(null)
 
-    /* fun switchToHomeOverview(i18nContext: I18nContext) = switch(Screen.HomeOverview(i18nContext))
+    fun switchBasedOnPath(i18nContext: I18nContext, path: String, backInHistory: Boolean) {
+        logger.info { "Trying to find a screen that matches $path" }
 
-    fun switchToFanArtsOverview(
-        i18nContext: I18nContext,
-        page: Int,
-        fanArtSortOrder: FanArtSortOrder,
-        tags: List<FanArtTag>
-    ) = switch(Screen.FanArtsOverview(i18nContext, page, fanArtSortOrder, tags))
+        val screenPath = ScreenPath.all.firstOrNull { it.matches(path) }
+        if (screenPath != null)
+            switch(i18nContext, screenPath.createScreen(m, path), backInHistory)
+    }
 
-    fun switchToArtistFanArtsOverview(
-        i18nContext: I18nContext,
-        fanArtArtist: FanArtArtist,
-        page: Int,
-        fanArtSortOrder: FanArtSortOrder,
-        tags: List<FanArtTag>
-    ) = switch(Screen.FanArtsArtistOverview(i18nContext, fanArtArtist, page, fanArtSortOrder, tags))
-
-    fun switchToFanArtOverview(i18nContext: I18nContext, fanArtArtist: FanArtArtist, fanArt: FanArt) = switch(Screen.FanArtOverview(i18nContext, fanArtArtist, fanArt))
-
-    fun switch(screen: Screen) {
-        val currentScreenState = screenState
-        // Automatically dispose the current screen ViewModel if the screen has a ViewModel
-        if (currentScreenState is Screen.ScreenWithViewModel)
-            currentScreenState.model.dispose()
-        screenState = screen
-        m.appState.isSidebarOpen = false // Close sidebar if it is open
-
-        val newPath = screen.path
-        // popstate is fired if "data" is different
-        // Title is unused
-        // https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
-        document.title = screen.title
-        window.history.pushState(newPath, "", newPath)
-        gtagSafe("set", "page_path", newPath)
-        gtagSafe("event", "page_view")
-    } */
-
-    fun switch(screen: Screen) {
+    fun switch(i18nContext: I18nContext, screen: Screen, backInHistory: Boolean) {
         val currentScreenState = screenState
         // Automatically dispose the current screen
         currentScreenState?.dispose()
         screenState = screen
         screen.onLoad()
-        // m.appState.isSidebarOpen = false // Close sidebar if it is open
+        m.globalState.isSidebarOpen = false // Close sidebar if it is open
 
-        // val newPath = screen.path
         // popstate is fired if "data" is different
         // Title is unused
         // https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
-        // document.title = screen.title
-        // window.history.pushState(newPath, "", newPath)
+        document.title = "${i18nContext.get(screen.createTitle())} • ${i18nContext.get(I18nKeysData.Website.Dashboard.Title)}"
+        val newPath = "/${i18nContext.get(I18nKeysData.Website.Dashboard.LocalePathId)}${screen.createPath().build()}"
+
+        // We don't want to push state when the user is going back their history, because if we did, that would create a "infinite loop" that the browser pops the old state... then we insert the state again
+        if (!backInHistory)
+            window.history.pushState(newPath, "", newPath)
         // gtagSafe("set", "page_path", newPath)
         // gtagSafe("event", "page_view")
     }

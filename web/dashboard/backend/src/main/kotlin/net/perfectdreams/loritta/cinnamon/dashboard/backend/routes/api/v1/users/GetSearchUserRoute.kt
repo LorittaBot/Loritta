@@ -6,12 +6,14 @@ import io.ktor.server.response.*
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondJson
-import net.perfectdreams.loritta.cinnamon.dashboard.common.LorittaJsonWebSession
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.TemmieDiscordAuth
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class GetSearchUserRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginRoute(m, "/api/v1/users/search") {
     override suspend fun onAuthenticatedRequest(
         call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
         userIdentification: LorittaJsonWebSession.UserIdentification
     ) {
         val id = call.parameters["id"]?.toLong()

@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWeb
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.TemmieDiscordAuth
 import net.perfectdreams.loritta.cinnamon.dashboard.common.RoutePaths
 
-class ShipEffectsRoute(m: LorittaDashboardBackend) : RequiresDiscordLoginRoute(m, RoutePaths.SHIP_EFFECTS) {
+class SonhosShopRoute(m: LorittaDashboardBackend) : RequiresDiscordLoginRoute(m, RoutePaths.SONHOS_SHOP) {
     override suspend fun onAuthenticatedRequest(
         call: ApplicationCall,
         discordAuth: TemmieDiscordAuth,

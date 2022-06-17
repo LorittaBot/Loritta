@@ -10,16 +10,19 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.LorittaResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.NotEnoughSonhosErrorResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButton
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordButtonType
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedText
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.css.textAlign
-import org.jetbrains.compose.web.dom.Button
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Img
 import org.jetbrains.compose.web.dom.P
@@ -28,6 +31,9 @@ import org.jetbrains.compose.web.dom.Text
 sealed class Screen(val m: LorittaDashboardFrontend) {
     private var rejectNewJobs = false
     private val jobs = mutableListOf<Job>()
+
+    abstract fun createPath(): ScreenPath
+    abstract fun createTitle(): StringI18nData
 
     open fun onLoad() {}
 
@@ -93,10 +99,9 @@ sealed class Screen(val m: LorittaDashboardFrontend) {
                 CloseModalButton(m.globalState)
             },
             {
-                Button(
+                DiscordButton(
+                    DiscordButtonType.SUCCESS,
                     attrs = {
-                        classes("discord-button", "success")
-
                         if (disablePurchaseButton) {
                             disabled()
                         } else {
@@ -124,7 +129,7 @@ sealed class Screen(val m: LorittaDashboardFrontend) {
                         }
                     }
                 ) {
-                    Text(i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Purchase))
+                    Text(i18nContext.get(I18nKeysData.Website.Dashboard.PurchaseModal.Buy))
                 }
             }
         )

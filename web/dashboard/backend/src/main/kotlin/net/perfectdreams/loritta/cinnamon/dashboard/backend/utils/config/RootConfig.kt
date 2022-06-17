@@ -9,6 +9,8 @@ data class RootConfig(
     val sessionDomain: String,
     val unauthorizedRedirectUrl: String,
     val legacyDashboardUrl: String,
+    val enableCORS: Boolean,
+    val perfectPayments: PerfectPaymentsConfig,
     val userAuthenticationOverride: UserAuthenticationOverrideConfig,
     val pudding: PuddingConfig
 )

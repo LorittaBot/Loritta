@@ -6,7 +6,8 @@ import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondLoritta
-import net.perfectdreams.loritta.cinnamon.dashboard.common.LorittaJsonWebSession
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWebSession
+import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.TemmieDiscordAuth
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetShipEffectsResponse
 import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -16,6 +17,7 @@ import org.jetbrains.exposed.sql.select
 class GetShipEffectsRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginRoute(m, "/api/v1/users/ship-effects") {
     override suspend fun onAuthenticatedRequest(
         call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
         userIdentification: LorittaJsonWebSession.UserIdentification
     ) {
         val shipEffects = m.pudding.transaction {

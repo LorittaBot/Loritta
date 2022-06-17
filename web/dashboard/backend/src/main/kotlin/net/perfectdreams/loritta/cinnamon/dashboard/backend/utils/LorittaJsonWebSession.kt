@@ -1,7 +1,10 @@
-package net.perfectdreams.loritta.cinnamon.dashboard.common
+package net.perfectdreams.loritta.cinnamon.dashboard.backend.utils
 
+import dev.kord.common.entity.DiscordUser
+import io.ktor.server.application.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 
@@ -18,20 +21,6 @@ data class LorittaJsonWebSession(
         private val logger = KotlinLogging.logger {}
     }
 
-    suspend fun getUserIdentification(loadFromCache: Boolean = true): UserIdentification? {
-        if (loadFromCache) {
-            try {
-                cachedIdentification?.let {
-                    return Json.decodeFromString(it)
-                }
-            } catch (e: Throwable) {
-                logger.error(e) { "Error while loading cached identification" }
-            }
-        }
-
-        return null
-    }
-
     @Serializable
     data class UserIdentification(
         val id: String,
@@ -42,5 +31,16 @@ data class LorittaJsonWebSession(
         val avatar: String?,
         val createdAt: Long,
         val updatedAt: Long
+    )
+
+    @Serializable
+    data class StoredDiscordAuthTokens(
+        val authCode: String? = null,
+        val redirectUri: String,
+        val scope: List<String>,
+        val accessToken: String? = null,
+        val refreshToken: String? = null,
+        val expiresIn: Long? = null,
+        val generatedAt: Long? = null
     )
 }
