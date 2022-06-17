@@ -46,7 +46,7 @@ abstract class RequiresDiscordLoginRoute(m: LorittaDashboardBackend, path: Strin
             val userIdentification = LorittaWebSession(m, session).getUserIdentification(call, true)
 
             if (discordAuth == null || userIdentification == null) {
-                logger.info { "Clearing any set sessions and redirecting request to unauthorized redirect URL... Is Discord Auth null? ${discordAuth != null}; Is User Identification null? ${userIdentification != null}" }
+                logger.info { "Clearing any set sessions and redirecting request to unauthorized redirect URL... Is Discord Auth null? ${discordAuth == null}; Is User Identification null? ${userIdentification == null}" }
                 call.sessions.clear<LorittaJsonWebSession>()
                 call.respondRedirect(m.config.unauthorizedRedirectUrl)
                 return
