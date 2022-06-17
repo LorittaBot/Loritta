@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes
 
 import kotlinx.html.HEAD
 import kotlinx.html.HTML
+import kotlinx.html.ScriptType
 import kotlinx.html.body
 import kotlinx.html.head
 import kotlinx.html.link
@@ -33,6 +34,22 @@ fun galleryOfDreamsSpaHtml(
         // https://www.reddit.com/r/discordapp/comments/82p8i6/a_basic_tutorial_on_how_to_get_the_most_out_of/
         meta(name = "theme-color", "#29a6fe")
         metaBlock.invoke(this)
+
+        // NitroPay
+        script(type = ScriptType.textJavaScript) {
+            unsafe {
+                raw("""
+window["nitroAds"] = window["nitroAds"] || {
+    createAd: function() {
+        window.nitroAds.queue.push(["createAd", arguments]);
+    },
+    queue: []
+};""".trimIndent())
+            }
+        }
+        script("https://s.nitropay.com/ads-595.js") {
+            defer = true // Only execute after the page has been parsed
+        }
 
         styleLink("/assets/css/style.css?hash=${m.hashManager.getAssetHash("/assets/css/style.css")}")
         script(src = "/assets/js/spicy-frontend.js?hash=${m.hashManager.getAssetHash("/assets/js/spicy-frontend.js")}") {
