@@ -20,7 +20,7 @@ class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: Lori
                     return Json.decodeFromString(it)
                 }
             } catch (e: Throwable) {
-                logger.error(e) { "Error while loading cached identification" }
+                logger.warn(e) { "Failed to load cached identification! Ignoring cached identification..." }
             }
         }
 
@@ -36,6 +36,7 @@ class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: Lori
 
             forCache
         } catch (e: Exception) {
+            logger.warn(e) { "Failed to get user identification!" }
             null
         }
     }
