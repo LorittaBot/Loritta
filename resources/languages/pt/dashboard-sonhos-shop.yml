@@ -1,1 +1,34 @@
 ---
+website:
+  dashboard:
+    sonhosShop:
+      title: "Lojinha de Sonhos"
+      bundleTitle: "{sonhos,plural, =0 {# Sonhos} one {# Sonho} other {# Sonhos}}"
+      faq:
+        whyCanIBuySonhos:
+          title: "Por que vocês vendem sonhos? Isso não é injusto com quem não tem dinheiro?"
+          description:
+            - "Ao contrário do que muitas pessoas imaginam, manter um bot grande não é uma tarefa fácil e nem barata, e de alguma maneira precisamos ter renda suficiente para manter a Loritta. Pois, sem renda, a Loritta não conseguiria se manter e acabaria deixando de existir..."
+            - "As compras de sonhos ajudam a Loritta a continuar a alegrar, ajudar e divertir pessoas mundo afora! Usamos o dinheiro para cobrir custos com hospedagem, impostos, implementação de novas funcionalidades, expansão da Loritta e outros serviços, salários e muito mais."
+            - "E com as compras, você ajuda um projeto brasileiro a continuar a existir e inspirar pessoas! Mostrando ao mundo que brasileiro também consegue fazer coisas extraordinárias."
+            - "Sabemos que é chato para usuários que não conseguem comprar, mas se não tivessem pessoas que comprassem, a Loritta não conseguiria ser pública para todas as pessoas poderem usufruir as funcionalidades dela sem pagar! Mesmo assim, sempre estamos tentando melhorar as funcionalidades de economia da Loritta para que usuários sem recursos financeiros possam se divertir com ela."
+        howMuchTimeItTakesToReceiveTheSonhos:
+          title: "Quanto tempo demora para receber os sonhos?"
+          description:
+            - "Depende da sua forma de pagamento que você escolheu! Enquanto algumas formas são praticamente instantâneas, algumas podem levar dias para que o pagamento seja aprovado. Você poderá ver mais informações e dicas sobre as formas de pagamento ao confirmar qual produto você deseja comprar."
+            - "Os sonhos são automaticamente entregues na sua conta quando o pagamento for marcado como aprovado pela plataforma de pagamento! Mas caso aconteça algum imprevisto, entre em contato com a nossa equipe de suporte para resolver o problema! O nosso objetivo não é passar a perna em você, e sim te deixar feliz."
+        whyNotBuyWithThirdParties:
+          title: "Por que eu deveria comprar na loja oficial?"
+          description:
+            - "As compras de sonhos ajudam a Loritta a continuar a alegrar, ajudar e divertir pessoas mundo afora! Usamos o dinheiro para cobrir custos com hospedagem, impostos, implementação de novas funcionalidades, expansão da Loritta e outros serviços, salários e muito mais."
+            - "Existem pessoas que podem te oferecer sonhos em troca de dinheiro, isto é contra os Termos de Serviço da Loritta e você poderá ser banido caso aceite a oferta! Vários motivos existem para não comprar com terceiros: A pessoa pode te dar um golpe e você acaba perdendo o seu dinheiro; Os sonhos podem ser de fontes duvidosas como, por exemplo, roubadas de outro usuário, e você poderá acabar sendo banido por receber os sonhos roubados; Você não ajuda a Loritta comprando com terceiros; entre outros."
+            - "Enquanto já recebemos ideias de usuários sugerindo que seria ótimo se tivesse um sistema oficial de comprar e vender sonhos, é algo difícil de implementar devido às legislações, burocracias e impostos em pagamentos no Brasil, o que transforma algo simples em algo extremamente complicado."
+        canIUseMyParentsCard:
+          title: "Posso usar o cartão dos meus pais para comprar?"
+          description:
+            - "Você só pode usar um meio de pagamento que você esteja autorizado a usar. Usar um cartão que você não tem autorização é fraude, você será suspenso da Loritta e você não receberá reembolso!"
+            - "Evite tabefes de seus pais, não quebre a confiança deles."
+        canIGetARefund:
+          title: "Posso ter reembolso dos sonhos que eu comprei?"
+          description:
+            - "Não, pois é um produto virtual. Se você está com pouco dinheiro, eu recomendo que você guarde ao invés de gastar e precisar pedir reembolso depois por não ter dinheiro suficiente, assim evita dor de cabeça para nós e, principalmente, para você."
