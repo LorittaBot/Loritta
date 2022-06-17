@@ -9,6 +9,8 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.platform.utils.UserId
 import net.perfectdreams.loritta.cinnamon.platform.utils.getUserProfile
 
 class SonhosExecutor() : SlashCommandExecutor() {
@@ -36,8 +38,8 @@ class SonhosExecutor() : SlashCommandExecutor() {
         else
             null
 
-        context.sendMessage {
-            if (isSelf) {
+        if (isSelf) {
+            context.sendMessage {
                 styled(
                     context.i18nContext.get(
                         SonhosCommand.I18N_PREFIX.YouHaveSonhos(
@@ -54,7 +56,19 @@ class SonhosExecutor() : SlashCommandExecutor() {
                     ),
                     Emotes.LoriRich
                 )
-            } else {
+            }
+
+            context.sendEphemeralMessage {
+                userHaventGotDailyTodayOrUpsellSonhosBundles(
+                    context.loritta,
+                    context.i18nContext,
+                    UserId(user.id),
+                    "sonhos",
+                    "viewing-own-sonhos"
+                )
+            }
+        } else {
+            context.sendMessage {
                 styled(
                     context.i18nContext.get(
                         SonhosCommand.I18N_PREFIX.UserHasSonhos(
