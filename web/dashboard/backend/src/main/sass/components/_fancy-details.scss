@@ -29,6 +29,10 @@ details.fancy-details {
         list-style: none;
         font-size: 1.5em;
         font-weight: bold;
+
+        // For the chevron icon
+        display: flex;
+        align-items: center;
     }
 
     > summary::-webkit-details-marker {
@@ -39,7 +43,10 @@ details.fancy-details {
 details.fancy-details > summary .chevron-icon {
 	transform: rotate(0deg);
 	transition-duration: 0.5s;
-	float: right;
+    margin-left: auto;
+    display: flex;
+    width: 1em;
+    height: 1em;
 }
 
 details.fancy-details[open] > summary .chevron-icon {

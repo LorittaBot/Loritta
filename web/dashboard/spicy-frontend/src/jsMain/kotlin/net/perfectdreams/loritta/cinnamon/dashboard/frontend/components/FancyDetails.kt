@@ -5,6 +5,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Details
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Summary
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import org.jetbrains.compose.web.css.lineHeight
@@ -49,6 +50,12 @@ fun FancyDetails(
     {
         Summary {
             summary?.invoke(this)
+
+            Div(attrs = {
+                classes("chevron-icon")
+            }) {
+                UIIcon(SVGIconManager.chevronDown)
+            }
         }
 
         Div(

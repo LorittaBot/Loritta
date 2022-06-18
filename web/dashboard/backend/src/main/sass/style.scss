@@ -315,6 +315,8 @@ section#right-sidebar {
         .hero-image {
             height: 300px;
             mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
+            width: 100%;
+            object-fit: contain;
         }
     }
 }
