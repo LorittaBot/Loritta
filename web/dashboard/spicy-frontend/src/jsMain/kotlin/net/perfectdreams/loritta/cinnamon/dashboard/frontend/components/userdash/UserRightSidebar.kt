@@ -11,5 +11,10 @@ fun UserRightSidebar(
 ) {
     RightSidebar {
         block.invoke()
+
+        // TODO: Re-enable this after we figure out how this legalese stuff works
+        // Hr {}
+
+        // LegalFooter()
     }
 }

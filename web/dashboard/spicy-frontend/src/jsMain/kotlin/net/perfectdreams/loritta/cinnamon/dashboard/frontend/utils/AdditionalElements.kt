@@ -17,13 +17,17 @@ private open class ElementBuilderImplementation<TElement : Element>(private val 
     override fun create(): TElement = el.cloneNode() as TElement
 }
 
+private val Details = ElementBuilderImplementation<HTMLElement>("details")
+private val Summary = ElementBuilderImplementation<HTMLElement>("summary")
+private val Ins = ElementBuilderImplementation<HTMLElement>("ins")
+
 @Composable
 fun Details(
     attrs: AttrBuilderContext<HTMLElement>? = null,
     content: ContentBuilder<HTMLElement>? = null
 ) {
     TagElement(
-        elementBuilder = ElementBuilderImplementation("details"),
+        elementBuilder = Details,
         applyAttrs = attrs,
         content = content
     )
@@ -35,7 +39,19 @@ fun Summary(
     content: ContentBuilder<HTMLElement>? = null
 ) {
     TagElement(
-        elementBuilder = ElementBuilderImplementation("summary"),
+        elementBuilder = Summary,
+        applyAttrs = attrs,
+        content = content
+    )
+}
+
+@Composable
+fun Ins(
+    attrs: AttrBuilderContext<HTMLElement>? = null,
+    content: ContentBuilder<HTMLElement>? = null
+) {
+    TagElement(
+        elementBuilder = Ins,
         applyAttrs = attrs,
         content = content
     )

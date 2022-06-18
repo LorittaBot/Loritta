@@ -28,16 +28,24 @@ class RoutingManager(private val m: LorittaDashboardFrontend) {
     }
 
     fun switch(i18nContext: I18nContext, screen: Screen, backInHistory: Boolean) {
+        logger.info { "Switching to screen ${screen::class.simpleName}... Are we going back in history? $backInHistory" }
+
         val currentScreenState = screenState
+        logger.info { "Disposing current screen $currentScreenState" }
+
         // Automatically dispose the current screen
         currentScreenState?.dispose()
+
+        logger.info { "Switching to new screen..." }
         screenState = screen
+        logger.info { "Loading new screen..." }
         screen.onLoad()
         m.globalState.isSidebarOpen = false // Close sidebar if it is open
 
         // popstate is fired if "data" is different
         // Title is unused
         // https://developer.mozilla.org/en-US/docs/Web/API/History/pushState
+        logger.info { "Updating document title to match new screen and pushing new state (if $backInHistory is true)" }
         document.title = "${i18nContext.get(screen.createTitle())} • ${i18nContext.get(I18nKeysData.Website.Dashboard.Title)}"
         val newPath = "/${i18nContext.get(I18nKeysData.Website.Dashboard.LocalePathId)}${screen.createPath().build()}"
 

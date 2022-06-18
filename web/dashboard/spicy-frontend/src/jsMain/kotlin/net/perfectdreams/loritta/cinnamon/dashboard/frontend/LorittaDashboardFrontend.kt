@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.GlobalState
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalI18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalSpicyInfo
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.NitroPayUtils
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.RoutingManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.loggerClassName
@@ -33,6 +34,7 @@ import org.jetbrains.compose.web.renderComposable
 import org.w3c.dom.COMPLETE
 import org.w3c.dom.DocumentReadyState
 import org.w3c.dom.HTMLDivElement
+import org.w3c.dom.INTERACTIVE
 
 class LorittaDashboardFrontend {
     companion object {
@@ -48,6 +50,8 @@ class LorittaDashboardFrontend {
 
     fun start() {
         logger.info { "Howdy from Kotlin ${KotlinVersion.CURRENT}! :3" }
+
+        NitroPayUtils.prepareNitroPayState()
 
         globalState.launch {
             globalState.launch { globalState.updateSelfUserInfo() }
@@ -161,12 +165,13 @@ class LorittaDashboardFrontend {
 
     // https://stackoverflow.com/a/59220393/7271796
     private fun runOnDOMLoaded(block: () -> (Unit)) {
-        if (document.readyState == DocumentReadyState.COMPLETE) {
+        logger.info { "Current document readyState is ${document.readyState}" }
+        if (document.readyState == DocumentReadyState.INTERACTIVE || document.readyState == DocumentReadyState.COMPLETE) {
             // already fired, so run logic right away
             block.invoke()
         } else {
             // not fired yet, so let's listen for the event
-            window.addEventListener("DOMContentLoaded", { block.invoke() });
+            window.addEventListener("DOMContentLoaded", { block.invoke() })
         }
     }
 

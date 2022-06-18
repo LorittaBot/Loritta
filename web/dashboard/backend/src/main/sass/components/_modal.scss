@@ -3,7 +3,7 @@
     overflow: auto;
     background-color: #000000a1;
     width: 100vw;
-    height: 100vh;
+    height: 100%; // We need to use 100% instead of 100vh because the footer of the modal gets "chopped off" due to the URL bar in Chrome Mobile
     z-index: 100;
     display: flex;
     justify-content: center;

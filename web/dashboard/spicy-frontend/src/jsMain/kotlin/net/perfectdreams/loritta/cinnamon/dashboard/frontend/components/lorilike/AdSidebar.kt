@@ -2,10 +2,11 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilik
 
 import androidx.compose.runtime.Composable
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.Ad
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseModalButton
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Ads
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalI18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.NitroPayUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import org.jetbrains.compose.web.css.textAlign
 import org.jetbrains.compose.web.dom.Aside
@@ -21,17 +22,7 @@ fun AdSidebar(m: LorittaDashboardFrontend) {
     if (userInfo.displayAds) {
         // https://knowyourmeme.com/memes/that-wasnt-very-cash-money-of-you
         Aside(attrs = { id("that-wasnt-very-cash-money-of-you") }) {
-            Div(attrs = {
-                id("ad-123")
-
-                ref { htmlDivElement ->
-                    NitroPayUtils.createAd(htmlDivElement, 160, 600)
-
-                    onDispose {
-                        // add clean up code here
-                    }
-                }
-            }) {}
+            Ad(Ads.RIGHT_SIDEBAR_AD)
         }
     } else {
         Aside(attrs = { id("loritta-snug") }) {

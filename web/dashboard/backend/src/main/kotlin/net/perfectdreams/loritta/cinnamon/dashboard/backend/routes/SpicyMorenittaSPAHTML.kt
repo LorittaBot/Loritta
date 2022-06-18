@@ -47,11 +47,14 @@ window["nitroAds"] = window["nitroAds"] || {
 };""".trimIndent())
             }
         }
-        script("https://s.nitropay.com/ads-595.js") {
+        script(src = "https://s.nitropay.com/ads-595.js") {
             defer = true // Only execute after the page has been parsed
         }
 
         styleLink("/assets/css/style.css?hash=${m.hashManager.getAssetHash("/assets/css/style.css")}")
+        script(src = "//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {
+            defer = true // Only execute after the page has been parsed
+        }
         script(src = "/assets/js/spicy-frontend.js?hash=${m.hashManager.getAssetHash("/assets/js/spicy-frontend.js")}") {
             defer = true // Only execute after the page has been parsed
         }

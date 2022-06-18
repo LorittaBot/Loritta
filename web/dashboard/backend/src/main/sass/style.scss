@@ -156,7 +156,7 @@ nav#left-sidebar {
     @media (min-width: 600px) {
         // Makes it look kinda pretty instead of filling the entire screen
         // However we will only apply if the screen size lets us do this without looking weird or ugly
-        max-width: 350px;
+        max-width: 360px;
     }
 
     // Used for mobile
@@ -424,5 +424,16 @@ input {
         width: 1em;
         height: 1em;
         display: flex;
+    }
+}
+
+.legal-footer {
+    text-align: center;
+}
+
+// Show where Google AdSense ads would be if they are unfilled, good for testing purposes
+.adsbygoogle {
+    &[data-ad-status=unfilled] {
+        background-color: rgba(0, 0, 0, 0.1);
     }
 }

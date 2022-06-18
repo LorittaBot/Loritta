@@ -3,16 +3,22 @@ package net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdas
 import androidx.compose.runtime.Composable
 import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetUserIdentificationResponse
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.Ad
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.SidebarEntryScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.LeftSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarCategory
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarDivider
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.SidebarEntryLink
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Ads
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalSpicyInfo
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import org.jetbrains.compose.web.css.DisplayStyle
+import org.jetbrains.compose.web.css.JustifyContent
+import org.jetbrains.compose.web.css.display
+import org.jetbrains.compose.web.css.justifyContent
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
@@ -69,6 +75,18 @@ fun UserLeftSidebar(
             SidebarEntryLink(SVGIconManager.asterisk, "${spicyInfo.legacyDashboardUrl}/guidelines", "Diretrizes da Comunidade")
         }
 
+        SidebarDivider()
+
+        Div(
+            attrs = {
+                style {
+                    display(DisplayStyle.Flex)
+                    justifyContent(JustifyContent.Center)
+                }
+            }
+        ) {
+            Ad(Ads.LEFT_SIDEBAR_AD)
+        }
         // SidebarEntry("Sair")
     }
 }
