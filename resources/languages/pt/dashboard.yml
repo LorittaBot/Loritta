@@ -16,7 +16,7 @@ website:
         - "Você quer pagar {price,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} para comprar?"
         - "Atualmente você tem {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}!"
     paymentMethods:
-      title: "Meios de Pagamento"
+      title: "Nós Aceitamos"
       pix: "Pix" #Only used in Brazil
       creditCard: "Cartão de Crédito"
       debitCard: "Cartão de Débito"
