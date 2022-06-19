@@ -317,6 +317,7 @@ section#right-sidebar {
             max-height: 350px;
             width: 100%;
             object-fit: contain;
+            -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
             mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
         }
 
@@ -325,6 +326,7 @@ section#right-sidebar {
             height: 350px;
             width: 100%;
             object-fit: contain;
+            -webkit-mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
             mask-image: linear-gradient(to bottom, rgb(0, 0, 0) 50%, rgba(0,0,0,0) 100%);
 
             > div {
