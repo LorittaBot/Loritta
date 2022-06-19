@@ -23,7 +23,6 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.appendAs
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.AdSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrapper
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.FieldWrappers
-import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.LegalFooter
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserLeftSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserRightSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
@@ -65,7 +64,7 @@ fun ShipEffectsOverview(
                 }
             ) {
                 Img("https://assets.perfectdreams.media/loritta/ship/loritta.png") {
-                    attr("width", "300")
+                    classes("hero-image")
                 }
 
                 LocalizedH1(i18nContext, I18nKeysData.Website.Dashboard.ShipEffects.Title)

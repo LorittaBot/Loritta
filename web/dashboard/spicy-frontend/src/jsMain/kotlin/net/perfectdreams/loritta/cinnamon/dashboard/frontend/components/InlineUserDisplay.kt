@@ -13,11 +13,9 @@ fun InlineUserDisplay(userInfo: CachedUserInfo) {
             classes("inline-user-display")
         }
     ) {
-        if (userInfo.avatarId != null) {
-            DiscordAvatar(userInfo.id, userInfo.discriminator, userInfo.avatarId) {
-                attr("width", "24")
-                attr("height", "24")
-            }
+        DiscordAvatar(userInfo.id, userInfo.discriminator, userInfo.avatarId) {
+            attr("width", "24")
+            attr("height", "24")
         }
 
         Div {

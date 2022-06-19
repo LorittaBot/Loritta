@@ -9,10 +9,12 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.FancyDet
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LoadingSection
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedH1
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.SupportedPaymentMethods
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.WebAnimation
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.lorilike.AdSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserLeftSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash.UserRightSidebar
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.SonhosShopScreen
+import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Animations
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import org.jetbrains.compose.web.css.DisplayStyle
@@ -24,7 +26,6 @@ import org.jetbrains.compose.web.css.gap
 import org.jetbrains.compose.web.css.textAlign
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Hr
-import org.jetbrains.compose.web.dom.Img
 
 @Composable
 fun SonhosShopOverview(
@@ -44,8 +45,12 @@ fun SonhosShopOverview(
                 }
             }
         ) {
-            Img(src = "https://cdn.discordapp.com/attachments/739823666891849729/986730747765342228/sunglasses.png") {
-                classes("hero-image")
+            Div(
+                attrs = {
+                    classes("hero-web-animation")
+                }
+            ) {
+                WebAnimation(Animations.lorittaSonhos)
             }
 
             LocalizedH1(i18nContext, I18nKeysData.Website.Dashboard.SonhosShop.Title)
