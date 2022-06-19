@@ -15,7 +15,7 @@ website:
         - "Do you want to pay {price,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} to purchase?"
         - "Currently you have {sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}!"
     paymentMethods:
-      title: "Payment Methods"
+      title: "We Accept"
       pix: "Pix" #Only used in Brazil
       creditCard: "Credit Card"
       debitCard: "Debit Card"
