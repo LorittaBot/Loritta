@@ -52,9 +52,9 @@ window["nitroAds"] = window["nitroAds"] || {
         }
 
         styleLink("/assets/css/style.css?hash=${m.hashManager.getAssetHash("/assets/css/style.css")}")
-        script(src = "//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {
+        /* script(src = "//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {
             defer = true // Only execute after the page has been parsed
-        }
+        } */
         script(src = "/assets/js/spicy-frontend.js?hash=${m.hashManager.getAssetHash("/assets/js/spicy-frontend.js")}") {
             defer = true // Only execute after the page has been parsed
         }
