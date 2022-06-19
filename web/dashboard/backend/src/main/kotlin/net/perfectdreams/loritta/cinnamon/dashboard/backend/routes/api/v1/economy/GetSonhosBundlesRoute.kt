@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundle
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
 
 class GetSonhosBundlesRoute(val m: LorittaDashboardBackend) : BaseRoute("/api/v1/economy/bundles/sonhos") {
     override suspend fun onRequest(call: ApplicationCall) {

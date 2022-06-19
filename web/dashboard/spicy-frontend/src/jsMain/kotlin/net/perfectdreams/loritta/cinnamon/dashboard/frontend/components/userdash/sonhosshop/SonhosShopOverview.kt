@@ -47,10 +47,20 @@ fun SonhosShopOverview(
         ) {
             Div(
                 attrs = {
-                    classes("hero-web-animation")
+                    classes("payment-hero-wrapper")
                 }
             ) {
-                WebAnimation(Animations.lorittaSonhos)
+                Div(
+                    attrs = {
+                        classes("hero-web-animation")
+                    }
+                ) {
+                    WebAnimation(Animations.lorittaSonhos)
+                }
+
+                Div {
+                    SupportedPaymentMethods(i18nContext)
+                }
             }
 
             LocalizedH1(i18nContext, I18nKeysData.Website.Dashboard.SonhosShop.Title)
@@ -67,8 +77,6 @@ fun SonhosShopOverview(
                 }
             }
         ) {
-            SupportedPaymentMethods(i18nContext)
-
             when (val sonhosBundles = screen.sonhosBundles) {
                 is State.Failure -> {}
                 is State.Loading -> {
