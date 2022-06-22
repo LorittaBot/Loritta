@@ -182,7 +182,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
      * @param afterTime allows filtering dailies by time, only dailies [afterTime] will be retrieven
      * @return the last received daily reward, if it exists
      */
-    internal fun _getUserLastDailyRewardReceived(userId: UserId, afterTime: kotlinx.datetime.Instant): Daily? {
+    private fun _getUserLastDailyRewardReceived(userId: UserId, afterTime: kotlinx.datetime.Instant): Daily? {
         val timeInMillis = afterTime.toEpochMilliseconds()
 
         val dailyResult = Dailies.select {

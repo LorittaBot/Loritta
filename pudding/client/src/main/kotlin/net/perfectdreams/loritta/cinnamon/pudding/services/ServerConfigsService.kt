@@ -7,26 +7,26 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRo
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardConfigs
-import org.jetbrains.exposed.sql.select
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 
 class ServerConfigsService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getServerConfigRoot(guildId: ULong): PuddingServerConfigRoot? = pudding.transaction { _getServerConfigRoot(guildId) }
 
-    suspend fun _getServerConfigRoot(guildId: ULong): PuddingServerConfigRoot? = ServerConfigs.select {
+    fun _getServerConfigRoot(guildId: ULong): PuddingServerConfigRoot? = ServerConfigs.selectFirstOrNull {
         ServerConfigs.id eq guildId.toLong()
-    }.firstOrNull()?.let { PuddingServerConfigRoot.fromRow(it) }
+    }?.let { PuddingServerConfigRoot.fromRow(it) }
 
     suspend fun getStarboardConfigById(id: Long): StarboardConfig? = pudding.transaction {  _getStarboardConfigById(id) }
 
-    suspend fun _getStarboardConfigById(id: Long): StarboardConfig? = StarboardConfigs.select {
+    fun _getStarboardConfigById(id: Long): StarboardConfig? = StarboardConfigs.selectFirstOrNull {
         StarboardConfigs.id eq id
-    }.firstOrNull()?.let { StarboardConfig.fromRow(it) }
+    }?.let { StarboardConfig.fromRow(it) }
 
     suspend fun getMiscellaneousConfigById(id: Long): MiscellaneousConfig? {
         return pudding.transaction {
-            MiscellaneousConfigs.select {
+            MiscellaneousConfigs.selectFirstOrNull {
                 MiscellaneousConfigs.id eq id
-            }.firstOrNull()
+            }
         }?.let { MiscellaneousConfig.fromRow(it) }
     }
 }

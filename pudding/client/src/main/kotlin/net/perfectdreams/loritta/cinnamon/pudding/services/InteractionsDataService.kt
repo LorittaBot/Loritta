@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
@@ -17,9 +18,9 @@ class InteractionsDataService(private val pudding: Pudding) : Service(pudding) {
     ): JsonObject? {
         return Json.parseToJsonElement(
             pudding.transaction {
-                InteractionsData.select {
+                InteractionsData.selectFirstOrNull {
                     InteractionsData.id eq interactionId
-                }.firstOrNull()
+                }
             }?.getOrNull(InteractionsData.data) ?: return null
         ).jsonObject
     }

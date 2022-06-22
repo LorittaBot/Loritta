@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -16,9 +17,7 @@ import java.time.Instant
 class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
     suspend fun trackCorreiosPackage(user: UserId, trackingId: String) {
         pudding.transaction {
-            var trackingPackageEntryId = TrackedCorreiosPackages.select { TrackedCorreiosPackages.trackingId eq trackingId }
-                .limit(1)
-                .firstOrNull()
+            var trackingPackageEntryId = TrackedCorreiosPackages.selectFirstOrNull { TrackedCorreiosPackages.trackingId eq trackingId }
                 ?.getOrNull(TrackedCorreiosPackages.id)
 
             if (trackingPackageEntryId == null) {
@@ -47,9 +46,7 @@ class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
 
     suspend fun untrackCorreiosPackage(user: UserId, trackingId: String) {
         pudding.transaction {
-            val trackingPackageEntryId: EntityID<Long> = TrackedCorreiosPackages.select { TrackedCorreiosPackages.trackingId eq trackingId }
-                .limit(1)
-                .firstOrNull()
+            val trackingPackageEntryId: EntityID<Long> = TrackedCorreiosPackages.selectFirstOrNull { TrackedCorreiosPackages.trackingId eq trackingId }
                 ?.getOrNull(TrackedCorreiosPackages.id) ?: return@transaction
 
             UsersFollowingCorreiosPackages.deleteWhere {

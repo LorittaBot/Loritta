@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotific
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -50,8 +51,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
 
     suspend fun _getUserProfile(id: UserId): PuddingUserProfile? {
         return pudding.transaction {
-            Profiles.select { Profiles.id eq id.value.toLong() }
-                .firstOrNull()
+            Profiles.selectFirstOrNull { Profiles.id eq id.value.toLong() }
         }?.let { PuddingUserProfile.fromRow(it) }
     }
 
@@ -92,8 +92,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      */
     suspend fun getProfileSettings(id: Long): PuddingProfileSettings? {
         return pudding.transaction {
-            UserSettings.select { UserSettings.id eq id }
-                .firstOrNull()
+            UserSettings.selectFirstOrNull { UserSettings.id eq id }
         }?.let { PuddingProfileSettings.fromRow(it) }
     }
 
@@ -106,9 +105,9 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      */
     suspend fun giveAchievement(id: UserId, type: AchievementType, achievedAt: Instant): Boolean {
         return pudding.transaction {
-            val alreadyHasAchievement = UserAchievements.select {
+            val alreadyHasAchievement = UserAchievements.selectFirstOrNull {
                 UserAchievements.user eq id.value.toLong() and (UserAchievements.type eq type)
-            }.firstOrNull() != null
+            } != null
 
             if (alreadyHasAchievement)
                 return@transaction false
@@ -177,9 +176,9 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @return the cached user info or null if it doesn't exist
      */
     suspend fun getCachedUserInfoById(userId: UserId) = pudding.transaction {
-        val info = CachedDiscordUsers.select {
+        val info = CachedDiscordUsers.selectFirstOrNull {
             CachedDiscordUsers.id eq userId.value.toLong()
-        }.limit(1).firstOrNull() ?: return@transaction null
+        } ?: return@transaction null
 
         CachedUserInfo(
             UserId(info[CachedDiscordUsers.id].value),
@@ -196,9 +195,9 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @return the cached user info or null if it doesn't exist
      */
     suspend fun getCachedUserInfoByNameAndDiscriminator(name: String, discriminator: String) = pudding.transaction {
-        val info = CachedDiscordUsers.select {
+        val info = CachedDiscordUsers.selectFirstOrNull {
             CachedDiscordUsers.name eq name and (CachedDiscordUsers.discriminator eq discriminator)
-        }.limit(1).firstOrNull() ?: return@transaction null
+        } ?: return@transaction null
 
         CachedUserInfo(
             UserId(info[CachedDiscordUsers.id].value),
@@ -224,9 +223,9 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
         discriminator: String,
         avatarId: String?
     ) = pudding.transaction {
-        val info = CachedDiscordUsers.select {
+        val info = CachedDiscordUsers.selectFirstOrNull {
             CachedDiscordUsers.id eq userId.value.toLong()
-        }.limit(1).firstOrNull()
+        }
 
         val now = System.currentTimeMillis()
         if (info != null) {
@@ -250,17 +249,15 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
 
     suspend fun getCachedDiscordDirectMessageChannel(id: UserId): Long? {
         return pudding.transaction {
-            CachedDiscordUsersDirectMessageChannels.select { CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong() }
-                .limit(1)
-                .firstOrNull()
+            CachedDiscordUsersDirectMessageChannels.selectFirstOrNull { CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong() }
         }?.get(CachedDiscordUsersDirectMessageChannels.channelId)
     }
 
     suspend fun insertOrUpdateCachedDiscordDirectMessageChannel(id: UserId, channelId: Long) {
         return pudding.transaction {
-            val info = CachedDiscordUsersDirectMessageChannels.select {
+            val info = CachedDiscordUsersDirectMessageChannels.selectFirstOrNull {
                 CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong()
-            }.limit(1).firstOrNull()
+            }
 
             if (info != null) {
                 CachedDiscordUsersDirectMessageChannels.update({ CachedDiscordUsersDirectMessageChannels.id eq id.value.toLong() }) {
@@ -313,10 +310,9 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
         newState: PendingImportantNotificationState
     ): String? {
         return pudding.transaction {
-            val dataResult = PendingImportantNotifications.select {
+            val dataResult = PendingImportantNotifications.selectFirstOrNull {
                 PendingImportantNotifications.userId eq userId.value.toLong() and (PendingImportantNotifications.state inList findState)
-            }.limit(1)
-                .firstOrNull()
+            }
 
             val data = dataResult?.let {
                 it[PendingImportantNotifications.message]

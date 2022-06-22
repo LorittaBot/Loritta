@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchm
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
@@ -134,13 +135,13 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                 (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
             }.count()
 
-            val winSum = CoinFlipBetGlobalMatchmakingResults.slice(sumField).select {
+            val winSum = CoinFlipBetGlobalMatchmakingResults.slice(sumField).selectFirstOrNull {
                 (CoinFlipBetGlobalMatchmakingResults.winner eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
-            }.firstOrNull()?.getOrNull(sumField) ?: 0L
+            }?.getOrNull(sumField) ?: 0L
 
-            val lostSum = CoinFlipBetGlobalMatchmakingResults.slice(sumField).select {
+            val lostSum = CoinFlipBetGlobalMatchmakingResults.slice(sumField).selectFirstOrNull {
                 (CoinFlipBetGlobalMatchmakingResults.loser eq userAsLong) and (CoinFlipBetGlobalMatchmakingResults.timestamp greaterEq javaCutoff)
-            }.firstOrNull()?.getOrNull(sumField) ?: 0L
+            }?.getOrNull(sumField) ?: 0L
 
             return@transaction UserCoinFlipBetGlobalStats(
                 winCount,
@@ -233,9 +234,9 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                 return@transaction results.apply { add(AlreadyInQueueResult()) }
 
             // If not, we are going to check if there is anyone else on the matchmaking queue that isn't ourselves...
-            val anotherUserMatchmakingData = CoinFlipBetGlobalMatchmakingQueue.select {
+            val anotherUserMatchmakingData = CoinFlipBetGlobalMatchmakingQueue.selectFirstOrNull {
                 CoinFlipBetGlobalMatchmakingQueue.user neq userId.value.toLong() and (CoinFlipBetGlobalMatchmakingQueue.quantity eq quantity)
-            }.firstOrNull()
+            }
 
             // Create self profile
             val profile = pudding.users._getOrCreateUserProfile(userId)

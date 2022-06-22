@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.avg
@@ -55,9 +56,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
      * @return a list of all tickers
      */
     suspend fun getTicker(tickerId: String) = pudding.transaction {
-        TickerPrices.select { TickerPrices.ticker eq tickerId }
-            .limit(1)
-            .firstOrNull()
+        TickerPrices.selectFirstOrNull { TickerPrices.ticker eq tickerId }
             ?.let {
                 BrokerTickerInformation(
                     it[TickerPrices.ticker].value,
@@ -265,9 +264,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
 
     private fun _getTicker(tickerId: String) = _getTickerOrNull(tickerId) ?: error("Ticker $tickerId is not present in the database!")
 
-    private fun _getTickerOrNull(tickerId: String) = TickerPrices.select { TickerPrices.ticker eq tickerId }
-        .limit(1)
-        .firstOrNull()
+    private fun _getTickerOrNull(tickerId: String) = TickerPrices.selectFirstOrNull { TickerPrices.ticker eq tickerId }
         ?.let {
             BrokerTickerInformation(
                 it[TickerPrices.ticker].value,
