@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.DatabaseConfig
-import sun.misc.Signal
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -79,13 +78,9 @@ object DiscordGatewayEventsProcessorLauncher {
         // It is recommended to set this to false, to avoid performance hits with the DebugProbes option!
         DebugProbes.enableCreationStackTraces = false
         DebugProbes.install()
-
-        Signal.handle(Signal("TRAP")) { signal ->
-            DebugProbes.dumpCoroutines()
-        }
     }
 
-    fun createPostgreSQLDatabaseConnection(address: String, databaseName: String, username: String, password: String): QueueDatabase {
+    private fun createPostgreSQLDatabaseConnection(address: String, databaseName: String, username: String, password: String): QueueDatabase {
         val hikariConfig = createHikariConfig()
         hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${getPuddingApplicationName()}"
 
