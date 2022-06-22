@@ -407,7 +407,6 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
         if (TransactionManager.currentOrNull() == null)
             error("This can only be ran within a transaction block!")
 
-        val pool = hikariDataSource.hikariPoolMXBean
         val config = hikariDataSource.hikariConfigMXBean
 
         mutex.withLock {
@@ -416,21 +415,16 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
                 config.minimumIdle = config.maximumPoolSize
             }
 
-            pool.suspendPool()
             config.maximumPoolSize = config.maximumPoolSize + 1
             logger.info { "Running IO Bound code, increased pool size to ${config.maximumPoolSize}" }
-            pool.resumePool()
         }
 
         try {
             return block.invoke()
         } finally {
             mutex.withLock {
-                pool.suspendPool()
                 config.maximumPoolSize = config.maximumPoolSize - 1
                 logger.info { "Finished running IO Bound code, decreased pool size to ${config.maximumPoolSize}" }
-                pool.softEvictConnections()
-                pool.resumePool()
             }
         }
     }

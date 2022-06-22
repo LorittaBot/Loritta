@@ -11,11 +11,8 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.QueueDatabase
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
-import kotlin.concurrent.thread
 
 class DiscordGatewayEventsProcessor(
     val config: RootConfig,
