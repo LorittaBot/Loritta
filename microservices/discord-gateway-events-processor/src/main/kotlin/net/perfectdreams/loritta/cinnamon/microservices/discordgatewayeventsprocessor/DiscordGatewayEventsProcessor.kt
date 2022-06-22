@@ -46,20 +46,5 @@ class DiscordGatewayEventsProcessor(
         }
 
         tasks.start()
-
-        repeat(10) {
-            thread {
-                runBlocking {
-                    services.transaction {
-                        ServerConfigs.selectAll().forEach {
-                            println(it)
-                        }
-                        services.runIOBound {
-                            Thread.sleep(25_000)
-                        }
-                    }
-                }
-            }
-        }
     }
 }
