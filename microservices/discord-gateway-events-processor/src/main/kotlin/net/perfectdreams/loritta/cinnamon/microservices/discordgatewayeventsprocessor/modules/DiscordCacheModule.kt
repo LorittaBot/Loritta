@@ -25,7 +25,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
     override suspend fun processEvent(event: Event) {
         when (event) {
             is GuildCreate -> {
-                logger.info { "Howdy ${event.guild.id} (${event.guild.name})! Is unavailable? ${event.guild.unavailable}" }
+                // logger.info { "Howdy ${event.guild.id} (${event.guild.name})! Is unavailable? ${event.guild.unavailable}" }
 
                 if (event.guild.unavailable.discordBoolean)
                     createUpdateAndDeleteRolesBulk(event.guild.id, event.guild.roles)
@@ -42,7 +42,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is GuildDelete -> {
                 // If the unavailable field is not set, the user/bot was removed from the guild.
                 if (event.guild.unavailable.value == null) {
-                    logger.info { "Someone removed me @ ${event.guild.id}! :(" }
+                    // logger.info { "Someone removed me @ ${event.guild.id}! :(" }
                     removeGuildData(event.guild.id)
                 }
             }
