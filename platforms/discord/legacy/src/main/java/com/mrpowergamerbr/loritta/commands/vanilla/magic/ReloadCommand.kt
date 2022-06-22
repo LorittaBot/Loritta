@@ -29,17 +29,6 @@ class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC
 		val arg1 = context.rawArgs.getOrNull(1)
 		val arg2 = context.rawArgs.getOrNull(2)
 
-		if (arg0 == "posts") {
-			loritta.newWebsite?.loadBlogPosts()
-
-			context.reply(
-                    LorittaReply(
-                            "Posts recarregados!"
-                    )
-			)
-			return
-		}
-
 		if (arg0 == "action") {
 			lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/$arg1")
 			context.reply(

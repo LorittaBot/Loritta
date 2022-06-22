@@ -129,9 +129,6 @@ object DebugLog {
 			"bomdiaecia" -> {
 				loritta.bomDiaECia.handleBomDiaECia(true)
 			}
-			"posts" -> {
-				LorittaWebsite.INSTANCE.blog.posts = LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
-			}
 			"dumpc" -> {
 				dumpCoroutinesToFile()
 			}
