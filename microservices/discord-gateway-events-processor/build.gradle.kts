@@ -17,6 +17,7 @@ dependencies {
     implementation("dev.kord:kord-rest:${Versions.KORD}")
     implementation("dev.kord:kord-gateway:${Versions.KORD}")
     implementation("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.0.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.6.3")
 
     // Logback GELF, used for Graylog logging
     implementation("de.siegmar:logback-gelf:3.0.0")

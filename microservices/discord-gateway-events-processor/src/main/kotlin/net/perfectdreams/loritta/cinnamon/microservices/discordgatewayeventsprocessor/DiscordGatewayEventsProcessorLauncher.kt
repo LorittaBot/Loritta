@@ -3,6 +3,9 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
+import jdk.internal.misc.Signal
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
@@ -67,6 +70,17 @@ object DiscordGatewayEventsProcessorLauncher {
         )
 
         loritta.start()
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun installCoroutinesDebugProbes() {
+        // It is recommended to set this to false to avoid performance hits with the DebugProbes option!
+        DebugProbes.enableCreationStackTraces = false
+        DebugProbes.install()
+
+        Signal.handle(Signal("TRAP")) { signal ->
+            DebugProbes.dumpCoroutines()
+        }
     }
 
     fun createPostgreSQLDatabaseConnection(address: String, databaseName: String, username: String, password: String): QueueDatabase {

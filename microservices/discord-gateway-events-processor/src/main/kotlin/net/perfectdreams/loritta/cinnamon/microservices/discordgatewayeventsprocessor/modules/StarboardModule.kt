@@ -19,8 +19,6 @@ import dev.kord.rest.builder.message.modify.UserMessageModifyBuilder
 import dev.kord.rest.builder.message.modify.actionRow
 import dev.kord.rest.builder.message.modify.embed
 import dev.kord.rest.request.KtorRequestException
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -35,10 +33,10 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContentTypeUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardMessages
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -133,11 +131,9 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
                 logger.info { "Getting Starboard Message of $messageId in the database..." }
 
                 // Get if the current message is already sent in the starboard
-                val starboardMessageFromDatabase = StarboardMessages.select {
+                val starboardMessageFromDatabase = StarboardMessages.selectFirstOrNull {
                     StarboardMessages.guildId eq guildId.value.toLong() and (StarboardMessages.messageId eq messageId.value.toLong())
                 }
-                    .limit(1)
-                    .firstOrNull()
 
                 logger.info { "Does message $messageId have a message in the database? ${starboardMessageFromDatabase != null}" }
 
