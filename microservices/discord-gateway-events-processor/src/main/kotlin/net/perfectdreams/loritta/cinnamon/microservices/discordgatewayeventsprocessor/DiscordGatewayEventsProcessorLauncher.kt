@@ -44,15 +44,6 @@ object DiscordGatewayEventsProcessorLauncher {
             rootConfig.pudding.password
         )
 
-        val servicesWithHttpRequests = Pudding.createPostgreSQLPudding(
-            rootConfig.pudding.address,
-            rootConfig.pudding.database,
-            rootConfig.pudding.username,
-            rootConfig.pudding.password,
-            8,
-            128
-        )
-
         Runtime.getRuntime().addShutdownHook(
             thread(false) {
                 // Shutdown services when stopping the application
@@ -75,7 +66,6 @@ object DiscordGatewayEventsProcessorLauncher {
         val loritta = DiscordGatewayEventsProcessor(
             rootConfig,
             services,
-            servicesWithHttpRequests,
             queueDatabase,
             languageManager,
         )

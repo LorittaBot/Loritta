@@ -117,7 +117,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         mutexes.getOrPut(lockKey) { Mutex() }.withLock {
             // Because we need to do REST queries here, we may get rate limited by Discord!
             // That's why we use a different transaction pool, to avoid blocking issues.
-            m.servicesWithHttpRequests.transaction {
+            m.services.transaction {
                 val serverConfig = m.services.serverConfigs._getServerConfigRoot(guildId.value) ?: return@transaction
                 val starboardConfig = serverConfig._getStarboardConfig() ?: return@transaction
                 val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
@@ -140,7 +140,9 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
                 logger.info { "Does message $messageId have a message in the database? ${starboardMessageFromDatabase != null}" }
 
                 val reactedMessage = try {
-                    m.rest.channel.getMessage(channelId, messageId)
+                    m.services.runIOBound {
+                        m.rest.channel.getMessage(channelId, messageId)
+                    }
                 } catch (e: KtorRequestException) {
                     logger.warn(e) { "Failed to get message $messageId" }
                     failedToSendMessageChannels.add(channelId)
@@ -167,10 +169,12 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
 
                     // Bye starboard message!
                     try {
-                        m.rest.channel.deleteMessage(
-                            Snowflake(starboardId),
-                            Snowflake(starboardMessageFromDatabase[StarboardMessages.embedId])
-                        )
+                        m.services.runIOBound {
+                            m.rest.channel.deleteMessage(
+                                Snowflake(starboardId),
+                                Snowflake(starboardMessageFromDatabase[StarboardMessages.embedId])
+                            )
+                        }
                     } catch (e: KtorRequestException) {
                         logger.warn(e) { "Failed to delete message ${starboardMessageFromDatabase[StarboardMessages.embedId]}" }
                     }
@@ -184,16 +188,18 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
                         val embedId = starboardMessageFromDatabase[StarboardMessages.embedId]
 
                         try {
-                            m.rest.channel.editMessage(
-                                Snowflake(starboardId),
-                                Snowflake(embedId),
-                                modifyStarboardMessage(
-                                    i18nContext,
-                                    guildId,
-                                    reactedMessage,
-                                    starReaction
+                            m.services.runIOBound {
+                                m.rest.channel.editMessage(
+                                    Snowflake(starboardId),
+                                    Snowflake(embedId),
+                                    modifyStarboardMessage(
+                                        i18nContext,
+                                        guildId,
+                                        reactedMessage,
+                                        starReaction
+                                    )
                                 )
-                            )
+                            }
                         } catch (e: KtorRequestException) {
                             logger.warn(e) { "Failed to edit starboard message $embedId in channel ${starboardConfig.starboardChannelId}" }
                             failedToSendMessageChannels.add(Snowflake(starboardId))
@@ -206,20 +212,22 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
 
                         // Don't send messages to the starboard if the source channel is NSFW
                         // TODO: Caching
-                        val channel = m.rest.channel.getChannel(channelId)
+                        val channel = m.services.runIOBound { m.rest.channel.getChannel(channelId) }
                         if (channel.nsfw.discordBoolean)
                             return@transaction
 
                         val newMessage = try {
-                            m.rest.channel.createMessage(
-                                Snowflake(starboardId),
-                                createStarboardMessage(
-                                    i18nContext,
-                                    guildId,
-                                    reactedMessage,
-                                    starReaction
+                            m.services.runIOBound {
+                                m.rest.channel.createMessage(
+                                    Snowflake(starboardId),
+                                    createStarboardMessage(
+                                        i18nContext,
+                                        guildId,
+                                        reactedMessage,
+                                        starReaction
+                                    )
                                 )
-                            )
+                            }
                         } catch (e: KtorRequestException) {
                             logger.warn(e) { "Failed to send starboard message in channel ${starboardConfig.starboardChannelId}" }
                             failedToSendMessageChannels.add(Snowflake(starboardId))

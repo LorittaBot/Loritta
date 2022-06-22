@@ -4,6 +4,8 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
@@ -110,11 +112,9 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             address: String,
             databaseName: String,
             username: String,
-            password: String,
-            maximumPoolSize: Int = 10, // Default HikariCP pool size
-            minimumIdle: Int = 0 // Default HikariCP minimum idle
+            password: String
         ): Pudding {
-            val hikariConfig = createHikariConfig(maximumPoolSize, minimumIdle)
+            val hikariConfig = createHikariConfig()
             hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${getPuddingApplicationName()}"
 
             hikariConfig.username = username
@@ -125,7 +125,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             return Pudding(hikariDataSource, connectToDatabase(hikariDataSource))
         }
 
-        private fun createHikariConfig(maximumPoolSize: Int, minimumIdle: Int): HikariConfig {
+        private fun createHikariConfig(): HikariConfig {
             val hikariConfig = HikariConfig()
 
             hikariConfig.driverClassName = DRIVER_CLASS_NAME
@@ -142,8 +142,8 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             hikariConfig.leakDetectionThreshold = 30L * 1000
             hikariConfig.transactionIsolation = ISOLATION_LEVEL.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
 
-            hikariConfig.maximumPoolSize = maximumPoolSize
-            hikariConfig.minimumIdle = minimumIdle
+            // https://stackoverflow.com/a/64375936/7271796
+            hikariConfig.isAllowPoolSuspension = true
 
             return hikariConfig
         }
@@ -151,7 +151,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
         // Loritta (Legacy) uses this!
         fun connectToDatabase(dataSource: HikariDataSource): Database =
             Database.connect(
-                HikariDataSource(dataSource),
+                dataSource,
                 databaseConfig = DatabaseConfig {
                     defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
                     defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
@@ -340,7 +340,6 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
         }
     }
 
-
     // This is a workaround because "Table.exists()" does not work for partitioned tables!
     private fun Transaction.checkIfTableExists(table: Table): Boolean {
         val tableScheme = table.tableName.substringBefore('.', "").takeIf { it.isNotEmpty() }
@@ -393,6 +392,42 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             }
         }
         throw lastException ?: RuntimeException("This should never happen")
+    }
+
+    private val mutex = Mutex()
+
+    /**
+     * Runs an IO bound code within a transaction (Example: Interactions with Discord's API)
+     *
+     * This is useful to avoid all transactions being exausted due to Discord's rate limit.
+     *
+     * To handle it, HikariCP's maximumPoolSize is increased and then decreased after the code finishes its execution.
+     */
+    suspend fun <T> runIOBound(block: suspend () -> (T)): T {
+        if (TransactionManager.currentOrNull() == null)
+            error("This can only be ran within a transaction block!")
+
+        val pool = hikariDataSource.hikariPoolMXBean
+        val config = hikariDataSource.hikariConfigMXBean
+
+        mutex.withLock {
+            pool.suspendPool()
+            config.maximumPoolSize = config.maximumPoolSize + 1
+            logger.info { "Running IO Bound code, increased pool size to ${config.maximumPoolSize}" }
+            pool.resumePool()
+        }
+
+        try {
+            return block.invoke()
+        } finally {
+            mutex.withLock {
+                pool.suspendPool()
+                config.maximumPoolSize = config.maximumPoolSize - 1
+                logger.info { "Finished running IO Bound code, decreased pool size to ${config.maximumPoolSize}" }
+                pool.softEvictConnections()
+                pool.resumePool()
+            }
+        }
     }
 
     fun shutdown() {

@@ -11,13 +11,15 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.QueueDatabase
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
+import kotlin.concurrent.thread
 
 class DiscordGatewayEventsProcessor(
     val config: RootConfig,
     val services: Pudding,
-    val servicesWithHttpRequests: Pudding,
     val queueDatabase: QueueDatabase,
     val languageManager: LanguageManager
 ) {
@@ -44,5 +46,20 @@ class DiscordGatewayEventsProcessor(
         }
 
         tasks.start()
+
+        repeat(10) {
+            thread {
+                runBlocking {
+                    services.transaction {
+                        ServerConfigs.selectAll().forEach {
+                            println(it)
+                        }
+                        services.runIOBound {
+                            Thread.sleep(25_000)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
