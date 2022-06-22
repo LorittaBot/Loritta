@@ -411,6 +411,11 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
         val config = hikariDataSource.hikariConfigMXBean
 
         mutex.withLock {
+            if (config.minimumIdle == 0) {
+                logger.info { "Running IO Bound code for the first time, setting minimum idle to ${config.maximumPoolSize}" }
+                config.minimumIdle = config.maximumPoolSize
+            }
+
             pool.suspendPool()
             config.maximumPoolSize = config.maximumPoolSize + 1
             logger.info { "Running IO Bound code, increased pool size to ${config.maximumPoolSize}" }
