@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.ProcessDiscordEventsModule

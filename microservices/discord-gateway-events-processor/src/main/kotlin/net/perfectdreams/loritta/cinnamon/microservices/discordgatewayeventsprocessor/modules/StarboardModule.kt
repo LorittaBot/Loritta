@@ -115,7 +115,9 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         // Before we were using PostgreSQL's advisory locks, however for some reason all connections got exausted after a while (maybe a connection leak? however there weren't any active transactions in the database)? Super weird issue
         // So for now we are relying on Kotlin Coroutines' mutexes, the issue with this is that it won't scale if we increase the number of replicas
         mutexes.getOrPut(lockKey) { Mutex() }.withLock {
-            m.services.transaction {
+            // Because we need to do REST queries here, we may get rate limited by Discord!
+            // That's why we use a different transaction pool, to avoid blocking issues.
+            m.servicesWithHttpRequests.transaction {
                 val serverConfig = m.services.serverConfigs._getServerConfigRoot(guildId.value) ?: return@transaction
                 val starboardConfig = serverConfig._getStarboardConfig() ?: return@transaction
                 val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)

@@ -17,6 +17,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class DiscordGatewayEventsProcessor(
     val config: RootConfig,
     val services: Pudding,
+    val servicesWithHttpRequests: Pudding,
     val queueDatabase: QueueDatabase,
     val languageManager: LanguageManager
 ) {
