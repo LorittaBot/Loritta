@@ -44,7 +44,6 @@ import com.mrpowergamerbr.loritta.utils.LorittaShards
 import com.mrpowergamerbr.loritta.utils.LorittaTasks
 import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
 import com.mrpowergamerbr.loritta.utils.PatchData
-import com.mrpowergamerbr.loritta.utils.config.EnvironmentType
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
@@ -116,11 +115,11 @@ import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.Sponsor
-import net.perfectdreams.loritta.utils.TrinketsStuff
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
@@ -136,7 +135,13 @@ import kotlin.concurrent.thread
  *
  * @author MrPowerGamerBR
  */
-class Loritta(discordConfig: GeneralDiscordConfig, discordInstanceConfig: GeneralDiscordInstanceConfig, config: GeneralConfig, instanceConfig: GeneralInstanceConfig) : LorittaDiscord(discordConfig, discordInstanceConfig, config, instanceConfig) {
+class Loritta(
+	discordConfig: GeneralDiscordConfig,
+	discordInstanceConfig: GeneralDiscordInstanceConfig,
+	config: GeneralConfig,
+	instanceConfig: GeneralInstanceConfig,
+	val queueDatabase: Database
+) : LorittaDiscord(discordConfig, discordInstanceConfig, config, instanceConfig) {
 	// ===[ STATIC ]===
 	companion object {
 		// ===[ LORITTA ]===

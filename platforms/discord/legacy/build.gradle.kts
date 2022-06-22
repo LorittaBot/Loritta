@@ -63,8 +63,6 @@ dependencies {
         exclude(group = "net.perfectdreams.minecraftmojangapi")
     }
 
-    implementation("com.rabbitmq:amqp-client:5.14.2")
-
     // DreamStorageService
     api("net.perfectdreams.dreamstorageservice:client:2.0.0-SNAPSHOT")
 

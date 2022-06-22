@@ -4,8 +4,14 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.debug.DebugProbes
 import net.perfectdreams.loritta.utils.readConfigurationFromFile
+import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.DatabaseConfig
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Paths
@@ -67,11 +73,15 @@ object LorittaLauncher {
 		// Used for Logback
 		System.setProperty("cluster.name", config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }.getUserAgent(config.loritta.environment))
 
-		val arg0 = args.getOrNull(0)
-		val arg1 = args.getOrNull(1)
+		val queueDatabase = createPostgreSQLDatabaseConnection(
+			config.queueDatabase.address,
+			config.queueDatabase.databaseName,
+			config.queueDatabase.username,
+			config.queueDatabase.password
+		)
 
 		// Iniciar instância da Loritta
-		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig)
+		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig, queueDatabase)
 		loritta.start()
 	}
 
@@ -103,5 +113,43 @@ object LorittaLauncher {
 		// It is recommended to set this to false to avoid performance hits with the DebugProbes option!
 		DebugProbes.enableCreationStackTraces = false
 		DebugProbes.install()
+	}
+
+	fun createPostgreSQLDatabaseConnection(address: String, databaseName: String, username: String, password: String): Database {
+		val hikariConfig = createHikariConfig()
+		hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName"
+
+		hikariConfig.username = username
+		hikariConfig.password = password
+
+		val hikariDataSource = HikariDataSource(hikariConfig)
+
+		return Database.connect(
+			hikariDataSource,
+			databaseConfig = DatabaseConfig {
+				defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
+				defaultIsolationLevel = IsolationLevel.TRANSACTION_READ_COMMITTED.levelId // Change our default isolation level
+			}
+		)
+	}
+
+	private fun createHikariConfig(): HikariConfig {
+		val hikariConfig = HikariConfig()
+
+		hikariConfig.driverClassName = "org.postgresql.Driver"
+
+		// https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
+		hikariConfig.addDataSourceProperty("reWriteBatchedInserts", "true")
+
+		// Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
+		// autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
+		// https://stackoverflow.com/a/41206003/7271796
+		hikariConfig.isAutoCommit = false
+
+		// Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
+		hikariConfig.leakDetectionThreshold = 30L * 1000
+		hikariConfig.transactionIsolation = IsolationLevel.TRANSACTION_READ_COMMITTED.name
+
+		return hikariConfig
 	}
 }
