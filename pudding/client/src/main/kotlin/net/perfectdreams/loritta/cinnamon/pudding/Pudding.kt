@@ -106,8 +106,15 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
          * @param password     the PostgreSQL password
          * @return a [Pudding] instance backed by a PostgreSQL database
          */
-        fun createPostgreSQLPudding(address: String, databaseName: String, username: String, password: String): Pudding {
-            val hikariConfig = createHikariConfig()
+        fun createPostgreSQLPudding(
+            address: String,
+            databaseName: String,
+            username: String,
+            password: String,
+            maximumPoolSize: Int = 10, // Default HikariCP pool size
+            minimumIdle: Int = 0 // Default HikariCP minimum idle
+        ): Pudding {
+            val hikariConfig = createHikariConfig(maximumPoolSize, minimumIdle)
             hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${getPuddingApplicationName()}"
 
             hikariConfig.username = username
@@ -118,7 +125,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             return Pudding(hikariDataSource, connectToDatabase(hikariDataSource))
         }
 
-        private fun createHikariConfig(): HikariConfig {
+        private fun createHikariConfig(maximumPoolSize: Int, minimumIdle: Int): HikariConfig {
             val hikariConfig = HikariConfig()
 
             hikariConfig.driverClassName = DRIVER_CLASS_NAME
@@ -134,6 +141,9 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             // Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
             hikariConfig.leakDetectionThreshold = 30L * 1000
             hikariConfig.transactionIsolation = ISOLATION_LEVEL.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
+
+            hikariConfig.maximumPoolSize = maximumPoolSize
+            hikariConfig.minimumIdle = minimumIdle
 
             return hikariConfig
         }
