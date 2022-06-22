@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.rabbitmq.client.Channel
 import dev.kord.common.Color
 import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.MessageStickerType
@@ -22,7 +21,6 @@ import dev.kord.rest.builder.message.modify.embed
 import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
@@ -42,9 +40,8 @@ import org.jetbrains.exposed.sql.select
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule(RABBITMQ_QUEUE) {
+class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
-        const val RABBITMQ_QUEUE = "starboard-module"
         const val STAR_REACTION = "⭐"
         private val logger = KotlinLogging.logger {}
     }
@@ -60,13 +57,6 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         .expireAfterAccess(60, TimeUnit.SECONDS)
         .build<Long, Mutex>()
         .asMap()
-
-    override fun setupQueueBinds(channel: Channel) {
-        channel.queueBindToModuleQueue("event.message-reaction-add")
-        channel.queueBindToModuleQueue("event.message-reaction-remove")
-        channel.queueBindToModuleQueue("event.message-reaction-remove-emoji")
-        channel.queueBindToModuleQueue("event.message-reaction-all")
-    }
 
     override suspend fun processEvent(event: Event) {
         when (event) {

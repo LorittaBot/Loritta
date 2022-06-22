@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
-import com.rabbitmq.client.Channel
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.ChannelCreate
@@ -8,10 +7,8 @@ import dev.kord.gateway.Event
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 
-class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule(RABBITMQ_QUEUE) {
+class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
-        const val RABBITMQ_QUEUE = "first-on-new-channels-module"
-
         private val FUNNY_FIRST_EMOJIS = listOf(
             Emotes.LoriCoffee,
             Emotes.LoriHappy,
@@ -24,10 +21,6 @@ class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) 
             Emotes.LoriLick,
             Emotes.LoriFlushed
         )
-    }
-
-    override fun setupQueueBinds(channel: Channel) {
-        channel.queueBindToModuleQueue("event.channel-create")
     }
 
     override suspend fun processEvent(event: Event) {

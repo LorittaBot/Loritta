@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
-import com.rabbitmq.client.Channel
 import dev.kord.common.entity.DiscordRole
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.value
@@ -18,18 +17,9 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import pw.forst.exposed.insertOrUpdate
 
-class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule(RABBITMQ_QUEUE) {
+class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
-        const val RABBITMQ_QUEUE = "discord-cache-module"
         private val logger = KotlinLogging.logger {}
-    }
-
-    override fun setupQueueBinds(channel: Channel) {
-        channel.queueBindToModuleQueue("event.guild-create")
-        channel.queueBindToModuleQueue("event.guild-delete")
-        channel.queueBindToModuleQueue("event.guild-role-create")
-        channel.queueBindToModuleQueue("event.guild-role-update")
-        channel.queueBindToModuleQueue("event.guild-role-delete")
     }
 
     override suspend fun processEvent(event: Event) {

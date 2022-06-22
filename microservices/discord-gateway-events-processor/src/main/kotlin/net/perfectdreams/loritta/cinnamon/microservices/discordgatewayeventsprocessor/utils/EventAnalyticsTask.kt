@@ -9,13 +9,18 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
         private val logger = KotlinLogging.logger {}
     }
 
+    var lastEventCountCheck = 0
+
     override fun run() {
+        val totalEventsProcessed = m.tasks.processDiscordGatewayEvents.totalEventsProcessed
+        logger.info { "Total Discord Events processed: $totalEventsProcessed; (+${totalEventsProcessed - lastEventCountCheck})" }
+        lastEventCountCheck = totalEventsProcessed
         printStats(m.starboardModule)
         printStats(m.addFirstToNewChannelsModule)
         printStats(m.discordCacheModule)
     }
 
     private fun printStats(module: ProcessDiscordEventsModule) {
-        logger.info { "Module ${module::class.simpleName} stats: ${module.activeEvents.size} active events; launched events: ${module.launchedEvents}; consumer tag: ${module.moduleConsumerTag}; last event received at: ${module.lastMessageReceivedAt}; ${module.activeEvents}" }
+        logger.info { "Module ${module::class.simpleName} stats: ${module.activeEvents.size} active events; ${module.activeEvents}" }
     }
 }

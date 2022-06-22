@@ -6,8 +6,9 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordCo
 
 @Serializable
 data class RootConfig(
+    val eventsPerBatch: Int,
     val loritta: LorittaConfig,
     val discord: LorittaDiscordConfig,
     val pudding: PuddingConfig,
-    val rabbitMQ: RabbitMQConfig,
+    val queueDatabase: PuddingConfig
 )
