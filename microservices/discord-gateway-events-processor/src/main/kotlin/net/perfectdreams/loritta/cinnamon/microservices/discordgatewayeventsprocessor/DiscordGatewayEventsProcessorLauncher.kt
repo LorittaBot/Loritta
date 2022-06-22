@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
-import jdk.internal.misc.Signal
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
@@ -15,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.DatabaseConfig
+import sun.misc.Signal
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -55,6 +55,8 @@ object DiscordGatewayEventsProcessorLauncher {
 
         logger.info { "Started Pudding client!" }
 
+        installCoroutinesDebugProbes()
+
         val queueDatabase = createPostgreSQLDatabaseConnection(
             rootConfig.queueDatabase.address,
             rootConfig.queueDatabase.database,
@@ -74,7 +76,7 @@ object DiscordGatewayEventsProcessorLauncher {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun installCoroutinesDebugProbes() {
-        // It is recommended to set this to false to avoid performance hits with the DebugProbes option!
+        // It is recommended to set this to false, to avoid performance hits with the DebugProbes option!
         DebugProbes.enableCreationStackTraces = false
         DebugProbes.install()
 
