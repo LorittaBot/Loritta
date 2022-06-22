@@ -120,7 +120,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             hikariConfig.username = username
             hikariConfig.password = password
 
-            val hikariDataSource = HikariDataSource(hikariConfig)
+            val hikariDataSource = HikariDataSource(hikariConfig, maximumPoolSize, minimumIdle)
 
             return Pudding(hikariDataSource, connectToDatabase(hikariDataSource))
         }
