@@ -24,7 +24,6 @@ Originally Loritta was made in Java, but in May 2017 I decided migrate to Kotlin
 * gifsicle (only required if you want to build the `:web:showtime:backend` module)
   * Windows or MacOS: https://www.lcdf.org/gifsicle/
   * Linux: Install it via your distro's package manager
-* RabbitMQ (only required if you want to run the `:microservices:discord-gateway-events-processor` module)
 
 ### 🧹 Preparing the environment 
 
@@ -60,56 +59,6 @@ systemProp.pngquant.path=L:\\Tools\\pngquant\\pngquant.exe
 If you are compiling Loritta via the command line instead of compiling within IntelliJ IDEA, you can provide the system property to the `/gradlew` command directly
 ```
 ./gradlew -Dpngquant.path=/home/lorittapath/to/pngquant/pngquant ...
-```
-
-#### Preparing RabbitMQ (`:microservices:discord-gateway-events-processor` only)
-
-RabbitMQ is used on the `:microservices:discord-gateway-events-processor` module to process gateway events produced by Loritta's Legacy branch. Splitting the gateway process from the event processor process has the advantage of allowing bug fixes and new features to be deployed without requiring restarting all shards, which on a big bot may take a loooong time.
-
-Setting up a RabbitMQ instance locally is easy with Docker, so that's what we are going to use!
-
-First, we will run RabbitMQ with Docker
-
-```bash
-docker run -it --rm --hostname rabbitmq --name rabbitmq -p 5672:5672 rabbitmq:3.8
-```
-
-(The `--hostname rabbitmq` is required because RabbitMQ uses the hostname to persist the data, if we don't explicitly set it, Docker will use a random hostname when starting the container: <https://hub.docker.com/_/rabbitmq>)
-
-We will create a virtual host because this allows us to not mix other application data that use RabbitMQ with our application data. If you know SQL, Virtual Hosts are like "databases".
-
-```bash
-docker exec rabbitmq rabbitmqctl add_vhost loritta
-```
-
-Because we aren't using the default RabbitMQ virtual host, we need to create a user.
-
-```bash
-docker exec rabbitmq rabbitmqctl add_user loritta insertnicepasswordhere
-```
-
-Our newly created user does not have permission to read our virtual host... So let's grant permission to it!
-
-```bash
-docker exec rabbitmq rabbitmqctl set_permissions --vhost loritta loritta ".*" ".*" ".*"
-```
-
-And that's it! You can use `docker exec rabbitmq rabbitmqctl list_queues --vhost loritta` to see the created queues and how many pending messages are in the queues.
-
-You can also persist RabbitMQ's data (users, etc) by using this `docker-compose.yml` file.
-```yml
-# https://stackoverflow.com/a/67959283
-version: "3.9"
-services:
-  rabbitmq:
-    image: "rabbitmq:3.8"
-    hostname: rabbitmq
-    # Persists RabbitMQ data, this path needs to be changed if you are running on Windows!
-    # You can also remove this if you don't care about persisting the data
-    volumes:
-      - /var/docker/rabbitmq/var/lib/rabbitmq:/var/lib/rabbitmq
-    ports:
-      - "5672:5672"
 ```
 
 ### 🐘 Compiling with Gradle
