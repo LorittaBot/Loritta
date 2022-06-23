@@ -5,8 +5,6 @@ import com.mrpowergamerbr.loritta.dao.Profile
 import com.mrpowergamerbr.loritta.dao.Reputation
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.sweetmorenitta.views.BlogPostView
-import net.perfectdreams.loritta.sweetmorenitta.views.BlogView
 import net.perfectdreams.loritta.sweetmorenitta.views.CommunityGuidelinesView
 import net.perfectdreams.loritta.sweetmorenitta.views.DailyView
 import net.perfectdreams.loritta.sweetmorenitta.views.DonateView
@@ -19,7 +17,6 @@ import net.perfectdreams.loritta.sweetmorenitta.views.UserBannedView
 import net.perfectdreams.loritta.sweetmorenitta.views.landingpages.BrazilianBotLandingPageView
 import net.perfectdreams.loritta.sweetmorenitta.views.user.UserReputationView
 import net.perfectdreams.loritta.utils.Sponsor
-import net.perfectdreams.loritta.website.blog.Post
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
 import net.perfectdreams.loritta.website.utils.RouteKey
@@ -106,22 +103,6 @@ class JVMHtmlProvider : LorittaHtmlProvider {
             return CommunityGuidelinesView(
                 arguments[1] as BaseLocale,
                 arguments[0] as String
-            ).generateHtml()
-        }
-
-        if (page == RouteKey.BLOG) {
-            return BlogView(
-                arguments[1] as BaseLocale,
-                arguments[0] as String,
-                arguments[2] as List<Post>
-            ).generateHtml()
-        }
-
-        if (page == RouteKey.BLOG_POST) {
-            return BlogPostView(
-                arguments[1] as BaseLocale,
-                arguments[0] as String,
-                arguments[2] as Post
             ).generateHtml()
         }
 

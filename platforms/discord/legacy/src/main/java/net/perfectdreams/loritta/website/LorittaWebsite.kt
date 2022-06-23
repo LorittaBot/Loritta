@@ -20,7 +20,6 @@ import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
-import net.perfectdreams.loritta.website.blog.Blog
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
@@ -57,7 +56,6 @@ class LorittaWebsite(val loritta: Loritta) {
 
 	val pathCache = ConcurrentHashMap<File, Any>()
 	var config = WebsiteConfig()
-	val blog = Blog()
 	val pageProvider: LorittaHtmlProvider
 		get() = loritta.pluginManager.plugins.filterIsInstance<LorittaDiscordPlugin>().mapNotNull {
 			it.htmlProvider
@@ -303,10 +301,6 @@ class LorittaWebsite(val loritta: Loritta) {
 	fun restart() {
 		stop()
 		start()
-	}
-
-	fun loadBlogPosts() {
-		blog.posts = blog.loadAllBlogPosts()
 	}
 
 	class WebsiteConfig {

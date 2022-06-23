@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.website
 
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.website.routes.AdsTxtRoute
-import net.perfectdreams.loritta.website.routes.BlogPostRoute
-import net.perfectdreams.loritta.website.routes.BlogRoute
 import net.perfectdreams.loritta.website.routes.CommandsRoute
 import net.perfectdreams.loritta.website.routes.CommunityGuidelinesRoute
 import net.perfectdreams.loritta.website.routes.DailyRoute
@@ -106,8 +104,6 @@ object DefaultRoutes {
 	fun defaultRoutes(loritta: LorittaDiscord) = listOf(
 		// ===[ USER ROUTES ]===
 		HomeRoute(loritta),
-		BlogRoute(loritta),
-		BlogPostRoute(loritta),
 		CommandsRoute(loritta),
 		CommunityGuidelinesRoute(loritta),
 		FanArtsArtistRoute(loritta),

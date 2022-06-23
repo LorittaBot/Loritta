@@ -7,7 +7,6 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.website.LorittaWebsite
 import java.io.File
 import java.io.PrintStream
 import java.lang.management.ManagementFactory
@@ -128,9 +127,6 @@ object DebugLog {
 			}
 			"bomdiaecia" -> {
 				loritta.bomDiaECia.handleBomDiaECia(true)
-			}
-			"posts" -> {
-				LorittaWebsite.INSTANCE.blog.posts = LorittaWebsite.INSTANCE.blog.loadAllBlogPosts()
 			}
 			"dumpc" -> {
 				dumpCoroutinesToFile()
