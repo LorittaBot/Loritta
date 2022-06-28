@@ -21,6 +21,8 @@ class DailyTaxTasks(private val m: DailyTax) {
     private val dailyTaxCollector = DailyTaxCollector(m)
 
     fun start() {
+        dailyTaxWarner.run()
+
         // 12 hours before
         scheduleEveryDayAtSpecificHour(
             LocalTime.of(12, 0),

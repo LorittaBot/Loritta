@@ -52,7 +52,7 @@ data class ImportantNotificationDatabaseMessage(
         }
 }
 
-// TODO: Documentation
+// TODO: Remove this
 class ImportantNotificationDatabaseMessageBuilder {
     var content: String? = null
 

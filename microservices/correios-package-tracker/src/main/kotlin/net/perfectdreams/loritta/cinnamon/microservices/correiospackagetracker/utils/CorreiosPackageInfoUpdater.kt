@@ -8,23 +8,15 @@ import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.utils.field
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker.CorreiosPackageTracker
-import net.perfectdreams.loritta.cinnamon.platform.utils.CorreiosUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.ImportantNotificationDatabaseMessageBuilder
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosFoundObjeto
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosUnknownObjeto
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.EventType
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.eventTypeWithStatus
-import net.perfectdreams.loritta.cinnamon.platform.utils.embed
-import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -62,6 +54,8 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
                     *trackedPackages.toTypedArray()
                 )
 
+                val now = Instant.now()
+
                 packageInformations.objeto.forEach { correiosPackage ->
                     when (correiosPackage) {
                         is CorreiosFoundObjeto -> {
@@ -92,7 +86,7 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
                                 }
                                 .sortedBy { it.criacao } // the order doesn't really matter because we sort when querying the database, but at least it looks prettier when querying the database without a sort
                                 .forEach { event ->
-                                    TrackedCorreiosPackagesEvents.insertAndGetId {
+                                    val packageEventId = TrackedCorreiosPackagesEvents.insertAndGetId {
                                         it[TrackedCorreiosPackagesEvents.trackingId] = correiosPackage.numero
                                         it[TrackedCorreiosPackagesEvents.triggeredAt] = event.criacao.toInstant(KTX_DATETIME_CORREIOS_OFFSET)
                                             .toJavaInstant()
@@ -105,6 +99,18 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
 
                                     if (!hasNeverReceivedAnyEventsBefore) {
                                         for (user in whoIsTrackingThisPackage) {
+                                            val userNotificationId = UserNotifications.insertAndGetId {
+                                                it[UserNotifications.timestamp] = now
+                                                it[UserNotifications.user] = user.value
+                                            }
+
+                                            CorreiosPackageUpdateUserNotifications.insert {
+                                                it[CorreiosPackageUpdateUserNotifications.id] = userNotificationId
+                                                it[CorreiosPackageUpdateUserNotifications.trackingId] = correiosPackage.numero
+                                                it[CorreiosPackageUpdateUserNotifications.packageEvent] = packageEventId
+                                            }
+
+                                            /*
                                             val message = ImportantNotificationDatabaseMessageBuilder().apply {
                                                 embed {
                                                     // Package ID here
@@ -129,12 +135,12 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
                                                 it[PendingImportantNotifications.submittedAt] = Instant.now()
                                                 it[PendingImportantNotifications.message] = Json.encodeToString(message)
                                                 it[PendingImportantNotifications.state] = PendingImportantNotificationState.PENDING
-                                            }
+                                            } */
                                         }
                                     }
 
                                     if (event.type == EventType.PackageDeliveredToRecipient) {
-                                        // If it is delieverd, update the status with "delivered"
+                                        // If it is delivered, update the status with "delivered"
                                         logger.info { "Package ${correiosPackage.numero} has been delivered! Updating its status in our database..." }
                                         TrackedCorreiosPackages.update({ TrackedCorreiosPackages.trackingId eq correiosPackage.numero }) {
                                             it[TrackedCorreiosPackages.delivered] = true

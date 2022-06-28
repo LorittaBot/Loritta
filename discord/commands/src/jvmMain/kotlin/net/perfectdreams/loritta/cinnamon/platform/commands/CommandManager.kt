@@ -7,37 +7,6 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BemBoladaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CancelledExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CoinFlipExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.FaustaoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.HungerGamesExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.JankenponExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateHusbandoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateLoliExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateWaifuExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RollExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.ShipExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TioDoPaveExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.VieirinhaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CancelledCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.JankenponCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SummonCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextClapExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextLowercaseExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextMockExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextQualityExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextUppercaseExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVaporQualityExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVaporwaveExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVemDeZapExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ChannelInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.EmojiInfoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.InviteInfoExecutor
@@ -87,6 +56,37 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.TransactionsExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BemBoladaExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CancelledExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CoinFlipExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.FaustaoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.HungerGamesExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.JankenponExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateHusbandoExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateLoliExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateWaifuExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RollExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.ShipExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TioDoPaveExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.VieirinhaExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CancelledCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.JankenponCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SummonCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextClapExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextLowercaseExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextMockExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextQualityExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextUppercaseExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVaporQualityExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVaporwaveExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVemDeZapExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BobBurningPaperExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BolsoDrakeExecutor
@@ -215,9 +215,12 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.D
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.HelpCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.NotificationsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.morse.MorseFromExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.morse.MorseToExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.notifications.NotificationsListExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.notifications.NotificationsViewExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.FollowPackageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.GoBackToPackageListButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.PackageListExecutor
@@ -515,6 +518,12 @@ class CommandManager(
             RgbColorInfoExecutor(gabrielaImageServerClient),
             HexColorInfoExecutor(gabrielaImageServerClient),
             DecimalColorInfoExecutor(gabrielaImageServerClient)
+        )
+
+        commandManager.register(
+            NotificationsCommand,
+            NotificationsListExecutor(),
+            NotificationsViewExecutor()
         )
 
         // ===[ ECONOMY ]===

@@ -88,6 +88,7 @@ object DailyTaxUtils {
         }
     }
 
+    // TODO: Remove this
     fun insertImportantNotification(inactiveDailyUser: InactiveDailyUser, message: ImportantNotificationDatabaseMessage) {
         val shouldSkipDirectMessage = DailyTaxUsersToSkipDirectMessages.select {
             DailyTaxUsersToSkipDirectMessages.userId eq inactiveDailyUser.id

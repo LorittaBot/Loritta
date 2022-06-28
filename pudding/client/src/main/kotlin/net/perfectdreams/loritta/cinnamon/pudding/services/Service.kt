@@ -4,6 +4,7 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.toKotlinInstant
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Achievement
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
@@ -11,8 +12,11 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.CorreiosPackageUpdateUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
+import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
@@ -30,7 +34,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
@@ -55,8 +61,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
@@ -270,6 +281,50 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[SonhosTransactionsLog.id].value,
             row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
             UserId(row[SonhosTransactionsLog.user].value),
+        )
+    }
+}
+
+fun UserNotification.Companion.fromRow(row: ResultRow): UserNotification {
+    // "hasValue" does not work, because it only checks if the value is present on the table BUT it is always present! (but it is null)
+    return if (row.getOrNull(DailyTaxWarnUserNotifications.id) != null) {
+        DailyTaxWarnUserNotification(
+            row[UserNotifications.id].value,
+            row[UserNotifications.timestamp].toKotlinInstant(),
+            UserId(row[UserNotifications.user].value),
+            row[DailyTaxWarnUserNotifications.inactivityTaxTimeWillBeTriggeredAt].toKotlinInstant(),
+            row[DailyTaxWarnUserNotifications.currentSonhos],
+            row[DailyTaxWarnUserNotifications.howMuchWasRemoved],
+            row[DailyTaxWarnUserNotifications.maxDayThreshold],
+            row[DailyTaxWarnUserNotifications.minimumSonhosForTrigger],
+            row[DailyTaxWarnUserNotifications.tax],
+        )
+    } else if (row.getOrNull(DailyTaxTaxedUserNotifications.id) != null) {
+        DailyTaxTaxedUserNotification(
+            row[UserNotifications.id].value,
+            row[UserNotifications.timestamp].toKotlinInstant(),
+            UserId(row[UserNotifications.user].value),
+            row[DailyTaxTaxedUserNotifications.nextInactivityTaxTimeWillBeTriggeredAt].toKotlinInstant(),
+            row[DailyTaxTaxedUserNotifications.currentSonhos],
+            row[DailyTaxTaxedUserNotifications.howMuchWasRemoved],
+            row[DailyTaxTaxedUserNotifications.maxDayThreshold],
+            row[DailyTaxTaxedUserNotifications.minimumSonhosForTrigger],
+            row[DailyTaxTaxedUserNotifications.tax],
+        )
+    } else if (row.getOrNull(CorreiosPackageUpdateUserNotifications.id) != null) {
+        CorreiosPackageUpdateUserNotification(
+            row[UserNotifications.id].value,
+            row[UserNotifications.timestamp].toKotlinInstant(),
+            UserId(row[UserNotifications.user].value),
+            row[TrackedCorreiosPackagesEvents.trackingId],
+            Json.parseToJsonElement(row[TrackedCorreiosPackagesEvents.event])
+                .jsonObject
+        )
+    } else {
+        UnknownUserNotification(
+            row[UserNotifications.id].value,
+            row[UserNotifications.timestamp].toKotlinInstant(),
+            UserId(row[UserNotifications.user].value),
         )
     }
 }
