@@ -59,7 +59,8 @@ class PendingImportantNotificationsProcessor(
                         } else {
                             val message = NotificationUtils.buildUserNotificationMessage(
                                 i18nContext,
-                                notification
+                                notification,
+                                lorittaConfig.website
                             )
 
                             return@runBlocking UserUtils.sendMessageToUserViaDirectMessage(

@@ -33,7 +33,8 @@ class NotificationsViewExecutor : SlashCommandExecutor() {
             apply(
                 NotificationUtils.buildUserNotificationMessage(
                     context.i18nContext,
-                    notification
+                    notification,
+                    context.loritta.config.website
                 )
             )
         }

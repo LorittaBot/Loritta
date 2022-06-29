@@ -25,13 +25,14 @@ object NotificationUtils {
 
     fun buildUserNotificationMessage(
         i18nContext: I18nContext,
-        notification: UserNotification
+        notification: UserNotification,
+        lorittaWebsiteUrl: String
     ): MessageBuilder.() -> Unit {
         when (notification) {
             is DailyTaxTaxedUserNotification -> {
                 return UserUtils.buildDailyTaxMessage(
                     i18nContext,
-                    "https://loritta.website/", // TODO: Fix website URL
+                    lorittaWebsiteUrl,
                     notification.user,
                     notification
                 )
@@ -39,7 +40,7 @@ object NotificationUtils {
             is DailyTaxWarnUserNotification -> {
                 return UserUtils.buildDailyTaxMessage(
                     i18nContext,
-                    "https://loritta.website/", // TODO: Fix website URL
+                    lorittaWebsiteUrl,
                     notification.user,
                     notification
                 )
