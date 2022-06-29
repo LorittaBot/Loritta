@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
-import kotlin.concurrent.thread
 
 object DirectMessageProcessorLauncher {
     private val logger = KotlinLogging.logger {}
@@ -27,14 +26,7 @@ object DirectMessageProcessorLauncher {
             rootConfig.pudding.username,
             rootConfig.pudding.password
         )
-
-        Runtime.getRuntime().addShutdownHook(
-            thread(false) {
-                // Shutdown services when stopping the application
-                // This is needed for the Pudding Tasks
-                services.shutdown()
-            }
-        )
+        services.setupShutdownHook()
 
         logger.info { "Started Pudding client!" }
 

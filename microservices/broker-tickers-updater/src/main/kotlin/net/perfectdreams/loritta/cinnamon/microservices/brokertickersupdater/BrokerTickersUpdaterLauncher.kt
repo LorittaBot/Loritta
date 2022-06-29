@@ -29,14 +29,7 @@ object BrokerTickersUpdaterLauncher {
             rootConfig.pudding.username,
             rootConfig.pudding.password
         )
-
-        Runtime.getRuntime().addShutdownHook(
-            thread(false) {
-                // Shutdown services when stopping the application
-                // This is needed for the Pudding Tasks
-                services.shutdown()
-            }
-        )
+        services.setupShutdownHook()
 
         logger.info { "Started Pudding client!" }
 

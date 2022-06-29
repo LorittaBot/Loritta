@@ -1,12 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
-import kotlin.concurrent.thread
 
 object CorreiosPackageTrackerLauncher {
     private val logger = KotlinLogging.logger {}
@@ -25,14 +23,7 @@ object CorreiosPackageTrackerLauncher {
             rootConfig.pudding.username,
             rootConfig.pudding.password
         )
-
-        Runtime.getRuntime().addShutdownHook(
-            thread(false) {
-                // Shutdown services when stopping the application
-                // This is needed for the Pudding Tasks
-                services.shutdown()
-            }
-        )
+        services.setupShutdownHook()
 
         logger.info { "Started Pudding client!" }
 

@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.statscollector.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
-import kotlin.concurrent.thread
 
 object StatsCollectorLauncher {
     private val logger = KotlinLogging.logger {}
@@ -29,6 +28,7 @@ object StatsCollectorLauncher {
             rootConfig.pudding.username,
             rootConfig.pudding.password
         )
+        services.setupShutdownHook()
 
         val loritta = StatsCollector(
             rootConfig,
@@ -36,13 +36,6 @@ object StatsCollectorLauncher {
             http
         )
 
-        Runtime.getRuntime().addShutdownHook(
-            thread(false) {
-                // Shutdown services when stopping the application
-                // This is needed for the Pudding Tasks
-                services.shutdown()
-            }
-        )
 
         logger.info { "Started Pudding client!" }
 

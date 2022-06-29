@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.cinnamon.platform.gateway.utils.config.RootConf
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
-import kotlin.concurrent.thread
 
 object LorittaCinnamonGatewayLauncher {
     private val logger = KotlinLogging.logger {}
@@ -36,14 +35,7 @@ object LorittaCinnamonGatewayLauncher {
             rootConfig.services.pudding.username,
             rootConfig.services.pudding.password
         )
-
-        Runtime.getRuntime().addShutdownHook(
-            thread(false) {
-                // Shutdown services when stopping the application
-                // This is needed for the Pudding Tasks
-                services.shutdown()
-            }
-        )
+        services.setupShutdownHook()
 
         logger.info { "Started Pudding client!" }
 

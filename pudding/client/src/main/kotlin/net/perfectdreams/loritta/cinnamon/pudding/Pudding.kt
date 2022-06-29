@@ -96,6 +96,7 @@ import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
+import kotlin.concurrent.thread
 
 class Pudding(val hikariDataSource: HikariDataSource, private val database: Database) {
     companion object {
@@ -441,5 +442,18 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
 
     fun shutdown() {
         puddingTasks.shutdown()
+    }
+
+    /**
+     * Setups a shutdown hook to shut down the [puddingTasks] when the application shutdowns.
+     */
+    fun setupShutdownHook() {
+        Runtime.getRuntime().addShutdownHook(
+            thread(false) {
+                // Shutdown services when stopping the application
+                // This is needed for the Pudding Tasks
+                shutdown()
+            }
+        )
     }
 }
