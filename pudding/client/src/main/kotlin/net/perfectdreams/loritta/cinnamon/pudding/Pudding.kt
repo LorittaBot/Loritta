@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedInteractionsLogService
 import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
 import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
+import net.perfectdreams.loritta.cinnamon.pudding.services.NotificationsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.PackagesTrackingService
 import net.perfectdreams.loritta.cinnamon.pudding.services.PatchNotesNotificationsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.PaymentsService
@@ -70,6 +71,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
@@ -208,6 +213,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
     val puddingTasks = PuddingTasks(this)
     val patchNotesNotifications = PatchNotesNotificationsService(this)
     val packagesTracking = PackagesTrackingService(this)
+    val notifications = NotificationsService(this)
     val random = SecureRandom()
 
     /**
@@ -279,7 +285,11 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             TrackedCorreiosPackagesEvents,
             PendingImportantNotifications,
             DiscordGuildRoles,
-            ShipEffectSonhosTransactionsLog
+            ShipEffectSonhosTransactionsLog,
+            UserNotifications,
+            DailyTaxTaxedUserNotifications,
+            DailyTaxWarnUserNotifications,
+            CorreiosPackageUpdateUserNotifications
         )
 
         if (schemas.isNotEmpty())

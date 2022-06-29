@@ -6,7 +6,7 @@ import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.QueueDatabase
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
@@ -30,12 +30,7 @@ object DiscordGatewayEventsProcessorLauncher {
             DiscordGatewayEventsProcessorLauncher::class, System.getProperty("discordgatewayeventsprocessor.config", "discord-gateway-events-processor.conf"))
         logger.info { "Loaded Loritta's configuration file" }
 
-        val languageManager = LanguageManager(
-            DiscordGatewayEventsProcessor::class,
-            "en",
-            "/languages/"
-        )
-        languageManager.loadLanguagesAndContexts()
+        val languageManager = LorittaLanguageManager(DiscordGatewayEventsProcessor::class)
 
         val services = Pudding.createPostgreSQLPudding(
             rootConfig.pudding.address,

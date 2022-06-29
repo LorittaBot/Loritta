@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
@@ -19,12 +19,7 @@ object DailyTaxLauncher {
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(DailyTaxLauncher::class, System.getProperty("dailytax.config", "daily-tax.conf"))
         logger.info { "Loaded Loritta's configuration file" }
 
-        val languageManager = LanguageManager(
-            DailyTax::class,
-            "en",
-            "/languages/"
-        )
-        languageManager.loadLanguagesAndContexts()
+        val languageManager = LorittaLanguageManager(DailyTaxLauncher::class)
 
         val services = Pudding.createPostgreSQLPudding(
             rootConfig.pudding.address,

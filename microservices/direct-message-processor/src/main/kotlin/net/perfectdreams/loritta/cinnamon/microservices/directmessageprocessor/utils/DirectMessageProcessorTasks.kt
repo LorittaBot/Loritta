@@ -14,6 +14,7 @@ class DirectMessageProcessorTasks(private val m: DirectMessageProcessor) {
 
     private val pendingMessageProcessor = PendingImportantNotificationsProcessor(
         m.config.loritta,
+        m.languageManager,
         m.services,
         m.rest
     )

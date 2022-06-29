@@ -7,14 +7,16 @@ import dev.kord.rest.json.request.MultipartMessageCreateRequest
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
+import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxTaxedDirectMessage
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxWarnDirectMessage
+import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
+import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 object UserUtils {
@@ -102,7 +104,12 @@ object UserUtils {
     /**
      * Builds a daily tax message for the [data]
      */
-    fun buildDailyTaxMessage(i18nContext: I18nContext, lorittaWebsiteUrl: String, userId: UserId, data: UserDailyTaxWarnDirectMessage): ImportantNotificationDatabaseMessageBuilder.() -> Unit = {
+    fun buildDailyTaxMessage(
+        i18nContext: I18nContext,
+        lorittaWebsiteUrl: String,
+        userId: UserId,
+        data: DailyTaxWarnUserNotification
+    ): MessageBuilder.() -> Unit = {
         embed {
             title = i18nContext.get(I18nKeysData.InactiveDailyTax.Title)
 
@@ -131,7 +138,7 @@ object UserUtils {
 
             color = LorittaColors.LorittaRed.toKordColor()
 
-            timestamp = data.triggeredWarnAt
+            timestamp = data.timestamp
 
             image = lorittaWebsiteUrl + "v3/assets/img/sonhos/loritta_sonhos_drool.png"
         }
@@ -140,7 +147,12 @@ object UserUtils {
     /**
      * Builds a daily tax message for the [data]
      */
-    fun buildDailyTaxMessage(i18nContext: I18nContext, lorittaWebsiteUrl: String, userId: UserId, data: UserDailyTaxTaxedDirectMessage): ImportantNotificationDatabaseMessageBuilder.() -> Unit = {
+    fun buildDailyTaxMessage(
+        i18nContext: I18nContext,
+        lorittaWebsiteUrl: String,
+        userId: UserId,
+        data: DailyTaxTaxedUserNotification
+    ): MessageBuilder.() -> Unit = {
         embed {
             title = i18nContext.get(I18nKeysData.InactiveDailyTax.Title)
 
@@ -168,7 +180,7 @@ object UserUtils {
 
             color = LorittaColors.LorittaRed.toKordColor()
 
-            timestamp = data.inactivityTaxTimeTriggeredAt
+            timestamp = data.timestamp
 
             image = lorittaWebsiteUrl + "v3/assets/img/sonhos/loritta_sonhos_running.png"
         }

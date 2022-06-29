@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor
 
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
@@ -17,6 +18,8 @@ object DirectMessageProcessorLauncher {
 
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(DirectMessageProcessorLauncher::class, System.getProperty("directmessageprocessor.config", "direct-message-processor.conf"))
         logger.info { "Loaded Loritta's configuration file" }
+
+        val languageManager = LorittaLanguageManager(DirectMessageProcessorLauncher::class)
 
         val services = Pudding.createPostgreSQLPudding(
             rootConfig.pudding.address,
@@ -37,6 +40,7 @@ object DirectMessageProcessorLauncher {
 
         val loritta = DirectMessageProcessor(
             rootConfig,
+            languageManager,
             services
         )
 

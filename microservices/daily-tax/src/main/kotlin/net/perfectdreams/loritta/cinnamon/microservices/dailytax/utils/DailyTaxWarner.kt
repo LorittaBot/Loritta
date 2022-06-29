@@ -1,13 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
 
 import kotlinx.datetime.Clock
+import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.dailytax.DailyTax
-import net.perfectdreams.loritta.cinnamon.platform.utils.ImportantNotificationDatabaseMessageBuilder
-import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserDailyTaxWarnDirectMessage
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.insertAndGetId
 import java.sql.Connection
 import java.time.LocalDateTime
 import java.time.ZoneOffset
@@ -41,24 +42,25 @@ class DailyTaxWarner(val m: DailyTax) : RunnableCoroutineWrapper() {
                 DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 0) { threshold, inactiveDailyUser ->
                     logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax warn" }
 
-                    val message = ImportantNotificationDatabaseMessageBuilder().apply(
-                        UserUtils.buildDailyTaxMessage(
-                            i18nContext,
-                            m.config.loritta.website,
-                            UserId(inactiveDailyUser.id),
-                            UserDailyTaxWarnDirectMessage(
-                                tomorrowAtMidnight,
-                                now,
-                                inactiveDailyUser.money,
-                                inactiveDailyUser.moneyToBeRemoved,
-                                threshold.maxDayThreshold,
-                                threshold.minimumSonhosForTrigger,
-                                threshold.tax
-                            )
-                        )
-                    ).toMessage()
+                    val userNotificationId = UserNotifications.insertAndGetId {
+                        it[UserNotifications.timestamp] = now.toJavaInstant()
+                        it[UserNotifications.user] = inactiveDailyUser.id
+                    }
 
-                    DailyTaxUtils.insertImportantNotification(inactiveDailyUser, message)
+                    DailyTaxWarnUserNotifications.insert {
+                        it[DailyTaxWarnUserNotifications.timestampLog] = userNotificationId
+                        it[DailyTaxWarnUserNotifications.inactivityTaxTimeWillBeTriggeredAt] = tomorrowAtMidnight.toJavaInstant()
+                        it[DailyTaxWarnUserNotifications.currentSonhos] = inactiveDailyUser.money
+                        it[DailyTaxWarnUserNotifications.howMuchWasRemoved] = inactiveDailyUser.moneyToBeRemoved
+                        it[DailyTaxWarnUserNotifications.maxDayThreshold] = threshold.maxDayThreshold
+                        it[DailyTaxWarnUserNotifications.minimumSonhosForTrigger] = threshold.minimumSonhosForTrigger
+                        it[DailyTaxWarnUserNotifications.tax] = threshold.tax
+                    }
+
+                    DailyTaxUtils.insertImportantNotification(
+                        inactiveDailyUser,
+                        userNotificationId.value
+                    )
                 }
             }
 

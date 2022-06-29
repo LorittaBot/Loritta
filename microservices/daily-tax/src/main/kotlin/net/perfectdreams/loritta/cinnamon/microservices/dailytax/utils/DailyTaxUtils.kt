@@ -1,13 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
 
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds.THRESHOLDS
 import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.cinnamon.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.cinnamon.platform.utils.ImportantNotificationDatabaseMessage
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
@@ -88,19 +85,19 @@ object DailyTaxUtils {
         }
     }
 
-    fun insertImportantNotification(inactiveDailyUser: InactiveDailyUser, message: ImportantNotificationDatabaseMessage) {
+    fun insertImportantNotification(inactiveDailyUser: InactiveDailyUser, notificationId: Long) {
         val shouldSkipDirectMessage = DailyTaxUsersToSkipDirectMessages.select {
             DailyTaxUsersToSkipDirectMessages.userId eq inactiveDailyUser.id
         }.count() == 1L
 
-        PendingImportantNotifications.insert {
-            it[PendingImportantNotifications.userId] = inactiveDailyUser.id
-            it[PendingImportantNotifications.state] = if (shouldSkipDirectMessage) PendingImportantNotificationState.SKIPPED_DIRECT_MESSAGE else PendingImportantNotificationState.PENDING
-            it[PendingImportantNotifications.submittedAt] = Instant.now()
-            it[PendingImportantNotifications.message] = Json.encodeToString(message)
-        }
-
         if (!shouldSkipDirectMessage) {
+            PendingImportantNotifications.insert {
+                it[PendingImportantNotifications.userId] = inactiveDailyUser.id
+                it[PendingImportantNotifications.state] = PendingImportantNotificationState.PENDING
+                it[PendingImportantNotifications.notification] = notificationId
+                it[PendingImportantNotifications.submittedAt] = Instant.now()
+            }
+
             DailyTaxUsersToSkipDirectMessages.insert {
                 it[DailyTaxUsersToSkipDirectMessages.userId] = inactiveDailyUser.id
                 it[DailyTaxUsersToSkipDirectMessages.timestamp] = Instant.now()
