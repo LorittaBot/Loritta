@@ -86,25 +86,10 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
                         it[DailyTaxTaxedUserNotifications.tax] = threshold.tax
                     }
 
-                    // TODO: Remove this
-                    /* val message = ImportantNotificationDatabaseMessageBuilder().apply(
-                        UserUtils.buildDailyTaxMessage(
-                            i18nContext,
-                            m.config.loritta.website,
-                            UserId(inactiveDailyUser.id),
-                            UserDailyTaxTaxedDirectMessage(
-                                now,
-                                nextTrigger,
-                                inactiveDailyUser.money,
-                                inactiveDailyUser.moneyToBeRemoved,
-                                threshold.maxDayThreshold,
-                                threshold.minimumSonhosForTrigger,
-                                threshold.tax
-                            )
-                        )
-                    ).toMessage()
-
-                    DailyTaxUtils.insertImportantNotification(inactiveDailyUser, message) */
+                    DailyTaxUtils.insertImportantNotification(
+                        inactiveDailyUser,
+                        userNotificationId.value
+                    )
                 }
             }
 
@@ -142,25 +127,10 @@ class DailyTaxCollector(val m: DailyTax) : RunnableCoroutineWrapper() {
                                 it[DailyTaxWarnUserNotifications.tax] = threshold.tax
                             }
 
-                            // TODO: Remove this
-                            /* val message = ImportantNotificationDatabaseMessageBuilder().apply(
-                                UserUtils.buildDailyTaxMessage(
-                                    i18nContext,
-                                    m.config.loritta.website,
-                                    UserId(inactiveDailyUser.id),
-                                    UserDailyTaxWarnDirectMessage(
-                                        plusXDaysAtMidnight,
-                                        now,
-                                        inactiveDailyUser.money,
-                                        inactiveDailyUser.moneyToBeRemoved,
-                                        threshold.maxDayThreshold,
-                                        threshold.minimumSonhosForTrigger,
-                                        threshold.tax
-                                    )
-                                )
-                            ).toMessage()
-
-                            DailyTaxUtils.insertImportantNotification(inactiveDailyUser, message) */
+                            DailyTaxUtils.insertImportantNotification(
+                                inactiveDailyUser,
+                                userNotificationId.value
+                            )
 
                             alreadyWarnedThatTheyAreGoingToBeTaxed.add(inactiveDailyUser.id)
                         }

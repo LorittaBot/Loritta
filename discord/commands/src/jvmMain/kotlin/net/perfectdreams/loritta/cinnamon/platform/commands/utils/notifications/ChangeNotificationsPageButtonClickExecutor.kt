@@ -17,7 +17,7 @@ class ChangeNotificationsPageButtonClickExecutor(
 
         val decoded = context.decodeDataFromComponentAndRequireUserToMatch<NotificationsListData>(data)
 
-        // TODO: Fix this
+        // TODO: Implement this
         /* val builtMessage = TransactionsExecutor.createMessage(
             loritta,
             context.i18nContext,

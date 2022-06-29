@@ -8,10 +8,12 @@ import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker.CorreiosPackageTracker
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosFoundObjeto
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosUnknownObjeto
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.EventType
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
@@ -34,9 +36,6 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
     }
 
     override suspend fun runCoroutine() {
-        // TODO: proper i18n
-        val i18nContext = m.languageManager.getI18nContextById("pt")
-
         logger.info { "Updating packages information..." }
 
         try {
@@ -108,6 +107,13 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
                                                 it[CorreiosPackageUpdateUserNotifications.id] = userNotificationId
                                                 it[CorreiosPackageUpdateUserNotifications.trackingId] = correiosPackage.numero
                                                 it[CorreiosPackageUpdateUserNotifications.packageEvent] = packageEventId
+                                            }
+
+                                            PendingImportantNotifications.insert {
+                                                it[PendingImportantNotifications.userId] = user.value
+                                                it[PendingImportantNotifications.state] = PendingImportantNotificationState.PENDING
+                                                it[PendingImportantNotifications.notification] = userNotificationId
+                                                it[PendingImportantNotifications.submittedAt] = Instant.now()
                                             }
 
                                             /*

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.platform.webserver
 
 import io.ktor.client.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.config.RootConfig
@@ -24,12 +24,7 @@ object LorittaCinnamonWebServerLauncher {
         Prometheus.register()
         logger.info { "Registered Prometheus Metrics" }
 
-        val languageManager = LanguageManager(
-            LorittaCinnamonWebServer::class,
-            "en",
-            "/languages/"
-        )
-        languageManager.loadLanguagesAndContexts()
+        val languageManager = LorittaLanguageManager(LorittaCinnamonWebServer::class)
 
         val http = HttpClient {
             expectSuccess = false

@@ -4,7 +4,6 @@ import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
-import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserBannedState
@@ -16,7 +15,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -298,35 +296,6 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     fun _deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) {
         DailyTaxUsersToSkipDirectMessages.deleteWhere {
             DailyTaxUsersToSkipDirectMessages.userId eq userId.value.toLong()
-        }
-    }
-
-    /**
-     * Gets and updates a pending daily tax direct message
-     */
-    suspend fun getAndUpdateImportantNotificationsState(
-        userId: UserId,
-        findState: List<PendingImportantNotificationState>,
-        newState: PendingImportantNotificationState
-    ): String? {
-        return pudding.transaction {
-            val dataResult = PendingImportantNotifications.selectFirstOrNull {
-                PendingImportantNotifications.userId eq userId.value.toLong() and (PendingImportantNotifications.state inList findState)
-            }
-
-            val data = dataResult?.let {
-                it[PendingImportantNotifications.message]
-            }
-
-            if (dataResult != null) {
-                PendingImportantNotifications.update({
-                    PendingImportantNotifications.id eq dataResult[PendingImportantNotifications.id]
-                }) {
-                    it[PendingImportantNotifications.state] = newState
-                }
-            }
-
-            data
         }
     }
 }

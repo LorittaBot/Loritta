@@ -58,9 +58,3 @@ jib {
         image = "openjdk:17-slim-bullseye"
     }
 }
-
-tasks {
-    processResources {
-        from("../../resources/") // Include folders from the resources root folder
-    }
-}

@@ -9,8 +9,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.datetime.Clock
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
@@ -20,11 +18,9 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
 import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
-import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
-import net.perfectdreams.loritta.cinnamon.platform.utils.ImportantNotificationDatabaseMessage
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext as InteraKTionsApplicationCommandContext
@@ -140,24 +136,6 @@ interface CommandExecutorWrapper {
                     Emotes.LoriSunglasses
                 )
             }
-        }
-
-        // Pending Daily Tax Direct Message
-        val pendingDailyTaxDirectMessage = loritta.services.users.getAndUpdateImportantNotificationsState(
-            userId,
-            listOf(
-                PendingImportantNotificationState.PENDING,
-                PendingImportantNotificationState.FAILED_TO_SEND_VIA_DIRECT_MESSAGE,
-                PendingImportantNotificationState.SKIPPED_DIRECT_MESSAGE
-            ),
-            PendingImportantNotificationState.SUCCESSFULLY_SENT_VIA_EPHEMERAL_MESSAGE
-        )
-
-        if (pendingDailyTaxDirectMessage != null) {
-            val builder = Json.decodeFromString<ImportantNotificationDatabaseMessage>(pendingDailyTaxDirectMessage)
-
-            // Skip the stuff, just send it directly
-            context.sendEphemeralMessage(builder.toEphemeralInteractionOrFollowupMessageCreateBuilder())
         }
     }
 
