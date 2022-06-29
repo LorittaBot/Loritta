@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
@@ -19,12 +19,7 @@ object LorittaDashboardBackendLauncher {
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaDashboardBackend::class, System.getProperty("spicymorenitta.config", "spicy-morenitta.conf"))
         logger.info { "Loaded SpicyMorenitta's configuration file" }
 
-        val languageManager = LanguageManager(
-            LorittaDashboardBackend::class,
-            "en",
-            "/languages/"
-        )
-        languageManager.loadLanguagesAndContexts()
+        val languageManager = LorittaLanguageManager(LorittaDashboardBackend::class)
 
         val services = Pudding.createPostgreSQLPudding(
             rootConfig.pudding.address,
