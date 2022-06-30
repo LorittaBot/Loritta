@@ -66,7 +66,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
                 if (guildId != null && member != null) {
                     m.services.transaction {
-                        createOrUpdateGuildMember(guildId, member)
+                        createOrUpdateGuildMember(guildId, event.message.author.id, member)
                     }
                 }
             }
@@ -194,23 +194,23 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }
     }
 
-    private fun createOrUpdateGuildMember(guildId: Snowflake, guildMember: DiscordGuildMember) {
+    private fun createOrUpdateGuildMember(guildId: Snowflake, userId: Snowflake, guildMember: DiscordGuildMember) {
         DiscordGuildMembers.insertOrUpdate(DiscordGuildMembers.guildId, DiscordGuildMembers.userId) {
             it[DiscordGuildMembers.guildId] = guildId.toLong()
-            it[DiscordGuildMembers.userId] = guildMember.user.value!!.id.toLong()
+            it[DiscordGuildMembers.userId] = userId.toLong()
         }
 
         for (roleId in guildMember.roles) {
             DiscordGuildMemberRoles.insertOrUpdate(DiscordGuildMemberRoles.guildId, DiscordGuildMemberRoles.userId, DiscordGuildMemberRoles.roleId) {
                 it[DiscordGuildMemberRoles.guildId] = guildId.toLong()
-                it[DiscordGuildMemberRoles.userId] = guildMember.user.value!!.id.toLong()
+                it[DiscordGuildMemberRoles.userId] = userId.toLong()
                 it[DiscordGuildMemberRoles.roleId] = roleId.toLong()
             }
         }
 
         DiscordGuildMemberRoles.deleteWhere {
             (DiscordGuildMemberRoles.guildId eq guildId.toLong()) and
-                    (DiscordGuildMemberRoles.userId eq guildMember.user.value!!.id.toLong()) and
+                    (DiscordGuildMemberRoles.userId eq userId.toLong()) and
                     (DiscordGuildMemberRoles.roleId notInList guildMember.roles.map { it.toLong() })
         }
     }
