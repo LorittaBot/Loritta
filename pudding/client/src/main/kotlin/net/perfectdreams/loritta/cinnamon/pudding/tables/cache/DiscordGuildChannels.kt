@@ -7,7 +7,7 @@ object DiscordGuildChannels : LongIdTable() {
     val channelId = long("channel").index()
     val name = text("name").nullable()
     val type = integer("type")
-    val permissions = long("permissions")
+    val permissions = long("permissions").nullable()
 
     init {
         index(true, guildId, channelId)
