@@ -140,7 +140,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             it[DiscordGuilds.name] = guild.name
             it[DiscordGuilds.icon] = guild.icon
             it[DiscordGuilds.ownerId] = guild.ownerId.value.toLong()
-            it[DiscordGuilds.joinedAt] = guild.joinedAt.value!!.toJavaInstant()
+            it[DiscordGuilds.joinedAt] = guild.joinedAt.value?.toJavaInstant()
         }
 
         // Shouldn't be null in a GUILD_CREATE event
