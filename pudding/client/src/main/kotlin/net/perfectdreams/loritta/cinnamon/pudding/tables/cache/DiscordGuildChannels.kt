@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.cache
 
 import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.sql.Table
 
-object DiscordGuildChannels : LongIdTable() {
+object DiscordGuildChannels : Table() {
     val guildId = long("guild").index()
     val channelId = long("channel").index()
     val name = text("name").nullable()

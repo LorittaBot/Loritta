@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.cache
 
-import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.sql.Table
 
-object DiscordGuildChannelPermissionOverrides : LongIdTable() {
+object DiscordGuildChannelPermissionOverrides : Table() {
     val guildId = long("guild").index()
     val channelId = long("channel").index()
     val entityId = long("entity_id").index()

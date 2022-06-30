@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.cache
 
-import org.jetbrains.exposed.dao.id.LongIdTable
+import org.jetbrains.exposed.sql.Table
 
-object DiscordGuildMembers : LongIdTable() {
+object DiscordGuildMembers : Table() {
     val guildId = long("guild").index()
     val userId = long("user").index()
 
