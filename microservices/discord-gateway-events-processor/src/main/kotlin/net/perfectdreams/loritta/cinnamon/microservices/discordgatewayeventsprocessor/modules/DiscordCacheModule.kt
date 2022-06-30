@@ -306,7 +306,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
     private fun deleteGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
         DiscordGuildChannelPermissionOverrides.deleteWhere {
-            (DiscordGuildChannels.guildId eq guildId.toLong()) and (DiscordGuildChannels.channelId eq channel.id.value.toLong())
+            (DiscordGuildChannelPermissionOverrides.guildId eq guildId.toLong()) and (DiscordGuildChannelPermissionOverrides.channelId eq channel.id.value.toLong())
         }
 
         DiscordGuildChannels.deleteWhere {
