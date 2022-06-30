@@ -70,7 +70,12 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannelPermissionOverrides
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannels
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMemberRoles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
@@ -285,12 +290,18 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             UsersFollowingCorreiosPackages,
             TrackedCorreiosPackagesEvents,
             PendingImportantNotifications,
-            DiscordGuildRoles,
             ShipEffectSonhosTransactionsLog,
             UserNotifications,
             DailyTaxTaxedUserNotifications,
             DailyTaxWarnUserNotifications,
-            CorreiosPackageUpdateUserNotifications
+            CorreiosPackageUpdateUserNotifications,
+
+            DiscordGuilds,
+            DiscordGuildRoles,
+            DiscordGuildChannels,
+            DiscordGuildChannelPermissionOverrides,
+            DiscordGuildMembers,
+            DiscordGuildMemberRoles
         )
 
         if (schemas.isNotEmpty())
