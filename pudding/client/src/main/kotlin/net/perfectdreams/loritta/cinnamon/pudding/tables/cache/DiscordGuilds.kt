@@ -9,7 +9,6 @@ object DiscordGuilds : IdTable<Long>() {
     override val id: Column<EntityID<Long>> = long("id").entityId()
     override val primaryKey = PrimaryKey(id)
 
-    val guildId = long("guild").index()
     val name = text("name")
     val icon = text("icon").nullable()
     val ownerId = long("owner")
