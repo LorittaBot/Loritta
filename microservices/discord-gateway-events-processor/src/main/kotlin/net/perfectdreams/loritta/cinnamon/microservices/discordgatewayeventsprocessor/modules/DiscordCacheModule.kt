@@ -331,7 +331,11 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }
 
         DiscordGuildMembers.deleteWhere {
-            DiscordGuildRoles.guildId eq guildIdAsLong
+            DiscordGuildMembers.guildId eq guildIdAsLong
+        }
+
+        DiscordGuildMemberRoles.deleteWhere {
+            DiscordGuildMemberRoles.guildId eq guildIdAsLong
         }
 
         DiscordGuilds.deleteWhere {
