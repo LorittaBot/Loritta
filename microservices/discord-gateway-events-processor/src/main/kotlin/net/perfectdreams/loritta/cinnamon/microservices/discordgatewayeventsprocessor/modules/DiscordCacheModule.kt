@@ -27,7 +27,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is GuildCreate -> {
                 // logger.info { "Howdy ${event.guild.id} (${event.guild.name})! Is unavailable? ${event.guild.unavailable}" }
 
-                if (event.guild.unavailable.discordBoolean)
+                if (!event.guild.unavailable.discordBoolean)
                     createUpdateAndDeleteRolesBulk(event.guild.id, event.guild.roles)
             }
             is GuildRoleCreate -> {
