@@ -15,7 +15,7 @@ object KordDiscordEventUtils {
     private val logger = KotlinLogging.logger {}
 
     fun parseEventFromJsonString(gatewayPayload: String): Event? {
-        // TODO: Ktor doesn't deserialize this well because it relies on the order
+        // TODO: kotlinx.serialization doesn't deserialize this well because it relies on the order
         val gatewayPayloadStuff = Json.parseToJsonElement(gatewayPayload)
             .jsonObject
 

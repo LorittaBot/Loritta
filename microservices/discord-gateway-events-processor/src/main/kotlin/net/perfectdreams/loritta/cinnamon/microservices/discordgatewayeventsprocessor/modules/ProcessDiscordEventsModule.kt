@@ -45,7 +45,7 @@ abstract class ProcessDiscordEventsModule {
 
             val diff = System.currentTimeMillis() - start
             if (diff >= 60_000) {
-                logger.warn { "Coroutine $job took too long to process! ${diff}ms" }
+                logger.warn { "Coroutine $job ($clazzName) took too long to process! ${diff}ms" }
             }
         }
     }
