@@ -38,7 +38,7 @@ abstract class ProcessDiscordEventsModule {
         )
 
         activeEvents.add(job)
-        
+
         // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
         // added to the list, causing leaks.
         // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
