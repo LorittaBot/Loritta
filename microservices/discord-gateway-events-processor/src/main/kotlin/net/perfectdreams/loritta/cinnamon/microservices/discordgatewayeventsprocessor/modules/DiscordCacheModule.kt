@@ -35,6 +35,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.select
 import pw.forst.exposed.insertOrUpdate
 
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
@@ -158,54 +159,61 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
     }
 
     private fun createOrUpdateGuildMember(guildMember: DiscordAddedGuildMember) {
-        DiscordGuildMembers.insertOrUpdate(DiscordGuildMembers.guildId, DiscordGuildMembers.userId) {
-            it[DiscordGuildMembers.guildId] = guildMember.guildId.toLong()
-            it[DiscordGuildMembers.userId] = guildMember.user.value!!.id.toLong()
-        }
-
-        for (roleId in guildMember.roles) {
-            DiscordGuildMemberRoles.insertOrUpdate(DiscordGuildMemberRoles.guildId, DiscordGuildMemberRoles.userId, DiscordGuildMemberRoles.roleId) {
-                it[DiscordGuildMemberRoles.guildId] = guildMember.guildId.toLong()
-                it[DiscordGuildMemberRoles.userId] = guildMember.user.value!!.id.toLong()
-                it[DiscordGuildMemberRoles.roleId] = roleId.toLong()
-            }
-        }
-
-        DiscordGuildMemberRoles.deleteWhere {
-            (DiscordGuildMemberRoles.guildId eq guildMember.guildId.toLong()) and
-                    (DiscordGuildMemberRoles.userId eq guildMember.user.value!!.id.toLong()) and
-                    (DiscordGuildMemberRoles.roleId notInList guildMember.roles.map { it.toLong() })
-        }
+        createOrUpdateGuildMember(
+            guildMember.guildId,
+            guildMember.user.value!!.id,
+            guildMember.roles
+        )
     }
 
     private fun createOrUpdateGuildMember(guildMember: DiscordUpdatedGuildMember) {
-        DiscordGuildMembers.insertOrUpdate(DiscordGuildMembers.guildId, DiscordGuildMembers.userId) {
-            it[DiscordGuildMembers.guildId] = guildMember.guildId.toLong()
-            it[DiscordGuildMembers.userId] = guildMember.user.id.toLong()
-        }
-
-        for (roleId in guildMember.roles) {
-            DiscordGuildMemberRoles.insertOrUpdate(DiscordGuildMemberRoles.guildId, DiscordGuildMemberRoles.userId, DiscordGuildMemberRoles.roleId) {
-                it[DiscordGuildMemberRoles.guildId] = guildMember.guildId.toLong()
-                it[DiscordGuildMemberRoles.userId] = guildMember.user.id.toLong()
-                it[DiscordGuildMemberRoles.roleId] = roleId.toLong()
-            }
-        }
-
-        DiscordGuildMemberRoles.deleteWhere {
-            (DiscordGuildMemberRoles.guildId eq guildMember.guildId.toLong()) and
-                    (DiscordGuildMemberRoles.userId eq guildMember.user.id.toLong()) and
-                    (DiscordGuildMemberRoles.roleId notInList guildMember.roles.map { it.toLong() })
-        }
+        createOrUpdateGuildMember(
+            guildMember.guildId,
+            guildMember.user.id,
+            guildMember.roles
+        )
     }
 
     private fun createOrUpdateGuildMember(guildId: Snowflake, userId: Snowflake, guildMember: DiscordGuildMember) {
+        createOrUpdateGuildMember(
+            guildId,
+            userId,
+            guildMember.roles
+        )
+    }
+
+    private fun createOrUpdateGuildMember(
+        guildId: Snowflake,
+        userId: Snowflake,
+        roles: List<Snowflake>
+    ) {
         DiscordGuildMembers.insertOrUpdate(DiscordGuildMembers.guildId, DiscordGuildMembers.userId) {
             it[DiscordGuildMembers.guildId] = guildId.toLong()
             it[DiscordGuildMembers.userId] = userId.toLong()
         }
 
-        for (roleId in guildMember.roles) {
+        // This is kinda weird, however we are exchanging the following:
+        // 1 statement to do an insert or update
+        // *role count* statements to do an insert or update
+        // 1 statement to delete removed roles
+        //
+        // With the following:
+        // 1 statement to do an insert or update
+        // 1 statement to query roles in the database
+        // *amount of missing roles* statements to do an insert or update
+        // 1 statement to delete removed roles IF NEEDED
+        //
+        // Best case scenario? We replace tons of statements with only two (user update + role ID query)!
+        // Worst case scenario? It wouldn't be worse compared to the previous implementation ;)
+        val roleIdsAsLong = roles.map { it.toLong() }
+
+        val storedRoleIds = DiscordGuildMemberRoles.select {
+            (DiscordGuildMemberRoles.guildId eq guildId.toLong()) and
+                    (DiscordGuildMemberRoles.userId eq userId.toLong())
+        }.toList().map { it[DiscordGuildMemberRoles.roleId] }
+
+        val newRoles = roles.filter { it.toLong() !in storedRoleIds }
+        for (roleId in newRoles) {
             DiscordGuildMemberRoles.insertOrUpdate(DiscordGuildMemberRoles.guildId, DiscordGuildMemberRoles.userId, DiscordGuildMemberRoles.roleId) {
                 it[DiscordGuildMemberRoles.guildId] = guildId.toLong()
                 it[DiscordGuildMemberRoles.userId] = userId.toLong()
@@ -213,10 +221,11 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             }
         }
 
+        val removedRoles = storedRoleIds.filter { it !in roleIdsAsLong }
         DiscordGuildMemberRoles.deleteWhere {
             (DiscordGuildMemberRoles.guildId eq guildId.toLong()) and
                     (DiscordGuildMemberRoles.userId eq userId.toLong()) and
-                    (DiscordGuildMemberRoles.roleId notInList guildMember.roles.map { it.toLong() })
+                    (DiscordGuildMemberRoles.roleId inList removedRoles)
         }
     }
 
