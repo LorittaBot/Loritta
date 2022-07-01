@@ -14,6 +14,6 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
         val totalEventsProcessed = m.tasks.processDiscordGatewayEvents.totalEventsProcessed
         logger.info { "Total Discord Events processed: $totalEventsProcessed; (+${totalEventsProcessed - lastEventCountCheck})" }
         lastEventCountCheck = totalEventsProcessed
-        logger.info { "Active Events (${m.activeEvents.size}): ${m.activeEvents}" }
+        logger.info { "Active Events (${m.activeEvents.size})" }
     }
 }
