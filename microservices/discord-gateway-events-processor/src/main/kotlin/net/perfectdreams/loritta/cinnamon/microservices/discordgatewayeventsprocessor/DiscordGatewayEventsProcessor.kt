@@ -38,12 +38,6 @@ class DiscordGatewayEventsProcessor(
     val discordCacheModule = DiscordCacheModule(this)
 
     val activeEvents = ConcurrentLinkedQueue<Job>()
-    val modules = listOf(
-        starboardModule,
-        addFirstToNewChannelsModule,
-        discordCacheModule
-    )
-
     val tasks = DiscordGatewayEventsProcessorTasks(this)
 
     fun start() {

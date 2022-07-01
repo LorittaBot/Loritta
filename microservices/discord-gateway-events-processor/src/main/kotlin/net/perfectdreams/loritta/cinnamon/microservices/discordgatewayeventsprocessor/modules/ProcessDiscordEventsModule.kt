@@ -1,3 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
-abstract class ProcessDiscordEventsModule
+import dev.kord.gateway.Event
+
+abstract class ProcessDiscordEventsModule {
+    abstract suspend fun processEvent(event: Event)
+}
