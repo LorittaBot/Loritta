@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.ProcessDiscordEventsModule
 
 class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnable {
     companion object {
@@ -15,12 +14,6 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
         val totalEventsProcessed = m.tasks.processDiscordGatewayEvents.totalEventsProcessed
         logger.info { "Total Discord Events processed: $totalEventsProcessed; (+${totalEventsProcessed - lastEventCountCheck})" }
         lastEventCountCheck = totalEventsProcessed
-        printStats(m.starboardModule)
-        printStats(m.addFirstToNewChannelsModule)
-        printStats(m.discordCacheModule)
-    }
-
-    private fun printStats(module: ProcessDiscordEventsModule) {
-        logger.info { "Module ${module::class.simpleName} stats: ${module.activeEvents.size} active events; ${module.activeEvents}" }
+        logger.info { "Active Events (${m.activeEvents.size}): ${m.activeEvents}" }
     }
 }

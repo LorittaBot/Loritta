@@ -25,13 +25,6 @@ class ProcessDiscordGatewayEvents(
 
                     var count = 0
                     val processedRows = mutableListOf<Long>()
-                    val currentActiveEvents = m.modules.sumOf { it.activeEvents.size }
-
-                    if (currentActiveEvents >= m.config.eventsPerBatch) {
-                        logger.warn { "Too many current active events! We are going to query again in 100ms... $currentActiveEvents" }
-                        Thread.sleep(100)
-                        return@use
-                    }
 
                     while (rs.next()) {
                         val id = rs.getLong("id")
@@ -41,9 +34,7 @@ class ProcessDiscordGatewayEvents(
                         val discordEvent = KordDiscordEventUtils.parseEventFromJsonString(gatewayPayload)
 
                         if (discordEvent != null) {
-                            for (module in m.modules) {
-                                module.launchEventProcessorJob(discordEvent)
-                            }
+                            m.launchEventProcessorJob(discordEvent)
                         } else {
                             logger.warn { "Unknown Discord event received ($type)! We are going to ignore the event... kthxbye!" }
                         }
