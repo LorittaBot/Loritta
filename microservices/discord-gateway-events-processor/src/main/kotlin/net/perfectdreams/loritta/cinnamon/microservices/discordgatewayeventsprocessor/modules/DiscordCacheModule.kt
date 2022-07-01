@@ -65,9 +65,10 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 val member = event.message.member.value
 
                 if (guildId != null && member != null) {
-                    m.services.transaction {
+                    // Disabled for now, mostly to avoid a lot of database accesses causing a lot of GC pressure
+                    /* m.services.transaction {
                         createOrUpdateGuildMember(guildId, event.message.author.id, member)
-                    }
+                    } */
                 }
             }
             is GuildMemberAdd -> {
