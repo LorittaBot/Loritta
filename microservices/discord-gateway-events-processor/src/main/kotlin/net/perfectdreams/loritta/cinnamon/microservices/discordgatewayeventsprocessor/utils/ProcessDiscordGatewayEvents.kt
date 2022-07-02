@@ -20,7 +20,7 @@ class ProcessDiscordGatewayEvents(
             try {
                 val connection = queueDatabaseDataSource.connection
                 connection.use {
-                    val selectStatement = it.prepareStatement("""SELECT id, "type", payload FROM ${DiscordGatewayEvents.tableName} WHERE shard % ${m.config.replicas.replicas} = ${m.replicaId} ORDER BY id FOR UPDATE SKIP LOCKED LIMIT ${m.config.eventsPerBatch};""")
+                    val selectStatement = it.prepareStatement("""SELECT id, "type", payload FROM ${DiscordGatewayEvents.tableName} WHERE shard % ${m.config.replicas.replicas} = ${m.replicaId} ORDER BY id LIMIT ${m.config.eventsPerBatch};""")
                     val rs = selectStatement.executeQuery()
 
                     var count = 0
