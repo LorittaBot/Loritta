@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariDataSource
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.tables.DiscordGatewayEvents
+import java.io.File
 
 class ProcessDiscordGatewayEvents(
     private val m: DiscordGatewayEventsProcessor,
@@ -30,6 +31,11 @@ class ProcessDiscordGatewayEvents(
                         val id = rs.getLong("id")
                         val type = rs.getString("type")
                         val gatewayPayload = rs.getString("payload")
+
+                        if (type == "GUILD_CREATE") {
+                            File("./guild_create.json")
+                                .writeText(gatewayPayload)
+                        }
 
                         val discordEvent = KordDiscordEventUtils.parseEventFromJsonString(gatewayPayload)
 

@@ -12,14 +12,14 @@ dependencies {
     api(project(":pudding:data"))
 
     // Databases
-    implementation(libs.exposed.core)
-    implementation(libs.exposed.jdbc)
-    implementation(libs.exposed.javatime)
+    api(libs.exposed.core)
+    api(libs.exposed.jdbc)
+    api(libs.exposed.javatime)
     implementation("org.postgresql:postgresql:42.2.23")
     implementation(libs.hikaricp)
-    implementation("pw.forst", "exposed-upsert", "1.1.0")
-    implementation("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.0.0")
-    implementation("net.perfectdreams.exposedpowerutils:postgres-java-time:1.0.0")
+    api("pw.forst", "exposed-upsert", "1.1.0")
+    api("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.0.0")
+    api("net.perfectdreams.exposedpowerutils:postgres-java-time:1.0.0")
 
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")

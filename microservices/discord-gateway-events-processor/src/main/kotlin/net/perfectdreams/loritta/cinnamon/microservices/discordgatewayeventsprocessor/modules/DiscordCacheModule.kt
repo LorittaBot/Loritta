@@ -7,7 +7,9 @@ import dev.kord.common.entity.DiscordGuildMember
 import dev.kord.common.entity.DiscordRemovedGuildMember
 import dev.kord.common.entity.DiscordRole
 import dev.kord.common.entity.DiscordUpdatedGuildMember
+import dev.kord.common.entity.Overwrite
 import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.optional.orEmpty
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.ChannelCreate
 import dev.kord.gateway.ChannelDelete
@@ -26,6 +28,7 @@ import dev.kord.gateway.MessageCreate
 import kotlinx.datetime.toJavaInstant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.batchUpsert
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannelPermissionOverrides
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannels
@@ -33,6 +36,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembe
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
+import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
@@ -49,9 +53,11 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 // logger.info { "Howdy ${event.guild.id} (${event.guild.name})! Is unavailable? ${event.guild.unavailable}" }
 
                 if (!event.guild.unavailable.discordBoolean) {
+                    val start = System.currentTimeMillis()
                     m.services.transaction {
                         createOrUpdateGuild(event.guild)
                     }
+                    logger.info { "GuildCreate took ${System.currentTimeMillis() - start}ms" }
                 }
             }
             is GuildUpdate -> {
@@ -213,12 +219,10 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }.toList().map { it[DiscordGuildMemberRoles.roleId] }
 
         val newRoles = roles.filter { it.toLong() !in storedRoleIds }
-        for (roleId in newRoles) {
-            DiscordGuildMemberRoles.insertOrUpdate(DiscordGuildMemberRoles.guildId, DiscordGuildMemberRoles.userId, DiscordGuildMemberRoles.roleId) {
-                it[DiscordGuildMemberRoles.guildId] = guildId.toLong()
-                it[DiscordGuildMemberRoles.userId] = userId.toLong()
-                it[DiscordGuildMemberRoles.roleId] = roleId.toLong()
-            }
+        DiscordGuildMemberRoles.batchUpsert(newRoles, DiscordGuildMemberRoles.guildId, DiscordGuildMemberRoles.userId, DiscordGuildMemberRoles.roleId) { it, roleId ->
+            it[DiscordGuildMemberRoles.guildId] = guildId.toLong()
+            it[DiscordGuildMemberRoles.userId] = userId.toLong()
+            it[DiscordGuildMemberRoles.roleId] = roleId.toLong()
         }
 
         val removedRoles = storedRoleIds.filter { it !in roleIdsAsLong }
@@ -241,21 +245,49 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
     }
 
     private fun createOrUpdateAndDeleteGuildChannelsBulk(guildId: Snowflake, channels: List<DiscordChannel>) {
-        // Create or update all
-        for (role in channels) {
-            createOrUpdateGuildChannel(guildId, role)
+        // Create or update all channels
+        DiscordGuildChannels.batchUpsert(channels, DiscordGuildChannels.guildId, DiscordGuildChannels.channelId) { it, channel ->
+            it[DiscordGuildChannels.guildId] = guildId.toLong()
+            it[DiscordGuildChannels.channelId] = channel.id.toLong()
+            it[DiscordGuildChannels.name] = channel.name.value
+            it[DiscordGuildChannels.type] = channel.type.value
+
+            val permissions = channel.permissions.value
+            if (permissions != null) {
+                it[DiscordGuildChannels.permissions] = permissions.code.value.toLong()
+            }
         }
 
-        // Then delete roles that weren't present in the GuildCreate event
+        updatePermissionOverwrites(guildId, channels)
+
+        // Then delete channels that weren't present in the GuildCreate event
         DiscordGuildChannels.deleteWhere {
             DiscordGuildChannels.guildId eq guildId.toLong() and (DiscordGuildChannels.channelId notInList channels.map { it.id.toLong() })
         }
+
+        cleanUpPermissionOverwrites(guildId, channels)
     }
 
     private fun createOrUpdateAndDeleteRolesBulk(guildId: Snowflake, roles: List<DiscordRole>) {
         // Create or update all
-        for (role in roles) {
-            createOrUpdateRole(guildId, role)
+        if (roles.isNotEmpty()) {
+            DiscordGuildRoles.batchUpsert(
+                roles,
+                DiscordGuildRoles.guildId,
+                DiscordGuildRoles.roleId
+            ) { it, role ->
+                it[DiscordGuildRoles.guildId] = guildId.toLong()
+                it[DiscordGuildRoles.roleId] = role.id.toLong()
+                it[DiscordGuildRoles.name] = role.name
+                it[DiscordGuildRoles.color] = role.color
+                it[DiscordGuildRoles.hoist] = role.hoist
+                it[DiscordGuildRoles.icon] = role.icon.value
+                it[DiscordGuildRoles.unicodeEmoji] = role.icon.value
+                it[DiscordGuildRoles.position] = role.position
+                it[DiscordGuildRoles.permissions] = role.permissions.code.value.toLong()
+                it[DiscordGuildRoles.managed] = role.managed
+                it[DiscordGuildRoles.mentionable] = role.mentionable
+            }
         }
 
         // Then delete roles that weren't present in the GuildCreate event
@@ -277,23 +309,82 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             }
         }
 
-        val permissionsOverwrites = channel.permissionOverwrites.value
-        if (permissionsOverwrites != null) {
-            for (overwrite in permissionsOverwrites) {
-                DiscordGuildChannelPermissionOverrides.insertOrUpdate(DiscordGuildChannelPermissionOverrides.guildId, DiscordGuildChannelPermissionOverrides.channelId, DiscordGuildChannelPermissionOverrides.entityId) {
-                    it[DiscordGuildChannelPermissionOverrides.guildId] = guildId.toLong()
-                    it[DiscordGuildChannelPermissionOverrides.channelId] = channel.id.toLong()
-                    it[DiscordGuildChannelPermissionOverrides.entityId] = overwrite.id.toLong()
-                    it[DiscordGuildChannelPermissionOverrides.type] = overwrite.type.value
-                    it[DiscordGuildChannelPermissionOverrides.allow] = overwrite.allow.code.value.toLong()
-                    it[DiscordGuildChannelPermissionOverrides.deny] = overwrite.deny.code.value.toLong()
+        updatePermissionOverwrites(guildId, listOf(channel))
+
+        cleanUpPermissionOverwrites(guildId, listOf(channel))
+    }
+
+    private fun updatePermissionOverwrites(guildId: Snowflake, channels: List<DiscordChannel>) {
+        val overwrites = mutableListOf<Pair<Snowflake, Overwrite>>()
+
+        for (channel in channels) {
+            for (permissionOverwrite in channel.permissionOverwrites.orEmpty()) {
+                overwrites.add(
+                    Pair(
+                        channel.id,
+                        permissionOverwrite
+                    )
+                )
+            }
+        }
+
+        // Create or update all permission overwrites
+        DiscordGuildChannelPermissionOverrides.batchUpsert(
+            overwrites,
+            DiscordGuildChannelPermissionOverrides.guildId,
+            DiscordGuildChannelPermissionOverrides.channelId,
+            DiscordGuildChannelPermissionOverrides.entityId
+        ) { it, channelWithOverwrite ->
+            val channelId = channelWithOverwrite.first
+            val overwrite = channelWithOverwrite.second
+
+            it[DiscordGuildChannelPermissionOverrides.guildId] = guildId.toLong()
+            it[DiscordGuildChannelPermissionOverrides.channelId] = channelId.toLong()
+            it[DiscordGuildChannelPermissionOverrides.entityId] = overwrite.id.toLong()
+            it[DiscordGuildChannelPermissionOverrides.type] = overwrite.type.value
+            it[DiscordGuildChannelPermissionOverrides.allow] = overwrite.allow.code.value.toLong()
+            it[DiscordGuildChannelPermissionOverrides.deny] = overwrite.deny.code.value.toLong()
+        }
+    }
+
+    private fun cleanUpPermissionOverwrites(guildId: Snowflake, channels: List<DiscordChannel>) {
+        // Clean up permission overwrites
+        val permissionOverwritesOnDatabase = DiscordGuildChannelPermissionOverrides.select {
+            (DiscordGuildChannelPermissionOverrides.guildId eq guildId.toLong()) and
+                    (DiscordGuildChannelPermissionOverrides.channelId inList channels.map { it.id.toLong() })
+        }
+
+        // Hacky!!!
+        var cond = Op.build {
+            DiscordGuildChannelPermissionOverrides.guildId neq guildId.toLong()
+        }
+
+        var shouldCleanUp = false
+
+        for (permissionOverwriteOnDatabase in permissionOverwritesOnDatabase) {
+            val pulledChannel = channels.firstOrNull { it.id.toLong() == permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.channelId] }
+            if (pulledChannel == null) {
+                shouldCleanUp = true
+                cond = cond.and {
+                    (DiscordGuildChannelPermissionOverrides.channelId eq permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.channelId]) and
+                            (DiscordGuildChannelPermissionOverrides.entityId eq permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.entityId])
+                }
+            } else {
+                val pulledOverwrites = pulledChannel.permissionOverwrites.orEmpty().firstOrNull { it.id.toLong() == permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.entityId] }
+
+                if (pulledOverwrites == null) {
+                    shouldCleanUp = true
+                    cond = cond.and {
+                        (DiscordGuildChannelPermissionOverrides.channelId eq permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.channelId]) and
+                                (DiscordGuildChannelPermissionOverrides.entityId eq permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.entityId])
+                    }
                 }
             }
+        }
 
+        if (shouldCleanUp) {
             DiscordGuildChannelPermissionOverrides.deleteWhere {
-                (DiscordGuildChannelPermissionOverrides.guildId eq guildId.toLong()) and
-                        (DiscordGuildChannelPermissionOverrides.channelId eq channel.id.toLong()) and
-                        (DiscordGuildChannelPermissionOverrides.entityId notInList permissionsOverwrites.map { it.id.toLong() })
+                DiscordGuildChannelPermissionOverrides.guildId eq guildId.toLong() and cond
             }
         }
     }

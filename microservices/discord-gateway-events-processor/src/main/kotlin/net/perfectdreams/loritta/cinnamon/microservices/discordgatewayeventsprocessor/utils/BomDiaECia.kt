@@ -11,6 +11,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
+import org.jetbrains.exposed.sql.insert
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 class BomDiaECia(private val m: DiscordGatewayEventsProcessor) {
@@ -194,7 +197,7 @@ class BomDiaECia(private val m: DiscordGatewayEventsProcessor) {
 
         scope?.launch {
             // Create a random delay between 15 minutes and 30 minutes
-            val wait = m.random.nextLong(1_000, 10_000)
+            val wait = m.random.nextLong(10_000, 30_000)
             val estimatedTime = wait + System.currentTimeMillis()
             logger.info { "We will wait ${wait}ms until the next Bom Dia & Cia!" }
             delay(wait)
@@ -214,6 +217,13 @@ class BomDiaECia(private val m: DiscordGatewayEventsProcessor) {
         currentText = randomTexts.random()
 
         lastBomDiaECia = System.currentTimeMillis()
+
+        m.services.transaction {
+            BomDiaECiaMatches.insert {
+                it[BomDiaECiaMatches.startedAt] = Instant.now()
+                it[BomDiaECiaMatches.text] = currentText
+            }
+        }
 
         val obfuscatedText = currentText.toCharArray()
             .joinToString("", transform = {
@@ -253,6 +263,10 @@ class BomDiaECia(private val m: DiscordGatewayEventsProcessor) {
         // TODO: This should be restarted after someone wins the bd&c!
         // TODO: ^ This could be hard because the slash commands process is in a separate app, so for now let's just keep it like this lol no harm
         startBomDiaECiaTask()
+    }
+
+    fun announceWinner(snowflake: Snowflake) {
+        // TODO: Fix this
     }
 
     /* @Synchronized

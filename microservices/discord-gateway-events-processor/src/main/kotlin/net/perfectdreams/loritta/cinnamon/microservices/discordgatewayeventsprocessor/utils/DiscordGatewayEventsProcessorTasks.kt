@@ -5,7 +5,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class DiscordGatewayEventsProcessorTasks(private val m: DiscordGatewayEventsProcessor) {
-    private val executorService = Executors.newScheduledThreadPool(2)
+    private val executorService = Executors.newScheduledThreadPool(4)
     private val eventAnalytics = EventAnalyticsTask(m)
     val processDiscordGatewayEvents = ProcessDiscordGatewayEvents(m, m.queueDatabase.hikariDataSource)
 

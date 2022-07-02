@@ -70,6 +70,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannelPermissionOverrides
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMemberRoles
@@ -295,6 +296,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             DailyTaxTaxedUserNotifications,
             DailyTaxWarnUserNotifications,
             CorreiosPackageUpdateUserNotifications,
+            BomDiaECiaMatches,
 
             DiscordGuilds,
             DiscordGuildRoles,
