@@ -4,7 +4,6 @@ import com.zaxxer.hikari.HikariDataSource
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.tables.DiscordGatewayEvents
-import java.io.File
 
 class ProcessDiscordGatewayEvents(
     private val m: DiscordGatewayEventsProcessor,

@@ -36,10 +36,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembe
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
+import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.statements.BatchInsertStatement
 import pw.forst.exposed.insertOrUpdate
 
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
@@ -219,10 +223,10 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }.toList().map { it[DiscordGuildMemberRoles.roleId] }
 
         val newRoles = roles.filter { it.toLong() !in storedRoleIds }
-        DiscordGuildMemberRoles.batchUpsert(newRoles, DiscordGuildMemberRoles.guildId, DiscordGuildMemberRoles.userId, DiscordGuildMemberRoles.roleId) { it, roleId ->
-            it[DiscordGuildMemberRoles.guildId] = guildId.toLong()
-            it[DiscordGuildMemberRoles.userId] = userId.toLong()
-            it[DiscordGuildMemberRoles.roleId] = roleId.toLong()
+        DiscordGuildMemberRoles.batchInsert(newRoles, ignore = true, shouldReturnGeneratedValues = true) { roleId ->
+            this[DiscordGuildMemberRoles.guildId] = guildId.toLong()
+            this[DiscordGuildMemberRoles.userId] = userId.toLong()
+            this[DiscordGuildMemberRoles.roleId] = roleId.toLong()
         }
 
         val removedRoles = storedRoleIds.filter { it !in roleIdsAsLong }
@@ -246,7 +250,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
     private fun createOrUpdateAndDeleteGuildChannelsBulk(guildId: Snowflake, channels: List<DiscordChannel>) {
         // Create or update all channels
-        DiscordGuildChannels.batchUpsert(channels, DiscordGuildChannels.guildId, DiscordGuildChannels.channelId) { it, channel ->
+        DiscordGuildChannels.batchUpsertIfNeeded(channels, DiscordGuildChannels.guildId, DiscordGuildChannels.channelId) { it, channel ->
             it[DiscordGuildChannels.guildId] = guildId.toLong()
             it[DiscordGuildChannels.channelId] = channel.id.toLong()
             it[DiscordGuildChannels.name] = channel.name.value
@@ -270,24 +274,22 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
     private fun createOrUpdateAndDeleteRolesBulk(guildId: Snowflake, roles: List<DiscordRole>) {
         // Create or update all
-        if (roles.isNotEmpty()) {
-            DiscordGuildRoles.batchUpsert(
-                roles,
-                DiscordGuildRoles.guildId,
-                DiscordGuildRoles.roleId
-            ) { it, role ->
-                it[DiscordGuildRoles.guildId] = guildId.toLong()
-                it[DiscordGuildRoles.roleId] = role.id.toLong()
-                it[DiscordGuildRoles.name] = role.name
-                it[DiscordGuildRoles.color] = role.color
-                it[DiscordGuildRoles.hoist] = role.hoist
-                it[DiscordGuildRoles.icon] = role.icon.value
-                it[DiscordGuildRoles.unicodeEmoji] = role.icon.value
-                it[DiscordGuildRoles.position] = role.position
-                it[DiscordGuildRoles.permissions] = role.permissions.code.value.toLong()
-                it[DiscordGuildRoles.managed] = role.managed
-                it[DiscordGuildRoles.mentionable] = role.mentionable
-            }
+        DiscordGuildRoles.batchUpsertIfNeeded(
+            roles,
+            DiscordGuildRoles.guildId,
+            DiscordGuildRoles.roleId
+        ) { it, role ->
+            it[DiscordGuildRoles.guildId] = guildId.toLong()
+            it[DiscordGuildRoles.roleId] = role.id.toLong()
+            it[DiscordGuildRoles.name] = role.name
+            it[DiscordGuildRoles.color] = role.color
+            it[DiscordGuildRoles.hoist] = role.hoist
+            it[DiscordGuildRoles.icon] = role.icon.value
+            it[DiscordGuildRoles.unicodeEmoji] = role.icon.value
+            it[DiscordGuildRoles.position] = role.position
+            it[DiscordGuildRoles.permissions] = role.permissions.code.value.toLong()
+            it[DiscordGuildRoles.managed] = role.managed
+            it[DiscordGuildRoles.mentionable] = role.mentionable
         }
 
         // Then delete roles that weren't present in the GuildCreate event
@@ -329,7 +331,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }
 
         // Create or update all permission overwrites
-        DiscordGuildChannelPermissionOverrides.batchUpsert(
+        DiscordGuildChannelPermissionOverrides.batchUpsertIfNeeded(
             overwrites,
             DiscordGuildChannelPermissionOverrides.guildId,
             DiscordGuildChannelPermissionOverrides.channelId,
@@ -446,5 +448,14 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         DiscordGuilds.deleteWhere {
             DiscordGuilds.id eq guildIdAsLong
         }
+    }
+
+    private fun <T : Table, E> T.batchUpsertIfNeeded(
+        data: Collection<E>,
+        vararg keys: Column<*> = (primaryKey ?: throw IllegalArgumentException("primary key is missing")).columns,
+        body: T.(BatchInsertStatement, E) -> Unit
+    ) {
+        if (data.isNotEmpty())
+            batchUpsert(data, *keys, body = body)
     }
 }
