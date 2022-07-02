@@ -16,7 +16,6 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.DatabaseConfig
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
 
 object DiscordGatewayEventsProcessorLauncher {
     private val logger = KotlinLogging.logger {}
@@ -29,6 +28,15 @@ object DiscordGatewayEventsProcessorLauncher {
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(
             DiscordGatewayEventsProcessorLauncher::class, System.getProperty("discordgatewayeventsprocessor.config", "discord-gateway-events-processor.conf"))
         logger.info { "Loaded Loritta's configuration file" }
+
+        val replicaId = if (rootConfig.replicas.enabled) {
+            val hostname = getHostname()
+            hostname.substringAfterLast("-").toIntOrNull() ?: error("Replicas is enabled, but I couldn't get the Replica ID from the hostname!")
+        } else {
+            0
+        }
+
+        logger.info { "Replica ID: $replicaId" }
 
         val languageManager = LorittaLanguageManager(DiscordGatewayEventsProcessor::class)
 
@@ -51,11 +59,13 @@ object DiscordGatewayEventsProcessorLauncher {
             rootConfig.queueDatabase.password
         )
 
+
         val loritta = DiscordGatewayEventsProcessor(
             rootConfig,
             services,
             queueDatabase,
             languageManager,
+            replicaId
         )
 
         loritta.start()
@@ -141,5 +151,37 @@ object DiscordGatewayEventsProcessorLauncher {
 
         logger.warn { "I wasn't able to get the machine's hostname! Falling back to \"Unknown\"..." }
         return "$suffix - Unknown"
+    }
+
+    private fun getHostname(): String {
+        // From hostname command
+        try {
+            val proc = ProcessBuilder("hostname")
+                .start()
+
+            proc.waitFor(5, TimeUnit.SECONDS)
+            val hostname = proc.inputStream.readAllBytes().toString(Charsets.UTF_8).removeSuffix("\n")
+            proc.destroyForcibly()
+
+            logger.warn { "Machine Hostname via \"hostname\" command: $hostname" }
+            return hostname
+        } catch (e: Exception) {
+            logger.warn(e) { "Something went wrong while trying to get the machine's hostname via the \"hostname\" command!" }
+        }
+
+        // From hostname env variable
+        System.getenv("HOSTNAME")?.let {
+            logger.warn { "Machine Hostname via \"HOSTNAME\" env variable: $it" }
+            return it
+        }
+
+        // From computername env variable
+        System.getenv("COMPUTERNAME")?.let {
+            logger.warn { "Machine Hostname via \"COMPUTERNAME\" env variable: $it" }
+            return it
+        }
+
+        logger.warn { "I wasn't able to get the machine's hostname! Falling back to \"Unknown\"..." }
+        return "Unknown"
     }
 }

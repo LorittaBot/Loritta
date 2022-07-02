@@ -37,7 +37,8 @@ class DiscordGatewayEventsProcessor(
     val config: RootConfig,
     val services: Pudding,
     val queueDatabase: QueueDatabase,
-    val languageManager: LanguageManager
+    val languageManager: LanguageManager,
+    val replicaId: Int
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}

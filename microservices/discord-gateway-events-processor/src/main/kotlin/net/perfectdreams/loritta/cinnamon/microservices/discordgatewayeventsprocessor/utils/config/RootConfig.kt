@@ -9,6 +9,7 @@ data class RootConfig(
     val eventsPerBatch: Int,
     val loritta: LorittaConfig,
     val discord: LorittaDiscordConfig,
+    val replicas: ReplicasConfig,
     val pudding: PuddingConfig,
     val queueDatabase: PuddingConfig
 )
