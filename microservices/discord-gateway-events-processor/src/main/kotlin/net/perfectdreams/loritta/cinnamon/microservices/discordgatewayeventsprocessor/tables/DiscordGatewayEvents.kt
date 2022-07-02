@@ -7,6 +7,6 @@ import org.jetbrains.exposed.dao.id.LongIdTable
 object DiscordGatewayEvents : LongIdTable() {
     val type = text("type").index()
     val receivedAt = timestampWithTimeZone("received_at")
-    val shard = integer("shard")
+    val shard = integer("shard").index()
     val payload = jsonb("payload")
 }
