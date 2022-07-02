@@ -49,6 +49,7 @@ dependencies {
     api("org.jetbrains.exposed:exposed-core:${Versions.EXPOSED}")
     api("org.jetbrains.exposed:exposed-dao:${Versions.EXPOSED}")
     api("org.jetbrains.exposed:exposed-jdbc:${Versions.EXPOSED}")
+    api("net.perfectdreams.exposedpowerutils:postgres-java-time:1.0.0")
     api("pw.forst:exposed-upsert:1.1.0")
     api("net.perfectdreams.loritta.cinnamon:common:${Versions.PUDDING}") {
         exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7

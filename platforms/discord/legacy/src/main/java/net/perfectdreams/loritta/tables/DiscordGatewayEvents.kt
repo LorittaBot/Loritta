@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.tables
 
+import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import org.jetbrains.exposed.dao.id.LongIdTable
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.ColumnType
@@ -10,6 +11,8 @@ import java.sql.ResultSet
 
 object DiscordGatewayEvents : LongIdTable() {
     val type = text("type").index()
+    val receivedAt = timestampWithTimeZone("received_at")
+    val shard = integer("shard")
     val payload = jsonb("payload")
 }
 
