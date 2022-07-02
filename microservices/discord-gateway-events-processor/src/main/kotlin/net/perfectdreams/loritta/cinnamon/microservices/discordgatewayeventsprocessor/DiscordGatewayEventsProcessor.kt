@@ -116,7 +116,7 @@ class DiscordGatewayEventsProcessor(
         val coroutineName = "Event ${discordEvent::class.simpleName}"
         launchEventJob(coroutineName) {
             try {
-                discordCacheModule.processEvent(discordEvent)
+                // discordCacheModule.processEvent(discordEvent)
                 addFirstToNewChannelsModule.processEvent(discordEvent)
                 starboardModule.processEvent(discordEvent)
                 // bomDiaECiaModule.processEvent(discordEvent)
