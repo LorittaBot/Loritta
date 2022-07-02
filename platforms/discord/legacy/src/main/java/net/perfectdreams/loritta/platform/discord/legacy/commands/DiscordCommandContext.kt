@@ -449,6 +449,7 @@ class DiscordCommandContext(
 			)
 		}
 
+		val command = command
 		if (command is DiscordCommand) {
 			if (command.botRequiredPermissions.isNotEmpty() || command.userRequiredPermissions.isNotEmpty()) {
 				var field = ""

@@ -205,6 +205,9 @@ class CustomCommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/
 
 							when (customCommand.codeType) {
 								CustomCommandCodeType.SIMPLE_TEXT -> openTextCommandModal(customCommand.label, customCommand.code)
+								CustomCommandCodeType.UNKNOWN -> TODO()
+								CustomCommandCodeType.JAVASCRIPT -> TODO()
+								CustomCommandCodeType.KOTLIN -> TODO()
 							}
 						}
 					}

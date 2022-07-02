@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit
  * Classe de utilidades relacionadas ao Minecraft (como UUID query)
  */
 object MCUtils {
-	val username2uuid = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).maximumSize(10000).build<String, String?>().asMap()
-	val uuid2profile = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures?>().asMap()
+	val username2uuid = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).maximumSize(10000).build<String, String>().asMap()
+	val uuid2profile = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures>().asMap()
 
 	fun getUniqueId(player: String): String? {
 		val lowercase = player.toLowerCase()

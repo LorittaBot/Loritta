@@ -3,11 +3,24 @@ package net.perfectdreams.loritta
 import com.mrpowergamerbr.loritta.network.Databases
 import com.mrpowergamerbr.loritta.plugin.LorittaPlugin
 import net.perfectdreams.loritta.api.LorittaBot
-import net.perfectdreams.loritta.commands.actions.modern.impl.*
-import net.perfectdreams.loritta.commands.administration.*
-import net.perfectdreams.loritta.commands.discord.*
-import net.perfectdreams.loritta.commands.economy.*
-import net.perfectdreams.loritta.commands.images.*
+import net.perfectdreams.loritta.commands.actions.modern.impl.AttackCommand
+import net.perfectdreams.loritta.commands.actions.modern.impl.DanceCommand
+import net.perfectdreams.loritta.commands.actions.modern.impl.HeadPatCommand
+import net.perfectdreams.loritta.commands.actions.modern.impl.HugCommand
+import net.perfectdreams.loritta.commands.actions.modern.impl.KissCommand
+import net.perfectdreams.loritta.commands.actions.modern.impl.SlapCommand
+import net.perfectdreams.loritta.commands.administration.DashboardCommand
+import net.perfectdreams.loritta.commands.administration.RenameChannelCommand
+import net.perfectdreams.loritta.commands.administration.RenameEmojiCommand
+import net.perfectdreams.loritta.commands.discord.GuildBannerCommand
+import net.perfectdreams.loritta.commands.discord.RoleInfoCommand
+import net.perfectdreams.loritta.commands.economy.ScratchCardCommand
+import net.perfectdreams.loritta.commands.economy.ScratchCardTopCommand
+import net.perfectdreams.loritta.commands.images.AsciiCommand
+import net.perfectdreams.loritta.commands.images.AtendenteCommand
+import net.perfectdreams.loritta.commands.images.DrawnWordCommand
+import net.perfectdreams.loritta.commands.images.EmojiMashupCommand
+import net.perfectdreams.loritta.commands.images.TristeRealidadeCommand
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.tables.Raspadinhas
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -17,7 +30,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 class ArtsyJoyLori(name: String, loritta: LorittaBot) : LorittaPlugin(name, loritta) {
 
     override fun onEnable() {
-        loritta as LorittaDiscord
+        val loritta = loritta as LorittaDiscord
 
         // ADMIN
         registerCommand(DashboardCommand(loritta))
