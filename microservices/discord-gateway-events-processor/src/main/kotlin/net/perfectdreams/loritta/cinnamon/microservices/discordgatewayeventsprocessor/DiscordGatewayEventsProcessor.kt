@@ -66,7 +66,7 @@ class DiscordGatewayEventsProcessor(
 
         tasks.start()
 
-        bomDiaECia.startBomDiaECiaTask()
+        // bomDiaECia.startBomDiaECiaTask()
     }
 
     suspend fun getPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake): Permissions {
