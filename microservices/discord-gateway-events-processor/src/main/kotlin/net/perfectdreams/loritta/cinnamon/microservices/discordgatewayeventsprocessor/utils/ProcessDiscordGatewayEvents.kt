@@ -32,11 +32,6 @@ class ProcessDiscordGatewayEvents(
                         val type = rs.getString("type")
                         val gatewayPayload = rs.getString("payload")
 
-                        if (type == "GUILD_CREATE") {
-                            File("./guild_create.json")
-                                .writeText(gatewayPayload)
-                        }
-
                         val discordEvent = KordDiscordEventUtils.parseEventFromJsonString(gatewayPayload)
 
                         if (discordEvent != null) {
