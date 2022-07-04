@@ -94,7 +94,7 @@ class DiscordGatewayEventsProcessor(
 
         services.transaction {
             val userRoleIds = DiscordGuildMembers
-                .slice(DiscordGuilds.roles)
+                .slice(DiscordGuildMembers.roles)
                 .selectFirstOrNull { DiscordGuildMembers.guildId eq guildId.toLong() and (DiscordGuildMembers.userId eq userId.toLong()) }
                 ?.get(DiscordGuildMembers.roles)
                 ?.let {
