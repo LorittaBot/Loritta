@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor
 
+import dev.kord.common.entity.OverwriteType
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Event
@@ -135,11 +136,43 @@ class DiscordGatewayEventsProcessor(
             val entityIds = mutableSetOf(userId)
             entityIds.addAll(userRoleIds.map { Snowflake(it) })
 
-            // Now we will get permission overrides
-            val permissionOverrides = guildChannel?.permissionOverwrites?.value
+            // Now we will get permission overwrites
+            val permissionOverwrites = guildChannel?.permissionOverwrites?.value
+
+            // https://discord.com/developers/docs/topics/permissions#permission-overwrites
+            if (permissionOverwrites != null) {
+                // First, the "@everyone" role permission overwrite
+                if (everyoneRole != null) {
+                    val everyonePermissionOverwrite = permissionOverwrites.firstOrNull { it.id == everyoneRole.id }
+                    if (everyonePermissionOverwrite != null) {
+                        permissions = permissions.minus(everyonePermissionOverwrite.deny)
+                        permissions = permissions.plus(everyonePermissionOverwrite.allow)
+                    }
+                }
+
+                // Then, permission overwrites for specific roles
+                val rolePermissionOverwrites = permissionOverwrites.filter {
+                    it.type == OverwriteType.Role
+                }.filter { it.id in entityIds }
+
+                for (permissionOverwrite in rolePermissionOverwrites) {
+                    permissions = permissions.minus(permissionOverwrite.deny)
+                    permissions = permissions.plus(permissionOverwrite.allow)
+                }
+
+                // And finally, permission overwrites for specific members
+                val memberPermissionOverwrites = permissionOverwrites.filter {
+                    it.type == OverwriteType.Member
+                }.filter { it.id in entityIds }
+
+                for (permissionOverwrite in memberPermissionOverwrites) {
+                    permissions = permissions.minus(permissionOverwrite.deny)
+                    permissions = permissions.plus(permissionOverwrite.allow)
+                }
+            }
 
             // TODO: I'm not sure if that's how permission overrides are actually calculated
-            permissionOverrides?.forEach {
+            permissionOverwrites?.forEach {
                 permissions = permissions.plus(it.allow)
                 permissions = permissions.minus(it.deny)
             }
