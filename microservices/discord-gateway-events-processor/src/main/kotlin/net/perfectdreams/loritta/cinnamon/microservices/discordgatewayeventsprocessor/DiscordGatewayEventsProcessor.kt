@@ -170,12 +170,6 @@ class DiscordGatewayEventsProcessor(
                     permissions = permissions.plus(permissionOverwrite.allow)
                 }
             }
-
-            // TODO: I'm not sure if that's how permission overrides are actually calculated
-            permissionOverwrites?.forEach {
-                permissions = permissions.plus(it.allow)
-                permissions = permissions.minus(it.deny)
-            }
         }
 
         return permissions
