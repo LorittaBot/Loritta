@@ -2,14 +2,11 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 
 import dev.kord.common.entity.DiscordAddedGuildMember
 import dev.kord.common.entity.DiscordChannel
-import dev.kord.common.entity.DiscordGuild
 import dev.kord.common.entity.DiscordGuildMember
 import dev.kord.common.entity.DiscordRemovedGuildMember
 import dev.kord.common.entity.DiscordRole
 import dev.kord.common.entity.DiscordUpdatedGuildMember
-import dev.kord.common.entity.Overwrite
 import dev.kord.common.entity.Snowflake
-import dev.kord.common.entity.optional.orEmpty
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.ChannelCreate
 import dev.kord.gateway.ChannelDelete
@@ -25,26 +22,24 @@ import dev.kord.gateway.GuildRoleDelete
 import dev.kord.gateway.GuildRoleUpdate
 import dev.kord.gateway.GuildUpdate
 import dev.kord.gateway.MessageCreate
-import kotlinx.datetime.toJavaInstant
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.batchUpsert
+import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordChannelsMap
+import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesMap
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannelPermissionOverrides
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMemberRoles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
-import org.jetbrains.exposed.sql.Column
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.Table
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.statements.BatchInsertStatement
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.jetbrains.exposed.sql.update
 import pw.forst.exposed.insertOrUpdate
+import java.sql.ResultSet
 
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
@@ -58,17 +53,53 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
                 if (!event.guild.unavailable.discordBoolean) {
                     val start = System.currentTimeMillis()
+
+                    // This looks weird, but it is actually used to indicate to the JVM that "hey, we aren't using the "event" object anymore!", which helps with GC (or, well, I hope it does)
+                    val guildId = event.guild.id
+                    val guildName = event.guild.name
+                    val guildIcon = event.guild.icon
+                    val guildOwnerId = event.guild.ownerId
+                    val guildRoles = event.guild.roles
+                    val guildChannels = event.guild.channels.value!! // Shouldn't be null in a GUILD_CREATE event
+
                     m.services.transaction {
-                        createOrUpdateGuild(event.guild)
+                        createOrUpdateGuild(
+                            guildId,
+                            guildName,
+                            guildIcon,
+                            guildOwnerId,
+                            guildRoles,
+                            guildChannels
+                        )
                     }
-                    logger.info { "GuildCreate took ${System.currentTimeMillis() - start}ms" }
+
+                    logger.info { "GuildCreate for $guildId took ${System.currentTimeMillis() - start}ms" }
                 }
             }
             is GuildUpdate -> {
                 if (!event.guild.unavailable.discordBoolean) {
+                    val start = System.currentTimeMillis()
+
+                    // This looks weird, but it is actually used to indicate to the JVM that "hey, we aren't using the "event" object anymore!", which helps with GC (or, well, I hope it does)
+                    val guildId = event.guild.id
+                    val guildName = event.guild.name
+                    val guildIcon = event.guild.icon
+                    val guildOwnerId = event.guild.ownerId
+                    val guildRoles = event.guild.roles
+                    val guildChannels = event.guild.channels.value!! // Shouldn't be null in a GUILD_CREATE event
+
                     m.services.transaction {
-                        createOrUpdateGuild(event.guild)
+                        createOrUpdateGuild(
+                            guildId,
+                            guildName,
+                            guildIcon,
+                            guildOwnerId,
+                            guildRoles,
+                            guildChannels
+                        )
                     }
+
+                    logger.info { "GuildUpdate for $guildId took ${System.currentTimeMillis() - start}ms" }
                 }
             }
             is MessageCreate -> {
@@ -136,7 +167,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is GuildDelete -> {
                 // If the unavailable field is not set, the user/bot was removed from the guild.
                 if (event.guild.unavailable.value == null) {
-                    // logger.info { "Someone removed me @ ${event.guild.id}! :(" }
+                    logger.info { "Someone removed me @ ${event.guild.id}! :(" }
                     m.services.transaction {
                         removeGuildData(event.guild.id)
                     }
@@ -146,26 +177,64 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }
     }
 
-    private fun createOrUpdateGuild(guild: DiscordGuild) {
-        DiscordGuilds.insertOrUpdate(DiscordGuilds.id) {
-            it[DiscordGuilds.id] = guild.id.value.toLong()
-            it[DiscordGuilds.name] = guild.name
-            it[DiscordGuilds.icon] = guild.icon
-            it[DiscordGuilds.ownerId] = guild.ownerId.value.toLong()
-
-            // joined_at is not null via the Guild Create event
-            val joinedAt = guild.joinedAt.value
-            if (joinedAt != null)
-                it[DiscordGuilds.joinedAt] = joinedAt.toJavaInstant()
+    private fun createOrUpdateGuild(
+        guildId: Snowflake,
+        guildName: String,
+        guildIcon: String?,
+        guildOwnerId: Snowflake,
+        guildRoles: List<DiscordRole>,
+        guildChannels: List<DiscordChannel>
+    ) {
+        // Verify if we really need to update the roles/channels/etc JSON field
+        val currentStoredValues = DiscordGuilds.slice(
+            DiscordGuilds.id,
+            DiscordGuilds.roles,
+            DiscordGuilds.channels
+        ).selectFirstOrNull {
+            DiscordGuilds.id eq guildId.toLong()
         }
 
-        // Shouldn't be null in a GUILD_CREATE event
-        val channels = guild.channels.value
-        if (channels != null) {
-            createOrUpdateAndDeleteGuildChannelsBulk(guild.id, channels)
-        }
+        val isPresent = currentStoredValues?.get(DiscordGuilds.id) != null
 
-        createOrUpdateAndDeleteRolesBulk(guild.id, guild.roles)
+        val storedRolesAsJson = currentStoredValues?.get(DiscordGuilds.roles)
+        val storedChannelsAsJson = currentStoredValues?.get(DiscordGuilds.channels)
+
+        if (currentStoredValues != null && isPresent) {
+            // It exists, let's update it
+            DiscordGuilds.update({ DiscordGuilds.id eq guildId.toLong() }) {
+                it[DiscordGuilds.id] = guildId.toLong()
+                it[DiscordGuilds.name] = guildName
+                it[DiscordGuilds.icon] = guildIcon
+                it[DiscordGuilds.ownerId] = guildOwnerId.toLong()
+
+                if (storedRolesAsJson != null) {
+                    val storedRoles = Json.decodeFromString<PuddingDiscordRolesMap>(storedRolesAsJson).values
+
+                    if (!(storedRoles.containsAll(guildRoles) && guildRoles.containsAll(storedRoles))) {
+                        it[DiscordGuilds.roles] = Json.encodeToString(guildRoles.associateBy { it.id.toString() })
+                    }
+                }
+
+                if (storedChannelsAsJson != null) {
+                    val storedChannels = Json.decodeFromString<PuddingDiscordChannelsMap>(storedChannelsAsJson).values
+
+                    if (!(storedChannels.containsAll(guildChannels) && guildChannels.containsAll(storedChannels))) {
+                        it[DiscordGuilds.channels] = Json.encodeToString(guildChannels.associateBy { it.id.toString() })
+                    }
+                }
+            }
+        } else {
+            // Does not exist, let's insert it
+            DiscordGuilds.insert {
+                it[DiscordGuilds.id] = guildId.toLong()
+                it[DiscordGuilds.name] = guildName
+                it[DiscordGuilds.icon] = guildIcon
+                it[DiscordGuilds.ownerId] = guildOwnerId.toLong()
+
+                it[DiscordGuilds.roles] = Json.encodeToString(guildRoles.associateBy { it.id.toString() })
+                it[DiscordGuilds.channels] = Json.encodeToString(guildChannels.associateBy { it.id.toString() })
+            }
+        }
     }
 
     private fun createOrUpdateGuildMember(guildMember: DiscordAddedGuildMember) {
@@ -200,40 +269,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         DiscordGuildMembers.insertOrUpdate(DiscordGuildMembers.guildId, DiscordGuildMembers.userId) {
             it[DiscordGuildMembers.guildId] = guildId.toLong()
             it[DiscordGuildMembers.userId] = userId.toLong()
-        }
-
-        // This is kinda weird, however we are exchanging the following:
-        // 1 statement to do an insert or update
-        // *role count* statements to do an insert or update
-        // 1 statement to delete removed roles
-        //
-        // With the following:
-        // 1 statement to do an insert or update
-        // 1 statement to query roles in the database
-        // *amount of missing roles* statements to do an insert or update
-        // 1 statement to delete removed roles IF NEEDED
-        //
-        // Best case scenario? We replace tons of statements with only two (user update + role ID query)!
-        // Worst case scenario? It wouldn't be worse compared to the previous implementation ;)
-        val roleIdsAsLong = roles.map { it.toLong() }
-
-        val storedRoleIds = DiscordGuildMemberRoles.select {
-            (DiscordGuildMemberRoles.guildId eq guildId.toLong()) and
-                    (DiscordGuildMemberRoles.userId eq userId.toLong())
-        }.toList().map { it[DiscordGuildMemberRoles.roleId] }
-
-        val newRoles = roles.filter { it.toLong() !in storedRoleIds }
-        DiscordGuildMemberRoles.batchInsert(newRoles, ignore = true, shouldReturnGeneratedValues = true) { roleId ->
-            this[DiscordGuildMemberRoles.guildId] = guildId.toLong()
-            this[DiscordGuildMemberRoles.userId] = userId.toLong()
-            this[DiscordGuildMemberRoles.roleId] = roleId.toLong()
-        }
-
-        val removedRoles = storedRoleIds.filter { it !in roleIdsAsLong }
-        DiscordGuildMemberRoles.deleteWhere {
-            (DiscordGuildMemberRoles.guildId eq guildId.toLong()) and
-                    (DiscordGuildMemberRoles.userId eq userId.toLong()) and
-                    (DiscordGuildMemberRoles.roleId inList removedRoles)
+            it[DiscordGuildMembers.roles] = Json.encodeToString(roles.map { it.toString() })
         }
     }
 
@@ -241,183 +277,85 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         DiscordGuildMembers.deleteWhere {
             DiscordGuildMembers.guildId eq guildMember.guildId.toLong() and (DiscordGuildMembers.userId eq guildMember.user.id.toLong())
         }
-
-        DiscordGuildMemberRoles.deleteWhere {
-            (DiscordGuildMemberRoles.guildId eq guildMember.guildId.toLong()) and
-                    (DiscordGuildMemberRoles.userId eq guildMember.user.id.toLong())
-        }
-    }
-
-    private fun createOrUpdateAndDeleteGuildChannelsBulk(guildId: Snowflake, channels: List<DiscordChannel>) {
-        // Create or update all channels
-        DiscordGuildChannels.batchUpsertIfNeeded(channels, DiscordGuildChannels.guildId, DiscordGuildChannels.channelId) { it, channel ->
-            it[DiscordGuildChannels.guildId] = guildId.toLong()
-            it[DiscordGuildChannels.channelId] = channel.id.toLong()
-            it[DiscordGuildChannels.name] = channel.name.value
-            it[DiscordGuildChannels.type] = channel.type.value
-
-            val permissions = channel.permissions.value
-            if (permissions != null) {
-                it[DiscordGuildChannels.permissions] = permissions.code.value.toLong()
-            }
-        }
-
-        updatePermissionOverwrites(guildId, channels)
-
-        // Then delete channels that weren't present in the GuildCreate event
-        DiscordGuildChannels.deleteWhere {
-            DiscordGuildChannels.guildId eq guildId.toLong() and (DiscordGuildChannels.channelId notInList channels.map { it.id.toLong() })
-        }
-
-        cleanUpPermissionOverwrites(guildId, channels)
-    }
-
-    private fun createOrUpdateAndDeleteRolesBulk(guildId: Snowflake, roles: List<DiscordRole>) {
-        // Create or update all
-        DiscordGuildRoles.batchUpsertIfNeeded(
-            roles,
-            DiscordGuildRoles.guildId,
-            DiscordGuildRoles.roleId
-        ) { it, role ->
-            it[DiscordGuildRoles.guildId] = guildId.toLong()
-            it[DiscordGuildRoles.roleId] = role.id.toLong()
-            it[DiscordGuildRoles.name] = role.name
-            it[DiscordGuildRoles.color] = role.color
-            it[DiscordGuildRoles.hoist] = role.hoist
-            it[DiscordGuildRoles.icon] = role.icon.value
-            it[DiscordGuildRoles.unicodeEmoji] = role.icon.value
-            it[DiscordGuildRoles.position] = role.position
-            it[DiscordGuildRoles.permissions] = role.permissions.code.value.toLong()
-            it[DiscordGuildRoles.managed] = role.managed
-            it[DiscordGuildRoles.mentionable] = role.mentionable
-        }
-
-        // Then delete roles that weren't present in the GuildCreate event
-        DiscordGuildRoles.deleteWhere {
-            DiscordGuildRoles.guildId eq guildId.toLong() and (DiscordGuildRoles.roleId notInList roles.map { it.id.toLong() })
-        }
     }
 
     private fun createOrUpdateGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
-        DiscordGuildChannels.insertOrUpdate(DiscordGuildChannels.guildId, DiscordGuildChannels.channelId) {
-            it[DiscordGuildChannels.guildId] = guildId.toLong()
-            it[DiscordGuildChannels.channelId] = channel.id.toLong()
-            it[DiscordGuildChannels.name] = channel.name.value
-            it[DiscordGuildChannels.type] = channel.type.value
+        val channels = DiscordGuilds.slice(DiscordGuilds.channels).selectFirstOrNull {
+            DiscordGuilds.id eq guildId.toLong()
+        }?.get(DiscordGuilds.channels)
 
-            val permissions = channel.permissions.value
-            if (permissions != null) {
-                it[DiscordGuildChannels.permissions] = permissions.code.value.toLong()
-            }
-        }
-
-        updatePermissionOverwrites(guildId, listOf(channel))
-
-        cleanUpPermissionOverwrites(guildId, listOf(channel))
-    }
-
-    private fun updatePermissionOverwrites(guildId: Snowflake, channels: List<DiscordChannel>) {
-        val overwrites = mutableListOf<Pair<Snowflake, Overwrite>>()
-
-        for (channel in channels) {
-            for (permissionOverwrite in channel.permissionOverwrites.orEmpty()) {
-                overwrites.add(
-                    Pair(
-                        channel.id,
-                        permissionOverwrite
-                    )
-                )
-            }
-        }
-
-        // Create or update all permission overwrites
-        DiscordGuildChannelPermissionOverrides.batchUpsertIfNeeded(
-            overwrites,
-            DiscordGuildChannelPermissionOverrides.guildId,
-            DiscordGuildChannelPermissionOverrides.channelId,
-            DiscordGuildChannelPermissionOverrides.entityId
-        ) { it, channelWithOverwrite ->
-            val channelId = channelWithOverwrite.first
-            val overwrite = channelWithOverwrite.second
-
-            it[DiscordGuildChannelPermissionOverrides.guildId] = guildId.toLong()
-            it[DiscordGuildChannelPermissionOverrides.channelId] = channelId.toLong()
-            it[DiscordGuildChannelPermissionOverrides.entityId] = overwrite.id.toLong()
-            it[DiscordGuildChannelPermissionOverrides.type] = overwrite.type.value
-            it[DiscordGuildChannelPermissionOverrides.allow] = overwrite.allow.code.value.toLong()
-            it[DiscordGuildChannelPermissionOverrides.deny] = overwrite.deny.code.value.toLong()
-        }
-    }
-
-    private fun cleanUpPermissionOverwrites(guildId: Snowflake, channels: List<DiscordChannel>) {
-        // Clean up permission overwrites
-        val permissionOverwritesOnDatabase = DiscordGuildChannelPermissionOverrides.select {
-            (DiscordGuildChannelPermissionOverrides.guildId eq guildId.toLong()) and
-                    (DiscordGuildChannelPermissionOverrides.channelId inList channels.map { it.id.toLong() })
-        }
-
-        // Hacky!!!
-        var cond = Op.build {
-            DiscordGuildChannelPermissionOverrides.guildId neq guildId.toLong()
-        }
-
-        var shouldCleanUp = false
-
-        for (permissionOverwriteOnDatabase in permissionOverwritesOnDatabase) {
-            val pulledChannel = channels.firstOrNull { it.id.toLong() == permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.channelId] }
-            if (pulledChannel == null) {
-                shouldCleanUp = true
-                cond = cond.and {
-                    (DiscordGuildChannelPermissionOverrides.channelId eq permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.channelId]) and
-                            (DiscordGuildChannelPermissionOverrides.entityId eq permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.entityId])
+        if (channels != null) {
+            val newChannelsMap = Json.decodeFromString<PuddingDiscordChannelsMap>(channels)
+                .toMutableMap()
+                .apply {
+                    this[channel.id.toString()] = channel
                 }
-            } else {
-                val pulledOverwrites = pulledChannel.permissionOverwrites.orEmpty().firstOrNull { it.id.toLong() == permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.entityId] }
 
-                if (pulledOverwrites == null) {
-                    shouldCleanUp = true
-                    cond = cond.and {
-                        (DiscordGuildChannelPermissionOverrides.channelId eq permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.channelId]) and
-                                (DiscordGuildChannelPermissionOverrides.entityId eq permissionOverwriteOnDatabase[DiscordGuildChannelPermissionOverrides.entityId])
-                    }
-                }
+            DiscordGuilds.update({ DiscordGuilds.id eq guildId.toLong() }) {
+                it[DiscordGuilds.channels] = Json.encodeToString(newChannelsMap)
             }
-        }
-
-        if (shouldCleanUp) {
-            DiscordGuildChannelPermissionOverrides.deleteWhere {
-                DiscordGuildChannelPermissionOverrides.guildId eq guildId.toLong() and cond
-            }
+        } else {
+            logger.info { "Channel $channel was created or updated in $guildId, but there isn't any database entries associated with it!" }
         }
     }
 
-    private fun createOrUpdateRole(guildId: Snowflake, role: DiscordRole) = DiscordGuildRoles.insertOrUpdate(DiscordGuildRoles.guildId, DiscordGuildRoles.roleId) {
-        it[DiscordGuildRoles.guildId] = guildId.toLong()
-        it[DiscordGuildRoles.roleId] = role.id.toLong()
-        it[DiscordGuildRoles.name] = role.name
-        it[DiscordGuildRoles.color] = role.color
-        it[DiscordGuildRoles.hoist] = role.hoist
-        it[DiscordGuildRoles.icon] = role.icon.value
-        it[DiscordGuildRoles.unicodeEmoji] = role.icon.value
-        it[DiscordGuildRoles.position] = role.position
-        it[DiscordGuildRoles.permissions] = role.permissions.code.value.toLong()
-        it[DiscordGuildRoles.managed] = role.managed
-        it[DiscordGuildRoles.mentionable] = role.mentionable
+    private fun createOrUpdateRole(guildId: Snowflake, role: DiscordRole) {
+        val roles = DiscordGuilds.slice(DiscordGuilds.roles).selectFirstOrNull {
+            DiscordGuilds.id eq guildId.toLong()
+        }?.get(DiscordGuilds.roles)
+
+        if (roles != null) {
+            val newChannelsMap = Json.decodeFromString<PuddingDiscordRolesMap>(roles)
+                .toMutableMap()
+                .apply {
+                    this[role.id.toString()] = role
+                }
+
+            DiscordGuilds.update({ DiscordGuilds.id eq guildId.toLong() }) {
+                it[DiscordGuilds.roles] = Json.encodeToString(newChannelsMap)
+            }
+        } else {
+            logger.info { "Role ${role} was created or updated in $guildId, but there isn't any database entries associated with it!" }
+        }
     }
 
     private fun deleteRole(guildId: Snowflake, roleId: Snowflake) {
-        DiscordGuildRoles.deleteWhere {
-            (DiscordGuildRoles.guildId eq guildId.toLong()) and (DiscordGuildRoles.roleId eq roleId.toLong())
+        val roles = DiscordGuilds.slice(DiscordGuilds.roles).selectFirstOrNull {
+            DiscordGuilds.id eq guildId.toLong()
+        }?.get(DiscordGuilds.roles)
+
+        if (roles != null) {
+            val newChannelsMap = Json.decodeFromString<PuddingDiscordRolesMap>(roles)
+                .toMutableMap()
+                .apply {
+                    this.remove(roleId.toString())
+                }
+
+            DiscordGuilds.update({ DiscordGuilds.id eq guildId.toLong() }) {
+                it[DiscordGuilds.roles] = Json.encodeToString(newChannelsMap)
+            }
+        } else {
+            logger.info { "Role $roleId was deleted in $guildId, but there isn't any database entries associated with it!" }
         }
     }
 
     private fun deleteGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
-        DiscordGuildChannelPermissionOverrides.deleteWhere {
-            (DiscordGuildChannelPermissionOverrides.guildId eq guildId.toLong()) and (DiscordGuildChannelPermissionOverrides.channelId eq channel.id.value.toLong())
-        }
+        val channels = DiscordGuilds.slice(DiscordGuilds.channels).selectFirstOrNull {
+            DiscordGuilds.id eq guildId.toLong()
+        }?.get(DiscordGuilds.channels)
 
-        DiscordGuildChannels.deleteWhere {
-            (DiscordGuildChannels.guildId eq guildId.toLong()) and (DiscordGuildChannels.channelId eq channel.id.value.toLong())
+        if (channels != null) {
+            val newChannelsMap = Json.decodeFromString<PuddingDiscordChannelsMap>(channels)
+                .toMutableMap()
+                .apply {
+                    this.remove(channel.id.toString())
+                }
+
+            DiscordGuilds.update({ DiscordGuilds.id eq guildId.toLong() }) {
+                it[DiscordGuilds.channels] = Json.encodeToString(newChannelsMap)
+            }
+        } else {
+            logger.info { "Channel $channel was deleted in $guildId, but there isn't any database entries associated with it!" }
         }
     }
 
@@ -425,24 +363,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         logger.info { "Removing $guildId's cached data..." }
         val guildIdAsLong = guildId.toLong()
 
-        DiscordGuildChannels.deleteWhere {
-            DiscordGuildChannels.guildId eq guildIdAsLong
-        }
-
-        DiscordGuildChannelPermissionOverrides.deleteWhere {
-            DiscordGuildChannelPermissionOverrides.guildId eq guildIdAsLong
-        }
-
-        DiscordGuildRoles.deleteWhere {
-            DiscordGuildRoles.guildId eq guildIdAsLong
-        }
-
         DiscordGuildMembers.deleteWhere {
             DiscordGuildMembers.guildId eq guildIdAsLong
-        }
-
-        DiscordGuildMemberRoles.deleteWhere {
-            DiscordGuildMemberRoles.guildId eq guildIdAsLong
         }
 
         DiscordGuilds.deleteWhere {
@@ -450,12 +372,13 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }
     }
 
-    private fun <T : Table, E> T.batchUpsertIfNeeded(
-        data: Collection<E>,
-        vararg keys: Column<*> = (primaryKey ?: throw IllegalArgumentException("primary key is missing")).columns,
-        body: T.(BatchInsertStatement, E) -> Unit
-    ) {
-        if (data.isNotEmpty())
-            batchUpsert(data, *keys, body = body)
+    private fun <T:Any> String.execAndMap(transform : (ResultSet) -> T) : List<T> {
+        val result = arrayListOf<T>()
+        TransactionManager.current().exec(this) { rs ->
+            while (rs.next()) {
+                result += transform(rs)
+            }
+        }
+        return result
     }
 }

@@ -71,11 +71,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannelPermissionOverrides
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMemberRoles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
@@ -104,7 +100,7 @@ import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
-class Pudding(val hikariDataSource: HikariDataSource, private val database: Database) {
+class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
@@ -299,11 +295,7 @@ class Pudding(val hikariDataSource: HikariDataSource, private val database: Data
             BomDiaECiaMatches,
 
             DiscordGuilds,
-            DiscordGuildRoles,
-            DiscordGuildChannels,
-            DiscordGuildChannelPermissionOverrides,
-            DiscordGuildMembers,
-            DiscordGuildMemberRoles
+            DiscordGuildMembers
         )
 
         if (schemas.isNotEmpty())

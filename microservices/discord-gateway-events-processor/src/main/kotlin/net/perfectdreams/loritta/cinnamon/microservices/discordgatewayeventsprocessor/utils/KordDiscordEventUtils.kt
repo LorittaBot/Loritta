@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 import dev.kord.gateway.Event
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -14,29 +15,31 @@ object KordDiscordEventUtils {
     private val json = Json { ignoreUnknownKeys = true }
     private val logger = KotlinLogging.logger {}
 
-    fun parseEventFromJsonString(gatewayPayload: String): Event? {
-        // TODO: kotlinx.serialization doesn't deserialize this well because it relies on the order
-        val gatewayPayloadStuff = Json.parseToJsonElement(gatewayPayload)
+    fun parseEventFromString(gatewayPayload: String) = parseEventFromJsonObject(
+        Json.parseToJsonElement(gatewayPayload)
             .jsonObject
+    )
 
+    fun parseEventFromJsonObject(gatewayPayload: JsonObject): Event? {
+        // kotlinx.serialization doesn't deserialize this well because it relies on the order
         // Using decodeFromJsonElement crashes with "Index -1 out of bounds for length 0", why?
         try {
             return json.decodeFromString(
                 Event.DeserializationStrategy,
                 buildJsonObject {
-                    gatewayPayloadStuff["op"]?.let {
+                    gatewayPayload["op"]?.let {
                         put("op", it.jsonPrimitive.longOrNull)
                     }
 
-                    gatewayPayloadStuff["t"]?.let {
+                    gatewayPayload["t"]?.let {
                         put("t", it)
                     }
 
-                    gatewayPayloadStuff["s"]?.let {
+                    gatewayPayload["s"]?.let {
                         put("s", it)
                     }
 
-                    gatewayPayloadStuff["d"]?.let {
+                    gatewayPayload["d"]?.let {
                         put("d", it)
                     }
                 }.toString()

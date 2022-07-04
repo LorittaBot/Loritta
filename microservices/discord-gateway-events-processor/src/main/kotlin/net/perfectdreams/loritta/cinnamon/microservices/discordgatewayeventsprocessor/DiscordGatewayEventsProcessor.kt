@@ -9,34 +9,38 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxy
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AddFirstToNewChannelsModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.BomDiaECiaModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.DiscordCacheModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.StarboardModule
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.tables.DiscordGatewayEvents
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.BomDiaECia
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.DiscordGatewayEventsProcessorTasks
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.QueueDatabase
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.GatewayEvent
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordChannelsMap
+import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesList
+import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesMap
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildChannelPermissionOverrides
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMemberRoles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildRoles
-import org.jetbrains.exposed.sql.SchemaUtils
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.atomic.AtomicInteger
 
 class DiscordGatewayEventsProcessor(
     val config: RootConfig,
     val services: Pudding,
-    val queueDatabase: QueueDatabase,
     val languageManager: LanguageManager,
     val replicaId: Int
 ) {
@@ -55,13 +59,26 @@ class DiscordGatewayEventsProcessor(
     val activeEvents = ConcurrentLinkedQueue<Job>()
     val tasks = DiscordGatewayEventsProcessorTasks(this)
 
+    var totalEventsProcessed = AtomicInteger()
+
+    private val onMessageReceived: (GatewayEvent) -> (Unit) = {
+        val (eventType, discordEvent) = parseEventFromString(it)
+
+        // We will call a method that doesn't reference the "discordEventAsJsonObject" nor the "it" object, this makes it veeeery clear to the JVM that yes, you can GC the "discordEventAsJsonObject" and "it" objects
+        // (Will it really GC the object? idk, but I hope it will)
+        launchEventProcessorJob(eventType, discordEvent)
+
+        totalEventsProcessed.incrementAndGet()
+    }
+
+    private val gatewayProxies = config.gatewayProxies.filter { it.replicaId == replicaId }.map {
+        GatewayProxy(it.url, it.authorizationToken, onMessageReceived)
+    }
+
     fun start() {
-        runBlocking {
-            transaction(queueDatabase.database) {
-                SchemaUtils.createMissingTablesAndColumns(
-                    DiscordGatewayEvents
-                )
-            }
+        gatewayProxies.forEachIndexed { index, gatewayProxy ->
+            logger.info { "Starting Gateway Proxy $index" }
+            gatewayProxy.start()
         }
 
         tasks.start()
@@ -74,49 +91,82 @@ class DiscordGatewayEventsProcessor(
         var permissions = Permissions()
 
         services.transaction {
-            val userRoles = DiscordGuildMemberRoles.select {
-                DiscordGuildMemberRoles.guildId eq guildId.toLong() and
-                        (DiscordGuildMemberRoles.userId eq userId.toLong())
-            }.toList()
+            val userRoleIds = DiscordGuildMembers
+                .slice(DiscordGuilds.roles)
+                .selectFirstOrNull { DiscordGuildMembers.guildId eq guildId.toLong() and (DiscordGuildMembers.userId eq userId.toLong()) }
+                ?.get(DiscordGuildMembers.roles)
+                ?.let {
+                    Json.decodeFromString<PuddingDiscordRolesList>(it)
+                } ?: emptyList()
 
-            val roles = DiscordGuildRoles.select {
-                DiscordGuildRoles.roleId inList userRoles.map {
-                    it[DiscordGuildMemberRoles.roleId]
-                } and (DiscordGuildRoles.guildId eq guildId.toLong())
-            }.toList()
+            val guild = DiscordGuilds
+                .slice(DiscordGuilds.roles, DiscordGuilds.channels)
+                .selectFirstOrNull { DiscordGuilds.id eq guildId.toLong() }
+
+            val rolesAsJson = guild?.get(DiscordGuilds.roles)
+            val channelsAsJson = guild?.get(DiscordGuilds.channels)
+
+            val guildRoles = rolesAsJson?.let { Json.decodeFromString<PuddingDiscordRolesMap>(it) } ?: emptyMap()
+            val guildChannels = channelsAsJson?.let { Json.decodeFromString<PuddingDiscordChannelsMap>(it) } ?: emptyMap()
+
+            val guildChannel = guildChannels[channelId.toString()]
+            val everyoneRole = guildRoles[guildId.toString()]
+
+            val userRoles = guildRoles
+                .filter { it.key in userRoleIds }
+                .values
+                .toMutableList()
+
+            if (everyoneRole != null) {
+                userRoles.add(everyoneRole)
+            } else {
+                logger.warn { "Everyone role is null in $guildId! We will ignore it..." }
+            }
 
             // Sort all roles by position...
-            roles.sortedBy { it[DiscordGuildRoles.position] }
+            userRoles.sortedBy { it.position }
                 .forEach {
                     // Keep "plus"'ing the permissions!
-                    permissions = permissions.plus(Permissions(it[DiscordGuildRoles.permissions].toString()))
+                    permissions = permissions.plus(it.permissions)
                 }
 
-            val entityIds = mutableSetOf(userId.toLong())
-            entityIds.addAll(roles.map { it[DiscordGuildRoles.roleId] })
+            val entityIds = mutableSetOf(userId)
+            entityIds.addAll(userRoleIds.map { Snowflake(it) })
 
             // Now we will get permission overrides
-            val permissionOverrides = DiscordGuildChannelPermissionOverrides.select {
-                DiscordGuildChannelPermissionOverrides.guildId eq guildId.toLong() and
-                        (DiscordGuildChannelPermissionOverrides.channelId eq channelId.toLong()) and
-                        (DiscordGuildChannelPermissionOverrides.entityId inList entityIds)
-            }.toList()
+            val permissionOverrides = guildChannel?.permissionOverwrites?.value
 
             // TODO: I'm not sure if that's how permission overrides are actually calculated
-            permissionOverrides.forEach {
-                permissions = permissions.plus(Permissions(it[DiscordGuildChannelPermissionOverrides.allow].toString()))
-                permissions = permissions.minus(Permissions(it[DiscordGuildChannelPermissionOverrides.deny].toString()))
+            permissionOverrides?.forEach {
+                permissions = permissions.plus(it.allow)
+                permissions = permissions.minus(it.deny)
             }
         }
 
         return permissions
     }
 
-    fun launchEventProcessorJob(discordEvent: Event) {
+    private fun parseEventFromString(discordGatewayEvent: GatewayEvent): Pair<String, Event?> {
+        val discordEventAsJsonObject = Json.parseToJsonElement(discordGatewayEvent.jsonAsString ?: error("Trying to parse an already parsed/null GatewayEvent!")).jsonObject
+        discordGatewayEvent.jsonAsString = null
+        val eventType = discordEventAsJsonObject["t"]?.jsonPrimitive?.content ?: "UNKNOWN"
+        val discordEvent = KordDiscordEventUtils.parseEventFromJsonObject(discordEventAsJsonObject)
+
+        return Pair(eventType, discordEvent)
+    }
+
+    private fun launchEventProcessorJob(type: String, discordEvent: Event?) {
+        if (discordEvent != null)
+            launchEventProcessorJob(discordEvent)
+        else
+            logger.warn { "Unknown Discord event received $type! We are going to ignore the event... kthxbye!" }
+    }
+
+    private fun launchEventProcessorJob(discordEvent: Event) {
         val coroutineName = "Event ${discordEvent::class.simpleName}"
         launchEventJob(coroutineName) {
             try {
-                // discordCacheModule.processEvent(discordEvent)
+                discordCacheModule.processEvent(discordEvent)
                 addFirstToNewChannelsModule.processEvent(discordEvent)
                 starboardModule.processEvent(discordEvent)
                 // bomDiaECiaModule.processEvent(discordEvent)

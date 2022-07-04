@@ -11,9 +11,16 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
     var lastEventCountCheck = 0
 
     override fun run() {
-        val totalEventsProcessed = m.tasks.processDiscordGatewayEvents.totalEventsProcessed
+        val mb = 1024 * 1024
+        val runtime = Runtime.getRuntime()
+
+        val totalEventsProcessed = m.totalEventsProcessed.get()
         logger.info { "Total Discord Events processed: $totalEventsProcessed; (+${totalEventsProcessed - lastEventCountCheck})" }
         lastEventCountCheck = totalEventsProcessed
         logger.info { "Active Events (${m.activeEvents.size})" }
+        logger.info { "Used Memory: ${(runtime.totalMemory() - runtime.freeMemory()) / mb}MiB" }
+        logger.info { "Free Memory: ${runtime.freeMemory() / mb}MiB" }
+        logger.info { "Total Memory: ${runtime.totalMemory() / mb}MiB" }
+        logger.info { "Max Memory: ${runtime.maxMemory() / mb}MiB" }
     }
 }

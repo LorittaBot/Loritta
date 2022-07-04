@@ -57,6 +57,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.TransactionsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BemBoladaExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BomDiaECiaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CancelledExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.FaustaoExecutor
@@ -69,6 +70,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RollExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.ShipExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TioDoPaveExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.VieirinhaExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.BomDiaECiaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CancelledCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
@@ -408,6 +410,11 @@ class CommandManager(
             HungerGamesCommand,
             HungerGamesExecutor(rest)
         )
+
+        /* commandManager.register(
+            BomDiaECiaCommand,
+            BomDiaECiaExecutor()
+        ) */
 
         // ===[ IMAGES ]===
         commandManager.register(DrakeCommand, DrakeExecutor(gabrielaImageServerClient), BolsoDrakeExecutor(gabrielaImageServerClient), LoriDrakeExecutor(gabrielaImageServerClient))
