@@ -86,7 +86,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     val guildIcon = event.guild.icon
                     val guildOwnerId = event.guild.ownerId
                     val guildRoles = event.guild.roles
-                    val guildChannels = event.guild.channels.value!! // Shouldn't be null in a GUILD_CREATE event
+                    val guildChannels = event.guild.channels.value
 
                     m.services.transaction {
                         createOrUpdateGuild(
@@ -183,7 +183,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         guildIcon: String?,
         guildOwnerId: Snowflake,
         guildRoles: List<DiscordRole>,
-        guildChannels: List<DiscordChannel>
+        guildChannels: List<DiscordChannel>?
     ) {
         // Verify if we really need to update the roles/channels/etc JSON field
         val currentStoredValues = DiscordGuilds.slice(
@@ -215,7 +215,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     }
                 }
 
-                if (storedChannelsAsJson != null) {
+                if (guildChannels != null && storedChannelsAsJson != null) {
                     val storedChannels = Json.decodeFromString<PuddingDiscordChannelsMap>(storedChannelsAsJson).values
 
                     if (!(storedChannels.containsAll(guildChannels) && guildChannels.containsAll(storedChannels))) {
@@ -232,7 +232,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 it[DiscordGuilds.ownerId] = guildOwnerId.toLong()
 
                 it[DiscordGuilds.roles] = Json.encodeToString(guildRoles.associateBy { it.id.toString() })
-                it[DiscordGuilds.channels] = Json.encodeToString(guildChannels.associateBy { it.id.toString() })
+                it[DiscordGuilds.channels] = Json.encodeToString((guildChannels ?: listOf()).associateBy { it.id.toString() })
             }
         }
     }
