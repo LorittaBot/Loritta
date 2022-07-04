@@ -10,7 +10,7 @@ class GeneralConfig(
 		val loritta: LorittaConfig,
 		val clusters: List<LorittaClusterConfig>,
 		val database: DatabaseConfig,
-		val queueDatabase: DatabaseConfig,
+		val gatewayProxy: GatewayProxyConfig,
 		val connectionManager: ConnectionManagerConfig,
 		val perfectPayments: PerfectPaymentsConfig,
 		val parallaxCodeServer: ParallaxCodeServerConfig,
@@ -26,11 +26,11 @@ class GeneralConfig(
 		val caches: CacheConfig,
 		val dreamStorageService: DreamStorageServiceConfig
 ) {
-
 	@Serializable
 	data class CrowdinConfig(
 			val url: String
 	)
+
 	@Serializable
 	class LorittaClusterConfig(
 			val id: Long,
@@ -87,6 +87,11 @@ class GeneralConfig(
 			val fileName: String,
 			val artistId: String,
 			val fancyName: String? = null
+	)
+
+	@Serializable
+	data class GatewayProxyConfig(
+		val waitUntilClientIsConnected: Boolean,
 	)
 
 	fun isOwner(id: String) = isOwner(id.toLong())

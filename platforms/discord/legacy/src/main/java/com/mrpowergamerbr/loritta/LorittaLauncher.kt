@@ -73,15 +73,8 @@ object LorittaLauncher {
 		// Used for Logback
 		System.setProperty("cluster.name", config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }.getUserAgent(config.loritta.environment))
 
-		val queueDatabase = createPostgreSQLDatabaseConnection(
-			config.queueDatabase.address,
-			config.queueDatabase.databaseName,
-			config.queueDatabase.username,
-			config.queueDatabase.password
-		)
-
 		// Iniciar instância da Loritta
-		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig, queueDatabase)
+		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig)
 		loritta.start()
 	}
 

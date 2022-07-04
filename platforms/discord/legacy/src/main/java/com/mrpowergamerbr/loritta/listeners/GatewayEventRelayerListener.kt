@@ -28,9 +28,8 @@ class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
             semaphore.withPermit {
                 val packageAsString = event.`package`.toString()
 
-                for (channel in m.connectedChannels) {
-                    logger.info { "Sending event to $channel" }
-                    channel.send(packageAsString)
+                for (connection in m.connectedChannels) {
+                    connection.channel.send(packageAsString)
                 }
             }
         }

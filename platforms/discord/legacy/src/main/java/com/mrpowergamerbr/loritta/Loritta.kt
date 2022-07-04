@@ -118,6 +118,7 @@ import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.Sponsor
 import net.perfectdreams.loritta.utils.metrics.Prometheus
+import net.perfectdreams.loritta.website.utils.GatewayProxyConnection
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -142,8 +143,7 @@ class Loritta(
 	discordConfig: GeneralDiscordConfig,
 	discordInstanceConfig: GeneralDiscordInstanceConfig,
 	config: GeneralConfig,
-	instanceConfig: GeneralInstanceConfig,
-	val queueDatabase: Database
+	instanceConfig: GeneralInstanceConfig
 ) : LorittaDiscord(discordConfig, discordInstanceConfig, config, instanceConfig) {
 	// ===[ STATIC ]===
 	companion object {
@@ -203,7 +203,7 @@ class Loritta(
 		.build<Long, Optional<CachedUserInfo>>()
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
-	val connectedChannels = CopyOnWriteArrayList<Channel<String>>()
+	val connectedChannels = CopyOnWriteArrayList<GatewayProxyConnection>()
 
 	init {
 		LorittaLauncher.loritta = this
@@ -321,6 +321,15 @@ class Loritta(
 			startWebServer()
 		} catch(e: Exception) {
 			logger.info(e) { "Failed to start Loritta's webserver" }
+		}
+
+		if (config.gatewayProxy.waitUntilClientIsConnected) {
+			logger.info { "Waiting for a DiscordGatewayEventsProcessor instance to be connected..." }
+			while (connectedChannels.isEmpty()) {
+				logger.info { "There isn't a DiscordGatewayEventsProcessor instance connected yet, waiting 1000ms..." }
+				Thread.sleep(1_000)
+			}
+			logger.info { "DiscordGatewayEventsProcessor instance connected! $connectedChannels" }
 		}
 
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards

@@ -28,7 +28,9 @@ import kotlinx.html.title
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
+import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.website.utils.GatewayProxyConnection
 import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
 import net.perfectdreams.loritta.website.utils.RouteKey
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
@@ -285,66 +287,26 @@ class LorittaWebsite(val loritta: Loritta) {
 				webSocket("/api/v1/loritta/gateway/events") {
 					println("Headers: ${this.call.request.headers}")
 
-					val path = call.request.path()
-					val auth = call.request.header("Authorization")
-					val clazzName = this::class.simpleName
+					val result = RequiresAPIAuthenticationRoute.validate(call)
 
-					if (auth == null) {
-						logger.warn { "Someone tried to access $path (${clazzName}) but the Authorization header was missing!" }
-						throw WebsiteAPIException(
-							HttpStatusCode.Unauthorized,
-							WebsiteUtils.createErrorPayload(
-								LoriWebCode.UNAUTHORIZED,
-								"Missing \"Authorization\" header"
-							)
-						)
-					}
+					if (result) {
+						logger.info { "Someone connected to our gateway event relayer!" }
+						val channel = Channel<String>()
+						val gatewayProxyConnection = GatewayProxyConnection(channel)
+						loritta.connectedChannels.add(gatewayProxyConnection)
 
-					val validKey = com.mrpowergamerbr.loritta.utils.loritta.config.loritta.website.apiKeys.firstOrNull {
-						it.name == auth
-					}
-
-					logger.trace { "$auth is trying to access $path (${clazzName}), using key $validKey" }
-					val result = if (validKey != null) {
-						if (validKey.allowed.contains("*") || validKey.allowed.contains(path)) {
-							true
-						} else {
-							logger.warn { "$auth was rejected when trying to acess $path utilizando key $validKey!" }
-							throw WebsiteAPIException(
-								HttpStatusCode.Unauthorized,
-								WebsiteUtils.createErrorPayload(
-									LoriWebCode.UNAUTHORIZED,
-									"Your Authorization level doesn't allow access to this resource"
-								)
-							)
+						try {
+							for (event in channel) {
+								send(Frame.Text(event))
+							}
+						} catch (e: Exception) {
+							// Maybe the client disconnected?
+							// java.util.concurrent.CancellationException: ArrayChannel was cancelled
+							logger.warn(e) { "Something went wrong while sending data to the connected channel!" }
 						}
-					} else {
-						logger.warn { "$auth was rejected when trying to access $path ($clazzName)!" }
-						throw WebsiteAPIException(
-							HttpStatusCode.Unauthorized,
-							WebsiteUtils.createErrorPayload(
-								LoriWebCode.UNAUTHORIZED,
-								"Invalid \"Authorization\" Header"
-							)
-						)
+
+						loritta.connectedChannels.remove(gatewayProxyConnection)
 					}
-
-					logger.info { "CONNECTED TO WEBSOCKET!" }
-					val channel = Channel<String>()
-					logger.info { "CHANNEL $channel" }
-					loritta.connectedChannels.add(channel)
-
-					try {
-						for (event in channel) {
-							send(Frame.Text(event))
-						}
-					} catch (e: Exception) {
-						// Maybe the client disconnected?
-						// java.util.concurrent.CancellationException: ArrayChannel was cancelled
-						logger.warn(e) { "Something went wrong while sending data to the connected channel!" }
-					}
-
-					loritta.connectedChannels.remove(channel)
 				}
 			}
 
