@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.http.*
+import io.ktor.http.cio.websocket.*
 import io.ktor.http.content.*
 import io.ktor.request.*
 import io.ktor.response.*
@@ -16,8 +17,14 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.sessions.*
 import io.ktor.util.*
-import kotlinx.html.*
+import io.ktor.websocket.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.html.body
+import kotlinx.html.head
+import kotlinx.html.html
+import kotlinx.html.pre
 import kotlinx.html.stream.appendHTML
+import kotlinx.html.title
 import mu.KotlinLogging
 import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
@@ -25,10 +32,17 @@ import net.perfectdreams.loritta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.website.utils.LorittaHtmlProvider
 import net.perfectdreams.loritta.website.utils.RouteKey
 import net.perfectdreams.loritta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.website.utils.extensions.*
+import net.perfectdreams.loritta.website.utils.extensions.HttpRedirectException
+import net.perfectdreams.loritta.website.utils.extensions.alreadyHandledStatus
+import net.perfectdreams.loritta.website.utils.extensions.redirect
+import net.perfectdreams.loritta.website.utils.extensions.respondHtml
+import net.perfectdreams.loritta.website.utils.extensions.respondJson
+import net.perfectdreams.loritta.website.utils.extensions.trueIp
+import net.perfectdreams.loritta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.io.File
+import java.time.Duration
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -45,12 +59,12 @@ class LorittaWebsite(val loritta: Loritta) {
 		private val logger = KotlinLogging.logger {}
 		private val TimeToProcess = AttributeKey<Long>("TimeToProcess")
 		val cachedFanArtThumbnails = Caffeine.newBuilder()
-				.expireAfterAccess(1, TimeUnit.HOURS)
-				.build<String, CachedThumbnail>()
+			.expireAfterAccess(1, TimeUnit.HOURS)
+			.build<String, CachedThumbnail>()
 
 		class CachedThumbnail(
-				val type: ContentType,
-				val thumbnailBytes: ByteArray
+			val type: ContentType,
+			val thumbnailBytes: ByteArray
 		)
 	}
 
@@ -62,10 +76,10 @@ class LorittaWebsite(val loritta: Loritta) {
 		}.firstOrNull() ?: throw RuntimeException("Can't find any plugins providing a valid Html Provider!")
 	lateinit var server: NettyApplicationEngine
 	private val typesToCache = listOf(
-			ContentType.Text.CSS,
-			ContentType.Text.JavaScript,
-			ContentType.Application.JavaScript,
-			ContentType.Image.Any
+		ContentType.Text.CSS,
+		ContentType.Text.JavaScript,
+		ContentType.Application.JavaScript,
+		ContentType.Image.Any
 	)
 
 	fun start() {
@@ -74,6 +88,13 @@ class LorittaWebsite(val loritta: Loritta) {
 		val routes = DefaultRoutes.defaultRoutes(loritta)
 
 		val server = embeddedServer(Netty, loritta.instanceConfig.loritta.website.port) {
+			install(WebSockets) {
+				pingPeriod = Duration.ofSeconds(15)
+				timeout = Duration.ofSeconds(15)
+				maxFrameSize = Long.MAX_VALUE
+				masking = false
+			}
+
 			install(CachingHeaders) {
 				options { outgoingContent ->
 					val contentType = outgoingContent.contentType
@@ -111,11 +132,11 @@ class LorittaWebsite(val loritta: Loritta) {
 						call.sessions.clear<LorittaJsonWebSession>()
 
 						call.respondJson(
-								WebsiteUtils.createErrorPayload(
-										LoriWebCode.UNAUTHORIZED,
-										"Invalid Discord Authorization"
-								),
-								HttpStatusCode.Unauthorized
+							WebsiteUtils.createErrorPayload(
+								LoriWebCode.UNAUTHORIZED,
+								"Invalid Discord Authorization"
+							),
+							HttpStatusCode.Unauthorized
 						)
 					} else {
 						logger.warn { "Unauthorized token! Redirecting to dashboard... $cause" }
@@ -131,11 +152,11 @@ class LorittaWebsite(val loritta: Loritta) {
 						call.sessions.clear<LorittaJsonWebSession>()
 
 						call.respondJson(
-								WebsiteUtils.createErrorPayload(
-										LoriWebCode.UNAUTHORIZED,
-										"Invalid Discord Authorization"
-								),
-								HttpStatusCode.Unauthorized
+							WebsiteUtils.createErrorPayload(
+								LoriWebCode.UNAUTHORIZED,
+								"Invalid Discord Authorization"
+							),
+							HttpStatusCode.Unauthorized
 						)
 					} else {
 						logger.warn { "Token exchange exception! Redirecting to dashboard... $cause" }
@@ -163,19 +184,19 @@ class LorittaWebsite(val loritta: Loritta) {
 					logger.error(cause) { "Something went wrong when processing ${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}" }
 
 					call.respondHtml(
-							StringBuilder().appendHTML()
-									.html {
-										head {
-											title { + "Uh, oh! Something went wrong!" }
-										}
-										body {
-											pre {
-												+ ExceptionUtils.getStackTrace(cause)
-											}
-										}
+						StringBuilder().appendHTML()
+							.html {
+								head {
+									title { + "Uh, oh! Something went wrong!" }
+								}
+								body {
+									pre {
+										+ ExceptionUtils.getStackTrace(cause)
 									}
-									.toString(),
-							status = HttpStatusCode.InternalServerError
+								}
+							}
+							.toString(),
+						status = HttpStatusCode.InternalServerError
 					)
 				}
 			}
@@ -259,6 +280,71 @@ class LorittaWebsite(val loritta: Loritta) {
 
 					route.register(this)
 					logger.info { "Registered ${route.getMethod().value} ${route.path} (${route::class.simpleName})" }
+				}
+
+				webSocket("/api/v1/loritta/gateway/events") {
+					println("Headers: ${this.call.request.headers}")
+
+					val path = call.request.path()
+					val auth = call.request.header("Authorization")
+					val clazzName = this::class.simpleName
+
+					if (auth == null) {
+						logger.warn { "Someone tried to access $path (${clazzName}) but the Authorization header was missing!" }
+						throw WebsiteAPIException(
+							HttpStatusCode.Unauthorized,
+							WebsiteUtils.createErrorPayload(
+								LoriWebCode.UNAUTHORIZED,
+								"Missing \"Authorization\" header"
+							)
+						)
+					}
+
+					val validKey = com.mrpowergamerbr.loritta.utils.loritta.config.loritta.website.apiKeys.firstOrNull {
+						it.name == auth
+					}
+
+					logger.trace { "$auth is trying to access $path (${clazzName}), using key $validKey" }
+					val result = if (validKey != null) {
+						if (validKey.allowed.contains("*") || validKey.allowed.contains(path)) {
+							true
+						} else {
+							logger.warn { "$auth was rejected when trying to acess $path utilizando key $validKey!" }
+							throw WebsiteAPIException(
+								HttpStatusCode.Unauthorized,
+								WebsiteUtils.createErrorPayload(
+									LoriWebCode.UNAUTHORIZED,
+									"Your Authorization level doesn't allow access to this resource"
+								)
+							)
+						}
+					} else {
+						logger.warn { "$auth was rejected when trying to access $path ($clazzName)!" }
+						throw WebsiteAPIException(
+							HttpStatusCode.Unauthorized,
+							WebsiteUtils.createErrorPayload(
+								LoriWebCode.UNAUTHORIZED,
+								"Invalid \"Authorization\" Header"
+							)
+						)
+					}
+
+					logger.info { "CONNECTED TO WEBSOCKET!" }
+					val channel = Channel<String>()
+					logger.info { "CHANNEL $channel" }
+					loritta.connectedChannels.add(channel)
+
+					try {
+						for (event in channel) {
+							send(Frame.Text(event))
+						}
+					} catch (e: Exception) {
+						// Maybe the client disconnected?
+						// java.util.concurrent.CancellationException: ArrayChannel was cancelled
+						logger.warn(e) { "Something went wrong while sending data to the connected channel!" }
+					}
+
+					loritta.connectedChannels.remove(channel)
 				}
 			}
 

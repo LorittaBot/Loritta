@@ -76,6 +76,7 @@ dependencies {
     // Ktor
     api("io.ktor:ktor-server-core:${Versions.KTOR}")
     api("io.ktor:ktor-server-netty:${Versions.KTOR}")
+    api("io.ktor:ktor-websockets:${Versions.KTOR}")
     api("io.ktor:ktor-client-core:${Versions.KTOR}")
     api("io.ktor:ktor-client-apache:${Versions.KTOR}")
 

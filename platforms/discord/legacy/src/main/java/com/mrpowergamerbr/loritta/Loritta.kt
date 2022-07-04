@@ -51,6 +51,8 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
+import io.ktor.websocket.*
+import kotlinx.coroutines.channels.Channel
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -126,6 +128,7 @@ import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -200,6 +203,7 @@ class Loritta(
 		.build<Long, Optional<CachedUserInfo>>()
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
+	val connectedChannels = CopyOnWriteArrayList<Channel<String>>()
 
 	init {
 		LorittaLauncher.loritta = this
@@ -310,6 +314,15 @@ class Loritta(
 
 		initPostgreSql()
 
+		try {
+			logger.info("Sucesso! Iniciando Loritta (Website)...")
+
+			website = LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder) // Apenas para rodar o init, que preenche uns companion objects marotos
+			startWebServer()
+		} catch(e: Exception) {
+			logger.info(e) { "Failed to start Loritta's webserver" }
+		}
+
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 
@@ -319,15 +332,6 @@ class Loritta(
 		logger.info { "Sucesso! Iniciando plugins da Loritta..." }
 
 		pluginManager.loadPlugins()
-
-		try {
-			logger.info("Sucesso! Iniciando Loritta (Website)...")
-
-			website = LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder) // Apenas para rodar o init, que preenche uns companion objects marotos
-			startWebServer()
-		} catch(e: Exception) {
-			logger.info(e) { "Failed to start Loritta's webserver" }
-		}
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
