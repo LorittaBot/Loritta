@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxy
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AddFirstToNewChannelsModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.BomDiaECiaModule
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.DebugGatewayModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.DiscordCacheModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.StarboardModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.BomDiaECia
@@ -53,6 +54,7 @@ class DiscordGatewayEventsProcessor(
     val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)
     val discordCacheModule = DiscordCacheModule(this)
     val bomDiaECiaModule = BomDiaECiaModule(this)
+    val debugGatewayModule = DebugGatewayModule(this)
 
     val bomDiaECia = BomDiaECia(this)
     val random = SecureRandom()
@@ -169,6 +171,7 @@ class DiscordGatewayEventsProcessor(
                 discordCacheModule.processEvent(discordEvent)
                 addFirstToNewChannelsModule.processEvent(discordEvent)
                 starboardModule.processEvent(discordEvent)
+                debugGatewayModule.processEvent(discordEvent)
                 // bomDiaECiaModule.processEvent(discordEvent)
             } catch (e: Throwable) {
                 logger.warn(e) { "Something went wrong while trying to process $coroutineName! We are going to ignore..." }
