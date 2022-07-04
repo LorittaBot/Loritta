@@ -22,11 +22,11 @@ object DiscordGatewayEventsProcessorLauncher {
             DiscordGatewayEventsProcessorLauncher::class, System.getProperty("discordgatewayeventsprocessor.config", "discord-gateway-events-processor.conf"))
         logger.info { "Loaded Loritta's configuration file" }
 
-        val replicaId = if (rootConfig.replicas.enabled) {
+        val replicaId = if (rootConfig.replicas.getReplicaIdFromHostname) {
             val hostname = getHostname()
             hostname.substringAfterLast("-").toIntOrNull() ?: error("Replicas is enabled, but I couldn't get the Replica ID from the hostname!")
         } else {
-            0
+            rootConfig.replicas.replicaIdOverride ?: 0
         }
 
         logger.info { "Replica ID: $replicaId" }
