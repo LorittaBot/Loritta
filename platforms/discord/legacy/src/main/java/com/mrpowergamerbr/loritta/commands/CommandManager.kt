@@ -162,7 +162,6 @@ class CommandManager(loritta: Loritta) {
 		commandMap.add(OfflineUUIDCommand())
 		commandMap.add(McAvatarCommand())
 		commandMap.add(McUUIDCommand())
-		commandMap.add(McStatusCommand())
 		commandMap.add(McHeadCommand())
 		commandMap.add(McBodyCommand())
 		commandMap.add(SpigotMcCommand())
