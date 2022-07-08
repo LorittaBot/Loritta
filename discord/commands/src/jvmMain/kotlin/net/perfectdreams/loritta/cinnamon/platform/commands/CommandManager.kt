@@ -57,7 +57,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.TransactionsExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BemBoladaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BomDiaECiaExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CancelledExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CoinFlipExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.FaustaoExecutor
@@ -70,7 +69,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RollExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.ShipExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TioDoPaveExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.VieirinhaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.BomDiaECiaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CancelledCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
@@ -241,6 +239,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.ChavesCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
+import net.perfectdreams.loritta.cinnamon.platform.interactions.inviteblocker.ActivateInviteBlockerBypassButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
@@ -695,6 +694,12 @@ class CommandManager(
             RobloxCommand,
             RobloxUserExecutor(http),
             RobloxGameExecutor(http)
+        )
+
+        // ===[ OTHER STUFF ]===
+        commandManager.register(
+            ActivateInviteBlockerBypassButtonClickExecutor,
+            ActivateInviteBlockerBypassButtonClickExecutor(loritta)
         )
 
         // Validate if we don't have more commands than Discord allows

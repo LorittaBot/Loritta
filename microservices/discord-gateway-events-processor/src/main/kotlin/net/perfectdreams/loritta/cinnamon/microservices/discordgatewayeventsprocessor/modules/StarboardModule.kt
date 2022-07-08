@@ -61,12 +61,12 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         .build<Long, Mutex>()
         .asMap()
 
-    override suspend fun processEvent(event: Event) {
+    override suspend fun processEvent(event: Event): ModuleResult {
         when (event) {
             // ===[ REACTIONS ]===
             is MessageReactionAdd -> {
                 handleStarboardReaction(
-                    event.reaction.guildId.value ?: return,
+                    event.reaction.guildId.value ?: return ModuleResult.Continue,
                     event.reaction.channelId,
                     event.reaction.messageId,
                     event.reaction.emoji.name
@@ -74,7 +74,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
             }
             is MessageReactionRemove -> {
                 handleStarboardReaction(
-                    event.reaction.guildId.value ?: return,
+                    event.reaction.guildId.value ?: return ModuleResult.Continue,
                     event.reaction.channelId,
                     event.reaction.messageId,
                     event.reaction.emoji.name
@@ -90,7 +90,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
             }
             is MessageReactionRemoveAll -> {
                 handleStarboardReaction(
-                    event.reactions.guildId.value ?: return,
+                    event.reactions.guildId.value ?: return ModuleResult.Continue,
                     event.reactions.channelId,
                     event.reactions.messageId,
                     STAR_REACTION // We only want the code to check if it should be removed from the starboard
@@ -98,6 +98,8 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
             }
             else -> {}
         }
+
+        return ModuleResult.Continue
     }
 
     suspend fun handleStarboardReaction(

@@ -1,16 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor
 
-import dev.kord.common.entity.OverwriteType
-import dev.kord.common.entity.Permissions
-import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Event
-import dev.kord.rest.service.RestClient
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
@@ -21,41 +16,45 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.BomDiaECiaModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.DebugGatewayModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.DiscordCacheModule
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.InviteBlockerModule
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.ModuleResult
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.StarboardModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.BomDiaECia
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.DiscordGatewayEventsProcessorTasks
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.GatewayEvent
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
-import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordChannelsMap
-import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesList
-import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesMap
-import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
+import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
-import org.jetbrains.exposed.sql.and
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 
 class DiscordGatewayEventsProcessor(
     val config: RootConfig,
-    val services: Pudding,
+    services: Pudding,
     val languageManager: LanguageManager,
     val replicaId: Int
-) {
+) : LorittaDiscordStuff(config.discord, services) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    val rest = RestClient(config.discord.token)
-    val starboardModule = StarboardModule(this)
-    val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)
-    val discordCacheModule = DiscordCacheModule(this)
-    val bomDiaECiaModule = BomDiaECiaModule(this)
-    val debugGatewayModule = DebugGatewayModule(this)
+    private val starboardModule = StarboardModule(this)
+    private val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)
+    private val discordCacheModule = DiscordCacheModule(this)
+    private val bomDiaECiaModule = BomDiaECiaModule(this)
+    private val debugGatewayModule = DebugGatewayModule(this)
+    private val inviteBlockerModule = InviteBlockerModule(this)
+
+    // This is executed sequentially!
+    val modules = listOf(
+        discordCacheModule,
+        inviteBlockerModule,
+        addFirstToNewChannelsModule,
+        starboardModule,
+        debugGatewayModule
+    )
 
     val bomDiaECia = BomDiaECia(this)
     val random = SecureRandom()
@@ -89,92 +88,6 @@ class DiscordGatewayEventsProcessor(
         // bomDiaECia.startBomDiaECiaTask()
     }
 
-    suspend fun getPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake): Permissions {
-        // Create an empty permissions object
-        var permissions = Permissions()
-
-        services.transaction {
-            val userRoleIds = DiscordGuildMembers
-                .slice(DiscordGuildMembers.roles)
-                .selectFirstOrNull { DiscordGuildMembers.guildId eq guildId.toLong() and (DiscordGuildMembers.userId eq userId.toLong()) }
-                ?.get(DiscordGuildMembers.roles)
-                ?.let {
-                    Json.decodeFromString<PuddingDiscordRolesList>(it)
-                } ?: emptyList()
-
-            val guild = DiscordGuilds
-                .slice(DiscordGuilds.roles, DiscordGuilds.channels)
-                .selectFirstOrNull { DiscordGuilds.id eq guildId.toLong() }
-
-            val rolesAsJson = guild?.get(DiscordGuilds.roles)
-            val channelsAsJson = guild?.get(DiscordGuilds.channels)
-
-            val guildRoles = rolesAsJson?.let { Json.decodeFromString<PuddingDiscordRolesMap>(it) } ?: emptyMap()
-            val guildChannels = channelsAsJson?.let { Json.decodeFromString<PuddingDiscordChannelsMap>(it) } ?: emptyMap()
-
-            val guildChannel = guildChannels[channelId.toString()]
-            val everyoneRole = guildRoles[guildId.toString()]
-
-            val userRoles = guildRoles
-                .filter { it.key in userRoleIds }
-                .values
-                .toMutableList()
-
-            if (everyoneRole != null) {
-                userRoles.add(everyoneRole)
-            } else {
-                logger.warn { "Everyone role is null in $guildId! We will ignore it..." }
-            }
-
-            // Sort all roles by position...
-            userRoles.sortedBy { it.position }
-                .forEach {
-                    // Keep "plus"'ing the permissions!
-                    permissions = permissions.plus(it.permissions)
-                }
-
-            val entityIds = mutableSetOf(userId)
-            entityIds.addAll(userRoleIds.map { Snowflake(it) })
-
-            // Now we will get permission overwrites
-            val permissionOverwrites = guildChannel?.permissionOverwrites?.value
-
-            // https://discord.com/developers/docs/topics/permissions#permission-overwrites
-            if (permissionOverwrites != null) {
-                // First, the "@everyone" role permission overwrite
-                if (everyoneRole != null) {
-                    val everyonePermissionOverwrite = permissionOverwrites.firstOrNull { it.id == everyoneRole.id }
-                    if (everyonePermissionOverwrite != null) {
-                        permissions = permissions.minus(everyonePermissionOverwrite.deny)
-                        permissions = permissions.plus(everyonePermissionOverwrite.allow)
-                    }
-                }
-
-                // Then, permission overwrites for specific roles
-                val rolePermissionOverwrites = permissionOverwrites.filter {
-                    it.type == OverwriteType.Role
-                }.filter { it.id in entityIds }
-
-                for (permissionOverwrite in rolePermissionOverwrites) {
-                    permissions = permissions.minus(permissionOverwrite.deny)
-                    permissions = permissions.plus(permissionOverwrite.allow)
-                }
-
-                // And finally, permission overwrites for specific members
-                val memberPermissionOverwrites = permissionOverwrites.filter {
-                    it.type == OverwriteType.Member
-                }.filter { it.id in entityIds }
-
-                for (permissionOverwrite in memberPermissionOverwrites) {
-                    permissions = permissions.minus(permissionOverwrite.deny)
-                    permissions = permissions.plus(permissionOverwrite.allow)
-                }
-            }
-        }
-
-        return permissions
-    }
-
     private fun parseEventFromString(discordGatewayEvent: GatewayEvent): Pair<String, Event?> {
         val discordEventAsJsonObject = Json.parseToJsonElement(discordGatewayEvent.jsonAsString ?: error("Trying to parse an already parsed/null GatewayEvent!")).jsonObject
         discordGatewayEvent.jsonAsString = null
@@ -195,11 +108,18 @@ class DiscordGatewayEventsProcessor(
         val coroutineName = "Event ${discordEvent::class.simpleName}"
         launchEventJob(coroutineName) {
             try {
-                discordCacheModule.processEvent(discordEvent)
-                addFirstToNewChannelsModule.processEvent(discordEvent)
-                starboardModule.processEvent(discordEvent)
-                debugGatewayModule.processEvent(discordEvent)
-                // bomDiaECiaModule.processEvent(discordEvent)
+                for (module in modules) {
+                    val result = module.processEvent(discordEvent)
+                    when (result) {
+                        ModuleResult.Cancel -> {
+                            // Module asked us to stop processing the events
+                            return@launchEventJob
+                        }
+                        ModuleResult.Continue -> {
+                            // Module asked us to continue processing the events
+                        }
+                    }
+                }
             } catch (e: Throwable) {
                 logger.warn(e) { "Something went wrong while trying to process $coroutineName! We are going to ignore..." }
             }

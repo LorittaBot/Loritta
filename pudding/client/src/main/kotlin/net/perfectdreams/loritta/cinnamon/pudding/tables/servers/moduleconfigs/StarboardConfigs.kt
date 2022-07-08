@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.pudding.tables
+package net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs
 
 import org.jetbrains.exposed.dao.id.LongIdTable
 

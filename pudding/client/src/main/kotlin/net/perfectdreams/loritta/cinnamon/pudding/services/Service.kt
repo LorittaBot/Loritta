@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotifica
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
+import net.perfectdreams.loritta.cinnamon.pudding.data.InviteBlockerConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
 import net.perfectdreams.loritta.cinnamon.pudding.data.MiscellaneousConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.PatchNotesNotification
@@ -52,15 +53,12 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhos
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
@@ -68,6 +66,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosP
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.InviteBlockerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MiscellaneousConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.StarboardConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
@@ -133,7 +135,8 @@ open class Service(private val pudding: Pudding) {
             row[ServerConfigs.id].value.toULong(),
             row[ServerConfigs.localeId],
             row[ServerConfigs.starboardConfig]?.value,
-            row[ServerConfigs.miscellaneousConfig]?.value
+            row[ServerConfigs.miscellaneousConfig]?.value,
+            row[ServerConfigs.inviteBlockerConfig]?.value
         )
     )
 
@@ -347,4 +350,13 @@ fun StarboardConfig.Companion.fromRow(row: ResultRow) = StarboardConfig(
 fun MiscellaneousConfig.Companion.fromRow(row: ResultRow) = MiscellaneousConfig(
     row[MiscellaneousConfigs.enableBomDiaECia],
     row[MiscellaneousConfigs.enableQuirky],
+)
+
+fun InviteBlockerConfig.Companion.fromRow(row: ResultRow) = InviteBlockerConfig(
+    row[InviteBlockerConfigs.enabled],
+    row[InviteBlockerConfigs.whitelistedChannels].toList(),
+    row[InviteBlockerConfigs.whitelistServerInvites],
+    row[InviteBlockerConfigs.deleteMessage],
+    row[InviteBlockerConfigs.tellUser],
+    row[InviteBlockerConfigs.warnMessage],
 )

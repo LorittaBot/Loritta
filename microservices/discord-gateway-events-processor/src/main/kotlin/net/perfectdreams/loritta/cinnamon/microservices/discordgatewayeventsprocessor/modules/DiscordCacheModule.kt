@@ -57,8 +57,18 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         .expireAfterAccess(1L, TimeUnit.MINUTES)
         .build<Snowflake, Mutex>()
         .asMap()
+    /**
+     * Used to avoid updating user information at the same time, causing "Could not serialize access due to concurrent update"
+     */
+    private val userMutexes = Caffeine.newBuilder()
+        .expireAfterAccess(1L, TimeUnit.MINUTES)
+        .build<Snowflake, Mutex>()
+        .asMap()
 
-    override suspend fun processEvent(event: Event) {
+    private suspend inline fun withGuildIdLock(guildId: Snowflake, action: () -> Unit) = guildMutexes.getOrPut(guildId) { Mutex() }.withLock(action = action)
+    private suspend inline fun withUserIdLock(guildId: Snowflake, action: () -> Unit) = userMutexes.getOrPut(guildId) { Mutex() }.withLock(action = action)
+
+    override suspend fun processEvent(event: Event): ModuleResult {
         when (event) {
             is GuildCreate -> {
                 // logger.info { "Howdy ${event.guild.id} (${event.guild.name})! Is unavailable? ${event.guild.unavailable}" }
@@ -74,7 +84,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     val guildRoles = event.guild.roles
                     val guildChannels = event.guild.channels.value!! // Shouldn't be null in a GUILD_CREATE event
 
-                    guildMutexes.getOrPut(guildId) { Mutex() }.withLock {
+                    withGuildIdLock(guildId) {
                         m.services.transaction {
                             createOrUpdateGuild(
                                 guildId,
@@ -102,7 +112,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     val guildRoles = event.guild.roles
                     val guildChannels = event.guild.channels.value
 
-                    guildMutexes.getOrPut(guildId) { Mutex() }.withLock {
+                    withGuildIdLock(guildId) {
                         m.services.transaction {
                             createOrUpdateGuild(
                                 guildId,
@@ -123,31 +133,38 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 val member = event.message.member.value
 
                 if (guildId != null && member != null) {
-                    // Disabled for now, mostly to avoid a lot of database accesses causing a lot of GC pressure
-                    /* m.services.transaction {
-                        createOrUpdateGuildMember(guildId, event.message.author.id, member)
-                    } */
+                    withUserIdLock(event.message.author.id) {
+                        m.services.transaction {
+                            createOrUpdateGuildMember(guildId, event.message.author.id, member)
+                        }
+                    }
                 }
             }
             is GuildMemberAdd -> {
-                m.services.transaction {
-                    createOrUpdateGuildMember(event.member)
+                withUserIdLock(event.member.user.value!!.id) {
+                    m.services.transaction {
+                        createOrUpdateGuildMember(event.member)
+                    }
                 }
             }
             is GuildMemberUpdate -> {
-                m.services.transaction {
-                    createOrUpdateGuildMember(event.member)
+                withUserIdLock(event.member.user.id) {
+                    m.services.transaction {
+                        createOrUpdateGuildMember(event.member)
+                    }
                 }
             }
             is GuildMemberRemove -> {
-                m.services.transaction {
-                    deleteGuildMember(event.member)
+                withUserIdLock(event.member.user.id) {
+                    m.services.transaction {
+                        deleteGuildMember(event.member)
+                    }
                 }
             }
             is ChannelCreate -> {
                 val guildId = event.channel.guildId.value
                 if (guildId != null)
-                    guildMutexes.getOrPut(guildId) { Mutex() }.withLock {
+                    withGuildIdLock(guildId) {
                         m.services.transaction {
                             createOrUpdateGuildChannel(guildId, event.channel)
                         }
@@ -156,7 +173,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is ChannelUpdate -> {
                 val guildId = event.channel.guildId.value
                 if (guildId != null)
-                    guildMutexes.getOrPut(guildId) { Mutex() }.withLock {
+                    withGuildIdLock(guildId) {
                         m.services.transaction {
                             createOrUpdateGuildChannel(guildId, event.channel)
                         }
@@ -165,28 +182,28 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is ChannelDelete -> {
                 val guildId = event.channel.guildId.value
                 if (guildId != null)
-                    guildMutexes.getOrPut(guildId) { Mutex() }.withLock {
+                    withGuildIdLock(guildId) {
                         m.services.transaction {
                             deleteGuildChannel(guildId, event.channel)
                         }
                     }
             }
             is GuildRoleCreate -> {
-                guildMutexes.getOrPut(event.role.guildId) { Mutex() }.withLock {
+                withGuildIdLock(event.role.guildId) {
                     m.services.transaction {
                         createOrUpdateRole(event.role.guildId, event.role.role)
                     }
                 }
             }
             is GuildRoleUpdate -> {
-                guildMutexes.getOrPut(event.role.guildId) { Mutex() }.withLock {
+                withGuildIdLock(event.role.guildId) {
                     m.services.transaction {
                         createOrUpdateRole(event.role.guildId, event.role.role)
                     }
                 }
             }
             is GuildRoleDelete -> {
-                guildMutexes.getOrPut(event.role.guildId) { Mutex() }.withLock {
+                withGuildIdLock(event.role.guildId) {
                     m.services.transaction {
                         deleteRole(event.role.guildId, event.role.id)
                     }
@@ -196,7 +213,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 // If the unavailable field is not set, the user/bot was removed from the guild.
                 if (event.guild.unavailable.value == null) {
                     logger.info { "Someone removed me @ ${event.guild.id}! :(" }
-                    guildMutexes.getOrPut(event.guild.id) { Mutex() }.withLock {
+                    withGuildIdLock(event.guild.id) {
                         m.services.transaction {
                             removeGuildData(event.guild.id)
                         }
@@ -205,6 +222,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             }
             else -> {}
         }
+        return ModuleResult.Continue
     }
 
     private fun createOrUpdateGuild(

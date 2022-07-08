@@ -1,14 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
-import dev.kord.common.entity.Permission
-import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Event
 import dev.kord.gateway.MessageCreate
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 
 class DebugGatewayModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
-    override suspend fun processEvent(event: Event) {
+    override suspend fun processEvent(event: Event): ModuleResult {
         when (event) {
             // ===[ CHANNEL CREATE ]===
             is MessageCreate -> {
@@ -16,6 +14,7 @@ class DebugGatewayModule(private val m: DiscordGatewayEventsProcessor) : Process
             }
             else -> {}
         }
+        return ModuleResult.Continue
     }
 
     suspend fun handleDebugGateway(
@@ -28,7 +27,7 @@ class DebugGatewayModule(private val m: DiscordGatewayEventsProcessor) : Process
         if (!isMessage)
             return
 
-        val canTalk = Permission.SendMessages in m.getPermissions(guildId, messageCreate.message.channelId, Snowflake(m.config.discord.applicationId))
+        val canTalk = m.cache.getLazyCachedLorittaPermissions(guildId, messageCreate.message.channelId).canTalk()
         if (!canTalk)
             return
 

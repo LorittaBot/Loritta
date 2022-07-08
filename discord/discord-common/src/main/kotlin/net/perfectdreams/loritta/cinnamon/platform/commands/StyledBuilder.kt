@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
+import dev.kord.rest.builder.message.create.MessageCreateBuilder
+import kotlinx.serialization.json.JsonNull.content
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
@@ -12,7 +14,8 @@ import net.perfectdreams.loritta.cinnamon.common.entities.LorittaReply
  *
  * If there's already content present in the builder, a new line will be inserted before the styled replied!
  *
- * @param content the already built LorittaReply
+ * @param content the content of the styled message
+ * @param prefix  the emote prefix of the styled message
  */
 fun MessageBuilder.styled(content: String, prefix: Emote) = styled(content, prefix.asMention)
 
@@ -23,8 +26,8 @@ fun MessageBuilder.styled(content: String, prefix: Emote) = styled(content, pref
  *
  * If there's already content present in the builder, a new line will be inserted before the styled replied!
  *
- * @param content the content of the message
- * @param prefix  the prefix of the message
+ * @param content the content of the styled message
+ * @param prefix  the emote prefix of the styled message
  */
 fun MessageBuilder.styled(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention) = styled(LorittaReply(content, prefix))
 
@@ -35,13 +38,88 @@ fun MessageBuilder.styled(content: String, prefix: String = Emotes.DefaultStyled
  *
  * If there's already content present in the builder, a new line will be inserted before the styled replied!
  *
- * @param content the already built LorittaReply
+ * @param reply the already built LorittaReply
  */
 fun MessageBuilder.styled(reply: LorittaReply) {
+    val styled = createStyledContent(reply)
+
     if (content != null) {
         content += "\n"
-        content += "${reply.prefix} **|** ${reply.content}"
+        content += styled
     } else {
-        content = "${reply.prefix} **|** ${reply.content}"
+        content = styled
     }
 }
+
+/**
+ * Appends a Loritta-styled formatted message to the builder's message content.
+ *
+ * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`.
+ *
+ * If there's already content present in the builder, a new line will be inserted before the styled replied!
+ *
+ * @param content the content of the styled message
+ * @param prefix  the emote prefix of the styled message
+ */
+fun MessageCreateBuilder.styled(content: String, prefix: Emote) = styled(content, prefix.asMention)
+
+/**
+ * Appends a Loritta-styled formatted message to the builder's message content.
+ *
+ * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`.
+ *
+ * If there's already content present in the builder, a new line will be inserted before the styled replied!
+ *
+ * @param content the content of the styled message
+ * @param prefix  the emote prefix of the styled message
+ */
+fun MessageCreateBuilder.styled(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention) = styled(LorittaReply(content, prefix))
+
+/**
+ * Appends a Loritta-styled formatted message to the builder's message content.
+ *
+ * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`.
+ *
+ * If there's already content present in the builder, a new line will be inserted before the styled replied!
+ *
+ * @param reply the already built LorittaReply
+ */
+fun MessageCreateBuilder.styled(reply: LorittaReply) {
+    val styled = createStyledContent(reply)
+
+    if (content != null) {
+        content += "\n"
+        content += styled
+    } else {
+        content = styled
+    }
+}
+
+/**
+ * Creates a Loritta-styled formatted content.
+ *
+ * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`.
+ *
+ * @param content the content of the styled message
+ * @param prefix  the emote prefix of the styled message
+ */
+fun createStyledContent(content: String, prefix: Emote) = createStyledContent(LorittaReply(content, prefix.asMention))
+
+/**
+ * Creates a Loritta-styled formatted content.
+ *
+ * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`.
+ *
+ * @param content the content of the styled message
+ * @param prefix  the emote prefix of the styled message
+ */
+fun createStyledContent(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention) = createStyledContent(LorittaReply(content, prefix))
+
+/**
+ * Creates a Loritta-styled formatted content.
+ *
+ * By default, Loritta-styled formatting looks like this: `[prefix] **|** [content]`.
+ *
+ * @param reply the already built LorittaReply
+ */
+fun createStyledContent(reply: LorittaReply) = "${reply.prefix} **|** ${reply.content}"

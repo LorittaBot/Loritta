@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.utils
 
 import io.github.netvl.ecoji.Ecoji
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.decodeFromByteArray
 import kotlinx.serialization.encodeToByteArray
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -16,7 +17,14 @@ import kotlinx.serialization.protobuf.ProtoBuf
  * The reason [Ecoji] is used instead of Base64 is because Discord does not check the length of the String,
  * it checks the amount of codepoints.
  */
+@OptIn(ExperimentalSerializationApi::class)
 object ComponentDataUtils {
+    val KTX_SERIALIZATION_SIMILAR_PROTOBUF_STRUCTURE_ISSUES_WORKAROUND_DUMMY = StoredGenericInteractionData.Dummy(
+        "howdy!",
+        "did u know that",
+        "lori is cute?"
+    )
+
     inline fun <reified T> encode(data: T) = Ecoji.getEncoder()
         .readFrom(
             ProtoBuf.encodeToByteArray(data)

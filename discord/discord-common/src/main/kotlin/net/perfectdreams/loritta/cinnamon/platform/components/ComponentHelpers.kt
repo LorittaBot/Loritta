@@ -11,6 +11,7 @@ import dev.kord.rest.builder.component.SelectOptionBuilder
 import net.perfectdreams.loritta.cinnamon.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.UnicodeEmote
+import java.util.*
 
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
@@ -97,6 +98,21 @@ fun ActionRowBuilder.selectMenu(
     selectMenu(
         "${executor.id.value}:$data"
     ) {
+        builder.invoke(this)
+    }
+}
+
+/**
+ * Creates a disabled button with a random custom ID
+ */
+fun ActionRowBuilder.disabledButton(
+    style: ButtonStyle,
+    label: String,
+    builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit = {}
+) {
+    interactionButton(style, "disabled:${UUID.randomUUID()}") {
+        this.label = label
+        this.disabled = true
         builder.invoke(this)
     }
 }

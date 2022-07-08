@@ -1,0 +1,6 @@
+modules:
+  inviteBlocker:
+    activateInviteBlockerBypass: "Psst, if you want, I can make the {roleMention} role be allowed to send server invites without being blocked!"
+    howToReEnableLater: "If you change your mind, you can change the permissions later in {dashboardUrl}!"
+    bypassEnabled: "Done! Now I won't block server invites sent by members who have the {roleMention} role!"
+    allowSendingInvites: "Allow sending invites"

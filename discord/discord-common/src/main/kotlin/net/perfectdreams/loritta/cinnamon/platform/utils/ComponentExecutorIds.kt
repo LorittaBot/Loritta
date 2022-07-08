@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands
+package net.perfectdreams.loritta.cinnamon.platform.utils
 
-import net.perfectdreams.discordinteraktions.common.components.ComponentExecutorDeclaration.Companion.ID_REGEX
+import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentId
 
 object ComponentExecutorIds {
     private val ID_REGEX = Regex("[A-z0-9]+")
@@ -35,6 +35,7 @@ object ComponentExecutorIds {
     val RETRIBUTE_KISS_BUTTON_EXECUTOR = register("0024")
     val SHOW_GUILD_MEMBER_PERMISSIONS_BUTTON_EXECUTOR = register("0025")
     val CHANGE_NOTIFICATIONS_PAGE_BUTTON_EXECUTOR = register("0026")
+    val ACTIVATE_INVITE_BLOCKER_BYPASS_BUTTON_EXECUTOR = register("0027")
 
     /**
      * Verifies if the [id] matches our constraints

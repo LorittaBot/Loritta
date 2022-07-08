@@ -322,11 +322,11 @@ class BomDiaECia(private val m: DiscordGatewayEventsProcessor) {
         activeTextChannels.forEach { (channelId, info) ->
             // We need to get the information from the database
             // TODO: Application ID is not *actually* Loritta's User ID! Some bots do not have the same app ID for the bot ID
-            val permissions = m.getPermissions(info.guildId, channelId, Snowflake(m.config.discord.applicationId))
+            val permissions = m.cache.getLazyCachedLorittaPermissions(info.guildId, channelId)
 
             logger.info { "Permissions for ${channelId}: $permissions" }
 
-            if (permissions.contains(Permission.SendMessages) && permissions.contains(Permission.EmbedLinks)) {
+            if (permissions.hasPermission(Permission.SendMessages, Permission.EmbedLinks)) {
                 if (info.users.size >= 5 && info.lastMessageSent > (System.currentTimeMillis() - 180_000)) {
                     val serverConfig = m.services.serverConfigs.getServerConfigRoot(info.guildId.value)
                     val miscellaneousConfig = serverConfig?.getMiscellaneousConfig()

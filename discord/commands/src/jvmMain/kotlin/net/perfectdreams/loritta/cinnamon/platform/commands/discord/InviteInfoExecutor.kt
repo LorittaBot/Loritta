@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
 
 class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
@@ -28,35 +29,19 @@ class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
         }
 
         override val options = Options
-
-        private val shortInviteRegex = Regex("(?:https?://)?discord.gg/([A-z0-9]+)")
-        private val longInviteRegex = Regex("(?:https?://)?discord(?:app)?.com/invite/([A-z0-9]+)")
-        private val inviteCodeRegex = Regex("[A-z0-9]+")
-    }
-
-    private fun getInviteCodeFromUrl(url: String): String? {
-        val shortInviteMatch = shortInviteRegex.find(url)
-        if (shortInviteMatch != null)
-            return shortInviteMatch.groupValues[1]
-
-        val longInviteMatch = longInviteRegex.find(url)
-        if (longInviteMatch != null)
-            return longInviteMatch.groupValues[1]
-
-        return null
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val text = args[Options.invite]
         val inviteCode = if (text.contains("/")) {
-            getInviteCodeFromUrl(text)
+            DiscordInviteUtils.getInviteCodeFromUrl(text)
         } else {
             text
         }
 
         // Not a invite code!
         // TODO: Change error message
-        if (inviteCode == null || !inviteCodeRegex.matches(inviteCode))
+        if (inviteCode == null || !DiscordInviteUtils.inviteCodeRegex.matches(inviteCode))
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(

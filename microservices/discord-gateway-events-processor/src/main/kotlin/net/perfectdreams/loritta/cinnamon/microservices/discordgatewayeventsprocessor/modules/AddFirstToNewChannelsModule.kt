@@ -23,20 +23,21 @@ class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) 
         )
     }
 
-    override suspend fun processEvent(event: Event) {
+    override suspend fun processEvent(event: Event): ModuleResult {
         when (event) {
             // ===[ CHANNEL CREATE ]===
             is ChannelCreate -> {
                 // This should only be sent in a guild text channel
                 if (event.channel.type == ChannelType.GuildText) {
                     handleFirst(
-                        event.channel.guildId.value ?: return, // Pretty sure that this cannot be null here
+                        event.channel.guildId.value ?: return ModuleResult.Continue, // Pretty sure that this cannot be null here
                         event.channel.id
                     )
                 }
             }
             else -> {}
         }
+        return ModuleResult.Continue
     }
 
     suspend fun handleFirst(

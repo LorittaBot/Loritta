@@ -347,6 +347,7 @@ interface UserInfoExecutor {
                         ShowGuildMemberPermissionsExecutor,
                         ComponentDataUtils.encode(
                             StoredGenericInteractionData(
+                                ComponentDataUtils.KTX_SERIALIZATION_SIMILAR_PROTOBUF_STRUCTURE_ISSUES_WORKAROUND_DUMMY,
                                 memberPermissionsInteractionId
                             )
                         )

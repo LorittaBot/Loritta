@@ -59,7 +59,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ReceivedPatchNotesNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ServerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
