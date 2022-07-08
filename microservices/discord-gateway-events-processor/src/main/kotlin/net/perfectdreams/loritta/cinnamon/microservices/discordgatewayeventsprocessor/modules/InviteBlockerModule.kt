@@ -54,6 +54,12 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
 
     private suspend fun handleMessage(event: MessageCreate): ModuleResult {
         val message = event.message
+        val author = message.author
+
+        // Ignore messages sent by bots
+        if (author.bot.discordBoolean)
+            return ModuleResult.Continue
+
         val guildId = message.guildId.value ?: return ModuleResult.Continue // Not in a guild
         val member = event.message.member.value ?: return ModuleResult.Continue // The member isn't in the guild
         val channelId = message.channelId
@@ -202,8 +208,8 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                     val toBeSent = MessageUtils.createMessage(
                         warnMessage,
                         listOf(
-                            UserTokenSource(event.message.author),
-                            MemberTokenSource(event.message.author, member)
+                            UserTokenSource(author),
+                            MemberTokenSource(author, member)
                         ),
                         emptyMap()
                     )
@@ -212,7 +218,7 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                         toBeSent.apply(this)
                     }
 
-                    if (m.cache.hasPermission(guildId, channelId, event.message.author.id, Permission.ManageGuild)) {
+                    if (m.cache.hasPermission(guildId, channelId, author.id, Permission.ManageGuild)) {
                         // If the user has permission to enable the invite bypass permission, make Loritta recommend to enable the permission
                         val topRole = m.cache.getRoles(guildId, member)
                             .asSequence()
@@ -233,7 +239,7 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                                 )
 
                                 styled(
-                                    i18nContext.get(I18nKeysData.Modules.InviteBlocker.HowToReEnableLater("<${m.config.loritta.website}guild/${message.author.id}/configure/permissions>")),
+                                    i18nContext.get(I18nKeysData.Modules.InviteBlocker.HowToReEnableLater("<${m.config.loritta.website}guild/${author.id}/configure/permissions>")),
                                     Emotes.LoriHi
                                 )
 
@@ -244,7 +250,7 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                                         ActivateInviteBlockerBypassButtonClickExecutor,
                                         m.encodeDataForComponentOrStoreInDatabase(
                                             ActivateInviteBlockerData(
-                                                message.author.id,
+                                                author.id,
                                                 topRole.id
                                             )
                                         )
