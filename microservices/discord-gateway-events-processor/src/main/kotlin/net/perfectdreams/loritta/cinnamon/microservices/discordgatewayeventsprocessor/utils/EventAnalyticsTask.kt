@@ -24,7 +24,7 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
         for (gateway in m.gatewayProxies) {
             val gatewayEventsProcessed = gateway.totalEventsReceived.get()
             val previousEventsProcessed = eventsGatewayCount[gateway] ?: 0
-            logger.info { "Discord Events processed on [${gateway.state} (${gateway.connectionTries})] ${gateway.url}: $gatewayEventsProcessed; (+${gatewayEventsProcessed - previousEventsProcessed}); Last event received at: ${gateway.lastEventReceivedAt}" }
+            logger.info { "Discord Events processed on [${gateway.state} (${gateway.connectionTries})] ${gateway.url}: $gatewayEventsProcessed; (+${gatewayEventsProcessed - previousEventsProcessed}); Connected at: ${gateway.connectedAt}; Last event received at: ${gateway.lastEventReceivedAt}" }
             eventsGatewayCount[gateway] = gatewayEventsProcessed
         }
 

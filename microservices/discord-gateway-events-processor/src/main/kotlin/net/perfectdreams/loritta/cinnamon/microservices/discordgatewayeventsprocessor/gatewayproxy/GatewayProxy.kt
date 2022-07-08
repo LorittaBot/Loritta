@@ -46,6 +46,7 @@ class GatewayProxy(
     val totalEventsReceived = AtomicInteger()
     var state = State.CONNECTING
     var lastEventReceivedAt: Instant? = null
+    var connectedAt: Instant? = null
 
     fun start() {
         coroutineScope.launch {
@@ -82,10 +83,17 @@ class GatewayProxy(
             for (event in newSession.incoming) {
                 when (event) {
                     is Frame.Text -> {
-                        connectionTries = 0 // On a successful connection, reset the try counter
+                        val now = Clock.System.now()
+
+                        if (state != State.CONNECTED) {
+                            connectionTries = 0 // On a successful connection, reset the try counter
+                            connectedAt = now
+                        }
+
                         state = State.CONNECTED
                         totalEventsReceived.addAndGet(1)
-                        lastEventReceivedAt = Clock.System.now()
+                        lastEventReceivedAt = now
+
                         onMessageReceived.invoke(GatewayEvent(event.data.toString(Charsets.UTF_8)))
                     }
                     is Frame.Binary -> {} // No need to handle this / It doesn't seem to be sent to us
