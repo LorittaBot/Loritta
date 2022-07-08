@@ -70,7 +70,7 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
         if (inviteBlockerConfig.whitelistedChannels.contains(channelId.toLong()))
             return ModuleResult.Continue
 
-        val i18nContext = m.languageManager.getI18nContextById(serverConfig.localeId)
+        val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
         // Can the user bypass the invite blocker check?
         val canBypass = m.services.serverConfigs.hasLorittaPermission(guildId, member, LorittaPermission.ALLOW_INVITES)
