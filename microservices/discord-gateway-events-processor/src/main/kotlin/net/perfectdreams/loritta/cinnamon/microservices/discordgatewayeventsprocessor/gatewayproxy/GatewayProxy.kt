@@ -35,7 +35,7 @@ class GatewayProxy(
 
     private val http = HttpClient {
         install(WebSockets) {
-            this.pingInterval = 15_000
+            this.pingInterval = 5_000
         }
 
         install(HttpTimeout)
@@ -46,19 +46,25 @@ class GatewayProxy(
     val totalEventsReceived = AtomicInteger()
     var state = State.CONNECTING
     var lastEventReceivedAt: Instant? = null
-    var connectedAt: Instant? = null
+    var lastConnection: Instant? = null
+    var lastDisconnection: Instant? = null
 
     fun start() {
         coroutineScope.launch {
             while (true) {
                 state = State.CONNECTING
-                logger.info { "Connecting to Gateway..." }
+                logger.info { "Connecting to Gateway endpoint $url..." }
+
                 connect()
                 connectionTries++
+
                 val delay = (1.1.pow(connectionTries.toDouble()) * 50).toLong()
                     .coerceAtMost(60_000)
-                logger.info { "Connection closed! Reconnecting in ${delay}ms..." }
+                logger.info { "Gateway $url connection closed! Reconnecting in ${delay}ms..." }
+
                 state = State.RECONNECTION_BACKOFF
+                lastDisconnection = Clock.System.now()
+
                 delay(delay)
             }
         }
@@ -80,24 +86,31 @@ class GatewayProxy(
                         val now = Clock.System.now()
 
                         if (state != State.CONNECTED) {
+                            logger.info { "Successfully connected to gateway endpoint $url!" }
                             connectionTries = 0 // On a successful connection, reset the try counter
-                            connectedAt = now
+                            lastConnection = now
+                            state = State.CONNECTED
                         }
 
-                        state = State.CONNECTED
                         totalEventsReceived.addAndGet(1)
                         lastEventReceivedAt = now
 
                         onMessageReceived.invoke(GatewayEvent(event.data.toString(Charsets.UTF_8)))
                     }
                     is Frame.Binary -> {} // No need to handle this / It doesn't seem to be sent to us
-                    is Frame.Close -> {} // No need to handle this / It doesn't seem to be sent to us
-                    is Frame.Ping -> {} // No need to handle this / It doesn't seem to be sent to us
-                    is Frame.Pong -> {} // No need to handle this / It doesn't seem to be sent to us
+                    is Frame.Close -> {
+                        logger.info { "WebSocket connection $url has been closed! Reason: ${event.readReason()}" }
+                    }
+                    is Frame.Ping -> {
+                        logger.info { "Received WebSocket ping on connection $url!" }
+                    }
+                    is Frame.Pong -> {
+                        logger.info { "Received WebSocket pong on connection $url!" }
+                    }
                 }
             }
         } catch (e: Throwable) {
-            logger.warn(e) { "Something went wrong while listening to the session!" }
+            logger.warn(e) { "Something went wrong while listening to the WebSocket session $url!" }
         }
     }
 
