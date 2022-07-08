@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.utils
 
+import dev.kord.common.entity.DiscordEmoji
 import dev.kord.common.entity.DiscordUser
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.cinnamon.platform.utils.sources.UserTokenSource
@@ -8,7 +9,7 @@ import org.junit.jupiter.api.Test
 class MessageUtilsTest {
     @Test
     fun `test message generation`() {
-        val input = "hello {user.name}!"
+        val input = "hello {user.name}! :lori_hi:"
 
         val parallaxMessage = MessageUtils.createMessage(
             input,
@@ -22,9 +23,17 @@ class MessageUtilsTest {
                     )
                 )
             ),
-            mapOf()
+            mapOf(),
+            listOf(),
+            listOf(),
+            listOf(
+                DiscordEmoji(
+                    Snowflake(972187812554211418),
+                    "lori_hi"
+                )
+            )
         )
 
-        require(parallaxMessage.content == "hello MrPowerGamerBR!") { "Content didn't match!" }
+        require(parallaxMessage.content == "hello MrPowerGamerBR! <:lori_hi:972187812554211418>") { "Content didn't match!" }
     }
 }

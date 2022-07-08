@@ -1,23 +1,51 @@
 package net.perfectdreams.loritta.cinnamon.platform.utils
 
+import dev.kord.common.entity.DiscordChannel
+import dev.kord.common.entity.DiscordEmoji
+import dev.kord.common.entity.DiscordRole
+import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
+import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.platform.utils.parallax.ParallaxMessage
 import net.perfectdreams.loritta.cinnamon.platform.utils.sources.TokenSource
 
 object MessageUtils {
+    private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
+
     private val jsonIgnoreUnknownKeys = Json {
         ignoreUnknownKeys = true
+    }
+
+    suspend fun createMessage(
+        stuff: LorittaDiscordStuff,
+        guildId: Snowflake,
+        message: String,
+        sources: List<TokenSource>,
+        tokens: Map<String, String?>
+    ): ParallaxMessage {
+        val (roles, channels, emojis) = stuff.cache.getDiscordEntitiesOfGuild(guildId)
+        return createMessage(
+            message,
+            sources,
+            tokens,
+            roles,
+            channels,
+            emojis
+        )
     }
 
     fun createMessage(
         message: String,
         sources: List<TokenSource>,
-        tokens: Map<String, String?>
+        tokens: Map<String, String?>,
+        roles: List<DiscordRole>,
+        channels: List<DiscordChannel>,
+        emojis: List<DiscordEmoji>
     ): ParallaxMessage {
         // TODO: Proper message validation?
 
@@ -49,33 +77,33 @@ object MessageUtils {
 
         return with(rawParallaxMessage) {
             copy(
-                content = replaceTokensIfNotNull(content, parsedTokens),
+                content = replaceTokensIfNotNull(content, parsedTokens, roles, channels, emojis),
                 embeds = embeds.map {
                     with(it) {
                         it.copy(
-                            title = replaceTokensIfNotNull(title, parsedTokens),
-                            description = replaceTokensIfNotNull(description, parsedTokens),
-                            url = replaceTokensIfNotNull(url, parsedTokens),
+                            title = replaceTokensIfNotNull(title, parsedTokens, roles, channels, emojis),
+                            description = replaceTokensIfNotNull(description, parsedTokens, roles, channels, emojis),
+                            url = replaceTokensIfNotNull(url, parsedTokens, roles, channels, emojis),
                             footer = with(footer) {
                                 this?.copy(
-                                    text = replaceTokens(text, parsedTokens),
-                                    iconUrl = replaceTokensIfNotNull(iconUrl, parsedTokens)
+                                    text = replaceTokens(text, parsedTokens, roles, channels, emojis),
+                                    iconUrl = replaceTokensIfNotNull(iconUrl, parsedTokens, roles, channels, emojis)
                                 )
                             },
                             image = with(image) {
                                 this?.copy(
-                                    url = replaceTokens(url, parsedTokens)
+                                    url = replaceTokens(url, parsedTokens, roles, channels, emojis)
                                 )
                             },
                             thumbnail = with(thumbnail) {
                                 this?.copy(
-                                    url = replaceTokens(url, parsedTokens)
+                                    url = replaceTokens(url, parsedTokens, roles, channels, emojis)
                                 )
                             },
                             fields = fields.map {
                                 it.copy(
-                                    name = replaceTokens(it.name, parsedTokens),
-                                    value = replaceTokens(it.value, parsedTokens),
+                                    name = replaceTokens(it.name, parsedTokens, roles, channels, emojis),
+                                    value = replaceTokens(it.value, parsedTokens, roles, channels, emojis),
                                     inline = it.inline
                                 )
                             }
@@ -86,10 +114,74 @@ object MessageUtils {
         }
     }
 
-    private fun replaceTokensIfNotNull(text: String?, tokens: Map<String, String?>) = text?.let { replaceTokens(text, tokens) }
-    private fun replaceTokens(text: String, tokens: Map<String, String?>): String {
+    private fun replaceTokensIfNotNull(
+        text: String?,
+        tokens: Map<String, String?>,
+        roles: List<DiscordRole>,
+        channels: List<DiscordChannel>,
+        emojis: List<DiscordEmoji>
+    ) = text?.let { replaceTokens(text, tokens, roles, channels, emojis) }
+
+    private fun replaceTokens(
+        text: String,
+        tokens: Map<String, String?>,
+        roles: List<DiscordRole>,
+        channels: List<DiscordChannel>,
+        emojis: List<DiscordEmoji>
+    ) = replaceLorittaTokens(replaceDiscordEntities(text, roles, channels, emojis), tokens) // First the Discord Entities, then our user tokens
+
+    private fun replaceDiscordEntities(
+        text: String,
+        roles: List<DiscordRole>,
+        channels: List<DiscordChannel>,
+        emojis: List<DiscordEmoji>
+    ): String {
         var message = text
 
+        for (role in roles.filter { it.name.isNotBlank() }) {
+            message = text.replace("@${role.name}", "<@&${role.id}>")
+        }
+
+        for (channel in channels) {
+            val name = channel.name.value ?: continue
+            if (name.isBlank())
+                continue
+            message = text.replace("#$name", "<#${channel.id}>")
+        }
+
+        // Emojis are kinda tricky, we need to match
+        // :lori_clown:
+        // but not
+        // <:lori_clown:950111543574536212>
+        // but that's hard, so how can we do this?
+        // ...
+        // with the power of RegEx of course! :3
+        message = message.replace(CHAT_EMOJI_REGEX) {
+            val emojiName = it.groupValues[1]
+            val guildEmoji = emojis.firstOrNull { it.name == emojiName }
+            if (guildEmoji != null) {
+                buildString {
+                    append("<")
+                    if (guildEmoji.animated.discordBoolean)
+                        append("a")
+                    append(":")
+                    append(guildEmoji.name)
+                    append(":")
+                    append(guildEmoji.id)
+                    append(">")
+                }
+            } else {
+                it.value // Emoji wasn't found, so let's keep it as is
+            }
+        }
+
+        return message
+    }
+
+    private fun replaceLorittaTokens(text: String, tokens: Map<String, String?>): String {
+        var message = text
+
+        // Replace tokens
         for ((token, value) in tokens)
             message = message.replace("{$token}", value ?: "\uD83E\uDD37")
 
@@ -122,152 +214,4 @@ object MessageUtils {
             action.invoke(value)
         }
     }
-
-    /* fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): Message? {
-        val jsonObject = try {
-            JsonParser.parseString(message).obj
-        } catch (ex: Exception) {
-            null
-        }
-
-        val tokens = mutableMapOf<String, String?>()
-        tokens.putAll(customTokens)
-
-        if (sources != null) {
-            for (source in sources) {
-                if (source is User) {
-                    tokens[Placeholders.USER_MENTION.name] = source.asMention
-                    tokens[Placeholders.USER_NAME_SHORT.name] = source.name
-                    tokens[Placeholders.USER_NAME.name] = source.name
-                    tokens[Placeholders.USER_DISCRIMINATOR.name] = source.discriminator
-                    tokens[Placeholders.USER_ID.name] = source.id
-                    tokens[Placeholders.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
-                    tokens[Placeholders.USER_TAG.name] = source.asTag
-
-                    tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.discriminator
-                    tokens[Placeholders.Deprecated.USER_ID.name] = source.id
-                    tokens[Placeholders.Deprecated.USER_AVATAR_URL.name] = source.effectiveAvatarUrl
-                }
-                if (source is Member) {
-                    tokens[Placeholders.USER_MENTION.name] = source.asMention
-                    tokens[Placeholders.USER_NAME_SHORT.name] = source.user.name
-                    tokens[Placeholders.USER_NAME.name] = source.user.name
-                    tokens[Placeholders.USER_DISCRIMINATOR.name] = source.user.discriminator
-                    tokens[Placeholders.USER_ID.name] = source.id
-                    tokens[Placeholders.USER_TAG.name] = source.user.asTag
-                    tokens[Placeholders.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
-                    tokens[Placeholders.USER_NICKNAME.name] = source.effectiveName
-
-                    tokens[Placeholders.Deprecated.USER_DISCRIMINATOR.name] = source.user.discriminator
-                    tokens[Placeholders.Deprecated.USER_ID.name] = source.id
-                    tokens[Placeholders.Deprecated.USER_AVATAR_URL.name] = source.user.effectiveAvatarUrl
-                    tokens[Placeholders.Deprecated.USER_NICKNAME.name] = source.effectiveName
-                }
-                if (source is Guild) {
-                    val guildSize = source.memberCount.toString()
-                    val mentionOwner = source.owner?.asMention ?: "???"
-                    val owner = source.owner?.effectiveName ?: "???"
-                    tokens["guild"] = source.name
-                    tokens["guildsize"] = guildSize
-                    tokens["guild-size"] = guildSize
-                    tokens["@owner"] = mentionOwner
-                    tokens["owner"] = owner
-                    tokens["guild-icon-url"] = source.iconUrl?.replace("jpg", "png")
-                }
-                if (source is GuildChannel) {
-                    tokens["channel"] = source.name
-                    tokens["channel-id"] = source.id
-                }
-                if (source is TextChannel) {
-                    tokens["@channel"] = source.asMention
-                }
-            }
-        }
-
-        val messageBuilder = MessageBuilder()
-        if (jsonObject != null) {
-            // alterar tokens
-            handleJsonTokenReplacer(jsonObject, sources, guild, tokens)
-            val jsonEmbed = jsonObject["embed"].nullObj
-            if (jsonEmbed != null) {
-                try {
-                    val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
-                    messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed(safe))
-                } catch (e: Exception) {
-                    // Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope
-                    // for the best!
-                }
-            }
-            messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
-        } else {
-            messageBuilder.append(replaceTokens(message, sources, guild, tokens).substringIfNeeded())
-        }
-        if (messageBuilder.isEmpty)
-            return null
-        return messageBuilder.build()
-    }
-
-    private fun handleJsonTokenReplacer(jsonObject: JsonObject, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf()) {
-        for ((key, value) in jsonObject.entrySet()) {
-            when {
-                value.isJsonPrimitive && value.asJsonPrimitive.isString -> {
-                    jsonObject[key] = replaceTokens(value.string, sources, guild, customTokens)
-                }
-                value.isJsonObject -> {
-                    handleJsonTokenReplacer(value.obj, sources, guild, customTokens)
-                }
-                value.isJsonArray -> {
-                    val array = JsonArray()
-                    for (it in value.array) {
-                        if (it.isJsonPrimitive && it.asJsonPrimitive.isString) {
-                            array.add(replaceTokens(it.string, sources, guild, customTokens))
-                            continue
-                        } else if (it.isJsonObject) {
-                            handleJsonTokenReplacer(it.obj, sources, guild, customTokens)
-                        }
-                        array.add(it)
-                    }
-                    jsonObject[key] = array
-                }
-            }
-        }
-    }
-
-    private fun replaceTokens(text: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String?> = mutableMapOf()): String {
-        var message = text
-
-        for ((token, value) in customTokens)
-            message = message.replace("{$token}", value ?: "\uD83E\uDD37")
-
-        // Para evitar pessoas perguntando "porque os emojis não funcionam???", nós iremos dar replace automaticamente em algumas coisas
-        // para que elas simplesmente "funcionem:tm:"
-        // Ou seja, se no chat do Discord aparece corretamente, é melhor que na própria Loritta também apareça, não é mesmo?
-        if (guild != null) {
-            for (emote in guild.emotes) {
-                var index = 0
-                var overflow = 0
-                while (message.indexOf(":${emote.name}:", index) != -1) {
-                    if (overflow == 999) {
-                        logger.warn { "String $message was overflown (999 > $overflow) when processing emotes, breaking current execution"}
-                        logger.warn { "Stuck while processing emote $emote, index = $index, indexOf = ${message.indexOf(":${emote.name}:", index)}"}
-                        break
-                    }
-                    val _index = index
-                    index = message.indexOf(":${emote.name}:", index) + 1
-                    if (message.indexOf(":${emote.name}:", _index) == 0 || (message[message.indexOf(":${emote.name}:", _index) - 1] != 'a' && message[message.indexOf(":${emote.name}:", _index) - 1] != '<')) {
-                        message = message.replaceRange(index - 1..(index - 2) + ":${emote.name}:".length, emote.asMention)
-                    }
-                    overflow++
-                }
-            }
-            for (textChannel in guild.textChannels) {
-                message = message.replace("#${textChannel.name}", textChannel.asMention)
-            }
-            for (roles in guild.roles) {
-                message = message.replace("@${roles.name}", roles.asMention)
-            }
-        }
-
-        return message
-    } */
 }

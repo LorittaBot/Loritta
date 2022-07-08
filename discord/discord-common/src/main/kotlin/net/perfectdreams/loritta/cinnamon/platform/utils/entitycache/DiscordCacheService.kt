@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.utils.entitycache
 
+import dev.kord.common.entity.DiscordChannel
+import dev.kord.common.entity.DiscordEmoji
 import dev.kord.common.entity.DiscordGuildMember
 import dev.kord.common.entity.DiscordRole
 import dev.kord.common.entity.OverwriteType
@@ -29,6 +31,26 @@ class DiscordCacheService(
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
+        private val EMPTY_GUILD_ENTITIES = GuildEntities(emptyList(), emptyList(), emptyList())
+    }
+
+    suspend fun getDiscordEntitiesOfGuild(guildId: Snowflake): GuildEntities {
+        return pudding.transaction {
+            val guildData = DiscordGuilds.slice(
+                DiscordGuilds.id,
+                DiscordGuilds.roles,
+                DiscordGuilds.channels,
+                DiscordGuilds.emojis
+            ).selectFirstOrNull {
+                DiscordGuilds.id eq guildId.toLong()
+            } ?: return@transaction EMPTY_GUILD_ENTITIES
+
+            return@transaction GuildEntities(
+                Json.decodeFromString(guildData[DiscordGuilds.roles]),
+                Json.decodeFromString(guildData[DiscordGuilds.channels]),
+                Json.decodeFromString(guildData[DiscordGuilds.emojis]),
+            )
+        }
     }
 
     /**
@@ -185,4 +207,10 @@ class DiscordCacheService(
 
         return permissions
     }
+
+    data class GuildEntities(
+        val roles: List<DiscordRole>,
+        val channels: List<DiscordChannel>,
+        val emojis: List<DiscordEmoji>
+    )
 }

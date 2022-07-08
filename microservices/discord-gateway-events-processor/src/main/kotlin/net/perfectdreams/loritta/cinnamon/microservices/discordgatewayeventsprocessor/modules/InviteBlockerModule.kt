@@ -227,6 +227,8 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                         logger.info { "Sending blocked invite message in $channelId on $guildId..." }
 
                         val toBeSent = MessageUtils.createMessage(
+                            m,
+                            guildId,
                             warnMessage,
                             listOf(
                                 UserTokenSource(author),

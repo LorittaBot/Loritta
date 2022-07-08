@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.DiscordAddedGuildMember
 import dev.kord.common.entity.DiscordChannel
+import dev.kord.common.entity.DiscordEmoji
 import dev.kord.common.entity.DiscordGuildMember
 import dev.kord.common.entity.DiscordRemovedGuildMember
 import dev.kord.common.entity.DiscordRole
@@ -31,6 +32,7 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordChannelsMap
+import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordEmojisMap
 import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesMap
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
@@ -83,6 +85,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     val guildOwnerId = event.guild.ownerId
                     val guildRoles = event.guild.roles
                     val guildChannels = event.guild.channels.value!! // Shouldn't be null in a GUILD_CREATE event
+                    val guildEmojis = event.guild.emojis
                     // If your bot does not have the GUILD_PRESENCES Gateway Intent, or if the guild has over 75k members, members and presences returned in this event will only contain your bot and users in voice channels.
                     val guildMembers = event.guild.members.value ?: emptyList()
 
@@ -94,7 +97,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                                 guildIcon,
                                 guildOwnerId,
                                 guildRoles,
-                                guildChannels
+                                guildChannels,
+                                guildEmojis
                             )
 
                             for (member in guildMembers) {
@@ -121,6 +125,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     val guildOwnerId = event.guild.ownerId
                     val guildRoles = event.guild.roles
                     val guildChannels = event.guild.channels.value
+                    val guildEmojis = event.guild.emojis
 
                     withGuildIdLock(guildId) {
                         m.services.transaction {
@@ -130,7 +135,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                                 guildIcon,
                                 guildOwnerId,
                                 guildRoles,
-                                guildChannels
+                                guildChannels,
+                                guildEmojis
                             )
                         }
                     }
@@ -241,13 +247,15 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         guildIcon: String?,
         guildOwnerId: Snowflake,
         guildRoles: List<DiscordRole>,
-        guildChannels: List<DiscordChannel>?
+        guildChannels: List<DiscordChannel>?,
+        guildEmojis: List<DiscordEmoji>
     ) {
         // Verify if we really need to update the roles/channels/etc JSON field
         val currentStoredValues = DiscordGuilds.slice(
             DiscordGuilds.id,
             DiscordGuilds.roles,
-            DiscordGuilds.channels
+            DiscordGuilds.channels,
+            DiscordGuilds.emojis
         ).selectFirstOrNull {
             DiscordGuilds.id eq guildId.toLong()
         }
@@ -256,6 +264,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
         val storedRolesAsJson = currentStoredValues?.get(DiscordGuilds.roles)
         val storedChannelsAsJson = currentStoredValues?.get(DiscordGuilds.channels)
+        val storedEmojisAsJson = currentStoredValues?.get(DiscordGuilds.emojis)
 
         if (currentStoredValues != null && isPresent) {
             // It exists, let's update it
@@ -278,6 +287,14 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
                     if (!(storedChannels.containsAll(guildChannels) && guildChannels.containsAll(storedChannels))) {
                         it[DiscordGuilds.channels] = Json.encodeToString(guildChannels.associateBy { it.id.toString() })
+                    }
+                }
+
+                if (storedEmojisAsJson != null) {
+                    val storedEmojis = Json.decodeFromString<PuddingDiscordEmojisMap>(storedEmojisAsJson).values
+
+                    if (!(storedEmojis.containsAll(guildEmojis) && guildEmojis.containsAll(storedEmojis))) {
+                        it[DiscordGuilds.channels] = Json.encodeToString(guildEmojis.associateBy { it.id.toString() })
                     }
                 }
             }
