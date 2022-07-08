@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Receives Discord gateway events via an WebSocket connection
@@ -62,6 +63,7 @@ class GatewayProxy(
 
                 state = State.RECONNECTION_BACKOFF
                 lastDisconnection = Clock.System.now()
+                lastEventReceivedAt = null
 
                 delay(delay)
             }
@@ -69,6 +71,20 @@ class GatewayProxy(
     }
 
     private suspend fun connect() {
+        // This is a hacky workaround, because for some reason our connection gets removed from Loritta Legacy's WebSocket list
+        val job = coroutineScope.launch {
+            while (true) {
+                val lastEventReceivedAt = lastEventReceivedAt
+                if (lastEventReceivedAt != null && Clock.System.now() - lastEventReceivedAt > 60.seconds) {
+                    logger.warn { "We haven't received an event for longer than 60s! We will close the connection and restart..." }
+                    session?.close()
+                    return@launch
+                }
+
+                delay(1_000)
+            }
+        }
+
         try {
             val newSession = http.webSocketSession(
                 "ws://${url}"
@@ -108,6 +124,7 @@ class GatewayProxy(
         val closeReason = session?.closeReason?.await()
         logger.warn { "WebSocket session $url seems to have been closed! Close Reason: $closeReason" }
         session = null
+        job.cancel()
     }
 
     override fun close() {
