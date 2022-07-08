@@ -58,7 +58,6 @@ class DiscordGatewayEventsProcessor(
     val bomDiaECia = BomDiaECia(this)
     val random = SecureRandom()
     val activeEvents = ConcurrentLinkedQueue<Job>()
-    val tasks = DiscordGatewayEventsProcessorTasks(this)
 
     private val onMessageReceived: (GatewayEvent) -> (Unit) = {
         val (eventType, discordEvent) = parseEventFromString(it)
@@ -71,6 +70,9 @@ class DiscordGatewayEventsProcessor(
     val gatewayProxies = config.gatewayProxies.filter { it.replicaId == replicaId }.map {
         GatewayProxy(it.url, it.authorizationToken, onMessageReceived)
     }
+
+    // This needs to be initialized AFTER the gatewayProxies above
+    val tasks = DiscordGatewayEventsProcessorTasks(this)
 
     fun start() {
         gatewayProxies.forEachIndexed { index, gatewayProxy ->
