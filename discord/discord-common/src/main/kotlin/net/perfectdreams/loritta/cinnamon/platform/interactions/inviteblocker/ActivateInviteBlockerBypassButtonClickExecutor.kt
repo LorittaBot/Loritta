@@ -17,7 +17,9 @@ import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 
 class ActivateInviteBlockerBypassButtonClickExecutor(val m: LorittaCinnamon) : ButtonClickWithDataExecutor {
     companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.ACTIVATE_INVITE_BLOCKER_BYPASS_BUTTON_EXECUTOR)
@@ -31,16 +33,29 @@ class ActivateInviteBlockerBypassButtonClickExecutor(val m: LorittaCinnamon) : B
 
         if (roleId !in context.member.roles)
             context.failEphemerally {
-                // TODO: Message
-                content = "You don't have the role anymore!"
+                styled(
+                    context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.YouDontHaveTheRoleAnymore("<@&$roleId>")),
+                    Emotes.Error
+                )
             }
 
-        m.services.transaction {
+        val success = m.services.transaction {
+            // Check if it already exists
+            if (ServerRolePermissions.select {
+                    ServerRolePermissions.guild eq context.guildId.toLong() and
+                            (ServerRolePermissions.roleId eq roleId.toLong()) and
+                            (ServerRolePermissions.permission eq LorittaPermission.ALLOW_INVITES)
+                }.count() == 1L
+            ) {
+                return@transaction false
+            }
+
             ServerRolePermissions.insert {
                 it[ServerRolePermissions.guild] = context.guildId.toLong()
                 it[ServerRolePermissions.roleId] = roleId.toLong()
                 it[ServerRolePermissions.permission] = LorittaPermission.ALLOW_INVITES
             }
+            return@transaction true
         }
 
         // Update message updates the original interaction message, in this case, where the button is
@@ -57,10 +72,17 @@ class ActivateInviteBlockerBypassButtonClickExecutor(val m: LorittaCinnamon) : B
         }
 
         context.sendEphemeralMessage {
-            styled(
-                context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.BypassEnabled("<@&$roleId>")),
-                Emotes.LoriHappy
-            )
+            if (success) {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.BypassEnabled("<@&$roleId>")),
+                    Emotes.LoriHappy
+                )
+            } else {
+                styled(
+                    context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.RoleAlreadyHasInviteBlockerBypass("<@&$roleId>")),
+                    Emotes.Error
+                )
+            }
         }
     }
 }
