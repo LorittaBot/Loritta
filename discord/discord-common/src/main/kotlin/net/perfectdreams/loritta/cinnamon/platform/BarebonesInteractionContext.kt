@@ -283,6 +283,6 @@ open class BarebonesInteractionContext(
         }
     )
 
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, title, builder)
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, data, title, builder)
+    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id.value, title, builder)
+    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id.value, data, title, builder)
 }

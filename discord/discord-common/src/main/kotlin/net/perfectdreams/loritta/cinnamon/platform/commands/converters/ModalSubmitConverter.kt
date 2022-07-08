@@ -24,7 +24,7 @@ class ModalSubmitConverter(
 
             val interaKTionsExecutorDeclaration = object : net.perfectdreams.discordinteraktions.common.modals.ModalSubmitExecutorDeclaration(
                 declaration::class,
-                declaration.id
+                declaration.id.value
             ) {
                 override val options = ModalComponentsWrapper(declaration)
             }

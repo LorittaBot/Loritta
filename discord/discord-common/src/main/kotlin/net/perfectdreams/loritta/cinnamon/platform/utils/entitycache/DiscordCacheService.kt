@@ -12,6 +12,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordChannelsMap
+import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordEmojisMap
 import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesList
 import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesMap
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordConfig
@@ -46,9 +47,15 @@ class DiscordCacheService(
             } ?: return@transaction EMPTY_GUILD_ENTITIES
 
             return@transaction GuildEntities(
-                Json.decodeFromString(guildData[DiscordGuilds.roles]),
-                Json.decodeFromString(guildData[DiscordGuilds.channels]),
-                Json.decodeFromString(guildData[DiscordGuilds.emojis]),
+                Json.decodeFromString<PuddingDiscordRolesMap>(guildData[DiscordGuilds.roles])
+                    .values
+                    .toList(),
+                Json.decodeFromString<PuddingDiscordChannelsMap>(guildData[DiscordGuilds.channels])
+                    .values
+                    .toList(),
+                Json.decodeFromString<PuddingDiscordEmojisMap>(guildData[DiscordGuilds.emojis])
+                    .values
+                    .toList(),
             )
         }
     }

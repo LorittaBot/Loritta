@@ -36,6 +36,7 @@ object ComponentExecutorIds {
     val SHOW_GUILD_MEMBER_PERMISSIONS_BUTTON_EXECUTOR = register("0025")
     val CHANGE_NOTIFICATIONS_PAGE_BUTTON_EXECUTOR = register("0026")
     val ACTIVATE_INVITE_BLOCKER_BYPASS_BUTTON_EXECUTOR = register("0027")
+    val TRACK_PACKAGE_MODAL_EXECUTOR = register("0028")
 
     /**
      * Verifies if the [id] matches our constraints

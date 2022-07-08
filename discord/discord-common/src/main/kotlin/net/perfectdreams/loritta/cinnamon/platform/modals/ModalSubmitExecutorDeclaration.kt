@@ -1,8 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.modals
 
-import net.perfectdreams.discordinteraktions.common.components.ComponentExecutorDeclaration.Companion.ID_REGEX
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.CommandDeclarationUtils
-import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitExecutorDeclaration.Companion.ID_REGEX
+import net.perfectdreams.loritta.cinnamon.platform.commands.ComponentId
 import net.perfectdreams.loritta.cinnamon.platform.modals.components.ModalComponents
 
 open class ModalSubmitExecutorDeclaration(
@@ -20,26 +19,11 @@ open class ModalSubmitExecutorDeclaration(
      *
      * All modal executors should be unique!
      */
-    val id: String,
-
-    /**
-     * The RegEx that the [id] will be validated against
-     *
-     * By default, it will be validated against the [ID_REGEX] regex, but you can use another RegEx if you want to
-     *
-     * Keep in mind that some IDs may break Discord InteraKTions functionality, such as IDs containing ":"
-     */
-    idRegex: Regex = ID_REGEX
+    val id: ComponentId
 ) {
-    constructor(id: String, idRegex: Regex = ID_REGEX) : this(null, id, idRegex)
-
-    companion object {
-        val ID_REGEX = Regex("[A-z0-9]+")
-    }
+    constructor(id: ComponentId) : this(null, id)
 
     init {
-        require(idRegex.matches(id)) { "ID must respect the $ID_REGEX regular expression!" }
-
         if (parent == null)
             parent = CommandDeclarationUtils.getParentClass(this)
     }
