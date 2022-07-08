@@ -19,11 +19,13 @@ class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
             val packageAsString = event.`package`.toString()
 
             val failedChannels = mutableSetOf<GatewayProxyConnection>()
+
             for (connection in m.connectedChannels) {
                 try {
                     connection.channel.send(packageAsString)
                 } catch (e: ClosedSendChannelException) {
                     logger.warn { "Gateway Proxy channel is closed! We will remove it from the connected channels list and ignore it then..." }
+                    connection.close()
                     failedChannels.add(connection)
                 }
             }

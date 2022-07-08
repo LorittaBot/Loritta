@@ -285,16 +285,15 @@ class LorittaWebsite(val loritta: Loritta) {
 				}
 
 				webSocket("/api/v1/loritta/gateway/events") {
-					println("Headers: ${this.call.request.headers}")
-
 					val result = RequiresAPIAuthenticationRoute.validate(call)
 
 					if (result) {
-						logger.info { "Someone connected to our gateway event relayer!" }
+						logger.info { "Someone connected to our gateway event relayer! ${this.call.request.userAgent()}" }
+
 						val channel = Channel<String>()
-						val gatewayProxyConnection = GatewayProxyConnection(channel)
+						val gatewayProxyConnection = GatewayProxyConnection(this, channel)
 						loritta.connectedChannels.add(gatewayProxyConnection)
-						logger.info { "Currently connected channels: ${loritta.connectedChannels}" }
+						logger.info { "Connected channels: ${loritta.connectedChannels}" }
 
 						try {
 							for (event in channel) {
@@ -304,11 +303,11 @@ class LorittaWebsite(val loritta: Loritta) {
 							// Maybe the client disconnected?
 							// java.util.concurrent.CancellationException: ArrayChannel was cancelled
 							logger.warn(e) { "Something went wrong while sending data to the connected channel!" }
+						} finally {
+							logger.info { "Shutting down ${gatewayProxyConnection}'s connection" }
+							gatewayProxyConnection.close()
+							loritta.connectedChannels.remove(gatewayProxyConnection)
 						}
-
-						logger.info { "Shutting down ${gatewayProxyConnection}'s connection" }
-						channel.close()
-						loritta.connectedChannels.remove(gatewayProxyConnection)
 					}
 				}
 			}
