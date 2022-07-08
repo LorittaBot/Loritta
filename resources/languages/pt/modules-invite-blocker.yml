@@ -1,0 +1,6 @@
+modules:
+  inviteBlocker:
+    activateInviteBlockerBypass: "Psiu, se você quiser, eu posso fazer que o cargo de {roleMention} tenha permissão para poder enviar convites sem serem bloqueados!"
+    howToReEnableLater: "Se você mudar de ideia, você pode alterar as permissões no futuro em {dashboardUrl}!"
+    bypassEnabled: "Prontinho! Agora eu não irei bloquear convites enviados por pessoas que possuem o cargo de {roleMention}!"
+    allowSendingInvites: "Permitir enviar convites"
