@@ -26,9 +26,11 @@ import dev.kord.gateway.GuildUpdate
 import dev.kord.gateway.MessageCreate
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.StringFormat
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordChannelsMap
@@ -50,6 +52,9 @@ import java.util.concurrent.TimeUnit
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
         private val logger = KotlinLogging.logger {}
+        private val jsonIgnoreUnknownKeys = Json {
+            ignoreUnknownKeys = true
+        }
     }
 
     /**
@@ -275,7 +280,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 it[DiscordGuilds.ownerId] = guildOwnerId.toLong()
 
                 if (storedRolesAsJson != null) {
-                    val storedRoles = Json.decodeFromString<PuddingDiscordRolesMap>(storedRolesAsJson).values
+                    val storedRoles = Json.decodeFromStringOrElseIfFailedToDeserialize<PuddingDiscordRolesMap>(storedRolesAsJson) { emptyMap() }.values
 
                     if (!(storedRoles.containsAll(guildRoles) && guildRoles.containsAll(storedRoles))) {
                         it[DiscordGuilds.roles] = Json.encodeToString(guildRoles.associateBy { it.id.toString() })
@@ -283,7 +288,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 }
 
                 if (guildChannels != null && storedChannelsAsJson != null) {
-                    val storedChannels = Json.decodeFromString<PuddingDiscordChannelsMap>(storedChannelsAsJson).values
+                    val storedChannels = Json.decodeFromStringOrElseIfFailedToDeserialize<PuddingDiscordChannelsMap>(storedChannelsAsJson) { emptyMap() }.values
 
                     if (!(storedChannels.containsAll(guildChannels) && guildChannels.containsAll(storedChannels))) {
                         it[DiscordGuilds.channels] = Json.encodeToString(guildChannels.associateBy { it.id.toString() })
@@ -291,7 +296,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 }
 
                 if (storedEmojisAsJson != null) {
-                    val storedEmojis = Json.decodeFromString<PuddingDiscordEmojisMap>(storedEmojisAsJson).values
+                    val storedEmojis = Json.decodeFromStringOrElseIfFailedToDeserialize<PuddingDiscordEmojisMap>(storedEmojisAsJson) { emptyMap() }.values
 
                     if (!(storedEmojis.containsAll(guildEmojis) && guildEmojis.containsAll(storedEmojis))) {
                         it[DiscordGuilds.emojis] = Json.encodeToString(guildEmojis.associateBy { it.id.toString() })
@@ -361,7 +366,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }?.get(DiscordGuilds.channels)
 
         if (channels != null) {
-            val newChannelsMap = Json.decodeFromString<PuddingDiscordChannelsMap>(channels)
+            val newChannelsMap = Json.decodeFromStringOrElseIfFailedToDeserialize<PuddingDiscordChannelsMap>(channels) { emptyMap() }
                 .toMutableMap()
                 .apply {
                     this[channel.id.toString()] = channel
@@ -381,7 +386,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }?.get(DiscordGuilds.roles)
 
         if (roles != null) {
-            val newChannelsMap = Json.decodeFromString<PuddingDiscordRolesMap>(roles)
+            val newChannelsMap = Json.decodeFromStringOrElseIfFailedToDeserialize<PuddingDiscordRolesMap>(roles) { emptyMap() }
                 .toMutableMap()
                 .apply {
                     this[role.id.toString()] = role
@@ -401,7 +406,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }?.get(DiscordGuilds.roles)
 
         if (roles != null) {
-            val newChannelsMap = Json.decodeFromString<PuddingDiscordRolesMap>(roles)
+            val newChannelsMap = Json.decodeFromStringOrElseIfFailedToDeserialize<PuddingDiscordRolesMap>(roles) { emptyMap() }
                 .toMutableMap()
                 .apply {
                     this.remove(roleId.toString())
@@ -421,7 +426,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }?.get(DiscordGuilds.channels)
 
         if (channels != null) {
-            val newChannelsMap = Json.decodeFromString<PuddingDiscordChannelsMap>(channels)
+            val newChannelsMap = Json.decodeFromStringOrElseIfFailedToDeserialize<PuddingDiscordChannelsMap>(channels) { emptyMap() }
                 .toMutableMap()
                 .apply {
                     this.remove(channel.id.toString())
@@ -447,14 +452,11 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             DiscordGuilds.id eq guildIdAsLong
         }
     }
-
-    private fun <T:Any> String.execAndMap(transform : (ResultSet) -> T) : List<T> {
-        val result = arrayListOf<T>()
-        TransactionManager.current().exec(this) { rs ->
-            while (rs.next()) {
-                result += transform(rs)
-            }
-        }
-        return result
+    
+    private inline fun <reified T> StringFormat.decodeFromStringOrElseIfFailedToDeserialize(string: String, action: () -> (T)): T = try {
+        decodeFromString(serializersModule.serializer(), string)
+    } catch (e: SerializationException) {
+        logger.warn(e) { "Failed to deserialize! We will fallback to the action block provided..." }
+        action.invoke()
     }
 }
