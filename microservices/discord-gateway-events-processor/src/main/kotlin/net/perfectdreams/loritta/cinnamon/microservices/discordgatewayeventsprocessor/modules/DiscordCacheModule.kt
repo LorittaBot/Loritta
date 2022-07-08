@@ -43,10 +43,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNul
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.update
 import pw.forst.exposed.insertOrUpdate
-import java.sql.ResultSet
 import java.util.concurrent.TimeUnit
 
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
@@ -452,7 +450,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             DiscordGuilds.id eq guildIdAsLong
         }
     }
-    
+
     private inline fun <reified T> StringFormat.decodeFromStringOrElseIfFailedToDeserialize(string: String, action: () -> (T)): T = try {
         decodeFromString(serializersModule.serializer(), string)
     } catch (e: SerializationException) {

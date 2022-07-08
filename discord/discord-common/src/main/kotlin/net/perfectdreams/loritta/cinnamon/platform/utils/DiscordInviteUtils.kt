@@ -2,7 +2,9 @@ package net.perfectdreams.loritta.cinnamon.platform.utils
 
 object DiscordInviteUtils {
     private val shortInviteRegex = Regex("(?:https?://)?discord.gg/([A-z0-9]+)")
-    private val longInviteRegex = Regex("(?:https?://)?discord(?:app)?.com/invite/([A-z0-9]+)")
+    // "discord.media", "discordsays.com" are present in "discord.gg/lori" source code
+    // they redirect to discord.com, but well, let's block them too just because they are official Discord URLs
+    private val longInviteRegex = Regex("(?:https?://)?(discord(?:app)?\\.com|discord\\.media|discordsays\\.com)/invite/([A-z0-9]+)")
     val inviteCodeRegex = Regex("[A-z0-9]+")
 
     /**
