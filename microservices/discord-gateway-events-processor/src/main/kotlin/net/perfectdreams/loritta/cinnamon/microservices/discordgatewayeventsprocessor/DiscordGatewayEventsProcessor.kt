@@ -76,7 +76,7 @@ class DiscordGatewayEventsProcessor(
 
     fun start() {
         gatewayProxies.forEachIndexed { index, gatewayProxy ->
-            logger.info { "Starting Gateway Proxy $index" }
+            logger.info { "Starting Gateway Proxy $index (${gatewayProxy.url})" }
             gatewayProxy.start()
         }
 

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy
 
 import io.ktor.client.*
-import io.ktor.client.plugins.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.websocket.*
@@ -33,15 +33,13 @@ class GatewayProxy(
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
-    private val http = HttpClient {
+    private val http = HttpClient(CIO) {
         install(WebSockets) {
             this.pingInterval = 5_000
         }
-
-        install(HttpTimeout)
     }
 
-    var session: ClientWebSocketSession? = null
+    var session: DefaultClientWebSocketSession? = null
     var connectionTries = 1
     val totalEventsReceived = AtomicInteger()
     var state = State.CONNECTING
@@ -98,20 +96,18 @@ class GatewayProxy(
                         onMessageReceived.invoke(GatewayEvent(event.data.toString(Charsets.UTF_8)))
                     }
                     is Frame.Binary -> {} // No need to handle this / It doesn't seem to be sent to us
-                    is Frame.Close -> {
-                        logger.info { "WebSocket connection $url has been closed! Reason: ${event.readReason()}" }
-                    }
-                    is Frame.Ping -> {
-                        logger.info { "Received WebSocket ping on connection $url!" }
-                    }
-                    is Frame.Pong -> {
-                        logger.info { "Received WebSocket pong on connection $url!" }
-                    }
+                    is Frame.Close -> {} // This isn't received by us because it isn't a raw connection
+                    is Frame.Ping -> {} // This isn't received by us because it isn't a raw connection
+                    is Frame.Pong -> {} // This isn't received by us because it isn't a raw connection
                 }
             }
         } catch (e: Throwable) {
             logger.warn(e) { "Something went wrong while listening to the WebSocket session $url!" }
         }
+
+        val closeReason = session?.closeReason?.await()
+        logger.warn { "WebSocket session $url seems to have been closed! Close Reason: $closeReason" }
+        session = null
     }
 
     override fun close() {

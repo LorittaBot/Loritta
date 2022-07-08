@@ -16,6 +16,7 @@ dependencies {
     implementation(libs.hikaricp)
     implementation("dev.kord:kord-rest:${Versions.KORD}")
     implementation("dev.kord:kord-gateway:${Versions.KORD}")
+    implementation(libs.ktor.client.cio)
     implementation("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-debug:1.6.3")
     implementation("commons-codec:commons-codec:1.15")

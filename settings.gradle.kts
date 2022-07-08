@@ -29,6 +29,7 @@ dependencyResolutionManagement {
             library("kotlinx-serialization-hocon", "org.jetbrains.kotlinx", "kotlinx-serialization-hocon").versionRef(kotlinXSerialization)
             library("ktor-client-core", "io.ktor", "ktor-client-core").versionRef(ktor)
             library("ktor-client-js", "io.ktor", "ktor-client-js").versionRef(ktor)
+            library("ktor-client-cio", "io.ktor", "ktor-client-cio").versionRef(ktor)
 
             library("exposed-core", "org.jetbrains.exposed", "exposed-core").versionRef(exposed)
             library("exposed-jdbc", "org.jetbrains.exposed", "exposed-jdbc").versionRef(exposed)
