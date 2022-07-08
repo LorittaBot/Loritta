@@ -83,6 +83,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     val guildOwnerId = event.guild.ownerId
                     val guildRoles = event.guild.roles
                     val guildChannels = event.guild.channels.value!! // Shouldn't be null in a GUILD_CREATE event
+                    // If your bot does not have the GUILD_PRESENCES Gateway Intent, or if the guild has over 75k members, members and presences returned in this event will only contain your bot and users in voice channels.
+                    val guildMembers = event.guild.members.value ?: emptyList()
 
                     withGuildIdLock(guildId) {
                         m.services.transaction {
@@ -94,6 +96,14 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                                 guildRoles,
                                 guildChannels
                             )
+
+                            for (member in guildMembers) {
+                                createOrUpdateGuildMember(
+                                    guildId,
+                                    member.user.value!!.id,
+                                    member
+                                )
+                            }
                         }
                     }
 
