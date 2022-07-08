@@ -104,7 +104,7 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
                                             }
 
                                             CorreiosPackageUpdateUserNotifications.insert {
-                                                it[CorreiosPackageUpdateUserNotifications.id] = userNotificationId
+                                                it[CorreiosPackageUpdateUserNotifications.timestampLog] = userNotificationId
                                                 it[CorreiosPackageUpdateUserNotifications.trackingId] = correiosPackage.numero
                                                 it[CorreiosPackageUpdateUserNotifications.packageEvent] = packageEventId
                                             }
@@ -115,33 +115,6 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
                                                 it[PendingImportantNotifications.notification] = userNotificationId
                                                 it[PendingImportantNotifications.submittedAt] = Instant.now()
                                             }
-
-                                            /*
-                                            val message = ImportantNotificationDatabaseMessageBuilder().apply {
-                                                embed {
-                                                    // Package ID here
-                                                    title = i18nContext.get(I18nKeysData.Commands.Command.Package.PackageUpdate(correiosPackage.numero))
-
-                                                    val eventTypeWithStatus = event.eventTypeWithStatus
-
-                                                    field(
-                                                        "${CorreiosUtils.getEmoji(eventTypeWithStatus)} ${event.descricao}",
-                                                        CorreiosUtils.formatEvent(event),
-                                                        false
-                                                    )
-
-                                                    image = CorreiosUtils.getImage(eventTypeWithStatus)
-                                                    color = LorittaColors.CorreiosYellow.toKordColor()
-                                                    timestamp = event.criacao.toInstant(CorreiosPackageInfoUpdater.KTX_DATETIME_CORREIOS_OFFSET)
-                                                }
-                                            }.toMessage()
-
-                                            PendingImportantNotifications.insert {
-                                                it[PendingImportantNotifications.userId] = user.value
-                                                it[PendingImportantNotifications.submittedAt] = Instant.now()
-                                                it[PendingImportantNotifications.message] = Json.encodeToString(message)
-                                                it[PendingImportantNotifications.state] = PendingImportantNotificationState.PENDING
-                                            } */
                                         }
                                     }
 
