@@ -11,6 +11,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.GatewayEvent
 import java.io.Closeable
@@ -42,16 +44,20 @@ class GatewayProxy(
     var session: ClientWebSocketSession? = null
     var connectionTries = 1
     val totalEventsReceived = AtomicInteger()
+    var state = State.CONNECTING
+    var lastEventReceivedAt: Instant? = null
 
     fun start() {
         coroutineScope.launch {
             while (true) {
+                state = State.CONNECTING
                 logger.info { "Connecting to Gateway..." }
                 connect()
                 connectionTries++
                 val delay = (1.1.pow(connectionTries.toDouble()) * 50).toLong()
                     .coerceAtMost(60_000)
                 logger.info { "Connection closed! Reconnecting in ${delay}ms..." }
+                state = State.RECONNECTION_BACKOFF
                 delay(delay)
             }
         }
@@ -77,7 +83,9 @@ class GatewayProxy(
                 when (event) {
                     is Frame.Text -> {
                         connectionTries = 0 // On a successful connection, reset the try counter
+                        state = State.CONNECTED
                         totalEventsReceived.addAndGet(1)
+                        lastEventReceivedAt = Clock.System.now()
                         onMessageReceived.invoke(GatewayEvent(event.data.toString(Charsets.UTF_8)))
                     }
                     is Frame.Binary -> {} // No need to handle this / It doesn't seem to be sent to us
@@ -97,5 +105,11 @@ class GatewayProxy(
             session?.close()
             http.close()
         }
+    }
+
+    enum class State {
+        CONNECTING,
+        CONNECTED,
+        RECONNECTION_BACKOFF
     }
 }

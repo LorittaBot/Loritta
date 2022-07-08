@@ -9,9 +9,9 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
     }
 
     private var lastEventCountCheck = 0
-    private val eventsGatewayCount = m.gatewayProxies.map {
-        it.url to 0
-    }.toMap().toMutableMap()
+    private val eventsGatewayCount = m.gatewayProxies.associate {
+        it to 0
+    }.toMutableMap()
 
     override fun run() {
         val mb = 1024 * 1024
@@ -23,9 +23,9 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
 
         for (gateway in m.gatewayProxies) {
             val gatewayEventsProcessed = gateway.totalEventsReceived.get()
-            val previousEventsProcessed = eventsGatewayCount[gateway.url] ?: 0
-            logger.info { "Discord Events processed on ${gateway.url}: $gatewayEventsProcessed; (+${gatewayEventsProcessed - previousEventsProcessed})" }
-            eventsGatewayCount[gateway.url] = gatewayEventsProcessed
+            val previousEventsProcessed = eventsGatewayCount[gateway] ?: 0
+            logger.info { "Discord Events processed on [${gateway.state} (${gateway.connectionTries})] ${gateway.url}: $gatewayEventsProcessed; (+${gatewayEventsProcessed - previousEventsProcessed}); Last event received at: ${gateway.lastEventReceivedAt}" }
+            eventsGatewayCount[gateway] = gatewayEventsProcessed
         }
 
         logger.info { "Active Events (${m.activeEvents.size})" }
