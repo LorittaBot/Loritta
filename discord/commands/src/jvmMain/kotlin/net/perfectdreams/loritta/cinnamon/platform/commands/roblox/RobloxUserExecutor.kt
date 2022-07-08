@@ -40,6 +40,8 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
         }
 
         override val options = Options
+
+        private val jsonIgnoreUnknownKeys = Json { ignoreUnknownKeys = true }
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
@@ -86,25 +88,25 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
         }
 
         val userDataJob = GlobalScope.async {
-            Json.decodeFromString<RobloxUserResponse>(
+            jsonIgnoreUnknownKeys.decodeFromString<RobloxUserResponse>(
                 http.get("https://users.roblox.com/v1/users/$userId").bodyAsText()
             )
         }
 
         val userBadgesJob = GlobalScope.async {
-            Json.decodeFromString<List<RobloxBadge>>(
+            jsonIgnoreUnknownKeys.decodeFromString<List<RobloxBadge>>(
                 http.get("https://accountinformation.roblox.com/v1/users/$userId/roblox-badges").bodyAsText()
             )
         }
 
         val userFriendsJob = GlobalScope.async {
-            Json.decodeFromString<RobloxFriendsResponse>(
+            jsonIgnoreUnknownKeys.decodeFromString<RobloxFriendsResponse>(
                 http.get("https://friends.roblox.com/v1/users/$userId/friends").bodyAsText()
             )
         }
 
         val userCollectionsJob = GlobalScope.async {
-            Json.decodeFromString<CollectionsItemsResponse>(
+            jsonIgnoreUnknownKeys.decodeFromString<CollectionsItemsResponse>(
                 http.get("https://www.roblox.com/users/profile/robloxcollections-json") {
                     parameter("userId", userId)
                 }.bodyAsText()
@@ -112,7 +114,7 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
         }
 
         val userAssetsJob = GlobalScope.async {
-            Json.decodeFromString<PlayerAssetsResponse>(
+            jsonIgnoreUnknownKeys.decodeFromString<PlayerAssetsResponse>(
                 http.get("https://www.roblox.com/users/profile/playerassets-json?assetTypeId=21&userId=$userId") {
                     parameter("assetTypeId", "21")
                     parameter("userId", userId)
@@ -280,7 +282,8 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
         val id: Long,
         val name: String,
         val displayName: String,
-        val externalAppDisplayName: String?
+        val externalAppDisplayName: String?,
+        val hasVerifiedBadge: Boolean
     )
 
     // [{"id":2,"name":"Friendship","description":"This badge is given to players who have embraced the Roblox community and have made at least 20 friends. People who have this badge are good people to know and can probably help you out if you are having trouble.","imageUrl":"https://images.rbxcdn.com/5eb20917cf530583e2641c0e1f7ba95e.png"},{"id":12,"name":"Veteran","description":"This badge recognizes members who have played Roblox for one year or more. They are stalwart community members who have stuck with us over countless releases, and have helped shape Roblox into the game that it is today. These medalists are the true steel, the core of the Robloxian history ... and its future.","imageUrl":"https://images.rbxcdn.com/b7e6cabb5a1600d813f5843f37181fa3.png"},{"id":6,"name":"Homestead","description":"The homestead badge is earned by having your personal place visited 100 times. Players who achieve this have demonstrated their ability to build cool things that other Robloxians were interested enough in to check out. Get a jump-start on earning this reward by inviting people to come visit your place.","imageUrl":"https://images.rbxcdn.com/b66bc601e2256546c5dd6188fce7a8d1.png"},{"id":7,"name":"Bricksmith","description":"The Bricksmith badge is earned by having a popular personal place. Once your place has been visited 1000 times, you will receive this award. Robloxians with Bricksmith badges are accomplished builders who were able to create a place that people wanted to explore a thousand times. They no doubt know a thing or two about putting bricks together.","imageUrl":"https://images.rbxcdn.com/49f3d30f5c16a1c25ea0f97ea8ef150e.png"},{"id":18,"name":"Welcome To The Club","description":"This badge is awarded to players who have ever belonged to the illustrious Builders Club. These players are part of a long tradition of Roblox greatness.","imageUrl":"https://images.rbxcdn.com/6c2a598114231066a386fa716ac099c4.png"}]
