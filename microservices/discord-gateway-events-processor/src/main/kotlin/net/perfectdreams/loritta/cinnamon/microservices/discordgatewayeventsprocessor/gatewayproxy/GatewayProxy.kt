@@ -69,12 +69,6 @@ class GatewayProxy(
             val newSession = http.webSocketSession(
                 "ws://${url}"
             ) {
-                // workaround until https://youtrack.jetbrains.com/issue/KTOR-4419 is fixed
-                // otherwise the gateway connection will die and fail to reconnect
-                timeout {
-                    requestTimeoutMillis = HttpTimeout.INFINITE_TIMEOUT_MS
-                }
-
                 header("Authorization", authorizationToken)
             }
 
