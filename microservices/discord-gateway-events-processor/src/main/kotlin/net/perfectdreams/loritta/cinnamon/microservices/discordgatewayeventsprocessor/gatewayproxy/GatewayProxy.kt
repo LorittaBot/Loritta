@@ -76,8 +76,8 @@ class GatewayProxy(
             while (true) {
                 val lastEventReceivedAt = lastEventReceivedAt
                 if (lastEventReceivedAt != null && Clock.System.now() - lastEventReceivedAt > 60.seconds) {
-                    logger.warn { "We haven't received an event for longer than 60s! We will close the connection and restart..." }
-                    session?.close()
+                    logger.warn { "We haven't received an event on the connection $url for longer than 60s! We will close the connection and restart..." }
+                    session?.close(CloseReason(CloseReason.Codes.NORMAL, "Haven't received an event for longer than 60s, so we will restart the connection"))
                     return@launch
                 }
 
