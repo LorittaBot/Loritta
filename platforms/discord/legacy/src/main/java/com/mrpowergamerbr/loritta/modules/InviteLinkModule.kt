@@ -17,12 +17,12 @@ import com.mrpowergamerbr.loritta.utils.removeAllFunctions
 import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.common.locale.BaseLocale
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
@@ -33,6 +33,9 @@ class InviteLinkModule : MessageReceivedModule {
 	}
 
 	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
+		if (loritta.config.gatewayProxy.disableInviteBlocker)
+			return false
+
 		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(ServerConfig::inviteBlockerConfig)
 				?: return false
 
