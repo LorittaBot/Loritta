@@ -294,7 +294,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     val storedEmojis = Json.decodeFromString<PuddingDiscordEmojisMap>(storedEmojisAsJson).values
 
                     if (!(storedEmojis.containsAll(guildEmojis) && guildEmojis.containsAll(storedEmojis))) {
-                        it[DiscordGuilds.channels] = Json.encodeToString(guildEmojis.associateBy { it.id.toString() })
+                        it[DiscordGuilds.emojis] = Json.encodeToString(guildEmojis.associateBy { it.id.toString() })
                     }
                 }
             }
@@ -308,6 +308,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
                 it[DiscordGuilds.roles] = Json.encodeToString(guildRoles.associateBy { it.id.toString() })
                 it[DiscordGuilds.channels] = Json.encodeToString((guildChannels ?: listOf()).associateBy { it.id.toString() })
+                it[DiscordGuilds.emojis] = Json.encodeToString(guildEmojis.associateBy { it.id.toString() })
             }
         }
     }
