@@ -14,6 +14,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.GatewayEvent
 import java.io.Closeable
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
 
 /**
@@ -40,6 +41,7 @@ class GatewayProxy(
 
     var session: ClientWebSocketSession? = null
     var connectionTries = 1
+    val totalEventsReceived = AtomicInteger()
 
     fun start() {
         coroutineScope.launch {
@@ -75,6 +77,7 @@ class GatewayProxy(
                 when (event) {
                     is Frame.Text -> {
                         connectionTries = 0 // On a successful connection, reset the try counter
+                        totalEventsReceived.addAndGet(1)
                         onMessageReceived.invoke(GatewayEvent(event.data.toString(Charsets.UTF_8)))
                     }
                     is Frame.Binary -> {} // No need to handle this / It doesn't seem to be sent to us

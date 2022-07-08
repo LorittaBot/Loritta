@@ -28,7 +28,6 @@ import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.atomic.AtomicInteger
 
 class DiscordGatewayEventsProcessor(
     val config: RootConfig,
@@ -61,19 +60,15 @@ class DiscordGatewayEventsProcessor(
     val activeEvents = ConcurrentLinkedQueue<Job>()
     val tasks = DiscordGatewayEventsProcessorTasks(this)
 
-    var totalEventsProcessed = AtomicInteger()
-
     private val onMessageReceived: (GatewayEvent) -> (Unit) = {
         val (eventType, discordEvent) = parseEventFromString(it)
 
         // We will call a method that doesn't reference the "discordEventAsJsonObject" nor the "it" object, this makes it veeeery clear to the JVM that yes, you can GC the "discordEventAsJsonObject" and "it" objects
         // (Will it really GC the object? idk, but I hope it will)
         launchEventProcessorJob(eventType, discordEvent)
-
-        totalEventsProcessed.incrementAndGet()
     }
 
-    private val gatewayProxies = config.gatewayProxies.filter { it.replicaId == replicaId }.map {
+    val gatewayProxies = config.gatewayProxies.filter { it.replicaId == replicaId }.map {
         GatewayProxy(it.url, it.authorizationToken, onMessageReceived)
     }
 
