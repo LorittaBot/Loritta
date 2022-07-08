@@ -13,6 +13,7 @@ import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.builder.message.create.allowedMentions
 import dev.kord.rest.request.KtorRequestException
 import io.ktor.http.*
+import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaPermission
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -35,6 +36,7 @@ import java.util.regex.Pattern
 class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
         private val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
+        private val logger = KotlinLogging.logger {}
     }
 
     private val cachedInviteLinks = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES)
@@ -149,19 +151,27 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
 
                 if (lorittaPermissions.hasPermission(Permission.ManageGuild)) {
                     try {
+                        logger.info { "Querying guild $guildId's vanity invite..." }
                         val vanityInvite = m.rest.guild.getVanityInvite(guildId)
                         val vanityInviteCode = vanityInvite.code
                         if (vanityInviteCode != null)
                             guildInviteLinks.add(vanityInviteCode)
+                        else
+                            logger.info { "Guild $guildId has the vanity invite feature, but they haven't set the invite code!" }
                     } catch (e: KtorRequestException) {
                         // Forbidden = The server does not have the feature enabled
                         if (e.httpResponse.status != HttpStatusCode.Forbidden)
                             throw e
+                        else
+                            logger.info { "Guild $guildId does not have the vanity invite feature..." }
                     }
 
+                    logger.info { "Querying guild $guildId normal invites..." }
                     val invites = m.rest.guild.getGuildInvites(guildId) // This endpoint does not return the vanity invite
                     val codes = invites.map { it.code }
                     guildInviteLinks.addAll(codes)
+                } else {
+                    logger.warn { "Not querying guild $guildId invites because I don't have permission to manage the guild there!" }
                 }
 
                 allowedInviteCodes.addAll(guildInviteLinks)
@@ -171,6 +181,8 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
 
             cachedInviteLinks[guildId] = allowedInviteCodes
         }
+
+        logger.info { "Allowed invite codes in guild $guildId: $allowedInviteCodes" }
 
         for (matcher in validMatchers) {
             val urls = mutableSetOf<String>()
@@ -185,8 +197,12 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
             for (url in urls) {
                 val inviteId = DiscordInviteUtils.getInviteCodeFromUrl(url) ?: continue
 
-                if (inviteId in allowedInviteCodes)
+                if (inviteId in allowedInviteCodes) {
+                    logger.info { "Invite Blocker triggered in guild $guildId, but we will ignore it because it is on the invite code allowed list... Invite Code: $inviteId" }
                     continue
+                }
+
+                logger.info { "Invite Blocker triggered in guild $guildId! Invite Code: $inviteId" }
 
                 if (inviteBlockerConfig.deleteMessage && lorittaPermissions.hasPermission(Permission.ManageMessages)) {
                     try {
@@ -199,70 +215,78 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                         // Maybe the message was deleted by another bot?
                         if (e.httpResponse.status != HttpStatusCode.NotFound)
                             throw e
+                        else
+                            logger.warn { "I tried deleting the message ${message.id} on $guildId, but looks like another bot deleted it... Let's just ignore it and pretend it was successfully deleted" }
                     }
                 }
 
                 val warnMessage = inviteBlockerConfig.warnMessage
 
-                if (inviteBlockerConfig.tellUser && !warnMessage.isNullOrEmpty() && lorittaPermissions.canTalk()) {
-                    val toBeSent = MessageUtils.createMessage(
-                        warnMessage,
-                        listOf(
-                            UserTokenSource(author),
-                            MemberTokenSource(author, member)
-                        ),
-                        emptyMap()
-                    )
+                if (inviteBlockerConfig.tellUser && !warnMessage.isNullOrEmpty()) {
+                    if (lorittaPermissions.canTalk()) {
+                        logger.info { "Sending blocked invite message in $channelId on $guildId..." }
 
-                    val sentMessage = m.rest.channel.createMessage(channelId) {
-                        toBeSent.apply(this)
-                    }
+                        val toBeSent = MessageUtils.createMessage(
+                            warnMessage,
+                            listOf(
+                                UserTokenSource(author),
+                                MemberTokenSource(author, member)
+                            ),
+                            emptyMap()
+                        )
 
-                    if (m.cache.hasPermission(guildId, channelId, author.id, Permission.ManageGuild)) {
-                        // If the user has permission to enable the invite bypass permission, make Loritta recommend to enable the permission
-                        val topRole = m.cache.getRoles(guildId, member)
-                            .asSequence()
-                            .sortedByDescending { it.position }
-                            .filter { !it.managed }
-                            .filter { it.id != guildId } // If it is the role ID == guild ID, then it is the @everyone role!
-                            .firstOrNull()
+                        val sentMessage = m.rest.channel.createMessage(channelId) {
+                            toBeSent.apply(this)
+                        }
 
-                        if (topRole != null) {
-                            // A role has been found! Tell the user about enabling the invite blocker bypass
-                            m.rest.channel.createMessage(channelId) {
-                                this.failIfNotExists = false
-                                this.messageReference = sentMessage.id
+                        if (m.cache.hasPermission(guildId, channelId, author.id, Permission.ManageGuild)) {
+                            // If the user has permission to enable the invite bypass permission, make Loritta recommend to enable the permission
+                            val topRole = m.cache.getRoles(guildId, member)
+                                .asSequence()
+                                .sortedByDescending { it.position }
+                                .filter { !it.managed }
+                                .filter { it.id != guildId } // If it is the role ID == guild ID, then it is the @everyone role!
+                                .firstOrNull()
 
-                                styled(
-                                    i18nContext.get(I18nKeysData.Modules.InviteBlocker.ActivateInviteBlockerBypass("<@&${topRole.id}>")),
-                                    Emotes.LoriSmile
-                                )
+                            if (topRole != null) {
+                                // A role has been found! Tell the user about enabling the invite blocker bypass
+                                m.rest.channel.createMessage(channelId) {
+                                    this.failIfNotExists = false
+                                    this.messageReference = sentMessage.id
 
-                                styled(
-                                    i18nContext.get(I18nKeysData.Modules.InviteBlocker.HowToReEnableLater("<${m.config.loritta.website}guild/${author.id}/configure/permissions>")),
-                                    Emotes.LoriHi
-                                )
+                                    styled(
+                                        i18nContext.get(I18nKeysData.Modules.InviteBlocker.ActivateInviteBlockerBypass("<@&${topRole.id}>")),
+                                        Emotes.LoriSmile
+                                    )
 
-                                actionRow {
-                                    interactiveButton(
-                                        ButtonStyle.Primary,
-                                        i18nContext.get(I18nKeysData.Modules.InviteBlocker.AllowSendingInvites),
-                                        ActivateInviteBlockerBypassButtonClickExecutor,
-                                        m.encodeDataForComponentOrStoreInDatabase(
-                                            ActivateInviteBlockerData(
-                                                author.id,
-                                                topRole.id
+                                    styled(
+                                        i18nContext.get(I18nKeysData.Modules.InviteBlocker.HowToReEnableLater("<${m.config.loritta.website}guild/${author.id}/configure/permissions>")),
+                                        Emotes.LoriHi
+                                    )
+
+                                    actionRow {
+                                        interactiveButton(
+                                            ButtonStyle.Primary,
+                                            i18nContext.get(I18nKeysData.Modules.InviteBlocker.AllowSendingInvites),
+                                            ActivateInviteBlockerBypassButtonClickExecutor,
+                                            m.encodeDataForComponentOrStoreInDatabase(
+                                                ActivateInviteBlockerData(
+                                                    author.id,
+                                                    topRole.id
+                                                )
                                             )
-                                        )
-                                    ) {
-                                        loriEmoji = Emotes.LoriPat
+                                        ) {
+                                            loriEmoji = Emotes.LoriPat
+                                        }
                                     }
-                                }
 
-                                // Empty allowed mentions because we don't want to mention the role
-                                allowedMentions {}
+                                    // Empty allowed mentions because we don't want to mention the role
+                                    allowedMentions {}
+                                }
                             }
                         }
+                    } else {
+                        logger.warn { "I wanted to tell about the blocked invite in $channelId on $guildId, but I can't talk there!" }
                     }
                 }
 
