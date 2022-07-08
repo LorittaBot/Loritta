@@ -1,0 +1,14 @@
+description: "Ver notificações"
+dailyTaxTaxedUserNotification: "Imposto de Inatividade no Prêmio Diário (Taxado)"
+dailyTaxWarnUserNotification: "Imposto de Inatividade no Prêmio Diário (Aviso)"
+correiosPackageUpdate: "Atualização sobre um pacote dos Correios"
+unknownNotification: "Notificação Desconhecida"
+list:
+  description: "Ver todas as notificações"
+  title: "Notificações"
+view:
+  description: "Ver uma notificação"
+  couldntFindTheNotification: "Não consegui encontrar essa notificação! Você tem certeza que ela existe?"
+  options:
+    id:
+      text: "O ID da notificação que você deseja ver as informações"
