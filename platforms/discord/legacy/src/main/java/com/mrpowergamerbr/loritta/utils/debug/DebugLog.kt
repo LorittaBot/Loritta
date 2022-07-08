@@ -132,6 +132,10 @@ object DebugLog {
 			"dumpc" -> {
 				dumpCoroutinesToFile()
 			}
+			"clearproxy" -> {
+				loritta.connectedChannels.clear()
+				println("Connected channels list were cleared!")
+			}
 		}
 	}
 }

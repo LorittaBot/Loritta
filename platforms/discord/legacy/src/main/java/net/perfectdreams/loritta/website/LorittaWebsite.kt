@@ -294,6 +294,7 @@ class LorittaWebsite(val loritta: Loritta) {
 						val channel = Channel<String>()
 						val gatewayProxyConnection = GatewayProxyConnection(channel)
 						loritta.connectedChannels.add(gatewayProxyConnection)
+						logger.info { "Currently connected channels: ${loritta.connectedChannels}" }
 
 						try {
 							for (event in channel) {
@@ -305,6 +306,7 @@ class LorittaWebsite(val loritta: Loritta) {
 							logger.warn(e) { "Something went wrong while sending data to the connected channel!" }
 						}
 
+						logger.info { "Shutting down ${gatewayProxyConnection}'s connection" }
 						channel.close()
 						loritta.connectedChannels.remove(gatewayProxyConnection)
 					}
