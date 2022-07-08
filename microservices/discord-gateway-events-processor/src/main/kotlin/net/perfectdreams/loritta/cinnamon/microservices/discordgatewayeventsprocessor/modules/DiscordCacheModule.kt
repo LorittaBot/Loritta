@@ -16,6 +16,7 @@ import dev.kord.gateway.ChannelUpdate
 import dev.kord.gateway.Event
 import dev.kord.gateway.GuildCreate
 import dev.kord.gateway.GuildDelete
+import dev.kord.gateway.GuildEmojisUpdate
 import dev.kord.gateway.GuildMemberAdd
 import dev.kord.gateway.GuildMemberRemove
 import dev.kord.gateway.GuildMemberUpdate
@@ -145,6 +146,16 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     }
 
                     logger.info { "GuildUpdate for $guildId took ${System.currentTimeMillis() - start}ms" }
+                }
+            }
+            is GuildEmojisUpdate -> {
+                val guildId = event.emoji.guildId
+                val discordEmojis = event.emoji.emojis
+
+                withGuildIdLock(guildId) {
+                    m.services.transaction {
+                        updateGuildEmojis(guildId, discordEmojis)
+                    }
                 }
             }
             is MessageCreate -> {
@@ -375,6 +386,12 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             }
         } else {
             logger.info { "Channel $channel was created or updated in $guildId, but there isn't any database entries associated with it!" }
+        }
+    }
+
+    private fun updateGuildEmojis(guildId: Snowflake, discordEmojis: List<DiscordEmoji>) {
+        DiscordGuilds.update({ DiscordGuilds.id eq guildId.toLong() }) {
+            it[DiscordGuilds.emojis] = Json.encodeToString(discordEmojis.associateBy { it.toString() })
         }
     }
 
