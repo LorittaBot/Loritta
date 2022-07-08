@@ -14,7 +14,6 @@ class InternalAnalyticSender : Runnable {
 	override fun run() {
 		try {
 			DebugLog.showExtendedInfo()
-			DebugLog.dumpCoroutinesToFile()
 		} catch (e: Exception) {
 			logger.error("Erro ao mostrar analytics", e)
 		}

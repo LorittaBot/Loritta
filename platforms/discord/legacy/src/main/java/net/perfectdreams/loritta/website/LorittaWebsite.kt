@@ -91,8 +91,8 @@ class LorittaWebsite(val loritta: Loritta) {
 
 		val server = embeddedServer(Netty, loritta.instanceConfig.loritta.website.port) {
 			install(WebSockets) {
-				pingPeriod = Duration.ofSeconds(15)
-				timeout = Duration.ofSeconds(15)
+				pingPeriod = Duration.ofSeconds(5)
+				timeout = Duration.ofSeconds(30)
 				maxFrameSize = Long.MAX_VALUE
 				masking = false
 			}
@@ -305,6 +305,7 @@ class LorittaWebsite(val loritta: Loritta) {
 							logger.warn(e) { "Something went wrong while sending data to the connected channel!" }
 						}
 
+						channel.close()
 						loritta.connectedChannels.remove(gatewayProxyConnection)
 					}
 				}
