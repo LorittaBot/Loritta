@@ -148,6 +148,8 @@ class SlashCommandConverter(
                 description,
                 localizedDescriptions,
                 interaKTionsExecutorDeclaration,
+                null,
+                false,
                 subcommands,
                 subcommandGroups
             )
@@ -158,6 +160,8 @@ class SlashCommandConverter(
                 description,
                 localizedDescriptions,
                 null,
+                null,
+                false,
                 subcommands,
                 subcommandGroups
             )
@@ -210,6 +214,8 @@ class SlashCommandConverter(
         val interaKTionsDeclaration = net.perfectdreams.discordinteraktions.common.commands.UserCommandDeclaration(
             defaultLocale.get(declaration.name),
             createLocalizedStringMapExcludingDefaultLocale(defaultLocale, declaration.name),
+            null,
+            false,
             interaKTionsExecutorDeclaration
         )
 
