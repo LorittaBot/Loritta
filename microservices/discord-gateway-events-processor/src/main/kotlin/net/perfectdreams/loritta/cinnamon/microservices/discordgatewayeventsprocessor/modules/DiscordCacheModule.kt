@@ -51,9 +51,6 @@ import java.util.concurrent.TimeUnit
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val jsonIgnoreUnknownKeys = Json {
-            ignoreUnknownKeys = true
-        }
     }
 
     /**

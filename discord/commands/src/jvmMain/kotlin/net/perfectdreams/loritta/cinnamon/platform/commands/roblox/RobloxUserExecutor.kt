@@ -17,6 +17,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
@@ -40,8 +41,6 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
         }
 
         override val options = Options
-
-        private val jsonIgnoreUnknownKeys = Json { ignoreUnknownKeys = true }
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
@@ -88,25 +87,25 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
         }
 
         val userDataJob = GlobalScope.async {
-            jsonIgnoreUnknownKeys.decodeFromString<RobloxUserResponse>(
+            JsonIgnoreUnknownKeys.decodeFromString<RobloxUserResponse>(
                 http.get("https://users.roblox.com/v1/users/$userId").bodyAsText()
             )
         }
 
         val userBadgesJob = GlobalScope.async {
-            jsonIgnoreUnknownKeys.decodeFromString<List<RobloxBadge>>(
+            JsonIgnoreUnknownKeys.decodeFromString<List<RobloxBadge>>(
                 http.get("https://accountinformation.roblox.com/v1/users/$userId/roblox-badges").bodyAsText()
             )
         }
 
         val userFriendsJob = GlobalScope.async {
-            jsonIgnoreUnknownKeys.decodeFromString<RobloxFriendsResponse>(
+            JsonIgnoreUnknownKeys.decodeFromString<RobloxFriendsResponse>(
                 http.get("https://friends.roblox.com/v1/users/$userId/friends").bodyAsText()
             )
         }
 
         val userCollectionsJob = GlobalScope.async {
-            jsonIgnoreUnknownKeys.decodeFromString<CollectionsItemsResponse>(
+            JsonIgnoreUnknownKeys.decodeFromString<CollectionsItemsResponse>(
                 http.get("https://www.roblox.com/users/profile/robloxcollections-json") {
                     parameter("userId", userId)
                 }.bodyAsText()
@@ -114,7 +113,7 @@ class RobloxUserExecutor(val http: HttpClient) : SlashCommandExecutor() {
         }
 
         val userAssetsJob = GlobalScope.async {
-            jsonIgnoreUnknownKeys.decodeFromString<PlayerAssetsResponse>(
+            JsonIgnoreUnknownKeys.decodeFromString<PlayerAssetsResponse>(
                 http.get("https://www.roblox.com/users/profile/playerassets-json?assetTypeId=21&userId=$userId") {
                     parameter("assetTypeId", "21")
                     parameter("userId", userId)

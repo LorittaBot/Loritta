@@ -4,22 +4,18 @@ import dev.kord.common.entity.DiscordChannel
 import dev.kord.common.entity.DiscordEmoji
 import dev.kord.common.entity.DiscordRole
 import dev.kord.common.entity.Snowflake
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
+import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.platform.utils.parallax.ParallaxMessage
 import net.perfectdreams.loritta.cinnamon.platform.utils.sources.TokenSource
 
 object MessageUtils {
     private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
-
-    private val jsonIgnoreUnknownKeys = Json {
-        ignoreUnknownKeys = true
-    }
 
     suspend fun createMessage(
         stuff: LorittaDiscordStuff,
@@ -51,12 +47,12 @@ object MessageUtils {
 
         // Is this a JSON message?
         val rawParallaxMessage = try {
-            val element = jsonIgnoreUnknownKeys.parseToJsonElement(message)
+            val element = JsonIgnoreUnknownKeys.parseToJsonElement(message)
                 .jsonObject
 
             val updatedMessageFormat = updateMessageFormat(element)
 
-            jsonIgnoreUnknownKeys.decodeFromJsonElement(updatedMessageFormat)
+            JsonIgnoreUnknownKeys.decodeFromJsonElement(updatedMessageFormat)
         } catch (e: Exception) {
             // Nope, doesn't seem like it! Let's create a ParallaxMessage from the message then...
             try {

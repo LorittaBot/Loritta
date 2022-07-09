@@ -10,9 +10,9 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
 
 object KordDiscordEventUtils {
-    private val json = Json { ignoreUnknownKeys = true }
     private val logger = KotlinLogging.logger {}
 
     fun parseEventFromString(gatewayPayload: String) = parseEventFromJsonObject(
@@ -24,7 +24,7 @@ object KordDiscordEventUtils {
         // kotlinx.serialization doesn't deserialize this well because it relies on the order
         // Using decodeFromJsonElement crashes with "Index -1 out of bounds for length 0", why?
         try {
-            return json.decodeFromString(
+            return JsonIgnoreUnknownKeys.decodeFromString(
                 Event.DeserializationStrategy,
                 buildJsonObject {
                     gatewayPayload["op"]?.let {
