@@ -125,7 +125,7 @@ class MessageListener(val loritta: Loritta) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Wrapping $member and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				if (lorittaProfile != null && lorittaProfile.isAfk) {
+				if (lorittaProfile != null && lorittaProfile.isAfk && !loritta.config.gatewayProxy.disableAntiAFK) {
 					loritta.newSuspendedTransaction {
 						lorittaProfile.isAfk = false
 						lorittaProfile.afkReason = null

@@ -92,7 +92,8 @@ class GeneralConfig(
 	@Serializable
 	data class GatewayProxyConfig(
 		val waitUntilClientIsConnected: Boolean,
-		val disableInviteBlocker: Boolean
+		val disableInviteBlocker: Boolean,
+		val disableAntiAFK: Boolean
 	)
 
 	fun isOwner(id: String) = isOwner(id.toLong())
