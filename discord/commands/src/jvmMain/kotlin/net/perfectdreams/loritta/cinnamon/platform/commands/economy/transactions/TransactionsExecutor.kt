@@ -292,7 +292,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
 
             description = i18nContext.get(TransactionsCommand.I18N_PREFIX.NoTransactionsFunnyMessages).random()
 
-            image = "${loritta.config.website}/assets/img/blog/lori_calca.gif"
+            image = "https://assets.perfectdreams.media/loritta/emotes/lori-sob.png"
         }
 
         suspend fun createTooManyPagesMessage(
