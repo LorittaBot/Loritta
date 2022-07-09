@@ -71,7 +71,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
     private suspend inline fun withGuildIdLock(guildId: Snowflake, action: () -> Unit) = guildMutexes.getOrPut(guildId) { Mutex() }.withLock(action = action)
     private suspend inline fun withUserIdLock(guildId: Snowflake, action: () -> Unit) = userMutexes.getOrPut(guildId) { Mutex() }.withLock(action = action)
 
-    override suspend fun processEvent(event: Event): ModuleResult {
+    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
         when (event) {
             is GuildCreate -> {
                 // logger.info { "Howdy ${event.guild.id} (${event.guild.name})! Is unavailable? ${event.guild.unavailable}" }

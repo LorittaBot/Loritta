@@ -12,7 +12,7 @@ class BomDiaECiaModule(private val m: DiscordGatewayEventsProcessor) : ProcessDi
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun processEvent(event: Event): ModuleResult {
+    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
         when (event) {
             // ===[ CHANNEL CREATE ]===
             is MessageCreate -> {

@@ -6,12 +6,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxy
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxyEvent
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AFKModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AddFirstToNewChannelsModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.BomDiaECiaModule
@@ -22,7 +21,6 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.StarboardModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.BomDiaECia
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.DiscordGatewayEventsProcessorTasks
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.GatewayEvent
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
@@ -62,12 +60,12 @@ class DiscordGatewayEventsProcessor(
     val random = SecureRandom()
     val activeEvents = ConcurrentLinkedQueue<Job>()
 
-    private val onMessageReceived: (GatewayEvent) -> (Unit) = {
-        val (eventType, discordEvent) = parseEventFromString(it)
+    private val onMessageReceived: (GatewayProxyEvent) -> (Unit) = {
+        val (eventType, discordEvent) = parseEvent(it)
 
         // We will call a method that doesn't reference the "discordEventAsJsonObject" nor the "it" object, this makes it veeeery clear to the JVM that yes, you can GC the "discordEventAsJsonObject" and "it" objects
         // (Will it really GC the object? idk, but I hope it will)
-        launchEventProcessorJob(eventType, discordEvent)
+        launchEventProcessorJob(it.shardId, eventType, discordEvent)
     }
 
     val gatewayProxies = config.gatewayProxies.filter { it.replicaId == replicaId }.map {
@@ -88,28 +86,27 @@ class DiscordGatewayEventsProcessor(
         // bomDiaECia.startBomDiaECiaTask()
     }
 
-    private fun parseEventFromString(discordGatewayEvent: GatewayEvent): Pair<String, Event?> {
-        val discordEventAsJsonObject = Json.parseToJsonElement(discordGatewayEvent.jsonAsString ?: error("Trying to parse an already parsed/null GatewayEvent!")).jsonObject
-        discordGatewayEvent.jsonAsString = null
+    private fun parseEvent(discordGatewayEvent: GatewayProxyEvent): Pair<String, Event?> {
+        val discordEventAsJsonObject = discordGatewayEvent.event
         val eventType = discordEventAsJsonObject["t"]?.jsonPrimitive?.content ?: "UNKNOWN"
         val discordEvent = KordDiscordEventUtils.parseEventFromJsonObject(discordEventAsJsonObject)
 
         return Pair(eventType, discordEvent)
     }
 
-    private fun launchEventProcessorJob(type: String, discordEvent: Event?) {
+    private fun launchEventProcessorJob(shardId: Int, type: String, discordEvent: Event?) {
         if (discordEvent != null)
-            launchEventProcessorJob(discordEvent)
+            launchEventProcessorJob(shardId, discordEvent)
         else
             logger.warn { "Unknown Discord event received $type! We are going to ignore the event... kthxbye!" }
     }
 
-    private fun launchEventProcessorJob(discordEvent: Event) {
+    private fun launchEventProcessorJob(shardId: Int, discordEvent: Event) {
         val coroutineName = "Event ${discordEvent::class.simpleName}"
         launchEventJob(coroutineName) {
             try {
                 for (module in modules) {
-                    val result = module.processEvent(discordEvent)
+                    val result = module.processEvent(shardId, discordEvent)
                     when (result) {
                         ModuleResult.Cancel -> {
                             // Module asked us to stop processing the events

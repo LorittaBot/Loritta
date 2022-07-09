@@ -23,7 +23,7 @@ class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) 
         )
     }
 
-    override suspend fun processEvent(event: Event): ModuleResult {
+    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
         when (event) {
             // ===[ CHANNEL CREATE ]===
             is ChannelCreate -> {

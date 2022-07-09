@@ -44,7 +44,7 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
         .build<Snowflake, Set<String>>()
         .asMap()
 
-    override suspend fun processEvent(event: Event): ModuleResult {
+    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
         when (event) {
             is MessageCreate -> return handleMessage(event)
             // Delete invite list from cache when a server invite is created or deleted

@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy
 
+import dev.kord.gateway.Command
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
@@ -13,8 +14,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonObject
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.GatewayEvent
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
@@ -26,7 +30,7 @@ import kotlin.time.Duration.Companion.seconds
 class GatewayProxy(
     val url: String,
     val authorizationToken: String,
-    val onMessageReceived: (GatewayEvent) -> (Unit)
+    val onMessageReceived: (GatewayProxyEvent) -> (Unit)
 ) : Closeable {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -116,7 +120,10 @@ class GatewayProxy(
                         totalEventsReceived.addAndGet(1)
                         lastEventReceivedAt = now
 
-                        onMessageReceived.invoke(GatewayEvent(event.data.toString(Charsets.UTF_8)))
+                        val receivedEvent = event.data.toString(Charsets.UTF_8)
+                        val gwProxyEvent = Json.decodeFromString<GatewayProxyEvent>(receivedEvent)
+
+                        onMessageReceived.invoke(gwProxyEvent)
                     }
                     is Frame.Binary -> {} // No need to handle this / It doesn't seem to be sent to us
                     is Frame.Close -> {} // This isn't received by us because it isn't a raw connection
@@ -132,6 +139,33 @@ class GatewayProxy(
         logger.warn { "WebSocket session $url seems to have been closed! Close Reason: $closeReason" }
         session = null
         job.cancel()
+    }
+
+    /**
+     * Sends a gateway event to the connected [session].
+     *
+     * @param shardId the shard ID
+     * @param command the gateway command
+     */
+    suspend fun send(shardId: Int, command: Command) {
+        val session = session
+        if (state != State.CONNECTED)
+            throw IllegalStateException("Tried sending an event while the connection isn't connected!")
+
+        if (session == null)
+            throw IllegalStateException("Session is null, so we can't send events!")
+
+        session.send(
+            Json.encodeToString(
+                GatewayProxyEvent(
+                    shardId,
+                    Json.encodeToJsonElement(
+                        Command.SerializationStrategy,
+                        command
+                    ).jsonObject
+                )
+            )
+        )
     }
 
     override fun close() {

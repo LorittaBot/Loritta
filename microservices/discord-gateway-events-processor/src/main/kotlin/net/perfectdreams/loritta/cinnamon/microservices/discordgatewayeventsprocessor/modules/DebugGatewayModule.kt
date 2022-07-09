@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 
 class DebugGatewayModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
-    override suspend fun processEvent(event: Event): ModuleResult {
+    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
         when (event) {
             // ===[ CHANNEL CREATE ]===
             is MessageCreate -> {

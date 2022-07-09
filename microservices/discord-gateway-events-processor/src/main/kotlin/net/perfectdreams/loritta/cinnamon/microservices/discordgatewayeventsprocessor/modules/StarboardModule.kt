@@ -61,7 +61,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         .build<Long, Mutex>()
         .asMap()
 
-    override suspend fun processEvent(event: Event): ModuleResult {
+    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
         when (event) {
             // ===[ REACTIONS ]===
             is MessageReactionAdd -> {

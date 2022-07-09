@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
-    override suspend fun processEvent(event: Event): ModuleResult {
+    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
         when (event) {
             // ===[ CHANNEL CREATE ]===
             is MessageCreate -> {
