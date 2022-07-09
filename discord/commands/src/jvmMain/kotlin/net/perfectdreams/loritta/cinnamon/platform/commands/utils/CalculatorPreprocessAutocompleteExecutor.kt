@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.utils
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.StringAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.StringAutocompleteExecutorDeclaration
@@ -48,7 +49,7 @@ class CalculatorPreprocessAutocompleteExecutor : StringAutocompleteExecutor {
                 CalculatorCommand.I18N_PREFIX.Invalid(
                     focusedOption.value
                 )
-            ).replace("`", "").shortenWithEllipsis(SlashCommandOptionsWrapper.MAX_OPTIONS_DESCRIPTION_LENGTH)
+            ).stripCodeBackticks().shortenWithEllipsis(SlashCommandOptionsWrapper.MAX_OPTIONS_DESCRIPTION_LENGTH)
 
             return mapOf(
                 message to focusedOption.value

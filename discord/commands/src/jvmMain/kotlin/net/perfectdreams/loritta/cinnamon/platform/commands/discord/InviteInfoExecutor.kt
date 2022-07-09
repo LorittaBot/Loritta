@@ -9,7 +9,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndRemoveCodeBackticks
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
@@ -46,7 +46,7 @@ class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
                 styled(
                     context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.DoesntExists(
-                            args[Options.invite].shortenAndRemoveCodeBackticks(100)
+                            args[Options.invite].shortenAndStripCodeBackticks(100)
                         )
                     ),
                     prefix = Emotes.Error
@@ -63,7 +63,7 @@ class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
                 styled(
                     context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.DoesntExists(
-                            args[Options.invite].shortenAndRemoveCodeBackticks(100)
+                            args[Options.invite].shortenAndStripCodeBackticks(100)
                         )
                     ),
                     prefix = Emotes.Error

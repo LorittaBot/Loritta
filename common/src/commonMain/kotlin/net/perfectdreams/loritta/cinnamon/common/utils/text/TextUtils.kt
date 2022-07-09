@@ -23,14 +23,30 @@ object TextUtils {
 
     fun snakeToUpperCamelCase(string: String) = snakeToLowerCamelCase(string).capitalize()
 
+    /**
+     * Shortens [this] to [maxLength], if the text would overflow, [suffix] is appended to the end of the string
+     */
     fun String.shortenWithEllipsis(maxLength: Int, suffix: String = "..."): String {
         if (this.length >= maxLength)
             return this.take(maxLength - suffix.length) + suffix
         return this
     }
 
-    fun String.shortenAndRemoveCodeBackticks(maxLength: Int, suffix: String = "..."): String =
-        shortenWithEllipsis(maxLength, suffix).replace("`", "")
+    /**
+     * Strips code backticks from [this] and then [shortenWithEllipsis]
+     */
+    fun String.shortenAndStripCodeBackticks(maxLength: Int, suffix: String = "..."): String =
+        this.stripCodeBackticks().shortenWithEllipsis(maxLength, suffix)
 
+    /**
+     * Strips code backticks from [this]
+     */
+    fun String.stripCodeBackticks(): String {
+        return this.stripCodeBackticks()
+    }
+
+    /**
+     * Strips new lines from [this]
+     */
     fun String.stripNewLines() = this.replace(Regex("[\\r\\n]"), "")
 }

@@ -8,7 +8,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndRemoveCodeBackticks
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
@@ -165,7 +165,7 @@ class EmojiInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
         context.failEphemerally {
             styled(
                 context.i18nContext.get(
-                    EmojiCommand.I18N_PREFIX.Info.EmojiNotFound(emojiContent.shortenAndRemoveCodeBackticks(100))
+                    EmojiCommand.I18N_PREFIX.Info.EmojiNotFound(emojiContent.shortenAndStripCodeBackticks(100))
                 ),
                 Emotes.Error
             )

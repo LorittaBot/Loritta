@@ -10,6 +10,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
@@ -219,7 +220,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
             title = buildString {
                 if (isSelf)
                     append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
-                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo.name.replace("`", "")}#${cachedUserInfo?.discriminator}")))
+                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo.name.stripCodeBackticks()}#${cachedUserInfo?.discriminator}")))
 
                 append(" — ")
 
@@ -284,7 +285,7 @@ class TransactionsExecutor : SlashCommandExecutor() {
             title = buildString {
                 if (isSelf)
                     append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
-                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name?.replace("`", "")}#${cachedUserInfo?.discriminator}")))
+                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name?.stripCodeBackticks()}#${cachedUserInfo?.discriminator}")))
             }
 
             color = LorittaColors.LorittaRed.toKordColor()

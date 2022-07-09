@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker
 
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -23,7 +24,7 @@ class BrokerStockQuantityAutocompleteExecutor(val loritta: LorittaCinnamon) : St
         val quantity = NumberUtils.convertShortenedNumberToLong(context.i18nContext, currentInput) ?: return mapOf(
             context.i18nContext.get(
                 I18nKeysData.Commands.InvalidNumber(currentInput)
-            ).replace("`", "").shortenWithEllipsis(SlashCommandOptionsWrapper.MAX_OPTIONS_DESCRIPTION_LENGTH) to "invalid_number"
+            ).shortenAndStripCodeBackticks(SlashCommandOptionsWrapper.MAX_OPTIONS_DESCRIPTION_LENGTH) to "invalid_number"
         )
 
         return mapOf(

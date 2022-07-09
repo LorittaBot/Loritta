@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers
 
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
@@ -43,7 +44,7 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
                         TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.LostTaxed(
                             quantity = transaction.entryPrice,
                             quantityAfterTax = transaction.entryPriceAfterTax,
-                            winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
+                            winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
                             winnerId = transaction.winner.value,
                             emojiFightEmoji = transaction.emoji
                         )
@@ -68,7 +69,7 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
                     i18nContext.get(
                         TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.Lost(
                             quantity = transaction.entryPrice,
-                            winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
+                            winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
                             winnerId = transaction.winner.value,
                             emojiFightEmoji = transaction.emoji
                         )

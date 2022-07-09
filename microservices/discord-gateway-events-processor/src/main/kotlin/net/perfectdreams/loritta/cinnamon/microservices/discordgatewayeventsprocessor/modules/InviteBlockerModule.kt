@@ -16,6 +16,7 @@ import io.ktor.http.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaPermission
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
@@ -82,7 +83,7 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
         val content = message.content
             // We need to strip the code marks to avoid this:
             // https://cdn.discordapp.com/attachments/513405772911345664/760887806191992893/invite-bug.png
-            .replace("`", "")
+            .stripCodeBackticks()
             .replace("\u200B", "")
             // https://discord.gg\loritta is actually detected as https://discord.gg/loritta on Discord
             // So we are going to flip all \ to /

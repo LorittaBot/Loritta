@@ -24,4 +24,9 @@ object DiscordInviteUtils {
 
         return null
     }
+
+    /**
+     * Checks if the [text] has any Discord invite URLs
+     */
+    fun hasInvite(text: String) = getInviteCodeFromUrl(text) != null
 }

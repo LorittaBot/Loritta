@@ -23,7 +23,7 @@ class AfkOffExecutor : SlashCommandExecutor() {
                 context.i18nContext.get(
                     AfkCommand.I18N_PREFIX.Off.AfkModeDeactivated
                 ),
-                Emotes.BabyChick
+                Emotes.LoriZap
             )
         }
     }

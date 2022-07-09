@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.social
 
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndRemoveCodeBackticks
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripNewLines
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
@@ -24,7 +24,7 @@ class AfkOnExecutor : SlashCommandExecutor() {
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val profile = context.loritta.services.users.getOrCreateUserProfile(UserId(context.user.id.value))
-        val reason = args[Options.reason]?.shortenAndRemoveCodeBackticks(300)?.stripNewLines()
+        val reason = args[Options.reason]?.shortenAndStripCodeBackticks(300)?.stripNewLines()
 
         if (!profile.isAfk || profile.afkReason != reason)
             profile.enableAfk(reason)
@@ -34,7 +34,7 @@ class AfkOnExecutor : SlashCommandExecutor() {
                 context.i18nContext.get(
                     AfkCommand.I18N_PREFIX.On.AfkModeActivated
                 ) + " ${Emotes.Wink}",
-                Emotes.Sleeping
+                Emotes.LoriSleeping
             )
         }
     }

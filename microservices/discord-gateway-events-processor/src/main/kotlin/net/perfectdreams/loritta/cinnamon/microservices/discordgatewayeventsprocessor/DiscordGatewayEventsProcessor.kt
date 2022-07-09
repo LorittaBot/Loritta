@@ -12,6 +12,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxy
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AFKModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AddFirstToNewChannelsModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.BomDiaECiaModule
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.DebugGatewayModule
@@ -45,11 +46,13 @@ class DiscordGatewayEventsProcessor(
     private val bomDiaECiaModule = BomDiaECiaModule(this)
     private val debugGatewayModule = DebugGatewayModule(this)
     private val inviteBlockerModule = InviteBlockerModule(this)
+    private val afkModule = AFKModule(this)
 
     // This is executed sequentially!
     val modules = listOf(
         discordCacheModule,
         inviteBlockerModule,
+        afkModule,
         addFirstToNewChannelsModule,
         starboardModule,
         debugGatewayModule

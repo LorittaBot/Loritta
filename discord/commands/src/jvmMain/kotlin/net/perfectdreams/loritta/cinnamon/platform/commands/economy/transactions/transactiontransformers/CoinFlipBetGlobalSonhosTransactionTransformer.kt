@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers
 
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
@@ -28,7 +29,7 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
                         TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.WonTaxed(
                             quantity = transaction.quantity,
                             quantityAfterTax = transaction.quantityAfterTax,
-                            loserTag = "${loserUserInfo?.name?.replace("`", "")}#${loserUserInfo?.discriminator}",
+                            loserTag = "${loserUserInfo?.name?.stripCodeBackticks()}#${loserUserInfo?.discriminator}",
                             loserId = transaction.loser.value
                         )
                     )
@@ -40,7 +41,7 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
                         TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.LostTaxed(
                             quantity = transaction.quantity,
                             quantityAfterTax = transaction.quantityAfterTax,
-                            winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
+                            winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
                             winnerId = transaction.winner.value
                         )
                     )
@@ -53,7 +54,7 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
                     i18nContext.get(
                         TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.Won(
                             quantityAfterTax = transaction.quantity,
-                            loserTag = "${loserUserInfo?.name?.replace("`", "")}#${loserUserInfo?.discriminator}",
+                            loserTag = "${loserUserInfo?.name?.stripCodeBackticks()}#${loserUserInfo?.discriminator}",
                             loserId = transaction.loser.value
                         )
                     )
@@ -64,7 +65,7 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
                     i18nContext.get(
                         TransactionsCommand.I18N_PREFIX.Types.CoinFlipBetGlobal.Lost(
                             quantity = transaction.quantity,
-                            winnerTag = "${winnerUserInfo?.name?.replace("`", "")}#${winnerUserInfo?.discriminator}",
+                            winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
                             winnerId = transaction.winner.value
                         )
                     )
