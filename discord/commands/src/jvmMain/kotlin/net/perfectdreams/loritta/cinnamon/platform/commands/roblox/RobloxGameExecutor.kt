@@ -13,6 +13,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
@@ -44,7 +45,7 @@ class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
             parameter("model.maxRows", 1)
         }
 
-        val gamesResponse = Json.decodeFromString<RobloxGamesResponse>(gameListRequest.bodyAsText())
+        val gamesResponse = JsonIgnoreUnknownKeys.decodeFromString<RobloxGamesResponse>(gameListRequest.bodyAsText())
         val games = gamesResponse.games
 
         // No games found that match the request
@@ -79,7 +80,7 @@ class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
         val upvotes = game.totalUpVotes
         val downvotes = game.totalDownVotes
 
-        val mediaResponse = Json.decodeFromString<RobloxMediaResponse>(
+        val mediaResponse = JsonIgnoreUnknownKeys.decodeFromString<RobloxMediaResponse>(
             http.get("https://games.roblox.com/v2/games/$universeId/media")
                 .bodyAsText()
         )
@@ -89,7 +90,7 @@ class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
         }
 
         val thumbnail = if (firstMediaInfo != null) {
-            Json.decodeFromString<RobloxBatchAssetResponse>(
+            JsonIgnoreUnknownKeys.decodeFromString<RobloxBatchAssetResponse>(
                 http.post("https://thumbnails.roblox.com/v1/batch") {
                     setBody(
                         TextContent(
@@ -215,6 +216,7 @@ class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
         val imageId: Long?,
         val videoHash: String?,
         val videoTitle: String?,
-        val approved: Boolean
+        val approved: Boolean,
+        val altText: String?
     )
 }
