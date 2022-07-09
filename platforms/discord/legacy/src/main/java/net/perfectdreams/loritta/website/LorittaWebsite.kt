@@ -305,8 +305,8 @@ class LorittaWebsite(val loritta: Loritta) {
 							logger.warn(e) { "Something went wrong while sending data to the connected channel!" }
 						} finally {
 							logger.info { "Shutting down ${gatewayProxyConnection}'s connection" }
-							gatewayProxyConnection.close()
 							loritta.connectedChannels.remove(gatewayProxyConnection)
+							gatewayProxyConnection.close()
 						}
 					}
 				}

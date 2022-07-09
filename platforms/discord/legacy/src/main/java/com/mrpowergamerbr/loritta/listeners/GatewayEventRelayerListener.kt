@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.website.utils.GatewayProxyConnection
 
 class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
     companion object {
@@ -18,19 +17,15 @@ class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
         GlobalScope.launch(m.coroutineDispatcher) {
             val packageAsString = event.`package`.toString()
 
-            val failedChannels = mutableSetOf<GatewayProxyConnection>()
-
             for (connection in m.connectedChannels) {
                 try {
                     connection.channel.send(packageAsString)
                 } catch (e: ClosedSendChannelException) {
-                    logger.warn { "Gateway Proxy channel is closed! We will remove it from the connected channels list and ignore it then..." }
-                    connection.close()
-                    failedChannels.add(connection)
+                    // Technically this could only happen if the .send is waiting for the WS to receive the event BEFORE the connection is closed
+                    // The clean up stuff should be triggered on the WebSocket route itself
+                    logger.warn(e) { "Gateway Proxy channel is closed! We will ignore it then..." }
                 }
             }
-
-            m.connectedChannels.removeAll(failedChannels)
         }
     }
 }
