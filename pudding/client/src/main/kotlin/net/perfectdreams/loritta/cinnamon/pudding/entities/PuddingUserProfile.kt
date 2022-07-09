@@ -33,18 +33,26 @@ class PuddingUserProfile(
 
     suspend fun getRankPositionInSonhosRanking() = pudding.sonhos.getSonhosRankPositionBySonhos(money)
 
-    suspend fun enableAfk(reason: String? = null) = pudding.transaction {
-        Profiles.update({ Profiles.id eq this@PuddingUserProfile.id.value.toLong() }) {
-            it[isAfk] = true
-            it[afkReason] = reason
+    suspend fun enableAfk(reason: String? = null) {
+        if (isAfk || this.afkReason != reason) {
+            pudding.transaction {
+                Profiles.update({ Profiles.id eq this@PuddingUserProfile.id.value.toLong() }) {
+                    it[isAfk] = true
+                    it[afkReason] = reason
+                }
+            }
         }
     }
 
 
-    suspend fun disableAfk() = pudding.transaction {
-        Profiles.update({ Profiles.id eq this@PuddingUserProfile.id.value.toLong() }) {
-            it[isAfk] = false
-            it[afkReason] = null
+    suspend fun disableAfk() {
+        if (!isAfk || this.afkReason != null) {
+            pudding.transaction {
+                Profiles.update({ Profiles.id eq this@PuddingUserProfile.id.value.toLong() }) {
+                    it[isAfk] = false
+                    it[afkReason] = null
+                }
+            }
         }
     }
 
