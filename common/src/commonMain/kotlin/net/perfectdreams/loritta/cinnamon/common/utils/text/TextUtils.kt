@@ -42,7 +42,7 @@ object TextUtils {
      * Strips code backticks from [this]
      */
     fun String.stripCodeBackticks(): String {
-        return this.stripCodeBackticks()
+        return this.replace("`", "")
     }
 
     /**
