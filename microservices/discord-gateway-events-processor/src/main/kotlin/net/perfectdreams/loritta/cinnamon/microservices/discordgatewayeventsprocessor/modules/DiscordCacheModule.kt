@@ -82,7 +82,6 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 if (!event.guild.unavailable.discordBoolean) {
                     val start = System.currentTimeMillis()
 
-                    // This looks weird, but it is actually used to indicate to the JVM that "hey, we aren't using the "event" object anymore!", which helps with GC (or, well, I hope it does)
                     val guildId = event.guild.id
                     val guildName = event.guild.name
                     val guildIcon = event.guild.icon
@@ -122,7 +121,6 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 if (!event.guild.unavailable.discordBoolean) {
                     val start = System.currentTimeMillis()
 
-                    // This looks weird, but it is actually used to indicate to the JVM that "hey, we aren't using the "event" object anymore!", which helps with GC (or, well, I hope it does)
                     val guildId = event.guild.id
                     val guildName = event.guild.name
                     val guildIcon = event.guild.icon
