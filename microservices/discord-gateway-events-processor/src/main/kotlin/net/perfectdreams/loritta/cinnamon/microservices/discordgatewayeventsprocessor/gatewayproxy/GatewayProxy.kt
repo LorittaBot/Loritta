@@ -6,12 +6,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.websocket.*
 import io.ktor.client.request.*
 import io.ktor.websocket.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import kotlinx.serialization.decodeFromString
@@ -82,12 +77,19 @@ class GatewayProxy(
                     val lastEventReceivedAt = lastEventReceivedAt
                     if (lastEventReceivedAt != null && Clock.System.now() - lastEventReceivedAt > 60.seconds) {
                         logger.warn { "We haven't received an event on the connection $url for longer than 60s! We will close the connection and restart..." }
-                        session?.close(
-                            CloseReason(
-                                CloseReason.Codes.NORMAL,
-                                "Haven't received an event for longer than 60s, so we will restart the connection"
-                            )
-                        )
+                        try {
+                            withTimeout(5_000) {
+                                session?.close(
+                                    CloseReason(
+                                        CloseReason.Codes.NORMAL,
+                                        "Haven't received an event for longer than 60s, so we will restart the connection"
+                                    )
+                                )
+                            }
+                        } catch (e: TimeoutCancellationException) {
+                            logger.warn { "Timed out trying to cancel $url's session, we will just ignore it and cancel the entire session manually..." }
+                            cancelSession()
+                        }
                         return@launch
                     }
                 }
@@ -135,10 +137,22 @@ class GatewayProxy(
             logger.warn(e) { "Something went wrong while listening to the WebSocket session $url!" }
         }
 
+        cancelSession()
+        job.cancel()
+    }
+
+    private suspend fun cancelSession() {
         val closeReason = session?.closeReason?.await()
+        if (session?.isActive == true) {
+            logger.warn { "Cancelling $url's session because session is not null!" }
+            try {
+                session?.cancel()
+            } catch (e: Exception) {
+                logger.warn(e) { "Something went wrong while trying to cancel $url's session!" }
+            }
+        }
         logger.warn { "WebSocket session $url seems to have been closed! Close Reason: $closeReason" }
         session = null
-        job.cancel()
     }
 
     /**
