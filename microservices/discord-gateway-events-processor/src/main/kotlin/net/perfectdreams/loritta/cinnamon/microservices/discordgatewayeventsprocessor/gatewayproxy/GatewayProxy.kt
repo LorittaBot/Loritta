@@ -110,22 +110,27 @@ class GatewayProxy(
             for (event in newSession.incoming) {
                 when (event) {
                     is Frame.Text -> {
-                        val now = Clock.System.now()
+                        try {
+                            val now = Clock.System.now()
 
-                        if (state != State.CONNECTED) {
-                            logger.info { "Successfully connected to gateway endpoint $url!" }
-                            connectionTries = 0 // On a successful connection, reset the try counter
-                            lastConnection = now
-                            state = State.CONNECTED
+                            if (state != State.CONNECTED) {
+                                logger.info { "Successfully connected to gateway endpoint $url!" }
+                                connectionTries = 0 // On a successful connection, reset the try counter
+                                lastConnection = now
+                                state = State.CONNECTED
+                            }
+
+                            totalEventsReceived.addAndGet(1)
+                            lastEventReceivedAt = now
+
+                            val receivedEvent = event.data.toString(Charsets.UTF_8)
+                            val gwProxyEvent = Json.decodeFromString<GatewayProxyEvent>(receivedEvent)
+
+                            onMessageReceived.invoke(gwProxyEvent)
+                        } catch (e: Exception) {
+                            // If something went wrong while trying to parse the event, just ignore and carry on, don't let an reconnection happen!
+                            logger.warn(e) { "Something went wrong while trying to process the event!" }
                         }
-
-                        totalEventsReceived.addAndGet(1)
-                        lastEventReceivedAt = now
-
-                        val receivedEvent = event.data.toString(Charsets.UTF_8)
-                        val gwProxyEvent = Json.decodeFromString<GatewayProxyEvent>(receivedEvent)
-
-                        onMessageReceived.invoke(gwProxyEvent)
                     }
                     is Frame.Binary -> {} // No need to handle this / It doesn't seem to be sent to us
                     is Frame.Close -> {} // This isn't received by us because it isn't a raw connection
@@ -142,15 +147,37 @@ class GatewayProxy(
     }
 
     private suspend fun cancelSession() {
-        val closeReason = session?.closeReason?.await()
-        if (session?.isActive == true) {
-            logger.warn { "Cancelling $url's session because session is not null!" }
+        val currentSession = session ?: return
+
+        logger.info { "Cancelling $url's session..." }
+
+        if (currentSession.isActive) {
+            logger.info { "Session is active! We will try cancelling it..." }
             try {
-                session?.cancel()
-            } catch (e: Exception) {
-                logger.warn(e) { "Something went wrong while trying to cancel $url's session!" }
+                withTimeout(5_000) {
+                    currentSession.cancel("Session has been cancelled")
+                }
+            } catch (e: TimeoutCancellationException) {
+                logger.warn(e) { "Took too long to cancel the current session!" }
             }
         }
+
+        val closeReason = try {
+            // If the connection is *actually* open, this will go on foreeeever, so let's have a timeout to avoid awaiting forever
+            withTimeout(5_000) {
+                session?.closeReason?.await()
+            }
+        } catch (e: TimeoutCancellationException) {
+            logger.warn { "Took took long to get closeReason! We will use null as the reason then..." }
+            null
+        }
+
+        try {
+            session?.cancel()
+        } catch (e: Exception) {
+            logger.warn(e) { "Something went wrong while trying to cancel $url's session!" }
+        }
+
         logger.warn { "WebSocket session $url seems to have been closed! Close Reason: $closeReason" }
         session = null
     }
