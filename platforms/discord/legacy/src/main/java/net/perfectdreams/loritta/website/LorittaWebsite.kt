@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.website
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.mrpowergamerbr.loritta.Loritta
 import com.mrpowergamerbr.loritta.utils.loritta
+import com.mrpowergamerbr.loritta.utils.lorittaShards
 import com.mrpowergamerbr.loritta.website.LoriWebCode
 import com.mrpowergamerbr.loritta.website.WebsiteAPIException
 import io.ktor.application.*
@@ -19,13 +20,20 @@ import io.ktor.sessions.*
 import io.ktor.util.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.launch
 import kotlinx.html.body
 import kotlinx.html.head
 import kotlinx.html.html
 import kotlinx.html.pre
 import kotlinx.html.stream.appendHTML
 import kotlinx.html.title
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.int
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
+import net.dv8tion.jda.api.utils.data.DataObject
+import net.dv8tion.jda.internal.JDAImpl
 import net.perfectdreams.loritta.platform.discord.legacy.plugin.LorittaDiscordPlugin
 import net.perfectdreams.loritta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.website.routes.api.v1.RequiresAPIAuthenticationRoute
@@ -296,9 +304,32 @@ class LorittaWebsite(val loritta: Loritta) {
 						logger.info { "Connected channels: ${loritta.connectedChannels}" }
 
 						try {
-							for (event in channel) {
-								send(Frame.Text(event))
+							val sender = launch {
+								for (event in channel) {
+									send(Frame.Text(event))
+								}
 							}
+							val relayer = launch {
+								for (event in incoming) {
+									when (event) {
+										is Frame.Text -> {
+											val eventAsString = event.readText()
+											val eventAsJson = Json.parseToJsonElement(eventAsString)
+												.jsonObject
+
+											val shardId = eventAsJson["shardId"]?.jsonPrimitive?.int ?: error("Missing shardId field!")
+											val event = eventAsJson["event"]?.jsonObject ?: error("Missing event field!")
+
+											val jdaShard = lorittaShards.shardManager.getShardById(shardId) as JDAImpl? ?: error("Unknown Shard $shardId!")
+											jdaShard.client.send(DataObject.fromJson(event.toString()))
+										}
+										else -> {}
+									}
+								}
+							}
+
+							sender.join()
+							relayer.join()
 						} catch (e: Exception) {
 							// Maybe the client disconnected?
 							// java.util.concurrent.CancellationException: ArrayChannel was cancelled
