@@ -140,13 +140,15 @@ class FortniteStuff(name: String, loritta: LorittaDiscord) : LorittaDiscordPlugi
         routes.add(ConfigureFortniteRoute(loritta))
 
         // acessar qualquer coisa só para registrar corretamente
-        FakeTable.fortniteConfig
-        transaction(Databases.loritta) {
-            SchemaUtils.createMissingTablesAndColumns(
+        if (System.getenv("LORITTA_CREATE_TABLES") != null) {
+            FakeTable.fortniteConfig
+            transaction(Databases.loritta) {
+                SchemaUtils.createMissingTablesAndColumns(
                     ServerConfigs,
                     FortniteConfigs,
                     TrackedFortniteItems
-            )
+                )
+            }
         }
     }
 }

@@ -38,12 +38,14 @@ class LorittaBirthday2020Event(name: String, loritta: LorittaDiscord) : LorittaD
 			loritta.profileDesignManager.registerBadge(it)
 		}
 
-		transaction(Databases.loritta) {
-			SchemaUtils.createMissingTablesAndColumns(
+		if (System.getenv("LORITTA_CREATE_TABLES") != null) {
+			transaction(Databases.loritta) {
+				SchemaUtils.createMissingTablesAndColumns(
 					Birthday2020Players,
 					Birthday2020Drops,
 					CollectedBirthday2020Points
-			)
+				)
+			}
 		}
 
 		/* launch {

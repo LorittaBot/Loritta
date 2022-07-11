@@ -58,10 +58,12 @@ class ArtsyJoyLori(name: String, loritta: LorittaBot) : LorittaPlugin(name, lori
         registerCommand(ScratchCardCommand(loritta))
         registerCommand(ScratchCardTopCommand(loritta))
 
-        transaction(Databases.loritta) {
-            SchemaUtils.createMissingTablesAndColumns(
+        if (System.getenv("LORITTA_CREATE_TABLES") != null) {
+            transaction(Databases.loritta) {
+                SchemaUtils.createMissingTablesAndColumns(
                     Raspadinhas
-            )
+                )
+            }
         }
     }
 }
