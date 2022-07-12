@@ -69,7 +69,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         .asMap()
 
     private suspend inline fun withGuildIdLock(guildId: Snowflake, action: () -> Unit) = guildMutexes.getOrPut(guildId) { Mutex() }.withLock(action = action)
-    private suspend inline fun withUserIdLock(guildId: Snowflake, action: () -> Unit) = userMutexes.getOrPut(guildId) { Mutex() }.withLock(action = action)
+    private suspend inline fun withUserIdLock(userId: Snowflake, action: () -> Unit) = userMutexes.getOrPut(userId) { Mutex() }.withLock(action = action)
 
     override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
         when (event) {
@@ -158,11 +158,12 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 val member = event.message.member.value
 
                 if (guildId != null && member != null) {
-                    withUserIdLock(event.message.author.id) {
+                    // Disabled for now, just to avoid a lot of active queries updating members
+                    /* withUserIdLock(event.message.author.id) {
                         m.services.transaction {
                             createOrUpdateGuildMember(guildId, event.message.author.id, member)
                         }
-                    }
+                    } */
                 }
             }
             is GuildMemberAdd -> {
