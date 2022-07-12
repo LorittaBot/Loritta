@@ -41,12 +41,6 @@ class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEv
         val selfUserProfile = m.services.users.getUserProfile(UserId(messageCreate.message.id.value))
         selfUserProfile?.disableAfk()
 
-        val lorittaPermissions = m.cache.getLazyCachedLorittaPermissions(guildId, channelId)
-
-        // I can't talk here! Bye!!
-        if (!lorittaPermissions.canTalk())
-            return
-
         // User ID -> Reason
         val afkMembers = mutableListOf<Pair<Snowflake, String?>>()
 
@@ -70,6 +64,12 @@ class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEv
         }
 
         if (afkMembers.isNotEmpty()) {
+            val lorittaPermissions = m.cache.getLazyCachedLorittaPermissions(guildId, channelId)
+
+            // I can't talk here! Bye!!
+            if (!lorittaPermissions.canTalk())
+                return
+            
             // Okay, so there are AFK members in the message!
             val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value)
             val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig?.localeId ?: "default")
