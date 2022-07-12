@@ -142,6 +142,7 @@ class GatewayProxy(
             logger.warn(e) { "Something went wrong while listening to the WebSocket session $url!" }
         }
 
+        logger.info { "Exited message loop on $url's connection! Has it been cancelled?" }
         cancelSession()
         job.cancel()
     }
@@ -152,10 +153,10 @@ class GatewayProxy(
         logger.info { "Cancelling $url's session..." }
 
         if (currentSession.isActive) {
-            logger.info { "Session is active! We will try cancelling it..." }
+            logger.info { "Session is active! We will try closing it..." }
             try {
                 withTimeout(5_000) {
-                    currentSession.cancel("Session has been cancelled")
+                    currentSession.close(CloseReason(CloseReason.Codes.GOING_AWAY, "Session has been cancelled"))
                 }
             } catch (e: TimeoutCancellationException) {
                 logger.warn(e) { "Took too long to cancel the current session!" }
@@ -165,15 +166,15 @@ class GatewayProxy(
         val closeReason = try {
             // If the connection is *actually* open, this will go on foreeeever, so let's have a timeout to avoid awaiting forever
             withTimeout(5_000) {
-                session?.closeReason?.await()
+                currentSession.closeReason?.await()
             }
         } catch (e: TimeoutCancellationException) {
-            logger.warn { "Took took long to get closeReason! We will use null as the reason then..." }
+            logger.warn { "Took too long to get closeReason! We will use null as the reason then..." }
             null
         }
 
         try {
-            session?.cancel()
+            currentSession.cancel()
         } catch (e: Exception) {
             logger.warn(e) { "Something went wrong while trying to cancel $url's session!" }
         }
