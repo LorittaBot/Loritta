@@ -38,7 +38,7 @@ class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEv
             return
 
         // Disable User's AFK state if they sent a message
-        val selfUserProfile = m.services.users.getUserProfile(UserId(messageCreate.message.id.value))
+        val selfUserProfile = m.services.users.getUserProfile(UserId(messageCreate.message.author.id.value))
         selfUserProfile?.disableAfk()
 
         // User ID -> Reason
@@ -69,7 +69,7 @@ class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEv
             // I can't talk here! Bye!!
             if (!lorittaPermissions.canTalk())
                 return
-            
+
             // Okay, so there are AFK members in the message!
             val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value)
             val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig?.localeId ?: "default")
