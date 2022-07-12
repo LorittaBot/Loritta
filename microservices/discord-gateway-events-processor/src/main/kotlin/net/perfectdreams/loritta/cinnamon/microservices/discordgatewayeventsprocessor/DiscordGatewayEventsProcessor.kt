@@ -27,6 +27,10 @@ import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.reflect.KClass
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
 class DiscordGatewayEventsProcessor(
     val config: RootConfig,
@@ -101,12 +105,15 @@ class DiscordGatewayEventsProcessor(
             logger.warn { "Unknown Discord event received $type! We are going to ignore the event... kthxbye!" }
     }
 
+    @OptIn(ExperimentalTime::class)
     private fun launchEventProcessorJob(shardId: Int, discordEvent: Event) {
         val coroutineName = "Event ${discordEvent::class.simpleName}"
         launchEventJob(coroutineName) {
             try {
                 for (module in modules) {
-                    val result = module.processEvent(shardId, discordEvent)
+                    val (result, duration) = measureTimedValue { module.processEvent(shardId, discordEvent) }
+                    it[module::class] = duration
+
                     when (result) {
                         ModuleResult.Cancel -> {
                             // Module asked us to stop processing the events
@@ -123,11 +130,15 @@ class DiscordGatewayEventsProcessor(
         }
     }
 
-    private fun launchEventJob(coroutineName: String, block: suspend CoroutineScope.() -> Unit) {
+    private fun launchEventJob(coroutineName: String, block: suspend CoroutineScope.(MutableMap<KClass<*>, Duration>) -> Unit) {
         val start = System.currentTimeMillis()
+        val durations = mutableMapOf<KClass<*>, Duration>()
+
         val job = GlobalScope.launch(
             CoroutineName(coroutineName),
-            block = block
+            block = {
+                block.invoke(this, durations)
+            }
         )
 
         activeEvents.add(job)
@@ -140,7 +151,7 @@ class DiscordGatewayEventsProcessor(
 
             val diff = System.currentTimeMillis() - start
             if (diff >= 60_000) {
-                logger.warn { "Coroutine $job ($coroutineName) took too long to process! ${diff}ms" }
+                logger.warn { "Coroutine $job ($coroutineName) took too long to process! ${diff}ms - Module Durations: $durations" }
             }
         }
     }

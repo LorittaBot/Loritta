@@ -123,10 +123,11 @@ class GatewayProxy(
                             totalEventsReceived.addAndGet(1)
                             lastEventReceivedAt = now
 
-                            val receivedEvent = event.data.toString(Charsets.UTF_8)
-                            val gwProxyEvent = Json.decodeFromString<GatewayProxyEvent>(receivedEvent)
-
-                            onMessageReceived.invoke(gwProxyEvent)
+                            onMessageReceived.invoke(
+                                Json.decodeFromString(
+                                    event.data.toString(Charsets.UTF_8)
+                                )
+                            )
                         } catch (e: Exception) {
                             // If something went wrong while trying to parse the event, just ignore and carry on, don't let an reconnection happen!
                             logger.warn(e) { "Something went wrong while trying to process the event!" }
@@ -166,7 +167,7 @@ class GatewayProxy(
         val closeReason = try {
             // If the connection is *actually* open, this will go on foreeeever, so let's have a timeout to avoid awaiting forever
             withTimeout(5_000) {
-                currentSession.closeReason?.await()
+                currentSession.closeReason.await()
             }
         } catch (e: TimeoutCancellationException) {
             logger.warn { "Took too long to get closeReason! We will use null as the reason then..." }
