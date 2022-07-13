@@ -68,20 +68,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         .build<Snowflake, Mutex>()
         .asMap()
 
-    private suspend inline fun withGuildIdLock(guildId: Snowflake, action: () -> Unit) {
-        val mutex = guildMutexes.getOrPut(guildId) { Mutex() }
-        if (mutex.isLocked) {
-            logger.info { "$guildId mutex is locked! Waiting until it is unlocked to proceed..." }
-        }
-        return guildMutexes.getOrPut(guildId) { Mutex() }.withLock(action = action)
-    }
-    private suspend inline fun withUserIdLock(userId: Snowflake, action: () -> Unit) {
-        val mutex = userMutexes.getOrPut(userId) { Mutex() }
-        if (mutex.isLocked) {
-            logger.info { "$userId mutex is locked! Waiting until it is unlocked to proceed..." }
-        }
-        userMutexes.getOrPut(userId) { Mutex() }.withLock(action = action)
-    }
+    private suspend inline fun withGuildIdLock(guildId: Snowflake, action: () -> Unit) = guildMutexes.getOrPut(guildId) { Mutex() }.withLock(action = action)
+    private suspend inline fun withUserIdLock(userId: Snowflake, action: () -> Unit) = userMutexes.getOrPut(userId) { Mutex() }.withLock(action = action)
 
     override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
         when (event) {
