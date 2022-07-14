@@ -84,36 +84,7 @@ class DiscordGatewayEventsProcessor(
     // This needs to be initialized AFTER the gatewayProxies above
     val tasks = DiscordGatewayEventsProcessorTasks(this)
 
-    @OptIn(ExperimentalTime::class)
     fun start() {
-        if (true) {
-            runBlocking {
-                services.transaction {
-                    SchemaUtils.createMissingTablesAndColumns(
-                        DiscordGuilds,
-                        DiscordChannels,
-                        DiscordRoles,
-                        DiscordEmojis
-                    )
-                }
-
-                val gc = GuildCreate(
-                    Json.decodeFromString(File("guild_create.json").readText()),
-                    0
-                )
-
-                measureTimedValue {
-                    val j = (0..100).map {
-                        discordCacheModule.processEvent(
-                            0,
-                            gc
-                        )
-                    }
-                }.let { println("Took ${it.duration}") }
-            }
-            return
-        }
-
         gatewayProxies.forEachIndexed { index, gatewayProxy ->
             logger.info { "Starting Gateway Proxy $index (${gatewayProxy.url})" }
             gatewayProxy.start()

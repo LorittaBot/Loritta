@@ -119,7 +119,7 @@ class DiscordCacheService(
      * @see getLorittaPermissions
      */
     suspend fun getPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake): Permissions {
-// Create an empty permissions object
+        // Create an empty permissions object
         var permissions = Permissions()
 
         pudding.transaction {
