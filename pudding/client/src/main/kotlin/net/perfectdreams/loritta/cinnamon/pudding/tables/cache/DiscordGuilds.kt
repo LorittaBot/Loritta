@@ -13,8 +13,4 @@ object DiscordGuilds : IdTable<Long>() {
     val name = text("name")
     val icon = text("icon").nullable()
     val ownerId = long("owner")
-    val joinedAt = timestampWithTimeZone("joined_at").nullable()
-    val roles = jsonb("roles")
-    val channels = jsonb("channels")
-    val emojis = jsonb("emojis")
 }

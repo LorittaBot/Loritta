@@ -11,17 +11,14 @@ import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordChannelsMap
-import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordEmojisMap
 import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesList
-import net.perfectdreams.loritta.cinnamon.platform.utils.PuddingDiscordRolesMap
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 
 /**
  * Services related to Discord entity caching
@@ -32,30 +29,26 @@ class DiscordCacheService(
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val EMPTY_GUILD_ENTITIES = GuildEntities(emptyList(), emptyList(), emptyList())
     }
 
     suspend fun getDiscordEntitiesOfGuild(guildId: Snowflake): GuildEntities {
         return pudding.transaction {
-            val guildData = DiscordGuilds.slice(
-                DiscordGuilds.id,
-                DiscordGuilds.roles,
-                DiscordGuilds.channels,
-                DiscordGuilds.emojis
-            ).selectFirstOrNull {
-                DiscordGuilds.id eq guildId.toLong()
-            } ?: return@transaction EMPTY_GUILD_ENTITIES
+            val roles = DiscordRoles.slice(DiscordRoles.data)
+                .select { DiscordRoles.guild eq guildId.toLong() }
+                .map { Json.decodeFromString<DiscordRole>(it[DiscordRoles.data]) }
+
+            val channels = DiscordChannels.slice(DiscordChannels.data)
+                .select { DiscordChannels.guild eq guildId.toLong() }
+                .map { Json.decodeFromString<DiscordChannel>(it[DiscordChannels.data]) }
+
+            val emojis = DiscordEmojis.slice(DiscordEmojis.data)
+                .select { DiscordEmojis.guild eq guildId.toLong() }
+                .map { Json.decodeFromString<DiscordEmoji>(it[DiscordEmojis.data]) }
 
             return@transaction GuildEntities(
-                Json.decodeFromString<PuddingDiscordRolesMap>(guildData[DiscordGuilds.roles])
-                    .values
-                    .toList(),
-                Json.decodeFromString<PuddingDiscordChannelsMap>(guildData[DiscordGuilds.channels])
-                    .values
-                    .toList(),
-                Json.decodeFromString<PuddingDiscordEmojisMap>(guildData[DiscordGuilds.emojis])
-                    .values
-                    .toList(),
+                roles,
+                channels,
+                emojis
             )
         }
     }
@@ -70,14 +63,10 @@ class DiscordCacheService(
      */
     suspend fun getRoles(guildId: Snowflake, roleIds: List<Snowflake>): List<DiscordRole> {
         return pudding.transaction {
-            val roles = DiscordGuilds.slice(DiscordGuilds.roles)
-                .selectFirstOrNull {
-                    DiscordGuilds.id eq guildId.toLong()
-                }?.get(DiscordGuilds.roles) ?: return@transaction emptyList()
-
-            return@transaction Json.decodeFromString<PuddingDiscordRolesMap>(roles)
-                .values
-                .filter { it.id in roleIds }
+            DiscordGuilds.slice(DiscordRoles.data)
+                .select {
+                    DiscordRoles.guild eq guildId.toLong() and (DiscordRoles.role inList roleIds.map { it.toLong() })
+                }.map { Json.decodeFromString(it[DiscordRoles.data]) }
         }
     }
 
@@ -130,40 +119,38 @@ class DiscordCacheService(
      * @see getLorittaPermissions
      */
     suspend fun getPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake): Permissions {
-        // Create an empty permissions object
+// Create an empty permissions object
         var permissions = Permissions()
 
         pudding.transaction {
-            val userRoleIds = DiscordGuildMembers
-                .slice(DiscordGuildMembers.roles)
-                .selectFirstOrNull { DiscordGuildMembers.guildId eq guildId.toLong() and (DiscordGuildMembers.userId eq userId.toLong()) }
-                ?.get(DiscordGuildMembers.roles)
-                ?.let {
-                    Json.decodeFromString<PuddingDiscordRolesList>(it)
-                } ?: emptyList()
+            val userRoleIds = (
+                    DiscordGuildMembers
+                        .slice(DiscordGuildMembers.roles)
+                        .selectFirstOrNull { DiscordGuildMembers.guildId eq guildId.toLong() and (DiscordGuildMembers.userId eq userId.toLong()) }
+                        ?.get(DiscordGuildMembers.roles)
+                        ?.let {
+                            Json.decodeFromString<PuddingDiscordRolesList>(it)
+                        } ?: emptyList()
+                    ) + guildId.toString() // Because the user always have the "@everyone" role!
 
-            val guild = DiscordGuilds
-                .slice(DiscordGuilds.roles, DiscordGuilds.channels)
-                .selectFirstOrNull { DiscordGuilds.id eq guildId.toLong() }
+            val userRoles = DiscordRoles.slice(DiscordRoles.data).select {
+                DiscordRoles.guild eq guildId.toLong() and (DiscordRoles.role inList userRoleIds.map { it.toLong() })
+            }.map { Json.decodeFromString<DiscordRole>(it[DiscordRoles.data]) }
 
-            val rolesAsJson = guild?.get(DiscordGuilds.roles)
-            val channelsAsJson = guild?.get(DiscordGuilds.channels)
+            val guildChannel = DiscordChannels.selectFirstOrNull {
+                DiscordChannels.guild eq guildId.toLong() and (DiscordChannels.channel eq channelId.toLong())
+            }?.let { Json.decodeFromString<DiscordChannel>(it[DiscordRoles.data]) }
 
-            val guildRoles = rolesAsJson?.let { Json.decodeFromString<PuddingDiscordRolesMap>(it) } ?: emptyMap()
-            val guildChannels = channelsAsJson?.let { Json.decodeFromString<PuddingDiscordChannelsMap>(it) } ?: emptyMap()
+            // We are going to validate if there are any missing roles
+            for (userRoleId in userRoleIds) {
+                if (!userRoles.any { it.id.toString() == userRoleId }) {
+                    logger.warn { "Missing role $userRoleId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
+                }
+            }
 
-            val guildChannel = guildChannels[channelId.toString()]
-            val everyoneRole = guildRoles[guildId.toString()]
-
-            val userRoles = guildRoles
-                .filter { it.key in userRoleIds }
-                .values
-                .toMutableList()
-
-            if (everyoneRole != null) {
-                userRoles.add(everyoneRole)
-            } else {
-                logger.warn { "Everyone role is null in $guildId! We will ignore it..." }
+            // And also validate if the channel is null
+            if (guildChannel != null) {
+                logger.warn { "Missing channel $channelId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
             }
 
             // The order of the roles doesn't matter!
@@ -182,12 +169,10 @@ class DiscordCacheService(
             // https://discord.com/developers/docs/topics/permissions#permission-overwrites
             if (permissionOverwrites != null) {
                 // First, the "@everyone" role permission overwrite
-                if (everyoneRole != null) {
-                    val everyonePermissionOverwrite = permissionOverwrites.firstOrNull { it.id == everyoneRole.id }
-                    if (everyonePermissionOverwrite != null) {
-                        permissions = permissions.minus(everyonePermissionOverwrite.deny)
-                        permissions = permissions.plus(everyonePermissionOverwrite.allow)
-                    }
+                val everyonePermissionOverwrite = permissionOverwrites.firstOrNull { it.id == guildId }
+                if (everyonePermissionOverwrite != null) {
+                    permissions = permissions.minus(everyonePermissionOverwrite.deny)
+                    permissions = permissions.plus(everyonePermissionOverwrite.allow)
                 }
 
                 // Then, permission overwrites for specific roles

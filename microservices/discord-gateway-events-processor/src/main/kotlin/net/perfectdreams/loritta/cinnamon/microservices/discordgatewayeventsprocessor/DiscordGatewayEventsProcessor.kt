@@ -1,11 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor
 
 import dev.kord.gateway.Event
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import dev.kord.gateway.GuildCreate
+import kotlinx.coroutines.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
@@ -25,6 +24,12 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordChannels
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordEmojis
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordRoles
+import org.jetbrains.exposed.sql.SchemaUtils
+import java.io.File
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.reflect.KClass
@@ -79,7 +84,36 @@ class DiscordGatewayEventsProcessor(
     // This needs to be initialized AFTER the gatewayProxies above
     val tasks = DiscordGatewayEventsProcessorTasks(this)
 
+    @OptIn(ExperimentalTime::class)
     fun start() {
+        if (true) {
+            runBlocking {
+                services.transaction {
+                    SchemaUtils.createMissingTablesAndColumns(
+                        DiscordGuilds,
+                        DiscordChannels,
+                        DiscordRoles,
+                        DiscordEmojis
+                    )
+                }
+
+                val gc = GuildCreate(
+                    Json.decodeFromString(File("guild_create.json").readText()),
+                    0
+                )
+
+                measureTimedValue {
+                    val j = (0..100).map {
+                        discordCacheModule.processEvent(
+                            0,
+                            gc
+                        )
+                    }
+                }.let { println("Took ${it.duration}") }
+            }
+            return
+        }
+
         gatewayProxies.forEachIndexed { index, gatewayProxy ->
             logger.info { "Starting Gateway Proxy $index (${gatewayProxy.url})" }
             gatewayProxy.start()
