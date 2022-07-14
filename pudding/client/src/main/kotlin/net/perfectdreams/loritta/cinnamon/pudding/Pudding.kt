@@ -71,8 +71,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuildMembers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
@@ -295,7 +294,10 @@ class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
             BomDiaECiaMatches,
 
             DiscordGuilds,
-            DiscordGuildMembers
+            DiscordGuildMembers,
+            DiscordRoles,
+            DiscordChannels,
+            DiscordEmojis
         )
 
         if (schemas.isNotEmpty())
