@@ -17,17 +17,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactio
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.EmojiFightSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.PaymentSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ShipEffectSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SparklyPowerLSXSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
@@ -133,6 +126,10 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
             it.leftJoin(DivineInterventionSonhosTransactionsLog)
         else it
     }.let {
+        if (TransactionType.BOT_VOTE in transactionTypeFilter)
+            it.leftJoin(BotVoteSonhosTransactionsLog)
+        else it
+    }.let {
         if (TransactionType.SHIP_EFFECT in transactionTypeFilter)
             it.leftJoin(ShipEffectSonhosTransactionsLog)
         else it
@@ -155,6 +152,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
                     TransactionType.SONHOS_BUNDLE_PURCHASE -> cond.or(SonhosBundlePurchaseSonhosTransactionsLog.id.isNotNull())
                     TransactionType.INACTIVE_DAILY_TAX -> cond.or(DailyTaxSonhosTransactionsLog.id.isNotNull())
                     TransactionType.DIVINE_INTERVENTION -> cond.or(DivineInterventionSonhosTransactionsLog.id.isNotNull())
+                    TransactionType.BOT_VOTE -> cond.or(BotVoteSonhosTransactionsLog.id.isNotNull())
                     TransactionType.SHIP_EFFECT -> cond.or(ShipEffectSonhosTransactionsLog.id.isNotNull())
                 }
             }
