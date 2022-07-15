@@ -281,6 +281,7 @@ class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
             DailyTaxWarnUserNotifications,
             CorreiosPackageUpdateUserNotifications,
             BomDiaECiaMatches,
+            BotVoteSonhosTransactionsLog,
 
             DiscordGuilds,
             DiscordGuildMembers,
