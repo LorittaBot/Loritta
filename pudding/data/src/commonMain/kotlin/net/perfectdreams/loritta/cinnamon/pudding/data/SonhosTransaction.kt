@@ -126,8 +126,7 @@ data class BotVoteTransaction(
     override val timestamp: Instant,
     override val user: UserId,
     val websiteSource: WebsiteVoteSource,
-    val sonhos: Long,
-    val reason: String?
+    val sonhos: Long
 ) : SonhosTransaction()
 
 @Serializable

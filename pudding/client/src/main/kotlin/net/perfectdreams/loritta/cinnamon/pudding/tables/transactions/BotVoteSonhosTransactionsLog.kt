@@ -9,5 +9,4 @@ object BotVoteSonhosTransactionsLog: LongIdTable() {
     val timestampLog = reference("timestamp_log", SonhosTransactionsLog).index()
     val websiteSource = postgresEnumeration<WebsiteVoteSource>("website_source")
     val sonhos = long("sonhos")
-    val reason = text("reason").nullable()
 }
