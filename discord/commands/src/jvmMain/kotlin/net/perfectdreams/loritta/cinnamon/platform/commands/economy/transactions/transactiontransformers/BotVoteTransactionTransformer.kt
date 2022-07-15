@@ -21,7 +21,7 @@ object BotVoteTransactionTransformer : SonhosTransactionTransformer<BotVoteTrans
                 appendMoneyEarnedEmoji()
                 append(
                     i18nContext.get(
-                        TransactionsCommand.I18N_PREFIX.Types.BotVote.TopGG(transaction.sonhos)
+                        TransactionsCommand.I18N_PREFIX.Types.BotVote.TopGg(transaction.sonhos)
                     )
                 )
             }
