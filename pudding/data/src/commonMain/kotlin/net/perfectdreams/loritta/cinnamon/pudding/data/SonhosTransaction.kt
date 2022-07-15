@@ -2,9 +2,11 @@ package net.perfectdreams.loritta.cinnamon.pudding.data
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
 import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.common.utils.WebsiteVoteSource
 
 @Serializable
 sealed class SonhosTransaction {
@@ -114,6 +116,16 @@ data class DivineInterventionSonhosTransaction(
     override val user: UserId,
     val action: DivineInterventionTransactionEntryAction,
     val givenBy: UserId?,
+    val sonhos: Long,
+    val reason: String?
+) : SonhosTransaction()
+
+@Serializable
+data class BotVoteTransaction(
+    override val id: Long,
+    override val timestamp: Instant,
+    override val user: UserId,
+    val websiteSource: WebsiteVoteSource,
     val sonhos: Long,
     val reason: String?
 ) : SonhosTransaction()

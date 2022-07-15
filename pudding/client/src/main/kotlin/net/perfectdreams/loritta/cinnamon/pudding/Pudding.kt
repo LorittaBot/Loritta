@@ -11,10 +11,7 @@ import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
-import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
-import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
-import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.common.utils.*
 import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
@@ -77,16 +74,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosP
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.EmojiFightSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ExecutedApplicationCommandsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.PaymentSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ShipEffectSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SparklyPowerLSXSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
@@ -277,6 +265,7 @@ class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
             EmojiFightMatchmakingResults,
             EmojiFightSonhosTransactionsLog,
             DivineInterventionSonhosTransactionsLog,
+            BotVoteSonhosTransactionsLog,
             PaymentSonhosTransactionResults,
             PaymentSonhosTransactionsLog,
             SonhosBundles,
@@ -306,6 +295,7 @@ class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
                 createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
                 createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
                 createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())
+                createOrUpdatePostgreSQLEnum(WebsiteVoteSource.values())
                 createOrUpdatePostgreSQLEnum(PendingImportantNotificationState.values())
 
                 logger.info { "Tables to be created or updated: $schemas" }

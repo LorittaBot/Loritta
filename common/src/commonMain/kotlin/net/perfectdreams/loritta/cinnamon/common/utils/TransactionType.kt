@@ -59,5 +59,10 @@ enum class TransactionType(
         I18nKeysData.Commands.Command.Transactions.Types.DivineIntervention.Title,
         I18nKeysData.Commands.Command.Transactions.Types.DivineIntervention.Description,
         Emotes.Jesus,
+    ),
+    BOT_VOTE(
+        I18nKeysData.Commands.Command.Transactions.Types.BotVote.Title,
+        I18nKeysData.Commands.Command.Transactions.Types.BotVote.Description,
+        Emotes.LoriShining,
     )
 }

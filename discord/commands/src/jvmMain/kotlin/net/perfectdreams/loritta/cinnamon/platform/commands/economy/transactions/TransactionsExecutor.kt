@@ -15,17 +15,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.BrokerSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.CoinFlipBetGlobalSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.CoinFlipBetSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.DailyTaxSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.DivineInterventionSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.EmojiFightBetSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.PaymentSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.ShipEffectSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.SonhosBundlePurchaseSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.SparklyPowerLSXSonhosTransactionTransformer
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.UnknownSonhosTransactionTransformer
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
@@ -33,20 +23,7 @@ import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
-import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffectSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.data.*
 import kotlin.math.ceil
 
 class TransactionsExecutor : SlashCommandExecutor() {
@@ -257,6 +234,9 @@ class TransactionsExecutor : SlashCommandExecutor() {
 
                         // ===[ DIVINE INTERVENTION ]===
                         is DivineInterventionSonhosTransaction -> DivineInterventionSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+
+                        // ===[ BOT VOTE ]===
+                        is BotVoteTransaction -> BotVoteTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         // ===[ SHIP EFFECT ]===
                         is ShipEffectSonhosTransaction -> ShipEffectSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)

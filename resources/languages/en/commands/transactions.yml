@@ -77,6 +77,10 @@ types:
     description: "Transactions made by Loritta's admins, \"the powers that be\""
     received: "A divine intervention gave {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
     lost: "A divine intervention removed {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
+  botVote:
+    title: "Bot Vote"
+    description: "Transactions related to bot voting websites"
+    topGg: "Received {quantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} after voting on me in Top.gg"
 options:
   user:
     text: "The user that you want to view their transactions"
