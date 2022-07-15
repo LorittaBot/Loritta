@@ -63,7 +63,7 @@ class DiscordCacheService(
      */
     suspend fun getRoles(guildId: Snowflake, roleIds: List<Snowflake>): List<DiscordRole> {
         return pudding.transaction {
-            DiscordGuilds.slice(DiscordRoles.data)
+            DiscordRoles.slice(DiscordRoles.data)
                 .select {
                     DiscordRoles.guild eq guildId.toLong() and (DiscordRoles.role inList roleIds.map { it.toLong() })
                 }.map { Json.decodeFromString(it[DiscordRoles.data]) }
@@ -139,7 +139,7 @@ class DiscordCacheService(
 
             val guildChannel = DiscordChannels.selectFirstOrNull {
                 DiscordChannels.guild eq guildId.toLong() and (DiscordChannels.channel eq channelId.toLong())
-            }?.let { Json.decodeFromString<DiscordChannel>(it[DiscordRoles.data]) }
+            }?.let { Json.decodeFromString<DiscordChannel>(it[DiscordChannels.data]) }
 
             // We are going to validate if there are any missing roles
             for (userRoleId in userRoleIds) {
