@@ -54,6 +54,10 @@ class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEv
 
         // Check all mentioned users...
         for (mention in messageCreate.message.mentions) {
+            // Bots can't be AFK so let's skip over them
+            if (mention.bot.discordBoolean)
+                continue
+
             // Are they AFK?
             val lorittaProfile = m.services.users.getUserProfile(UserId(mention.id.value))
 
