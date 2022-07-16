@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContentTypeUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
@@ -64,13 +65,8 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         .build<Long, Mutex>()
         .asMap()
 
-    override suspend fun processEvent(
-        shardId: Int,
-        receivedAt: Instant,
-        event: Event,
-        durations: Map<KClass<*>, Duration>
-    ): ModuleResult {
-        when (event) {
+    override suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult {
+        when (val event = context.event) {
             // ===[ REACTIONS ]===
             is MessageReactionAdd -> {
                 handleStarboardReaction(

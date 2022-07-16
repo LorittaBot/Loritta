@@ -6,6 +6,7 @@ import dev.kord.gateway.MessageCreate
 import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.BomDiaECia
 import kotlin.reflect.KClass
 import kotlin.time.Duration
@@ -15,23 +16,18 @@ class BomDiaECiaModule(private val m: DiscordGatewayEventsProcessor) : ProcessDi
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun processEvent(
-        shardId: Int,
-        receivedAt: Instant,
-        event: Event,
-        durations: Map<KClass<*>, Duration>
-    ): ModuleResult {
-        when (event) {
+    override suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult {
+        when (context.event) {
             // ===[ CHANNEL CREATE ]===
             is MessageCreate -> {
-                val guildId = event.message.guildId.value
-                val channelId = event.message.channelId
+                val guildId = context.event.message.guildId.value
+                val channelId = context.event.message.channelId
 
                 if (guildId != null) {
                     handleMessage(
                         guildId,
                         channelId,
-                        event.message.author.id
+                        context.event.message.author.id
                     )
                 }
             }

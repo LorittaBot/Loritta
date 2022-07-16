@@ -7,6 +7,7 @@ import dev.kord.gateway.Event
 import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 
@@ -26,20 +27,15 @@ class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) 
         )
     }
 
-    override suspend fun processEvent(
-        shardId: Int,
-        receivedAt: Instant,
-        event: Event,
-        durations: Map<KClass<*>, Duration>
-    ): ModuleResult {
-        when (event) {
+    override suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult {
+        when (context.event) {
             // ===[ CHANNEL CREATE ]===
             is ChannelCreate -> {
                 // This should only be sent in a guild text channel
-                if (event.channel.type == ChannelType.GuildText) {
+                if (context.event.channel.type == ChannelType.GuildText) {
                     handleFirst(
-                        event.channel.guildId.value ?: return ModuleResult.Continue, // Pretty sure that this cannot be null here
-                        event.channel.id
+                        context.event.channel.guildId.value ?: return ModuleResult.Continue, // Pretty sure that this cannot be null here
+                        context.event.channel.id
                     )
                 }
             }

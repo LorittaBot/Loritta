@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.common.utils.LorittaPermission
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
@@ -47,13 +48,8 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
         .build<Snowflake, Set<String>>()
         .asMap()
 
-    override suspend fun processEvent(
-        shardId: Int,
-        receivedAt: Instant,
-        event: Event,
-        durations: Map<KClass<*>, Duration>
-    ): ModuleResult {
-        when (event) {
+    override suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult {
+        when (val event = context.event) {
             is MessageCreate -> return handleMessage(event)
             // Delete invite list from cache when a server invite is created or deleted
             is InviteCreate -> event.invite.guildId.value?.let { cachedInviteLinks.remove(it) }

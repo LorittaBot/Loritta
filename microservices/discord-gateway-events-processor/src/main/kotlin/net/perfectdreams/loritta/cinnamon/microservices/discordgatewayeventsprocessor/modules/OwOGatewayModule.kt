@@ -5,17 +5,13 @@ import dev.kord.gateway.MessageCreate
 import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 
 class OwOGatewayModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
-    override suspend fun processEvent(
-        shardId: Int,
-        receivedAt: Instant,
-        event: Event,
-        durations: Map<KClass<*>, Duration>
-    ): ModuleResult {
-        when (event) {
+    override suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult {
+        when (val event = context.event) {
             // ===[ CHANNEL CREATE ]===
             is MessageCreate -> {
                 handleOwOGateway(event)

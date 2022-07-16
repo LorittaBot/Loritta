@@ -33,6 +33,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.HashEncoder
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.batchUpsert
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.upsert
@@ -66,13 +67,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
     private suspend inline fun withMutex(vararg ids: Snowflake, action: () -> Unit) = mutexes.getOrPut(ids.joinToString(":")) { Mutex() }.withLock(action = action)
 
-    override suspend fun processEvent(
-        shardId: Int,
-        receivedAt: Instant,
-        event: Event,
-        durations: Map<KClass<*>, Duration>
-    ): ModuleResult {
-        when (event) {
+    override suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult {
+        when (val event = context.event) {
             is GuildCreate -> {
                 // logger.info { "Howdy ${event.guild.id} (${event.guild.name})! Is unavailable? ${event.guild.unavailable}" }
 
@@ -269,12 +265,6 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             it[DiscordGuilds.ownerId] = guildOwnerId.toLong()
         }
 
-        // TODO: We need a way to calculate if a Kord object is the same object as another object - Maybe figure out something with kotlinx.serialization? I'm not sure yet
-        // The issue is that "hashCode" is not consistent between JVM restarts
-
-        // Check if the stored roles contains the same elements and, if not, batch upsert and delete outdated entries
-        // This reduces the query time quite a bit if we don't need to update the roles/channels/emojis
-        // TODO: Kinda farfetched, but why not store the object hash code in the table too? Then we could query *only* the entities that needs to be updated!
         updateEntitiesInDatabaseIfNeeded(
             DiscordRoles,
             DiscordRoles.guild,
@@ -434,7 +424,13 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
+    /**
+     * Check if the stored [entities] contains the same elements and, if not, batch upsert and delete outdated entries
+     *
+     * This stores a [dataHashColumn] of the entity, to optimize the upserting procedure to avoid multiple upserts.
+     * 
+     * This reduces the query time quite a bit if we don't need to update the roles/channels/emojis
+     */
     private inline fun <T : Table, reified E> updateEntitiesInDatabaseIfNeeded(
         table: T,
         guildColumn: Column<Long>,

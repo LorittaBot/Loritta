@@ -1,15 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
-import dev.kord.gateway.Event
-import kotlinx.datetime.Instant
-import kotlin.reflect.KClass
-import kotlin.time.Duration
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 
 abstract class ProcessDiscordEventsModule {
-    abstract suspend fun processEvent(
-        shardId: Int,
-        receivedAt: Instant,
-        event: Event,
-        durations: Map<KClass<*>, Duration>
-    ): ModuleResult
+    abstract suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult
 }

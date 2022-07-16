@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 
 import dev.kord.gateway.Event
 import kotlinx.coroutines.*
-import kotlinx.datetime.Instant
 import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
@@ -62,7 +61,14 @@ class DiscordGatewayEventsProcessor(
 
         // We will call a method that doesn't reference the "discordEventAsJsonObject" nor the "it" object, this makes it veeeery clear to the JVM that yes, you can GC the "discordEventAsJsonObject" and "it" objects
         // (Will it really GC the object? idk, but I hope it will)
-        launchEventProcessorJob(it.shardId, it.receivedAt, eventType, discordEvent)
+        launchEventProcessorJob(
+            GatewayProxyEventContext(
+                eventType,
+                discordEvent,
+                it.shardId,
+                it.receivedAt
+            )
+        )
     }
 
     val gatewayProxies = config.gatewayProxies.filter { it.replicaId == replicaId }.map {
@@ -91,36 +97,32 @@ class DiscordGatewayEventsProcessor(
         return Pair(eventType, discordEvent)
     }
 
-    private fun launchEventProcessorJob(shardId: Int, receivedAt: Instant, type: String, discordEvent: Event?) {
-        if (discordEvent != null)
-            launchEventProcessorJob(shardId, receivedAt, discordEvent)
-        else
-            logger.warn { "Unknown Discord event received $type! We are going to ignore the event... kthxbye!" }
-    }
-
     @OptIn(ExperimentalTime::class)
-    private fun launchEventProcessorJob(shardId: Int, receivedAt: Instant, discordEvent: Event) {
-        val coroutineName = "Event ${discordEvent::class.simpleName}"
-        launchEventJob(coroutineName) {
-            try {
-                for (module in modules) {
-                    val (result, duration) = measureTimedValue { module.processEvent(shardId, receivedAt, discordEvent, it) }
-                    it[module::class] = duration
+    private fun launchEventProcessorJob(context: GatewayProxyEventContext) {
+        if (context.event != null) {
+            val coroutineName = "Event ${context.event::class.simpleName}"
+            launchEventJob(coroutineName) {
+                try {
+                    for (module in modules) {
+                        val (result, duration) = measureTimedValue { module.processEvent(context) }
+                        it[module::class] = duration
 
-                    when (result) {
-                        ModuleResult.Cancel -> {
-                            // Module asked us to stop processing the events
-                            return@launchEventJob
-                        }
-                        ModuleResult.Continue -> {
-                            // Module asked us to continue processing the events
+                        when (result) {
+                            ModuleResult.Cancel -> {
+                                // Module asked us to stop processing the events
+                                return@launchEventJob
+                            }
+                            ModuleResult.Continue -> {
+                                // Module asked us to continue processing the events
+                            }
                         }
                     }
+                } catch (e: Throwable) {
+                    logger.warn(e) { "Something went wrong while trying to process $coroutineName! We are going to ignore..." }
                 }
-            } catch (e: Throwable) {
-                logger.warn(e) { "Something went wrong while trying to process $coroutineName! We are going to ignore..." }
             }
-        }
+        } else
+            logger.warn { "Unknown Discord event received ${context.eventType}! We are going to ignore the event... kthxbye!" }
     }
 
     private fun launchEventJob(coroutineName: String, block: suspend CoroutineScope.(MutableMap<KClass<*>, Duration>) -> Unit) {
