@@ -428,7 +428,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
      * Check if the stored [entities] contains the same elements and, if not, batch upsert and delete outdated entries
      *
      * This stores a [dataHashColumn] of the entity, to optimize the upserting procedure to avoid multiple upserts.
-     * 
+     *
      * This reduces the query time quite a bit if we don't need to update the roles/channels/emojis
      */
     private inline fun <T : Table, reified E> updateEntitiesInDatabaseIfNeeded(

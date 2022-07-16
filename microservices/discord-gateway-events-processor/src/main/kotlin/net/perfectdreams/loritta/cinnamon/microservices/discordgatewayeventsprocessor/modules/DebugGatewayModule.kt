@@ -29,7 +29,6 @@ class DebugGatewayModule(private val m: DiscordGatewayEventsProcessor) : Process
     }
 
     private suspend fun handleDebugGateway(context: GatewayProxyEventContext, messageCreate: MessageCreate) {
-
         // Only MrPowerGamerBR heh
         if (messageCreate.message.author.id != Snowflake(123170274651668480))
             return

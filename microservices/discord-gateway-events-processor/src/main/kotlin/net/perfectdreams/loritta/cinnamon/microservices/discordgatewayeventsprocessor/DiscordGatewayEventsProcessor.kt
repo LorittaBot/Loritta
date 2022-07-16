@@ -101,11 +101,11 @@ class DiscordGatewayEventsProcessor(
     private fun launchEventProcessorJob(context: GatewayProxyEventContext) {
         if (context.event != null) {
             val coroutineName = "Event ${context.event::class.simpleName}"
-            launchEventJob(coroutineName) {
+            launchEventJob(coroutineName, context.durations) {
                 try {
                     for (module in modules) {
                         val (result, duration) = measureTimedValue { module.processEvent(context) }
-                        it[module::class] = duration
+                        context.durations[module::class] = duration
 
                         when (result) {
                             ModuleResult.Cancel -> {
@@ -125,15 +125,12 @@ class DiscordGatewayEventsProcessor(
             logger.warn { "Unknown Discord event received ${context.eventType}! We are going to ignore the event... kthxbye!" }
     }
 
-    private fun launchEventJob(coroutineName: String, block: suspend CoroutineScope.(MutableMap<KClass<*>, Duration>) -> Unit) {
+    private fun launchEventJob(coroutineName: String, durations: Map<KClass<*>, Duration>, block: suspend CoroutineScope.() -> Unit) {
         val start = System.currentTimeMillis()
-        val durations = mutableMapOf<KClass<*>, Duration>()
 
         val job = GlobalScope.launch(
             CoroutineName(coroutineName),
-            block = {
-                block.invoke(this, durations)
-            }
+            block = block
         )
 
         activeEvents.add(job)
