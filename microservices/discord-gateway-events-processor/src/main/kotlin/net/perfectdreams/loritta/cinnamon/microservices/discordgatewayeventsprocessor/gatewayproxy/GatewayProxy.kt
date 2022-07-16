@@ -108,11 +108,15 @@ class GatewayProxy(
             session = newSession
 
             for (event in newSession.incoming) {
+                val now = Clock.System.now()
+
+                // Every event should be counted as +1 and be tracked
+                totalEventsReceived.addAndGet(1)
+                lastEventReceivedAt = now
+
                 when (event) {
                     is Frame.Text -> {
                         try {
-                            val now = Clock.System.now()
-
                             if (state != State.CONNECTED) {
                                 logger.info { "Successfully connected to gateway endpoint $url!" }
                                 connectionTries = 0 // On a successful connection, reset the try counter
@@ -120,12 +124,9 @@ class GatewayProxy(
                                 state = State.CONNECTED
                             }
 
-                            totalEventsReceived.addAndGet(1)
-                            lastEventReceivedAt = now
-
                             onMessageReceived.invoke(
                                 GatewayProxyEventWrapper(
-                                    Clock.System.now(),
+                                    now,
                                     Json.decodeFromString(event.data.toString(Charsets.UTF_8))
                                 )
                             )
