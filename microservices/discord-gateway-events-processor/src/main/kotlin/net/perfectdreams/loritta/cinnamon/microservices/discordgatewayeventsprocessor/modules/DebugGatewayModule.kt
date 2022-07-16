@@ -70,7 +70,7 @@ class DebugGatewayModule(private val m: DiscordGatewayEventsProcessor) : Process
                 append("\n")
                 append("**When the event was started being processed:** <t:${handleStart.epochSeconds}:F> (<t:${handleStart.epochSeconds}:R>)")
                 append("\n")
-                append("**Difference (Handle Start X Message ID):** ${handleStart - receivedAt}")
+                append("**Difference (Handle Start X Received At):** ${handleStart - receivedAt}")
                 append("\n")
                 append("**Durations:**")
                 append("\n")
