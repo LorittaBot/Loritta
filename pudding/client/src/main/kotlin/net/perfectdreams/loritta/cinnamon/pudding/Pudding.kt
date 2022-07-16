@@ -137,9 +137,6 @@ class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
             hikariConfig.leakDetectionThreshold = 30L * 1000
             hikariConfig.transactionIsolation = ISOLATION_LEVEL.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
 
-            // https://stackoverflow.com/a/64375936/7271796
-            hikariConfig.isAllowPoolSuspension = true
-
             return hikariConfig
         }
 
