@@ -10,11 +10,12 @@ import com.mrpowergamerbr.loritta.utils.lorittaShards
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BotVoteSonhosTransactionsLog
 import net.perfectdreams.loritta.dao.BotVote
 import net.perfectdreams.loritta.tables.BotVotes
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import org.jetbrains.exposed.sql.*
+import java.time.Instant
 import java.util.concurrent.TimeUnit
 
 object WebsiteVoteUtils {
@@ -71,6 +72,17 @@ object WebsiteVoteUtils {
 					SonhosPaymentReason.DISCORD_BOTS,
 					receivedBy = userId
 				)
+			}
+
+			val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+				it[SonhosTransactionsLog.user] = userId
+				it[SonhosTransactionsLog.timestamp] = Instant.now()
+			}
+
+			BotVoteSonhosTransactionsLog.insert {
+				it[BotVoteSonhosTransactionsLog.timestampLog] = transactionLogId
+				it[BotVoteSonhosTransactionsLog.websiteSource] = net.perfectdreams.loritta.cinnamon.common.utils.WebsiteVoteSource.TOP_GG
+				it[BotVoteSonhosTransactionsLog.sonhos] = SONHOS_AMOUNT
 			}
 
 			val voteCount = loritta.newSuspendedTransaction {
