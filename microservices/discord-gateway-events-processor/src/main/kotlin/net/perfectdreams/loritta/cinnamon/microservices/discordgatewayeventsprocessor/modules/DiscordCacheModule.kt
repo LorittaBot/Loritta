@@ -50,11 +50,6 @@ import kotlin.time.Duration
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
         private val logger = KotlinLogging.logger {}
-
-        @OptIn(ExperimentalSerializationApi::class)
-        private val protoBuf = ProtoBuf {
-            encodeDefaults = false
-        }
     }
 
     /**
@@ -346,7 +341,6 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     private fun createOrUpdateGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
         DiscordChannels.upsert(DiscordChannels.guild, DiscordChannels.channel) {
             it[DiscordChannels.guild] = guildId.toLong()
@@ -377,7 +371,6 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         }
     }
 
-    @OptIn(ExperimentalSerializationApi::class)
     private fun createOrUpdateRole(guildId: Snowflake, role: DiscordRole) {
         DiscordRoles.upsert(DiscordRoles.guild, DiscordRoles.role) {
             it[DiscordRoles.guild] = guildId.toLong()
