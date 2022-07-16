@@ -3,7 +3,7 @@ authors: [ "mrpowergamerbr" ]
 ---
 **Isto são apenas apelos para ser desbanido de usar a Loritta, não são apelos para ser desbanido do servidor de suporte dela!**
 
-Se você foi banido de usar a Loritta, você tem direito a ter uma segunda chance fazendo um apelo para perdoarem o motivo do seu ban.
+Se você foi banido de usar a Loritta, você talvez tenha direito a ter uma segunda chance fazendo um apelo para perdoarem o motivo do seu ban. Mas saiba que você pode perder sua segunda chance se você ficar incomodando a equipe, insistindo no seu unban ou quebrar as regras dos servidores da Loritta.
 
 Nesta página, quando estamos dizendo que é para "esperar X meses", significa que é para esperar X meses desde a data que você foi banido de usar a Loritta ANTES DE FAZER UM APELO. A data de quando você foi banido aparece quando alguém tenta visualizar o seu perfil com o comando `+perfil` da Loritta.
 
