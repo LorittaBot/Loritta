@@ -3,7 +3,9 @@ package net.perfectdreams.loritta.cinnamon.pudding
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -87,7 +89,11 @@ import java.security.SecureRandom
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
-class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
+class Pudding(
+    val hikariDataSource: HikariDataSource,
+    val database: Database,
+    val dispatcher: CoroutineDispatcher
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
@@ -103,6 +109,7 @@ class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
          * @param password     the PostgreSQL password
          * @return a [Pudding] instance backed by a PostgreSQL database
          */
+        @ExperimentalCoroutinesApi
         fun createPostgreSQLPudding(
             address: String,
             databaseName: String,
@@ -117,7 +124,20 @@ class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
 
             val hikariDataSource = HikariDataSource(hikariConfig)
 
-            return Pudding(hikariDataSource, connectToDatabase(hikariDataSource))
+            println(hikariDataSource.maximumPoolSize)
+
+            return Pudding(
+                hikariDataSource,
+                connectToDatabase(hikariDataSource),
+                // Instead of using Dispatchers.IO directly, we will limit the maximum parallelism to the maximum pool size
+                // This avoids issues when all Dispatchers.IO threads are blocked on transactions, causing any other coroutine using the Dispatcher.IO job to be
+                // blocked.
+                // Example: 64 blocked coroutines due to transactions (64 = max threads in a Dispatchers.IO dispatcher) + you also have a WebSocket listening for events, when the WS tries to
+                // read incoming events, it is blocked because there isn't any available Dispatchers.IO threads!
+                //
+                // The only issue with this solution is that you can't check how many transactions are waiting for a available connection via HikariCP's stats.
+                Dispatchers.IO.limitedParallelism(hikariDataSource.maximumPoolSize)
+            )
         }
 
         private fun createHikariConfig(): HikariConfig {
@@ -389,7 +409,7 @@ class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
-                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, database, transactionIsolation) {
+                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(dispatcher, database, transactionIsolation) {
                     statement.invoke(this)
                 }
             } catch (e: ExposedSQLException) {
@@ -401,39 +421,6 @@ class Pudding(val hikariDataSource: HikariDataSource, val database: Database) {
     }
 
     private val mutex = Mutex()
-
-    /**
-     * Runs an IO bound code within a transaction (Example: Interactions with Discord's API)
-     *
-     * This is useful to avoid all transactions being exausted due to Discord's rate limit.
-     *
-     * To handle it, HikariCP's maximumPoolSize is increased and then decreased after the code finishes its execution.
-     */
-    suspend fun <T> runIOBound(block: suspend () -> (T)): T {
-        if (TransactionManager.currentOrNull() == null)
-            error("This can only be ran within a transaction block!")
-
-        val config = hikariDataSource.hikariConfigMXBean
-
-        mutex.withLock {
-            if (config.minimumIdle == 0) {
-                logger.info { "Running IO Bound code for the first time, setting minimum idle to ${config.maximumPoolSize}" }
-                config.minimumIdle = config.maximumPoolSize
-            }
-
-            config.maximumPoolSize = config.maximumPoolSize + 1
-            logger.info { "Running IO Bound code, increased pool size to ${config.maximumPoolSize}" }
-        }
-
-        try {
-            return block.invoke()
-        } finally {
-            mutex.withLock {
-                config.maximumPoolSize = config.maximumPoolSize - 1
-                logger.info { "Finished running IO Bound code, decreased pool size to ${config.maximumPoolSize}" }
-            }
-        }
-    }
 
     fun shutdown() {
         puddingTasks.shutdown()
