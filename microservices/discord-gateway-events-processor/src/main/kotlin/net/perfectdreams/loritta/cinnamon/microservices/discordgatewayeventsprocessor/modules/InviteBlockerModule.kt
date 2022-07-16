@@ -13,6 +13,7 @@ import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.builder.message.create.allowedMentions
 import dev.kord.rest.request.KtorRequestException
 import io.ktor.http.*
+import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaPermission
@@ -33,6 +34,8 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
+import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
@@ -44,7 +47,12 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
         .build<Snowflake, Set<String>>()
         .asMap()
 
-    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
+    override suspend fun processEvent(
+        shardId: Int,
+        receivedAt: Instant,
+        event: Event,
+        durations: Map<KClass<*>, Duration>
+    ): ModuleResult {
         when (event) {
             is MessageCreate -> return handleMessage(event)
             // Delete invite list from cache when a server invite is created or deleted

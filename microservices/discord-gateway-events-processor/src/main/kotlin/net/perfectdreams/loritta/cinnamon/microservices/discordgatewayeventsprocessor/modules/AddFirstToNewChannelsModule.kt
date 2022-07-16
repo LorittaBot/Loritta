@@ -4,8 +4,11 @@ import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.ChannelCreate
 import dev.kord.gateway.Event
+import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
@@ -23,7 +26,12 @@ class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) 
         )
     }
 
-    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
+    override suspend fun processEvent(
+        shardId: Int,
+        receivedAt: Instant,
+        event: Event,
+        durations: Map<KClass<*>, Duration>
+    ): ModuleResult {
         when (event) {
             // ===[ CHANNEL CREATE ]===
             is ChannelCreate -> {

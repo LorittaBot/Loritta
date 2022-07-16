@@ -1,35 +1,21 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor
 
 import dev.kord.gateway.Event
-import dev.kord.gateway.GuildCreate
 import kotlinx.coroutines.*
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import kotlinx.datetime.Instant
 import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxy
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxyEvent
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AFKModule
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.AddFirstToNewChannelsModule
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.BomDiaECiaModule
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.DebugGatewayModule
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.DiscordCacheModule
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.InviteBlockerModule
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.ModuleResult
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.StarboardModule
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxyEventWrapper
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules.*
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.BomDiaECia
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.DiscordGatewayEventsProcessorTasks
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordEmojis
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordGuilds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordRoles
-import org.jetbrains.exposed.sql.SchemaUtils
-import java.io.File
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.reflect.KClass
@@ -52,6 +38,7 @@ class DiscordGatewayEventsProcessor(
     private val discordCacheModule = DiscordCacheModule(this)
     private val bomDiaECiaModule = BomDiaECiaModule(this)
     private val debugGatewayModule = DebugGatewayModule(this)
+    private val owoGatewayModule = OwOGatewayModule(this)
     private val inviteBlockerModule = InviteBlockerModule(this)
     private val afkModule = AFKModule(this)
 
@@ -62,6 +49,7 @@ class DiscordGatewayEventsProcessor(
         afkModule,
         addFirstToNewChannelsModule,
         starboardModule,
+        owoGatewayModule,
         debugGatewayModule
     )
 
@@ -69,12 +57,12 @@ class DiscordGatewayEventsProcessor(
     val random = SecureRandom()
     val activeEvents = ConcurrentLinkedQueue<Job>()
 
-    private val onMessageReceived: (GatewayProxyEvent) -> (Unit) = {
-        val (eventType, discordEvent) = parseEvent(it)
+    private val onMessageReceived: (GatewayProxyEventWrapper) -> (Unit) = {
+        val (eventType, discordEvent) = parseEvent(it.data)
 
         // We will call a method that doesn't reference the "discordEventAsJsonObject" nor the "it" object, this makes it veeeery clear to the JVM that yes, you can GC the "discordEventAsJsonObject" and "it" objects
         // (Will it really GC the object? idk, but I hope it will)
-        launchEventProcessorJob(it.shardId, eventType, discordEvent)
+        launchEventProcessorJob(it.shardId, it.receivedAt, eventType, discordEvent)
     }
 
     val gatewayProxies = config.gatewayProxies.filter { it.replicaId == replicaId }.map {
@@ -103,20 +91,20 @@ class DiscordGatewayEventsProcessor(
         return Pair(eventType, discordEvent)
     }
 
-    private fun launchEventProcessorJob(shardId: Int, type: String, discordEvent: Event?) {
+    private fun launchEventProcessorJob(shardId: Int, receivedAt: Instant, type: String, discordEvent: Event?) {
         if (discordEvent != null)
-            launchEventProcessorJob(shardId, discordEvent)
+            launchEventProcessorJob(shardId, receivedAt, discordEvent)
         else
             logger.warn { "Unknown Discord event received $type! We are going to ignore the event... kthxbye!" }
     }
 
     @OptIn(ExperimentalTime::class)
-    private fun launchEventProcessorJob(shardId: Int, discordEvent: Event) {
+    private fun launchEventProcessorJob(shardId: Int, receivedAt: Instant, discordEvent: Event) {
         val coroutineName = "Event ${discordEvent::class.simpleName}"
         launchEventJob(coroutineName) {
             try {
                 for (module in modules) {
-                    val (result, duration) = measureTimedValue { module.processEvent(shardId, discordEvent) }
+                    val (result, duration) = measureTimedValue { module.processEvent(shardId, receivedAt, discordEvent, it) }
                     it[module::class] = duration
 
                     when (result) {

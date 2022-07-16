@@ -3,16 +3,24 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Event
 import dev.kord.gateway.MessageCreate
+import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.BomDiaECia
+import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 class BomDiaECiaModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
+    override suspend fun processEvent(
+        shardId: Int,
+        receivedAt: Instant,
+        event: Event,
+        durations: Map<KClass<*>, Duration>
+    ): ModuleResult {
         when (event) {
             // ===[ CHANNEL CREATE ]===
             is MessageCreate -> {

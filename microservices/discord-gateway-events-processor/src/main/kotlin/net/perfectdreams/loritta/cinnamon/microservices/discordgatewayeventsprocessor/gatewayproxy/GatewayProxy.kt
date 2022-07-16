@@ -25,7 +25,7 @@ import kotlin.time.Duration.Companion.seconds
 class GatewayProxy(
     val url: String,
     val authorizationToken: String,
-    val onMessageReceived: (GatewayProxyEvent) -> (Unit)
+    val onMessageReceived: (GatewayProxyEventWrapper) -> (Unit)
 ) : Closeable {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -124,8 +124,9 @@ class GatewayProxy(
                             lastEventReceivedAt = now
 
                             onMessageReceived.invoke(
-                                Json.decodeFromString(
-                                    event.data.toString(Charsets.UTF_8)
+                                GatewayProxyEventWrapper(
+                                    Clock.System.now(),
+                                    Json.decodeFromString(event.data.toString(Charsets.UTF_8))
                                 )
                             )
                         } catch (e: Exception) {

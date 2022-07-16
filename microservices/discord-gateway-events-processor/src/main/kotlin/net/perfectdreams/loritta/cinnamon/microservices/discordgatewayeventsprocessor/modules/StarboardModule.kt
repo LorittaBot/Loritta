@@ -21,6 +21,7 @@ import dev.kord.rest.builder.message.modify.embed
 import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
@@ -42,6 +43,8 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
@@ -61,7 +64,12 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         .build<Long, Mutex>()
         .asMap()
 
-    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
+    override suspend fun processEvent(
+        shardId: Int,
+        receivedAt: Instant,
+        event: Event,
+        durations: Map<KClass<*>, Duration>
+    ): ModuleResult {
         when (event) {
             // ===[ REACTIONS ]===
             is MessageReactionAdd -> {

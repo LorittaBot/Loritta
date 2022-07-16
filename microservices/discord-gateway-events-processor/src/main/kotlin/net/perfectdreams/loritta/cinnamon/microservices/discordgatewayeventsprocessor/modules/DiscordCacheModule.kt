@@ -27,6 +27,7 @@ import dev.kord.gateway.GuildUpdate
 import dev.kord.gateway.MessageCreate
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.datetime.Instant
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
@@ -42,6 +43,8 @@ import org.jetbrains.exposed.sql.statements.BatchInsertStatement
 import pw.forst.exposed.insertOrUpdate
 import java.util.*
 import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
@@ -63,7 +66,12 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
     private suspend inline fun withMutex(vararg ids: Snowflake, action: () -> Unit) = mutexes.getOrPut(ids.joinToString(":")) { Mutex() }.withLock(action = action)
 
-    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
+    override suspend fun processEvent(
+        shardId: Int,
+        receivedAt: Instant,
+        event: Event,
+        durations: Map<KClass<*>, Duration>
+    ): ModuleResult {
         when (event) {
             is GuildCreate -> {
                 // logger.info { "Howdy ${event.guild.id} (${event.guild.name})! Is unavailable? ${event.guild.unavailable}" }

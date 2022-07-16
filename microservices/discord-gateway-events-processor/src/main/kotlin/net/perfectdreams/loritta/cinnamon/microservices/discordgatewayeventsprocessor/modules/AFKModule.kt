@@ -7,15 +7,23 @@ import dev.kord.rest.builder.message.create.allowedMentions
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import kotlin.reflect.KClass
+import kotlin.time.Duration
 
 class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
-    override suspend fun processEvent(shardId: Int, event: Event): ModuleResult {
+    override suspend fun processEvent(
+        shardId: Int,
+        receivedAt: Instant,
+        event: Event,
+        durations: Map<KClass<*>, Duration>
+    ): ModuleResult {
         when (event) {
             // ===[ CHANNEL CREATE ]===
             is MessageCreate -> {
