@@ -6,6 +6,7 @@ import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -86,12 +87,16 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
+import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class Pudding(
     val hikariDataSource: HikariDataSource,
     val database: Database,
+    private val cachedThreadPool: ExecutorService,
     val dispatcher: CoroutineDispatcher
 ) {
     companion object {
@@ -124,19 +129,18 @@ class Pudding(
 
             val hikariDataSource = HikariDataSource(hikariConfig)
 
-            println(hikariDataSource.maximumPoolSize)
+            val cachedThreadPool = Executors.newCachedThreadPool()
 
             return Pudding(
                 hikariDataSource,
                 connectToDatabase(hikariDataSource),
-                // Instead of using Dispatchers.IO directly, we will limit the maximum parallelism to the maximum pool size
+                cachedThreadPool,
+                // Instead of using Dispatchers.IO directly, we will create a cached thread pool.
                 // This avoids issues when all Dispatchers.IO threads are blocked on transactions, causing any other coroutine using the Dispatcher.IO job to be
                 // blocked.
                 // Example: 64 blocked coroutines due to transactions (64 = max threads in a Dispatchers.IO dispatcher) + you also have a WebSocket listening for events, when the WS tries to
                 // read incoming events, it is blocked because there isn't any available Dispatchers.IO threads!
-                //
-                // The only issue with this solution is that you can't check how many transactions are waiting for a available connection via HikariCP's stats.
-                Dispatchers.IO.limitedParallelism(hikariDataSource.maximumPoolSize)
+                cachedThreadPool.asCoroutineDispatcher()
             )
         }
 
@@ -420,10 +424,9 @@ class Pudding(
         throw lastException ?: RuntimeException("This should never happen")
     }
 
-    private val mutex = Mutex()
-
     fun shutdown() {
         puddingTasks.shutdown()
+        cachedThreadPool.shutdown()
     }
 
     /**
