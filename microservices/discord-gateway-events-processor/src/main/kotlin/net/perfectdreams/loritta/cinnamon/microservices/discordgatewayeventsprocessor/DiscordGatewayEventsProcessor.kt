@@ -59,7 +59,7 @@ class DiscordGatewayEventsProcessor(
     val random = SecureRandom()
     val activeEvents = ConcurrentLinkedQueue<Job>()
 
-    val promscaleClient = PromscaleClient("http://127.0.0.1:9201/")
+    val promscaleClient = PromscaleClient(config.promscale.url)
     val metrics = DiscordGatewayEventsProcessorMetrics()
 
     private val onMessageReceived: (GatewayProxyEventWrapper) -> (Unit) = {
