@@ -19,11 +19,6 @@ dependencies {
     // We want to use Kord REST on our project too!
     api("dev.kord:kord-rest:${Versions.KORD}")
 
-    // Prometheus, for metrics
-    api("io.prometheus:simpleclient:${Versions.PROMETHEUS}")
-    api("io.prometheus:simpleclient_hotspot:${Versions.PROMETHEUS}")
-    api("io.prometheus:simpleclient_common:${Versions.PROMETHEUS}")
-
     // Databases
     implementation(libs.exposed.core)
     implementation(libs.exposed.jdbc)
