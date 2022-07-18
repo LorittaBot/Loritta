@@ -65,7 +65,7 @@ class DiscordGatewayEventsProcessor(
     private val onMessageReceived: (GatewayProxyEventWrapper) -> (Unit) = {
         val (eventType, discordEvent) = parseEvent(it.data)
 
-        metrics.gatewayEventsReceived.labels(eventType).inc()
+        metrics.gatewayEventsReceived.labels(it.shardId.toString(), eventType).inc()
 
         // We will call a method that doesn't reference the "discordEventAsJsonObject" nor the "it" object, this makes it veeeery clear to the JVM that yes, you can GC the "discordEventAsJsonObject" and "it" objects
         // (Will it really GC the object? idk, but I hope it will)
