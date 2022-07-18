@@ -59,7 +59,7 @@ class DiscordGatewayEventsProcessor(
     val random = SecureRandom()
     val activeEvents = ConcurrentLinkedQueue<Job>()
 
-    val promscaleClient = PromscaleClient(config.promscale.url)
+    val promscaleClient = PromscaleClient("discordgatewayeventsprocessor", config.promscale.url)
     val metrics = DiscordGatewayEventsProcessorMetrics()
 
     private val onMessageReceived: (GatewayProxyEventWrapper) -> (Unit) = {

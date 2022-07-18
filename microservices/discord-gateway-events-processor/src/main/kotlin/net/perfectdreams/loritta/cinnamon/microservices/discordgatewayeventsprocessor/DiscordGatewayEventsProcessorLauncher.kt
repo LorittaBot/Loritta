@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.HostnameUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.JFRExports
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
@@ -19,6 +20,8 @@ object DiscordGatewayEventsProcessorLauncher {
     fun main(args: Array<String>) {
         // https://github.com/JetBrains/Exposed/issues/1356
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
+
+        JFRExports.register()
 
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(
             DiscordGatewayEventsProcessorLauncher::class, System.getProperty("discordgatewayeventsprocessor.config", "discord-gateway-events-processor.conf"))
