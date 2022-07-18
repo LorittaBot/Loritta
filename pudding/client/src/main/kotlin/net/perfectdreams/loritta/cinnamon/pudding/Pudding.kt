@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
+import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory
 import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -160,6 +161,7 @@ class Pudding(
             // Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
             hikariConfig.leakDetectionThreshold = 30L * 1000
             hikariConfig.transactionIsolation = ISOLATION_LEVEL.name // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
+            hikariConfig.metricsTrackerFactory = PrometheusMetricsTrackerFactory()
 
             return hikariConfig
         }
