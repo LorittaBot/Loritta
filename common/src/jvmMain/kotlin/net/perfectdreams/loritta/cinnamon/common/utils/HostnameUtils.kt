@@ -17,7 +17,7 @@ object HostnameUtils {
             proc.destroyForcibly()
 
             logger.warn { "Machine Hostname via \"hostname\" command: $hostname" }
-            return hostname
+            return hostname.replace("\n", "").replace("\r", "")
         } catch (e: Exception) {
             logger.warn(e) { "Something went wrong while trying to get the machine's hostname via the \"hostname\" command!" }
         }
@@ -25,13 +25,13 @@ object HostnameUtils {
         // From hostname env variable
         System.getenv("HOSTNAME")?.let {
             logger.warn { "Machine Hostname via \"HOSTNAME\" env variable: $it" }
-            return it
+            return it.replace("\n", "").replace("\r", "")
         }
 
         // From computername env variable
         System.getenv("COMPUTERNAME")?.let {
             logger.warn { "Machine Hostname via \"COMPUTERNAME\" env variable: $it" }
-            return it
+            return it.replace("\n", "").replace("\r", "")
         }
 
         logger.warn { "I wasn't able to get the machine's hostname! Falling back to \"Unknown\"..." }
