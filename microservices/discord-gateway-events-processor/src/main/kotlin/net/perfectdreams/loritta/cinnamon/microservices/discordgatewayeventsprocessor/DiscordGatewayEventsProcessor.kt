@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.PromscaleClient
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.PrometheusPushClient
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -59,7 +59,7 @@ class DiscordGatewayEventsProcessor(
     val random = SecureRandom()
     val activeEvents = ConcurrentLinkedQueue<Job>()
 
-    val promscaleClient = PromscaleClient("discordgatewayeventsprocessor", config.promscale.url)
+    val promscaleClient = PrometheusPushClient("discordgatewayeventsprocessor", config.prometheusPush.url)
     val metrics = DiscordGatewayEventsProcessorMetrics()
 
     private val onMessageReceived: (GatewayProxyEventWrapper) -> (Unit) = {

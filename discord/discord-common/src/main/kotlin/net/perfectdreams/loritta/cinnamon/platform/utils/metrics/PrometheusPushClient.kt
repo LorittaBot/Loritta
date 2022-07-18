@@ -5,24 +5,18 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.content.*
 import io.ktor.http.*
-import io.prometheus.client.Collector
-import io.prometheus.client.Collector.MetricFamilySamples
 import io.prometheus.client.CollectorRegistry
-import io.prometheus.client.exporter.common.TextFormat
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.utils.HostnameUtils
 import java.io.Closeable
-import java.io.IOException
 import java.io.StringWriter
-import java.io.Writer
-import java.util.*
 import kotlin.time.Duration.Companion.seconds
 
 /**
- * Writes Prometheus stats to a Promscale server at [url].
+ * Writes Prometheus stats to a Prometheus remote write server at [url].
  */
-class PromClient internal constructor(
+class PromPushClient internal constructor(
     job: String,
     instance: String,
     val url: String
@@ -41,7 +35,7 @@ class PromClient internal constructor(
                 try {
                     postStats()
                 } catch (e: Exception) {
-                    logger.warn(e) { "Something went wrong while trying to post stats to Promscale!" }
+                    logger.warn(e) { "Something went wrong while trying to post stats to Prometheus!" }
                 }
                 delay(5.seconds)
             }
@@ -61,7 +55,7 @@ class PromClient internal constructor(
 
         val s = writer.toString()
 
-        http.post("$url/write") {
+        http.post(url) {
             setBody(
                 TextContent(
                     s,
@@ -77,8 +71,8 @@ class PromClient internal constructor(
     }
 }
 
-fun PromscaleClient(job: String, url: String): PromClient {
-    val client = PromClient(job, HostnameUtils.getHostname(), url.removeSuffix("/"))
+fun PrometheusPushClient(job: String, url: String): PromPushClient {
+    val client = PromPushClient(job, HostnameUtils.getHostname(), url)
     client.start()
     return client
 }

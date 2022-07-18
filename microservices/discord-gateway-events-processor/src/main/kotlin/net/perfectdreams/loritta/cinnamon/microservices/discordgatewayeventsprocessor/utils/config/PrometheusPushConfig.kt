@@ -3,4 +3,4 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PromscaleConfig(val url: String)
+data class PrometheusPushConfig(val url: String)

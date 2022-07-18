@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.ServicesConfig
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.PromscaleClient
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.random.Random
