@@ -10,5 +10,6 @@ data class RootConfig(
     val discord: LorittaDiscordConfig,
     val replicas: ReplicasConfig,
     val gatewayProxies: List<GatewayProxyConfig>,
-    val pudding: PuddingConfig
+    val promscale: PromscaleConfig,
+    val pudding: PuddingConfig,
 )

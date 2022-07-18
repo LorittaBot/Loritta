@@ -13,12 +13,15 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.DiscordGatewayEventsProcessorTasks
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.PromscaleClient
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedQueue
 import kotlin.reflect.KClass
 import kotlin.time.Duration
+import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
@@ -56,8 +59,13 @@ class DiscordGatewayEventsProcessor(
     val random = SecureRandom()
     val activeEvents = ConcurrentLinkedQueue<Job>()
 
+    val promscaleClient = PromscaleClient("http://127.0.0.1:9201/")
+    val metrics = DiscordGatewayEventsProcessorMetrics()
+
     private val onMessageReceived: (GatewayProxyEventWrapper) -> (Unit) = {
         val (eventType, discordEvent) = parseEvent(it.data)
+
+        metrics.gatewayEventsReceived.labels(eventType).inc()
 
         // We will call a method that doesn't reference the "discordEventAsJsonObject" nor the "it" object, this makes it veeeery clear to the JVM that yes, you can GC the "discordEventAsJsonObject" and "it" objects
         // (Will it really GC the object? idk, but I hope it will)
@@ -106,6 +114,9 @@ class DiscordGatewayEventsProcessor(
                     for (module in modules) {
                         val (result, duration) = measureTimedValue { module.processEvent(context) }
                         context.durations[module::class] = duration
+                        metrics.executedModuleLatency
+                            .labels(module::class.simpleName!!, context.eventType)
+                            .observe(duration.toDouble(DurationUnit.SECONDS))
 
                         when (result) {
                             ModuleResult.Cancel -> {

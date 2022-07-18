@@ -122,7 +122,7 @@ class Pudding(
             password: String
         ): Pudding {
             val hikariConfig = createHikariConfig()
-            hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${getPuddingApplicationName()}"
+            hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${"Loritta Cinnamon Pudding - " + HostnameUtils.getHostname()}"
 
             hikariConfig.username = username
             hikariConfig.password = password
@@ -173,39 +173,6 @@ class Pudding(
                     defaultIsolationLevel = ISOLATION_LEVEL.levelId // Change our default isolation level
                 }
             )
-
-        private fun getPuddingApplicationName(): String {
-            val suffix = "Loritta Cinnamon Pudding"
-            // From hostname command
-            try {
-                val proc = ProcessBuilder("hostname")
-                    .start()
-
-                proc.waitFor(5, TimeUnit.SECONDS)
-                val hostname = proc.inputStream.readAllBytes().toString(Charsets.UTF_8).removeSuffix("\n")
-                proc.destroyForcibly()
-
-                logger.warn { "Machine Hostname via \"hostname\" command: $hostname" }
-                return "$suffix - $hostname"
-            } catch (e: Exception) {
-                logger.warn(e) { "Something went wrong while trying to get the machine's hostname via the \"hostname\" command!" }
-            }
-
-            // From hostname env variable
-            System.getenv("HOSTNAME")?.let {
-                logger.warn { "Machine Hostname via \"HOSTNAME\" env variable: $it" }
-                return "$suffix - $it"
-            }
-
-            // From computername env variable
-            System.getenv("COMPUTERNAME")?.let {
-                logger.warn { "Machine Hostname via \"COMPUTERNAME\" env variable: $it" }
-                return "$suffix - $it"
-            }
-
-            logger.warn { "I wasn't able to get the machine's hostname! Falling back to \"Unknown\"..." }
-            return "$suffix - Unknown"
-        }
     }
 
     val users = UsersService(this)

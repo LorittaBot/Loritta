@@ -21,7 +21,9 @@ object LorittaCinnamonWebServerLauncher {
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaCinnamonWebServer::class, ConfigUtils.defaultConfigFileName)
         logger.info { "Loaded Loritta's configuration file" }
 
-        Prometheus.register()
+        Prometheus.registerJFRExports()
+        Prometheus.registerInteractions()
+
         logger.info { "Registered Prometheus Metrics" }
 
         val languageManager = LorittaLanguageManager(LorittaCinnamonWebServer::class)
