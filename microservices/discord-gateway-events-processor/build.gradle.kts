@@ -60,7 +60,7 @@ jib {
     }
 
     from {
-        image = "openjdk:17-slim-bullseye"
+        image = "eclipse-temurin:17-focal"
     }
 }
 
