@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
@@ -41,7 +42,10 @@ class PutShipEffectsRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginR
             val userProfile = m.pudding.users._getUserProfile(UserId(userIdentification.id.toLong()))
             if (userProfile == null || SHIP_EFFECT_COST > userProfile.money) {
                 // If the user profile is null, or they don't have enough money, quit
-                call.respondLoritta(NotEnoughSonhosErrorResponse, status = HttpStatusCode.Forbidden)
+                // TODO: Move it outside of here
+                runBlocking {
+                    call.respondLoritta(NotEnoughSonhosErrorResponse, status = HttpStatusCode.Forbidden)
+                }
                 return@transaction
             }
 
