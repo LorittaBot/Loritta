@@ -41,9 +41,9 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
 
         logger.info { "Dumping coroutines..." }
         val baos = ByteArrayOutputStream()
-        val printStream = PrintStream(ByteArrayOutputStream())
-        DebugProbes.dumpCoroutines(printStream)
-        printStream.close()
+        PrintStream(ByteArrayOutputStream(), true).use {
+            DebugProbes.dumpCoroutines(it)
+        }
         File("coroutines.txt")
             .writeText(baos.toString(Charsets.UTF_8))
         logger.info { "Successfully dumped coroutines!" }
