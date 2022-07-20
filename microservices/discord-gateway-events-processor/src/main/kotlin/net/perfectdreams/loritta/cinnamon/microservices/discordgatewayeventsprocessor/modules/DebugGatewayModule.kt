@@ -7,6 +7,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.common.utils.HostnameUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import kotlin.reflect.KClass
@@ -52,7 +53,7 @@ class DebugGatewayModule(private val m: DiscordGatewayEventsProcessor) : Process
             messageCreate.message.channelId
         ) {
             content = buildString {
-                append("**Debug Gateway Event** (Shard: ${context.shardId})")
+                append("**Debug Gateway Event** (Shard: ${context.shardId} / `${HostnameUtils.getHostname()}`)")
                 append("\n")
                 append("**Message Timestamp:** <t:${messageCreate.message.id.timestamp.epochSeconds}:F> (<t:${messageCreate.message.id.timestamp.epochSeconds}:R>)")
                 append("\n")
