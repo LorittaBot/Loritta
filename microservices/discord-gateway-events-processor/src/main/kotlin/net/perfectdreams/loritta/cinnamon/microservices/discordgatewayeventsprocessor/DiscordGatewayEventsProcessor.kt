@@ -59,13 +59,12 @@ class DiscordGatewayEventsProcessor(
     val random = SecureRandom()
     val activeEvents = ConcurrentLinkedQueue<Job>()
 
-    val promscaleClient = PrometheusPushClient("discordgatewayeventsprocessor", config.prometheusPush.url)
-    val metrics = DiscordGatewayEventsProcessorMetrics()
+    val prometheusPushClient = PrometheusPushClient("discordgatewayeventsprocessor", config.prometheusPush.url)
 
     private val onMessageReceived: (GatewayProxyEventWrapper) -> (Unit) = {
         val (eventType, discordEvent) = parseEvent(it.data)
 
-        metrics.gatewayEventsReceived.labels(it.shardId.toString(), eventType).inc()
+        DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived.labels(it.shardId.toString(), eventType).inc()
 
         // We will call a method that doesn't reference the "discordEventAsJsonObject" nor the "it" object, this makes it veeeery clear to the JVM that yes, you can GC the "discordEventAsJsonObject" and "it" objects
         // (Will it really GC the object? idk, but I hope it will)
@@ -114,7 +113,7 @@ class DiscordGatewayEventsProcessor(
                     for (module in modules) {
                         val (result, duration) = measureTimedValue { module.processEvent(context) }
                         context.durations[module::class] = duration
-                        metrics.executedModuleLatency
+                        DiscordGatewayEventsProcessorMetrics.executedModuleLatency
                             .labels(module::class.simpleName!!, context.eventType)
                             .observe(duration.toDouble(DurationUnit.SECONDS))
 

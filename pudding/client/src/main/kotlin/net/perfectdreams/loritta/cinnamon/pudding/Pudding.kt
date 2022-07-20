@@ -5,12 +5,9 @@ import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory
 import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asCoroutineDispatcher
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
@@ -18,83 +15,24 @@ import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.common.utils.*
-import net.perfectdreams.loritta.cinnamon.pudding.services.BackgroundsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ExecutedInteractionsLogService
-import net.perfectdreams.loritta.cinnamon.pudding.services.InteractionsDataService
-import net.perfectdreams.loritta.cinnamon.pudding.services.MarriagesService
-import net.perfectdreams.loritta.cinnamon.pudding.services.NotificationsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.PackagesTrackingService
-import net.perfectdreams.loritta.cinnamon.pudding.services.PatchNotesNotificationsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.PaymentsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ProfileDesignsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ServerConfigsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.ShipEffectsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.SonhosService
-import net.perfectdreams.loritta.cinnamon.pudding.services.StatsService
-import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BoughtStocks
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsers
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CachedDiscordUsersDirectMessageChannels
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.GuildCountStats
-import net.perfectdreams.loritta.cinnamon.pudding.tables.InteractionsData
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Marriages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PatchNotesNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ReceivedPatchNotesNotifications
-import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ShipEffects
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices
-import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UserSettings
-import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
+import net.perfectdreams.loritta.cinnamon.pudding.services.*
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
 import org.jetbrains.exposed.exceptions.ExposedSQLException
-import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.Transaction
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
-import java.util.concurrent.Executor
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class Pudding(
@@ -201,7 +139,6 @@ class Pudding(
     // Used to avoid having a lot of threads being created on the "dispatcher" just to be blocked waiting for a connection, causing thread starvation and an OOM kill
     private val semaphore = Semaphore(128)
     val random = SecureRandom()
-    private val metrics = PuddingMetrics()
 
     /**
      * Starts tasks related to [Pudding], like table partition creation, purge old data, etc.
@@ -389,7 +326,7 @@ class Pudding(
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
-                metrics.availablePermits.set(semaphore.availablePermits.toDouble())
+                PuddingMetrics.availablePermits.set(semaphore.availablePermits.toDouble())
                 semaphore.withPermit {
                     return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(
                         dispatcher,
