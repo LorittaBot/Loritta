@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.platform
 
+import dev.kord.common.annotation.KordUnsafe
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.ratelimit.ParallelRequestRateLimiter
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.request.KtorRequestHandler
 import dev.kord.rest.service.RestClient
@@ -25,7 +27,17 @@ abstract class LorittaDiscordStuff(
     val discordConfig: LorittaDiscordConfig,
     val services: Pudding
 ) {
-    val rest = RestClient(BetterSTRecoveringKtorRequestHandler(KtorRequestHandler(discordConfig.token)))
+    @OptIn(KordUnsafe::class)
+    val rest = RestClient(
+        BetterSTRecoveringKtorRequestHandler(
+            KtorRequestHandler(
+                discordConfig.token,
+                // By default, Kord uses ExclusionRequestRateLimiter, and that suspends all coroutines if a request is ratelimited
+                // So we need to use the ParallelRequestRateLimiter
+                requestRateLimiter = ParallelRequestRateLimiter()
+            )
+        )
+    )
     val cache = DiscordCacheService(discordConfig, services)
 
     suspend fun getCachedUserInfo(userId: Snowflake) = getCachedUserInfo(UserId(userId.value))
