@@ -144,13 +144,15 @@ class DiscordGatewayEventsProcessor(
         )
 
         activeEvents.add(job)
+        DiscordGatewayEventsProcessorMetrics.activeEvents.set(activeEvents.size.toDouble())
 
         // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
         // added to the list, causing leaks.
         // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
         job.invokeOnCompletion {
             activeEvents.remove(job)
-
+            DiscordGatewayEventsProcessorMetrics.activeEvents.set(activeEvents.size.toDouble())
+            
             val diff = System.currentTimeMillis() - start
             if (diff >= 60_000) {
                 logger.warn { "Coroutine $job ($coroutineName) took too long to process! ${diff}ms - Module Durations: $durations" }

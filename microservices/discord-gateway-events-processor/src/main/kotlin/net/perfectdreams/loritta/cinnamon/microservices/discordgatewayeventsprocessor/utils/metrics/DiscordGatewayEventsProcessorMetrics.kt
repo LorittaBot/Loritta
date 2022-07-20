@@ -3,7 +3,9 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.PrometheusMetrics
 
 object DiscordGatewayEventsProcessorMetrics : PrometheusMetrics() {
-    val gatewayEventsReceived = createCounterWithLabels("gateway_events_received", "module", "shard", "event")
+    val gatewayEventsReceived = createCounterWithLabels("gateway_events_received", "Gateway Events Received", "shard", "event")
+
+    val activeEvents = createGaugeWithLabels("discordgatewayeventsprocessor_active_events", "Active Events")
 
     val executedModuleLatency = createHistogramWithLabels("executed_module_latency", "Executed Module Latency", "module", "event") {
         name("executed_module_latency")
