@@ -201,15 +201,12 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                 urls.add(url)
             }
 
-            for (url in urls) {
-                val inviteId = DiscordInviteUtils.getInviteCodeFromUrl(url) ?: continue
+            val inviteCodes = urls.map { DiscordInviteUtils.getInviteCodeFromUrl(it) }
+            val disallowedInviteCodes = urls.filter { it !in allowedInviteCodes }
 
-                if (inviteId in allowedInviteCodes) {
-                    logger.info { "Invite Blocker triggered in guild $guildId, but we will ignore it because it is on the invite code allowed list... Invite Code: $inviteId" }
-                    continue
-                }
-
-                logger.info { "Invite Blocker triggered in guild $guildId! Invite Code: $inviteId" }
+            if (disallowedInviteCodes.isNotEmpty()) {
+                logger.info { "Invite Blocker triggered in guild $guildId! Invite Codes: $disallowedInviteCodes" }
+                
                 DiscordGatewayEventsProcessorMetrics.invitesBlocked
                     .labels(guildId.toString())
                     .inc()
@@ -304,6 +301,9 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
 
                 // Invite has been found, exit!
                 return ModuleResult.Cancel
+            } else {
+                logger.info { "Invite Blocker triggered in guild $guildId, but we will ignore it because it is on the invite code allowed list... Invite Codes: $inviteCodes" }
+                continue
             }
         }
 
