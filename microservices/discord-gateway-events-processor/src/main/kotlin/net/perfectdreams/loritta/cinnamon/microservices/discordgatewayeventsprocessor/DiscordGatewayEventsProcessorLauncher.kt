@@ -8,10 +8,8 @@ import net.perfectdreams.loritta.cinnamon.common.utils.HostnameUtils
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.JFRExports
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 object DiscordGatewayEventsProcessorLauncher {
     private val logger = KotlinLogging.logger {}

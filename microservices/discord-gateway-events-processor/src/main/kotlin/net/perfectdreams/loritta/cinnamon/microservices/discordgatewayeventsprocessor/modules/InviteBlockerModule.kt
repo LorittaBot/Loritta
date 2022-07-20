@@ -11,6 +11,7 @@ import dev.kord.gateway.InviteDelete
 import dev.kord.gateway.MessageCreate
 import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.builder.message.create.allowedMentions
+import dev.kord.rest.json.request.BulkDeleteRequest
 import dev.kord.rest.request.KtorRequestException
 import io.ktor.http.*
 import kotlinx.datetime.Instant

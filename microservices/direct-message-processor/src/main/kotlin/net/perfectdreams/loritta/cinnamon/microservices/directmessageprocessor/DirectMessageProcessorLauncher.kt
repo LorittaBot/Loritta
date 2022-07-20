@@ -4,7 +4,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils.config.RootConfig
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
 
@@ -19,7 +19,7 @@ object DirectMessageProcessorLauncher {
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(DirectMessageProcessorLauncher::class, System.getProperty("directmessageprocessor.config", "direct-message-processor.conf"))
         logger.info { "Loaded Loritta's configuration file" }
 
-        Prometheus.registerJFRExports()
+        InteractionsMetrics.registerJFRExports()
 
         logger.info { "Registered Prometheus Metrics" }
 
