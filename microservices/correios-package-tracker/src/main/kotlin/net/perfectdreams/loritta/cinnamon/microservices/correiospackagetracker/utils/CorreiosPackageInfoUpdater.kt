@@ -49,9 +49,11 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
                 }
 
                 logger.info { "Querying information about packages $trackedPackages" }
-                val packageInformations = m.correiosClient.getPackageInfo(
-                    *trackedPackages.toTypedArray()
-                )
+                val packageInformations = runBlocking {
+                    m.correiosClient.getPackageInfo(
+                        *trackedPackages.toTypedArray()
+                    )
+                }
 
                 val now = Instant.now()
 
