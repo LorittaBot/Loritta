@@ -3,6 +3,10 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.PrintStream
+import java.io.StringWriter
 
 class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnable {
     companion object {
@@ -35,6 +39,12 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
         logger.info { "Total Memory: ${runtime.totalMemory() / mb}MiB" }
         logger.info { "Max Memory: ${runtime.maxMemory() / mb}MiB" }
 
-        DebugProbes.dumpCoroutines()
+        logger.info { "Dumping coroutines..." }
+        val baos = ByteArrayOutputStream()
+        val printStream = PrintStream(ByteArrayOutputStream())
+        DebugProbes.dumpCoroutines(printStream)
+        File("coroutines.txt")
+            .writeText(baos.toString(Charsets.UTF_8))
+        logger.info { "Successfully dumped coroutines!" }
     }
 }

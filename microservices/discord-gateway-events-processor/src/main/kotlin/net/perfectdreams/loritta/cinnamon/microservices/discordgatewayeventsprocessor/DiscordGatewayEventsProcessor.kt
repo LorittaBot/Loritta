@@ -152,7 +152,7 @@ class DiscordGatewayEventsProcessor(
         job.invokeOnCompletion {
             activeEvents.remove(job)
             DiscordGatewayEventsProcessorMetrics.activeEvents.set(activeEvents.size.toDouble())
-            
+
             val diff = System.currentTimeMillis() - start
             if (diff >= 60_000) {
                 logger.warn { "Coroutine $job ($coroutineName) took too long to process! ${diff}ms - Module Durations: $durations" }
