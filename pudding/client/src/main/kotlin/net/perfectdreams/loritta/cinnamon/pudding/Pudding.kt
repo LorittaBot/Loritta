@@ -88,10 +88,7 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
-import java.util.concurrent.Executor
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 import kotlin.concurrent.thread
 
 class Pudding(
@@ -130,7 +127,15 @@ class Pudding(
 
             val hikariDataSource = HikariDataSource(hikariConfig)
 
-            val cachedThreadPool = Executors.newCachedThreadPool()
+            // We will create a max 128 threads thread pool, to avoid creating too many threads waiting for connections
+            // Because this is used as a coroutine dispatcher, the coroutines should suspend instead of blocking the threads (which can cause a OOM kill due to too many created threads)
+            val cachedThreadPool = ThreadPoolExecutor(
+                hikariConfig.maximumPoolSize,
+                128,
+                60L,
+                TimeUnit.SECONDS,
+                SynchronousQueue()
+            )
 
             return Pudding(
                 hikariDataSource,
