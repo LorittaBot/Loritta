@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripCodeB
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
@@ -208,6 +209,9 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                 }
 
                 logger.info { "Invite Blocker triggered in guild $guildId! Invite Code: $inviteId" }
+                DiscordGatewayEventsProcessorMetrics.invitesBlocked
+                    .labels(guildId.toString())
+                    .inc()
 
                 if (inviteBlockerConfig.deleteMessage && lorittaPermissions.hasPermission(Permission.ManageMessages)) {
                     try {

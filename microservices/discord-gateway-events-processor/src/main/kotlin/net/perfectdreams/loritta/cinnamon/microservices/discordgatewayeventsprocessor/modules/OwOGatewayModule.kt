@@ -1,13 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
-import dev.kord.gateway.Event
 import dev.kord.gateway.MessageCreate
-import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
-import kotlin.reflect.KClass
-import kotlin.time.Duration
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.metrics.DiscordGatewayEventsProcessorMetrics
 
 class OwOGatewayModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     override suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult {
@@ -34,6 +31,10 @@ class OwOGatewayModule(private val m: DiscordGatewayEventsProcessor) : ProcessDi
         val canTalk = m.cache.getLazyCachedLorittaPermissions(guildId, messageCreate.message.channelId).canTalk()
         if (!canTalk)
             return
+
+        DiscordGatewayEventsProcessorMetrics.owoTriggered
+            .labels(guildId.toString())
+            .inc()
 
         m.rest.channel.createMessage(
             messageCreate.message.channelId

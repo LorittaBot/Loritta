@@ -8,6 +8,7 @@ import kotlinx.datetime.Instant
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 
@@ -53,6 +54,10 @@ class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) 
 
         if (!miscellaneousConfig.enableQuirky)
             return
+
+        DiscordGatewayEventsProcessorMetrics.firstTriggered
+            .labels(guildId.toString())
+            .inc()
 
         m.rest.channel.createMessage(channelId) {
             content = "First! ${FUNNY_FIRST_EMOJIS.random()}"
