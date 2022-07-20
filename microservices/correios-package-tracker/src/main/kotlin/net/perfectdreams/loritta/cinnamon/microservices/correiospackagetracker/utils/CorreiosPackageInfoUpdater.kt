@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker.utils
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.toInstant
 import kotlinx.datetime.toJavaInstant
