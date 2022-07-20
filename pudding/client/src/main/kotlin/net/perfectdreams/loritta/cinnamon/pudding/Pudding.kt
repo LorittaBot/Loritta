@@ -9,7 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.withPermit
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
@@ -79,6 +81,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxW
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
+import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
@@ -88,7 +91,10 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
-import java.util.concurrent.*
+import java.util.concurrent.Executor
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 
 class Pudding(
@@ -127,15 +133,7 @@ class Pudding(
 
             val hikariDataSource = HikariDataSource(hikariConfig)
 
-            // We will create a max 128 threads thread pool, to avoid creating too many threads waiting for connections
-            // Because this is used as a coroutine dispatcher, the coroutines should suspend instead of blocking the threads (which can cause a OOM kill due to too many created threads)
-            val cachedThreadPool = ThreadPoolExecutor(
-                hikariConfig.maximumPoolSize,
-                128,
-                60L,
-                TimeUnit.SECONDS,
-                SynchronousQueue()
-            )
+            val cachedThreadPool = Executors.newCachedThreadPool()
 
             return Pudding(
                 hikariDataSource,
@@ -199,7 +197,11 @@ class Pudding(
     val patchNotesNotifications = PatchNotesNotificationsService(this)
     val packagesTracking = PackagesTrackingService(this)
     val notifications = NotificationsService(this)
+
+    // Used to avoid having a lot of threads being created on the "dispatcher" just to be blocked waiting for a connection, causing thread starvation and an OOM kill
+    private val semaphore = Semaphore(128)
     val random = SecureRandom()
+    private val metrics = PuddingMetrics()
 
     /**
      * Starts tasks related to [Pudding], like table partition creation, purge old data, etc.
@@ -387,8 +389,15 @@ class Pudding(
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
-                return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(dispatcher, database, transactionIsolation) {
-                    statement.invoke(this)
+                metrics.availablePermits.set(semaphore.availablePermits.toDouble())
+                semaphore.withPermit {
+                    return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(
+                        dispatcher,
+                        database,
+                        transactionIsolation
+                    ) {
+                        statement.invoke(this)
+                    }
                 }
             } catch (e: ExposedSQLException) {
                 logger.warn(e) { "Exception while trying to execute query. Tries: $i" }
