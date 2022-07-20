@@ -6,7 +6,8 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.PrintStream
-import java.io.StringWriter
+import java.nio.charset.StandardCharsets
+
 
 class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnable {
     companion object {
@@ -41,11 +42,13 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
 
         logger.info { "Dumping coroutines..." }
         val baos = ByteArrayOutputStream()
-        PrintStream(ByteArrayOutputStream(), true).use {
-            DebugProbes.dumpCoroutines(it)
+        val utf8 = StandardCharsets.UTF_8.name()
+        PrintStream(baos, true, utf8).use { ps ->
+            DebugProbes.dumpCoroutines(ps)
         }
+        val data = baos.toString(utf8)
         File("coroutines.txt")
-            .writeText(baos.toString(Charsets.UTF_8))
+            .writeText(data)
         logger.info { "Successfully dumped coroutines!" }
     }
 }
