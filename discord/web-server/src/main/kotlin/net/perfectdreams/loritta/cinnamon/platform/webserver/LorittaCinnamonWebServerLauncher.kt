@@ -4,11 +4,10 @@ import io.ktor.client.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
-import kotlin.concurrent.thread
 
 object LorittaCinnamonWebServerLauncher {
     private val logger = KotlinLogging.logger {}
@@ -21,8 +20,8 @@ object LorittaCinnamonWebServerLauncher {
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaCinnamonWebServer::class, ConfigUtils.defaultConfigFileName)
         logger.info { "Loaded Loritta's configuration file" }
 
-        Prometheus.registerJFRExports()
-        Prometheus.registerInteractions()
+        InteractionsMetrics.registerJFRExports()
+        InteractionsMetrics.registerInteractions()
 
         logger.info { "Registered Prometheus Metrics" }
 

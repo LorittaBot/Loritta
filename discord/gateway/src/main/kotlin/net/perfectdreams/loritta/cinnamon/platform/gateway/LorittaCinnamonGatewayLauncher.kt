@@ -5,7 +5,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.platform.gateway.utils.config.RootConfig
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
 
@@ -20,8 +20,8 @@ object LorittaCinnamonGatewayLauncher {
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaCinnamonGateway::class, ConfigUtils.defaultConfigFileName)
         logger.info { "Loaded Loritta's configuration file" }
 
-        Prometheus.registerJFRExports()
-        Prometheus.registerInteractions()
+        InteractionsMetrics.registerJFRExports()
+        InteractionsMetrics.registerInteractions()
 
         logger.info { "Registered Prometheus Metrics" }
 
