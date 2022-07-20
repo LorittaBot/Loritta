@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandExce
 import net.perfectdreams.loritta.cinnamon.platform.commands.SilentCommandException
 import net.perfectdreams.loritta.cinnamon.platform.modals.components.ModalComponent
 import net.perfectdreams.loritta.cinnamon.platform.modals.components.StringModalComponent
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
 
 class ModalSubmitWithDataExecutorWrapper(
     private val loritta: LorittaCinnamon,
@@ -32,7 +32,7 @@ class ModalSubmitWithDataExecutorWrapper(
 
         logger.info { "(${context.sender.id.value}) $executor" }
 
-        val timer = Prometheus.EXECUTED_MODAL_SUBMIT_LATENCY_COUNT
+        val timer = InteractionsMetrics.EXECUTED_MODAL_SUBMIT_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 

@@ -5,7 +5,7 @@ import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandO
 import net.perfectdreams.discordinteraktions.common.autocomplete.GuildAutocompleteContext
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutorWrapper
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
 
 sealed class AutocompleteExecutorWrapperBase<T>(
     private val loritta: LorittaCinnamon,
@@ -22,7 +22,7 @@ sealed class AutocompleteExecutorWrapperBase<T>(
 
         logger.info { "(${context.sender.id.value}) $executor" }
 
-        val timer = Prometheus.EXECUTED_AUTOCOMPLETE_LATENCY_COUNT
+        val timer = InteractionsMetrics.EXECUTED_AUTOCOMPLETE_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 

@@ -280,7 +280,7 @@ object JFRExports {
             if (itf == null) itf = "N/A"
             NETWORK_READ.labels(itf).set(e.getLong("readRate").toDouble())
             NETWORK_WRITE.labels(itf).set(e.getLong("writeRate").toDouble())
-        }).withPeriod(Prometheus.UPDATE_PERIOD)
+        }).withPeriod(InteractionsMetrics.UPDATE_PERIOD)
 
         /*
          * jdk.JavaThreadStatistics {
@@ -295,7 +295,7 @@ object JFRExports {
             val count = e.getLong("activeCount").toDouble()
             THREADS_CURRENT.set(count)
             THREADS_DAEMON.set(e.getLong("daemonCount").toDouble())
-        }).withPeriod(Prometheus.UPDATE_PERIOD)
+        }).withPeriod(InteractionsMetrics.UPDATE_PERIOD)
 
         /*
          * jdk.CPULoad {
@@ -312,7 +312,7 @@ object JFRExports {
             CPU_USER.set(user)
             CPU_SYSTEM.set(system)
             CPU_MACHINE.set(machine)
-        }).withPeriod(Prometheus.UPDATE_PERIOD)
+        }).withPeriod(InteractionsMetrics.UPDATE_PERIOD)
 
         /*
          * jdk.GCHeapSummary {
@@ -359,7 +359,7 @@ object JFRExports {
                     + getNestedUsed(e, "dataSpace")
                     + getNestedUsed(e, "classSpace"))
             MEMORY_USAGE_NONHEAP.set(amt.toDouble())
-        }).withPeriod(Prometheus.UPDATE_PERIOD)
+        }).withPeriod(InteractionsMetrics.UPDATE_PERIOD)
 
         // start AsyncInfoMonitor data collection
         rs.startAsync()

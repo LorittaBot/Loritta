@@ -11,7 +11,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
 import kotlin.reflect.KClass
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 
@@ -41,7 +41,7 @@ class UserCommandExecutorWrapper(
     ) {
         logger.info { "(${context.sender.id.value}) $executor" }
 
-        val timer = Prometheus.EXECUTED_COMMAND_LATENCY_COUNT
+        val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 

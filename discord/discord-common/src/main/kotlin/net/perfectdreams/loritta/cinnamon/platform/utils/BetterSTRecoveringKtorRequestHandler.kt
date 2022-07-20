@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.platform.utils
 import dev.kord.rest.request.KtorRequestHandler
 import dev.kord.rest.request.Request
 import dev.kord.rest.request.RequestHandler
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.KordMetrics
 
 public class BetterSTRecoveringKtorRequestHandler(private val delegate: KtorRequestHandler) :
     RequestHandler by delegate {
@@ -13,6 +14,10 @@ public class BetterSTRecoveringKtorRequestHandler(private val delegate: KtorRequ
      */
     override suspend fun <B : Any, R> handle(request: Request<B, R>): R {
         val stacktrace = ContextException()
+
+        KordMetrics.requests
+            .labels(request.route.path, request.route.method.value)
+            .inc()
 
         return try {
             delegate.handle(request)

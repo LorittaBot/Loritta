@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutorWrapp
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.SilentCommandException
 import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.Prometheus
+import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext as CinnamonComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.components.GuildComponentContext as CinnamonGuildComponentContext
 
@@ -36,7 +36,7 @@ class SelectMenuWithDataExecutorWrapper(
 
         logger.info { "(${context.sender.id.value}) $executor" }
 
-        val timer = Prometheus.EXECUTED_SELECT_MENU_LATENCY_COUNT
+        val timer = InteractionsMetrics.EXECUTED_SELECT_MENU_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
