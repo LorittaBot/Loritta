@@ -116,7 +116,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
             checkIfTickerIsInactive(tickerInformation)
             checkIfTickerDataIsStale(tickerInformation)
 
-            val userProfile = pudding.users.getUserProfile(UserId(userId)) ?: error("User does not have a profile!")
+            val userProfile = pudding.users._getUserProfile(UserId(userId)) ?: error("User does not have a profile!")
             val currentStockCount = BoughtStocks.select {
                 BoughtStocks.user eq userProfile.id.value.toLong()
             }.count()

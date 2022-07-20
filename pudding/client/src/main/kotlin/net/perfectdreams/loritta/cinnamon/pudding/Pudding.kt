@@ -322,7 +322,7 @@ class Pudding(
     }
 
     // https://github.com/JetBrains/Exposed/issues/1003
-    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend org.jetbrains.exposed.sql.Transaction.() -> T): T {
+    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: Transaction.() -> T): T {
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {

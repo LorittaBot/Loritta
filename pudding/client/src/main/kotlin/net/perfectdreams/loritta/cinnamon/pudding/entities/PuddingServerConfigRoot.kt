@@ -21,7 +21,7 @@ class PuddingServerConfigRoot(
         )
     }
 
-    suspend fun _getStarboardConfig(): StarboardConfig? = data.starboardConfigId?.let {
+    fun _getStarboardConfig(): StarboardConfig? = data.starboardConfigId?.let {
         pudding.serverConfigs._getStarboardConfigById(
             it
         )

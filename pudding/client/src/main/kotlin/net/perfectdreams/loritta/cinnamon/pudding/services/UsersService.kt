@@ -43,17 +43,12 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @param id the profile's ID
      * @return the user profile or null if it doesn't exist
      */
-    suspend fun getUserProfile(id: UserId): PuddingUserProfile? {
-        return pudding.transaction { _getUserProfile(id) }
-    }
+    suspend fun getUserProfile(id: UserId) = pudding.transaction { _getUserProfile(id) }
 
-    suspend fun _getUserProfile(id: UserId): PuddingUserProfile? {
-        return pudding.transaction {
-            Profiles.selectFirstOrNull { Profiles.id eq id.value.toLong() }
-        }?.let { PuddingUserProfile.fromRow(it) }
-    }
+    fun _getUserProfile(id: UserId) = Profiles.selectFirstOrNull { Profiles.id eq id.value.toLong() }
+        ?.let { PuddingUserProfile.fromRow(it) }
 
-    internal suspend fun _getOrCreateUserProfile(id: UserId): PuddingUserProfile {
+    internal fun _getOrCreateUserProfile(id: UserId): PuddingUserProfile {
         val profile = _getUserProfile(id)
         if (profile != null)
             return profile
