@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils
 
+import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 
@@ -33,5 +34,7 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
         logger.info { "Free Memory: ${runtime.freeMemory() / mb}MiB" }
         logger.info { "Total Memory: ${runtime.totalMemory() / mb}MiB" }
         logger.info { "Max Memory: ${runtime.maxMemory() / mb}MiB" }
+
+        DebugProbes.dumpCoroutines()
     }
 }
