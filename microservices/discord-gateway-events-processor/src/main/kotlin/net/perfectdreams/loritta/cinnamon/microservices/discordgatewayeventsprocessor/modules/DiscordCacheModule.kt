@@ -41,6 +41,7 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.BatchInsertStatement
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import pw.forst.exposed.insertOrUpdate
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -82,6 +83,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
                     withMutex(guildId) {
                         m.services.transaction {
+                            disableSynchronousCommit()
+
                             createOrUpdateGuild(
                                 guildId,
                                 guildName,
@@ -119,6 +122,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
                     withMutex(guildId) {
                         m.services.transaction {
+                            disableSynchronousCommit()
+
                             createOrUpdateGuild(
                                 guildId,
                                 guildName,
@@ -140,6 +145,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
 
                 withMutex(guildId) {
                     m.services.transaction {
+                        disableSynchronousCommit()
+
                         updateGuildEmojis(guildId, discordEmojis)
                     }
                 }
@@ -151,6 +158,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 if (guildId != null && member != null) {
                     withMutex(guildId, event.message.author.id) {
                         m.services.transaction {
+                            disableSynchronousCommit()
+
                             createOrUpdateGuildMember(guildId, event.message.author.id, member)
                         }
                     }
@@ -159,6 +168,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is GuildMemberAdd -> {
                 withMutex(event.member.guildId, event.member.user.value!!.id) {
                     m.services.transaction {
+                        disableSynchronousCommit()
+
                         createOrUpdateGuildMember(event.member)
                     }
                 }
@@ -166,6 +177,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is GuildMemberUpdate -> {
                 withMutex(event.member.guildId, event.member.user.id) {
                     m.services.transaction {
+                        disableSynchronousCommit()
+
                         createOrUpdateGuildMember(event.member)
                     }
                 }
@@ -173,6 +186,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is GuildMemberRemove -> {
                 withMutex(event.member.guildId, event.member.user.id) {
                     m.services.transaction {
+                        disableSynchronousCommit()
+
                         deleteGuildMember(event.member)
                     }
                 }
@@ -182,6 +197,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 if (guildId != null)
                     withMutex(guildId, event.channel.id) {
                         m.services.transaction {
+                            disableSynchronousCommit()
+
                             createOrUpdateGuildChannel(guildId, event.channel)
                         }
                     }
@@ -191,6 +208,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 if (guildId != null)
                     withMutex(guildId, event.channel.id) {
                         m.services.transaction {
+                            disableSynchronousCommit()
+
                             createOrUpdateGuildChannel(guildId, event.channel)
                         }
                     }
@@ -200,6 +219,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 if (guildId != null)
                     withMutex(guildId, event.channel.id) {
                         m.services.transaction {
+                            disableSynchronousCommit()
+
                             deleteGuildChannel(guildId, event.channel)
                         }
                     }
@@ -207,6 +228,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is GuildRoleCreate -> {
                 withMutex(event.role.guildId, event.role.role.id) {
                     m.services.transaction {
+                        disableSynchronousCommit()
+
                         createOrUpdateRole(event.role.guildId, event.role.role)
                     }
                 }
@@ -214,6 +237,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is GuildRoleUpdate -> {
                 withMutex(event.role.guildId, event.role.role.id) {
                     m.services.transaction {
+                        disableSynchronousCommit()
+
                         createOrUpdateRole(event.role.guildId, event.role.role)
                     }
                 }
@@ -221,6 +246,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             is GuildRoleDelete -> {
                 withMutex(event.role.guildId, event.role.id) {
                     m.services.transaction {
+                        disableSynchronousCommit()
+
                         deleteRole(event.role.guildId, event.role.id)
                     }
                 }
@@ -231,6 +258,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     logger.info { "Someone removed me @ ${event.guild.id}! :(" }
                     withMutex(event.guild.id) {
                         m.services.transaction {
+                            disableSynchronousCommit()
+
                             removeGuildData(event.guild.id)
                         }
                     }
@@ -489,4 +518,11 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         // collections are same or they contain the same elements
         return true
     }
+
+    /**
+     * Disables synchronous commit on the current transaction.
+     *
+     * This gives a performance boost, however because the transaction is async, you may lose data if PostgreSQL crashes!
+     */
+    private fun disableSynchronousCommit() = TransactionManager.current().exec("SET LOCAL synchronous_commit = 'off';")
 }
