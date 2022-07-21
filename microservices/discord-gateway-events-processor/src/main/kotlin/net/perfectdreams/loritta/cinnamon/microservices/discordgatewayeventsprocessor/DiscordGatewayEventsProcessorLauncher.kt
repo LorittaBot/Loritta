@@ -61,7 +61,7 @@ object DiscordGatewayEventsProcessorLauncher {
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun installCoroutinesDebugProbes() {
         // It is recommended to set this to false, to avoid performance hits with the DebugProbes option!
-        DebugProbes.enableCreationStackTraces = true // Currently true because we are debugging issues :3
+        DebugProbes.enableCreationStackTraces = false
         DebugProbes.install()
     }
 }

@@ -39,16 +39,5 @@ class EventAnalyticsTask(private val m: DiscordGatewayEventsProcessor) : Runnabl
         logger.info { "Free Memory: ${runtime.freeMemory() / mb}MiB" }
         logger.info { "Total Memory: ${runtime.totalMemory() / mb}MiB" }
         logger.info { "Max Memory: ${runtime.maxMemory() / mb}MiB" }
-
-        logger.info { "Dumping coroutines..." }
-        val baos = ByteArrayOutputStream()
-        val utf8 = StandardCharsets.UTF_8.name()
-        PrintStream(baos, true, utf8).use { ps ->
-            DebugProbes.dumpCoroutines(ps)
-        }
-        val data = baos.toString(utf8)
-        File("coroutines.txt")
-            .writeText(data)
-        logger.info { "Successfully dumped coroutines!" }
     }
 }

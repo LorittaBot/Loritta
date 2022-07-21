@@ -206,7 +206,7 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
 
             if (disallowedInviteCodes.isNotEmpty()) {
                 logger.info { "Invite Blocker triggered in guild $guildId! Invite Codes: $disallowedInviteCodes" }
-                
+
                 DiscordGatewayEventsProcessorMetrics.invitesBlocked
                     .labels(guildId.toString())
                     .inc()
