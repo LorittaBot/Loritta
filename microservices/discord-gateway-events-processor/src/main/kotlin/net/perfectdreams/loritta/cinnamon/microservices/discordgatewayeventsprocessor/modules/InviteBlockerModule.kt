@@ -1,20 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.Permission
-import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.Optional
-import dev.kord.gateway.Event
-import dev.kord.gateway.InviteCreate
-import dev.kord.gateway.InviteDelete
-import dev.kord.gateway.MessageCreate
+import dev.kord.gateway.*
 import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.builder.message.create.allowedMentions
-import dev.kord.rest.json.request.BulkDeleteRequest
 import dev.kord.rest.request.KtorRequestException
 import io.ktor.http.*
-import kotlinx.datetime.Instant
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaPermission
@@ -37,8 +30,6 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-import kotlin.reflect.KClass
-import kotlin.time.Duration
 
 class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
@@ -52,7 +43,40 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
 
     override suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult {
         when (val event = context.event) {
-            is MessageCreate -> return handleMessage(event)
+            is MessageCreate -> {
+                val author = event.message.author
+                val guildId = event.message.guildId.value ?: return ModuleResult.Continue // Not in a guild
+                val member = event.message.member.value ?: return ModuleResult.Continue // The member isn't in the guild
+                val channelId = event.message.channelId
+
+                return handleMessage(
+                    guildId,
+                    channelId,
+                    event.message.id,
+                    author,
+                    member,
+                    event.message.content,
+                    event.message.embeds
+                )
+            }
+            is MessageUpdate -> {
+                val author = event.message.author.value ?: return ModuleResult.Continue // Where's the user?
+                val guildId = event.message.guildId.value ?: return ModuleResult.Continue // Not in a guild
+                val member = event.message.member.value ?: return ModuleResult.Continue // The member isn't in the guild
+                val channelId = event.message.channelId
+                val content = event.message.content.value ?: return ModuleResult.Continue // Where's the message content?
+                val embeds = event.message.embeds.value ?: return ModuleResult.Continue // Where's the embeds? (This is an empty list even if the message doesn't have any embeds)
+
+                return handleMessage(
+                    guildId,
+                    channelId,
+                    event.message.id,
+                    author,
+                    member,
+                    content,
+                    embeds
+                )
+            }
             // Delete invite list from cache when a server invite is created or deleted
             is InviteCreate -> event.invite.guildId.value?.let { cachedInviteLinks.remove(it) }
             is InviteDelete -> event.invite.guildId.value?.let { cachedInviteLinks.remove(it) }
@@ -61,32 +85,20 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
         return ModuleResult.Continue
     }
 
-    private suspend fun handleMessage(event: MessageCreate): ModuleResult {
-        val message = event.message
-        val author = message.author
-
+    private suspend fun handleMessage(
+        guildId: Snowflake,
+        channelId: Snowflake,
+        messageId: Snowflake,
+        author: DiscordUser,
+        member: DiscordGuildMember,
+        content: String,
+        embeds: List<DiscordEmbed>
+    ): ModuleResult {
         // Ignore messages sent by bots
         if (author.bot.discordBoolean)
             return ModuleResult.Continue
 
-        val guildId = message.guildId.value ?: return ModuleResult.Continue // Not in a guild
-        val member = event.message.member.value ?: return ModuleResult.Continue // The member isn't in the guild
-        val channelId = message.channelId
-        val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value)
-        val inviteBlockerConfig = serverConfig
-            ?.getInviteBlockerConfig()
-            ?: return ModuleResult.Continue
-        if (inviteBlockerConfig.whitelistedChannels.contains(channelId.toLong()))
-            return ModuleResult.Continue
-
-        val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
-
-        // Can the user bypass the invite blocker check?
-        val canBypass = m.services.serverConfigs.hasLorittaPermission(guildId, member, LorittaPermission.ALLOW_INVITES)
-        if (canBypass)
-            return ModuleResult.Continue
-
-        val content = message.content
+        val strippedContent = content
             // We need to strip the code marks to avoid this:
             // https://cdn.discordapp.com/attachments/513405772911345664/760887806191992893/invite-bug.png
             .stripCodeBackticks()
@@ -100,12 +112,11 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
             .replace(Regex("/+"), "/")
 
         val validMatchers = mutableListOf<Matcher>()
-        val contentMatcher = getMatcherIfHasInviteLink(content)
+        val contentMatcher = getMatcherIfHasInviteLink(strippedContent)
         if (contentMatcher != null)
             validMatchers.add(contentMatcher)
 
-        val embeds = message.embeds
-        if (!isYouTubeLink(content)) {
+        if (!isYouTubeLink(strippedContent)) {
             for (embed in embeds) {
                 val descriptionMatcher = getMatcherIfHasInviteLink(embed.description)
                 if (descriptionMatcher != null)
@@ -146,9 +157,24 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
         if (validMatchers.isEmpty())
             return ModuleResult.Continue
 
+        // We will only get the configuration and stuff after checking if we should act on the message
+        val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value)
+        val inviteBlockerConfig = serverConfig
+            ?.getInviteBlockerConfig()
+            ?: return ModuleResult.Continue
+        if (inviteBlockerConfig.whitelistedChannels.contains(channelId.toLong()))
+            return ModuleResult.Continue
+
+        val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
+
+        // Can the user bypass the invite blocker check?
+        val canBypass = m.services.serverConfigs.hasLorittaPermission(guildId, member, LorittaPermission.ALLOW_INVITES)
+        if (canBypass)
+            return ModuleResult.Continue
+
         // Para evitar que use a API do Discord para pegar os invites do servidor toda hora, nós iremos *apenas* pegar caso seja realmente
         // necessário, e, ao pegar, vamos guardar no cache de invites
-        val lorittaPermissions = m.cache.getLazyCachedLorittaPermissions(guildId, event.message.channelId)
+        val lorittaPermissions = m.cache.getLazyCachedLorittaPermissions(guildId, channelId)
 
         val allowedInviteCodes = mutableSetOf<String>()
         if (inviteBlockerConfig.whitelistServerInvites) {
@@ -216,14 +242,14 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                         // Discord does not log messages deleted by bots, so providing an audit log reason is pointless
                         m.rest.channel.deleteMessage(
                             channelId,
-                            message.id
+                            messageId
                         )
                     } catch (e: KtorRequestException) {
                         // Maybe the message was deleted by another bot?
                         if (e.httpResponse.status != HttpStatusCode.NotFound)
                             throw e
                         else
-                            logger.warn { "I tried deleting the message ${message.id} on $guildId, but looks like another bot deleted it... Let's just ignore it and pretend it was successfully deleted" }
+                            logger.warn { "I tried deleting the message ${messageId} on $guildId, but looks like another bot deleted it... Let's just ignore it and pretend it was successfully deleted" }
                     }
                 }
 
