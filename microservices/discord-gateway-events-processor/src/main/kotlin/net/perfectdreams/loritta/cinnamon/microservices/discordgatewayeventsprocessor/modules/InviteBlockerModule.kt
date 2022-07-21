@@ -201,8 +201,7 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                 urls.add(url)
             }
 
-            val inviteCodes = urls.map { DiscordInviteUtils.getInviteCodeFromUrl(it) }
-                .filterNotNull()
+            val inviteCodes = urls.mapNotNull { DiscordInviteUtils.getInviteCodeFromUrl(it) }
             val disallowedInviteCodes = inviteCodes.filter { it !in allowedInviteCodes }
 
             if (disallowedInviteCodes.isNotEmpty()) {
