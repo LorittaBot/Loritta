@@ -338,7 +338,7 @@ class Pudding(
                 PuddingMetrics.availablePermits
                     .labels(hikariDataSource.poolName)
                     .set(semaphore.availablePermits.toDouble())
-                
+
                 semaphore.withPermit {
                     return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(
                         dispatcher,
