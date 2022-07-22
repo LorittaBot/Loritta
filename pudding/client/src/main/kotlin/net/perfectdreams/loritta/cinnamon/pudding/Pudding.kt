@@ -39,7 +39,8 @@ class Pudding(
     val hikariDataSource: HikariDataSource,
     val database: Database,
     private val cachedThreadPool: ExecutorService,
-    val dispatcher: CoroutineDispatcher
+    val dispatcher: CoroutineDispatcher,
+    permits: Int
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -56,14 +57,15 @@ class Pudding(
          * @param password     the PostgreSQL password
          * @return a [Pudding] instance backed by a PostgreSQL database
          */
-        @ExperimentalCoroutinesApi
         fun createPostgreSQLPudding(
             address: String,
             databaseName: String,
             username: String,
-            password: String
+            password: String,
+            permits: Int = 128,
+            builder: HikariConfig.() -> (Unit) = {}
         ): Pudding {
-            val hikariConfig = createHikariConfig()
+            val hikariConfig = createHikariConfig(builder)
             hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${"Loritta Cinnamon Pudding - " + HostnameUtils.getHostname()}"
 
             hikariConfig.username = username
@@ -82,11 +84,12 @@ class Pudding(
                 // blocked.
                 // Example: 64 blocked coroutines due to transactions (64 = max threads in a Dispatchers.IO dispatcher) + you also have a WebSocket listening for events, when the WS tries to
                 // read incoming events, it is blocked because there isn't any available Dispatchers.IO threads!
-                cachedThreadPool.asCoroutineDispatcher()
+                cachedThreadPool.asCoroutineDispatcher(),
+                permits
             )
         }
 
-        private fun createHikariConfig(): HikariConfig {
+        private fun createHikariConfig(builder: HikariConfig.() -> (Unit)): HikariConfig {
             val hikariConfig = HikariConfig()
 
             hikariConfig.driverClassName = DRIVER_CLASS_NAME
@@ -106,6 +109,9 @@ class Pudding(
 
             // Our dedicated db server has 16 cores, so we (16 * 2) like what's described in https://wiki.postgresql.org/wiki/Number_Of_Database_Connections
             hikariConfig.maximumPoolSize = 30
+            hikariConfig.poolName = "PuddingPool"
+
+            hikariConfig.apply(builder)
 
             return hikariConfig
         }
@@ -140,7 +146,7 @@ class Pudding(
     val notifications = NotificationsService(this)
 
     // Used to avoid having a lot of threads being created on the "dispatcher" just to be blocked waiting for a connection, causing thread starvation and an OOM kill
-    private val semaphore = Semaphore(128)
+    private val semaphore = Semaphore(permits)
     val random = SecureRandom()
 
     /**
@@ -329,7 +335,10 @@ class Pudding(
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
-                PuddingMetrics.availablePermits.set(semaphore.availablePermits.toDouble())
+                PuddingMetrics.availablePermits
+                    .labels(hikariDataSource.poolName)
+                    .set(semaphore.availablePermits.toDouble())
+                
                 semaphore.withPermit {
                     return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(
                         dispatcher,

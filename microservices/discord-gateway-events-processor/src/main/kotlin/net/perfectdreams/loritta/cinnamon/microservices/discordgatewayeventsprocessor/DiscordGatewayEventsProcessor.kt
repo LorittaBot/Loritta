@@ -28,6 +28,7 @@ import kotlin.time.measureTimedValue
 class DiscordGatewayEventsProcessor(
     val config: RootConfig,
     services: Pudding,
+    val guildCreateServices: Pudding,
     val languageManager: LanguageManager,
     val replicaId: Int
 ) : LorittaDiscordStuff(config.discord, services) {

@@ -82,7 +82,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     val guildMembers = event.guild.members.value ?: emptyList()
 
                     withMutex(guildId) {
-                        m.services.transaction {
+                        m.guildCreateServices.transaction {
                             disableSynchronousCommit()
 
                             createOrUpdateGuild(

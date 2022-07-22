@@ -42,6 +42,20 @@ object DiscordGatewayEventsProcessorLauncher {
             rootConfig.pudding.username,
             rootConfig.pudding.password
         )
+        val guildCreateServices = Pudding.createPostgreSQLPudding(
+            rootConfig.pudding.address,
+            rootConfig.pudding.database,
+            rootConfig.pudding.username,
+            rootConfig.pudding.password,
+            1024
+        ) {
+            // Because GuildCreate is mostly I/O bound, we want to have a lot of active but idle connections here
+            // We also want to use a separate service, to avoid blocking any other events, due to the way GuildCreate creates a "perfect storm" when a
+            // Loritta cluster restarts
+            maximumPoolSize = 90
+            poolName = "PuddingGuildCreatePool"
+        }
+
         services.setupShutdownHook()
 
         logger.info { "Started Pudding client!" }
@@ -51,6 +65,7 @@ object DiscordGatewayEventsProcessorLauncher {
         val loritta = DiscordGatewayEventsProcessor(
             rootConfig,
             services,
+            guildCreateServices,
             languageManager,
             replicaId
         )
