@@ -21,7 +21,6 @@ dependencies {
     implementation("dev.kord:kord-rest:${Versions.KORD}")
     implementation("dev.kord:kord-gateway:${Versions.KORD}")
     implementation("dev.kord:kord-voice:0.8.x-20220720.101712-210")
-    implementation("com.github.stephengold:j-ogg-all:1.0.1")
     implementation("org.gagravarr:vorbis-java-core:0.8")
     implementation(libs.ktor.client.cio)
     implementation("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.0.0")
