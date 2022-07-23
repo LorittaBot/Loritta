@@ -53,7 +53,8 @@ class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager
             coroutineScope {
                 val guildId = context.guildId
 
-                context.deferChannelMessage()
+                // TODO: Reenable de defer after we remove the warning above
+                // context.deferChannelMessage()
 
                 val userConnectedVoiceChannelId = m.cache.getUserConnectedVoiceChannel(guildId, context.user.id) ?: context.fail {
                     // Not in a voice channel
