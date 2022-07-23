@@ -42,6 +42,13 @@ class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager
         if (context !is GuildApplicationCommandContext) // Only guilds
             return
 
+        context.sendMessage {
+            styled(
+                "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento!",
+                Emotes.LoriMegaphone
+            )
+        }
+
         try {
             coroutineScope {
                 val guildId = context.guildId

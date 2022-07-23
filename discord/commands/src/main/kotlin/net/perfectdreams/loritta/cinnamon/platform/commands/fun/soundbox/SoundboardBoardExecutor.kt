@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox
 
 import dev.kord.common.entity.ButtonStyle
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
+import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
@@ -14,6 +15,13 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext) // Only guilds
             return
+
+        context.sendEphemeralMessage {
+            styled(
+                "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento!",
+                Emotes.LoriMegaphone
+            )
+        }
 
         context.sendEphemeralMessage {
             content = "Clique em um som!"
