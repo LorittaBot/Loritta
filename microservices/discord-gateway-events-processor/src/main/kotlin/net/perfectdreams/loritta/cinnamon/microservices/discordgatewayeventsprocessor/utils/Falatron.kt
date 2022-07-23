@@ -61,8 +61,6 @@ class Falatron(private val apiUrl: String) : Closeable {
                 )
             }
 
-            println(response.bodyAsText())
-
             if (response.status.isSuccess())
                 return response.bodyAsText()
 

@@ -184,8 +184,6 @@ class GatewayProxy(
         if (session == null)
             throw IllegalStateException("Session is null, so we can't send events!")
 
-        println("Sending event to shard $shardId")
-
         session.send(
             Json.encodeToString(
                 GatewayProxyEvent(
