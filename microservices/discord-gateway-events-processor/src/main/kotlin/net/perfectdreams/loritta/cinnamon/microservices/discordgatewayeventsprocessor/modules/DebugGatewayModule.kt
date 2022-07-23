@@ -1,8 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
+import de.jarnbjo.ogg.EndOfOggStreamException
+import de.jarnbjo.ogg.FileStream
+import de.jarnbjo.ogg.LogicalOggStream
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.Event
 import dev.kord.gateway.MessageCreate
+import dev.kord.voice.AudioFrame
+import dev.kord.voice.AudioProvider
+import dev.kord.voice.VoiceConnection
+import dev.kord.voice.gateway.DefaultVoiceGateway
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import mu.KotlinLogging
@@ -10,6 +17,10 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.HostnameUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.ProxiedKordGateway
+import java.io.File
+import java.io.RandomAccessFile
+import kotlin.concurrent.thread
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 

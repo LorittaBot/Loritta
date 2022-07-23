@@ -200,6 +200,20 @@ class DiscordCacheService(
         return permissions
     }
 
+    /**
+     * Gets the [userId]'s voice channel ID on [guildId], if they are connected to a voice channel
+     *
+     * @param guildId the guild's ID
+     * @param userId  the user's ID
+     * @return the voice channel ID, if they are connected to a voice channel
+     */
+    suspend fun getUserConnectedVoiceChannel(guildId: Snowflake, userId: Snowflake): Snowflake? {
+        return pudding.transaction {
+            DiscordVoiceStates.slice(DiscordVoiceStates.channel).selectFirstOrNull {
+                DiscordVoiceStates.guild eq guildId.toLong() and (DiscordVoiceStates.user eq userId.toLong())
+            }?.get(DiscordVoiceStates.channel)?.let { Snowflake(it) }
+        }
+    }
     data class GuildEntities(
         val roles: List<DiscordRole>,
         val channels: List<DiscordChannel>,

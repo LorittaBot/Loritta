@@ -4,17 +4,18 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory
 import com.zaxxer.hikari.util.IsolationLevel
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.common.utils.*
+import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.services.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
@@ -30,6 +31,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
+import org.postgresql.jdbc.PgConnection
 import java.security.SecureRandom
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -230,7 +232,8 @@ class Pudding(
             DiscordGuildMembers,
             DiscordRoles,
             DiscordChannels,
-            DiscordEmojis
+            DiscordEmojis,
+            DiscordVoiceStates
         )
 
         if (schemas.isNotEmpty())
@@ -359,6 +362,15 @@ class Pudding(
     fun shutdown() {
         puddingTasks.shutdown()
         cachedThreadPool.shutdown()
+    }
+
+    /**
+     * Sends a notification to the `loritta` channel
+     */
+    suspend fun notify(notification: LorittaNotification) {
+        transaction {
+            exec("SELECT pg_notify('loritta', ?)", listOf(TextColumnType() to Json.encodeToString(notification)))
+        }
     }
 
     /**

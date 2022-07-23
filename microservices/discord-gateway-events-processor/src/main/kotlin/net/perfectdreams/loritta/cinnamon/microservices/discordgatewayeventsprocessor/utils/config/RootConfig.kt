@@ -8,8 +8,10 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordCo
 data class RootConfig(
     val loritta: LorittaConfig,
     val discord: LorittaDiscordConfig,
+    val totalShards: Int,
     val replicas: ReplicasConfig,
     val gatewayProxies: List<GatewayProxyConfig>,
     val prometheusPush: PrometheusPushConfig,
-    val pudding: PuddingConfig,
+    val falatron: FalatronConfig,
+    val pudding: PuddingConfig
 )

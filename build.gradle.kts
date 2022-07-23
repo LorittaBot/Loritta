@@ -3,7 +3,7 @@ plugins {
     kotlin("multiplatform") version libs.versions.kotlin apply false
     kotlin("jvm") version libs.versions.kotlin apply false
     kotlin("plugin.serialization") version libs.versions.kotlin apply false
-    id("io.github.turansky.kfc.latest-webpack") version "5.34.0" apply false
+    id("io.github.turansky.kfc.latest-webpack") version "5.50.0" apply false
 }
 
 allprojects {

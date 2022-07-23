@@ -14,6 +14,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.ProxiedKordGateway
 import java.io.Closeable
 import java.util.concurrent.atomic.AtomicInteger
 import kotlin.math.pow
@@ -25,6 +26,8 @@ import kotlin.time.Duration.Companion.seconds
 class GatewayProxy(
     val url: String,
     val authorizationToken: String,
+    val minShard: Int,
+    val maxShard: Int,
     val onMessageReceived: (GatewayProxyEventWrapper) -> (Unit)
 ) : Closeable {
     companion object {
@@ -32,6 +35,8 @@ class GatewayProxy(
     }
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    // Shard ID -> ProxiedKordGateway
+    val proxiedKordGateways = mutableMapOf<Int, ProxiedKordGateway>()
 
     private val http = HttpClient(CIO) {
         install(WebSockets) {
@@ -48,6 +53,14 @@ class GatewayProxy(
     var lastDisconnection: Instant? = null
 
     fun start() {
+        // Create proxied Kord Gateway instances
+        for (shardId in minShard..maxShard) {
+            proxiedKordGateways[shardId] = ProxiedKordGateway(
+                shardId,
+                this
+            )
+        }
+
         coroutineScope.launch {
             while (true) {
                 state = State.CONNECTING
@@ -70,34 +83,6 @@ class GatewayProxy(
     }
 
     private suspend fun connect() {
-        // This is a hacky workaround, because for some reason our connection gets removed from Loritta Legacy's WebSocket list
-        val job = coroutineScope.launch {
-            while (true) {
-                if (state == State.CONNECTED) {
-                    val lastEventReceivedAt = lastEventReceivedAt
-                    if (lastEventReceivedAt != null && Clock.System.now() - lastEventReceivedAt > 60.seconds) {
-                        logger.warn { "We haven't received an event on the connection $url for longer than 60s! We will close the connection and restart..." }
-                        try {
-                            withTimeout(5_000) {
-                                session?.close(
-                                    CloseReason(
-                                        CloseReason.Codes.NORMAL,
-                                        "Haven't received an event for longer than 60s, so we will restart the connection"
-                                    )
-                                )
-                            }
-                        } catch (e: TimeoutCancellationException) {
-                            logger.warn { "Timed out trying to cancel $url's session, we will just ignore it and cancel the entire session manually..." }
-                            cancelSession()
-                        }
-                        return@launch
-                    }
-                }
-
-                delay(1_000)
-            }
-        }
-
         try {
             val newSession = http.webSocketSession(
                 "ws://${url}"
@@ -147,7 +132,6 @@ class GatewayProxy(
 
         logger.info { "Exited message loop on $url's connection! Has it been cancelled?" }
         cancelSession()
-        job.cancel()
     }
 
     private suspend fun cancelSession() {
@@ -199,6 +183,8 @@ class GatewayProxy(
 
         if (session == null)
             throw IllegalStateException("Session is null, so we can't send events!")
+
+        println("Sending event to shard $shardId")
 
         session.send(
             Json.encodeToString(

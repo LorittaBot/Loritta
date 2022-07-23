@@ -14,7 +14,7 @@ dependencies {
     api(project(":discord:commands"))
 
     // Logging Stuff
-    implementation("ch.qos.logback:logback-classic:1.3.0-alpha14")
+    implementation(libs.logback.classic)
 
     // Ktor
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")

@@ -56,29 +56,9 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.TransactionsExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.BemBoladaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CancelledExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.CoinFlipExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.FaustaoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.HungerGamesExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.JankenponExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateHusbandoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateLoliExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateWaifuExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RollExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.ShipExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TioDoPaveExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.VieirinhaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CancelledCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.JankenponCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SummonCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextClapExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextLowercaseExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextMockExecutor
@@ -274,6 +254,9 @@ class CommandManager(
     private val mojangApi = MinecraftMojangAPI()
     private val correiosClient = CorreiosClient()
     private val randomRoleplayPicturesClient = RandomRoleplayPicturesClient(loritta.servicesConfig.randomRoleplayPictures.url)
+    private val falatronModelsManager = FalatronModelsManager().also {
+        it.startUpdater()
+    }
 
     val commandManager = CommandRegistry(
         loritta,
@@ -411,6 +394,22 @@ class CommandManager(
         )
 
         /* commandManager.register(
+            FalatronVoiceAutocompleteExecutor,
+            FalatronVoiceAutocompleteExecutor(falatronModelsManager)
+        )
+
+        commandManager.register(
+            SoundboxCommand,
+            FalatronExecutor(loritta, falatronModelsManager),
+            SoundboardBoardExecutor(loritta)
+        )
+
+        commandManager.register(
+            PlayAudioClipButtonExecutor,
+            PlayAudioClipButtonExecutor(loritta)
+        )
+
+        commandManager.register(
             BomDiaECiaCommand,
             BomDiaECiaExecutor()
         ) */

@@ -10,7 +10,7 @@ dependencies {
     implementation(project(":pudding:client"))
 
     // Logging Stuff
-    implementation("ch.qos.logback:logback-classic:1.3.0-alpha14")
+    implementation(libs.logback.classic)
 
     implementation("commons-codec:commons-codec:1.15")
 

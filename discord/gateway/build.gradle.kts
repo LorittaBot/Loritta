@@ -16,7 +16,7 @@ dependencies {
     implementation("dev.kord:kord-gateway:${Versions.KORD}")
 
     // Logging
-    api("ch.qos.logback:logback-classic:1.3.0-alpha14")
+    api(libs.logback.classic)
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.assertj:assertj-core:3.19.0")

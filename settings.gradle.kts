@@ -12,16 +12,16 @@ rootProject.name = "cinnamon-parent"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val kotlin = version("kotlin", "1.7.0")
-            val kotlinXSerialization = version("kotlinx-serialization", "1.3.3")
+            val kotlin = version("kotlin", "1.7.10")
+            val kotlinXSerialization = version("kotlinx-serialization", "1.4.0-RC")
             val ktor = version("ktor", "2.0.3")
             val jib = version("jib", "3.2.1")
             val exposed = version("exposed", "0.38.2")
             val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
+            val logback = version("logback", "1.3.0-alpha16")
 
-            // This needs to be fixed before updating https://github.com/Kotlin/kotlinx.coroutines/issues/3305#issuecomment-1141239424
-            library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version("1.6.1")
-            library("kotlin-logging", "io.github.microutils", "kotlin-logging").version("2.1.21")
+            library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version("1.6.4")
+            library("kotlin-logging", "io.github.microutils", "kotlin-logging").version("2.1.23")
 
             library("kotlinx-serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef(kotlinXSerialization)
             library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinXSerialization)
@@ -34,6 +34,8 @@ dependencyResolutionManagement {
             library("exposed-core", "org.jetbrains.exposed", "exposed-core").versionRef(exposed)
             library("exposed-jdbc", "org.jetbrains.exposed", "exposed-jdbc").versionRef(exposed)
             library("exposed-javatime", "org.jetbrains.exposed", "exposed-java-time").versionRef(exposed)
+
+            library("logback-classic", "ch.qos.logback", "logback-classic").versionRef(logback)
 
             library("hikaricp", "com.zaxxer", "HikariCP").version("5.0.1")
         }

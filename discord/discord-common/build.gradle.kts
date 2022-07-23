@@ -9,6 +9,8 @@ dependencies {
     api(project(":common"))
     api(project(":pudding:client"))
 
+    api(libs.kotlinx.coroutines.core)
+
     // Discord InteraKTions my beloved
     // We only depend in the common module here, the interactions/gateway will have the proper Discord InteraKTions modules related to them.
     api("net.perfectdreams.discordinteraktions:common:${Versions.DISCORD_INTERAKTIONS}")
@@ -27,7 +29,7 @@ dependencies {
     // Logback GELF, used for Graylog logging
     implementation("de.siegmar:logback-gelf:3.0.0")
 
-    testImplementation("ch.qos.logback:logback-classic:1.3.0-alpha14")
+    testImplementation(libs.logback.classic)
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.testcontainers:testcontainers:1.16.3")
     testImplementation("org.testcontainers:junit-jupiter:1.16.3")

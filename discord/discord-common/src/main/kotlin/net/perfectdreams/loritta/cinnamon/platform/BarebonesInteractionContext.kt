@@ -39,26 +39,22 @@ open class BarebonesInteractionContext(
         }
     }
 
-    suspend inline fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) {
-        interaKTionsContext.sendMessage {
-            // Disable ALL mentions, to avoid a "@everyone 3.0" moment
-            allowedMentions {
-                repliedUser = true
-            }
-
-            block()
+    suspend inline fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) = interaKTionsContext.sendMessage {
+        // Disable ALL mentions, to avoid a "@everyone 3.0" moment
+        allowedMentions {
+            repliedUser = true
         }
+
+        block()
     }
 
-    suspend inline fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) {
-        interaKTionsContext.sendEphemeralMessage {
-            // Disable ALL mentions, to avoid a "@everyone 3.0" moment
-            allowedMentions {
-                repliedUser = true
-            }
-
-            apply(block)
+    suspend inline fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) = interaKTionsContext.sendEphemeralMessage {
+        // Disable ALL mentions, to avoid a "@everyone 3.0" moment
+        allowedMentions {
+            repliedUser = true
         }
+
+        apply(block)
     }
 
     suspend fun sendEmbed(message: String = "", embed: EmbedBuilder.() -> Unit) {

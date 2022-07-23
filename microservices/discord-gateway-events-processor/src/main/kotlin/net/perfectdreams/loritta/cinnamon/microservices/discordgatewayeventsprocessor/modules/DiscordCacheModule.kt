@@ -1,36 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import dev.kord.common.entity.DiscordAddedGuildMember
-import dev.kord.common.entity.DiscordChannel
-import dev.kord.common.entity.DiscordEmoji
-import dev.kord.common.entity.DiscordGuildMember
-import dev.kord.common.entity.DiscordRemovedGuildMember
-import dev.kord.common.entity.DiscordRole
-import dev.kord.common.entity.DiscordUpdatedGuildMember
-import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.value
-import dev.kord.gateway.ChannelCreate
-import dev.kord.gateway.ChannelDelete
-import dev.kord.gateway.ChannelUpdate
-import dev.kord.gateway.Event
-import dev.kord.gateway.GuildCreate
-import dev.kord.gateway.GuildDelete
-import dev.kord.gateway.GuildEmojisUpdate
-import dev.kord.gateway.GuildMemberAdd
-import dev.kord.gateway.GuildMemberRemove
-import dev.kord.gateway.GuildMemberUpdate
-import dev.kord.gateway.GuildRoleCreate
-import dev.kord.gateway.GuildRoleDelete
-import dev.kord.gateway.GuildRoleUpdate
-import dev.kord.gateway.GuildUpdate
-import dev.kord.gateway.MessageCreate
+import dev.kord.gateway.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.Instant
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
@@ -45,8 +22,6 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 import pw.forst.exposed.insertOrUpdate
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.reflect.KClass
-import kotlin.time.Duration
 
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
@@ -80,6 +55,27 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     val guildEmojis = event.guild.emojis
                     // If your bot does not have the GUILD_PRESENCES Gateway Intent, or if the guild has over 75k members, members and presences returned in this event will only contain your bot and users in voice channels.
                     val guildMembers = event.guild.members.value ?: emptyList()
+                    val guildVoiceStates = event.guild.voiceStates.value ?: emptyList()
+
+                    val lorittaVoiceState = guildVoiceStates.firstOrNull { it.userId == Snowflake(m.config.discord.applicationId) }
+                    if (lorittaVoiceState != null) {
+                        // Wait... that's us! omg omg omg
+                        val lorittaVoiceConnection = m.voiceConnections[guildId]
+
+                        if (lorittaVoiceConnection == null) {
+                            // B-but... we shouldn't be here!? Uhhh, meow? Time to disconnect maybe??
+                            logger.warn { "Looks like we are connected @ $guildId but we don't have any active voice connections here! We will disconnect from the voice channel to avoid issues..." }
+                            val gatewayProxy = m.getProxiedKordGatewayForGuild(guildId)
+                            gatewayProxy?.send(
+                                UpdateVoiceStatus(
+                                    guildId,
+                                    null,
+                                    selfMute = false,
+                                    selfDeaf = false
+                                )
+                            )
+                        }
+                    }
 
                     withMutex(guildId) {
                         m.guildCreateServices.transaction {
@@ -101,6 +97,24 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                                     member.user.value!!.id,
                                     member
                                 )
+                            }
+
+                            // Delete all voice states
+                            DiscordVoiceStates.deleteWhere {
+                                DiscordVoiceStates.guild eq guildId.toLong()
+                            }
+
+                            // Reinsert them
+                            DiscordVoiceStates.batchUpsert(
+                                guildVoiceStates,
+                                DiscordVoiceStates.user,
+                                DiscordVoiceStates.guild
+                            ) { it, voiceState ->
+                                it[DiscordVoiceStates.guild] = guildId.toLong() // The voiceState.guildId is missing on a GuildCreate event!
+                                it[DiscordVoiceStates.channel] = voiceState.channelId!!.toLong() // Also shouldn't be null because they are in a channel
+                                it[DiscordVoiceStates.user] = voiceState.userId.toLong()
+                                it[DiscordVoiceStates.dataHashCode] = hashEntity(voiceState)
+                                it[DiscordVoiceStates.data] = Json.encodeToString(voiceState)
                             }
                         }
                     }
@@ -261,6 +275,51 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                             disableSynchronousCommit()
 
                             removeGuildData(event.guild.id)
+                        }
+                    }
+                }
+            }
+            is VoiceStateUpdate -> {
+                val guildId = event.voiceState.guildId.value!! // Shouldn't be null here
+                val channelId = event.voiceState.channelId
+                val userId = event.voiceState.userId
+
+                if (userId == Snowflake(m.config.discord.applicationId)) {
+                    // Wait... that's us! omg omg omg
+                    val lorittaVoiceConnection = m.voiceConnections[guildId]
+                    if (lorittaVoiceConnection != null) {
+                        if (channelId != null) {
+                            logger.info { "We were moved @ $guildId to $channelId, updating our voice connection to match it..." }
+                            lorittaVoiceConnection.channelId = channelId
+                        } else {
+                            logger.info { "We were removed from a voice channel @ $guildId, shutting down our voice connection..." }
+                            m.shutdownVoiceConnection(guildId, lorittaVoiceConnection)
+                        }
+                    }
+                }
+
+                withMutex(guildId) {
+                    val voiceState = event.voiceState
+                    m.services.transaction {
+                        disableSynchronousCommit()
+
+                        // Delete all voice states related to the user
+                        DiscordVoiceStates.deleteWhere {
+                            DiscordVoiceStates.guild eq guildId.toLong() and (DiscordVoiceStates.user eq voiceState.userId.toLong())
+                        }
+
+                        if (channelId != null) {
+                            // Reinsert them
+                            DiscordVoiceStates.upsert(
+                                DiscordVoiceStates.user,
+                                DiscordVoiceStates.guild
+                            ) {
+                                it[DiscordVoiceStates.guild] = guildId.toLong() // The voiceState.guildId is missing on a GuildCreate event!
+                                it[DiscordVoiceStates.channel] = channelId.toLong() // Also shouldn't be null because they are in a channel
+                                it[DiscordVoiceStates.user] = userId.toLong()
+                                it[DiscordVoiceStates.dataHashCode] = hashEntity(voiceState)
+                                it[DiscordVoiceStates.data] = Json.encodeToString(voiceState)
+                            }
                         }
                     }
                 }
