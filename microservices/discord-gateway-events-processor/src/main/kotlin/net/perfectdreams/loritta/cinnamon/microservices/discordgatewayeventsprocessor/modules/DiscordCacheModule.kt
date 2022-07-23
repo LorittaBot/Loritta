@@ -36,6 +36,14 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         .build<String, Mutex>()
         .asMap()
 
+    /**
+     * Used to avoid sending a transaction on a MessageCreate event just to update the user's roles
+     */
+    private val userRolesHashes = Caffeine.newBuilder()
+        .expireAfterAccess(1L, TimeUnit.MINUTES)
+        .build<Snowflake, Int>()
+        .asMap()
+
     private suspend inline fun withMutex(vararg ids: Snowflake, action: () -> Unit) = mutexes.getOrPut(ids.joinToString(":")) { Mutex() }.withLock(action = action)
 
     override suspend fun processEvent(context: GatewayProxyEventContext): ModuleResult {
@@ -170,11 +178,19 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                 val member = event.message.member.value
 
                 if (guildId != null && member != null) {
-                    withMutex(guildId, event.message.author.id) {
-                        m.services.transaction {
-                            disableSynchronousCommit()
+                    // To avoid unnecessary database updates just because someone sent a message in chat, we will store a hash of their roles in memory
+                    // If the role list hash doesn't match, *then* we send a transaction updating the user's information
+                    val userRoleHash = userRolesHashes[event.message.author.id]
 
-                            createOrUpdateGuildMember(guildId, event.message.author.id, member)
+                    if (userRoleHash != member.roles.hashCode()) {
+                        withMutex(guildId, event.message.author.id) {
+                            userRolesHashes[event.message.author.id] = member.roles.hashCode()
+
+                            m.services.transaction {
+                                disableSynchronousCommit()
+
+                                createOrUpdateGuildMember(guildId, event.message.author.id, member)
+                            }
                         }
                     }
                 }
