@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
+import dev.kord.common.entity.Permissions
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 
 fun slashCommand(
@@ -15,6 +16,9 @@ class SlashCommandDeclarationBuilder(val labels: List<String>, val description: 
     var executor: SlashCommandExecutorDeclaration? = null
     val subcommands = mutableListOf<SlashCommandDeclaration>()
     val subcommandGroups = mutableListOf<SlashCommandGroupDeclaration>()
+    // Only root commands can have permissions and dmPermission
+    var defaultMemberPermissions: Permissions? = null
+    var dmPermission: Boolean? = null
 
     fun subcommand(labels: List<String>, description: StringI18nData, block: SlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands += SlashCommandDeclarationBuilder(labels, description, category).apply(block).build()
@@ -29,6 +33,8 @@ class SlashCommandDeclarationBuilder(val labels: List<String>, val description: 
         description,
         category,
         executor,
+        defaultMemberPermissions,
+        dmPermission,
         subcommands,
         subcommandGroups
     )

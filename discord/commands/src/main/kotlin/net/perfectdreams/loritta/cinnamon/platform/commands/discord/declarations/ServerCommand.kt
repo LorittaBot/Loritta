@@ -14,6 +14,8 @@ object ServerCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Server
 
     override fun declaration() = slashCommand(listOf("server"), CommandCategory.DISCORD, TodoFixThisData) {
+        dmPermission = false
+
         subcommand(listOf("icon"), I18nKeysData.Commands.Command.Server.Icon.Description) {
             executor = ServerIconExecutor
         }

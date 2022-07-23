@@ -148,8 +148,8 @@ class SlashCommandConverter(
                 description,
                 localizedDescriptions,
                 interaKTionsExecutorDeclaration,
-                null,
-                false,
+                declaration.defaultMemberPermissions,
+                declaration.dmPermission,
                 subcommands,
                 subcommandGroups
             )

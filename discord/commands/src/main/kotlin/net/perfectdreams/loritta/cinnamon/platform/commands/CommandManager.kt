@@ -393,7 +393,7 @@ class CommandManager(
             HungerGamesExecutor(rest)
         )
 
-        /* commandManager.register(
+        commandManager.register(
             FalatronVoiceAutocompleteExecutor,
             FalatronVoiceAutocompleteExecutor(falatronModelsManager)
         )
@@ -409,7 +409,7 @@ class CommandManager(
             PlayAudioClipButtonExecutor(loritta)
         )
 
-        commandManager.register(
+        /* commandManager.register(
             BomDiaECiaCommand,
             BomDiaECiaExecutor()
         ) */

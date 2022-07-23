@@ -10,6 +10,8 @@ object HungerGamesCommand : SlashCommandDeclarationWrapper {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Hungergames
 
     override fun declaration() = slashCommand(listOf("hungergames"), CommandCategory.FUN, I18N_PREFIX.Description) {
+        dmPermission = false
+
         executor = HungerGamesExecutor
     }
 }

@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
+import dev.kord.common.entity.Permission
+import dev.kord.common.entity.Permissions
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 
 /**
@@ -12,6 +14,8 @@ class SlashCommandDeclaration(
     val description: StringI18nData,
     val category: CommandCategory,
     val executor: SlashCommandExecutorDeclaration? = null,
+    val defaultMemberPermissions: Permissions? = null,
+    val dmPermission: Boolean? = null,
     val subcommands: List<SlashCommandDeclaration>,
     val subcommandGroups: List<SlashCommandGroupDeclaration>
 ) : ApplicationCommandDeclaration()
