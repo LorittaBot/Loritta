@@ -44,7 +44,7 @@ class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager
 
         context.sendMessage {
             styled(
-                "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento!",
+                "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento! Ela ainda não está pronta e será melhorada com o passar do tempo... ou talvez até mesmo removida! ${Emotes.LoriSob}",
                 Emotes.LoriMegaphone
             )
         }
