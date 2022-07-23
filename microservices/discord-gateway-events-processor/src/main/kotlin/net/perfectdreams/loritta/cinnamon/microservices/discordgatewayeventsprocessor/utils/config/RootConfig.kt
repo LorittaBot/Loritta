@@ -13,5 +13,6 @@ data class RootConfig(
     val gatewayProxies: List<GatewayProxyConfig>,
     val prometheusPush: PrometheusPushConfig,
     val falatron: FalatronConfig,
+    val binaries: BinariesConfig,
     val pudding: PuddingConfig
 )

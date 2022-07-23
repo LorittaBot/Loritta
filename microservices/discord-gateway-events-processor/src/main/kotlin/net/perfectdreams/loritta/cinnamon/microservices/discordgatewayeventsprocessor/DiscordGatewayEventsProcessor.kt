@@ -28,7 +28,6 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
-import java.io.File
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -309,7 +308,7 @@ class DiscordGatewayEventsProcessor(
 
     private fun convertAudio(byteArray: ByteArray): ByteArray {
         val processBuilder = ProcessBuilder(
-            "D:\\Tools\\ffmpeg\\ffmpeg.exe",
+            config.binaries.ffmpeg,
             // "-hide_banner",
             // "-loglevel",
             // "error",
@@ -326,7 +325,7 @@ class DiscordGatewayEventsProcessor(
             "-f",
             "ogg",
             "-"
-        ).redirectError(File("D:\\Tools\\ffmpeg\\ffmpeg_log.txt")).start()
+        ).start()
 
         val inputStream = processBuilder.inputStream
         val outputStream = processBuilder.outputStream

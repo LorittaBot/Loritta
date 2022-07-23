@@ -66,7 +66,10 @@ jib {
     }
 
     from {
-        image = "eclipse-temurin:17-focal"
+        // This image comes from the "docker" folder Dockerfile!
+        // Don't forget to build the image before compiling!
+        // https://github.com/GoogleContainerTools/jib/issues/1468
+        image = "tar://${File(rootDir, "docker/image.tar").absoluteFile}"
     }
 }
 
