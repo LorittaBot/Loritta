@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SoundboxCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
@@ -23,14 +24,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
-class FalatronExecutor(val m: LorittaCinnamon, val falatronModelsManager: FalatronModelsManager) : SlashCommandExecutor() {
+class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager: FalatronModelsManager) : SlashCommandExecutor() {
     companion object : SlashCommandExecutorDeclaration() {
         object Options : ApplicationCommandOptions() {
-            val voice = string("voice", TodoFixThisData)
+            val voice = string("voice", SoundboxCommand.I18N_PREFIX.Falatron.Options.Voice.Text)
                 .autocomplete(FalatronVoiceAutocompleteExecutor)
                 .register()
 
-            val text = string("text", TodoFixThisData)
+            val text = string("text", SoundboxCommand.I18N_PREFIX.Falatron.Options.Text.Text)
                 .register()
         }
 
