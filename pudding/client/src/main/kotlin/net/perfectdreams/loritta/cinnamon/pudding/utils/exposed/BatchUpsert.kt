@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils
+package net.perfectdreams.loritta.cinnamon.pudding.utils.exposed
 
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table

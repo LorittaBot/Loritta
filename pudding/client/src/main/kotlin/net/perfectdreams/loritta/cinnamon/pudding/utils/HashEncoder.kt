@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils
+package net.perfectdreams.loritta.cinnamon.pudding.utils
 
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.descriptors.SerialDescriptor

@@ -11,17 +11,15 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.HashEncoder
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.batchUpsert
-import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.upsert
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.batchUpsert
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.upsert
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.statements.BatchInsertStatement
-import org.jetbrains.exposed.sql.transactions.TransactionManager
 import pw.forst.exposed.insertOrUpdate
 import java.util.*
 import java.util.concurrent.TimeUnit
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.disableSynchronousCommit
 
 class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
@@ -89,7 +87,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                         m.guildCreateServices.transaction {
                             disableSynchronousCommit()
 
-                            createOrUpdateGuild(
+                            m.cache.createOrUpdateGuild(
                                 guildId,
                                 guildName,
                                 guildIcon,
@@ -124,7 +122,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                                     it[DiscordVoiceStates.channel] =
                                         voiceState.channelId!!.toLong() // Also shouldn't be null because they are in a channel
                                     it[DiscordVoiceStates.user] = voiceState.userId.toLong()
-                                    it[DiscordVoiceStates.dataHashCode] = hashEntity(voiceState)
+                                    it[DiscordVoiceStates.dataHashCode] = m.cache.hashEntity(voiceState)
                                     it[DiscordVoiceStates.data] = Json.encodeToString(voiceState)
                                 }
                             }
@@ -150,7 +148,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                         m.services.transaction {
                             disableSynchronousCommit()
 
-                            createOrUpdateGuild(
+                            m.cache.createOrUpdateGuild(
                                 guildId,
                                 guildName,
                                 guildIcon,
@@ -173,7 +171,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                     m.services.transaction {
                         disableSynchronousCommit()
 
-                        updateGuildEmojis(guildId, discordEmojis)
+                        m.cache.updateGuildEmojis(guildId, discordEmojis)
                     }
                 }
             }
@@ -337,7 +335,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                                 it[DiscordVoiceStates.guild] = guildId.toLong() // The voiceState.guildId is missing on a GuildCreate event!
                                 it[DiscordVoiceStates.channel] = channelId.toLong() // Also shouldn't be null because they are in a channel
                                 it[DiscordVoiceStates.user] = userId.toLong()
-                                it[DiscordVoiceStates.dataHashCode] = hashEntity(voiceState)
+                                it[DiscordVoiceStates.dataHashCode] = m.cache.hashEntity(voiceState)
                                 it[DiscordVoiceStates.data] = Json.encodeToString(voiceState)
                             }
                         }
@@ -347,64 +345,6 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             else -> {}
         }
         return ModuleResult.Continue
-    }
-
-    private fun createOrUpdateGuild(
-        guildId: Snowflake,
-        guildName: String,
-        guildIcon: String?,
-        guildOwnerId: Snowflake,
-        guildRoles: List<DiscordRole>,
-        guildChannels: List<DiscordChannel>?,
-        guildEmojis: List<DiscordEmoji>
-    ) {
-        val guildIdAsLong = guildId.toLong()
-
-        // Does not exist, let's insert it
-        DiscordGuilds.upsert(DiscordGuilds.id) {
-            it[DiscordGuilds.id] = guildIdAsLong
-            it[DiscordGuilds.name] = guildName
-            it[DiscordGuilds.icon] = guildIcon
-            it[DiscordGuilds.ownerId] = guildOwnerId.toLong()
-        }
-
-        updateEntitiesInDatabaseIfNeeded(
-            DiscordRoles,
-            DiscordRoles.guild,
-            DiscordRoles.dataHashCode,
-            DiscordRoles.role,
-            guildId,
-            guildRoles,
-            DiscordRole::id,
-            DiscordRoles.guild,
-            DiscordRoles.role
-        ) { it, role, hash ->
-            it[DiscordRoles.guild] = guildIdAsLong
-            it[DiscordRoles.role] = role.id.toLong()
-            it[DiscordRoles.dataHashCode] = hash
-            it[DiscordRoles.data] = Json.encodeToString(role)
-        }
-
-        if (guildChannels != null) {
-            updateEntitiesInDatabaseIfNeeded(
-                DiscordChannels,
-                DiscordChannels.guild,
-                DiscordChannels.dataHashCode,
-                DiscordChannels.channel,
-                guildId,
-                guildChannels,
-                DiscordChannel::id,
-                DiscordChannels.guild,
-                DiscordChannels.channel
-            ) { it, channel, hash ->
-                it[DiscordChannels.guild] = guildIdAsLong
-                it[DiscordChannels.channel] = channel.id.toLong()
-                it[DiscordChannels.dataHashCode] = hash
-                it[DiscordChannels.data] = Json.encodeToString(channel)
-            }
-        }
-
-        updateGuildEmojis(guildId, guildEmojis)
     }
 
     private fun createOrUpdateGuildMember(guildMember: DiscordAddedGuildMember) {
@@ -453,29 +393,8 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         DiscordChannels.upsert(DiscordChannels.guild, DiscordChannels.channel) {
             it[DiscordChannels.guild] = guildId.toLong()
             it[DiscordChannels.channel] = channel.id.toLong()
-            it[DiscordChannels.dataHashCode] = hashEntity(channel)
+            it[DiscordChannels.dataHashCode] = m.cache.hashEntity(channel)
             it[DiscordChannels.data] = Json.encodeToString(channel)
-        }
-    }
-
-    private fun updateGuildEmojis(guildId: Snowflake, guildEmojis: List<DiscordEmoji>) {
-        val guildIdAsLong = guildId.toLong()
-
-        updateEntitiesInDatabaseIfNeeded(
-            DiscordEmojis,
-            DiscordEmojis.guild,
-            DiscordEmojis.dataHashCode,
-            DiscordEmojis.emoji,
-            guildId,
-            guildEmojis,
-            { it.id!! },
-            DiscordEmojis.guild,
-            DiscordEmojis.emoji
-        ) { it, emoji, hash ->
-            it[DiscordEmojis.guild] = guildIdAsLong
-            it[DiscordEmojis.emoji] = emoji.id!!.toLong() // Shouldn't be null because guild emojis always have IDs
-            it[DiscordEmojis.dataHashCode] = hash
-            it[DiscordEmojis.data] = Json.encodeToString(emoji)
         }
     }
 
@@ -483,7 +402,7 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
         DiscordRoles.upsert(DiscordRoles.guild, DiscordRoles.role) {
             it[DiscordRoles.guild] = guildId.toLong()
             it[DiscordRoles.role] = role.id.toLong()
-            it[DiscordRoles.dataHashCode] = hashEntity(role)
+            it[DiscordRoles.dataHashCode] = m.cache.hashEntity(role)
             it[DiscordRoles.data] = Json.encodeToString(role)
         }
     }
@@ -524,84 +443,4 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
             DiscordGuilds.id eq guildIdAsLong
         }
     }
-
-    /**
-     * Check if the stored [entities] contains the same elements and, if not, batch upsert and delete outdated entries
-     *
-     * This stores a [dataHashColumn] of the entity, to optimize the upserting procedure to avoid multiple upserts.
-     *
-     * This reduces the query time quite a bit if we don't need to update the roles/channels/emojis
-     */
-    private inline fun <T : Table, reified E> updateEntitiesInDatabaseIfNeeded(
-        table: T,
-        guildColumn: Column<Long>,
-        dataHashColumn: Column<Int>,
-        entityIdColumn: Column<Long>,
-        guildId: Snowflake,
-        entities: List<E>,
-        crossinline entityId: (E) -> (Snowflake),
-        vararg keys: Column<*>,
-        noinline body: T.(BatchInsertStatement, E, Int) -> Unit
-    ) {
-        val guildIdAsLong = guildId.toLong()
-
-        val storedEntitiesHashCodes = table.slice(dataHashColumn)
-            .select {
-                guildColumn eq guildIdAsLong
-            }
-            .map { it[dataHashColumn] }
-
-        val hashedEntities = entities.associate { entityId.invoke(it) to hashEntity(it) }
-
-        val currentEntitiesHashes = hashedEntities.values
-
-        val requiresUpdates = !currentEntitiesHashes.containsSameElements(storedEntitiesHashCodes)
-
-        if (requiresUpdates) {
-            val requiresUpdateEntities = entities.filter { hashedEntities[entityId.invoke(it)]!! !in storedEntitiesHashCodes }
-            val allEntityIds = entities.map { entityId.invoke(it) }
-
-            if (requiresUpdateEntities.isNotEmpty())
-                table.batchUpsert(requiresUpdateEntities, *keys, body = { it, e ->
-                    body.invoke(table, it, e, hashedEntities[entityId.invoke(e)]!!)
-                })
-
-            // Delete unknown roles
-            table.deleteWhere { guildColumn eq guildIdAsLong and (entityIdColumn notInList allEntityIds.map { it.toLong() }) }
-        }
-    }
-
-    /**
-     * Hashes [value]'s primitives with [Objects.hash] to create a hash that identifies the object.
-     */
-    private inline fun <reified T> hashEntity(value: T): Int {
-        // We use our own custom hash encoder because ProtoBuf can't encode the "Optional" fields, because it can't serialize null values
-        // on a field that isn't marked as null
-        val encoder = HashEncoder()
-        encoder.encodeSerializableValue(serializer(), value)
-        return Objects.hash(*encoder.list.toTypedArray())
-    }
-
-    // https://stackoverflow.com/a/58310635/7271796
-    private fun <T> Collection<T>.containsSameElements(other: Collection<T>): Boolean {
-        // check collections aren't same
-        if (this !== other) {
-            // fast check of sizes
-            if (this.size != other.size) return false
-
-            // check other contains next element from this
-            // all "it" must be in "other", if there isn't, then it should return false
-            // (Kotlin fast fails in the "all" check!)
-            return this.all { it in other }
-        }
-        // collections are same or they contain the same elements
-        return true
-    }
-
-    /**
-     * Disables synchronous commit on the current transaction.
-     *
-     * This gives a performance boost, however because the transaction is async, you may lose data if PostgreSQL crashes!
-     */
-    private fun disableSynchronousCommit() = TransactionManager.current().exec("SET LOCAL synchronous_commit = 'off';")
 }
