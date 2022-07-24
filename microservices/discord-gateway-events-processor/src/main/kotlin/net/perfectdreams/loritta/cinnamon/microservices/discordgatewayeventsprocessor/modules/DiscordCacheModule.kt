@@ -113,16 +113,20 @@ class DiscordCacheModule(private val m: DiscordGatewayEventsProcessor) : Process
                             }
 
                             // Reinsert them
-                            DiscordVoiceStates.batchUpsert(
-                                guildVoiceStates,
-                                DiscordVoiceStates.user,
-                                DiscordVoiceStates.guild
-                            ) { it, voiceState ->
-                                it[DiscordVoiceStates.guild] = guildId.toLong() // The voiceState.guildId is missing on a GuildCreate event!
-                                it[DiscordVoiceStates.channel] = voiceState.channelId!!.toLong() // Also shouldn't be null because they are in a channel
-                                it[DiscordVoiceStates.user] = voiceState.userId.toLong()
-                                it[DiscordVoiceStates.dataHashCode] = hashEntity(voiceState)
-                                it[DiscordVoiceStates.data] = Json.encodeToString(voiceState)
+                            if (guildVoiceStates.isNotEmpty()) {
+                                DiscordVoiceStates.batchUpsert(
+                                    guildVoiceStates,
+                                    DiscordVoiceStates.user,
+                                    DiscordVoiceStates.guild
+                                ) { it, voiceState ->
+                                    it[DiscordVoiceStates.guild] =
+                                        guildId.toLong() // The voiceState.guildId is missing on a GuildCreate event!
+                                    it[DiscordVoiceStates.channel] =
+                                        voiceState.channelId!!.toLong() // Also shouldn't be null because they are in a channel
+                                    it[DiscordVoiceStates.user] = voiceState.userId.toLong()
+                                    it[DiscordVoiceStates.dataHashCode] = hashEntity(voiceState)
+                                    it[DiscordVoiceStates.data] = Json.encodeToString(voiceState)
+                                }
                             }
                         }
                     }
