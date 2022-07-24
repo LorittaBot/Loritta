@@ -437,6 +437,9 @@ class DiscordGatewayEventsProcessor(
                 }
             }
 
+            DiscordGatewayEventsProcessorMetrics.voiceConnections
+                .set(voiceConnections.size.toDouble())
+
             return loriVC
         }
     }
@@ -453,6 +456,9 @@ class DiscordGatewayEventsProcessor(
         logger.info { "Shutting down voice connecion $voiceConnection related to $guildId" }
         voiceConnections.remove(guildId, voiceConnection)
         voiceConnection.shutdown()
+
+        DiscordGatewayEventsProcessorMetrics.voiceConnections
+            .set(voiceConnections.size.toDouble())
     }
 
     /**
