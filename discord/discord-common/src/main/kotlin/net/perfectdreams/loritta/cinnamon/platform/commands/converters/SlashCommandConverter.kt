@@ -160,8 +160,8 @@ class SlashCommandConverter(
                 description,
                 localizedDescriptions,
                 null,
-                null,
-                false,
+                declaration.defaultMemberPermissions,
+                declaration.dmPermission,
                 subcommands,
                 subcommandGroups
             )
