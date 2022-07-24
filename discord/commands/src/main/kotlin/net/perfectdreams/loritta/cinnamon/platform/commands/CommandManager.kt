@@ -398,7 +398,7 @@ class CommandManager(
             FalatronVoiceAutocompleteExecutor(falatronModelsManager)
         )
 
-        commandManager.register(
+        /* commandManager.register(
             SoundboxCommand,
             FalatronExecutor(loritta, falatronModelsManager),
             SoundboardBoardExecutor(loritta)
@@ -409,7 +409,7 @@ class CommandManager(
             PlayAudioClipButtonExecutor(loritta)
         )
 
-        /* commandManager.register(
+        commandManager.register(
             BomDiaECiaCommand,
             BomDiaECiaExecutor()
         ) */
