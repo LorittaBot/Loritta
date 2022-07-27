@@ -1,38 +1,34 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform
 
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
-import kotlin.random.Random
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 
-class TextVemDeZapExecutor(val random: Random) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val mood = string("mood", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Text)
-                .choice("happy", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy)
-                .choice("angry", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Angry)
-                .choice("sassy", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sassy)
-                .choice("sad", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sad)
-                .choice("sick", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sick)
-                .register()
-
-            val level = integer("level", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Text)
-                .choice(0, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level1)
-                .choice(1, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level2)
-                .choice(2, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level3)
-                .choice(3, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level4)
-                .choice(4, TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level5)
-                .register()
-
-            val text = string("text", TextTransformDeclaration.VEMDEZAP_I18N_PREFIX.Options.Text)
-                .register()
+class TextVemDeZapExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val mood = string("mood", TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Text) {
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy, "happy")
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Angry, "angry")
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sassy, "sassy")
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sad, "sad")
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Sick, "sick")
         }
 
-        override val options = Options
+        val level = integer("level", TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Level.Text) {
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level1, 0)
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level2, 1)
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level3, 2)
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level4, 3)
+            choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Level.Choice.Level5, 4)
+        }
+
+        val text = string("text", TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Text)
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val mood = ZapZapMood.valueOf(args[options.mood].toUpperCase())
@@ -46,21 +42,21 @@ class TextVemDeZapExecutor(val random: Random) : SlashCommandExecutor() {
             output += "$word "
             var addedEmoji = false
 
-            for ((match, emojis) in TextTransformDeclaration.fullMatch) {
+            for ((match, emojis) in TextTransformCommand.fullMatch) {
                 if (lowerCaseWord == match) {
                     output += "${emojis.random()} "
                     addedEmoji = true
                 }
             }
 
-            for ((match, emojis) in TextTransformDeclaration.partialMatchAny) {
+            for ((match, emojis) in TextTransformCommand.partialMatchAny) {
                 if (lowerCaseWord.contains(match, true)) {
                     output += "${emojis.random()} "
                     addedEmoji = true
                 }
             }
 
-            for ((match, emojis) in TextTransformDeclaration.partialMatchPrefix) {
+            for ((match, emojis) in TextTransformCommand.partialMatchPrefix) {
                 if (lowerCaseWord.startsWith(match, true)) {
                     output += "${emojis.random()} "
                     addedEmoji = true
@@ -70,19 +66,19 @@ class TextVemDeZapExecutor(val random: Random) : SlashCommandExecutor() {
             if (!addedEmoji) { // Se nós ainda não adicionamos nenhum emoji na palavra...
                 // Para fazer um aleatório baseado no nível... quanto maior o nível = mais chance de aparecer emojos
                 val upperBound = (5 - level) + 3
-                val randomInteger = random.nextLong(upperBound)
+                val randomInteger = loritta.random.nextLong(upperBound)
 
                 if (randomInteger == 0L) {
                     val moodEmojis = when (mood) {
-                        ZapZapMood.HAPPY -> TextTransformDeclaration.happyEmojis
-                        ZapZapMood.ANGRY -> TextTransformDeclaration.angryEmojis
-                        ZapZapMood.SASSY -> TextTransformDeclaration.sassyEmojis
-                        ZapZapMood.SAD -> TextTransformDeclaration.sadEmojis
-                        ZapZapMood.SICK -> TextTransformDeclaration.sickEmojis
+                        ZapZapMood.HAPPY -> TextTransformCommand.happyEmojis
+                        ZapZapMood.ANGRY -> TextTransformCommand.angryEmojis
+                        ZapZapMood.SASSY -> TextTransformCommand.sassyEmojis
+                        ZapZapMood.SAD -> TextTransformCommand.sadEmojis
+                        ZapZapMood.SICK -> TextTransformCommand.sickEmojis
                     }
 
                     // E quanto maior o nível, maiores as chances de aparecer mais emojis do lado da palavra
-                    val addEmojis = random.nextLong(1, level + 2)
+                    val addEmojis = loritta.random.nextLong(1, level + 2)
 
                     for (i in 0 until addEmojis) {
                         output += "${moodEmojis.random()} "

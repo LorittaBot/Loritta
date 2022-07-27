@@ -34,6 +34,7 @@ import net.perfectdreams.randomroleplaypictures.common.data.api.PictureSource
 
 object RoleplayUtils {
     val HUG_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayCommand.I18N_PREFIX.Hug.Options.User.Text,
         RandomRoleplayPicturesClient::hug,
         RetributeHugButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Hug::Response,
@@ -42,6 +43,7 @@ object RoleplayUtils {
     )
 
     val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayCommand.I18N_PREFIX.Headpat.Options.User.Text,
         RandomRoleplayPicturesClient::headPat,
         RetributeHeadPatButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Headpat::Response,
@@ -50,6 +52,7 @@ object RoleplayUtils {
     )
 
     val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayCommand.I18N_PREFIX.Highfive.Options.User.Text,
         RandomRoleplayPicturesClient::highFive,
         RetributeHighFiveButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Highfive::Response,
@@ -58,6 +61,7 @@ object RoleplayUtils {
     )
 
     val SLAP_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayCommand.I18N_PREFIX.Slap.Options.User.Text,
         RandomRoleplayPicturesClient::slap,
         RetributeSlapButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Slap::Response,
@@ -66,6 +70,7 @@ object RoleplayUtils {
     )
 
     val ATTACK_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayCommand.I18N_PREFIX.Attack.Options.User.Text,
         RandomRoleplayPicturesClient::attack,
         RetributeAttackButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Attack::Response,
@@ -74,6 +79,7 @@ object RoleplayUtils {
     )
 
     val DANCE_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayCommand.I18N_PREFIX.Dance.Options.User.Text,
         RandomRoleplayPicturesClient::dance,
         RetributeDanceButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Dance::Response,
@@ -82,6 +88,7 @@ object RoleplayUtils {
     )
 
     val KISS_ATTRIBUTES = RoleplayActionAttributes(
+        RoleplayCommand.I18N_PREFIX.Kiss.Options.User.Text,
         RandomRoleplayPicturesClient::kiss,
         RetributeKissButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Kiss::Response,

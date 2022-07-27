@@ -47,7 +47,7 @@ class LorittaCinnamonWebServer(
         interactions.commandManager
     )
 
-    override fun getCommandCount() = commandManager.commandManager.executors.size
+    override fun getCommandCount() = TODO() // commandManager.commandManager.executors.size
 
     fun start() {
         runBlocking {

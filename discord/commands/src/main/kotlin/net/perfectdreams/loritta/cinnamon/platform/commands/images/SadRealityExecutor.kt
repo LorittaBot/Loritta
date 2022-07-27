@@ -11,44 +11,35 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SadRealityCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import java.util.*
 
 class SadRealityExecutor(
-    val rest: RestClient,
-    val client: GabrielaImageServerClient,
-    val lorittaId: Snowflake
-) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val user1 = optionalUser("user1", SadRealityCommand.I18N_PREFIX.Options.User1.Text(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female))
-                .register()
+    loritta: LorittaCinnamon,
+    val client: GabrielaImageServerClient
+) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val user1 = optionalUser("user1", SadRealityCommand.I18N_PREFIX.Options.User1.Text(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female))
 
-            val user2 = optionalUser("user2", SadRealityCommand.I18N_PREFIX.Options.User2.Text(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale))
-                .register()
+        val user2 = optionalUser("user2", SadRealityCommand.I18N_PREFIX.Options.User2.Text(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale))
 
-            val user3 = optionalUser("user3", SadRealityCommand.I18N_PREFIX.Options.User3.Text(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale))
-                .register()
+        val user3 = optionalUser("user3", SadRealityCommand.I18N_PREFIX.Options.User3.Text(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale))
 
-            val user4 = optionalUser("user4", SadRealityCommand.I18N_PREFIX.Options.User4.Text(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale))
-                .register()
+        val user4 = optionalUser("user4", SadRealityCommand.I18N_PREFIX.Options.User4.Text(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale))
 
-            val user5 = optionalUser("user5", SadRealityCommand.I18N_PREFIX.Options.User5.Text(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale))
-                .register()
+        val user5 = optionalUser("user5", SadRealityCommand.I18N_PREFIX.Options.User5.Text(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale))
 
-            val user6 = optionalUser("user6", SadRealityCommand.I18N_PREFIX.Options.User6.Text(SadRealityCommand.I18N_PREFIX.Slot.You.Male))
-                .register()
-        }
-
-        override val options = Options
+        val user6 = optionalUser("user6", SadRealityCommand.I18N_PREFIX.Options.User6.Text(SadRealityCommand.I18N_PREFIX.Slot.You.Male))
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()
@@ -234,7 +225,7 @@ class SadRealityExecutor(
         val result = client.images.sadReality(
             SadRealityRequest(
                 SadRealityRequest.SadRealityUser(
-                    if (user1.id == lorittaId) {
+                    if (user1.id == applicationId) {
                         context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Loritta)
                     } else {
                         when (lovedGender) {

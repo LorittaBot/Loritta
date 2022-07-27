@@ -1,31 +1,27 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 
 import dev.kord.common.Color
-import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
 
-class RoleInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val role = role("role", ServerCommand.I18N_PREFIX.Role.Info.Options.Role)
-                .register()
-        }
-
-        override val options = Options
+class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val role = role("role", ServerCommand.I18N_PREFIX.Role.Info.Options.Role)
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext)
@@ -33,7 +29,7 @@ class RoleInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
                 content = context.i18nContext.get(I18nKeysData.Commands.CommandOnlyAvailableInGuilds)
             }
 
-        val role = args[Options.role] as KordRole
+        val role = args[options.role] as KordRole
 
         val extension = if (role.handle.icon.value?.startsWith("a_") == true) "gif" else "png"
         val iconUrl = "https://cdn.discordapp.com/role-icons/${role.id.asString}/${role.handle.icon.value}.$extension?size=2048"

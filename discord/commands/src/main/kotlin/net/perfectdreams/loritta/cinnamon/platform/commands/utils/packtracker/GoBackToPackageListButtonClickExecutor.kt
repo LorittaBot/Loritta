@@ -6,21 +6,21 @@ import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.BarebonesSingleUserComponentData
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class GoBackToPackageListButtonClickExecutor(
-    val loritta: LorittaCinnamon,
+    loritta: LorittaCinnamon,
     val correios: CorreiosClient
-) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.GO_BACK_TO_PACKAGE_LIST_BUTTON_EXECUTOR)
+) : CinnamonButtonExecutor(loritta) {
+    companion object : ButtonExecutorDeclaration(ComponentExecutorIds.GO_BACK_TO_PACKAGE_LIST_BUTTON_EXECUTOR)
 
-    override suspend fun onClick(user: User, context: ComponentContext, data: String) {
+    override suspend fun onClick(user: User, context: ComponentContext) {
         context.deferUpdateMessage()
-        context.decodeDataFromComponentAndRequireUserToMatch<BarebonesSingleUserComponentData>(data)
+        context.decodeDataFromComponentAndRequireUserToMatch<BarebonesSingleUserComponentData>()
 
         val packageIds = context.loritta.services.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
 

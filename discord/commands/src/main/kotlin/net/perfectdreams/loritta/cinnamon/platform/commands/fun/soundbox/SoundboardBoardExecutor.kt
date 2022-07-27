@@ -5,13 +5,11 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.*
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
 
-class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration()
-
+class SoundboardBoardExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext) // Only guilds
             return
@@ -30,7 +28,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.AMONG_US_ROUND_START
                         )
@@ -42,7 +40,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.RAPAIZ
                         )
@@ -54,7 +52,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.CHAVES_RISADAS,
                         )
@@ -66,7 +64,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.DANCE_CAT_DANCE,
                         )
@@ -78,7 +76,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.ESSE_E_O_MEU_PATRAO_HEHE,
                         )
@@ -92,7 +90,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.IRRA,
                         )
@@ -104,7 +102,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.RATINHO,
                         )
@@ -116,7 +114,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.UEPA,
                         )
@@ -128,7 +126,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.UI,
                         )
@@ -140,7 +138,7 @@ class SoundboardBoardExecutor(val m: LorittaCinnamon) : SlashCommandExecutor() {
                 interactiveButton(
                     ButtonStyle.Primary,
                     PlayAudioClipButtonExecutor,
-                    m.encodeDataForComponentOrStoreInDatabase(
+                    loritta.encodeDataForComponentOrStoreInDatabase(
                         PlayAudioClipData(
                             SoundboardAudio.NICELY_DONE_CHEER,
                         )

@@ -1,22 +1,26 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images.base
 
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.SingleImageRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
 
 open class GabrielaImageServerSingleCommandBase(
+    loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient,
     val block: suspend GabrielaImageServerClient.(SingleImageRequest) -> (ByteArray),
     val fileName: String
-) : SlashCommandExecutor() {
+) : CinnamonSlashCommandExecutor(loritta) {
+    override val options = SingleImageOptions(loritta)
+
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
-        val imageReference = args[SingleImageOptions.imageReference]
+        val imageReference = args[options.imageReference].get(context)!!
 
         val result = client.handleExceptions(context) {
             block.invoke(

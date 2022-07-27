@@ -10,10 +10,10 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
@@ -27,15 +27,8 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.correios.exceptions.Inv
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
-class TrackPackageExecutor(val client: CorreiosClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val trackingId = string("tracking_id", PackageCommand.I18N_PREFIX.Track.Options.TrackingId.Text)
-                .register()
-        }
-
-        override val options = Options
-
+class TrackPackageExecutor(loritta: LorittaCinnamon, val client: CorreiosClient) : CinnamonSlashCommandExecutor(loritta) {
+    companion object {
         fun createMessage(
             i18nContext: I18nContext,
             userId: Snowflake,
@@ -94,10 +87,16 @@ class TrackPackageExecutor(val client: CorreiosClient) : SlashCommandExecutor() 
         }
     }
 
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val trackingId = string("tracking_id", PackageCommand.I18N_PREFIX.Track.Options.TrackingId.Text)
+    }
+
+    override val options = Options()
+
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally()
 
-        val packageId = args[Options.trackingId].uppercase()
+        val packageId = args[options.trackingId].uppercase()
 
         val correiosResponse = try {
             client.getPackageInfo(packageId)

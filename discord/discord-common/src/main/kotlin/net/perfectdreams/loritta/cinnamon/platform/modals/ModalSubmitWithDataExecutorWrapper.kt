@@ -102,11 +102,12 @@ class ModalSubmitWithDataExecutorWrapper(
             i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
 
             executorDeclaration.options.arguments.forEach {
-                val interaKTionArgument = interaKTionsArgumentEntries.firstOrNull { opt -> it.name == opt.key.name }
+                // TODO: Fix this
+                /* val interaKTionArgument = interaKTionsArgumentEntries.firstOrNull { opt -> it.name == opt.key.name }
 
                 when (it) {
                     is StringModalComponent -> cinnamonArgs[it] =  interaKTionArgument?.value
-                }
+                } */
             }
 
             // Tell the user that something went *really* wrong

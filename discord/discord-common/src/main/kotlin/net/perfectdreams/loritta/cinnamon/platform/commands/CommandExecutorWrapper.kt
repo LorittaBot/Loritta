@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.cinnamon.common.images.ImageReference
 import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
+import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext as InteraKTionsApplicationCommandContext
@@ -73,7 +73,7 @@ interface CommandExecutorWrapper {
         val users = mutableSetOf(context.sender)
         if (args != null)
             users.addAll(args.types.values.filterIsInstance<User>())
-        val resolvedUsers = context.data.resolved?.users?.values
+        val resolvedUsers = context.interactionData.resolved?.users?.values
 
         if (resolvedUsers != null)
             users.addAll(resolvedUsers)
@@ -237,11 +237,11 @@ interface CommandExecutorWrapper {
      * @param types the arguments
      * @return a map with argument name -> argument value
      */
-    fun stringifyArgumentNames(types: Map<net.perfectdreams.discordinteraktions.common.commands.options.CommandOption<*>, Any?>) =
+    fun stringifyArgumentNames(types: Map<OptionReference<*>, Any?>) =
         types.map { it.key.name to it.value }
             .toMap()
 
-    fun buildJsonWithArguments(types: Map<CommandOption<*>, Any?>) = buildJsonObject {
+    fun buildJsonWithArguments(types: Map<OptionReference<*>, Any?>) = buildJsonObject {
         for ((option, value) in types) {
             when (value) {
                 is ImageReference -> put(option.name, value.url)

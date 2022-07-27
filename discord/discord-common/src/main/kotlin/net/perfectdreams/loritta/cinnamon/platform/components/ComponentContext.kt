@@ -21,6 +21,11 @@ open class ComponentContext(
     user: User,
     override val interaKTionsContext: ComponentContext
 ) : InteractionContext(loritta, i18nContext, user, interaKTionsContext) {
+    val data: String
+        get() = interaKTionsContext.data
+    val dataOrNull: String?
+        get() = interaKTionsContext.dataOrNull
+
     suspend fun deferUpdateMessage() = interaKTionsContext.deferUpdateMessage()
 
     suspend inline fun updateMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit)) = interaKTionsContext.updateMessage(block)
@@ -119,8 +124,8 @@ open class ComponentContext(
      * @see failEphemerally
      * @see requireUserToMatchOrFailEphemerally
      */
-    inline fun <reified T : SingleUserComponentData> decodeDataFromComponentAndRequireUserToMatch(dataAsString: String): T {
-        val data = ComponentDataUtils.decode<T>(dataAsString)
+    inline fun <reified T : SingleUserComponentData> decodeDataFromComponentAndRequireUserToMatch(): T {
+        val data = ComponentDataUtils.decode<T>(data)
         requireUserToMatchOrContextuallyFail(data)
         return data
     }
@@ -138,8 +143,8 @@ open class ComponentContext(
      * @see requireUserToMatchOrFailEphemerally
      * @see decodeDataFromComponentAndRequireUserToMatch
      */
-    suspend inline fun <reified T : SingleUserComponentData> decodeDataFromComponentOrFromDatabaseIfPresentAndRequireUserToMatch(dataAsString: String): T? {
-        val data = loritta.decodeDataFromComponentOrFromDatabase<T>(dataAsString) ?: return null
+    suspend inline fun <reified T : SingleUserComponentData> decodeDataFromComponentOrFromDatabaseIfPresentAndRequireUserToMatch(): T? {
+        val data = loritta.decodeDataFromComponentOrFromDatabase<T>(data) ?: return null
         requireUserToMatchOrContextuallyFail(data)
         return data
     }
@@ -154,7 +159,6 @@ open class ComponentContext(
      * @see failEphemerally
      */
     suspend inline fun <reified T> decodeDataFromComponentOrFromDatabase(
-        dataAsString: String,
         block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit) = {
             styled(
                 i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
@@ -162,7 +166,7 @@ open class ComponentContext(
             )
         }
     ): T {
-        return loritta.decodeDataFromComponentOrFromDatabase<T>(dataAsString)
+        return loritta.decodeDataFromComponentOrFromDatabase<T>(data)
             ?: if (interaKTionsContext.wasInitiallyDeferredEphemerally || interaKTionsContext.bridge.state.value == InteractionRequestState.NOT_REPLIED_YET)
                 failEphemerally(block)
             else
@@ -183,7 +187,6 @@ open class ComponentContext(
      * @see decodeDataFromComponentAndRequireUserToMatch
      */
     suspend inline fun <reified T : SingleUserComponentData> decodeDataFromComponentOrFromDatabaseAndRequireUserToMatch(
-        dataAsString: String,
         block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit) = {
             styled(
                 i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
@@ -191,7 +194,7 @@ open class ComponentContext(
             )
         }
     ): T {
-        return decodeDataFromComponentOrFromDatabaseIfPresentAndRequireUserToMatch(dataAsString)
+        return decodeDataFromComponentOrFromDatabaseIfPresentAndRequireUserToMatch()
             ?: if (interaKTionsContext.wasInitiallyDeferredEphemerally || interaKTionsContext.bridge.state.value == InteractionRequestState.NOT_REPLIED_YET)
                 failEphemerally(block)
             else

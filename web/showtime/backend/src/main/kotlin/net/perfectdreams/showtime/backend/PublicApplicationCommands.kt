@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationBuilder
+import net.perfectdreams.loritta.cinnamon.platform.commands.LorittaCommandDeclarationBuilder
 import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.R
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SummonCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BobBurningPaperExecutor
@@ -133,7 +133,7 @@ object PublicApplicationCommands {
         SummonCommand,
         VieirinhaCommand,
         RollCommand,
-        TextTransformDeclaration,
+        TextTransformCommand,
         JankenponCommand,
         HungerGamesCommand,
 
@@ -417,7 +417,7 @@ object PublicApplicationCommands {
     value class VideoUrl(val url: String)
 
     /**
-     * Converts a [SlashCommandDeclarationBuilder] to [InteractionCommand]
+     * Converts a [LorittaCommandDeclarationBuilder] to [InteractionCommand]
      */
     private fun convertToData(declaration: SlashCommandDeclaration): InteractionCommand {
         return InteractionCommand(

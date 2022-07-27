@@ -2,8 +2,9 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.declaratio
 
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayAttackExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayDanceExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHeadPatExecutor
@@ -11,37 +12,40 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHig
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHugExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayKissExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplaySlapExecutor
+import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
-object RoleplayCommand : SlashCommandDeclarationWrapper {
-    val I18N_PREFIX = I18nKeysData.Commands.Command.Roleplay
+class RoleplayCommand(loritta: LorittaCinnamon, val randomRoleplayPicturesClient: RandomRoleplayPicturesClient) : CinnamonSlashCommandDeclarationWrapper(loritta) {
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Roleplay
+    }
 
-    override fun declaration() = slashCommand(listOf("roleplay"), CommandCategory.ROLEPLAY, TodoFixThisData) {
-        subcommand(listOf("hug"), I18N_PREFIX.Hug.Description) {
-            executor = RoleplayHugExecutor
+    override fun declaration() = slashCommand("roleplay", CommandCategory.ROLEPLAY, TodoFixThisData) {
+        subcommand("hug", I18N_PREFIX.Hug.Description) {
+            executor = RoleplayHugExecutor(loritta, randomRoleplayPicturesClient)
         }
 
-        subcommand(listOf("kiss"), I18N_PREFIX.Kiss.Description) {
-            executor = RoleplayKissExecutor
+        subcommand("kiss", I18N_PREFIX.Kiss.Description) {
+            executor = RoleplayKissExecutor(loritta, randomRoleplayPicturesClient)
         }
 
-        subcommand(listOf("slap"), I18N_PREFIX.Slap.Description) {
-            executor = RoleplaySlapExecutor
+        subcommand("slap", I18N_PREFIX.Slap.Description) {
+            executor = RoleplaySlapExecutor(loritta, randomRoleplayPicturesClient)
         }
 
-        subcommand(listOf("headpat"), I18N_PREFIX.Headpat.Description) {
-            executor = RoleplayHeadPatExecutor
+        subcommand("headpat", I18N_PREFIX.Headpat.Description) {
+            executor = RoleplayHeadPatExecutor(loritta, randomRoleplayPicturesClient)
         }
 
-        subcommand(listOf("highfive"), I18N_PREFIX.Highfive.Description) {
-            executor = RoleplayHighFiveExecutor
+        subcommand("highfive", I18N_PREFIX.Highfive.Description) {
+            executor = RoleplayHighFiveExecutor(loritta, randomRoleplayPicturesClient)
         }
 
-        subcommand(listOf("attack"), I18N_PREFIX.Attack.Description) {
-            executor = RoleplayAttackExecutor
+        subcommand("attack", I18N_PREFIX.Attack.Description) {
+            executor = RoleplayAttackExecutor(loritta, randomRoleplayPicturesClient)
         }
 
-        subcommand(listOf("dance"), I18N_PREFIX.Dance.Description) {
-            executor = RoleplayDanceExecutor
+        subcommand("dance", I18N_PREFIX.Dance.Description) {
+            executor = RoleplayDanceExecutor(loritta, randomRoleplayPicturesClient)
         }
     }
 }

@@ -1,17 +1,20 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations
 
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationWrapper
 
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.HungerGamesExecutor
 
-object HungerGamesCommand : SlashCommandDeclarationWrapper {
-    val I18N_PREFIX = I18nKeysData.Commands.Command.Hungergames
+class HungerGamesCommand(loritta: LorittaCinnamon) : CinnamonSlashCommandDeclarationWrapper(loritta) {
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Hungergames
+    }
 
-    override fun declaration() = slashCommand(listOf("hungergames"), CommandCategory.FUN, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand("hungergames", CommandCategory.FUN, I18N_PREFIX.Description) {
         dmPermission = false
 
-        executor = HungerGamesExecutor
+        executor = HungerGamesExecutor(loritta)
     }
 }

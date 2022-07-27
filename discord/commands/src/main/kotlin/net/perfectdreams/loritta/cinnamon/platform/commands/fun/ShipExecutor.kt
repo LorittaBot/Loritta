@@ -12,12 +12,12 @@ import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
@@ -25,21 +25,20 @@ import kotlin.math.absoluteValue
 import kotlin.random.Random
 
 class ShipExecutor(
-    val client: GabrielaImageServerClient,
-    val lorittaId: Snowflake
-) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val user1 = string("user1", ShipCommand.I18N_PREFIX.Options.User1)
-                .register()
-
-            val user2 = optionalString("user2", ShipCommand.I18N_PREFIX.Options.User2)
-                .register()
-        }
-
-        override val options = Options
+    loritta: LorittaCinnamon,
+    val client: GabrielaImageServerClient
+) : CinnamonSlashCommandExecutor(loritta) {
+    companion object {
         private val inputConverter = ShipDiscordMentionInputConverter()
     }
+
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val user1 = string("user1", ShipCommand.I18N_PREFIX.Options.User1)
+
+        val user2 = optionalString("user2", ShipCommand.I18N_PREFIX.Options.User2)
+    }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()
@@ -135,7 +134,7 @@ class ShipExecutor(
             value = 100
             isLoveYourself = true
             isNatural = false // Not a natural ship
-        } else if (user1Id == lorittaId.value.toLong() || user2Id == lorittaId.value.toLong()) {
+        } else if (user1Id == applicationId.value.toLong() || user2Id == applicationId.value.toLong()) {
             // Easter Egg: Shipping you/someone with Loritta
             val shipEffects = mutableListOf<PuddingShipEffect>()
 
@@ -298,7 +297,7 @@ class ShipExecutor(
             if (userMatch != null) {
                 // Is a mention... maybe?
                 val userId = userMatch.groupValues[1].toLongOrNull() ?: return ShipExecutor.StringResult(input) // If the input is not a long, then return the input
-                val user = context.interaKTionsContext.data.resolved?.users?.get(Snowflake(userId)) ?: return ShipExecutor.StringResult(input) // If there isn't any matching user, then return the input
+                val user = context.interaKTionsContext.interactionData.resolved?.users?.get(Snowflake(userId)) ?: return ShipExecutor.StringResult(input) // If there isn't any matching user, then return the input
                 return UserResult(user)
             }
 

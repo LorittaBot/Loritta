@@ -3,44 +3,35 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.videos
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.FansExplainingRequest
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
 
-class FansExplainingExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val section1Line1 = string("section1_line1", FansExplainingCommand.I18N_PREFIX.Options.Section1Line1)
-                .register()
-            val section1Line2 = string("section1_line2", FansExplainingCommand.I18N_PREFIX.Options.Section1Line2)
-                .register()
+class FansExplainingExecutor(
+    loritta: LorittaCinnamon,
+    val client: GabrielaImageServerClient
+) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val section1Line1 = string("section1_line1", FansExplainingCommand.I18N_PREFIX.Options.Section1Line1)
+        val section1Line2 = string("section1_line2", FansExplainingCommand.I18N_PREFIX.Options.Section1Line2)
 
-            val section2Line1 = string("section2_line1", FansExplainingCommand.I18N_PREFIX.Options.Section2Line1)
-                .register()
-            val section2Line2 = string("section2_line2", FansExplainingCommand.I18N_PREFIX.Options.Section2Line2)
-                .register()
+        val section2Line1 = string("section2_line1", FansExplainingCommand.I18N_PREFIX.Options.Section2Line1)
+        val section2Line2 = string("section2_line2", FansExplainingCommand.I18N_PREFIX.Options.Section2Line2)
 
-            val section3Line1 = string("section3_line1", FansExplainingCommand.I18N_PREFIX.Options.Section3Line1)
-                .register()
-            val section3Line2 = string("section3_line2", FansExplainingCommand.I18N_PREFIX.Options.Section3Line2)
-                .register()
+        val section3Line1 = string("section3_line1", FansExplainingCommand.I18N_PREFIX.Options.Section3Line1)
+        val section3Line2 = string("section3_line2", FansExplainingCommand.I18N_PREFIX.Options.Section3Line2)
 
-            val section4Line1 = string("section4_line1", FansExplainingCommand.I18N_PREFIX.Options.Section4Line1)
-                .register()
-            val section4Line2 = string("section4_line2", FansExplainingCommand.I18N_PREFIX.Options.Section4Line2)
-                .register()
+        val section4Line1 = string("section4_line1", FansExplainingCommand.I18N_PREFIX.Options.Section4Line1)
+        val section4Line2 = string("section4_line2", FansExplainingCommand.I18N_PREFIX.Options.Section4Line2)
 
-            val section5Line1 = string("section5_line1", FansExplainingCommand.I18N_PREFIX.Options.Section5Line1)
-                .register()
-            val section5Line2 = string("section5_line2", FansExplainingCommand.I18N_PREFIX.Options.Section5Line2)
-                .register()
-        }
-
-        override val options = Options
+        val section5Line1 = string("section5_line1", FansExplainingCommand.I18N_PREFIX.Options.Section5Line1)
+        val section5Line2 = string("section5_line2", FansExplainingCommand.I18N_PREFIX.Options.Section5Line2)
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer message because image manipulation is kinda heavy

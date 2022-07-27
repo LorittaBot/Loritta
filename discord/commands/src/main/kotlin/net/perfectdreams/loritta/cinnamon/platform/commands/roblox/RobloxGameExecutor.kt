@@ -17,28 +17,25 @@ import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.declarations.RobloxCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import org.jsoup.Jsoup
 
-class RobloxGameExecutor(val http: HttpClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val game = string("game", RobloxCommand.I18N_PREFIX.Game.Options.Game.Text)
-                .register()
-        }
-
-        override val options = Options
+class RobloxGameExecutor(loritta: LorittaCinnamon, val http: HttpClient) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val game = string("game", RobloxCommand.I18N_PREFIX.Game.Options.Game.Text)
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()
 
-        val searchParameter = args[Options.game]
+        val searchParameter = args[options.game]
         val gameListRequest = http.get("https://games.roblox.com/v1/games/list") {
             parameter("model.keyword", searchParameter)
             parameter("model.startRows", 0)

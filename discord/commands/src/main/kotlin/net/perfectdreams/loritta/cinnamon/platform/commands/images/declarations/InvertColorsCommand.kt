@@ -1,14 +1,18 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations
 
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.InvertColorsExecutor
 
-object InvertColorsCommand : SlashCommandDeclarationWrapper {
-    val I18N_PREFIX = I18nKeysData.Commands.Command.Invertcolors
+class InvertColorsCommand(loritta: LorittaCinnamon, val gabiClient: GabrielaImageServerClient) : CinnamonSlashCommandDeclarationWrapper(loritta) {
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Invertcolors
+    }
 
-    override fun declaration() = slashCommand(listOf("invert", "inverter"), CommandCategory.IMAGES, I18N_PREFIX.Description) {
-        executor = InvertColorsExecutor
+    override fun declaration() = slashCommand("invert", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+        executor = InvertColorsExecutor(loritta, gabiClient)
     }
 }

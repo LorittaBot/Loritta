@@ -1,10 +1,9 @@
-package net.perfectdreams.loritta.cinnamon.platform.components.selects
+package net.perfectdreams.loritta.cinnamon.platform.components
 
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
-import net.perfectdreams.discordinteraktions.common.components.GuildComponentContext
-import net.perfectdreams.discordinteraktions.common.components.SelectMenuWithDataExecutor
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
@@ -15,40 +14,41 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.SilentCommandException
-import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
-import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext as CinnamonComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.GuildComponentContext as CinnamonGuildComponentContext
 
-class SelectMenuWithDataExecutorWrapper(
-    private val loritta: LorittaCinnamon,
+abstract class CinnamonButtonExecutor(
+    val loritta: LorittaCinnamon,
+    // TODO: Fix this
     // This is only used for metrics and logs
-    private val executorDeclaration: SelectMenuExecutorDeclaration,
-    private val executor: net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
-) : SelectMenuWithDataExecutor {
+    // private val executorDeclaration: ButtonClickExecutorDeclaration,
+    // private val executor: ButtonClickWithDataExecutor
+) : ButtonExecutor {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun onSelect(user: User, context: ComponentContext, data: String, values: List<String>) {
-        val rootDeclarationClazzName = executorDeclaration::class.simpleName
-        val executorClazzName = executor::class.simpleName
+    private val rootDeclarationClazzName = "UnknownCommand" // rootDeclarationClazz.simpleName ?: "UnknownCommand"
+    private val executorClazzName = "UnknownExecutor" // executor::class.simpleName ?: "UnknownExecutor"
 
-        logger.info { "(${context.sender.id.value}) $executor" }
+    abstract suspend fun onClick(user: User, context: net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext)
 
-        val timer = InteractionsMetrics.EXECUTED_SELECT_MENU_LATENCY_COUNT
+    override suspend fun onClick(user: User, context: ComponentContext) {
+        // val rootDeclarationClazzName = executorDeclaration::class.simpleName
+        // val executorClazzName = executor::class.simpleName
+
+        // logger.info { "(${context.sender.id.value}) $executor" }
+
+        val timer = InteractionsMetrics.EXECUTED_BUTTON_CLICK_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
         // These variables are used in the catch { ... } block, to make our lives easier
         var i18nContext: I18nContext? = null
-        var cinnamonContext: CinnamonComponentContext? = null
-        val guildId = (context as? GuildComponentContext)?.guildId
+        var cinnamonContext: net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext? = null
+        val guildId = (context as? net.perfectdreams.discordinteraktions.common.components.GuildComponentContext)?.guildId
         var stacktrace: String? = null
 
         try {
-            val guildId = (context as? GuildComponentContext)?.guildId
-
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
                 loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: CommandExecutorWrapper.NonGuildServerConfigRoot
@@ -62,7 +62,7 @@ class SelectMenuWithDataExecutorWrapper(
             // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
             cinnamonContext = if (guildId != null) {
                 // TODO: Add Guild ID here
-                CinnamonGuildComponentContext(
+                GuildComponentContext(
                     loritta,
                     i18nContext,
                     context.sender,
@@ -71,7 +71,7 @@ class SelectMenuWithDataExecutorWrapper(
                     context.member
                 )
             } else {
-                CinnamonComponentContext(
+                ComponentContext(
                     loritta,
                     i18nContext,
                     context.sender,
@@ -79,11 +79,9 @@ class SelectMenuWithDataExecutorWrapper(
                 )
             }
 
-            executor.onSelect(
+            onClick(
                 user,
-                cinnamonContext,
-                data,
-                values
+                cinnamonContext
             )
         } catch (e: Throwable) {
             if (e is SilentCommandException)
@@ -102,7 +100,7 @@ class SelectMenuWithDataExecutorWrapper(
             logger.warn(e) { "Something went wrong while executing this executor!" } // TODO: Better logs
 
             // If the i18nContext is not present, we will default to the default language provided
-            i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
+            i18nContext = i18nContext ?: loritta.languageManager.getI18nContextByLegacyLocaleId(loritta.languageManager.defaultLanguageId)
 
             // Tell the user that something went *really* wrong
             // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context
@@ -135,21 +133,19 @@ class SelectMenuWithDataExecutorWrapper(
         }
 
         val commandLatency = timer.observeDuration()
-        logger.info { "(${context.sender.id.value}) $executor - OK! Took ${commandLatency * 1000}ms" }
+        // logger.info { "(${context.sender.id.value}) $executor - OK! Took ${commandLatency * 1000}ms" }
 
         loritta.services.executedInteractionsLog.insertComponentLog(
             context.sender.id.value.toLong(),
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
             Clock.System.now(),
-            ComponentType.SELECT_MENU,
-            rootDeclarationClazzName!!,
-            executorClazzName!!,
+            ComponentType.BUTTON,
+            rootDeclarationClazzName,
+            executorClazzName,
             stacktrace == null,
             commandLatency,
             stacktrace
         )
     }
-
-    override fun signature() = executorDeclaration::class
 }

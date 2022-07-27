@@ -5,39 +5,35 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 import kotlin.math.abs
 
-class BrokerSellStockExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Sell.Options.Ticker.Text)
-                .also {
-                    LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
-                        it.choice(tickerId.lowercase(), "$tickerTitle ($tickerId)")
-                    }
-                }
-                .register()
-
-            val quantity = optionalString("quantity", BrokerCommand.I18N_PREFIX.Sell.Options.Quantity.Text)
-                .autocomplete(BrokerStockQuantityAutocompleteExecutor)
-                .register()
+class BrokerSellStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Sell.Options.Ticker.Text) {
+            LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
+                choice("$tickerTitle ($tickerId)", tickerId.lowercase())
+            }
         }
 
-        override val options = Options
+        val quantity = optionalString("quantity", BrokerCommand.I18N_PREFIX.Sell.Options.Quantity.Text) {
+            autocomplete(BrokerStockQuantityAutocompleteExecutor(loritta, ticker))
+        }
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally()
 
-        val tickerId = args[Options.ticker].uppercase()
-        val quantityAsString = args[Options.quantity] ?: "1"
+        val tickerId = args[options.ticker].uppercase()
+        val quantityAsString = args[options.quantity] ?: "1"
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)

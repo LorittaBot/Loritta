@@ -3,25 +3,24 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.economy.transaction
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
 
 class ChangeTransactionFilterSelectMenuExecutor(
-    val loritta: LorittaCinnamon
-) : SelectMenuWithDataExecutor {
+    loritta: LorittaCinnamon
+) : CinnamonSelectMenuExecutor(loritta) {
     companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR)
 
     override suspend fun onSelect(
         user: User,
         context: ComponentContext,
-        data: String,
         values: List<String>
     ) {
         context.deferUpdateMessage()
 
-        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<TransactionListData>(data)
+        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<TransactionListData>()
 
         val builtMessage = TransactionsExecutor.createMessage(
             loritta,

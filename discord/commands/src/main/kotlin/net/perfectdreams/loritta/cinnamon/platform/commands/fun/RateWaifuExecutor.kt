@@ -6,23 +6,16 @@ import kotlinx.datetime.toLocalDateTime
 import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RateCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserNameConverter
 import kotlin.random.Random
 
-class RateWaifuExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val waifu = string("waifu", RateCommand.I18N_PREFIX.WaifuHusbando.Options.Waifu)
-                .register()
-        }
-
-        override val options = Options
-
+class RateWaifuExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    companion object {
         /**
          * Executes the generic Waifu/Husbando score response.
          *
@@ -195,11 +188,17 @@ class RateWaifuExecutor() : SlashCommandExecutor() {
         }
     }
 
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val waifu = string("waifu", RateCommand.I18N_PREFIX.WaifuHusbando.Options.Waifu)
+    }
+
+    override val options = Options()
+
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         executeGeneric(
             ContextStringToUserNameConverter.convert(context, args[options.waifu]),
             context,
-                    RateCommand.WAIFU_SINGULAR,
+            RateCommand.WAIFU_SINGULAR,
             RateCommand.WAIFU_PLURAL
         )
     }

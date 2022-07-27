@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox
 
+import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -8,22 +9,22 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimage
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.characters.CharacterType
+import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 
 class ChangeCharacterSelectMenuExecutor(
-    val loritta: LorittaCinnamon,
+    loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
-) : SelectMenuWithDataExecutor {
+) : CinnamonSelectMenuExecutor(loritta) {
     companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_TOBY_CHARACTER_MENU_EXECUTOR)
 
-    override suspend fun onSelect(user: User, context: ComponentContext, data: String, values: List<String>) {
+    override suspend fun onSelect(user: User, context: ComponentContext, values: List<String>) {
         // We will already defer to avoid issues
         // Also because we want to edit the message with a file... later!
         context.deferUpdateMessage()
 
-        val (_, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>(data)
+        val (_, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>()
 
         val textBoxOptionsData = TextBoxHelper.getInteractionDataAndFailIfItDoesNotExist(context, interactionDataId)
 

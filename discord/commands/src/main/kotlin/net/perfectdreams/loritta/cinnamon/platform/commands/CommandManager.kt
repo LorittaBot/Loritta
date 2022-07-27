@@ -4,221 +4,38 @@ import dev.kord.common.entity.Snowflake
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
+import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ChannelInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.EmojiInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.InviteInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.LorittaInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.RoleInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerBannerExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.UserBannerExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGlobalAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGuildProfileAvatarExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.UserAvatarSlashExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.UserAvatarUserExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserAvatarUserCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserInfoUserCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.info.ShowGuildMemberPermissionsExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.info.UserInfoSlashExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.info.UserInfoUserExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditJsonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditRepostExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookEditSimpleExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookSendJsonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookSendRepostExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.WebhookSendSimpleExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.DailyExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.SonhosExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.bet.CoinFlipBetGlobalExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.bet.CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.bet.StartCoinFlipGlobalBetMatchmakingButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerBuyStockExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerPortfolioExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerSellStockExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerStockInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker.BrokerStockQuantityAutocompleteExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.DailyCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionPageButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.TransactionsExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.*
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox.*
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextClapExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextLowercaseExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextMockExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextQualityExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextUppercaseExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVaporQualityExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVaporwaveExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVemDeZapExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.BobBurningPaperExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.BolsoDrakeExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.BolsoFrameExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.Bolsonaro2Executor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.BolsonaroExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.BriggsCoverExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.BuckShirtExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.CanellaDvdExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.CepoDeMadeiraExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.ChicoAtaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.CortesFlowExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrakeExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrawnMaskAtendenteExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrawnMaskSignExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.DrawnMaskWordExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.EdnaldoBandeiraExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.EdnaldoTvExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.GessyAtaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.GetOverHereExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.InvertColorsExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.KnuxThrowExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.LoriAtaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.LoriDrakeExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.LoriSignExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.ManiaTitleCardExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.MarkMetaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.MemeMakerExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.MonicaAtaExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.NichijouYuukoPaperExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.PassingPaperExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.PepeDreamExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.PetPetExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.RipTvExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.RomeroBrittoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.SAMExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.SadRealityExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.StudiopolisTvExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.SustoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.TerminatorAnimeExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.ToBeContinuedExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.TrumpExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.WolverineFrameExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.ArtCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BRMemesCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BobBurningPaperCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BuckShirtCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.DrakeCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.DrawnMaskCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.GetOverHereCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.InvertColorsCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.LoriSignCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.MarkMetaCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.MemeMakerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.NichijouYuukoPaperCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.PassingPaperCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.PepeDreamCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.PetPetCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.RipTvCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SadRealityCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SonicCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.SustoCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.TerminatorAnimeCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.ToBeContinuedCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.TrumpCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.WolverineFrameCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McAvatarExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McBodyExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McHeadExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McOfflineUUIDExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McSkinLorittaSweatshirtExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.McUUIDExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox.FalatronModelsManager
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox.PlayAudioClipButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.RobloxGameExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.RobloxUserExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roblox.declarations.RobloxCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayAttackExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayDanceExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHeadPatExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHighFiveExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayHugExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplayKissExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.RoleplaySlapExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.declarations.RoleplayCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeAttackButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeDanceButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHeadPatButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHighFiveButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeHugButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeKissButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeSlapButtonExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.source.SourcePictureExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.AchievementsExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOffExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.AfkOnExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.GenderExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AfkCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.GenderCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.CustomTextBoxExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ChangeCharacterSelectMenuExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ChangeColorPortraitTypeButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ChangeDialogBoxTypeButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ChangeUniverseSelectMenuExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.ConfirmDialogBoxButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.PortraitSelectMenuExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.AnagramExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.CalculatorPreprocessAutocompleteExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ChooseExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.DictionaryExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ECBManager
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.HelpExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.MoneyExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.colorinfo.DecimalColorInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.colorinfo.HexColorInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.colorinfo.RgbColorInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.AnagramCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.ChooseCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.ColorInfoCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.DictionaryCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.HelpCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MorseCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.NotificationsCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.morse.MorseFromExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.morse.MorseToExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.notifications.NotificationsListExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.notifications.NotificationsViewExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.FollowPackageButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.GoBackToPackageListButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.PackageListExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.SelectPackageSelectMenuExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.TrackPackageButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.TrackPackageExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.UnfollowPackageButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.AttackOnHeartExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.ChavesCocieloExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.ChavesOpeningExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.FansExplainingExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.GigaChadExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.AttackOnHeartCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.CarlyAaahCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.ChavesCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.FansExplainingCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.interactions.inviteblocker.ActivateInviteBlockerBypassButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
@@ -227,7 +44,7 @@ import kotlin.system.exitProcess
 
 class CommandManager(
     private val loritta: LorittaCinnamon,
-    interaKTionsManager: net.perfectdreams.discordinteraktions.common.commands.CommandManager
+    val interaKTionsManager: net.perfectdreams.discordinteraktions.common.commands.CommandManager
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -248,6 +65,7 @@ class CommandManager(
             }
         }
     )
+
     private val random = loritta.random
     private val http = loritta.http
 
@@ -257,8 +75,9 @@ class CommandManager(
     private val falatronModelsManager = FalatronModelsManager().also {
         it.startUpdater()
     }
+    private val ecbManager = ECBManager()
 
-    val commandManager = CommandRegistry(
+    val commandRegistry = CommandRegistry(
         loritta,
         interaKTionsManager,
         KordCommandRegistry(
@@ -270,144 +89,36 @@ class CommandManager(
 
     suspend fun register() {
         // ===[ DISCORD ]===
-        commandManager.register(
-            UserCommand,
-            UserAvatarSlashExecutor(Snowflake(discordConfig.applicationId)),
-            UserInfoSlashExecutor(http),
-            UserBannerExecutor(rest)
-        )
+        register(UserCommand(loritta))
 
-        commandManager.register(
-            UserAvatarUserCommand,
-            UserAvatarUserExecutor(Snowflake(discordConfig.applicationId))
-        )
+        register(UserAvatarUserCommand(loritta))
+        register(SwitchToGuildProfileAvatarExecutor(loritta, Snowflake(discordConfig.applicationId)))
+        register(SwitchToGlobalAvatarExecutor(loritta, Snowflake(discordConfig.applicationId)))
 
-        commandManager.register(
-            SwitchToGuildProfileAvatarExecutor,
-            SwitchToGuildProfileAvatarExecutor(loritta, Snowflake(discordConfig.applicationId))
-        )
+        register(UserInfoUserCommand(loritta, http))
+        register(ShowGuildMemberPermissionsExecutor(loritta))
 
-        commandManager.register(
-            SwitchToGlobalAvatarExecutor,
-            SwitchToGlobalAvatarExecutor(loritta, Snowflake(discordConfig.applicationId))
-        )
-
-        commandManager.register(
-            UserInfoUserCommand,
-            UserInfoUserExecutor(http)
-        )
-
-        commandManager.register(
-            ShowGuildMemberPermissionsExecutor,
-            ShowGuildMemberPermissionsExecutor()
-        )
-
-        commandManager.register(
-            ServerCommand,
-            ServerIconExecutor(rest),
-            ServerBannerExecutor(rest),
-            ServerSplashExecutor(rest),
-            RoleInfoExecutor(rest),
-            ChannelInfoExecutor(rest)
-        )
-
-        commandManager.register(
-            InviteCommand,
-            InviteInfoExecutor(rest)
-        )
-
-        commandManager.register(
-            EmojiCommand,
-            EmojiInfoExecutor(rest)
-        )
-
-        commandManager.register(
-            WebhookCommand,
-            WebhookSendSimpleExecutor(rest),
-            WebhookSendJsonExecutor(rest),
-            WebhookSendRepostExecutor(rest),
-            WebhookEditSimpleExecutor(rest),
-            WebhookEditJsonExecutor(rest),
-            WebhookEditRepostExecutor(rest)
-        )
-
-        commandManager.register(
-            LorittaCommand,
-            LorittaInfoExecutor()
-        )
+        register(ServerCommand(loritta))
+        register(InviteCommand(loritta))
+        register(EmojiCommand(loritta))
+        register(WebhookCommand(loritta))
+        register(LorittaCommand(loritta))
 
         // ===[ FUN ]===
-        commandManager.register(CoinFlipCommand, CoinFlipExecutor(random))
-        commandManager.register(
-            RateCommand,
-            RateWaifuExecutor(),
-            RateHusbandoExecutor(),
-            RateLoliExecutor()
-        )
+        register(CoinFlipCommand(loritta))
+        register(RateCommand(loritta))
+        register(ShipCommand(loritta, gabrielaImageServerClient))
+        register(CancelledCommand(loritta))
+        register(SummonCommand(loritta))
+        register(VieirinhaCommand(loritta))
+        register(RollCommand(loritta))
+        register(MinecraftCommand(loritta, mojangApi, gabrielaImageServerClient))
+        register(TextTransformCommand(loritta))
+        register(JankenponCommand(loritta))
+        register(HungerGamesCommand(loritta))
 
-        commandManager.register(
-            ShipCommand,
-            ShipExecutor(gabrielaImageServerClient, Snowflake(discordConfig.applicationId))
-        )
-
-        commandManager.register(CancelledCommand, CancelledExecutor())
-        commandManager.register(
-            SummonCommand,
-            TioDoPaveExecutor(),
-            FaustaoExecutor(),
-            BemBoladaExecutor()
-        )
-
-        commandManager.register(VieirinhaCommand, VieirinhaExecutor())
-        commandManager.register(RollCommand, RollExecutor(random))
-
-        commandManager.register(
-            MinecraftCommand,
-            McSkinExecutor(mojangApi),
-            McAvatarExecutor(mojangApi),
-            McHeadExecutor(mojangApi),
-            McBodyExecutor(mojangApi),
-            McOfflineUUIDExecutor(),
-            McUUIDExecutor(mojangApi),
-            McSkinLorittaSweatshirtExecutor(gabrielaImageServerClient, mojangApi)
-        )
-
-        commandManager.register(
-            TextTransformDeclaration,
-            TextVaporwaveExecutor(),
-            TextQualityExecutor(),
-            TextVaporQualityExecutor(),
-            TextVemDeZapExecutor(random),
-            TextUppercaseExecutor(),
-            TextLowercaseExecutor(),
-            TextClapExecutor(),
-            TextMockExecutor()
-        )
-
-        commandManager.register(
-            JankenponCommand, JankenponExecutor(random)
-        )
-
-        commandManager.register(
-            HungerGamesCommand,
-            HungerGamesExecutor(rest)
-        )
-
-        commandManager.register(
-            FalatronVoiceAutocompleteExecutor,
-            FalatronVoiceAutocompleteExecutor(falatronModelsManager)
-        )
-
-        commandManager.register(
-            SoundboxCommand,
-            FalatronExecutor(loritta, falatronModelsManager),
-            SoundboardBoardExecutor(loritta)
-        )
-
-        commandManager.register(
-            PlayAudioClipButtonExecutor,
-            PlayAudioClipButtonExecutor(loritta)
-        )
+        register(SoundboxCommand(loritta, falatronModelsManager))
+        register(PlayAudioClipButtonExecutor(loritta))
 
         /* commandManager.register(
             BomDiaECiaCommand,
@@ -415,302 +126,130 @@ class CommandManager(
         ) */
 
         // ===[ IMAGES ]===
-        commandManager.register(DrakeCommand, DrakeExecutor(gabrielaImageServerClient), BolsoDrakeExecutor(gabrielaImageServerClient), LoriDrakeExecutor(gabrielaImageServerClient))
-        commandManager.register(
-            SonicCommand,
-            KnuxThrowExecutor(gabrielaImageServerClient),
-            ManiaTitleCardExecutor(gabrielaImageServerClient),
-            StudiopolisTvExecutor(gabrielaImageServerClient)
-        )
-        commandManager.register(ArtCommand, ArtExecutor(gabrielaImageServerClient))
-        commandManager.register(BobBurningPaperCommand, BobBurningPaperExecutor(gabrielaImageServerClient))
-        commandManager.register(
-            BRMemesCommand,
-            BolsonaroExecutor(gabrielaImageServerClient),
-            Bolsonaro2Executor(gabrielaImageServerClient),
-            MonicaAtaExecutor(gabrielaImageServerClient),
-            ChicoAtaExecutor(gabrielaImageServerClient),
-            LoriAtaExecutor(gabrielaImageServerClient),
-            GessyAtaExecutor(gabrielaImageServerClient),
-            EdnaldoBandeiraExecutor(gabrielaImageServerClient),
-            EdnaldoTvExecutor(gabrielaImageServerClient),
-            BolsoFrameExecutor(gabrielaImageServerClient),
-            CanellaDvdExecutor(gabrielaImageServerClient),
-            CortesFlowExecutor(gabrielaImageServerClient),
-            SAMExecutor(gabrielaImageServerClient),
-            CepoDeMadeiraExecutor(gabrielaImageServerClient),
-            RomeroBrittoExecutor(gabrielaImageServerClient),
-            BriggsCoverExecutor(gabrielaImageServerClient),
-        )
-
-        commandManager.register(BuckShirtCommand, BuckShirtExecutor(gabrielaImageServerClient))
-        commandManager.register(LoriSignCommand, LoriSignExecutor(gabrielaImageServerClient))
-        commandManager.register(PassingPaperCommand, PassingPaperExecutor(gabrielaImageServerClient))
-        commandManager.register(PepeDreamCommand, PepeDreamExecutor(gabrielaImageServerClient))
-        commandManager.register(PetPetCommand, PetPetExecutor(gabrielaImageServerClient))
-        commandManager.register(WolverineFrameCommand, WolverineFrameExecutor(gabrielaImageServerClient))
-        commandManager.register(RipTvCommand, RipTvExecutor(gabrielaImageServerClient))
-        commandManager.register(SustoCommand, SustoExecutor(gabrielaImageServerClient))
-        commandManager.register(GetOverHereCommand, GetOverHereExecutor(gabrielaImageServerClient))
-        commandManager.register(NichijouYuukoPaperCommand, NichijouYuukoPaperExecutor(gabrielaImageServerClient))
-        commandManager.register(TrumpCommand, TrumpExecutor(gabrielaImageServerClient))
-        commandManager.register(TerminatorAnimeCommand, TerminatorAnimeExecutor(gabrielaImageServerClient))
-        commandManager.register(ToBeContinuedCommand, ToBeContinuedExecutor(gabrielaImageServerClient))
-        commandManager.register(InvertColorsCommand, InvertColorsExecutor(gabrielaImageServerClient))
-        commandManager.register(MemeMakerCommand, MemeMakerExecutor(gabrielaImageServerClient))
-        commandManager.register(MarkMetaCommand, MarkMetaExecutor(gabrielaImageServerClient))
-        commandManager.register(
-            DrawnMaskCommand,
-            DrawnMaskAtendenteExecutor(gabrielaImageServerClient),
-            DrawnMaskSignExecutor(gabrielaImageServerClient),
-            DrawnMaskWordExecutor(gabrielaImageServerClient)
-        )
-        commandManager.register(SadRealityCommand, SadRealityExecutor(rest, gabrielaImageServerClient, Snowflake(discordConfig.applicationId)))
+        register(DrakeCommand(loritta, gabrielaImageServerClient))
+        register(SonicCommand(loritta, gabrielaImageServerClient))
+        register(ArtCommand(loritta, gabrielaImageServerClient))
+        register(BobBurningPaperCommand(loritta, gabrielaImageServerClient))
+        register(BRMemesCommand(loritta, gabrielaImageServerClient))
+        register(BuckShirtCommand(loritta, gabrielaImageServerClient))
+        register(LoriSignCommand(loritta, gabrielaImageServerClient))
+        register(PassingPaperCommand(loritta, gabrielaImageServerClient))
+        register(PepeDreamCommand(loritta, gabrielaImageServerClient))
+        register(PetPetCommand(loritta, gabrielaImageServerClient))
+        register(WolverineFrameCommand(loritta, gabrielaImageServerClient))
+        register(RipTvCommand(loritta, gabrielaImageServerClient))
+        register(SustoCommand(loritta, gabrielaImageServerClient))
+        register(GetOverHereCommand(loritta, gabrielaImageServerClient))
+        register(NichijouYuukoPaperCommand(loritta, gabrielaImageServerClient))
+        register(TrumpCommand(loritta, gabrielaImageServerClient))
+        register(TerminatorAnimeCommand(loritta, gabrielaImageServerClient))
+        register(ToBeContinuedCommand(loritta, gabrielaImageServerClient))
+        register(InvertColorsCommand(loritta, gabrielaImageServerClient))
+        register(MemeMakerCommand(loritta, gabrielaImageServerClient))
+        register(MarkMetaCommand(loritta, gabrielaImageServerClient))
+        register(DrawnMaskCommand(loritta, gabrielaImageServerClient))
+        register(SadRealityCommand(loritta, gabrielaImageServerClient))
 
         // ===[ VIDEOS ]===
-        commandManager.register(CarlyAaahCommand, CarlyAaahExecutor(gabrielaImageServerClient))
-        commandManager.register(AttackOnHeartCommand, AttackOnHeartExecutor(gabrielaImageServerClient))
-        commandManager.register(FansExplainingCommand, FansExplainingExecutor(gabrielaImageServerClient))
-        commandManager.register(GigaChadCommand, GigaChadExecutor(gabrielaImageServerClient))
-        commandManager.register(
-            ChavesCommand,
-            ChavesOpeningExecutor(gabrielaImageServerClient),
-            ChavesCocieloExecutor(gabrielaImageServerClient)
-        )
+        register(CarlyAaahCommand(loritta, gabrielaImageServerClient))
+        register(AttackOnHeartCommand(loritta, gabrielaImageServerClient))
+        register(FansExplainingCommand(loritta, gabrielaImageServerClient))
+        register(GigaChadCommand(loritta, gabrielaImageServerClient))
+        register(ChavesCommand(loritta, gabrielaImageServerClient))
 
         // ===[ UTILS ]===
-        commandManager.register(HelpCommand, HelpExecutor())
-        commandManager.register(MoneyCommand, MoneyExecutor(ECBManager()))
-        commandManager.register(MorseCommand, MorseFromExecutor(), MorseToExecutor())
-        commandManager.register(DictionaryCommand, DictionaryExecutor(http), MorseToExecutor())
-        commandManager.register(CalculatorCommand, CalculatorExecutor())
-        commandManager.register(CalculatorPreprocessAutocompleteExecutor, CalculatorPreprocessAutocompleteExecutor())
-        commandManager.register(AnagramCommand, AnagramExecutor())
-        commandManager.register(ChooseCommand, ChooseExecutor())
-        commandManager.register(
-            PackageCommand,
-            TrackPackageExecutor(correiosClient),
-            PackageListExecutor(correiosClient)
-        )
+        register(HelpCommand(loritta))
+        register(MoneyCommand(loritta, ecbManager))
+        register(MorseCommand(loritta))
+        register(DictionaryCommand(loritta))
+        register(CalculatorCommand(loritta))
+        register(AnagramCommand(loritta))
+        register(ChooseCommand(loritta))
 
-        commandManager.register(
-            FollowPackageButtonClickExecutor,
-            FollowPackageButtonClickExecutor(loritta, correiosClient)
-        )
+        register(PackageCommand(loritta, correiosClient))
+        register(FollowPackageButtonClickExecutor(loritta, correiosClient))
+        register(UnfollowPackageButtonClickExecutor(loritta, correiosClient))
+        register(SelectPackageSelectMenuExecutor(loritta))
 
-        commandManager.register(
-            UnfollowPackageButtonClickExecutor,
-            UnfollowPackageButtonClickExecutor(loritta, correiosClient)
-        )
+        register(GoBackToPackageListButtonClickExecutor(loritta, correiosClient))
+        register(TrackPackageButtonClickExecutor(loritta, correiosClient))
 
-        commandManager.register(
-            SelectPackageSelectMenuExecutor,
-            SelectPackageSelectMenuExecutor(loritta)
-        )
-
-        commandManager.register(
-            GoBackToPackageListButtonClickExecutor,
-            GoBackToPackageListButtonClickExecutor(loritta, correiosClient)
-        )
-
-        commandManager.register(
-            TrackPackageButtonClickExecutor,
-            TrackPackageButtonClickExecutor(loritta, correiosClient)
-        )
-
-        commandManager.register(
-            ColorInfoCommand,
-            RgbColorInfoExecutor(gabrielaImageServerClient),
-            HexColorInfoExecutor(gabrielaImageServerClient),
-            DecimalColorInfoExecutor(gabrielaImageServerClient)
-        )
-
-        commandManager.register(
-            NotificationsCommand,
-            NotificationsListExecutor(),
-            NotificationsViewExecutor()
-        )
+        register(ColorInfoCommand(loritta, gabrielaImageServerClient))
+        register(NotificationsCommand(loritta))
 
         // ===[ ECONOMY ]===
-        commandManager.register(SonhosCommand, SonhosExecutor())
-        commandManager.register(DailyCommand, DailyExecutor())
-        commandManager.register(
-            BrokerCommand,
-            BrokerInfoExecutor(),
-            BrokerBuyStockExecutor(),
-            BrokerSellStockExecutor(),
-            BrokerPortfolioExecutor(),
-            BrokerStockInfoExecutor()
-        )
-        commandManager.register(
-            TransactionsCommand,
-            TransactionsExecutor()
-        )
+        register(SonhosCommand(loritta))
+        register(DailyCommand(loritta))
+        register(BrokerCommand(loritta))
 
-        commandManager.register(
-            ChangeTransactionPageButtonClickExecutor,
-            ChangeTransactionPageButtonClickExecutor(loritta)
-        )
+        register(TransactionsCommand(loritta))
+        register(ChangeTransactionPageButtonClickExecutor(loritta))
+        register(ChangeTransactionFilterSelectMenuExecutor(loritta))
 
-        commandManager.register(
-            ChangeTransactionFilterSelectMenuExecutor,
-            ChangeTransactionFilterSelectMenuExecutor(loritta)
-        )
-
-        commandManager.register(
-            BetCommand,
-            CoinFlipBetGlobalExecutor()
-        )
-
-        commandManager.register(
-            StartCoinFlipGlobalBetMatchmakingButtonClickExecutor,
-            StartCoinFlipGlobalBetMatchmakingButtonClickExecutor(loritta)
-        )
-
-        commandManager.register(
-            CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor,
-            CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta)
-        )
-
-        commandManager.register(
-            BrokerStockQuantityAutocompleteExecutor,
-            BrokerStockQuantityAutocompleteExecutor(loritta)
-        )
+        register(BetCommand(loritta))
+        register(StartCoinFlipGlobalBetMatchmakingButtonClickExecutor(loritta))
 
         // ===[ SOCIAL ]===
-        commandManager.register(
-            AchievementsCommand,
-            AchievementsExecutor()
-        )
+        register(AchievementsCommand(loritta))
+        register(AchievementsExecutor.ChangeCategoryMenuExecutor(loritta))
 
-        commandManager.register(
-            AfkCommand,
-            AfkOnExecutor(),
-            AfkOffExecutor()
-        )
-
-        commandManager.register(
-            GenderCommand,
-            GenderExecutor()
-        )
-
-        commandManager.register(
-            AchievementsExecutor.ChangeCategoryMenuExecutor,
-            AchievementsExecutor.ChangeCategoryMenuExecutor(loritta)
-        )
+        register(AfkCommand(loritta))
+        register(GenderCommand(loritta))
 
         // ===[ UNDERTALE ]===
-        commandManager.register(
-            UndertaleCommand,
-            CustomTextBoxExecutor(gabrielaImageServerClient),
-            TextBoxExecutor(gabrielaImageServerClient),
-        )
+        register(UndertaleCommand(loritta, gabrielaImageServerClient))
+        register(PortraitSelectMenuExecutor(loritta, gabrielaImageServerClient))
+        register(ChangeUniverseSelectMenuExecutor(loritta, gabrielaImageServerClient))
+        register(ChangeCharacterSelectMenuExecutor(loritta, gabrielaImageServerClient))
 
-        commandManager.register(
-            PortraitSelectMenuExecutor,
-            PortraitSelectMenuExecutor(loritta, gabrielaImageServerClient)
-        )
-
-        commandManager.register(
-            ChangeUniverseSelectMenuExecutor,
-            ChangeUniverseSelectMenuExecutor(loritta, gabrielaImageServerClient)
-        )
-
-        commandManager.register(
-            ChangeCharacterSelectMenuExecutor,
-            ChangeCharacterSelectMenuExecutor(loritta, gabrielaImageServerClient)
-        )
-
-        commandManager.register(
-            ChangeDialogBoxTypeButtonClickExecutor,
-            ChangeDialogBoxTypeButtonClickExecutor(loritta, gabrielaImageServerClient)
-        )
-
-        commandManager.register(
-            ConfirmDialogBoxButtonClickExecutor,
-            ConfirmDialogBoxButtonClickExecutor(loritta, gabrielaImageServerClient)
-        )
-
-        commandManager.register(
-            ChangeColorPortraitTypeButtonClickExecutor,
-            ChangeColorPortraitTypeButtonClickExecutor(loritta, gabrielaImageServerClient)
-        )
+        register(ChangeDialogBoxTypeButtonClickExecutor(loritta, gabrielaImageServerClient))
+        register(ConfirmDialogBoxButtonClickExecutor(loritta, gabrielaImageServerClient))
+        register(ChangeColorPortraitTypeButtonClickExecutor(loritta, gabrielaImageServerClient))
 
         // ===[ ROLEPLAY ]===
-        commandManager.register(
-            RoleplayCommand,
-            RoleplayHugExecutor(randomRoleplayPicturesClient),
-            RoleplayHeadPatExecutor(randomRoleplayPicturesClient),
-            RoleplayHighFiveExecutor(randomRoleplayPicturesClient),
-            RoleplaySlapExecutor(randomRoleplayPicturesClient),
-            RoleplayAttackExecutor(randomRoleplayPicturesClient),
-            RoleplayDanceExecutor(randomRoleplayPicturesClient),
-            RoleplayKissExecutor(randomRoleplayPicturesClient)
-        )
-
-        commandManager.register(
-            RetributeHugButtonExecutor,
-            RetributeHugButtonExecutor(randomRoleplayPicturesClient)
-        )
-
-        commandManager.register(
-            RetributeHeadPatButtonExecutor,
-            RetributeHeadPatButtonExecutor(randomRoleplayPicturesClient)
-        )
-
-        commandManager.register(
-            RetributeHighFiveButtonExecutor,
-            RetributeHighFiveButtonExecutor(randomRoleplayPicturesClient)
-        )
-
-        commandManager.register(
-            RetributeSlapButtonExecutor,
-            RetributeSlapButtonExecutor(randomRoleplayPicturesClient)
-        )
-
-        commandManager.register(
-            RetributeAttackButtonExecutor,
-            RetributeAttackButtonExecutor(randomRoleplayPicturesClient)
-        )
-
-        commandManager.register(
-            RetributeDanceButtonExecutor,
-            RetributeDanceButtonExecutor(randomRoleplayPicturesClient)
-        )
-
-        commandManager.register(
-            RetributeKissButtonExecutor,
-            RetributeKissButtonExecutor(randomRoleplayPicturesClient)
-        )
-
-        commandManager.register(
-            SourcePictureExecutor,
-            SourcePictureExecutor()
-        )
+        register(RoleplayCommand(loritta, randomRoleplayPicturesClient))
+        register(RetributeHugButtonExecutor(loritta, randomRoleplayPicturesClient))
+        register(RetributeHeadPatButtonExecutor(loritta, randomRoleplayPicturesClient))
+        register(RetributeHighFiveButtonExecutor(loritta, randomRoleplayPicturesClient))
+        register(RetributeSlapButtonExecutor(loritta, randomRoleplayPicturesClient))
+        register(RetributeAttackButtonExecutor(loritta, randomRoleplayPicturesClient))
+        register(RetributeDanceButtonExecutor(loritta, randomRoleplayPicturesClient))
+        register(RetributeKissButtonExecutor(loritta, randomRoleplayPicturesClient))
+        register(SourcePictureExecutor(loritta))
 
         // ===[ ROBLOX ]===
-        commandManager.register(
-            RobloxCommand,
-            RobloxUserExecutor(http),
-            RobloxGameExecutor(http)
-        )
+        register(RobloxCommand(loritta))
 
         // ===[ OTHER STUFF ]===
-        commandManager.register(
+        commandRegistry.register(
             ActivateInviteBlockerBypassButtonClickExecutor,
             ActivateInviteBlockerBypassButtonClickExecutor(loritta)
         )
 
         // Validate if we don't have more commands than Discord allows
-        if (commandManager.declarationWrappers.size > 100) {
-            logger.error { "Currently there are ${commandManager.declarationWrappers.size} root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
+        if (commandRegistry.interaKTionsManager.applicationCommandsDeclarations.size > 100) {
+            logger.error { "Currently there are ${commandRegistry.interaKTionsManager.applicationCommandsDeclarations.size} root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
             exitProcess(1)
         }
 
-        logger.info { "Total Root Commands: ${commandManager.declarationWrappers.size}/100" }
+        logger.info { "Total Root Commands: ${commandRegistry.interaKTionsManager.applicationCommandsDeclarations.size}/100" }
 
-        commandManager.convertToInteraKTions(
-            loritta.languageManager.getI18nContextById("en")
-        )
+        commandRegistry.updateAllCommands()
+    }
+
+    private fun register(declarationWrapper: CinnamonSlashCommandDeclarationWrapper) {
+        interaKTionsManager.register(declarationWrapper.declaration().build())
+    }
+
+    private fun register(declarationWrapper: CinnamonUserCommandDeclarationWrapper) {
+        interaKTionsManager.register(declarationWrapper.declaration().build())
+    }
+
+    private fun register(executor: ButtonExecutor) {
+        interaKTionsManager.register(executor)
+    }
+
+    private fun register(executor: SelectMenuExecutor) {
+        interaKTionsManager.register(executor)
     }
 }

@@ -5,8 +5,8 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosFoundObjeto
@@ -15,14 +15,14 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.correios.exceptions.Inv
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class TrackPackageButtonClickExecutor(
-    val loritta: LorittaCinnamon,
+    loritta: LorittaCinnamon,
     val client: CorreiosClient
-) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.TRACK_PACKAGE_BUTTON_EXECUTOR)
+) : CinnamonButtonExecutor(loritta) {
+    companion object : ButtonExecutorDeclaration(ComponentExecutorIds.TRACK_PACKAGE_BUTTON_EXECUTOR)
 
-    override suspend fun onClick(user: User, context: ComponentContext, data: String) {
+    override suspend fun onClick(user: User, context: ComponentContext) {
         context.deferUpdateMessage()
-        val (userId, trackingId) = context.decodeDataFromComponentAndRequireUserToMatch<TrackPackageData>(data)
+        val (userId, trackingId) = context.decodeDataFromComponentAndRequireUserToMatch<TrackPackageData>()
 
         val correiosResponse = try {
             client.getPackageInfo(trackingId)

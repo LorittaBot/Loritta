@@ -13,12 +13,11 @@ import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.*
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
@@ -27,18 +26,8 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.*
 import kotlin.math.ceil
 
-class TransactionsExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val user = optionalUser("user", TransactionsCommand.I18N_PREFIX.Options.User.Text)
-                .register()
-
-            val page = optionalInteger("page", TransactionsCommand.I18N_PREFIX.Options.Page.Text)
-                .register()
-        }
-
-        override val options = Options
-
+class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    companion object {
         private const val TRANSACTIONS_PER_PAGE = 10
 
         suspend fun createMessage(
@@ -309,11 +298,19 @@ class TransactionsExecutor : SlashCommandExecutor() {
         }
     }
 
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val user = optionalUser("user", TransactionsCommand.I18N_PREFIX.Options.User.Text)
+
+        val page = optionalInteger("page", TransactionsCommand.I18N_PREFIX.Options.Page.Text)
+    }
+
+    override val options = Options()
+
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because this sometimes takes too long
 
-        val userId = UserId(args[Options.user]?.id?.value ?: context.user.id.value)
-        val page = ((args[Options.page] ?: 1L) - 1)
+        val userId = UserId(args[options.user]?.id?.value ?: context.user.id.value)
+        val page = ((args[options.page] ?: 1L) - 1)
             .coerceAtLeast(0)
 
         val message = createMessage(

@@ -11,6 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
 import kotlin.time.Duration.Companion.minutes
 
 class FalatronModelsManager {
@@ -27,7 +28,7 @@ class FalatronModelsManager {
 
     private suspend fun update() {
         val response = http.get("https://falatron.com/static/models.json")
-        models.emit(Json.decodeFromString<FalatronModelResponse>(response.bodyAsText()).models)
+        models.emit(JsonIgnoreUnknownKeys.decodeFromString<FalatronModelResponse>(response.bodyAsText()).models)
     }
 
     @Serializable
@@ -40,6 +41,7 @@ class FalatronModelsManager {
         val author: String,
         val category: String,
         val description: String,
+        val dublador: String,
         val image: String,
         val name: String,
         val path: String

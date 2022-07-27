@@ -5,48 +5,49 @@ import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
 import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
 import kotlin.reflect.KClass
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 
 /**
- * Bridge between Cinnamon's [UserCommandExecutor] and Discord InteraKTions' [UserCommandExecutor].
- *
- * Used for argument conversion between the two platforms
+ * Discord InteraKTions' [UserCommandExecutor] wrapper, used to provide Cinnamon-specific features.
  */
-class UserCommandExecutorWrapper(
-    private val loritta: LorittaCinnamon,
+abstract class CinnamonUserCommandExecutor(
+    val loritta: LorittaCinnamon,
+    // TODO: Fix this
     // This is only used for metrics and logs
-    private val rootDeclarationClazz: KClass<*>,
-    private val declarationExecutor: UserCommandExecutorDeclaration,
-    private val executor: UserCommandExecutor
-) : net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor(), CommandExecutorWrapper {
+    // private val rootDeclarationClazz: KClass<*>,
+    // private val declarationExecutor: UserCommandExecutorDeclaration
+) : UserCommandExecutor(), CommandExecutorWrapper {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val rootDeclarationClazzName = rootDeclarationClazz.simpleName ?: "UnknownCommand"
-    private val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
+    private val rootDeclarationClazzName = "UnknownCommand" // rootDeclarationClazz.simpleName ?: "UnknownCommand"
+    private val executorClazzName = this::class.simpleName ?: "UnknownExecutor"
+
+    val rest = loritta.rest
+    val applicationId = Snowflake(loritta.discordConfig.applicationId)
+
+    abstract suspend fun execute(context: net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext, targetUser: User, targetMember: InteractionMember?)
 
     override suspend fun execute(
         context: ApplicationCommandContext,
         targetUser: User,
         targetMember: InteractionMember?
     ) {
-        logger.info { "(${context.sender.id.value}) $executor" }
+        logger.info { "(${context.sender.id.value}) $this" }
 
         val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
-        // Map Cinnamon Arguments to Discord InteraKTions Arguments
-        val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
         val guildId = (context as? GuildApplicationCommandContext)?.guildId
 
         val result = executeCommand(
@@ -63,7 +64,8 @@ class UserCommandExecutorWrapper(
             stacktrace = result.throwable.stackTraceToString()
 
         val commandLatency = timer.observeDuration()
-        logger.info { "(${context.sender.id.value}) $executor - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
+
+        logger.info { "(${context.sender.id.value}) $this - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
 
         loritta.services.executedInteractionsLog.insertApplicationCommandLog(
             context.sender.id.value.toLong(),
@@ -73,7 +75,7 @@ class UserCommandExecutorWrapper(
             ApplicationCommandType.USER,
             rootDeclarationClazzName,
             executorClazzName,
-            buildJsonWithArguments(cinnamonArgs),
+            buildJsonWithArguments(emptyMap()),
             stacktrace == null,
             commandLatency,
             stacktrace
@@ -104,7 +106,7 @@ class UserCommandExecutorWrapper(
 
             launchUserInfoCacheUpdater(loritta, context, null)
 
-            executor.execute(
+            execute(
                 cinnamonContext,
                 targetUser,
                 targetMember
@@ -124,6 +126,4 @@ class UserCommandExecutorWrapper(
             )
         }
     }
-
-    override fun signature() = declarationExecutor::class
 }

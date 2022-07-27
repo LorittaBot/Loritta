@@ -15,14 +15,14 @@ import java.util.*
 
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
-    executor: ButtonClickExecutorDeclaration,
+    executor: ButtonExecutorDeclaration,
     builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit
 ) {
     require(style != ButtonStyle.Link) { "You cannot use a ButtonStyle.Link style in a interactive button! Please use \"linkButton(...)\" if you want to create a button with a link" }
 
     interactionButton(
         style,
-        executor.id.value
+        executor.id
     ) {
         builder.invoke(this)
     }
@@ -31,14 +31,14 @@ fun ActionRowBuilder.interactiveButton(
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
     label: String,
-    executor: ButtonClickExecutorDeclaration,
+    executor: ButtonExecutorDeclaration,
     builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit = {}
 ) {
     require(style != ButtonStyle.Link) { "You cannot use a ButtonStyle.Link style in a interactive button! Please use \"linkButton(...)\" if you want to create a button with a link" }
 
     interactionButton(
         style,
-        executor.id.value
+        executor.id
     ) {
         this.label = label
         builder.invoke(this)
@@ -47,7 +47,7 @@ fun ActionRowBuilder.interactiveButton(
 
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
-    executor: ButtonClickExecutorDeclaration,
+    executor: ButtonExecutorDeclaration,
     data: String,
     builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit
 ) {
@@ -55,7 +55,7 @@ fun ActionRowBuilder.interactiveButton(
 
     interactionButton(
         style,
-        "${executor.id.value}:$data"
+        "${executor.id}:$data"
     ) {
         builder.invoke(this)
     }
@@ -64,7 +64,7 @@ fun ActionRowBuilder.interactiveButton(
 fun ActionRowBuilder.interactiveButton(
     style: ButtonStyle,
     label: String,
-    executor: ButtonClickExecutorDeclaration,
+    executor: ButtonExecutorDeclaration,
     data: String,
     builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit = {}
 ) {
@@ -72,7 +72,7 @@ fun ActionRowBuilder.interactiveButton(
 
     interactionButton(
         style,
-        "${executor.id.value}:$data"
+        "${executor.id}:$data"
     ) {
         this.label = label
         builder.invoke(this)
@@ -84,7 +84,7 @@ fun ActionRowBuilder.selectMenu(
     builder: SelectMenuBuilder.() -> Unit = {}
 ) {
     selectMenu(
-        executor.id.value
+        executor.id
     ) {
         builder.invoke(this)
     }
@@ -96,7 +96,7 @@ fun ActionRowBuilder.selectMenu(
     builder: SelectMenuBuilder.() -> Unit = {}
 ) {
     selectMenu(
-        "${executor.id.value}:$data"
+        "${executor.id}:$data"
     ) {
         builder.invoke(this)
     }

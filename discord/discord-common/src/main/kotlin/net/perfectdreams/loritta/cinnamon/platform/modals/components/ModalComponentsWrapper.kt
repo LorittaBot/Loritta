@@ -7,10 +7,11 @@ class ModalComponentsWrapper(
     declarationExecutor: ModalSubmitExecutorDeclaration
 ) : ModalComponents() {
     init {
-        declarationExecutor.options.arguments.forEach {
+        // TODO: Fix this
+        /* declarationExecutor.options.arguments.forEach {
             when (it) {
                 is StringModalComponent -> textInput(it.name)
             }.register()
-        }
+        } */
     }
 }

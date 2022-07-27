@@ -2,22 +2,25 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.economy.declaration
 
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.bet.CoinFlipBetGlobalExecutor
 
-object BetCommand : SlashCommandDeclarationWrapper {
-    val COINFLIP_GLOBAL_I18N_PREFIX = I18nKeysData.Commands.Command.Betcoinflipglobal
+class BetCommand(loritta: LorittaCinnamon) : CinnamonSlashCommandDeclarationWrapper(loritta) {
+    companion object {
+        val COINFLIP_GLOBAL_I18N_PREFIX = I18nKeysData.Commands.Command.Betcoinflipglobal
+    }
 
-    override fun declaration() = slashCommand(listOf("bet"), CommandCategory.ECONOMY, TodoFixThisData) {
-        subcommandGroup(listOf("coinflip"), TodoFixThisData) {
-            subcommand(listOf("global"), COINFLIP_GLOBAL_I18N_PREFIX.Description) {
-                executor = CoinFlipBetGlobalExecutor
+    override fun declaration() = slashCommand("bet", CommandCategory.ECONOMY, TodoFixThisData) {
+        subcommandGroup("coinflip", TodoFixThisData) {
+            subcommand("global", COINFLIP_GLOBAL_I18N_PREFIX.Description) {
+                executor = CoinFlipBetGlobalExecutor(loritta)
             }
         }
 
-        subcommand(listOf("coinflipglobal"), COINFLIP_GLOBAL_I18N_PREFIX.Description) {
-            executor = CoinFlipBetGlobalExecutor
+        subcommand("coinflipglobal", COINFLIP_GLOBAL_I18N_PREFIX.Description) {
+            executor = CoinFlipBetGlobalExecutor(loritta)
         }
     }
 }

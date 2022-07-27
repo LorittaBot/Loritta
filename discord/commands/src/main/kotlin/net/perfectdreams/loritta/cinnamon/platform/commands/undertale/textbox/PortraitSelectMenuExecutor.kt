@@ -7,20 +7,19 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper
+import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 
 class PortraitSelectMenuExecutor(
-    val loritta: LorittaCinnamon,
+    loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
-) : SelectMenuWithDataExecutor {
+) : CinnamonSelectMenuExecutor(loritta) {
     companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.PORTRAIT_SELECT_MENU_EXECUTOR)
 
     override suspend fun onSelect(
         user: User,
         context: ComponentContext,
-        data: String,
         values: List<String>
     ) {
         // We will already defer to avoid issues
@@ -28,7 +27,7 @@ class PortraitSelectMenuExecutor(
         context.deferUpdateMessage()
 
         // Yes, this is unused because we haven't implemented buttons yet :(
-        val (_, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>(data)
+        val (_, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>()
 
         val textBoxOptionsData = TextBoxHelper.getInteractionDataAndFailIfItDoesNotExist(context, interactionDataId)
 

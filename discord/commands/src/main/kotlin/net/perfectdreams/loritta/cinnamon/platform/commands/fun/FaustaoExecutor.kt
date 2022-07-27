@@ -3,14 +3,12 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 
-class FaustaoExecutor() : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration()
-
+class FaustaoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     // TODO: Localization
     private val frases = listOf(
         "Que isso bicho, ó u cara lá ó",

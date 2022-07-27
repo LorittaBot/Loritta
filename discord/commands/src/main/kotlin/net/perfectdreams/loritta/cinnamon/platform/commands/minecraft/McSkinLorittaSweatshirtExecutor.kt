@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.minecraft
 
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.MinecraftSkinLorittaSweatshirtRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
@@ -7,38 +8,52 @@ import net.perfectdreams.gabrielaimageserver.exceptions.InvalidMinecraftSkinExce
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.URLUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import java.util.*
 
-class McSkinLorittaSweatshirtExecutor(val client: GabrielaImageServerClient, val mojang: MinecraftMojangAPI) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val skin = string("skin", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.Skin.Text)
-                .register()
+class McSkinLorittaSweatshirtExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerClient, val mojang: MinecraftMojangAPI) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val skin = string("skin", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.Skin.Text)
 
-            val sweatshirtStyle = string("sweatshirt_style", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Text)
-                .choice(MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.LIGHT.name.lowercase(), MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.Light)
-                .choice(MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.DARK.name.lowercase(), MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.Dark)
-                .choice(MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_WAVY.name.lowercase(), MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixWavy)
-                .choice(MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_WAVY_WITH_STITCHES.name.lowercase(), MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixWavyWithStitches)
-                .choice(MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_VERTICAL.name.lowercase(), MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixVertical)
-                .choice(MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_VERTICAL_WITH_STITCHES.name.lowercase(), MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixVerticalWithStitches)
-                .register()
+        val sweatshirtStyle = string("sweatshirt_style", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Text) {
+            choice(
+                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.Light,
+                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.LIGHT.name.lowercase()
+            )
+            choice(
+                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.Dark,
+                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.DARK.name.lowercase()
+            )
+            choice(
+                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixWavy,
+                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_WAVY.name.lowercase()
+            )
+            choice(
+                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixWavyWithStitches,
+                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_WAVY_WITH_STITCHES.name.lowercase()
+            )
+            choice(
+                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixVertical,
+                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_VERTICAL.name.lowercase()
+            )
+            choice(
+                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixVerticalWithStitches,
+                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_VERTICAL_WITH_STITCHES.name.lowercase()
+            )
         }
-
-        override val options = Options
     }
 
+    override val options = Options()
+
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val playerNameOrUrl = args[Options.skin]
-        val sweatshirtStyleName = args[Options.sweatshirtStyle]
+        val playerNameOrUrl = args[options.skin]
+        val sweatshirtStyleName = args[options.sweatshirtStyle]
 
         val imageData = if (URLUtils.isValidHttpOrHttpsURL(playerNameOrUrl)) {
             URLImageData(playerNameOrUrl)

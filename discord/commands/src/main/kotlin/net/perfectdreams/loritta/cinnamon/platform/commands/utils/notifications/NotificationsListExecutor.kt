@@ -4,9 +4,9 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.NotificationsCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserId
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
@@ -15,8 +15,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotifica
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownUserNotification
 
-class NotificationsListExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration()
+class NotificationsListExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally()

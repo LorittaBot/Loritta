@@ -1,9 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 
-import net.perfectdreams.loritta.cinnamon.platform.commands.UserCommandDeclarationWrapper
+import io.ktor.client.*
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonUserCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.info.UserInfoUserExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.userCommand
 
-object UserInfoUserCommand : UserCommandDeclarationWrapper {
-    override fun declaration() = userCommand(UserCommand.I18N_PREFIX.Info.ViewUserInfo, UserInfoUserExecutor)
+class UserInfoUserCommand(loritta: LorittaCinnamon, val http: HttpClient) : CinnamonUserCommandDeclarationWrapper(loritta) {
+    override fun declaration() = userCommand(UserCommand.I18N_PREFIX.Info.ViewUserInfo, UserInfoUserExecutor(loritta, http))
 }

@@ -4,17 +4,14 @@ import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteContext
-import net.perfectdreams.loritta.cinnamon.platform.autocomplete.StringAutocompleteExecutor
-import net.perfectdreams.loritta.cinnamon.platform.autocomplete.StringAutocompleteExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.autocomplete.CinnamonAutocompleteHandler
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.time.Duration.Companion.minutes
 
-class CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(val loritta: LorittaCinnamon) : StringAutocompleteExecutor {
-    companion object : StringAutocompleteExecutorDeclaration()
-
-    override suspend fun onAutocomplete(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
+class CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta: LorittaCinnamon) : CinnamonAutocompleteHandler<String>(loritta) {
+    override suspend fun handle(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
         val currentInput = focusedOption.value
 
         val trueNumber = NumberUtils.convertShortenedNumberToLong(

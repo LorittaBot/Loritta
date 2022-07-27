@@ -13,13 +13,12 @@ import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.platform.InteractionContext
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
@@ -32,16 +31,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import kotlin.time.Duration.Companion.hours
 
-class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val quantity = string("quantity", BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Text)
-                .autocomplete(CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor)
-                .register()
-        }
-
-        override val options = Options
-
+class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    companion object {
         val QUANTITIES = listOf<Long>(
             0,
             100,
@@ -174,9 +165,11 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                             }
 
                             styled(
-                                "${mentionUser(Snowflake(result.user.value))} ${otherUserI18nContext.get(
-                                    BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.LeftMatchmakingQueueDueToNotEnoughSonhos
-                                )}",
+                                "${mentionUser(Snowflake(result.user.value))} ${
+                                    otherUserI18nContext.get(
+                                        BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.LeftMatchmakingQueueDueToNotEnoughSonhos
+                                    )
+                                }",
                                 Emotes.LoriSob
                             )
 
@@ -193,9 +186,11 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
                     is BetsService.YouDontHaveEnoughSonhosToBetResult -> {
                         context.sendEphemeralMessage {
                             styled(
-                                "${mentionUser(context.user.id)} ${context.i18nContext.get(
-                                    BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.NotEnoughSonhosToBet
-                                )}",
+                                "${mentionUser(context.user.id)} ${
+                                    context.i18nContext.get(
+                                        BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.NotEnoughSonhosToBet
+                                    )
+                                }",
                                 Emotes.LoriSob
                             )
 
@@ -412,10 +407,18 @@ class CoinFlipBetGlobalExecutor : SlashCommandExecutor() {
         }
     }
 
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val quantity = string("quantity", BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Text) {
+            autocomplete(CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta))
+        }
+    }
+
+    override val options = Options()
+
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally() // Defer because this sometimes takes too long
 
-        val quantityAsString = args[Options.quantity]
+        val quantityAsString = args[options.quantity]
 
         val isRemoveFromQueueRequest = quantityAsString.startsWith("q")
 

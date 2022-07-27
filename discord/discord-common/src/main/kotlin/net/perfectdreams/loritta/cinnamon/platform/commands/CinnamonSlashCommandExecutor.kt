@@ -5,46 +5,52 @@ import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ArgumentReader
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
-import kotlin.reflect.KClass
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 
 /**
- * Bridge between Cinnamon's [SlashCommandExecutor] and Discord InteraKTions' [SlashCommandExecutor].
- *
- * Used for argument conversion between the two platforms
+ * Discord InteraKTions' [SlashCommandExecutor] wrapper, used to provide Cinnamon-specific features.
  */
-class SlashCommandExecutorWrapper(
-    private val loritta: LorittaCinnamon,
+abstract class CinnamonSlashCommandExecutor(
+    val loritta: LorittaCinnamon,
+    // TODO: Fix this
     // This is only used for metrics and logs
-    private val rootDeclarationClazz: KClass<*>,
-    private val declarationExecutor: SlashCommandExecutorDeclaration,
-    private val executor: SlashCommandExecutor
-) : net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor(), CommandExecutorWrapper {
+    // private val rootDeclarationClazz: KClass<*>,
+    // private val declarationExecutor: SlashCommandExecutorDeclaration
+) : SlashCommandExecutor(), CommandExecutorWrapper {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val rootDeclarationClazzName = rootDeclarationClazz.simpleName ?: "UnknownCommand"
-    private val executorClazzName = executor::class.simpleName ?: "UnknownExecutor"
+    private val rootDeclarationClazzName: String = "UnknownCommand" // TODO() // rootDeclarationClazz.simpleName ?: "UnknownCommand"
+    private val executorClazzName: String = this::class.simpleName ?: "UnknownExecutor"
 
-    override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
+    val rest = loritta.rest
+    val applicationId = Snowflake(loritta.discordConfig.applicationId)
+
+    abstract suspend fun execute(
+        context: CinnamonApplicationCommandContext,
+        args: SlashCommandArguments
+    )
+
+    override suspend fun execute(
+        context: ApplicationCommandContext,
+        args: SlashCommandArguments
+    ) {
         val stringifiedArgumentNames = stringifyArgumentNames(args.types)
 
-        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames" }
+        logger.info { "(${context.sender.id.value}) $this $stringifiedArgumentNames" }
 
         val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
-        // Map Cinnamon Arguments to Discord InteraKTions Arguments
-        val cinnamonArgs = mutableMapOf<CommandOption<*>, Any?>()
         val guildId = (context as? GuildApplicationCommandContext)?.guildId
 
         val result = executeCommand(
@@ -52,7 +58,6 @@ class SlashCommandExecutorWrapper(
             executorClazzName,
             context,
             args,
-            cinnamonArgs,
             guildId
         )
 
@@ -61,7 +66,7 @@ class SlashCommandExecutorWrapper(
             stacktrace = result.throwable.stackTraceToString()
 
         val commandLatency = timer.observeDuration()
-        logger.info { "(${context.sender.id.value}) $executor $stringifiedArgumentNames - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
+        logger.info { "(${context.sender.id.value}) $this $stringifiedArgumentNames - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
 
         loritta.services.executedInteractionsLog.insertApplicationCommandLog(
             context.sender.id.value.toLong(),
@@ -71,7 +76,7 @@ class SlashCommandExecutorWrapper(
             ApplicationCommandType.CHAT_INPUT,
             rootDeclarationClazzName,
             executorClazzName,
-            buildJsonWithArguments(cinnamonArgs),
+            buildJsonWithArguments(args.types),
             stacktrace == null,
             commandLatency,
             stacktrace
@@ -83,7 +88,6 @@ class SlashCommandExecutorWrapper(
         executorClazzName: String,
         context: ApplicationCommandContext,
         args: SlashCommandArguments,
-        cinnamonArgs: MutableMap<CommandOption<*>, Any?>,
         guildId: Snowflake?
     ): CommandExecutorWrapper.CommandExecutionResult {
         // These variables are used in the catch { ... } block, to make our lives easier
@@ -100,18 +104,11 @@ class SlashCommandExecutorWrapper(
             if (handleIfBanned(loritta, cinnamonContext))
                 return CommandExecutorWrapper.CommandExecutionSuccess
 
-            if (declarationExecutor.options.arguments.isNotEmpty()) {
-                val argumentsReader = ArgumentReader(cinnamonContext, args.types)
-                declarationExecutor.options.arguments.forEach {
-                    cinnamonArgs[it] = it.parse(argumentsReader)
-                }
-            }
-
             launchUserInfoCacheUpdater(loritta, context, args)
 
-            executor.execute(
+            execute(
                 cinnamonContext,
-                net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments(cinnamonArgs)
+                args
             )
 
             launchAdditionalNotificationsCheckerAndSender(loritta, context, i18nContext)
@@ -128,6 +125,4 @@ class SlashCommandExecutorWrapper(
             )
         }
     }
-
-    override fun signature() = declarationExecutor::class
 }

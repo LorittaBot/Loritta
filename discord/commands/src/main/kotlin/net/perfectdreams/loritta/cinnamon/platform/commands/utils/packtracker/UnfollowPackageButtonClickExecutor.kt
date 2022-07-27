@@ -7,23 +7,20 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
+import net.perfectdreams.loritta.cinnamon.platform.components.*
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class UnfollowPackageButtonClickExecutor(
-    val loritta: LorittaCinnamon,
+    loritta: LorittaCinnamon,
     val correios: CorreiosClient
-) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.UNFOLLOW_PACKAGE_BUTTON_EXECUTOR)
+) : CinnamonButtonExecutor(loritta) {
+    companion object : ButtonExecutorDeclaration(ComponentExecutorIds.UNFOLLOW_PACKAGE_BUTTON_EXECUTOR)
 
-    override suspend fun onClick(user: User, context: ComponentContext, data: String) {
+    override suspend fun onClick(user: User, context: ComponentContext) {
         context.deferUpdateMessage()
-        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<UnfollowPackageData>(data)
+        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<UnfollowPackageData>()
 
         loritta.services.packagesTracking.untrackCorreiosPackage(
             UserId(user.id.value),

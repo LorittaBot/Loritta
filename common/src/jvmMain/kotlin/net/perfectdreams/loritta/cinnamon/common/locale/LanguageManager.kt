@@ -39,6 +39,12 @@ class LanguageManager(
     var languageContexts = mapOf<String, I18nContext>()
     var languages = mapOf<String, Language>()
 
+    val defaultLanguage: Language
+        get() = getLanguageById(defaultLanguageId)
+
+    val defaultI18nContext: I18nContext
+        get() = getI18nContextById(defaultLanguageId)
+
     /**
      * Gets the Language by its ID, if the language doesn't exist, the default language ([defaultLanguageId]) will be used
      *
