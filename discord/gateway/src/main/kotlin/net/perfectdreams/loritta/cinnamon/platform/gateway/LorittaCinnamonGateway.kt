@@ -46,7 +46,7 @@ class LorittaCinnamonGateway(
         net.perfectdreams.discordinteraktions.common.commands.CommandManager()
     )
 
-    override fun getCommandCount() = TODO() // commandManager.commandManager.executors.size
+    override fun getCommandCount() = commandManager.interaKTionsManager.applicationCommandsExecutors.size
 
     fun start() {
         runBlocking {

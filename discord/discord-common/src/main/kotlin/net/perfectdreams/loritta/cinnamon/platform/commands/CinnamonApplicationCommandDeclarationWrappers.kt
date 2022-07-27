@@ -6,15 +6,15 @@ import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 interface CinnamonApplicationCommandDeclarationWrapper
 
 abstract class CinnamonSlashCommandDeclarationWrapper(val loritta: LorittaCinnamon) : CinnamonApplicationCommandDeclarationWrapper {
-    abstract fun declaration(): LorittaSlashCommandDeclarationBuilder
+    abstract fun declaration(): CinnamonSlashCommandDeclarationBuilder
 
-    fun slashCommand(label: String, category: CommandCategory, description: StringI18nData, block: LorittaSlashCommandDeclarationBuilder.() -> (Unit))
-            = slashCommand(loritta.languageManager, label, description, category, block)
+    fun slashCommand(label: String, category: CommandCategory, description: StringI18nData, block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit))
+            = slashCommand(this, loritta.languageManager, label, description, category, block)
 }
 
 abstract class CinnamonUserCommandDeclarationWrapper(val loritta: LorittaCinnamon) : CinnamonApplicationCommandDeclarationWrapper {
-    abstract fun declaration(): LorittaUserCommandDeclarationBuilder
+    abstract fun declaration(): CinnamonUserCommandDeclarationBuilder
 
-    fun userCommand(name: StringI18nData, executor: CinnamonUserCommandExecutor, block: LorittaUserCommandDeclarationBuilder.() -> (Unit) = {})
-            = userCommand(loritta.languageManager, name, executor, block)
+    fun userCommand(name: StringI18nData, executor: CinnamonUserCommandExecutor, block: CinnamonUserCommandDeclarationBuilder.() -> (Unit) = {})
+            = userCommand(this, loritta.languageManager, name, executor, block)
 }

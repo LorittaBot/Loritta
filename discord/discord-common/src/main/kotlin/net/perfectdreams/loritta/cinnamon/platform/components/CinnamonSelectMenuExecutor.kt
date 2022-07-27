@@ -17,29 +17,21 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandExce
 import net.perfectdreams.loritta.cinnamon.platform.commands.SilentCommandException
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
 
-abstract class CinnamonSelectMenuExecutor(
-    val loritta: LorittaCinnamon,
-    // TODO: Fix this
-    // This is only used for metrics and logs
-    // private val executorDeclaration: ButtonClickExecutorDeclaration,
-    // private val executor: ButtonClickWithDataExecutor
-) : SelectMenuExecutor {
+abstract class CinnamonSelectMenuExecutor(val loritta: LorittaCinnamon) : SelectMenuExecutor {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val rootDeclarationClazzName = "UnknownCommand" // rootDeclarationClazz.simpleName ?: "UnknownCommand"
-    private val executorClazzName = "UnknownExecutor" // executor::class.simpleName ?: "UnknownExecutor"
+    private val executorClazzName = this::class.simpleName ?: "UnknownExecutor"
 
     abstract suspend fun onSelect(user: User, context: net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext, values: List<String>)
 
     override suspend fun onSelect(user: User, context: ComponentContext, values: List<String>) {
-        // val rootDeclarationClazzName = executorDeclaration::class.simpleName
-        // val executorClazzName = executor::class.simpleName
+        val rootDeclarationClazzName = context.componentExecutorDeclaration::class.simpleName ?: "UnknownDeclaration"
 
-        // logger.info { "(${context.sender.id.value}) $executor" }
+        logger.info { "(${context.sender.id.value}) $this" }
 
-        val timer = InteractionsMetrics.EXECUTED_BUTTON_CLICK_LATENCY_COUNT
+        val timer = InteractionsMetrics.EXECUTED_SELECT_MENU_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
             .startTimer()
 
@@ -135,7 +127,7 @@ abstract class CinnamonSelectMenuExecutor(
         }
 
         val commandLatency = timer.observeDuration()
-        // logger.info { "(${context.sender.id.value}) $executor - OK! Took ${commandLatency * 1000}ms" }
+        logger.info { "(${context.sender.id.value}) $this - OK! Took ${commandLatency * 1000}ms" }
 
         loritta.services.executedInteractionsLog.insertComponentLog(
             context.sender.id.value.toLong(),

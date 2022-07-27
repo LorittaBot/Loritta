@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands
 
 import dev.kord.common.Locale
-import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
 import net.perfectdreams.discordinteraktions.common.commands.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 
-open class LorittaCommandDeclaration(
+class CinnamonSlashCommandDeclaration(
+    val declarationWrapper: CinnamonSlashCommandDeclarationWrapper,
     name: String,
     description: String,
     descriptionLocalizations: Map<Locale, String>? = null,
@@ -29,7 +29,7 @@ open class LorittaCommandDeclaration(
     subcommandGroups
 )
 
-open class LorittaCommandGroupDeclaration(
+class CinnamonSlashCommandGroupDeclaration(
     name: String,
     description: String,
     descriptionLocalizations: Map<Locale, String>? = null,
@@ -43,3 +43,12 @@ open class LorittaCommandGroupDeclaration(
     descriptionLocalizations,
     subcommands
 )
+
+class CinnamonUserCommandDeclaration(
+    val declarationWrapper: CinnamonUserCommandDeclarationWrapper,
+    name: String,
+    nameLocalizations: Map<Locale, String>? = null,
+    defaultMemberPermissions: Permissions?,
+    dmPermission: Boolean?,
+    executor: UserCommandExecutor // User/Message commands always requires an executor, that's why it is not nullable!
+) : UserCommandDeclaration(name, nameLocalizations, defaultMemberPermissions, dmPermission, executor)

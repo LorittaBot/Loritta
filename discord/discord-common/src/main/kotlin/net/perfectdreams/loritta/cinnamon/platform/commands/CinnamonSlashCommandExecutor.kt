@@ -6,7 +6,6 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
@@ -17,18 +16,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
 /**
  * Discord InteraKTions' [SlashCommandExecutor] wrapper, used to provide Cinnamon-specific features.
  */
-abstract class CinnamonSlashCommandExecutor(
-    val loritta: LorittaCinnamon,
-    // TODO: Fix this
-    // This is only used for metrics and logs
-    // private val rootDeclarationClazz: KClass<*>,
-    // private val declarationExecutor: SlashCommandExecutorDeclaration
-) : SlashCommandExecutor(), CommandExecutorWrapper {
+abstract class CinnamonSlashCommandExecutor(val loritta: LorittaCinnamon) : SlashCommandExecutor(), CommandExecutorWrapper {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val rootDeclarationClazzName: String = "UnknownCommand" // TODO() // rootDeclarationClazz.simpleName ?: "UnknownCommand"
     private val executorClazzName: String = this::class.simpleName ?: "UnknownExecutor"
 
     val rest = loritta.rest
@@ -43,6 +35,9 @@ abstract class CinnamonSlashCommandExecutor(
         context: ApplicationCommandContext,
         args: SlashCommandArguments
     ) {
+        val rootDeclarationClazzName = (context.applicationCommandDeclaration as CinnamonSlashCommandDeclaration).declarationWrapper::class
+            .simpleName ?: "UnknownCommand"
+
         val stringifiedArgumentNames = stringifyArgumentNames(args.types)
 
         logger.info { "(${context.sender.id.value}) $this $stringifiedArgumentNames" }

@@ -17,14 +17,10 @@ abstract class CinnamonAutocompleteHandler<T>(val loritta: LorittaCinnamon) : Au
     abstract suspend fun handle(context: net.perfectdreams.loritta.cinnamon.platform.autocomplete.AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, T>
 
     override suspend fun handle(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, T> {
-        // TODO: Fix this
-        // val rootDeclarationClazzName = executorDeclaration::class.simpleName
-        // val executorClazzName = executor::class.simpleName
-
-        // logger.info { "(${context.sender.id.value}) $executor" }
+        logger.info { "(${context.sender.id.value}) $this" }
 
         val timer = InteractionsMetrics.EXECUTED_AUTOCOMPLETE_LATENCY_COUNT
-            .labels("Unknown", "Unknown") // TODO: Fix this
+            .labels(this::class.simpleName ?: "UnknownHandler") // TODO: Fix this
             .startTimer()
 
         val result = try {
@@ -53,9 +49,8 @@ abstract class CinnamonAutocompleteHandler<T>(val loritta: LorittaCinnamon) : Au
             throw e
         }
 
-        // TODO: Fix this
         val commandLatency = timer.observeDuration()
-        // logger.info { "(${context.sender.id.value}) $executor - OK! Took ${commandLatency * 1000}ms" }
+        logger.info { "(${context.sender.id.value}) $this - OK! Took ${commandLatency * 1000}ms" }
 
         // Weird hack
         return result

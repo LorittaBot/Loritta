@@ -18,18 +18,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandCo
 /**
  * Discord InteraKTions' [UserCommandExecutor] wrapper, used to provide Cinnamon-specific features.
  */
-abstract class CinnamonUserCommandExecutor(
-    val loritta: LorittaCinnamon,
-    // TODO: Fix this
-    // This is only used for metrics and logs
-    // private val rootDeclarationClazz: KClass<*>,
-    // private val declarationExecutor: UserCommandExecutorDeclaration
-) : UserCommandExecutor(), CommandExecutorWrapper {
+abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserCommandExecutor(), CommandExecutorWrapper {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val rootDeclarationClazzName = "UnknownCommand" // rootDeclarationClazz.simpleName ?: "UnknownCommand"
     private val executorClazzName = this::class.simpleName ?: "UnknownExecutor"
 
     val rest = loritta.rest
@@ -42,6 +35,10 @@ abstract class CinnamonUserCommandExecutor(
         targetUser: User,
         targetMember: InteractionMember?
     ) {
+        val rootDeclarationClazzName = (context.applicationCommandDeclaration as CinnamonUserCommandDeclaration)
+            .declarationWrapper::class
+            .simpleName ?: "UnknownCommand"
+
         logger.info { "(${context.sender.id.value}) $this" }
 
         val timer = InteractionsMetrics.EXECUTED_COMMAND_LATENCY_COUNT
