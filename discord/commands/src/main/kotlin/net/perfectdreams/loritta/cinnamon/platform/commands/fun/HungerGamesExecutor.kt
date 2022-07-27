@@ -9,23 +9,20 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.HungerGamesCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import org.jsoup.Jsoup
 
-class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val users = userList("user", HungerGamesCommand.I18N_PREFIX.Options.Users, 24, 24)
-                .register()
-        }
-
-        override val options = Options
+class HungerGamesExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val users = userList("user", HungerGamesCommand.I18N_PREFIX.Options.Users, 24, 24)
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext)
@@ -35,7 +32,7 @@ class HungerGamesExecutor(val rest: RestClient) : SlashCommandExecutor() {
 
         context.deferChannelMessage()
 
-        val users = args[Options.users]
+        val users = args[options.users]
         val guild = rest.guild.getGuild(context.guildId)
 
         val hungerGamesUrl = "https://brantsteele.net/hungergames"

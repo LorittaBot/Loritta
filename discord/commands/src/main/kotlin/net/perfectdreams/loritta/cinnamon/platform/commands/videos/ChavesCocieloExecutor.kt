@@ -5,39 +5,39 @@ import net.perfectdreams.gabrielaimageserver.data.CocieloChavesRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 
-class ChavesCocieloExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            // The description is replaced with "User, URL or Emote" so we don't really care that we are using "TodoFixThisData" here
-            val friend1Image = imageReference("friend1", TodoFixThisData)
-                .register()
-            val friend2Image = imageReference("friend2", TodoFixThisData)
-                .register()
-            val friend3Image = imageReference("friend3", TodoFixThisData)
-                .register()
-            val friend4Image = imageReference("friend4", TodoFixThisData)
-                .register()
-            val friend5Image = imageReference("friend5", TodoFixThisData)
-                .register()
-        }
+class ChavesCocieloExecutor(
+    loritta: LorittaCinnamon,
+    val client: GabrielaImageServerClient
+) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        // The description is replaced with "User, URL or Emote" so we don't really care that we are using "TodoFixThisData" here
+        val friend1Image = imageReference("friend1")
 
-        override val options = Options
+        val friend2Image = imageReference("friend2")
+
+        val friend3Image = imageReference("friend3")
+
+        val friend4Image = imageReference("friend4")
+
+        val friend5Image = imageReference("friend5")
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
-        val friend1 = args[options.friend1Image]
-        val friend2 = args[options.friend2Image]
-        val friend3 = args[options.friend3Image]
-        val friend4 = args[options.friend4Image]
-        val friend5 = args[options.friend5Image]
+        val friend1 = args[options.friend1Image].get(context)
+        val friend2 = args[options.friend2Image].get(context)
+        val friend3 = args[options.friend3Image].get(context)
+        val friend4 = args[options.friend4Image].get(context)
+        val friend5 = args[options.friend5Image].get(context)
 
         val result = client.handleExceptions(context) {
             client.videos.cocieloChaves(

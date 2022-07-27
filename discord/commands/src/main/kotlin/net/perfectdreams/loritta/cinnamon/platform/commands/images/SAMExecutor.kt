@@ -4,34 +4,31 @@ import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.SAMLogoRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.BRMemesCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 
-class SAMExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val type = string("type", BRMemesCommand.I18N_PREFIX.Sam.Options.Type)
-                .choice("1", BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam1)
-                .choice("2", BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam2)
-                .choice("3", BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam3)
-                .register()
-
-            val imageReference = imageReferenceOrAttachment("image", BRMemesCommand.I18N_PREFIX.Sam.Options.Image)
-                .register()
+class SAMExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val type = string("type", BRMemesCommand.I18N_PREFIX.Sam.Options.Type) {
+            choice(BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam1, "1")
+            choice(BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam2, "2")
+            choice(BRMemesCommand.I18N_PREFIX.Sam.Options.Choice.Sam3, "3")
         }
 
-        override val options = Options
+        val imageReference = imageReferenceOrAttachment("image")
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer message because image manipulation is kinda heavy
 
         val type = args[options.type]
-        val imageReference = args[options.imageReference]
+        val imageReference = args[options.imageReference].get(context)!!
 
         val result = client.handleExceptions(context) {
             client.images.samLogo(

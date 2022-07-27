@@ -1,42 +1,42 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ChannelInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.RoleInfoExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerBannerExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerIconExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.ServerSplashExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.discord.*
 
-object ServerCommand : SlashCommandDeclarationWrapper {
-    val I18N_PREFIX = I18nKeysData.Commands.Command.Server
+class ServerCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Server
+    }
 
-    override fun declaration() = slashCommand(listOf("server"), CommandCategory.DISCORD, TodoFixThisData) {
+    override fun declaration() = slashCommand("server", CommandCategory.DISCORD, TodoFixThisData) {
         dmPermission = false
 
-        subcommand(listOf("icon"), I18nKeysData.Commands.Command.Server.Icon.Description) {
-            executor = ServerIconExecutor
+        subcommand("icon", I18N_PREFIX.Icon.Description) {
+            executor = { ServerIconExecutor(it) }
         }
 
-        subcommand(listOf("banner"), I18nKeysData.Commands.Command.Server.Banner.Description) {
-            executor = ServerBannerExecutor
+        subcommand("banner", I18N_PREFIX.Banner.Description) {
+            executor = { ServerBannerExecutor(it) }
         }
 
-        subcommand(listOf("splash"), I18nKeysData.Commands.Command.Server.Splash.Description) {
-            executor = ServerSplashExecutor
+        subcommand("splash", I18N_PREFIX.Splash.Description) {
+            executor = { ServerSplashExecutor(it) }
         }
 
-        subcommandGroup(listOf("channel"), TodoFixThisData) {
-            subcommand(listOf("info"), I18nKeysData.Commands.Command.Server.Channel.Info.Description) {
-                executor = ChannelInfoExecutor
+        subcommandGroup("channel", TodoFixThisData) {
+            subcommand("info", I18N_PREFIX.Channel.Info.Description) {
+                executor = { ChannelInfoExecutor(it) }
             }
         }
 
-        subcommandGroup(listOf("role"), TodoFixThisData) {
-            subcommand(listOf("info"), I18nKeysData.Commands.Command.Server.Role.Info.Description) {
-                executor = RoleInfoExecutor
+        subcommandGroup("role", TodoFixThisData) {
+            subcommand("info", I18N_PREFIX.Role.Info.Description) {
+                executor = { RoleInfoExecutor(it) }
             }
         }
     }

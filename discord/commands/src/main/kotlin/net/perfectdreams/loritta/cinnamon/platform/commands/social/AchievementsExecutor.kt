@@ -17,23 +17,18 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.*
 import net.perfectdreams.loritta.cinnamon.platform.components.data.SingleUserComponentData
-import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
-import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.getUserAchievements
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 
-class AchievementsExecutor : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
+class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    companion object {
         suspend fun createMessage(
             loritta: LorittaCinnamon,
             user: User,
@@ -157,17 +152,16 @@ class AchievementsExecutor : SlashCommandExecutor() {
         )
     }
 
-    class ChangeCategoryMenuExecutor(val loritta: LorittaCinnamon) : SelectMenuWithDataExecutor {
+    class ChangeCategoryMenuExecutor(loritta: LorittaCinnamon) : CinnamonSelectMenuExecutor(loritta) {
         companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_CATEGORY_MENU_EXECUTOR)
 
         override suspend fun onSelect(
             user: User,
             context: ComponentContext,
-            data: String,
             values: List<String>
         ) {
             // Yes, this is unused because we haven't implemented buttons yet :(
-            val deserialized = context.decodeDataFromComponentAndRequireUserToMatch<ChangeCategoryData>(data)
+            val deserialized = context.decodeDataFromComponentAndRequireUserToMatch<ChangeCategoryData>()
 
             val newCategory = values.first()
             val achievements = loritta.services.users.getUserAchievements(user)

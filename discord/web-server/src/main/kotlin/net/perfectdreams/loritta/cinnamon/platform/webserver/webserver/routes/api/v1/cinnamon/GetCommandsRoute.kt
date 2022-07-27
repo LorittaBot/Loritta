@@ -1,19 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.platform.webserver.webserver.routes.api.v1.cinnamon
 
-import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.response.*
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaCinnamonWebServer
-import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.InteractionCommand
-import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.InteractionCommandGroup
 import net.perfectdreams.sequins.ktor.BaseRoute
 
 class GetCommandsRoute(val m: LorittaCinnamonWebServer) : BaseRoute("/api/v1/cinnamon/commands") {
     override suspend fun onRequest(call: ApplicationCall) {
-        call.respondText(
+        TODO()
+        /* call.respondText(
             Json.encodeToString(
                 m.commandManager.commandManager.declarationWrappers.filterIsInstance<SlashCommandDeclarationWrapper>().map { it.declaration() }.map {
                     InteractionCommand(
@@ -50,6 +44,6 @@ class GetCommandsRoute(val m: LorittaCinnamonWebServer) : BaseRoute("/api/v1/cin
                 }
             ),
             ContentType.Application.Json
-        )
+        ) */
     }
 }

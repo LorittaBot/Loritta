@@ -4,27 +4,23 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.math.Dice
 import net.perfectdreams.loritta.cinnamon.common.utils.math.MathUtils
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.CalculatorCommand
 import kotlin.random.Random
 
-class RollExecutor(val random: Random) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val dices = optionalString("dices", RollCommand.I18N_PREFIX.Options.Dices)
-                .register()
+class RollExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val dices = optionalString("dices", RollCommand.I18N_PREFIX.Options.Dices)
 
-            val expression = optionalString("expression", RollCommand.I18N_PREFIX.Options.Expression)
-                .register()
-        }
-
-        override val options = Options
+        val expression = optionalString("expression", RollCommand.I18N_PREFIX.Options.Expression)
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val dicesAsString = args[options.dices]
@@ -64,7 +60,7 @@ class RollExecutor(val random: Random) : SlashCommandExecutor() {
 
         var response = ""
         for (dice in dices) {
-            val rolledSide = random.nextLong(dice.lowerBound, dice.upperBound + 1)
+            val rolledSide = loritta.random.nextLong(dice.lowerBound, dice.upperBound + 1)
             rolledSides.add(rolledSide)
         }
 

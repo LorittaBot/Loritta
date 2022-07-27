@@ -73,6 +73,7 @@ class ShowtimeBackend(
     val renderer = HtmlRenderer.builder(options).build()
     val svgIconManager = SVGIconManager(this)
     val hashManager = WebsiteAssetsHashManager(this)
+    val publicApplicationCommands = PublicApplicationCommands(languageManager)
 
     val addBotUrl = DiscordOAuth2AuthorizationURL {
         append("client_id", rootConfig.discord.applicationId.toString())

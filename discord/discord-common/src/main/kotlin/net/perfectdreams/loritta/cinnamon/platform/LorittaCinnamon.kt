@@ -4,6 +4,7 @@ import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import io.ktor.client.*
+import io.ktor.client.plugins.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -11,12 +12,16 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withTimeoutOrNull
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.DiscordInteractionsConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordConfig
 import net.perfectdreams.loritta.cinnamon.platform.utils.config.ServicesConfig
+import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
+import net.perfectdreams.loritta.cinnamon.platform.utils.ecb.ECBManager
+import net.perfectdreams.loritta.cinnamon.platform.utils.falatron.FalatronModelsManager
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -24,6 +29,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNoti
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaVoiceConnectionStateRequest
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaVoiceConnectionStateResponse
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
+import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
+import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import java.util.*
 import kotlin.random.Random
 import kotlin.time.Duration
@@ -44,6 +51,26 @@ abstract class LorittaCinnamon(
     services: Pudding,
     val http: HttpClient
 ) : LorittaDiscordStuff(discordConfig, services) {
+    val gabrielaImageServerClient = GabrielaImageServerClient(
+        servicesConfig.gabrielaImageServer.url,
+        HttpClient {
+            // Increase the default timeout for image generation, because some video generations may take too long to be generated
+            install(HttpTimeout) {
+                this.socketTimeoutMillis = 60_000
+                this.requestTimeoutMillis = 60_000
+                this.connectTimeoutMillis = 60_000
+            }
+        }
+    )
+
+    val mojangApi = MinecraftMojangAPI()
+    val correiosClient = CorreiosClient()
+    val randomRoleplayPicturesClient = RandomRoleplayPicturesClient(servicesConfig.randomRoleplayPictures.url)
+    val falatronModelsManager = FalatronModelsManager().also {
+        it.startUpdater()
+    }
+    val ecbManager = ECBManager()
+
     // TODO: *Really* set a random seed
     val random = Random(0)
 

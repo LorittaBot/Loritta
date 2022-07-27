@@ -3,34 +3,30 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 import com.vdurmont.emoji.EmojiManager
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndStripCodeBackticks
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordRegexes
 import kotlin.streams.toList
 
-class EmojiInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val emoji = string("emoji", EmojiCommand.I18N_PREFIX.Info.Options.Emoji)
-                .register()
-        }
-
-        override val options = Options
+class EmojiInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val emoji = string("emoji", EmojiCommand.I18N_PREFIX.Info.Options.Emoji)
     }
 
+    override val options = Options()
+
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val emojiContent = args[Options.emoji]
+        val emojiContent = args[options.emoji]
 
         if (EmojiManager.isEmoji(emojiContent)) {
             context.sendMessage {

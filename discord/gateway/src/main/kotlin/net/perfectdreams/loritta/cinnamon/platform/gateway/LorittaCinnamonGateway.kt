@@ -46,7 +46,7 @@ class LorittaCinnamonGateway(
         net.perfectdreams.discordinteraktions.common.commands.CommandManager()
     )
 
-    override fun getCommandCount() = commandManager.commandManager.executors.size
+    override fun getCommandCount() = commandManager.interaKTionsManager.applicationCommandsExecutors.size
 
     fun start() {
         runBlocking {
@@ -63,7 +63,7 @@ class LorittaCinnamonGateway(
             gateway.installDiscordInteraKTions(
                 Snowflake(discordConfig.applicationId),
                 rest,
-                commandManager.commandManager.interaKTionsManager
+                commandManager.commandRegistry.interaKTionsManager
             )
 
             gateway.start(discordConfig.token)

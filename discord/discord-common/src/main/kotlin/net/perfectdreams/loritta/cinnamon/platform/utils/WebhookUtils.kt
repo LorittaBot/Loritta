@@ -51,7 +51,6 @@ object WebhookUtils {
 
     // Same thing as Kord's "executeWebhook" method, but we accept a WebhookExecuteRequest class instead of a builder
     // TODO: Support files
-    @OptIn(ExperimentalContracts::class)
     suspend inline fun executeWebhook(
         webhookId: Snowflake,
         token: String,
@@ -63,7 +62,7 @@ object WebhookUtils {
             keys[Route.WebhookId] = webhookId
             keys[Route.WebhookToken] = token
             if(wait != null) parameter("wait", "$wait")
-            if(threadId != null) parameter("thread_id", threadId.asString)
+            if(threadId != null) parameter("thread_id", threadId.toString())
             body(WebhookExecuteRequest.serializer(), request)
         }
     }

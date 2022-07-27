@@ -10,54 +10,43 @@ import dev.kord.rest.json.request.WebhookExecuteRequest
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.loritta.cinnamon.common.utils.Color
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 
-class WebhookSendRepostExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val webhookUrl = string("webhook_url", WebhookCommand.I18N_PREFIX.Options.WebhookUrl.Text)
-                .register()
+class WebhookSendRepostExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val webhookUrl = string("webhook_url", WebhookCommand.I18N_PREFIX.Options.WebhookUrl.Text)
 
-            val messageUrl = string("message_url", WebhookCommand.I18N_PREFIX.Options.MessageUrl.Text)
-                .register()
+        val messageUrl = string("message_url", WebhookCommand.I18N_PREFIX.Options.MessageUrl.Text)
 
-            val username = optionalString("username", WebhookCommand.I18N_PREFIX.Options.Username.Text)
-                .register()
+        val username = optionalString("username", WebhookCommand.I18N_PREFIX.Options.Username.Text)
 
-            val avatarUrl = optionalString("avatar_url", WebhookCommand.I18N_PREFIX.Options.AvatarUrl.Text)
-                .register()
+        val avatarUrl = optionalString("avatar_url", WebhookCommand.I18N_PREFIX.Options.AvatarUrl.Text)
 
-            val embedTitle = optionalString("embed_title", WebhookCommand.I18N_PREFIX.Options.EmbedTitle.Text)
-                .register()
+        val embedTitle = optionalString("embed_title", WebhookCommand.I18N_PREFIX.Options.EmbedTitle.Text)
 
-            val embedDescription = optionalString("embed_description", WebhookCommand.I18N_PREFIX.Options.EmbedDescription.Text)
-                .register()
+        val embedDescription = optionalString("embed_description", WebhookCommand.I18N_PREFIX.Options.EmbedDescription.Text)
 
-            val embedImageUrl = optionalString("embed_image_url", WebhookCommand.I18N_PREFIX.Options.EmbedImageUrl.Text)
-                .register()
+        val embedImageUrl = optionalString("embed_image_url", WebhookCommand.I18N_PREFIX.Options.EmbedImageUrl.Text)
 
-            val embedThumbnailUrl = optionalString("embed_thumbnail_url", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
-                .register()
+        val embedThumbnailUrl = optionalString("embed_thumbnail_url", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
 
-            val embedColor = optionalString("embed_color", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
-                .register()
-        }
-
-        override val options = Options
+        val embedColor = optionalString("embed_color", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally() // Defer the message ephemerally because we don't want users looking at the webhook URL
 
-        val webhookUrl = args[Options.webhookUrl]
-        val messageUrl = args[Options.messageUrl]
-        val username = args[Options.username]
-        val avatarUrl = args[Options.avatarUrl]
+        val webhookUrl = args[options.webhookUrl]
+        val messageUrl = args[options.messageUrl]
+        val username = args[options.username]
+        val avatarUrl = args[options.avatarUrl]
 
         val matcher = WebhookCommandUtils.messageUrlRegex.find(messageUrl) ?: context.failEphemerally(
             context.i18nContext.get(
@@ -70,11 +59,11 @@ class WebhookSendRepostExecutor(val rest: RestClient) : SlashCommandExecutor() {
         )
 
         // Embed Stuff
-        val embedTitle = args[Options.embedTitle]
-        val embedDescription = args[Options.embedDescription]
-        val embedImageUrl = args[Options.embedImageUrl]
-        val embedThumbnailUrl = args[Options.embedThumbnailUrl]
-        val embedColor = args[Options.embedColor]
+        val embedTitle = args[options.embedTitle]
+        val embedDescription = args[options.embedDescription]
+        val embedImageUrl = args[options.embedImageUrl]
+        val embedThumbnailUrl = args[options.embedThumbnailUrl]
+        val embedColor = args[options.embedColor]
 
         WebhookCommandUtils.sendMessageViaWebhook(context, webhookUrl) {
             val embed = if (embedTitle != null || embedDescription != null || embedImageUrl != null || embedThumbnailUrl != null) {

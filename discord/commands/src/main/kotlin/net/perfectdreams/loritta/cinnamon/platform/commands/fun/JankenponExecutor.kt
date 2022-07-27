@@ -3,34 +3,32 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.JankenponCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.platform.commands.*
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
 import kotlin.random.Random
 
-class JankenponExecutor(val random: Random, ): SlashCommandExecutor() {
-    companion object: SlashCommandExecutorDeclaration() {
-        object Options: ApplicationCommandOptions() {
-            val value = string("value", JankenponCommand.I18N_PREFIX.Options.Action)
-                .choice("rock", JankenponCommand.I18N_PREFIX.Rock)
-                .choice("paper", JankenponCommand.I18N_PREFIX.Paper)
-                .choice("scissors", JankenponCommand.I18N_PREFIX.Scissors)
-                .choice("jesus", JankenponCommand.I18N_PREFIX.JesusChrist)
-                .register()
+class JankenponExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val value = string("value", JankenponCommand.I18N_PREFIX.Options.Action) {
+            choice(JankenponCommand.I18N_PREFIX.Rock, "rock")
+            choice(JankenponCommand.I18N_PREFIX.Paper, "paper")
+            choice(JankenponCommand.I18N_PREFIX.Scissors, "scissors")
+            choice(JankenponCommand.I18N_PREFIX.JesusChrist, "jesus")
         }
-        override val options = Options
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val argument = args[options.value]
         val janken = Jankenpon.getJanken(argument)
 
         if (janken != null) {
-            val opponent = Jankenpon.values()[random.nextInt(Jankenpon.values().size)]
+            val opponent = Jankenpon.values()[loritta.random.nextInt(Jankenpon.values().size)]
 
             val status = janken.getStatus(opponent)
 

@@ -1,6 +1,18 @@
 package net.perfectdreams.loritta.cinnamon.platform.utils
 
 object DiscordResourceLimits {
+    object Command {
+        object Description {
+            const val Length = 100
+        }
+
+        object Options {
+            object Description {
+                const val Length = 100
+            }
+        }
+    }
+
     object Message {
         const val Length = 2000
         const val EmbedsPerMessage = 10

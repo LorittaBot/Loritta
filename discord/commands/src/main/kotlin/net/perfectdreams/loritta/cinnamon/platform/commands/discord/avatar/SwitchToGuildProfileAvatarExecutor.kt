@@ -4,16 +4,15 @@ import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 
-class SwitchToGuildProfileAvatarExecutor(val loritta: LorittaCinnamon, val lorittaId: Snowflake) :
-    ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.SWITCH_TO_GUILD_PROFILE_AVATAR_EXECUTOR)
+class SwitchToGuildProfileAvatarExecutor(loritta: LorittaCinnamon, val lorittaId: Snowflake) : CinnamonButtonExecutor(loritta) {
+    companion object : ButtonExecutorDeclaration(ComponentExecutorIds.SWITCH_TO_GUILD_PROFILE_AVATAR_EXECUTOR)
 
-    override suspend fun onClick(user: User, context: ComponentContext, data: String) {
-        val decodedInteractionData = context.decodeDataFromComponentAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>(data)
+    override suspend fun onClick(user: User, context: ComponentContext) {
+        val decodedInteractionData = context.decodeDataFromComponentAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>()
         val data = UserDataUtils.getInteractionDataOrRetrieveViaRestIfItDoesNotExist(
             loritta,
             decodedInteractionData,

@@ -9,27 +9,26 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExe
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.characters.CharacterType
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.characters.UniverseType
+import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
 
 class ChangeUniverseSelectMenuExecutor(
-    val loritta: LorittaCinnamon,
+    loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
-) : SelectMenuWithDataExecutor {
+) : CinnamonSelectMenuExecutor(loritta) {
     companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_UNIVERSE_SELECT_MENU_EXECUTOR)
 
     override suspend fun onSelect(
         user: User,
         context: ComponentContext,
-        data: String,
         values: List<String>
     ) {
         // We will already defer to avoid issues
         // Also because we want to edit the message with a file... later!
         context.deferUpdateMessage()
 
-        val (_, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>(data)
+        val (_, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>()
 
         val textBoxOptionsData = TextBoxHelper.getInteractionDataAndFailIfItDoesNotExist(context, interactionDataId)
 

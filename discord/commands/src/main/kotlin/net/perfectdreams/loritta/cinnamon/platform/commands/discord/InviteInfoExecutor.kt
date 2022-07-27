@@ -3,36 +3,32 @@ package net.perfectdreams.loritta.cinnamon.platform.commands.discord
 import dev.kord.common.Color
 import dev.kord.common.entity.optional.value
 import dev.kord.rest.request.KtorRequestException
-import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenAndStripCodeBackticks
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
 
-class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val invite = string("invite", InviteCommand.I18N_PREFIX.Info.Options.Invite)
-                .register()
-        }
-
-        override val options = Options
+class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val invite = string("invite", InviteCommand.I18N_PREFIX.Info.Options.Invite)
     }
 
+    override val options = Options()
+
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val text = args[Options.invite]
+        val text = args[options.invite]
         val inviteCode = if (text.contains("/")) {
             DiscordInviteUtils.getInviteCodeFromUrl(text)
         } else {
@@ -46,7 +42,7 @@ class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
                 styled(
                     context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.DoesntExists(
-                            args[Options.invite].shortenAndStripCodeBackticks(100)
+                            args[options.invite].shortenAndStripCodeBackticks(100)
                         )
                     ),
                     prefix = Emotes.Error
@@ -63,7 +59,7 @@ class InviteInfoExecutor(val rest: RestClient) : SlashCommandExecutor() {
                 styled(
                     context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.DoesntExists(
-                            args[Options.invite].shortenAndStripCodeBackticks(100)
+                            args[options.invite].shortenAndStripCodeBackticks(100)
                         )
                     ),
                     prefix = Emotes.Error

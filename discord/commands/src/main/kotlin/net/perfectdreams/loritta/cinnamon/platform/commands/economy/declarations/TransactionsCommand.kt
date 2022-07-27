@@ -1,14 +1,18 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations
 
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.TransactionsExecutor
 
-object TransactionsCommand : SlashCommandDeclarationWrapper {
-    val I18N_PREFIX = I18nKeysData.Commands.Command.Transactions
+class TransactionsCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Transactions
+    }
 
-    override fun declaration() = slashCommand(listOf("transactions"), CommandCategory.ECONOMY, I18N_PREFIX.Description) {
-        executor = TransactionsExecutor
+    override fun declaration() = slashCommand("transactions", CommandCategory.ECONOMY, I18N_PREFIX.Description) {
+        executor = { TransactionsExecutor(it) }
     }
 }

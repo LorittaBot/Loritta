@@ -13,12 +13,7 @@ import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.BarebonesSingleUserComponentData
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.SelectMenuWithDataExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
-import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
-import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
+import net.perfectdreams.loritta.cinnamon.platform.components.*
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.CorreiosUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosEvento
@@ -27,14 +22,13 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class SelectPackageSelectMenuExecutor(
-    val loritta: LorittaCinnamon
-) : SelectMenuWithDataExecutor {
+    loritta: LorittaCinnamon
+) : CinnamonSelectMenuExecutor(loritta) {
     companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.SELECT_PACKAGE_SELECT_MENU_EXECUTOR)
 
     override suspend fun onSelect(
         user: User,
         context: ComponentContext,
-        data: String,
         values: List<String>
     ) {
         context.deferUpdateMessage()

@@ -7,22 +7,22 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
+import net.perfectdreams.loritta.cinnamon.platform.components.ButtonExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
 
 class ChangeColorPortraitTypeButtonClickExecutor(
-    val loritta: LorittaCinnamon,
+    loritta: LorittaCinnamon,
     val client: GabrielaImageServerClient
-) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.CHANGE_COLOR_PORTRAIT_TYPE_BUTTON_EXECUTOR)
+) : CinnamonButtonExecutor(loritta) {
+    companion object : ButtonExecutorDeclaration(ComponentExecutorIds.CHANGE_COLOR_PORTRAIT_TYPE_BUTTON_EXECUTOR)
 
-    override suspend fun onClick(user: User, context: ComponentContext, data: String) {
+    override suspend fun onClick(user: User, context: ComponentContext) {
         // We will already defer to avoid issues
         // Also because we want to edit the message with a file... later!
         context.deferUpdateMessage()
 
-        val (_, type, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectColorPortraitTypeData>(data)
+        val (_, type, interactionDataId) = context.decodeDataFromComponentAndRequireUserToMatch<SelectColorPortraitTypeData>()
 
         val textBoxOptionsData = TextBoxHelper.getInteractionDataAndFailIfItDoesNotExist(context, interactionDataId)
 

@@ -13,30 +13,40 @@ import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SoundboxCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.utils.falatron.FalatronModelsManager
 import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
-class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager: FalatronModelsManager) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val voice = string("voice", SoundboxCommand.I18N_PREFIX.Falatron.Options.Voice.Text)
-                .autocomplete(FalatronVoiceAutocompleteExecutor)
-                .register()
+class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManager: FalatronModelsManager) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val voice = string("voice", SoundboxCommand.I18N_PREFIX.Falatron.Options.Voice.Text) {
+            cinnamonAutocomplete { _, focused ->
+                // Wait until we have a non-empty model list
+                val models = falatronModelsManager.models.filter { it.isNotEmpty() }
+                    .first()
 
-            val text = string("text", SoundboxCommand.I18N_PREFIX.Falatron.Options.Text.Text)
-                .register()
+                // Then we filter only the models that starts with the user input!
+                models
+                    .sortedBy { it.name }
+                    .filter {
+                        it.name.startsWith(focused.value, true)
+                    }.take(25).associate {
+                        "${it.name} (${it.category})" to it.name
+                    }
+            }
         }
 
-        override val options = Options
+        val text = string("text", SoundboxCommand.I18N_PREFIX.Falatron.Options.Text.Text)
     }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext) // Only guilds
@@ -56,20 +66,20 @@ class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager
                 // TODO: Reenable de defer after we remove the warning above
                 // context.deferChannelMessage()
 
-                val userConnectedVoiceChannelId = m.cache.getUserConnectedVoiceChannel(guildId, context.user.id) ?: context.fail {
+                val userConnectedVoiceChannelId = loritta.cache.getUserConnectedVoiceChannel(guildId, context.user.id) ?: context.fail {
                     // Not in a voice channel
                     content = "Você precisa estar conectado em um canal de voz para usar o Falatron!"
                 }
 
                 // Can we talk there?
-                if (!m.cache.lorittaHasPermission(context.guildId, userConnectedVoiceChannelId, Permission.Connect, Permission.Speak))
+                if (!loritta.cache.lorittaHasPermission(context.guildId, userConnectedVoiceChannelId, Permission.Connect, Permission.Speak))
                     context.fail {
                         // Looks like we can't...
                         content = "Desculpe, mas eu não tenho permissão para falar no canal <#${userConnectedVoiceChannelId}>!"
                     }
 
                 // Are we already playing something in another channel already?
-                val voiceConnectionStatus = m.getLorittaVoiceConnectionStateOrNull(guildId) ?: context.fail {
+                val voiceConnectionStatus = loritta.getLorittaVoiceConnectionStateOrNull(guildId) ?: context.fail {
                     // Looks like something went wrong! Took too long to get if I'm in a voice channel or not
                     content = "Deu ruim!"
                 }
@@ -85,7 +95,7 @@ class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager
                 val models = falatronModelsManager.models.filter { it.isNotEmpty() }
                     .first()
 
-                val model = models.firstOrNull { it.name == args[Options.voice] }
+                val model = models.firstOrNull { it.name == args[options.voice] }
                     ?: context.fail {
                         styled(
                             "Voz desconhecida!",
@@ -102,18 +112,18 @@ class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager
                     )
                 }
 
-                m.services.notify(
+                loritta.services.notify(
                     FalatronVoiceRequest(
                         uniqueNotificationId2,
                         context.guildId.toLong(),
                         userConnectedVoiceChannelId.toLong(),
-                        args[Options.voice],
-                        args[Options.text]
+                        args[options.voice],
+                        args[options.text]
                     )
                 )
 
                 val receivedResponse = withTimeoutOrNull(5_000) {
-                    m.filterNotificationsByUniqueId(uniqueNotificationId2)
+                    loritta.filterNotificationsByUniqueId(uniqueNotificationId2)
                         .filterIsInstance<FalatronVoiceRequestReceivedResponseX>()
                         .first()
                 }
@@ -144,7 +154,7 @@ class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager
                     this@coroutineScope.cancel()
                 }
 
-                m.filterNotificationsByUniqueId(uniqueNotificationId2)
+                loritta.filterNotificationsByUniqueId(uniqueNotificationId2)
                     .filterIsInstance<FalatronNotification>()
                     .collect {
                         when (it) {
@@ -178,7 +188,7 @@ class FalatronExecutor(val m: LorittaCinnamon, private val falatronModelsManager
                                         url = "https://falatron.com/"
 
                                         title = model.name
-                                        description = "*${args[Options.text]}*"
+                                        description = "*${args[options.text]}*"
 
                                         if (model.image.isNotBlank())
                                             thumbnailUrl = model.image

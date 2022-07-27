@@ -8,7 +8,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.allowedMenti
 /**
  * Mentions a [user] in this message
  *
- * @param user         the user that will be mentioned
+ * @param user       the user that will be mentioned
  * @param notifyUser if the user should be notified about the message
  * @return the user mention
  */

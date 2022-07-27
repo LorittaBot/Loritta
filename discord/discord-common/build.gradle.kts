@@ -29,6 +29,9 @@ dependencies {
     // Logback GELF, used for Graylog logging
     implementation("de.siegmar:logback-gelf:3.0.0")
 
+    api("org.jsoup:jsoup:1.13.1")
+    api("net.perfectdreams.randomroleplaypictures:client:1.0.1")
+
     testImplementation(libs.logback.classic)
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.testcontainers:testcontainers:1.16.3")

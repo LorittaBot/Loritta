@@ -15,10 +15,9 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.ApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.TextBoxHelper.textBoxTextOption
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
@@ -48,15 +47,8 @@ import java.io.InputStream
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
-class TextBoxExecutor(val client: GabrielaImageServerClient) : SlashCommandExecutor() {
-    companion object : SlashCommandExecutorDeclaration() {
-        object Options : ApplicationCommandOptions() {
-            val text = textBoxTextOption()
-                .register()
-        }
-
-        override val options = Options
-
+class TextBoxExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
+    companion object {
         @OptIn(ExperimentalTime::class)
         suspend fun createMessage(
             loritta: LorittaCinnamon,
@@ -261,11 +253,16 @@ class TextBoxExecutor(val client: GabrielaImageServerClient) : SlashCommandExecu
         }
     }
 
-    @OptIn(ExperimentalTime::class)
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val text = textBoxTextOption()
+    }
+
+    override val options = Options()
+
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because we will create a image
 
-        val text = args[Options.text]
+        val text = args[options.text]
 
         val data = TextBoxWithGamePortraitOptionsData(
             text,

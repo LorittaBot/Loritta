@@ -1,26 +1,31 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.roleplay
 
 import kotlinx.coroutines.delay
-import net.perfectdreams.discordinteraktions.common.entities.User
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.CommandOption
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.platform.commands.roleplay.retribute.RetributeRoleplayData
 import net.perfectdreams.loritta.cinnamon.platform.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserId
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
 abstract class RoleplayPictureExecutor(
+    loritta: LorittaCinnamon,
     private val client: RandomRoleplayPicturesClient,
     private val attributes: RoleplayActionAttributes
-) : SlashCommandExecutor() {
-    abstract val userOption: CommandOption<User>
+) : CinnamonSlashCommandExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val user = user("user", attributes.userI18nDescription)
+    }
+
+    override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()
 
-        val receiver = args[userOption]
+        val receiver = args[options.user]
 
         val (achievementTargets, message) = RoleplayUtils.handleRoleplayMessage(
             context.loritta,

@@ -1,11 +1,11 @@
 package net.perfectdreams.showtime.backend
 
 import kotlinx.serialization.Serializable
+import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationBuilder
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclarationBuilder
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand
@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.R
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.RollCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.ShipCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SummonCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.TextTransformCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.VieirinhaCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.ArtExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.BobBurningPaperExecutor
@@ -116,92 +116,92 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
 import kotlin.reflect.KClass
 
-object PublicApplicationCommands {
+class PublicApplicationCommands(val languageManager: LanguageManager) {
     val cinnamonDeclarations = listOf(
         // ===[ DISCORD ]===
-        UserCommand,
-        ServerCommand,
-        InviteCommand,
-        EmojiCommand,
-        WebhookCommand,
-        LorittaCommand,
+        UserCommand(languageManager),
+        ServerCommand(languageManager),
+        InviteCommand(languageManager),
+        EmojiCommand(languageManager),
+        WebhookCommand(languageManager),
+        LorittaCommand(languageManager),
 
         // ===[ FUN ]===
-        CoinFlipCommand,
-        RateCommand,
-        ShipCommand,
-        SummonCommand,
-        VieirinhaCommand,
-        RollCommand,
-        TextTransformDeclaration,
-        JankenponCommand,
-        HungerGamesCommand,
+        CoinFlipCommand(languageManager),
+        RateCommand(languageManager),
+        ShipCommand(languageManager),
+        SummonCommand(languageManager),
+        VieirinhaCommand(languageManager),
+        RollCommand(languageManager),
+        TextTransformCommand(languageManager),
+        JankenponCommand(languageManager),
+        HungerGamesCommand(languageManager),
 
         // ===[ MINECRAFT ]===
-        MinecraftCommand,
+        MinecraftCommand(languageManager),
 
         // ===[ IMAGES ]===
-        DrakeCommand,
-        SonicCommand,
-        ArtCommand,
-        BobBurningPaperCommand,
-        BRMemesCommand,
-        BuckShirtCommand,
-        LoriSignCommand,
-        PassingPaperCommand,
-        PepeDreamCommand,
-        PetPetCommand,
-        WolverineFrameCommand,
-        RipTvCommand,
-        SustoCommand,
-        GetOverHereCommand,
-        NichijouYuukoPaperCommand,
-        TrumpCommand,
-        TerminatorAnimeCommand,
-        ToBeContinuedCommand,
-        InvertColorsCommand,
-        MemeMakerCommand,
-        MarkMetaCommand,
-        DrawnMaskCommand,
-        SadRealityCommand,
+        DrakeCommand(languageManager),
+        SonicCommand(languageManager),
+        ArtCommand(languageManager),
+        BobBurningPaperCommand(languageManager),
+        BRMemesCommand(languageManager),
+        BuckShirtCommand(languageManager),
+        LoriSignCommand(languageManager),
+        PassingPaperCommand(languageManager),
+        PepeDreamCommand(languageManager),
+        PetPetCommand(languageManager),
+        WolverineFrameCommand(languageManager),
+        RipTvCommand(languageManager),
+        SustoCommand(languageManager),
+        GetOverHereCommand(languageManager),
+        NichijouYuukoPaperCommand(languageManager),
+        TrumpCommand(languageManager),
+        TerminatorAnimeCommand(languageManager),
+        ToBeContinuedCommand(languageManager),
+        InvertColorsCommand(languageManager),
+        MemeMakerCommand(languageManager),
+        MarkMetaCommand(languageManager),
+        DrawnMaskCommand(languageManager),
+        SadRealityCommand(languageManager),
 
         // ===[ VIDEOS ]===
-        CarlyAaahCommand,
-        AttackOnHeartCommand,
-        FansExplainingCommand,
-        GigaChadCommand,
-        ChavesCommand,
+        CarlyAaahCommand(languageManager),
+        AttackOnHeartCommand(languageManager),
+        FansExplainingCommand(languageManager),
+        GigaChadCommand(languageManager),
+        ChavesCommand(languageManager),
 
         // ===[ UTILS ]===
-        HelpCommand,
-        MoneyCommand,
-        MorseCommand,
-        DictionaryCommand,
-        CalculatorCommand,
-        AnagramCommand,
-        ChooseCommand,
-        PackageCommand,
-        ColorInfoCommand,
+        HelpCommand(languageManager),
+        MoneyCommand(languageManager),
+        MorseCommand(languageManager),
+        DictionaryCommand(languageManager),
+        CalculatorCommand(languageManager),
+        AnagramCommand(languageManager),
+        ChooseCommand(languageManager),
+        PackageCommand(languageManager),
+        ColorInfoCommand(languageManager),
 
         // ===[ ECONOMY ]===
-        SonhosCommand,
-        DailyCommand,
-        BrokerCommand,
-        TransactionsCommand,
-        BetCommand,
-        AchievementsCommand,
-        AfkCommand,
-        GenderCommand,
-        UndertaleCommand,
+        SonhosCommand(languageManager),
+        DailyCommand(languageManager),
+        BrokerCommand(languageManager),
+        TransactionsCommand(languageManager),
+        BetCommand(languageManager),
+        AchievementsCommand(languageManager),
+        AfkCommand(languageManager),
+        GenderCommand(languageManager),
+        UndertaleCommand(languageManager),
 
         // ===[ ROLEPLAY ]===
-        RoleplayCommand,
+        RoleplayCommand(languageManager),
 
         // ===[ ROBLOX ]===
-        RobloxCommand
-    ).map { it.declaration() }
+        RobloxCommand(languageManager)
+    )
 
-    val dataDeclarations = cinnamonDeclarations.map { convertToData(it) }
+    val dataDeclarations = cinnamonDeclarations.map { convertToData(it.declaration()) }
 
     val flattenedDataDeclarations = dataDeclarations.flatMap { flattenData(it) }
 
@@ -417,14 +417,14 @@ object PublicApplicationCommands {
     value class VideoUrl(val url: String)
 
     /**
-     * Converts a [SlashCommandDeclarationBuilder] to [InteractionCommand]
+     * Converts a [LorittaCommandDeclarationBuilder] to [InteractionCommand]
      */
-    private fun convertToData(declaration: SlashCommandDeclaration): InteractionCommand {
+    private fun convertToData(declaration: CinnamonSlashCommandDeclarationBuilder): InteractionCommand {
         return InteractionCommand(
             declaration.name,
             declaration.description,
             declaration.category,
-            (declaration.executor?.parent as KClass<*>?)?.simpleName,
+            null, // (declaration.executor?.parent as KClass<*>?)?.simpleName,
             declaration.subcommandGroups.map {
                 InteractionCommandGroup(
                     it.name,
@@ -433,7 +433,7 @@ object PublicApplicationCommands {
                             it.name,
                             it.description,
                             it.category,
-                            (it.executor?.parent as KClass<*>?)?.simpleName,
+                            null, // (it.executor?.parent as KClass<*>?)?.simpleName,
                             listOf(),
                             listOf()
                         )

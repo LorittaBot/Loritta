@@ -7,10 +7,7 @@ import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonClickWithDataExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
+import net.perfectdreams.loritta.cinnamon.platform.components.*
 import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosFoundObjeto
@@ -20,15 +17,15 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.PackagesTrackingService
 
 class FollowPackageButtonClickExecutor(
-    val loritta: LorittaCinnamon,
+    loritta: LorittaCinnamon,
     val correios: CorreiosClient
-) : ButtonClickWithDataExecutor {
-    companion object : ButtonClickExecutorDeclaration(ComponentExecutorIds.FOLLOW_PACKAGE_BUTTON_EXECUTOR)
+) : CinnamonButtonExecutor(loritta) {
+    companion object : ButtonExecutorDeclaration(ComponentExecutorIds.FOLLOW_PACKAGE_BUTTON_EXECUTOR)
 
-    override suspend fun onClick(user: User, context: ComponentContext, data: String) {
+    override suspend fun onClick(user: User, context: ComponentContext) {
         context.deferUpdateMessage()
 
-        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<FollowPackageData>(data)
+        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<FollowPackageData>()
 
         // Check if the package is already delivered and, if it is, don't allow the user to track it!
         val correiosResponse = correios.getPackageInfo(decoded.trackingId)
