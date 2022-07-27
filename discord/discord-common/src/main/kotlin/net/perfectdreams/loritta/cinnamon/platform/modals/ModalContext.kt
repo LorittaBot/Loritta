@@ -4,7 +4,6 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitContext
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
@@ -14,11 +13,11 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 
-open class ModalSubmitContext(
+open class ModalContext(
     val loritta: LorittaCinnamon,
     val i18nContext: I18nContext,
     val user: User,
-    val interaKTionsContext: ModalSubmitContext
+    val interaKTionsContext: net.perfectdreams.discordinteraktions.common.modals.ModalContext
 ) {
     suspend fun sendMessage(message: String, embed: EmbedBuilder? = null) {
         interaKTionsContext.sendMessage {

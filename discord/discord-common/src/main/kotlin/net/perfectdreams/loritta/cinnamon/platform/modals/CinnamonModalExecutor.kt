@@ -1,9 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.modals
 
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.modals.GuildModalSubmitContext
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitContext
-import net.perfectdreams.discordinteraktions.common.modals.ModalSubmitWithDataExecutor
+import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
@@ -13,24 +11,24 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.SilentCommandException
-import net.perfectdreams.loritta.cinnamon.platform.modals.components.ModalComponent
-import net.perfectdreams.loritta.cinnamon.platform.modals.components.StringModalComponent
 import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.InteractionsMetrics
+import net.perfectdreams.discordinteraktions.common.modals.ModalContext
 
-class ModalSubmitWithDataExecutorWrapper(
-    private val loritta: LorittaCinnamon,
-    private val executorDeclaration: ModalSubmitExecutorDeclaration,
-    private val executor: net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitWithDataExecutor
-) : ModalSubmitWithDataExecutor {
+abstract class CinnamonModalExecutor(
+    val loritta: LorittaCinnamon
+) : ModalExecutor {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun onModalSubmit(context: ModalSubmitContext, args: ModalArguments, data: String) {
-        val rootDeclarationClazzName = executorDeclaration::class.simpleName
-        val executorClazzName = executor::class.simpleName
+    val executorClazzName = this::class.simpleName
 
-        logger.info { "(${context.sender.id.value}) $executor" }
+    abstract suspend fun onSubmit(context: net.perfectdreams.loritta.cinnamon.platform.modals.ModalContext, args: ModalArguments)
+
+    override suspend fun onSubmit(context: ModalContext, args: ModalArguments) {
+        val rootDeclarationClazzName = context.modalExecutorDeclaration::class.simpleName ?: "UnknownDeclaration"
+
+        logger.info { "(${context.sender.id.value}) $this" }
 
         val timer = InteractionsMetrics.EXECUTED_MODAL_SUBMIT_LATENCY_COUNT
             .labels(rootDeclarationClazzName, executorClazzName)
@@ -38,13 +36,9 @@ class ModalSubmitWithDataExecutorWrapper(
 
         // These variables are used in the catch { ... } block, to make our lives easier
         var i18nContext: I18nContext? = null
-        var cinnamonContext: net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitContext? = null
-        val guildId = (context as? GuildModalSubmitContext)?.guildId
+        val cinnamonContext: net.perfectdreams.loritta.cinnamon.platform.modals.ModalContext?
+        val guildId = (context as? net.perfectdreams.discordinteraktions.common.modals.GuildModalContext)?.guildId
         var stacktrace: String? = null
-
-        val cinnamonArgs = mutableMapOf<ModalComponent<*>, Any?>()
-
-        val interaKTionsArgumentEntries = args.types.entries
 
         try {
             val serverConfig = if (guildId != null) {
@@ -57,10 +51,9 @@ class ModalSubmitWithDataExecutorWrapper(
 
             i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-            // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
-            cinnamonContext = if (guildId != null) {
+            cinnamonContext = if (context is net.perfectdreams.discordinteraktions.common.modals.GuildModalContext) {
                 // TODO: Add Guild ID here
-                net.perfectdreams.loritta.cinnamon.platform.modals.GuildModalSubmitContext(
+                GuildModalContext(
                     loritta,
                     i18nContext,
                     context.sender,
@@ -69,7 +62,7 @@ class ModalSubmitWithDataExecutorWrapper(
                     context.member
                 )
             } else {
-                net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitContext(
+                ModalContext(
                     loritta,
                     i18nContext,
                     context.sender,
@@ -77,10 +70,9 @@ class ModalSubmitWithDataExecutorWrapper(
                 )
             }
 
-            executor.onModalSubmit(
+            onSubmit(
                 cinnamonContext,
-                net.perfectdreams.loritta.cinnamon.platform.modals.components.ModalArguments(cinnamonArgs),
-                data
+                args
             )
         } catch (e: Throwable) {
             if (e is SilentCommandException)
@@ -100,15 +92,6 @@ class ModalSubmitWithDataExecutorWrapper(
 
             // If the i18nContext is not present, we will default to the default language provided
             i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
-
-            executorDeclaration.options.arguments.forEach {
-                // TODO: Fix this
-                /* val interaKTionArgument = interaKTionsArgumentEntries.firstOrNull { opt -> it.name == opt.key.name }
-
-                when (it) {
-                    is StringModalComponent -> cinnamonArgs[it] =  interaKTionArgument?.value
-                } */
-            }
 
             // Tell the user that something went *really* wrong
             // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context
@@ -141,7 +124,7 @@ class ModalSubmitWithDataExecutorWrapper(
         }
 
         val commandLatency = timer.observeDuration()
-        logger.info { "(${context.sender.id.value}) $executor - OK! Took ${commandLatency * 1000}ms" }
+        logger.info { "(${context.sender.id.value}) $this - OK! Took ${commandLatency * 1000}ms" }
 
         // TODO: Interaction Log
         /* loritta.services.executedInteractionsLog.insertComponentLog(
@@ -157,6 +140,4 @@ class ModalSubmitWithDataExecutorWrapper(
             stacktrace
         ) */
     }
-
-    override fun signature() = executorDeclaration::class
 }

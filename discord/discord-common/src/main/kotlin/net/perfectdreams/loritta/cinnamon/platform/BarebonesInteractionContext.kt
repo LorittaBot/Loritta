@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.common.entities.LorittaReply
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.platform.modals.ModalSubmitExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.platform.modals.CinnamonModalExecutorDeclaration
 
 open class BarebonesInteractionContext(
     open val interaKTionsContext: BarebonesInteractionContext
@@ -279,6 +279,6 @@ open class BarebonesInteractionContext(
         }
     )
 
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id.value, title, builder)
-    suspend fun sendModal(declaration: ModalSubmitExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id.value, data, title, builder)
+    suspend fun sendModal(declaration: CinnamonModalExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, title, builder)
+    suspend fun sendModal(declaration: CinnamonModalExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, data, title, builder)
 }

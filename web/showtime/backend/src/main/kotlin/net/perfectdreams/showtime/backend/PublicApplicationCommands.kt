@@ -3,9 +3,6 @@ package net.perfectdreams.showtime.backend
 import kotlinx.serialization.Serializable
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.commands.LorittaCommandDeclarationBuilder
-import net.perfectdreams.loritta.cinnamon.platform.commands.SlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand

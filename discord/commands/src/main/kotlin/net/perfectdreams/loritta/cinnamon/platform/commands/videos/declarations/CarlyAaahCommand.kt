@@ -8,7 +8,9 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.CarlyAaahExecutor
 
 class CarlyAaahCommand(loritta: LorittaCinnamon, val gabiClient: GabrielaImageServerClient) : CinnamonSlashCommandDeclarationWrapper(loritta) {
-    val I18N_PREFIX = I18nKeysData.Commands.Command.Carlyaaah
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Carlyaaah
+    }
 
     override fun declaration() = slashCommand("carlyaaah", CommandCategory.VIDEOS, I18N_PREFIX.Description) {
         executor = CarlyAaahExecutor(loritta, gabiClient)

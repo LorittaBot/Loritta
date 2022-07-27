@@ -6,6 +6,7 @@ import io.ktor.client.plugins.*
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
+import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -221,10 +222,7 @@ class CommandManager(
         register(RobloxCommand(loritta))
 
         // ===[ OTHER STUFF ]===
-        commandRegistry.register(
-            ActivateInviteBlockerBypassButtonClickExecutor,
-            ActivateInviteBlockerBypassButtonClickExecutor(loritta)
-        )
+        register(ActivateInviteBlockerBypassButtonClickExecutor(loritta))
 
         // Validate if we don't have more commands than Discord allows
         if (commandRegistry.interaKTionsManager.applicationCommandsDeclarations.size > 100) {
@@ -250,6 +248,10 @@ class CommandManager(
     }
 
     private fun register(executor: SelectMenuExecutor) {
+        interaKTionsManager.register(executor)
+    }
+
+    private fun register(executor: ModalExecutor) {
         interaKTionsManager.register(executor)
     }
 }

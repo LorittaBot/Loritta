@@ -10,7 +10,9 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.FaustaoExecuto
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.TioDoPaveExecutor
 
 class SummonCommand(loritta: LorittaCinnamon) : CinnamonSlashCommandDeclarationWrapper(loritta) {
-    val I18N_PREFIX = I18nKeysData.Commands.Command.Summon
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Summon
+    }
 
     override fun declaration() = slashCommand("summon", CommandCategory.FUN, TodoFixThisData) {
         subcommand("tiodopavê", I18N_PREFIX.Tiodopave.Description) {
