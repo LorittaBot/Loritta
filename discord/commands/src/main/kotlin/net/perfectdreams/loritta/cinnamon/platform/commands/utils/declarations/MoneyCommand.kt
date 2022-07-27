@@ -1,13 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations
 
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ECBManager
+import net.perfectdreams.loritta.cinnamon.platform.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.MoneyExecutor
 
-class MoneyCommand(loritta: LorittaCinnamon, val ecbManager: ECBManager) : CinnamonSlashCommandDeclarationWrapper(loritta) {
+class MoneyCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Money
 
@@ -51,6 +52,6 @@ class MoneyCommand(loritta: LorittaCinnamon, val ecbManager: ECBManager) : Cinna
     }
 
     override fun declaration() = slashCommand("money", CommandCategory.UTILS, I18N_PREFIX.Description) {
-        executor = MoneyExecutor(loritta, ecbManager)
+        executor = { MoneyExecutor(it, it.ecbManager) }
     }
 }

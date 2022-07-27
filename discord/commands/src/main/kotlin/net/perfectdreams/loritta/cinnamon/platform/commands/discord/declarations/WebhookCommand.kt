@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
 
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -7,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook.*
 
-class WebhookCommand(loritta: LorittaCinnamon) : CinnamonSlashCommandDeclarationWrapper(loritta) {
+class WebhookCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Webhook
     }
@@ -15,29 +16,29 @@ class WebhookCommand(loritta: LorittaCinnamon) : CinnamonSlashCommandDeclaration
     override fun declaration() = slashCommand("webhook", CommandCategory.DISCORD, I18N_PREFIX.Description) {
         subcommandGroup("send", TodoFixThisData) {
             subcommand("simple", I18N_PREFIX.Send.Simple.Description) {
-                executor = WebhookSendSimpleExecutor(loritta)
+                executor = { WebhookSendSimpleExecutor(it) }
             }
 
             subcommand("json", I18N_PREFIX.Send.Json.Description) {
-                executor = WebhookSendJsonExecutor(loritta)
+                executor = { WebhookSendJsonExecutor(it) }
             }
 
             subcommand("repost", I18N_PREFIX.Send.Repost.Description) {
-                executor = WebhookSendRepostExecutor(loritta)
+                executor = { WebhookSendRepostExecutor(it) }
             }
         }
 
         subcommandGroup("edit", TodoFixThisData) {
             subcommand("simple", I18N_PREFIX.Edit.Simple.Description) {
-                executor = WebhookEditSimpleExecutor(loritta)
+                executor = { WebhookEditSimpleExecutor(it) }
             }
 
             subcommand("json", I18N_PREFIX.Edit.Json.Description) {
-                executor = WebhookEditJsonExecutor(loritta)
+                executor = { WebhookEditJsonExecutor(it) }
             }
 
             subcommand("repost", I18N_PREFIX.Send.Repost.Description) {
-                executor = WebhookEditRepostExecutor(loritta)
+                executor = { WebhookEditRepostExecutor(it) }
             }
         }
     }

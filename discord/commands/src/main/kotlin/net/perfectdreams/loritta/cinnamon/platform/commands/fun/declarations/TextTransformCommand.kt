@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations
 
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -14,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVaporwaveExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.texttransform.TextVemDeZapExecutor
 
-class TextTransformCommand(loritta: LorittaCinnamon) : CinnamonSlashCommandDeclarationWrapper(loritta) {
+class TextTransformCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
         const val VEMDEZAP_LOCALE_PREFIX = "commands.command.vemdezap"
 
@@ -347,35 +348,35 @@ class TextTransformCommand(loritta: LorittaCinnamon) : CinnamonSlashCommandDecla
 
     override fun declaration() = slashCommand("text", CommandCategory.FUN, TodoFixThisData) {
         subcommand("vaporwave", I18N_PREFIX.Vaporwave.Description) {
-            executor = TextVaporwaveExecutor(loritta)
+            executor = { TextVaporwaveExecutor(it) }
         }
 
         subcommand("uppercase", I18N_PREFIX.Uppercase.Description) {
-            executor = TextUppercaseExecutor(loritta)
+            executor = { TextUppercaseExecutor(it) }
         }
 
         subcommand("lowercase", I18N_PREFIX.Lowercase.Description) {
-            executor = TextLowercaseExecutor(loritta)
+            executor = { TextLowercaseExecutor(it) }
         }
 
         subcommand("clap", I18N_PREFIX.Clap.Description(CLAP_EMOJI)) {
-            executor = TextClapExecutor(loritta)
+            executor = { TextClapExecutor(it) }
         }
 
         subcommand("mock", I18N_PREFIX.Mock.Description) {
-            executor = TextMockExecutor(loritta)
+            executor = { TextMockExecutor(it) }
         }
 
         subcommand("quality", I18N_PREFIX.Quality.Description) {
-            executor = TextQualityExecutor(loritta)
+            executor = { TextQualityExecutor(it) }
         }
 
         subcommand("vaporquality", I18N_PREFIX.Vaporquality.Description) {
-            executor = TextVaporQualityExecutor(loritta)
+            executor = { TextVaporQualityExecutor(it) }
         }
 
         subcommand("vemdezap", VEMDEZAP_I18N_PREFIX.Description) {
-            executor = TextVemDeZapExecutor(loritta)
+            executor = { TextVemDeZapExecutor(it) }
         }
     }
 }

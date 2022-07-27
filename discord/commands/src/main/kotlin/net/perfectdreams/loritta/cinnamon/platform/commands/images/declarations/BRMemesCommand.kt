@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations
 
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
@@ -22,7 +23,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.images.MonicaAtaExec
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.RomeroBrittoExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.SAMExecutor
 
-class BRMemesCommand(loritta: LorittaCinnamon, val gabiClient: GabrielaImageServerClient) : CinnamonSlashCommandDeclarationWrapper(loritta) {
+class BRMemesCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
    companion object {
        val I18N_PREFIX = I18nKeysData.Commands.Command.Brmemes
        const val I18N_CORTESFLOW_KEY_PREFIX = "commands.command.brmemes.cortesflow"
@@ -53,33 +54,33 @@ class BRMemesCommand(loritta: LorittaCinnamon, val gabiClient: GabrielaImageServ
     override fun declaration() = slashCommand("brmemes", CommandCategory.IMAGES, TodoFixThisData) {
         subcommandGroup("bolsonaro", I18N_PREFIX.Bolsonaro.Description) {
             subcommand("tv", I18N_PREFIX.Bolsonaro.Tv.Description) {
-                executor = BolsonaroExecutor(loritta, gabiClient)
+                executor = { BolsonaroExecutor(it, it.gabrielaImageServerClient) }
             }
 
             subcommand("tv2", I18N_PREFIX.Bolsonaro.Tv.Description) {
-                executor = Bolsonaro2Executor(loritta, gabiClient)
+                executor = { Bolsonaro2Executor(it, it.gabrielaImageServerClient) }
             }
 
             subcommand("frame", I18N_PREFIX.Bolsonaro.Frame.Description) {
-                executor = BolsoFrameExecutor(loritta, gabiClient)
+                executor = { BolsoFrameExecutor(it, it.gabrielaImageServerClient) }
             }
         }
 
         subcommandGroup("ata", I18N_PREFIX.Ata.Description) {
             subcommand("monica", I18N_PREFIX.Ata.Monica.Description) {
-                executor = MonicaAtaExecutor(loritta, gabiClient)
+                executor = { MonicaAtaExecutor(it, it.gabrielaImageServerClient) }
             }
 
             subcommand("chico", I18N_PREFIX.Ata.Chico.Description) {
-                executor = ChicoAtaExecutor(loritta, gabiClient)
+                executor = { ChicoAtaExecutor(it, it.gabrielaImageServerClient) }
             }
 
             subcommand("lori", I18N_PREFIX.Ata.Lori.Description) {
-                executor = LoriAtaExecutor(loritta, gabiClient)
+                executor = { LoriAtaExecutor(it, it.gabrielaImageServerClient) }
             }
 
             subcommand("gessy", I18N_PREFIX.Ata.Gessy.Description) {
-                executor = GessyAtaExecutor(loritta, gabiClient)
+                executor = { GessyAtaExecutor(it, it.gabrielaImageServerClient) }
             }
         }
 
@@ -88,36 +89,36 @@ class BRMemesCommand(loritta: LorittaCinnamon, val gabiClient: GabrielaImageServ
                 "flag",
                 I18N_PREFIX.Ednaldo.Bandeira.Description
             ) {
-                executor = EdnaldoBandeiraExecutor(loritta, gabiClient)
+                executor = { EdnaldoBandeiraExecutor(it, it.gabrielaImageServerClient) }
             }
 
             subcommand("tv", I18N_PREFIX.Ednaldo.Tv.Description) {
-                executor = EdnaldoTvExecutor(loritta, gabiClient)
+                executor = { EdnaldoTvExecutor(it, it.gabrielaImageServerClient) }
             }
         }
 
         subcommand("cortesflow", I18N_PREFIX.Cortesflow.Description) {
-            executor = CortesFlowExecutor(loritta, gabiClient)
+            executor = { CortesFlowExecutor(it, it.gabrielaImageServerClient) }
         }
 
         subcommand("sam", I18N_PREFIX.Sam.Description) {
-            executor = SAMExecutor(loritta, gabiClient)
+            executor = { SAMExecutor(it, it.gabrielaImageServerClient) }
         }
 
         subcommand("canelladvd", I18N_PREFIX.Canelladvd.Description) {
-            executor = CanellaDvdExecutor(loritta, gabiClient)
+            executor = { CanellaDvdExecutor(it, it.gabrielaImageServerClient) }
         }
 
         subcommand("cepo", I18N_PREFIX.Cepo.Description) {
-            executor = CepoDeMadeiraExecutor(loritta, gabiClient)
+            executor = { CepoDeMadeiraExecutor(it, it.gabrielaImageServerClient) }
         }
 
         subcommand("romerobritto", I18N_PREFIX.Romerobritto.Description) {
-            executor = RomeroBrittoExecutor(loritta, gabiClient)
+            executor = { RomeroBrittoExecutor(it, it.gabrielaImageServerClient) }
         }
 
         subcommand("briggscover", I18N_PREFIX.Briggscover.Description) {
-            executor = BriggsCoverExecutor(loritta, gabiClient)
+            executor = { BriggsCoverExecutor(it, it.gabrielaImageServerClient) }
         }
     }
 }

@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox
+package net.perfectdreams.loritta.cinnamon.platform.utils.falatron
 
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
 import kotlin.time.Duration.Companion.minutes
 

@@ -8,7 +8,6 @@ import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
 import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
-import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGlobalAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGuildProfileAvatarExecutor
@@ -19,7 +18,6 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.*
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox.FalatronModelsManager
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox.PlayAudioClipButtonExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.images.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.minecraft.declarations.MinecraftCommand
@@ -33,14 +31,10 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.GenderCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.declarations.UndertaleCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.undertale.textbox.*
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.ECBManager
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker.*
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.*
 import net.perfectdreams.loritta.cinnamon.platform.interactions.inviteblocker.ActivateInviteBlockerBypassButtonClickExecutor
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
-import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
-import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import kotlin.system.exitProcess
 
 class CommandManager(
@@ -55,28 +49,8 @@ class CommandManager(
     private val servicesConfig = loritta.servicesConfig
     private val rest = loritta.rest
 
-    private val gabrielaImageServerClient = GabrielaImageServerClient(
-        loritta.servicesConfig.gabrielaImageServer.url,
-        HttpClient {
-            // Increase the default timeout for image generation, because some video generations may take too long to be generated
-            install(HttpTimeout) {
-                this.socketTimeoutMillis = 60_000
-                this.requestTimeoutMillis = 60_000
-                this.connectTimeoutMillis = 60_000
-            }
-        }
-    )
-
     private val random = loritta.random
     private val http = loritta.http
-
-    private val mojangApi = MinecraftMojangAPI()
-    private val correiosClient = CorreiosClient()
-    private val randomRoleplayPicturesClient = RandomRoleplayPicturesClient(loritta.servicesConfig.randomRoleplayPictures.url)
-    private val falatronModelsManager = FalatronModelsManager().also {
-        it.startUpdater()
-    }
-    private val ecbManager = ECBManager()
 
     val commandRegistry = CommandRegistry(
         loritta,
@@ -88,37 +62,39 @@ class CommandManager(
         )
     )
 
+    val languageManager = loritta.languageManager
+
     suspend fun register() {
         // ===[ DISCORD ]===
-        register(UserCommand(loritta))
+        register(UserCommand(languageManager))
 
-        register(UserAvatarUserCommand(loritta))
+        register(UserAvatarUserCommand(languageManager))
         register(SwitchToGuildProfileAvatarExecutor(loritta, Snowflake(discordConfig.applicationId)))
         register(SwitchToGlobalAvatarExecutor(loritta, Snowflake(discordConfig.applicationId)))
 
-        register(UserInfoUserCommand(loritta, http))
+        register(UserInfoUserCommand(languageManager))
         register(ShowGuildMemberPermissionsExecutor(loritta))
 
-        register(ServerCommand(loritta))
-        register(InviteCommand(loritta))
-        register(EmojiCommand(loritta))
-        register(WebhookCommand(loritta))
-        register(LorittaCommand(loritta))
+        register(ServerCommand(languageManager))
+        register(InviteCommand(languageManager))
+        register(EmojiCommand(languageManager))
+        register(WebhookCommand(languageManager))
+        register(LorittaCommand(languageManager))
 
         // ===[ FUN ]===
-        register(CoinFlipCommand(loritta))
-        register(RateCommand(loritta))
-        register(ShipCommand(loritta, gabrielaImageServerClient))
-        register(CancelledCommand(loritta))
-        register(SummonCommand(loritta))
-        register(VieirinhaCommand(loritta))
-        register(RollCommand(loritta))
-        register(MinecraftCommand(loritta, mojangApi, gabrielaImageServerClient))
-        register(TextTransformCommand(loritta))
-        register(JankenponCommand(loritta))
-        register(HungerGamesCommand(loritta))
+        register(CoinFlipCommand(languageManager))
+        register(RateCommand(languageManager))
+        register(ShipCommand(languageManager))
+        register(CancelledCommand(languageManager))
+        register(SummonCommand(languageManager))
+        register(VieirinhaCommand(languageManager))
+        register(RollCommand(languageManager))
+        register(MinecraftCommand(languageManager))
+        register(TextTransformCommand(languageManager))
+        register(JankenponCommand(languageManager))
+        register(HungerGamesCommand(languageManager))
 
-        register(SoundboxCommand(loritta, falatronModelsManager))
+        register(SoundboxCommand(languageManager))
         register(PlayAudioClipButtonExecutor(loritta))
 
         /* commandManager.register(
@@ -127,99 +103,99 @@ class CommandManager(
         ) */
 
         // ===[ IMAGES ]===
-        register(DrakeCommand(loritta, gabrielaImageServerClient))
-        register(SonicCommand(loritta, gabrielaImageServerClient))
-        register(ArtCommand(loritta, gabrielaImageServerClient))
-        register(BobBurningPaperCommand(loritta, gabrielaImageServerClient))
-        register(BRMemesCommand(loritta, gabrielaImageServerClient))
-        register(BuckShirtCommand(loritta, gabrielaImageServerClient))
-        register(LoriSignCommand(loritta, gabrielaImageServerClient))
-        register(PassingPaperCommand(loritta, gabrielaImageServerClient))
-        register(PepeDreamCommand(loritta, gabrielaImageServerClient))
-        register(PetPetCommand(loritta, gabrielaImageServerClient))
-        register(WolverineFrameCommand(loritta, gabrielaImageServerClient))
-        register(RipTvCommand(loritta, gabrielaImageServerClient))
-        register(SustoCommand(loritta, gabrielaImageServerClient))
-        register(GetOverHereCommand(loritta, gabrielaImageServerClient))
-        register(NichijouYuukoPaperCommand(loritta, gabrielaImageServerClient))
-        register(TrumpCommand(loritta, gabrielaImageServerClient))
-        register(TerminatorAnimeCommand(loritta, gabrielaImageServerClient))
-        register(ToBeContinuedCommand(loritta, gabrielaImageServerClient))
-        register(InvertColorsCommand(loritta, gabrielaImageServerClient))
-        register(MemeMakerCommand(loritta, gabrielaImageServerClient))
-        register(MarkMetaCommand(loritta, gabrielaImageServerClient))
-        register(DrawnMaskCommand(loritta, gabrielaImageServerClient))
-        register(SadRealityCommand(loritta, gabrielaImageServerClient))
+        register(DrakeCommand(languageManager))
+        register(SonicCommand(languageManager))
+        register(ArtCommand(languageManager))
+        register(BobBurningPaperCommand(languageManager))
+        register(BRMemesCommand(languageManager))
+        register(BuckShirtCommand(languageManager))
+        register(LoriSignCommand(languageManager))
+        register(PassingPaperCommand(languageManager))
+        register(PepeDreamCommand(languageManager))
+        register(PetPetCommand(languageManager))
+        register(WolverineFrameCommand(languageManager))
+        register(RipTvCommand(languageManager))
+        register(SustoCommand(languageManager))
+        register(GetOverHereCommand(languageManager))
+        register(NichijouYuukoPaperCommand(languageManager))
+        register(TrumpCommand(languageManager))
+        register(TerminatorAnimeCommand(languageManager))
+        register(ToBeContinuedCommand(languageManager))
+        register(InvertColorsCommand(languageManager))
+        register(MemeMakerCommand(languageManager))
+        register(MarkMetaCommand(languageManager))
+        register(DrawnMaskCommand(languageManager))
+        register(SadRealityCommand(languageManager))
 
         // ===[ VIDEOS ]===
-        register(CarlyAaahCommand(loritta, gabrielaImageServerClient))
-        register(AttackOnHeartCommand(loritta, gabrielaImageServerClient))
-        register(FansExplainingCommand(loritta, gabrielaImageServerClient))
-        register(GigaChadCommand(loritta, gabrielaImageServerClient))
-        register(ChavesCommand(loritta, gabrielaImageServerClient))
+        register(CarlyAaahCommand(languageManager))
+        register(AttackOnHeartCommand(languageManager))
+        register(FansExplainingCommand(languageManager))
+        register(GigaChadCommand(languageManager))
+        register(ChavesCommand(languageManager))
 
         // ===[ UTILS ]===
-        register(HelpCommand(loritta))
-        register(MoneyCommand(loritta, ecbManager))
-        register(MorseCommand(loritta))
-        register(DictionaryCommand(loritta))
-        register(CalculatorCommand(loritta))
-        register(AnagramCommand(loritta))
-        register(ChooseCommand(loritta))
+        register(HelpCommand(languageManager))
+        register(MoneyCommand(languageManager))
+        register(MorseCommand(languageManager))
+        register(DictionaryCommand(languageManager))
+        register(CalculatorCommand(languageManager))
+        register(AnagramCommand(languageManager))
+        register(ChooseCommand(languageManager))
 
-        register(PackageCommand(loritta, correiosClient))
-        register(FollowPackageButtonClickExecutor(loritta, correiosClient))
-        register(UnfollowPackageButtonClickExecutor(loritta, correiosClient))
+        register(PackageCommand(languageManager))
+        register(FollowPackageButtonClickExecutor(loritta, loritta.correiosClient))
+        register(UnfollowPackageButtonClickExecutor(loritta, loritta.correiosClient))
         register(SelectPackageSelectMenuExecutor(loritta))
 
-        register(GoBackToPackageListButtonClickExecutor(loritta, correiosClient))
-        register(TrackPackageButtonClickExecutor(loritta, correiosClient))
+        register(GoBackToPackageListButtonClickExecutor(loritta, loritta.correiosClient))
+        register(TrackPackageButtonClickExecutor(loritta, loritta.correiosClient))
 
-        register(ColorInfoCommand(loritta, gabrielaImageServerClient))
-        register(NotificationsCommand(loritta))
+        register(ColorInfoCommand(languageManager))
+        register(NotificationsCommand(languageManager))
 
         // ===[ ECONOMY ]===
-        register(SonhosCommand(loritta))
-        register(DailyCommand(loritta))
-        register(BrokerCommand(loritta))
+        register(SonhosCommand(languageManager))
+        register(DailyCommand(languageManager))
+        register(BrokerCommand(languageManager))
 
-        register(TransactionsCommand(loritta))
+        register(TransactionsCommand(languageManager))
         register(ChangeTransactionPageButtonClickExecutor(loritta))
         register(ChangeTransactionFilterSelectMenuExecutor(loritta))
 
-        register(BetCommand(loritta))
+        register(BetCommand(languageManager))
         register(StartCoinFlipGlobalBetMatchmakingButtonClickExecutor(loritta))
 
         // ===[ SOCIAL ]===
-        register(AchievementsCommand(loritta))
+        register(AchievementsCommand(languageManager))
         register(AchievementsExecutor.ChangeCategoryMenuExecutor(loritta))
 
-        register(AfkCommand(loritta))
-        register(GenderCommand(loritta))
+        register(AfkCommand(languageManager))
+        register(GenderCommand(languageManager))
 
         // ===[ UNDERTALE ]===
-        register(UndertaleCommand(loritta, gabrielaImageServerClient))
-        register(PortraitSelectMenuExecutor(loritta, gabrielaImageServerClient))
-        register(ChangeUniverseSelectMenuExecutor(loritta, gabrielaImageServerClient))
-        register(ChangeCharacterSelectMenuExecutor(loritta, gabrielaImageServerClient))
+        register(UndertaleCommand(languageManager))
+        register(PortraitSelectMenuExecutor(loritta, loritta.gabrielaImageServerClient))
+        register(ChangeUniverseSelectMenuExecutor(loritta, loritta.gabrielaImageServerClient))
+        register(ChangeCharacterSelectMenuExecutor(loritta, loritta.gabrielaImageServerClient))
 
-        register(ChangeDialogBoxTypeButtonClickExecutor(loritta, gabrielaImageServerClient))
-        register(ConfirmDialogBoxButtonClickExecutor(loritta, gabrielaImageServerClient))
-        register(ChangeColorPortraitTypeButtonClickExecutor(loritta, gabrielaImageServerClient))
+        register(ChangeDialogBoxTypeButtonClickExecutor(loritta, loritta.gabrielaImageServerClient))
+        register(ConfirmDialogBoxButtonClickExecutor(loritta, loritta.gabrielaImageServerClient))
+        register(ChangeColorPortraitTypeButtonClickExecutor(loritta, loritta.gabrielaImageServerClient))
 
         // ===[ ROLEPLAY ]===
-        register(RoleplayCommand(loritta, randomRoleplayPicturesClient))
-        register(RetributeHugButtonExecutor(loritta, randomRoleplayPicturesClient))
-        register(RetributeHeadPatButtonExecutor(loritta, randomRoleplayPicturesClient))
-        register(RetributeHighFiveButtonExecutor(loritta, randomRoleplayPicturesClient))
-        register(RetributeSlapButtonExecutor(loritta, randomRoleplayPicturesClient))
-        register(RetributeAttackButtonExecutor(loritta, randomRoleplayPicturesClient))
-        register(RetributeDanceButtonExecutor(loritta, randomRoleplayPicturesClient))
-        register(RetributeKissButtonExecutor(loritta, randomRoleplayPicturesClient))
+        register(RoleplayCommand(languageManager))
+        register(RetributeHugButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
+        register(RetributeHeadPatButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
+        register(RetributeHighFiveButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
+        register(RetributeSlapButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
+        register(RetributeAttackButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
+        register(RetributeDanceButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
+        register(RetributeKissButtonExecutor(loritta, loritta.randomRoleplayPicturesClient))
         register(SourcePictureExecutor(loritta))
 
         // ===[ ROBLOX ]===
-        register(RobloxCommand(loritta))
+        register(RobloxCommand(languageManager))
 
         // ===[ OTHER STUFF ]===
         register(ActivateInviteBlockerBypassButtonClickExecutor(loritta))
@@ -236,11 +212,11 @@ class CommandManager(
     }
 
     private fun register(declarationWrapper: CinnamonSlashCommandDeclarationWrapper) {
-        interaKTionsManager.register(declarationWrapper.declaration().build())
+        interaKTionsManager.register(declarationWrapper.declaration().build(loritta))
     }
 
     private fun register(declarationWrapper: CinnamonUserCommandDeclarationWrapper) {
-        interaKTionsManager.register(declarationWrapper.declaration().build())
+        interaKTionsManager.register(declarationWrapper.declaration().build(loritta))
     }
 
     private fun register(executor: ButtonExecutor) {

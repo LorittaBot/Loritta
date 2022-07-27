@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations
 
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
@@ -8,7 +9,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateHusbandoEx
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateLoliExecutor
 import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.RateWaifuExecutor
 
-class RateCommand(loritta: LorittaCinnamon) : CinnamonSlashCommandDeclarationWrapper(loritta) {
+class RateCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
         val I18N_PREFIX = I18nKeysData.Commands.Command.Rate
         const val WAIFU_SINGULAR = "Waifu"
@@ -34,15 +35,15 @@ class RateCommand(loritta: LorittaCinnamon) : CinnamonSlashCommandDeclarationWra
 
     override fun declaration() = slashCommand("rate", CommandCategory.FUN, I18N_PREFIX.Description) {
         subcommand("waifu", I18N_PREFIX.WaifuHusbando.Description(WAIFU_SINGULAR)) {
-            executor = RateWaifuExecutor(loritta)
+            executor = { RateWaifuExecutor(it) }
         }
 
         subcommand("husbando", I18N_PREFIX.WaifuHusbando.Description(HUSBANDO_SINGULAR)) {
-            executor = RateHusbandoExecutor(loritta)
+            executor = { RateHusbandoExecutor(it) }
         }
 
         subcommand("loli", I18N_PREFIX.Loli.Description) {
-            executor = RateLoliExecutor(loritta)
+            executor = { RateLoliExecutor(it) }
         }
     }
 }

@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApp
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.platform.commands.styled
 import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.MoneyCommand
+import net.perfectdreams.loritta.cinnamon.platform.utils.ecb.ECBManager
 
 class MoneyExecutor(loritta: LorittaCinnamon, val ecbManager: ECBManager) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {

@@ -5,9 +5,10 @@ import net.perfectdreams.discordinteraktions.common.commands.*
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsDslMarker
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.platform.utils.SlashTextUtils
 
-// ===[ LORITTA COMMANDS ]===
+// ===[ SLASH COMMANDS ]===
 fun slashCommand(
     declarationWrapper: CinnamonSlashCommandDeclarationWrapper,
     languageManager: LanguageManager,
@@ -31,7 +32,8 @@ class CinnamonSlashCommandDeclarationBuilder(
     val description: StringI18nData,
     val category: CommandCategory
 ) {
-    var executor: SlashCommandExecutor? = null
+    var executor: ((LorittaCinnamon) -> SlashCommandExecutor)? = null
+    // var executor: SlashCommandExecutor? = null
     val subcommands = mutableListOf<CinnamonSlashCommandDeclarationBuilder>()
     val subcommandGroups = mutableListOf<CinnamonSlashCommandGroupDeclarationBuilder>()
     // Only root commands can have permissions and dmPermission
@@ -46,19 +48,18 @@ class CinnamonSlashCommandDeclarationBuilder(
         subcommandGroups += CinnamonSlashCommandGroupDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
     }
 
-    fun build(): SlashCommandDeclaration {
+    fun build(loritta: LorittaCinnamon): SlashCommandDeclaration {
         return CinnamonSlashCommandDeclaration(
             declarationWrapper,
+            languageManager,
             name,
-            SlashTextUtils.shorten(languageManager.defaultI18nContext.get(description)),
-            SlashTextUtils.createShortenedLocalizedDescriptionMapExcludingDefaultLocale(languageManager, description, category),
             description,
             category,
-            executor,
+            executor?.invoke(loritta),
             defaultMemberPermissions,
             dmPermission,
-            subcommands.map { it.build() },
-            subcommandGroups.map { it.build() }
+            subcommands.map { it.build(loritta) },
+            subcommandGroups.map { it.build(loritta) }
         )
     }
 }
@@ -78,14 +79,13 @@ class CinnamonSlashCommandGroupDeclarationBuilder(
         subcommands += CinnamonSlashCommandDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
     }
 
-    fun build(): SlashCommandGroupDeclaration {
+    fun build(loritta: LorittaCinnamon): SlashCommandGroupDeclaration {
         return CinnamonSlashCommandGroupDeclaration(
+            languageManager,
             name,
-            languageManager.defaultI18nContext.get(description),
-            SlashTextUtils.createShortenedLocalizedDescriptionMapExcludingDefaultLocale(languageManager, description, category),
             description,
             category,
-            subcommands.map { it.build() }
+            subcommands.map { it.build(loritta) }
         )
     }
 }
@@ -95,7 +95,7 @@ fun userCommand(
     declarationWrapper: CinnamonUserCommandDeclarationWrapper,
     languageManager: LanguageManager,
     name: StringI18nData,
-    executor: UserCommandExecutor,
+    executor: (LorittaCinnamon) -> (UserCommandExecutor),
     block: CinnamonUserCommandDeclarationBuilder.() -> (Unit) = {}
 ) = CinnamonUserCommandDeclarationBuilder(declarationWrapper, languageManager, name, executor)
     .apply(block)
@@ -105,19 +105,19 @@ class CinnamonUserCommandDeclarationBuilder(
     val declarationWrapper: CinnamonUserCommandDeclarationWrapper,
     val languageManager: LanguageManager,
     val name: StringI18nData,
-    val executor: UserCommandExecutor
+    val executor: (LorittaCinnamon) -> (UserCommandExecutor)
 ) {
     var defaultMemberPermissions: Permissions? = null
     var dmPermission: Boolean? = null
 
-    fun build(): CinnamonUserCommandDeclaration {
+    fun build(loritta: LorittaCinnamon): CinnamonUserCommandDeclaration {
         return CinnamonUserCommandDeclaration(
             declarationWrapper,
-            languageManager.defaultI18nContext.get(name),
-            SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, name),
+            languageManager,
+            name,
             defaultMemberPermissions,
             dmPermission,
-            executor
+            executor.invoke(loritta)
         )
     }
 }

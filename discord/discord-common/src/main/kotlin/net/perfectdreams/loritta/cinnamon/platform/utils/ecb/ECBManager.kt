@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.utils
+package net.perfectdreams.loritta.cinnamon.platform.utils.ecb
 
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope

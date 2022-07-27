@@ -420,7 +420,7 @@ class ApplicationCommandsView(
             val commandLabel = command.label
 
             // Additional command info (like images)
-            val additionalInfo = PublicApplicationCommands.additionalCommandsInfo[command.executor]
+            val additionalInfo = showtimeBackend.publicApplicationCommands.additionalCommandsInfo[command.executor]
 
             val color = getCategoryColor(command.category)
 

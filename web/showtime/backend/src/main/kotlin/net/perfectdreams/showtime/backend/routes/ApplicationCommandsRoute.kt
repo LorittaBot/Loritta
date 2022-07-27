@@ -21,7 +21,7 @@ class ApplicationCommandsRoute(val showtime: ShowtimeBackend) : LocalizedRoute(s
                     locale,
                     i18nContext,
                     "/commands/slash",
-                    PublicApplicationCommands.flattenedDataDeclarations,
+                    showtime.publicApplicationCommands.flattenedDataDeclarations,
                     call.parameters["category"]?.toUpperCase()?.let {
                         try {
                             CommandCategory.valueOf(it)
