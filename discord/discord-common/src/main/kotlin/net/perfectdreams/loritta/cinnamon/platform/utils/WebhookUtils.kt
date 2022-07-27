@@ -51,7 +51,6 @@ object WebhookUtils {
 
     // Same thing as Kord's "executeWebhook" method, but we accept a WebhookExecuteRequest class instead of a builder
     // TODO: Support files
-    @OptIn(ExperimentalContracts::class)
     suspend inline fun executeWebhook(
         webhookId: Snowflake,
         token: String,

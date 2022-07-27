@@ -32,7 +32,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
         val role = args[options.role] as KordRole
 
         val extension = if (role.handle.icon.value?.startsWith("a_") == true) "gif" else "png"
-        val iconUrl = "https://cdn.discordapp.com/role-icons/${role.id.asString}/${role.handle.icon.value}.$extension?size=2048"
+        val iconUrl = "https://cdn.discordapp.com/role-icons/${role.id}/${role.handle.icon.value}.$extension?size=2048"
 
         // If the color is not 0, then it means that it has a color set!
         val hasColor = role.color != 0
@@ -51,14 +51,14 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
 
                 field {
                     name = "${Emotes.Eyes} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Mention)
-                    value = "`<@&${role.id.asString}>`"
+                    value = "`<@&${role.id}>`"
 
                     inline = true
                 }
 
                 field {
                     name = "${Emotes.Computer} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.RoleId)
-                    value = "`${role.id.asString}`"
+                    value = "`${role.id}`"
 
                     inline = true
                 }
