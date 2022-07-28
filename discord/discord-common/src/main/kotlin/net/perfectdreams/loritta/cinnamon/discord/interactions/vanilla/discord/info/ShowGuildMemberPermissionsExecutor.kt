@@ -28,7 +28,7 @@ class ShowGuildMemberPermissionsExecutor(loritta: LorittaCinnamon) : CinnamonBut
             context.loritta.services.interactionsData.getInteractionData(decodedInteractionData.interactionDataId) ?: context.failEphemerally {
                 styled(
                     context.i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                    Emotes.LoriSleeping
                 )
             }
         )
@@ -36,7 +36,7 @@ class ShowGuildMemberPermissionsExecutor(loritta: LorittaCinnamon) : CinnamonBut
         context.sendEphemeralMessage {
             embed {
                 field(
-                    "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSunglasses} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Roles)}",
+                    "${Emotes.LoriSunglasses} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Roles)}",
                     interactionDataFromDatabase.roles.joinToString { "<@&${it}>" },
                     false
                 )
@@ -48,7 +48,7 @@ class ShowGuildMemberPermissionsExecutor(loritta: LorittaCinnamon) : CinnamonBut
 
                 if (permissionList != null) {
                     field(
-                        "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriAngel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Permissions)}",
+                        "${Emotes.LoriAngel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Permissions)}",
                         permissionList,
                         false
                     )

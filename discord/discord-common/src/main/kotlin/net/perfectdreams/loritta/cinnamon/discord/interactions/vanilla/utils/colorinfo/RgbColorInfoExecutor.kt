@@ -39,7 +39,7 @@ class RgbColorInfoExecutor(loritta: LorittaCinnamon, client: GabrielaImageServer
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.RgbColorInfo.InvalidColor),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    Emotes.Error
                 )
             }
 

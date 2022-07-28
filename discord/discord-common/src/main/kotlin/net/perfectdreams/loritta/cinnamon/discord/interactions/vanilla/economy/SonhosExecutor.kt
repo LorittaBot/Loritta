@@ -51,7 +51,7 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                             }
                         )
                     ),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
+                    Emotes.LoriRich
                 )
             }
 
@@ -82,7 +82,7 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                             }
                         )
                     ),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
+                    Emotes.LoriRich
                 )
             }
         }

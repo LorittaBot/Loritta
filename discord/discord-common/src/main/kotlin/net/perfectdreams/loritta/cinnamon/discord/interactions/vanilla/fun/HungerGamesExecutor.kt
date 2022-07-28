@@ -112,7 +112,7 @@ class HungerGamesExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
         context.sendMessage {
             styled(
                 context.i18nContext.get(HungerGamesCommand.I18N_PREFIX.SimulationCreated(saveLink)),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappyJumping
+                Emotes.LoriHappyJumping
             )
         }
     }

@@ -99,7 +99,7 @@ class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEv
                                 append(i18nContext.get(I18nKeysData.Modules.Afk.AfkReason(afkReason)))
                             }
                         },
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                        Emotes.LoriSleeping
                     )
                 } else {
                     styled(
@@ -120,7 +120,7 @@ class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEv
                                 }
                             }
                         },
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                        Emotes.LoriSleeping
                     )
                 }
 

@@ -26,10 +26,10 @@ class ChooseExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
             content = context.i18nContext.get(
                 ChooseCommand.I18N_PREFIX.Result(
                     result = options.random(),
-                    emote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriYay
+                    emote = Emotes.LoriYay
                 )
             ),
-            prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHm
+            prefix = Emotes.LoriHm
         )
     }
 }

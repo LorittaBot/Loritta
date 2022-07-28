@@ -31,7 +31,7 @@ class ActivateInviteBlockerBypassButtonClickExecutor(loritta: LorittaCinnamon) :
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.YouDontHaveTheRoleAnymore("<@&$roleId>")),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    Emotes.Error
                 )
             }
 
@@ -62,7 +62,7 @@ class ActivateInviteBlockerBypassButtonClickExecutor(loritta: LorittaCinnamon) :
                     ButtonStyle.Primary,
                     context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.AllowSendingInvites)
                 ) {
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat
+                    loriEmoji = Emotes.LoriPat
                 }
             }
         }
@@ -71,12 +71,12 @@ class ActivateInviteBlockerBypassButtonClickExecutor(loritta: LorittaCinnamon) :
             if (success) {
                 styled(
                     context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.BypassEnabled("<@&$roleId>")),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappy
+                    Emotes.LoriHappy
                 )
             } else {
                 styled(
                     context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.RoleAlreadyHasInviteBlockerBypass("<@&$roleId>")),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    Emotes.Error
                 )
             }
         }

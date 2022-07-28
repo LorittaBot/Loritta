@@ -16,8 +16,8 @@ class SoundboardBoardExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
 
         context.sendEphemeralMessage {
             styled(
-                "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento! Ela ainda não está pronta e será melhorada com o passar do tempo... ou talvez até mesmo removida! ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob}",
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriMegaphone
+                "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento! Ela ainda não está pronta e será melhorada com o passar do tempo... ou talvez até mesmo removida! ${Emotes.LoriSob}",
+                Emotes.LoriMegaphone
             )
         }
 

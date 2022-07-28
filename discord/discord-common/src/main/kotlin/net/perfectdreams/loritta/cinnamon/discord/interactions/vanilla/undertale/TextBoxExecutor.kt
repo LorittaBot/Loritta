@@ -74,8 +74,8 @@ class TextBoxExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerC
             // I suppose that, if someday, DELTARUNE has save points outside of the Dark World, they won't be blue-ish
             // So let's do it based on the Dialog Box Style, not on the Universe Type!
             val savePointBasedOnTheDialogBoxStyleType = when (data.dialogBoxType) {
-                DialogBoxType.ORIGINAL -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.UndertaleSavePoint
-                DialogBoxType.DARK_WORLD -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.DeltaruneSavePoint
+                DialogBoxType.ORIGINAL -> Emotes.UndertaleSavePoint
+                DialogBoxType.DARK_WORLD -> Emotes.DeltaruneSavePoint
             }
 
             return {
@@ -142,7 +142,7 @@ class TextBoxExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerC
                                 )
                             )
                         ) {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.DarkWorldBox
+                            loriEmoji = Emotes.DarkWorldBox
                             label = i18nContext.get(UndertaleCommand.I18N_TEXTBOX_PREFIX.DarkWorldDialogBox.Name)
                         }
                     } else {
@@ -157,7 +157,7 @@ class TextBoxExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerC
                                 )
                             )
                         ) {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.OriginalBox
+                            loriEmoji = Emotes.OriginalBox
                             label = i18nContext.get(UndertaleCommand.I18N_TEXTBOX_PREFIX.OriginalDialogBox.Name)
                         }
                     }
@@ -184,9 +184,9 @@ class TextBoxExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerC
                             )
                         ) {
                             loriEmoji = when (newColor) {
-                                ColorPortraitType.COLORED -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriColored
-                                ColorPortraitType.BLACK_AND_WHITE -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBlackAndWhite
-                                ColorPortraitType.SHADES_OF_GRAY -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriGrayscale
+                                ColorPortraitType.COLORED -> Emotes.LoriColored
+                                ColorPortraitType.BLACK_AND_WHITE -> Emotes.LoriBlackAndWhite
+                                ColorPortraitType.SHADES_OF_GRAY -> Emotes.LoriGrayscale
                             }
 
                             label = i18nContext.get(

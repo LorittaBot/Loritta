@@ -55,21 +55,21 @@ class EmojiInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
 
                     if (names.isNotEmpty())
                         field {
-                            name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.BookMark} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiName)
+                            name = "${Emotes.BookMark} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiName)
                             value = "`${names.joinToString(" + ")}`"
 
                             inline = true
                         }
 
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Eyes} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.Mention)
+                        name = "${Emotes.Eyes} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.Mention)
                         value = "`${emojiContent}`"
 
                         inline = true
                     }
 
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Computer} Unicode"
+                        name = "${Emotes.Computer} Unicode"
                         value = "`${codePoints.joinToString("") { "\\$it" }}`"
 
                         inline = true
@@ -120,28 +120,28 @@ class EmojiInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                     thumbnailUrl = emojiUrl
 
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.BookMark} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiName)
+                        name = "${Emotes.BookMark} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiName)
                         value = emojiName
 
                         inline = true
                     }
 
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Computer} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiId)
+                        name = "${Emotes.Computer} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiId)
                         value = emojiId.toString()
 
                         inline = true
                     }
 
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Eyes} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.Mention)
+                        name = "${Emotes.Eyes} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.Mention)
                         value = "`$emojiMention`"
 
                         inline = true
                     }
 
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Date} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.CreatedAt)
+                        name = "${Emotes.Date} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.CreatedAt)
                         value = "<t:${emojiIdAsSnowflake.timestamp.toEpochMilliseconds() / 1000}:D>"
 
                         inline = true
@@ -163,7 +163,7 @@ class EmojiInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                 context.i18nContext.get(
                     EmojiCommand.I18N_PREFIX.Info.EmojiNotFound(emojiContent.shortenAndStripCodeBackticks(100))
                 ),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                Emotes.Error
             )
         }
     }

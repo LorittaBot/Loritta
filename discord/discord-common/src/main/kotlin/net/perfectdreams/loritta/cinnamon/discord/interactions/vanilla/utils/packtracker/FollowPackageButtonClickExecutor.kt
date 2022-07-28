@@ -40,7 +40,7 @@ class FollowPackageButtonClickExecutor(
                 if (firstObject.events.any { it.type == EventType.PackageDeliveredToRecipient })
                     context.failEphemerally(
                         context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.FollowPackage.PackageAlreadyDelivered),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                        Emotes.LoriSob
                     )
 
                 try {
@@ -64,24 +64,24 @@ class FollowPackageButtonClickExecutor(
 
                     context.sendEphemeralReply(
                         context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.FollowPackage.YouAreNowFollowingThePackage(decoded.trackingId)),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSunglasses
+                        Emotes.LoriSunglasses
                     )
                 } catch (e: PackagesTrackingService.UserIsAlreadyTrackingPackageException) {
                     context.failEphemerally(
                         context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.FollowPackage.YouAreAlreadyFollowingThePackage),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                        Emotes.LoriSob
                     )
                 } catch (e: PackagesTrackingService.UserIsAlreadyTrackingTooManyPackagesException) {
                     context.failEphemerally(
                         context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.FollowPackage.YouAreAlreadyFollowingTooManyPackages),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                        Emotes.LoriSob
                     )
                 }
             }
 
             is CorreiosUnknownObjeto -> context.failEphemerally(
                 context.i18nContext.get(PackageCommand.I18N_PREFIX.ObjectNotFoundCorreios),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
         }
     }

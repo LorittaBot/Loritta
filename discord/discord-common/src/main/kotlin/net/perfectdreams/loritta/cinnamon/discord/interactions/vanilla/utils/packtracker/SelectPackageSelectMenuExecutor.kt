@@ -69,7 +69,7 @@ class SelectPackageSelectMenuExecutor(
                         BarebonesSingleUserComponentData(context.user.id)
                     )
                 ) {
-                    this.loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.ChevronLeft
+                    this.loriEmoji = Emotes.ChevronLeft
                 }
 
                 interactiveButton(
@@ -80,7 +80,7 @@ class SelectPackageSelectMenuExecutor(
                     )
                 ) {
                     this.label = context.i18nContext.get(PackageCommand.I18N_PREFIX.List.TrackPackage)
-                    this.loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+                    this.loriEmoji = Emotes.LoriReading
                 }
             }
 
@@ -88,7 +88,7 @@ class SelectPackageSelectMenuExecutor(
                 selectMenu(SelectPackageSelectMenuExecutor) {
                     for (trackingId in trackingIdsTrackedByUser) {
                         option(trackingId, trackingId) {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Correios
+                            loriEmoji = Emotes.Correios
                             default = trackingId == viewingTrackingId
                         }
                     }

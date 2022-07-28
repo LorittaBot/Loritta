@@ -33,7 +33,7 @@ class HexColorInfoExecutor(loritta: LorittaCinnamon, client: GabrielaImageServer
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.HexColorInfo.InvalidColor),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    Emotes.Error
                 )
             }
 

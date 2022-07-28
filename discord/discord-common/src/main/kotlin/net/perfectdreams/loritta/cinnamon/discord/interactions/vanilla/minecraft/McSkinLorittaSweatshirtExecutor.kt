@@ -60,12 +60,12 @@ class McSkinLorittaSweatshirtExecutor(loritta: LorittaCinnamon, val client: Gabr
         } else {
             if (!playerNameOrUrl.matches(McSkinExecutor.VALID_NAME_REGEX))
                 context.failEphemerally(
-                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                    prefix = Emotes.Error,
                     content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.InvalidPlayerName(playerNameOrUrl))
                 )
 
             val profile = mojang.getUserProfileFromName(playerNameOrUrl) ?: context.failEphemerally(
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                prefix = Emotes.Error,
                 content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(playerNameOrUrl))
             )
 
@@ -76,7 +76,7 @@ class McSkinLorittaSweatshirtExecutor(loritta: LorittaCinnamon, val client: Gabr
             val isSteve = uniqueId.hashCode() % 2 == 1
 
             val skinUrl = profile.textures["SKIN"]?.url ?: context.failEphemerally(
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                prefix = Emotes.Error,
                 content = context.i18nContext.get(
                     I18nKeysData.Commands.Command.Minecraft.Player.Skin.PlayerDoesNotHaveASkin(
                         playerName = playerNameOrUrl,
@@ -97,7 +97,7 @@ class McSkinLorittaSweatshirtExecutor(loritta: LorittaCinnamon, val client: Gabr
             )
         } catch (e: InvalidMinecraftSkinException) {
             context.failEphemerally(
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                prefix = Emotes.Error,
                 content = context.i18nContext.get(
                     I18nKeysData.Commands.Command.Minecraft.Sweatshirt.InvalidMinecraftSkin
                 )
@@ -109,7 +109,7 @@ class McSkinLorittaSweatshirtExecutor(loritta: LorittaCinnamon, val client: Gabr
                 context.i18nContext.get(
                     I18nKeysData.Commands.Command.Minecraft.Sweatshirt.Result
                 ),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHeart
+                Emotes.LoriHeart
             )
 
             addFile("skin_lori_sweatshirt.png", image.inputStream())

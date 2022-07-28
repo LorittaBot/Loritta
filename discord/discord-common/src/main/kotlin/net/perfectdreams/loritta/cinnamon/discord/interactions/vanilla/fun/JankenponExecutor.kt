@@ -36,23 +36,23 @@ class JankenponExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                 when (status) {
                     Jankenpon.JankenponStatus.WIN -> {
                         append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Win)} ")
-                        append(net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriWow.asMention + "**")
+                        append(Emotes.LoriWow.asMention + "**")
                     }
                     Jankenpon.JankenponStatus.LOSE -> {
                         append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Lose)} ")
-                        append(net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat.asMention + "**")
+                        append(Emotes.LoriPat.asMention + "**")
                     }
                     Jankenpon.JankenponStatus.DRAW -> {
                         append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Draw)} ")
-                        append(net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile.asMention + "**")
+                        append(Emotes.LoriSmile.asMention + "**")
                     }
                 }
             }
 
             val jankenPrefix = when (status) {
-                Jankenpon.JankenponStatus.WIN -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.Tada
-                Jankenpon.JankenponStatus.DRAW -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.WhiteFlag
-                Jankenpon.JankenponStatus.LOSE -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.BlackFlag
+                Jankenpon.JankenponStatus.WIN -> Emotes.Tada
+                Jankenpon.JankenponStatus.DRAW -> Emotes.WhiteFlag
+                Jankenpon.JankenponStatus.LOSE -> Emotes.BlackFlag
             }
 
             context.sendMessage {
@@ -65,15 +65,15 @@ class JankenponExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
             }
         } else {
             if (argument.equals("jesus", ignoreCase = true)) {
-                val jesus = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Jesus} *${context.i18nContext.get(JankenponCommand.I18N_PREFIX.JesusChrist)}* ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Jesus}"
+                val jesus = "${Emotes.Jesus} *${context.i18nContext.get(JankenponCommand.I18N_PREFIX.JesusChrist)}* ${Emotes.Jesus}"
 
                 context.sendMessage {
                     styled(
-                        prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.WhiteFlag,
+                        prefix = Emotes.WhiteFlag,
                         content = context.i18nContext.get(JankenponCommand.I18N_PREFIX.Chosen(jesus, jesus))
                     )
 
-                    styled("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.MaybeDraw)} ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Thinking} ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Shrug}**")
+                    styled("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.MaybeDraw)} ${Emotes.Thinking} ${Emotes.Shrug}**")
                 }
             }
         }
@@ -97,9 +97,9 @@ class JankenponExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
 
         fun getEmoji(): net.perfectdreams.loritta.cinnamon.emotes.Emote {
             return when (this) {
-                ROCK -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.Rock
-                PAPER -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.Newspaper
-                SCISSORS -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.Scissors
+                ROCK -> Emotes.Rock
+                PAPER -> Emotes.Newspaper
+                SCISSORS -> Emotes.Scissors
             }
         }
 

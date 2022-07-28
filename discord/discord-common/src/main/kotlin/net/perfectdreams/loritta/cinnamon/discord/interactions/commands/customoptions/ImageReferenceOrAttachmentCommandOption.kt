@@ -34,7 +34,7 @@ data class ImageReferenceOrAttachmentIntermediaryData(
             // This ain't an image dawg! Because the user explicitly provided the image, then let's fail
             context.fail(
                 context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
         } else if (dataValue != null) {
             // Now check if it is a valid thing!
@@ -105,7 +105,7 @@ data class ImageReferenceOrAttachmentIntermediaryData(
         if (required) {
             context.fail(
                 context.i18nContext.get(I18nKeysData.Commands.NoValidImageFound),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
         }
 

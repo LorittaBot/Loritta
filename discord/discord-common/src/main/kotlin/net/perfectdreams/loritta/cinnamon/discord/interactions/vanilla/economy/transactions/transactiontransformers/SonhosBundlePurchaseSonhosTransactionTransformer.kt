@@ -21,7 +21,7 @@ object SonhosBundlePurchaseSonhosTransactionTransformer : SonhosTransactionTrans
             i18nContext.get(
                 TransactionsCommand.I18N_PREFIX.Types.SonhosBundlePurchase.PurchasedSonhos(
                     transaction.sonhos,
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
+                    Emotes.LoriKiss
                 )
             )
         )

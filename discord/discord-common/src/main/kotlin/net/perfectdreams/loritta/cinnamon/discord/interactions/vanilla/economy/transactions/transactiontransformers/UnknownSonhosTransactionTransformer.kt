@@ -16,6 +16,6 @@ object UnknownSonhosTransactionTransformer : SonhosTransactionTransformer<Unknow
         cachedUserInfos: MutableMap<UserId, CachedUserInfo?>,
         transaction: UnknownSonhosTransaction
     ): suspend StringBuilder.() -> (Unit) = {
-        append("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriShrug} Unknown Transaction (Bug?)")
+        append("${Emotes.LoriShrug} Unknown Transaction (Bug?)")
     }
 }

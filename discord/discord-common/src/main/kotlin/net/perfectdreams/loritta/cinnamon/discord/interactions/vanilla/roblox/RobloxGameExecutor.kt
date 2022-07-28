@@ -48,7 +48,7 @@ class RobloxGameExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
         // No games found that match the request
         if (games.isEmpty())
             context.fail(
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                prefix = Emotes.Error,
                 content = context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.UnknownGame(searchParameter))
             )
 
@@ -115,7 +115,7 @@ class RobloxGameExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
         context.sendMessage {
             embed {
                 author(gameAuthor)
-                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Roblox} $gameName"
+                title = "${Emotes.Roblox} $gameName"
                 url = "https://www.roblox.com/games/$gameId"
                 description = gameDescription.shortenWithEllipsis(1_000)
                 field("\uD83D\uDCBB ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.PlaceId)}", placeId, true)

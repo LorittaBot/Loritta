@@ -19,7 +19,7 @@ object TextBoxHelper {
                 ?: context.fail {
                     styled(
                         context.i18nContext.get(UndertaleCommand.I18N_TEXTBOX_PREFIX.DataIsMissing),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.AnnoyingDog
+                        Emotes.AnnoyingDog
                     )
                 }
         )

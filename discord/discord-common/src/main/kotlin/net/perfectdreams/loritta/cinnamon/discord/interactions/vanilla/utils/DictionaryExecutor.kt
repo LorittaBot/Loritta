@@ -46,7 +46,7 @@ class DictionaryExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
         if (httpResponse.status == HttpStatusCode.NotFound)
             context.failEphemerally(
                 context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                Emotes.Error
             )
 
         val response = httpResponse.bodyAsText()
@@ -61,7 +61,7 @@ class DictionaryExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
             val resultadosLi = resultados.getElementsByTag("li").firstOrNull()
                 ?: context.failEphemerally(
                     context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    Emotes.Error
                 )
 
             val linkElement = resultadosLi.getElementsByClass("_sugg").first()
@@ -73,7 +73,7 @@ class DictionaryExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
             if (httpRequest2.status == HttpStatusCode.NotFound)
                 context.failEphemerally(
                     context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    Emotes.Error
                 )
 
             val response2 = httpRequest2.bodyAsText()
@@ -87,7 +87,7 @@ class DictionaryExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
         )
             context.failEphemerally(
                 context.i18nContext.get(DictionaryCommand.I18N_PREFIX.WordNotFound),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                Emotes.Error
             )
 
         val description = jsoup.select("p[itemprop = description]")[0]

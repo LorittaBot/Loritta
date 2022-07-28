@@ -22,7 +22,7 @@ class NotificationsViewExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
 
         val notification = context.loritta.services.notifications.getUserNotification(UserId(context.user.id), args[options.id].toLong())
             ?: context.failEphemerally(
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                prefix = Emotes.Error,
                 content = context.i18nContext.get(NotificationsCommand.I18N_PREFIX.View.CouldntFindTheNotification)
             )
 

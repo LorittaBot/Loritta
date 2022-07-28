@@ -27,7 +27,7 @@ class GoBackToPackageListButtonClickExecutor(
         if (packageIds.isEmpty())
             context.failEphemerally(
                 context.i18nContext.get(PackageCommand.I18N_PREFIX.List.YouAreNotFollowingAnyPackage),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
 
         val message = PackageListExecutor.createMessage(context.i18nContext, packageIds)

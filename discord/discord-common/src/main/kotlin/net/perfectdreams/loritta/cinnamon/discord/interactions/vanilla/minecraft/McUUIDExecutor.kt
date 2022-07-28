@@ -21,12 +21,12 @@ class McUUIDExecutor(loritta: LorittaCinnamon, val mojang: MinecraftMojangAPI) :
 
         if (!player.matches(McSkinExecutor.VALID_NAME_REGEX))
             context.failEphemerally(
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                prefix = Emotes.Error,
                 content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.InvalidPlayerName(player))
             )
 
         val onlineUniqueId = mojang.getUniqueId(player) ?: context.failEphemerally(
-            prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+            prefix = Emotes.Error,
             content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(player))
         )
 

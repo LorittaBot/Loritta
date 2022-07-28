@@ -29,7 +29,7 @@ class CancelledExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                             .random()
                     )
                 ),
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHmpf.toString()
+                prefix = Emotes.LoriHmpf.toString()
             )
         }
     }

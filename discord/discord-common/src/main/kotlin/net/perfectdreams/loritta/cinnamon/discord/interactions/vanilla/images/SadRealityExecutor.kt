@@ -184,12 +184,12 @@ class SadRealityExecutor(
         // Not enough users!
         if (listOfUsers.filterNotNull().size != 6) {
             context.fail {
-                styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsers), net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob)
+                styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsers), Emotes.LoriSob)
 
                 if (noPermissionToQuery) {
-                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersPermissionsTip), net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading)
+                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersPermissionsTip), Emotes.LoriReading)
                 } else if (context !is GuildApplicationCommandContext) {
-                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersGuildTip), net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading)
+                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersGuildTip), Emotes.LoriReading)
                 }
             }
         }

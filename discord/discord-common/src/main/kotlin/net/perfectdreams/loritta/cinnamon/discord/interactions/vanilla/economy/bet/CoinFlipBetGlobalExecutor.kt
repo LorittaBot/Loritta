@@ -60,7 +60,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                             QUANTITIES.joinToString(", ")
                         )
                     ),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    Emotes.Error
                 )
 
             val results = context.loritta.services.bets.addToCoinFlipBetGlobalMatchmakingQueue(
@@ -77,7 +77,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                             context.i18nContext.get(
                                 BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.AddedToMatchmakingQueue
                             ),
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
+                            Emotes.LoriRich
                         )
                     }
                     is BetsService.AlreadyInQueueResult -> context.sendEphemeralMessage {
@@ -85,7 +85,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                             context.i18nContext.get(
                                 BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouAreAlreadyInTheMatchmakingQueue
                             ),
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRage
+                            Emotes.LoriRage
                         )
                     }
                     is BetsService.CoinFlipResult -> {
@@ -170,7 +170,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                         BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.LeftMatchmakingQueueDueToNotEnoughSonhos
                                     )
                                 }",
-                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                                Emotes.LoriSob
                             )
 
                             userHaventGotDailyTodayOrUpsellSonhosBundles(
@@ -191,7 +191,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                         BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.NotEnoughSonhosToBet
                                     )
                                 }",
-                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                                Emotes.LoriSob
                             )
 
                             userHaventGotDailyTodayOrUpsellSonhosBundles(
@@ -249,9 +249,9 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                 else
                     "**${i18nContext.get(CoinFlipCommand.I18N_PREFIX.Heads)}!**",
                 if (result.isTails)
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.CoinTails
+                    Emotes.CoinTails
                 else
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.CoinHeads
+                    Emotes.CoinHeads
             )
 
             if (isJustForFun) {
@@ -264,7 +264,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                 loserId = loserCachedUserInfo?.id?.value.toString()
                             )
                         ),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
+                        Emotes.LoriRich
                     )
                 } else {
                     styled(
@@ -275,7 +275,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                 winnerId = winnerCachedUserInfo?.id?.value.toString()
                             )
                         ),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                        Emotes.LoriSob
                     )
                 }
             } else if (result.tax != null && result.taxPercentage != null) {
@@ -291,7 +291,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                 loserId = loserCachedUserInfo?.id?.value.toString()
                             )
                         ),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
+                        Emotes.LoriRich
                     )
                 } else {
                     styled(
@@ -304,7 +304,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                 winnerId = winnerCachedUserInfo?.id?.value.toString()
                             )
                         ),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                        Emotes.LoriSob
                     )
                 }
             } else {
@@ -318,7 +318,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                 loserId = loserCachedUserInfo?.id?.value.toString()
                             )
                         ),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
+                        Emotes.LoriRich
                     )
 
                     // Upsell if the user does not have premium but the loser has
@@ -333,7 +333,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                     )
                                 )
                             ),
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.CreditCard
+                            Emotes.CreditCard
                         )
                     }
                 } else {
@@ -346,7 +346,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                 winnerId = winnerCachedUserInfo?.id?.value.toString()
                             )
                         ),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                        Emotes.LoriSob
                     )
                 }
             }
@@ -360,7 +360,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                         selfStats.winSum - selfStats.lostSum
                     )
                 ),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+                Emotes.LoriReading
             )
 
             // If the user won, then the selfStreak is their winning streak
@@ -370,18 +370,18 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                 styled(
                     i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveWins(selfStreak)),
                     when {
-                        selfStreak >= 10 -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappy
-                        selfStreak >= 5 -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriUwU
-                        else -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriWow
+                        selfStreak >= 10 -> Emotes.LoriHappy
+                        selfStreak >= 5 -> Emotes.LoriUwU
+                        else -> Emotes.LoriWow
                     }
                 )
             } else {
                 styled(
                     i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouHaveConsecutiveLosses(selfStreak)),
                     when {
-                        selfStreak >= 10 -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
-                        selfStreak >= 5 -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRage
-                        else -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHmpf
+                        selfStreak >= 10 -> Emotes.LoriSob
+                        selfStreak >= 5 -> Emotes.LoriRage
+                        else -> Emotes.LoriHmpf
                     }
                 )
             }
@@ -403,7 +403,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                         i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.JoinMatchmakingQueueButton(quantity))
                     }
 
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
+                    loriEmoji = Emotes.LoriRich
                 }
             }
         }
@@ -434,7 +434,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                     QUANTITIES.joinToString(", ")
                 )
             ),
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+            Emotes.Error
         )
 
         if (isRemoveFromQueueRequest) {
@@ -447,14 +447,14 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                 context.sendEphemeralMessage {
                     styled(
                         context.i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.QuittedMatchmakingQueue),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile
+                        Emotes.LoriSmile
                     )
                 }
             } else {
                 context.sendEphemeralMessage {
                     styled(
                         context.i18nContext.get(BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.YouArentInTheMatchmakingQueueToLeaveIt),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                        Emotes.Error
                     )
                 }
             }

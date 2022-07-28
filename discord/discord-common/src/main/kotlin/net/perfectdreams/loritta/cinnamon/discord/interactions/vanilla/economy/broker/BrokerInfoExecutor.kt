@@ -18,11 +18,11 @@ class BrokerInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
         context.sendMessage {
             brokerBaseEmbed(context) {
-                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.Title)}"
+                title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.Title)}"
                 description = context.i18nContext.get(
                     BrokerCommand.I18N_PREFIX.Info.Embed.Explanation(
-                        loriSob = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob,
-                        tickerOutOfMarket = net.perfectdreams.loritta.cinnamon.emotes.Emotes.DoNotDisturb,
+                        loriSob = Emotes.LoriSob,
+                        tickerOutOfMarket = Emotes.DoNotDisturb,
                         openTime = LorittaBovespaBrokerUtils.TIME_OPEN_DISCORD_TIMESTAMP,
                         closingTime = LorittaBovespaBrokerUtils.TIME_CLOSING_DISCORD_TIMESTAMP
                     )

@@ -21,7 +21,7 @@ class AfkOffExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                 context.i18nContext.get(
                     AfkCommand.I18N_PREFIX.Off.AfkModeDeactivated
                 ),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriZap
+                Emotes.LoriZap
             )
         }
     }

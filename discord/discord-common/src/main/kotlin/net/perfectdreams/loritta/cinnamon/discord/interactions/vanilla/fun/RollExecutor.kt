@@ -37,22 +37,22 @@ class RollExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lori
         } catch (e: Dice.Companion.TooManyDicesException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.TooManyDices),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
         } catch (e: Dice.Companion.LowerBoundHigherThanUpperBoundException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.InvalidBound),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriShrug
+                Emotes.LoriShrug
             )
         } catch (e: IllegalArgumentException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.InvalidBound),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriShrug
+                Emotes.LoriShrug
             )
         } catch (e: UnsupportedOperationException) {
             context.failEphemerally(
                 context.i18nContext.get(RollCommand.I18N_PREFIX.InvalidBound),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriShrug
+                Emotes.LoriShrug
             )
         }
 
@@ -88,7 +88,7 @@ class RollExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lori
                             mathematicalExpression
                         )
                     ),
-                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHm
+                    prefix = Emotes.LoriHm
                 )
             }
         }

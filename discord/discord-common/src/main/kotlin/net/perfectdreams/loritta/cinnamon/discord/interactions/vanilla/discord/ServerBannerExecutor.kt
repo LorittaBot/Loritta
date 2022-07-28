@@ -21,8 +21,8 @@ class ServerBannerExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
 
         val bannerId = guild.banner ?: context.failEphemerally {
             styled(
-                context.i18nContext.get(I18nKeysData.Commands.Command.Server.Banner.NoBanner(net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat)),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                context.i18nContext.get(I18nKeysData.Commands.Command.Server.Banner.NoBanner(Emotes.LoriPat)),
+                Emotes.LoriSob
             )
         }
 
@@ -31,7 +31,7 @@ class ServerBannerExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
 
         context.sendMessage {
             embed {
-                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Discord} ${guild.name}"
+                title = "${Emotes.Discord} ${guild.name}"
                 color = Color(114, 137, 218) // TODO: Move this to an object
                 image = bannerUrl
 

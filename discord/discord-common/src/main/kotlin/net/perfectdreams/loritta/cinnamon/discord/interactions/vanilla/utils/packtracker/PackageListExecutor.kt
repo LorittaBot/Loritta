@@ -31,7 +31,7 @@ class PackageListExecutor(loritta: LorittaCinnamon, val client: CorreiosClient) 
                 selectMenu(SelectPackageSelectMenuExecutor) {
                     for (packageId in trackingIds) {
                         option(packageId, packageId) {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Correios
+                            loriEmoji = Emotes.Correios
                         }
                     }
                 }
@@ -47,7 +47,7 @@ class PackageListExecutor(loritta: LorittaCinnamon, val client: CorreiosClient) 
         if (trackingIdsTrackedByUser.isEmpty())
             context.failEphemerally(
                 context.i18nContext.get(PackageCommand.I18N_PREFIX.List.YouAreNotFollowingAnyPackage),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
 
         val message = createMessage(context.i18nContext, trackingIdsTrackedByUser)

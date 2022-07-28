@@ -23,8 +23,8 @@ object BrokerExecutorUtils {
     }
 
     fun getEmojiStatusForTicker(brokerTickerInformation: BrokerTickerInformation) = if (brokerTickerInformation.status != LorittaBovespaBrokerUtils.MARKET)
-        net.perfectdreams.loritta.cinnamon.emotes.Emotes.DoNotDisturb
+        Emotes.DoNotDisturb
     else if (LorittaBovespaBrokerUtils.checkIfTickerDataIsStale(brokerTickerInformation.lastUpdatedAt))
-        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Idle
-    else net.perfectdreams.loritta.cinnamon.emotes.Emotes.Online
+        Emotes.Idle
+    else Emotes.Online
 }

@@ -76,7 +76,7 @@ class BrokerBuyStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExe
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.YouDontHaveEnoughSonhos),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                    Emotes.LoriSob
                 )
 
                 userHaventGotDailyTodayOrUpsellSonhosBundles(
@@ -105,7 +105,7 @@ class BrokerBuyStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExe
                     price = value
                 )
             ),
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
+            Emotes.LoriRich
         )
     }
 }

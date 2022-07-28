@@ -331,7 +331,7 @@ object WebhookCommandUtils {
     private suspend fun sendWebhookSuccessMessage(context: ApplicationCommandContext, messageId: Long?, message: StringI18nData) = context.sendEphemeralMessage {
         styled(
             "**${context.i18nContext.get(message)}**",
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriYay
+            Emotes.LoriYay
         )
 
         if (messageId != null) {

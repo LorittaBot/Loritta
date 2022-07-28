@@ -104,7 +104,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                                 )
                             )
                         ) {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.ChevronLeft
+                            loriEmoji = Emotes.ChevronLeft
                         }
                     } else {
                         interactiveButton(
@@ -116,7 +116,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                                 )
                             )
                         ) {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.ChevronLeft
+                            loriEmoji = Emotes.ChevronLeft
                             disabled = true
                         }
                     }
@@ -131,7 +131,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                                 )
                             )
                         ) {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.ChevronRight
+                            loriEmoji = Emotes.ChevronRight
                         }
                     } else {
                         interactiveButton(
@@ -143,7 +143,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                                 )
                             )
                         ) {
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.ChevronRight
+                            loriEmoji = Emotes.ChevronRight
                             disabled = true
                         }
                     }
@@ -292,7 +292,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                     )
                 ) {
                     label = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.GoToTheLastPage)
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                    loriEmoji = Emotes.LoriSob
                 }
             }
         }

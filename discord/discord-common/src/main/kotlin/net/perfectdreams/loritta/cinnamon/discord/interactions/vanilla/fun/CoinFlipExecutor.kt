@@ -16,10 +16,10 @@ class CoinFlipExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
         val message: StringI18nData
 
         if (isTails) {
-            prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.CoinTails.toString()
+            prefix = Emotes.CoinTails.toString()
             message = CoinFlipCommand.I18N_PREFIX.Tails
         } else {
-            prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.CoinHeads.toString()
+            prefix = Emotes.CoinHeads.toString()
             message = CoinFlipCommand.I18N_PREFIX.Heads
         }
 

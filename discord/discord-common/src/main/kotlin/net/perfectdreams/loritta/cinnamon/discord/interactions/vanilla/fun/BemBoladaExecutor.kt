@@ -196,7 +196,7 @@ class BemBoladaExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
             embed {
                 author("Kenji do Loop Infinito", null, "https://loritta.website/assets/img/kenji.jpg")
 
-                description = "${bemBoladas.random()} ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile}"
+                description = "${bemBoladas.random()} ${Emotes.LoriSmile}"
             }
         }
     }

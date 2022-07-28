@@ -24,12 +24,12 @@ open class CrafatarExecutorBase(
         val player = args[options.username]
         if (!player.matches(McSkinExecutor.VALID_NAME_REGEX))
             context.failEphemerally(
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                prefix = Emotes.Error,
                 content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.InvalidPlayerName(player))
             )
 
         val uuid = mojang.getUniqueId(player) ?: context.failEphemerally(
-            prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+            prefix = Emotes.Error,
             content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(player))
         )
 

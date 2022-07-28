@@ -13,18 +13,18 @@ object CorreiosUtils {
     fun getEmoji(eventTypeWithStatus: EventTypeWithStatus) = when (eventTypeWithStatus.event) {
         EventType.ExternalPackageUpdate -> {
             when (eventTypeWithStatus.status) {
-                EventType.ExternalPackageUpdate.WaitingForPayment -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCard
-                EventType.ExternalPackageUpdate.PaymentConfirmed -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
-                else -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.BrasilTorcida
+                EventType.ExternalPackageUpdate.WaitingForPayment -> Emotes.LoriCard
+                EventType.ExternalPackageUpdate.PaymentConfirmed -> Emotes.LoriRich
+                else -> Emotes.BrasilTorcida
             }
         }
-        EventType.IssuesInPackageDelivery -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk
-        EventType.PackageDeliveredToRecipient -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile
-        EventType.PackageInDeliveryRouteToRecipient -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.Dash
-        EventType.PackageInTransitFromTreatmentUnitToDistributionUnit -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.DeliveryTruck
-        EventType.PackageInTransitToTreatmentUnit -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.DeliveryTruck
-        EventType.PackagePosted -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.Inbox
-        else -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.Package
+        EventType.IssuesInPackageDelivery -> Emotes.LoriBonk
+        EventType.PackageDeliveredToRecipient -> Emotes.LoriSmile
+        EventType.PackageInDeliveryRouteToRecipient -> Emotes.Dash
+        EventType.PackageInTransitFromTreatmentUnitToDistributionUnit -> Emotes.DeliveryTruck
+        EventType.PackageInTransitToTreatmentUnit -> Emotes.DeliveryTruck
+        EventType.PackagePosted -> Emotes.Inbox
+        else -> Emotes.Package
     }
 
     fun getImage(eventTypeWithStatus: EventTypeWithStatus) = when (eventTypeWithStatus.event) {

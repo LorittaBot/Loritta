@@ -345,7 +345,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         // Show the message's attachments in the embed
         if (message.attachments.isNotEmpty()) {
             field(
-                "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.FileFolder} ${i18nContext.get(I18nKeysData.Modules.Starboard.Files(message.attachments.size))}",
+                "${Emotes.FileFolder} ${i18nContext.get(I18nKeysData.Modules.Starboard.Files(message.attachments.size))}",
                 message.attachments.joinToString("\n") {
                     "[${it.filename}](${it.url})"
                 }
@@ -368,7 +368,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
     }
 
     private fun getStarEmojiForReactionCount(count: Int) = when {
-        count == 69 -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk.toString() // Easter Egg
+        count == 69 -> Emotes.LoriBonk.toString() // Easter Egg
         count >= 20 -> "\uD83C\uDF0C"
         count >= 15 -> "\uD83D\uDCAB"
         count >= 10 -> "\uD83C\uDF20"

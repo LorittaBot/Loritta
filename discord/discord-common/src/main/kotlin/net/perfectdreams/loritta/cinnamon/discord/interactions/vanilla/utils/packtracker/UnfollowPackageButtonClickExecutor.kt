@@ -49,7 +49,7 @@ class UnfollowPackageButtonClickExecutor(
 
         context.sendEphemeralReply(
             context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.UnfollowPackage.YouUnfollowedThePackage(decoded.trackingId)),
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSunglasses
+            Emotes.LoriSunglasses
         )
     }
 }

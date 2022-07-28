@@ -45,7 +45,7 @@ class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                             args[options.invite].shortenAndStripCodeBackticks(100)
                         )
                     ),
-                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    prefix = Emotes.Error
                 )
             }
 
@@ -62,7 +62,7 @@ class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                             args[options.invite].shortenAndStripCodeBackticks(100)
                         )
                     ),
-                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    prefix = Emotes.Error
                 )
             }
         }
@@ -78,25 +78,25 @@ class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
         context.sendMessage {
             embed {
-                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Discord} ${invite.guild.value?.name}"
+                title = "${Emotes.Discord} ${invite.guild.value?.name}"
                 color = Color(114, 137, 218) // TODO: Move this to an object
 
                 if (invite.guild.value?.icon != null)
                     thumbnailUrl = iconUrl
 
-                field("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Computer} ID", true) {
+                field("${Emotes.Computer} ID", true) {
                     "`${invite.guild.value?.id?.value.toString()}`"
                 }
 
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.BustsInSilhouette} " + context.i18nContext.get(
+                    name = "${Emotes.BustsInSilhouette} " + context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.ServerMembers
                     )
-                    value = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.PersonTippingHand} " + context.i18nContext.get(
+                    value = "${Emotes.PersonTippingHand} " + context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.OnlineMembersPresence(
                             invite.approximatePresenceCount.value!!.toString(),
                         )
-                    ) + "\n${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Sleeping} " + context.i18nContext.get(
+                    ) + "\n${Emotes.Sleeping} " + context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.OfflineMembersPresence(
                             (invite.approximateMemberCount.value!! - invite.approximatePresenceCount.value!!).toString()
                         )
@@ -108,7 +108,7 @@ class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                 val inviteChannel = invite.channel
                 if (inviteChannel != null) {
                     if (inviteChannel.name.value != null) field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.SpeakingHead} " + context.i18nContext.get(
+                        name = "${Emotes.SpeakingHead} " + context.i18nContext.get(
                             InviteCommand.I18N_PREFIX.Info.InvitationChannel
                         )
                         value = "#${inviteChannel.name.value} (`${inviteChannel.id.value}`)"
@@ -118,7 +118,7 @@ class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                 }
 
                 if (invite.inviter.value != null) field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Wave}" + context.i18nContext.get(
+                    name = "${Emotes.Wave}" + context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.WhoInvited
                     )
                     value = "${invite.inviter.value!!.username}#${invite.inviter.value!!.discriminator} " +
@@ -129,7 +129,7 @@ class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
                 val featuresToLocalized = invite.guild.value?.features?.toLocalized()
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Sparkles} " + context.i18nContext.get(
+                    name = "${Emotes.Sparkles} " + context.i18nContext.get(
                         InviteCommand.I18N_PREFIX.Info.GuildFeatures
                     )
                     value = featuresToLocalized?.joinToString(
@@ -139,8 +139,8 @@ class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                 }
 
                 footer(
-                    if (discordGuild != null) "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Blush} " + context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.InThisServer)
-                    else "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Sob} " + context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.NotOnTheServer)
+                    if (discordGuild != null) "${Emotes.Blush} " + context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.InThisServer)
+                    else "${Emotes.Sob} " + context.i18nContext.get(InviteCommand.I18N_PREFIX.Info.NotOnTheServer)
                 )
             }
 

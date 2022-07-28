@@ -30,8 +30,8 @@ class AfkOnExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
             styled(
                 context.i18nContext.get(
                     AfkCommand.I18N_PREFIX.On.AfkModeActivated
-                ) + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Wink}",
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                ) + " ${Emotes.Wink}",
+                Emotes.LoriSleeping
             )
         }
     }

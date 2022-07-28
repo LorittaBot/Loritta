@@ -28,7 +28,7 @@ class MorseFromExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                 context.sendMessage {
                     styled(
                         content = "`$fromMorse`",
-                        prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Radio.toString()
+                        prefix = Emotes.Radio.toString()
                     )
 
                     if (unknownMorseCodes.isNotEmpty()) {
@@ -38,7 +38,7 @@ class MorseFromExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                                     unknownMorseCodes.joinToString("")
                                 )
                             ),
-                            prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                            prefix = Emotes.LoriSob
                         )
                     }
                 }
@@ -46,7 +46,7 @@ class MorseFromExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
 
             is MorseUtils.InvalidFromMorseConversionResult -> {
                 context.failEphemerally(
-                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error.asMention,
+                    prefix = Emotes.Error.asMention,
                     content = context.i18nContext.get(
                         MorseCommand.I18N_PREFIX.FromMorseFailUnknownMorseCodes
                     )

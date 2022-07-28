@@ -134,7 +134,7 @@ interface CommandExecutorWrapper {
                             )
                         )
                     ),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSunglasses
+                    Emotes.LoriSunglasses
                 )
             }
         }
@@ -161,10 +161,10 @@ interface CommandExecutorWrapper {
 
         // Tell the user that something went *really* wrong
         // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context
-        val content = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHm} **|** " + i18nContext.get(
+        val content = "${Emotes.LoriHm} **|** " + i18nContext.get(
             I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                loriRage = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRage,
-                loriSob = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob,
+                loriRage = Emotes.LoriRage,
+                loriSob = Emotes.LoriSob,
                 stacktrace = if (!e.message.isNullOrEmpty())
                     " `${e.message}`" // TODO: Sanitize
                 else
@@ -202,22 +202,22 @@ interface CommandExecutorWrapper {
                 content = context.i18nContext.get(
                     if (expiresDateInEpochSeconds != null) {
                         I18nKeysData.Commands.YouAreLorittaBannedTemporary(
-                            loriHmpf = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHmpf,
+                            loriHmpf = Emotes.LoriHmpf,
                             reason = userBannedState.reason,
                             banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
                             expiresDate = "<t:$expiresDateInEpochSeconds:R> (<t:$expiresDateInEpochSeconds:f>)",
                             banAppealPageUrl = banAppealPageUrl,
-                            loriAmeno = net.perfectdreams.loritta.cinnamon.emotes.Emotes.loriAmeno,
-                            loriSob = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                            loriAmeno = Emotes.loriAmeno,
+                            loriSob = Emotes.LoriSob
                         )
                     } else {
                         I18nKeysData.Commands.YouAreLorittaBannedPermanent(
-                            loriHmpf = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHmpf,
+                            loriHmpf = Emotes.LoriHmpf,
                             reason = userBannedState.reason,
                             banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
                             banAppealPageUrl = banAppealPageUrl,
-                            loriAmeno = net.perfectdreams.loritta.cinnamon.emotes.Emotes.loriAmeno,
-                            loriSob = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                            loriAmeno = Emotes.loriAmeno,
+                            loriSob = Emotes.LoriSob
                         )
                     }
 

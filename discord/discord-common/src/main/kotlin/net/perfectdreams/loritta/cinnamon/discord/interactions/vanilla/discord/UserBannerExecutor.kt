@@ -33,7 +33,7 @@ class UserBannerExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                 context.i18nContext.get(
                     I18nKeysData.Commands.Command.User.Banner.UserDoesNotHaveAnBanner(mentionUser(user, false))
                 ),
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                prefix = Emotes.Error
             )
         }
 

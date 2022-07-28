@@ -61,7 +61,7 @@ open class ComponentContext(
                         mentionUser(data.userId, false)
                     )
                 ),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRage
+                Emotes.LoriRage
             )
         }
 
@@ -88,7 +88,7 @@ open class ComponentContext(
                         mentionUser(data.userId, false)
                     )
                 ),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRage
+                Emotes.LoriRage
             )
         }
     }
@@ -109,7 +109,7 @@ open class ComponentContext(
                         mentionUser(data.userId, false)
                     )
                 ),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRage
+                Emotes.LoriRage
             )
         }
     }
@@ -162,7 +162,7 @@ open class ComponentContext(
         block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit) = {
             styled(
                 i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                Emotes.LoriSleeping
             )
         }
     ): T {
@@ -190,7 +190,7 @@ open class ComponentContext(
         block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit) = {
             styled(
                 i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                Emotes.LoriSleeping
             )
         }
     ): T {

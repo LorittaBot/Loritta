@@ -291,12 +291,12 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
 
                                     styled(
                                         i18nContext.get(I18nKeysData.Modules.InviteBlocker.ActivateInviteBlockerBypass("<@&${topRole.id}>")),
-                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile
+                                        Emotes.LoriSmile
                                     )
 
                                     styled(
                                         i18nContext.get(I18nKeysData.Modules.InviteBlocker.HowToReEnableLater("<${m.config.loritta.website}guild/${author.id}/configure/permissions>")),
-                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHi
+                                        Emotes.LoriHi
                                     )
 
                                     actionRow {
@@ -311,7 +311,7 @@ class InviteBlockerModule(val m: DiscordGatewayEventsProcessor) : ProcessDiscord
                                                 )
                                             )
                                         ) {
-                                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat
+                                            loriEmoji = Emotes.LoriPat
                                         }
                                     }
 

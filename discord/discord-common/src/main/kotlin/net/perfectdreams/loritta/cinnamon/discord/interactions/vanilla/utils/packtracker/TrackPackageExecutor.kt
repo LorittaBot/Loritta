@@ -40,7 +40,7 @@ class TrackPackageExecutor(loritta: LorittaCinnamon, val client: CorreiosClient)
             val wouldHaveOverflown = obj.events.size > DiscordResourceLimits.Embed.FieldsPerEmbed
 
             embed {
-                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Correios} `${trackingId}` (${obj.nome})"
+                title = "${Emotes.Correios} `${trackingId}` (${obj.nome})"
                 if (wouldHaveOverflown)
                     description = i18nContext.get(PackageCommand.I18N_PREFIX.Track.TooManyEventsFiltered(DiscordResourceLimits.Embed.FieldsPerEmbed))
 
@@ -103,7 +103,7 @@ class TrackPackageExecutor(loritta: LorittaCinnamon, val client: CorreiosClient)
         } catch (e: InvalidTrackingIdException) {
             context.failEphemerally(
                 context.i18nContext.get(PackageCommand.I18N_PREFIX.InvalidCorreiosTrackingId("LO400218922RI")), // While there is a "AA123456785BR" package ID example in Correios website, that's actually a (very buggy) package!
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
         }
 
@@ -112,7 +112,7 @@ class TrackPackageExecutor(loritta: LorittaCinnamon, val client: CorreiosClient)
         if (obj is CorreiosUnknownObjeto)
             context.failEphemerally(
                 context.i18nContext.get(PackageCommand.I18N_PREFIX.ObjectNotFoundCorreios),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
 
         if (obj is CorreiosFoundObjeto) {

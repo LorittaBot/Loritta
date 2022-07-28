@@ -61,7 +61,7 @@ object AchievementUtils {
             context.sendEphemeralMessage {
                 styled(
                     content = "**${i18nContext.get(I18nKeysData.Achievements.AchievementUnlocked)}**",
-                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Sparkles
+                    prefix = Emotes.Sparkles
                 )
 
                 styled(
@@ -71,7 +71,7 @@ object AchievementUtils {
 
                 styled(
                     i18nContext.get(I18nKeysData.Achievements.ViewYourAchievements("/achievements")),
-                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriWow
+                    prefix = Emotes.LoriWow
                 )
             }
     }

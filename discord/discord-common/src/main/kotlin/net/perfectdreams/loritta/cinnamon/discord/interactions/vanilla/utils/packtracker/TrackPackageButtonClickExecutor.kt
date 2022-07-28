@@ -29,7 +29,7 @@ class TrackPackageButtonClickExecutor(
         } catch (e: InvalidTrackingIdException) {
             context.failEphemerally(
                 context.i18nContext.get(PackageCommand.I18N_PREFIX.InvalidCorreiosTrackingId("AA123456785BR")),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
         }
 
@@ -38,7 +38,7 @@ class TrackPackageButtonClickExecutor(
         if (pack is CorreiosUnknownObjeto)
             context.failEphemerally(
                 context.i18nContext.get(PackageCommand.I18N_PREFIX.ObjectNotFoundCorreios),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
 
         if (pack is CorreiosFoundObjeto) {

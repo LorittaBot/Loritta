@@ -65,7 +65,7 @@ class MoneyExecutor(loritta: LorittaCinnamon, val ecbManager: ECBManager) : Cinn
             // (Example: Discord Slash Commands)
             val euroValueInCurrency = exchangeRates[from] ?: context.failEphemerally {
                 styled(
-                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                    prefix = Emotes.Error,
                     content = context.i18nContext.get(
                         MoneyCommand.I18N_PREFIX.InvalidCurrency(
                             currency = from
@@ -86,7 +86,7 @@ class MoneyExecutor(loritta: LorittaCinnamon, val ecbManager: ECBManager) : Cinn
 
             val endValueInEuros = exchangeRates[to] ?: context.failEphemerally {
                 styled(
-                    prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                    prefix = Emotes.Error,
                     content = context.i18nContext.get(
                         MoneyCommand.I18N_PREFIX.InvalidCurrency(
                             currency = from

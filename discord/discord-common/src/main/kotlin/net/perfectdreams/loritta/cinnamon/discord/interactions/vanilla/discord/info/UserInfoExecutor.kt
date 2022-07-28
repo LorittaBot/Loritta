@@ -56,19 +56,19 @@ interface UserInfoExecutor {
         val flags = user.publicFlags
         val flagsToEmotes = flags.mapNotNull {
             when (it) {
-                UserFlag.DiscordEmployee -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.DiscordEmployee
-                UserFlag.DiscordPartner -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.DiscordPartner
-                UserFlag.HypeSquad -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.HypeSquad
-                UserFlag.BugHunterLevel1 -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.BugHunterLevel1
-                UserFlag.HouseBravery -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.HouseBravery
-                UserFlag.HouseBrilliance -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.HouseBrilliance
-                UserFlag.HouseBalance -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.HouseBalance
-                UserFlag.EarlySupporter -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.EarlySupporter
+                UserFlag.DiscordEmployee -> Emotes.DiscordEmployee
+                UserFlag.DiscordPartner -> Emotes.DiscordPartner
+                UserFlag.HypeSquad -> Emotes.HypeSquad
+                UserFlag.BugHunterLevel1 -> Emotes.BugHunterLevel1
+                UserFlag.HouseBravery -> Emotes.HouseBravery
+                UserFlag.HouseBrilliance -> Emotes.HouseBrilliance
+                UserFlag.HouseBalance -> Emotes.HouseBalance
+                UserFlag.EarlySupporter -> Emotes.EarlySupporter
                 // I don't know how we could represent this
                 // UserFlag.TeamUser -> ???
-                UserFlag.BugHunterLevel2 -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.BugHunterLevel2
-                UserFlag.VerifiedBotDeveloper -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.VerifiedBotDeveloper
-                UserFlag.DiscordCertifiedModerator -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCoffee
+                UserFlag.BugHunterLevel2 -> Emotes.BugHunterLevel2
+                UserFlag.VerifiedBotDeveloper -> Emotes.VerifiedBotDeveloper
+                UserFlag.DiscordCertifiedModerator -> Emotes.LoriCoffee
                 else -> null
             }
         }
@@ -100,13 +100,13 @@ interface UserInfoExecutor {
                     if (user.bot) {
                         append(
                             when {
-                                isSystemUser -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.VerifiedSystemTag
-                                UserFlag.VerifiedBot in flags -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.VerifiedBotTag
-                                else -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.BotTag
+                                isSystemUser -> Emotes.VerifiedSystemTag
+                                UserFlag.VerifiedBot in flags -> Emotes.VerifiedBotTag
+                                else -> Emotes.BotTag
                             }
                         )
                     } else {
-                        append(net.perfectdreams.loritta.cinnamon.emotes.Emotes.WumpusBasic)
+                        append(Emotes.WumpusBasic)
                     }
 
                     if (flagsToEmotes.isNotEmpty()) {
@@ -143,7 +143,7 @@ interface UserInfoExecutor {
 
                     if (communicationDisabledUntil != null) {
                         field(
-                            "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.TimedOutUntil)}",
+                            "${Emotes.LoriBonk} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.TimedOutUntil)}",
                             buildString {
                                 append("<t:${member.communicationDisabledUntil?.epochSeconds}:f> (<t:${member.communicationDisabledUntil?.epochSeconds}:R>)")
                                 if (Clock.System.now() > communicationDisabledUntil) {
@@ -159,7 +159,7 @@ interface UserInfoExecutor {
 
                     if (premiumSince != null) {
                         field(
-                            "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriWow} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.BoostingSince)}",
+                            "${Emotes.LoriWow} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.BoostingSince)}",
                             "<t:${premiumSince.epochSeconds}:f> (<t:${premiumSince.epochSeconds}:R>)",
                             true
                         )
@@ -167,7 +167,7 @@ interface UserInfoExecutor {
 
                     if (topRole != null) {
                         field(
-                            "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSunglasses} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.HighestRole)}",
+                            "${Emotes.LoriSunglasses} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.HighestRole)}",
                             "<@&${topRole.id}>",
                             true
                         )
@@ -176,7 +176,7 @@ interface UserInfoExecutor {
                     }
 
                     field(
-                        "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriZap} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InterestingTidbits)}",
+                        "${Emotes.LoriZap} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InterestingTidbits)}",
                         """${fancify(!member.pending)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.CompletedMembershipScreening)}
                                 |${fancify(communicationDisabledUntil != null && communicationDisabledUntil >= Clock.System.now())} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.IsTimedOut)}
                             """.trimMargin(),
@@ -232,7 +232,7 @@ interface UserInfoExecutor {
                         // While it would be nice to show the "Bot is actually using the intent but it is in less than 100 servers", it is not that reliable.
                         // Loritta has the "hasGuildMembersLimited" intent, however she is in more than 100 guilds
                         field(
-                            "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriZap} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InterestingTidbits)}",
+                            "${Emotes.LoriZap} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InterestingTidbits)}",
                             """${fancify(applicationInfo.botPublic)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.Public)}
                                 |${fancify(applicationInfo.botRequireCodeGrant)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.RequiresOAuth2CodeGrant)}
                                 |${fancify(UserFlag.BotHttpInteractions in flags)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.UsesInteractionsOverHttp)}
@@ -254,7 +254,7 @@ interface UserInfoExecutor {
 
                         color = LorittaColors.DiscordOldBlurple.toKordColor()
                     } else {
-                        title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error} Whoops"
+                        title = "${Emotes.Error} Whoops"
                         description = context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.NoMatchingApplicationFound)
                     }
                 }
@@ -402,9 +402,9 @@ interface UserInfoExecutor {
 
     private fun fancify(bool: Boolean) =
         if (bool)
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.CheckMark
+            Emotes.CheckMark
         else
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+            Emotes.Error
 
     suspend fun getApplicationInfo(snowflake: Snowflake): ApplicationInfo? {
         val applicationInfoResponse = http.get("https://discord.com/api/v10/applications/$snowflake/rpc")

@@ -311,7 +311,7 @@ class TioDoPaveExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
         context.sendMessage {
             embed {
                 author("Tio do Pavê", null, "https://loritta.website/assets/img/tio_do_pave.jpg")
-                description = "${PIADAS.random()} ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriOkHand}"
+                description = "${PIADAS.random()} ${Emotes.LoriOkHand}"
             }
         }
     }

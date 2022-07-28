@@ -21,8 +21,8 @@ class ServerIconExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
         val iconId = guild.icon ?: context.failEphemerally {
             styled(
-                context.i18nContext.get(I18nKeysData.Commands.Command.Server.Icon.NoIcon(net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat)),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                context.i18nContext.get(I18nKeysData.Commands.Command.Server.Icon.NoIcon(Emotes.LoriPat)),
+                Emotes.Error
             )
         }
 
@@ -31,7 +31,7 @@ class ServerIconExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
         context.sendMessage {
             embed {
-                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Discord} ${guild.name}"
+                title = "${Emotes.Discord} ${guild.name}"
                 image = urlIcon
                 color = Color(114, 137, 218) // TODO: Move this to an object
 

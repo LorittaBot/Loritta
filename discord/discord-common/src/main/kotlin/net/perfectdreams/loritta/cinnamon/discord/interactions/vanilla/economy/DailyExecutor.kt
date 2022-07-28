@@ -55,7 +55,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
             context.sendEphemeralMessage {
                 styled(
                     context.i18nContext.get(DailyCommand.I18N_PREFIX.PleaseWait("<t:${tomorrowAtMidnight.toInstant().toEpochMilli() / 1000}:R>")),
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    Emotes.Error
                 )
 
                 userHaventGotDailyTodayOrUpsellSonhosBundles(
@@ -98,7 +98,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
         context.sendEphemeralMessage {
             styled(
                 context.i18nContext.get(DailyCommand.I18N_PREFIX.DailyLink(url, "<t:${tomorrowAtMidnight.toInstant().toEpochMilli() / 1000}:t>")),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
+                Emotes.LoriRich
             )
 
             val todayDailyTaxTimeEpoch = OffsetDateTime.now(dailyTaxZoneOffset)
@@ -137,7 +137,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
                                         "<t:$todayDailyTaxTimeEpoch:f>"
                                     )
                                 ),
-                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCoffee
+                                Emotes.LoriCoffee
                             )
                         } else {
                             // User will lose sonhos in the future
@@ -152,7 +152,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
                                         "<t:$whenYouAreGoingToStartToLoseSonhosEpoch:f>"
                                     )
                                 ),
-                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCoffee
+                                Emotes.LoriCoffee
                             )
                         }
                     } else {
@@ -167,7 +167,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
                                     "<t:$todayDailyTaxTimeEpoch:f>",
                                 )
                             ),
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCoffee
+                            Emotes.LoriCoffee
                         )
                     }
                 } else {
@@ -178,17 +178,17 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
                                 currentUserThreshold.minimumSonhosForTrigger,
                                 currentUserThreshold.maxDayThreshold,
                                 currentUserThreshold.tax,
-                                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
+                                Emotes.LoriKiss
                             )
                         ),
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCoffee
+                        Emotes.LoriCoffee
                     )
                 }
             }
 
             styled(
                 context.i18nContext.get(DailyCommand.I18N_PREFIX.DailyWarning("${context.loritta.config.website}guidelines")),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBanHammer
+                Emotes.LoriBanHammer
             )
 
             styled(
@@ -199,7 +199,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
                         "daily-reward"
                     )
                 ),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.CreditCard
+                Emotes.CreditCard
             )
         }
     }

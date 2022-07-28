@@ -44,13 +44,13 @@ object SonhosUtils {
                         upsellCampaignContent
                     )
                 ),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.CreditCard
+                Emotes.CreditCard
             )
         } else {
             // Recommend the user to get their daily reward
             styled(
                 i18nContext.get(I18nKeysData.Commands.WantingMoreSonhosDaily),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.Gift
+                Emotes.Gift
             )
         }
     }

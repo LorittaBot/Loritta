@@ -89,7 +89,7 @@ class ChavesOpeningExecutor(
         } catch (e: InvalidChavesOpeningTextException) {
             context.fail(
                 context.i18nContext.get(ChavesCommand.I18N_PREFIX.Opening.InvalidShowName),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
         }
 

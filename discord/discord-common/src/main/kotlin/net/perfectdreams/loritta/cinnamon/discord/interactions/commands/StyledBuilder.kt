@@ -29,7 +29,7 @@ fun MessageBuilder.styled(content: String, prefix: net.perfectdreams.loritta.cin
  * @param content the content of the styled message
  * @param prefix  the emote prefix of the styled message
  */
-fun MessageBuilder.styled(content: String, prefix: String = net.perfectdreams.loritta.cinnamon.emotes.Emotes.DefaultStyledPrefix.asMention) = styled(
+fun MessageBuilder.styled(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention) = styled(
     net.perfectdreams.loritta.cinnamon.entities.LorittaReply(content, prefix)
 )
 
@@ -75,7 +75,7 @@ fun MessageCreateBuilder.styled(content: String, prefix: net.perfectdreams.lorit
  * @param content the content of the styled message
  * @param prefix  the emote prefix of the styled message
  */
-fun MessageCreateBuilder.styled(content: String, prefix: String = net.perfectdreams.loritta.cinnamon.emotes.Emotes.DefaultStyledPrefix.asMention) = styled(
+fun MessageCreateBuilder.styled(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention) = styled(
     net.perfectdreams.loritta.cinnamon.entities.LorittaReply(content, prefix)
 )
 
@@ -119,7 +119,7 @@ fun createStyledContent(content: String, prefix: net.perfectdreams.loritta.cinna
  * @param content the content of the styled message
  * @param prefix  the emote prefix of the styled message
  */
-fun createStyledContent(content: String, prefix: String = net.perfectdreams.loritta.cinnamon.emotes.Emotes.DefaultStyledPrefix.asMention) = createStyledContent(
+fun createStyledContent(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention) = createStyledContent(
     net.perfectdreams.loritta.cinnamon.entities.LorittaReply(content, prefix)
 )
 

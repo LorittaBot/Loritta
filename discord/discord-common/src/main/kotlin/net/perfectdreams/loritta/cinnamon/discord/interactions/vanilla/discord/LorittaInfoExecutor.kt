@@ -42,10 +42,10 @@ class LorittaInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                         executedApplicationCommands = executedApplicationCommands,
                         uniqueUsersExecutedApplicationCommands = uniqueUsersExecutedApplicationCommands,
                         userMention = "<@${context.user.id.value}>",
-                        loriSunglasses = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSunglasses,
-                        loriYay = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriYay,
-                        loriKiss = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss,
-                        loriHeart = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHeart
+                        loriSunglasses = Emotes.LoriSunglasses,
+                        loriYay = Emotes.LoriYay,
+                        loriKiss = Emotes.LoriKiss,
+                        loriHeart = Emotes.LoriHeart
                     )
                 ).joinToString("\n")
 
@@ -65,7 +65,7 @@ class LorittaInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                     ).toString()
                 ) {
                     label = context.i18nContext.get(LorittaCommand.I18N_PREFIX.Info.Website)
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSunglasses
+                    loriEmoji = Emotes.LoriSunglasses
                 }
 
                 linkButton(
@@ -78,7 +78,7 @@ class LorittaInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                     ).toString()
                 ) {
                     label = context.i18nContext.get(LorittaCommand.I18N_PREFIX.Info.Dashboard)
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+                    loriEmoji = Emotes.LoriReading
                 }
 
                 linkButton(
@@ -91,7 +91,7 @@ class LorittaInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                     ).toString()
                 ) {
                     label = context.i18nContext.get(LorittaCommand.I18N_PREFIX.Info.Commands)
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriWow
+                    loriEmoji = Emotes.LoriWow
                 }
 
                 linkButton(
@@ -104,7 +104,7 @@ class LorittaInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                     ).toString()
                 ) {
                     label = context.i18nContext.get(LorittaCommand.I18N_PREFIX.Info.Support)
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHm
+                    loriEmoji = Emotes.LoriHm
                 }
 
                 linkButton(
@@ -117,34 +117,34 @@ class LorittaInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                     ).toString()
                 ) {
                     label = context.i18nContext.get(LorittaCommand.I18N_PREFIX.Info.Premium)
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCard
+                    loriEmoji = Emotes.LoriCard
                 }
             }
 
             actionRow {
                 linkButton("https://twitter.com/LorittaBot") {
                     label = "Twitter"
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Twitter
+                    loriEmoji = Emotes.Twitter
                 }
 
                 linkButton("https://instagram.com/lorittabot") {
                     label = "Instagram"
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Instagram
+                    loriEmoji = Emotes.Instagram
                 }
 
                 linkButton("https://youtube.com/c/Loritta") {
                     label = "YouTube"
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.YouTube
+                    loriEmoji = Emotes.YouTube
                 }
 
                 linkButton("https://www.tiktok.com/@lorittamorenittabot") {
                     label = "TikTok"
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.TikTok
+                    loriEmoji = Emotes.TikTok
                 }
 
                 linkButton("https://github.com/LorittaBot") {
                     label = "GitHub"
-                    loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.GitHub
+                    loriEmoji = Emotes.GitHub
                 }
             }
         }

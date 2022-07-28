@@ -22,7 +22,7 @@ class RateLoliExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
         val strScore = "∞"
         val reason = context.i18nContext.get(
             RateCommand.I18N_PREFIX.WaifuHusbando.ScoreLoritta
-        ).random() + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriYay}"
+        ).random() + " ${Emotes.LoriYay}"
 
         context.sendMessage {
             styled(

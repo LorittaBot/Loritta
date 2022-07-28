@@ -195,39 +195,39 @@ class ShipExecutor(
         when {
             isLorittaWithShipEffects -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLorittaWithShipEffect
-                loveTextEmote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHmpf
+                loveTextEmote = Emotes.LoriHmpf
             }
             isLoritta -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLoritta
-                loveTextEmote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriShrug
+                loveTextEmote = Emotes.LoriShrug
             }
             isLoveYourself -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLoveYourself
-                loveTextEmote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile
+                loveTextEmote = Emotes.LoriSmile
             }
             isMarried -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreMarried
-                loveTextEmote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.MarriageRing
+                loveTextEmote = Emotes.MarriageRing
             }
             value == 100 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScorePerfect
-                loveTextEmote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.SparklingHeart
+                loveTextEmote = Emotes.SparklingHeart
             }
             value in 67..99 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreLove
-                loveTextEmote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHeart
+                loveTextEmote = Emotes.LoriHeart
             }
             value in 34..66 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreShrug
-                loveTextEmote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriShrug
+                loveTextEmote = Emotes.LoriShrug
             }
             value in 1..33 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreSob
-                loveTextEmote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                loveTextEmote = Emotes.LoriSob
             }
             value == 0 -> {
                 loveTextResults = ShipCommand.I18N_PREFIX.ScoreImpossible
-                loveTextEmote = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHmpf
+                loveTextEmote = Emotes.LoriHmpf
             }
             else -> error("Percentage is out of range")
         }
@@ -256,8 +256,8 @@ class ShipExecutor(
         }
 
         context.sendMessage {
-            content = """${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHeartCombo1}${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHeartCombo2} **${context.i18nContext.get(ShipCommand.I18N_PREFIX.NewCouple)}** ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHeartCombo1}${net.perfectdreams.loritta.cinnamon.emotes.Emotes.PantufaHeartCombo2}
-                |${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading} `$user1Name` + `$user2Name` = ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Sparkles} **`$shipName`** ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Sparkles}
+            content = """${Emotes.LoriHeartCombo1}${Emotes.LoriHeartCombo2} **${context.i18nContext.get(ShipCommand.I18N_PREFIX.NewCouple)}** ${Emotes.LoriHeartCombo1}${Emotes.PantufaHeartCombo2}
+                |${Emotes.LoriReading} `$user1Name` + `$user2Name` = ${Emotes.Sparkles} **`$shipName`** ${Emotes.Sparkles}
                 |$loveTextEmote $loveTextResult $loveTextEmote
             """.trimMargin()
 

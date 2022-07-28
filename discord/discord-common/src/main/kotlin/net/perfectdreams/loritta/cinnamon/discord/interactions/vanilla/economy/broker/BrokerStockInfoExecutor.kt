@@ -40,7 +40,7 @@ class BrokerStockInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
 
         context.sendEphemeralMessage {
             brokerBaseEmbed(context) {
-                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Stock.Embed.Title)}"
+                title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Stock.Embed.Title)}"
 
                 // This is just like the "/broker portfolio" command
                 // There is two alternatives however: If the user has stock, the output will be the same as the "/broker portfolio" command

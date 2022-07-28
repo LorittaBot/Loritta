@@ -95,10 +95,10 @@ abstract class CinnamonModalExecutor(
 
             // Tell the user that something went *really* wrong
             // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context
-            val content = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHm} **|** " + i18nContext.get(
+            val content = "${Emotes.LoriHm} **|** " + i18nContext.get(
                 I18nKeysData.Commands.ErrorWhileExecutingCommand(
-                    loriRage = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRage,
-                    loriSob = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob,
+                    loriRage = Emotes.LoriRage,
+                    loriSob = Emotes.LoriSob,
                     stacktrace = if (!e.message.isNullOrEmpty())
                         " `${e.message}`" // TODO: Sanitize
                     else

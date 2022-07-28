@@ -9,19 +9,19 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeys
 object RawToFormated {
     @JvmStatic
     val flagsRepository = hashMapOf(
-        UserFlag.DiscordEmployee to net.perfectdreams.loritta.cinnamon.emotes.Emotes.DiscordEmployee,
-        UserFlag.DiscordPartner to net.perfectdreams.loritta.cinnamon.emotes.Emotes.DiscordPartner,
-        UserFlag.HypeSquad to net.perfectdreams.loritta.cinnamon.emotes.Emotes.HypeSquad,
-        UserFlag.BugHunterLevel1 to net.perfectdreams.loritta.cinnamon.emotes.Emotes.BugHunterLevel1,
-        UserFlag.HouseBravery to net.perfectdreams.loritta.cinnamon.emotes.Emotes.HouseBravery,
-        UserFlag.HouseBrilliance to net.perfectdreams.loritta.cinnamon.emotes.Emotes.HouseBrilliance,
-        UserFlag.HouseBalance to net.perfectdreams.loritta.cinnamon.emotes.Emotes.HouseBalance,
-        UserFlag.EarlySupporter to net.perfectdreams.loritta.cinnamon.emotes.Emotes.EarlySupporter,
-        UserFlag.TeamUser to net.perfectdreams.loritta.cinnamon.emotes.Emotes.MissingEmote,
-        UserFlag.System to net.perfectdreams.loritta.cinnamon.emotes.Emotes.MissingEmote,
-        UserFlag.BugHunterLevel2 to net.perfectdreams.loritta.cinnamon.emotes.Emotes.BugHunterLevel2,
-        UserFlag.VerifiedBot to net.perfectdreams.loritta.cinnamon.emotes.Emotes.MissingEmote,
-        UserFlag.VerifiedBotDeveloper to net.perfectdreams.loritta.cinnamon.emotes.Emotes.VerifiedBotDeveloper
+        UserFlag.DiscordEmployee to Emotes.DiscordEmployee,
+        UserFlag.DiscordPartner to Emotes.DiscordPartner,
+        UserFlag.HypeSquad to Emotes.HypeSquad,
+        UserFlag.BugHunterLevel1 to Emotes.BugHunterLevel1,
+        UserFlag.HouseBravery to Emotes.HouseBravery,
+        UserFlag.HouseBrilliance to Emotes.HouseBrilliance,
+        UserFlag.HouseBalance to Emotes.HouseBalance,
+        UserFlag.EarlySupporter to Emotes.EarlySupporter,
+        UserFlag.TeamUser to Emotes.MissingEmote,
+        UserFlag.System to Emotes.MissingEmote,
+        UserFlag.BugHunterLevel2 to Emotes.BugHunterLevel2,
+        UserFlag.VerifiedBot to Emotes.MissingEmote,
+        UserFlag.VerifiedBotDeveloper to Emotes.VerifiedBotDeveloper
     ).toMutableMap()
 
     @JvmStatic

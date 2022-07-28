@@ -129,9 +129,9 @@ class BrokerSellStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
                 )
             ),
             when {
-                profit == 0L -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriShrug
-                profit > 0L -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRich
-                else -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                profit == 0L -> Emotes.LoriShrug
+                profit > 0L -> Emotes.LoriRich
+                else -> Emotes.LoriSob
             }
         )
 

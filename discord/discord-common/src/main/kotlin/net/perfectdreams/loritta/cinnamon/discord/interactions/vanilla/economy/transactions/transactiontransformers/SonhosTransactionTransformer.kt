@@ -20,12 +20,12 @@ interface SonhosTransactionTransformer<T : SonhosTransaction> {
     ): suspend StringBuilder.() -> (Unit)
 
     fun StringBuilder.appendMoneyLostEmoji() {
-        append(net.perfectdreams.loritta.cinnamon.emotes.Emotes.MoneyWithWings)
+        append(Emotes.MoneyWithWings)
         append(" ")
     }
 
     fun StringBuilder.appendMoneyEarnedEmoji() {
-        append(net.perfectdreams.loritta.cinnamon.emotes.Emotes.DollarBill)
+        append(Emotes.DollarBill)
         append(" ")
     }
 }

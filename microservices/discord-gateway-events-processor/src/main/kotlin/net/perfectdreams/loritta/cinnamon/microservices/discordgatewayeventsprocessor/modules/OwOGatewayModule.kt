@@ -39,7 +39,7 @@ class OwOGatewayModule(private val m: DiscordGatewayEventsProcessor) : ProcessDi
         m.rest.channel.createMessage(
             messageCreate.message.channelId
         ) {
-            content = "UwU! ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLick}"
+            content = "UwU! ${Emotes.LoriLick}"
         }
     }
 }

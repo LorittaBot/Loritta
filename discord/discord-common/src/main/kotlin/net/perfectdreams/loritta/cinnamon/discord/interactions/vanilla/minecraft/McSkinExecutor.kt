@@ -26,12 +26,12 @@ class McSkinExecutor(loritta: LorittaCinnamon, val mojang: MinecraftMojangAPI) :
         val player = args[options.username]
         if (!player.matches(VALID_NAME_REGEX))
             context.failEphemerally(
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                prefix = Emotes.Error,
                 content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.InvalidPlayerName(player))
             )
 
         val profile = mojang.getUserProfileFromName(player) ?: context.failEphemerally(
-            prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+            prefix = Emotes.Error,
             content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.UnknownPlayer(player))
         )
 
@@ -42,7 +42,7 @@ class McSkinExecutor(loritta: LorittaCinnamon, val mojang: MinecraftMojangAPI) :
         val isSteve = uniqueId.hashCode() % 2 == 1
 
         val skinUrl = profile.textures["SKIN"]?.url ?: context.failEphemerally(
-            prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+            prefix = Emotes.Error,
             content = context.i18nContext.get(
                 I18nKeysData.Commands.Command.Minecraft.Player.Skin.PlayerDoesNotHaveASkin(
                     playerName = player,

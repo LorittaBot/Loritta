@@ -39,7 +39,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
 
         context.sendMessage {
             embed {
-                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.BriefCase.asMention} ${role.name}"
+                title = "${Emotes.BriefCase.asMention} ${role.name}"
                 color = if (hasColor)
                     Color(role.color)
                 else
@@ -50,35 +50,35 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
 
 
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Eyes} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Mention)
+                    name = "${Emotes.Eyes} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Mention)
                     value = "`<@&${role.id}>`"
 
                     inline = true
                 }
 
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Computer} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.RoleId)
+                    name = "${Emotes.Computer} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.RoleId)
                     value = "`${role.id}`"
 
                     inline = true
                 }
 
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Eyes} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Hoisted)
+                    name = "${Emotes.Eyes} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Hoisted)
                     value = context.i18nContext.get(role.hoist.toLocalized())
 
                     inline = true
                 }
 
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.BotTag} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Managed)
+                    name = "${Emotes.BotTag} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Managed)
                     value = context.i18nContext.get(role.managed.toLocalized())
 
                     inline = true
                 }
 
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPing} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Mentionable)
+                    name = "${Emotes.LoriPing} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Mentionable)
                     value = context.i18nContext.get(role.mentionable.toLocalized())
 
                     inline = true
@@ -86,7 +86,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
 
                 if (hasColor) {
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Art} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Color)
+                        name = "${Emotes.Art} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Color)
                         value = "`#${Integer.toHexString(role.color).uppercase()}`"
 
                         inline = true
@@ -94,7 +94,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
                 }
 
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Date} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.CreatedAt)
+                    name = "${Emotes.Date} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.CreatedAt)
                     value = "<t:${role.id.timestamp.toEpochMilliseconds() / 1000}:D>"
 
                     inline = true
@@ -106,7 +106,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
                 )
 
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Shield} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Permissions)
+                    name = "${Emotes.Shield} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Permissions)
                     value = rolePermissionsLocalized ?: context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.NoPermissions)
                 }
             }

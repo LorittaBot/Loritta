@@ -43,14 +43,14 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
         } catch (e: KtorRequestException) {
             context.fail {
                 styled(
-                    context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.MissingAccessToChannel) + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob}",
-                    net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error
+                    context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.MissingAccessToChannel) + " ${Emotes.LoriSob}",
+                    Emotes.Error
                 )
             }
         }
 
         context.sendEmbed {
-            title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.PersonTippingHand} " + context.i18nContext.get(
+            title = "${Emotes.PersonTippingHand} " + context.i18nContext.get(
                 ServerCommand.I18N_PREFIX.Channel.Info.InfoFrom(channel.name.value.toString())
             )
             color = Color(114, 137, 218) // TODO: Move this to an object
@@ -60,7 +60,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
             else "```${channel.topic.value}```"
 
             field {
-                name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.SmallBlueDiamond} " + context.i18nContext.get(
+                name = "${Emotes.SmallBlueDiamond} " + context.i18nContext.get(
                     ServerCommand.I18N_PREFIX.Channel.Info.ChannelMention
                 )
                 value = "`<#${channel.id.value}>`"
@@ -69,21 +69,21 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
             }
 
             field {
-                name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Computer} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.ChannelId)
+                name = "${Emotes.Computer} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.ChannelId)
                 value = "`${channel.id.value}`"
 
                 inline = true
             }
 
             if (channel.nsfw.value != null)
-                field("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.UnderAge} NSFW", true) {
+                field("${Emotes.UnderAge} NSFW", true) {
                     context.i18nContext.get(channel.nsfw.value!!.toLocalized())
                 }
 
             when (channel.type) {
                 ChannelType.GuildVoice -> {
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Microphone2} " + context.i18nContext.get(
+                        name = "${Emotes.Microphone2} " + context.i18nContext.get(
                             ServerCommand.I18N_PREFIX.Channel.Info.Voice.BitRate
                         )
                         value = channel.bitrate.value.toString()
@@ -92,7 +92,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                     }
 
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.BustsInSilhouette} " + context.i18nContext.get(
+                        name = "${Emotes.BustsInSilhouette} " + context.i18nContext.get(
                             ServerCommand.I18N_PREFIX.Channel.Info.Voice.UserLimit
                         )
                         value = if (channel.userLimit.value == 0)
@@ -104,7 +104,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
 
                     if (channel.rtcRegion.value != null)
                         field {
-                            name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.EarthAmericas} " + context.i18nContext.get(
+                            name = "${Emotes.EarthAmericas} " + context.i18nContext.get(
                                 ServerCommand.I18N_PREFIX.Channel.Info.Voice.Region
                             )
                             value = channel.rtcRegion.value.toString()
@@ -114,7 +114,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                 }
                 ChannelType.PublicGuildThread, ChannelType.PrivateThread -> {
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.PageFacingUp} " + context.i18nContext.get(
+                        name = "${Emotes.PageFacingUp} " + context.i18nContext.get(
                             ServerCommand.I18N_PREFIX.Channel.Info.Thread.MessageCount
                         )
 
@@ -127,7 +127,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                     }
 
                     field {
-                        name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.BustsInSilhouette} " + context.i18nContext.get(
+                        name = "${Emotes.BustsInSilhouette} " + context.i18nContext.get(
                             ServerCommand.I18N_PREFIX.Channel.Info.Thread.MemberCount
                         )
 
@@ -141,7 +141,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
 
                     if (channel.threadMetadata.value != null) {
                         field {
-                            name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Dividers} " + context.i18nContext.get(
+                            name = "${Emotes.Dividers} " + context.i18nContext.get(
                                 ServerCommand.I18N_PREFIX.Channel.Info.Thread.Archived
                             )
                             value = context.i18nContext.get(
@@ -152,7 +152,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                         }
 
                         field {
-                            name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Lock} " + context.i18nContext.get(
+                            name = "${Emotes.Lock} " + context.i18nContext.get(
                                 ServerCommand.I18N_PREFIX.Channel.Info.Thread.Locked
                             )
                             value = context.i18nContext.get(
@@ -168,7 +168,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
 
             if (channel.rateLimitPerUser.value != null)
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Snail} " + context.i18nContext.get(
+                    name = "${Emotes.Snail} " + context.i18nContext.get(
                         ServerCommand.I18N_PREFIX.Channel.Info.Text.SlowMode
                     )
                     val rateLimitPerUser = channel.rateLimitPerUser.value
@@ -184,14 +184,14 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
 
             if (channel.position.value != null)
                 field {
-                    name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Trophy} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.Position)
+                    name = "${Emotes.Trophy} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.Position)
                     value = "${channel.position.value.toString()}º"
 
                     inline = true
                 }
 
             field {
-                name = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Date} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.CreatedAt)
+                name = "${Emotes.Date} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.CreatedAt)
                 value = "<t:${channel.id.timestamp.toEpochMilliseconds() / 1000}:D>"
 
                 inline = true

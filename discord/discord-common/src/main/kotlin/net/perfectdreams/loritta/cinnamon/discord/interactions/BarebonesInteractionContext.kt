@@ -87,7 +87,7 @@ open class BarebonesInteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendReply(content: String, prefix: String = net.perfectdreams.loritta.cinnamon.emotes.Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
+    suspend fun sendReply(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
         styled(content, prefix)
 
         apply(block)
@@ -134,7 +134,7 @@ open class BarebonesInteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendEphemeralReply(content: String, prefix: String = net.perfectdreams.loritta.cinnamon.emotes.Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+    suspend fun sendEphemeralReply(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
         styled(content, prefix)
 
         apply(block)
@@ -179,7 +179,7 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun fail(content: String, prefix: String = net.perfectdreams.loritta.cinnamon.emotes.Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
+    inline fun fail(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
         net.perfectdreams.loritta.cinnamon.entities.LorittaReply(
             content, prefix
         ),
@@ -241,7 +241,7 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun failEphemerally(content: String, prefix: String = net.perfectdreams.loritta.cinnamon.emotes.Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
+    inline fun failEphemerally(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
         net.perfectdreams.loritta.cinnamon.entities.LorittaReply(
             content, prefix
         ),

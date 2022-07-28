@@ -34,7 +34,7 @@ class GenderExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
         context.sendEphemeralMessage {
             styled(
                 context.i18nContext.get(GenderCommand.I18N_PREFIX.SuccessfullyChanged),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.Tada
+                Emotes.Tada
             )
         }
     }

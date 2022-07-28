@@ -39,7 +39,7 @@ object RoleplayUtils {
         RetributeHugButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Hug::Response,
         Color(255, 141, 230),
-        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Blush
+        Emotes.Blush
     )
 
     val HEAD_PAT_ATTRIBUTES = RoleplayActionAttributes(
@@ -48,7 +48,7 @@ object RoleplayUtils {
         RetributeHeadPatButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Headpat::Response,
         Color(156, 39, 176),
-        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat
+        Emotes.LoriPat
     )
 
     val HIGH_FIVE_ATTRIBUTES = RoleplayActionAttributes(
@@ -57,7 +57,7 @@ object RoleplayUtils {
         RetributeHighFiveButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Highfive::Response,
         Color(165, 255, 76),
-        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHi
+        Emotes.LoriHi
     )
 
     val SLAP_ATTRIBUTES = RoleplayActionAttributes(
@@ -66,7 +66,7 @@ object RoleplayUtils {
         RetributeSlapButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Slap::Response,
         Color(244, 67, 54),
-        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPunch
+        Emotes.LoriPunch
     )
 
     val ATTACK_ATTRIBUTES = RoleplayActionAttributes(
@@ -75,7 +75,7 @@ object RoleplayUtils {
         RetributeAttackButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Attack::Response,
         Color(244, 67, 54),
-        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRage
+        Emotes.LoriRage
     )
 
     val DANCE_ATTRIBUTES = RoleplayActionAttributes(
@@ -84,7 +84,7 @@ object RoleplayUtils {
         RetributeDanceButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Dance::Response,
         Color(255, 152, 0),
-        net.perfectdreams.loritta.cinnamon.emotes.Emotes.Dancer
+        Emotes.Dancer
     )
 
     val KISS_ATTRIBUTES = RoleplayActionAttributes(
@@ -93,7 +93,7 @@ object RoleplayUtils {
         RetributeKissButtonExecutor,
         I18nKeysData.Commands.Command.Roleplay.Kiss::Response,
         Color(233, 30, 99),
-        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss
+        Emotes.LoriKiss
     )
 
     val RETRIBUTABLE_ACTIONS_BY_LORITTA_EASTER_EGG = listOf(
@@ -126,7 +126,7 @@ object RoleplayUtils {
                     return RoleplayResponse(listOf(AchievementTarget(giver, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.TRIED_KISSING_LORITTA))) {
                         styled(
                             i18nContext.get(I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseLori),
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk
+                            Emotes.LoriBonk
                         )
                     }
                 }
@@ -306,7 +306,7 @@ object RoleplayUtils {
                         SourcePictureExecutor,
                         pictureSourceData
                     ) {
-                        loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+                        loriEmoji = Emotes.LoriReading
                     }
                 } else {
                     interactionButton(
@@ -315,7 +315,7 @@ object RoleplayUtils {
                     ) {
                         label = i18nContext.get(RoleplayCommand.I18N_PREFIX.PictureSource)
                         disabled = true
-                        loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+                        loriEmoji = Emotes.LoriReading
                     }
                 }
             }

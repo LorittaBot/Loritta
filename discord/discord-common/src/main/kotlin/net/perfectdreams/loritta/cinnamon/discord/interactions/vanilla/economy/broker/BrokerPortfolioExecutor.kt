@@ -20,12 +20,12 @@ class BrokerPortfolioExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
         if (userStockAssets.isEmpty())
             context.fail(
                 context.i18nContext.get(BrokerCommand.I18N_PREFIX.Portfolio.YouDontHaveAnyShares),
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                Emotes.LoriSob
             )
 
         context.sendMessage {
             brokerBaseEmbed(context) {
-                title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Portfolio.Title)}"
+                title = "${Emotes.LoriStonks} ${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Portfolio.Title)}"
 
                 val totalStockCount = userStockAssets.sumOf { it.count }
                 val totalStockSum = userStockAssets.sumOf { it.sum }

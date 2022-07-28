@@ -40,13 +40,13 @@ class RateWaifuExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
             ).random()
 
             var reason = when (score) {
-                10 -> "$scoreReason ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriWow}"
-                9 -> "$scoreReason ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHeart}"
-                8 -> "$scoreReason ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat}"
-                7 -> "$scoreReason ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile}"
-                3 -> "$scoreReason ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriShrug}"
-                2 -> "$scoreReason ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHmpf}"
-                1 -> "$scoreReason ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriRage}"
+                10 -> "$scoreReason ${Emotes.LoriWow}"
+                9 -> "$scoreReason ${Emotes.LoriHeart}"
+                8 -> "$scoreReason ${Emotes.LoriPat}"
+                7 -> "$scoreReason ${Emotes.LoriSmile}"
+                3 -> "$scoreReason ${Emotes.LoriShrug}"
+                2 -> "$scoreReason ${Emotes.LoriHmpf}"
+                1 -> "$scoreReason ${Emotes.LoriRage}"
                 else -> scoreReason
             }
 
@@ -59,14 +59,14 @@ class RateWaifuExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                     strScore = "∞"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreLoritta
-                    ).random() + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriYay}"
+                    ).random() + " ${Emotes.LoriYay}"
                     isLoritta = true
                 }
                 "pantufa" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScorePantufa
-                    ).random() + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHeart}"
+                    ).random() + " ${Emotes.LoriHeart}"
                 }
                 "wumpus" -> {
                     strScore = "∞"
@@ -84,13 +84,13 @@ class RateWaifuExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreDankMemer(typeSingular)
-                    ).random() + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCoffee}"
+                    ).random() + " ${Emotes.LoriCoffee}"
                 }
                 "carl-bot" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreCarlbot
-                    ).random() + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriPat}"
+                    ).random() + " ${Emotes.LoriPat}"
                 }
                 "kuraminha" -> {
                     strScore = "10"
@@ -98,13 +98,13 @@ class RateWaifuExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreKuraminha(
                             typeSingular
                         )
-                    ).random() + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHm}"
+                    ).random() + " ${Emotes.LoriHm}"
                 }
                 "pollux" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScorePollux
-                    ).random() + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriYay}"
+                    ).random() + " ${Emotes.LoriYay}"
                 }
                 "tatsumaki" -> {
                     strScore = "10"
@@ -165,7 +165,7 @@ class RateWaifuExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                     strScore = "-∞"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreLorrita
-                    ).random() + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHmpf}"
+                    ).random() + " ${Emotes.LoriHmpf}"
                 }
             }
 

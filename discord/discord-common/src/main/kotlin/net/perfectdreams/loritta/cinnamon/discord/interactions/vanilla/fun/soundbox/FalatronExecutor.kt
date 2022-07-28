@@ -57,8 +57,8 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
 
         context.sendMessage {
             styled(
-                "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento! Ela ainda não está pronta e será melhorada com o passar do tempo... ou talvez até mesmo removida! ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob}",
-                net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriMegaphone
+                "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento! Ela ainda não está pronta e será melhorada com o passar do tempo... ou talvez até mesmo removida! ${Emotes.LoriSob}",
+                Emotes.LoriMegaphone
             )
         }
 
@@ -102,7 +102,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
                     ?: context.fail {
                         styled(
                             "Voz desconhecida!",
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                            Emotes.LoriSob
                         )
                     }
 
@@ -111,7 +111,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
                 val message = context.sendMessage {
                     styled(
                         "Pedindo para o Falatron gerar as vozes...",
-                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLick
+                        Emotes.LoriLick
                     )
                 }
 
@@ -135,7 +135,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
                     message.editMessage {
                         styled(
                             "Parece que deu algum problema e eu não recebi o pedido de geração de voz! Bug?",
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                            Emotes.LoriSleeping
                         )
                     }
                     return@coroutineScope
@@ -149,7 +149,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
                     message.editMessage {
                         styled(
                             "Parece que algo deu errado!",
-                            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                            Emotes.LoriSleeping
                         )
                     }
 
@@ -165,7 +165,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
                                 message.editMessage {
                                     styled(
                                         "Parece que o Falatron está instável ou offline... Tente novamente mais tarde!",
-                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
+                                        Emotes.LoriSleeping
                                     )
                                 }
                                 cancel()
@@ -174,7 +174,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
                                 message.editMessage {
                                     styled(
                                         "Eu não consegui entrar no canal de voz... Se eu estou conectada no canal de voz, tente me desconectar do canal e use o comando novamente!",
-                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSob
+                                        Emotes.LoriSob
                                     )
                                 }
                                 cancel()
@@ -183,7 +183,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
                                 message.editMessage {
                                     styled(
                                         "Voz gerada com sucesso! Tocando em <#${userConnectedVoiceChannelId}>",
-                                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHi
+                                        Emotes.LoriHi
                                     )
 
                                     embed {

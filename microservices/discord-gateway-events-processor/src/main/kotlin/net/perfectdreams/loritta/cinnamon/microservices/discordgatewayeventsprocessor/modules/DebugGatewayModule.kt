@@ -64,7 +64,7 @@ class DebugGatewayModule(private val m: DiscordGatewayEventsProcessor) : Process
                 append("**Durations:**")
                 append("\n")
                 for ((clazz, duration) in context.durations) {
-                    append("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.SmallBlueDiamond}**${clazz.simpleName}:** $duration")
+                    append("${Emotes.SmallBlueDiamond}**${clazz.simpleName}:** $duration")
                     append("\n")
                 }
             }

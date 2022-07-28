@@ -49,7 +49,7 @@ class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
         // Unknown user
         if (userProfileRequest.status == HttpStatusCode.NotFound)
             context.fail(
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Error,
+                prefix = Emotes.Error,
                 content = context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.UnknownPlayer(username))
             )
 
@@ -207,10 +207,10 @@ class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
         context.sendMessage {
             embed {
                 title = buildString {
-                    this.append(net.perfectdreams.loritta.cinnamon.emotes.Emotes.Roblox.toString())
+                    this.append(Emotes.Roblox.toString())
                     if (isRobloxPremium) {
                         this.append(" ")
-                        this.append(net.perfectdreams.loritta.cinnamon.emotes.Emotes.RobloxPremium)
+                        this.append(Emotes.RobloxPremium)
                     }
                     this.append(" ")
                     this.append(userData.name)

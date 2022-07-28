@@ -15,16 +15,16 @@ import kotlin.time.Duration
 class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
         private val FUNNY_FIRST_EMOJIS = listOf(
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCoffee,
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappy,
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile,
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSunglasses,
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriUwU,
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriWow,
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriStonks,
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss,
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLick,
-            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriFlushed
+            Emotes.LoriCoffee,
+            Emotes.LoriHappy,
+            Emotes.LoriSmile,
+            Emotes.LoriSunglasses,
+            Emotes.LoriUwU,
+            Emotes.LoriWow,
+            Emotes.LoriStonks,
+            Emotes.LoriKiss,
+            Emotes.LoriLick,
+            Emotes.LoriFlushed
         )
     }
 

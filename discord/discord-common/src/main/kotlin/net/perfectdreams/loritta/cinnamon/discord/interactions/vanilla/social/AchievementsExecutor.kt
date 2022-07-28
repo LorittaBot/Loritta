@@ -64,7 +64,7 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                     val description = StringBuilder()
 
                     if (category == null)
-                        title = "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.Sparkles} ${i18nContext.get(I18nKeysData.Achievements.Category.All.Title)} [$userAchievementsInCurrentCategoryCount/$totalAchievementsInCurrentCategoryCount]"
+                        title = "${Emotes.Sparkles} ${i18nContext.get(I18nKeysData.Achievements.Category.All.Title)} [$userAchievementsInCurrentCategoryCount/$totalAchievementsInCurrentCategoryCount]"
                     else {
                         title = "${category.emote} ${i18nContext.get(category.title)} [$userAchievementsInCurrentCategoryCount/$totalAchievementsInCurrentCategoryCount]"
                         description.append(i18nContext.get(category.description))
@@ -127,10 +127,10 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                             if (category == null)
                                 default = true // Set "ALL" as the default if the category is null (which means... "all categories")
 
-                            loriEmoji = net.perfectdreams.loritta.cinnamon.emotes.Emotes.Sparkles
+                            loriEmoji = Emotes.Sparkles
                         }
 
-                        net.perfectdreams.loritta.cinnamon.achievements.AchievementCategory.values().forEach {
+                        AchievementCategory.values().forEach {
                             insertOption(it)
                         }
                     }
@@ -174,7 +174,7 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                     context.i18nContext,
                     achievements,
                     try {
-                        net.perfectdreams.loritta.cinnamon.achievements.AchievementCategory.valueOf(newCategory)
+                        AchievementCategory.valueOf(newCategory)
                     } catch (e: IllegalArgumentException) {
                         if (newCategory == "ALL") // null = All categories
                             null

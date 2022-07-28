@@ -50,7 +50,7 @@ class CalculatorExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                         result
                     )
                 ),
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriReading
+                prefix = Emotes.LoriReading
             )
 
             if (expression.replace(" ", "") == "1+1")
@@ -63,7 +63,7 @@ class CalculatorExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                         expression
                     )
                 ),
-                prefix = net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHm
+                prefix = Emotes.LoriHm
             )
         }
     }

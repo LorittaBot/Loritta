@@ -41,7 +41,7 @@ class AnagramExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
                     AnagramCommand.I18N_PREFIX.Result(
                         shuffledWord
                     )
-                ) + " ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriWow}",
+                ) + " ${Emotes.LoriWow}",
                 prefix = "✍"
             )
 
