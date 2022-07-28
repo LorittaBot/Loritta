@@ -43,7 +43,9 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
             }
         }
 
-        val text = string("text", SoundboxCommand.I18N_PREFIX.Falatron.Options.Text.Text)
+        val text = string("text", SoundboxCommand.I18N_PREFIX.Falatron.Options.Text.Text) {
+            allowedLength = 5..300
+        }
     }
 
     override val options = Options()

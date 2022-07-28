@@ -4,7 +4,7 @@ object Versions {
     const val JVM_TARGET = "15"
     const val PROMETHEUS = "0.12.0"
     const val KTOR = "2.0.3"
-    const val DISCORD_INTERAKTIONS = "0.0.16-20220728.003133-6"
+    const val DISCORD_INTERAKTIONS = "0.0.16-20220728.015750-7"
     const val KORD = "0.8.x-20220708.090554-210" // Should match Discord InteraKTions
     const val KOTLINX_DATE_TIME = "0.3.3"
 }
