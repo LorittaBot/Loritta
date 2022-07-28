@@ -2,21 +2,25 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
+import io.ktor.content.*
 import io.ktor.http.*
+import io.ktor.util.Identity.encode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.Closeable
 import java.io.File
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
 
-class Falatron(private val apiUrl: String) : Closeable {
+class Falatron(private val apiUrl: String, private val apiKey: String) : Closeable {
     private val http = HttpClient {
         install(HttpTimeout) {
             connectTimeoutMillis = 180_000
@@ -52,13 +56,15 @@ class Falatron(private val apiUrl: String) : Closeable {
         var i = 0
         while (i != 5) {
             val response = withTimeout(3.minutes) {
-                http.submitForm(
-                    apiUrl,
-                    Parameters.build {
-                        this.append("voz", voice)
-                        this.append("texto", text.take(300))
-                    }
-                )
+                http.post(apiUrl) {
+                    header("x-api-key", apiKey)
+                    setBody(
+                        TextContent(
+                            Json.encodeToString(FalatronRequest(voice, text)),
+                            ContentType.Application.Json
+                        )
+                    )
+                }
             }
 
             if (response.status.isSuccess())
@@ -73,6 +79,12 @@ class Falatron(private val apiUrl: String) : Closeable {
     override fun close() {
         http.close()
     }
+
+    @Serializable
+    data class FalatronRequest(
+        val voz: String,
+        val texto: String
+    )
 
     @Serializable
     data class FalatronResponse(

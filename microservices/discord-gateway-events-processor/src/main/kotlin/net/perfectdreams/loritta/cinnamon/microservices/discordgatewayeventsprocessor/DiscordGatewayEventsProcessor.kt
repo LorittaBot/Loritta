@@ -259,7 +259,7 @@ class DiscordGatewayEventsProcessor(
         services.notify(FalatronVoiceRequestReceivedResponseX(notification.uniqueId))
 
         // First: Request Falatron voice
-        val falatron = Falatron(config.falatron.url)
+        val falatron = Falatron(config.falatron.url, config.falatron.key)
         val generatedAudioInMP3Format = try {
             falatron.generate(
                 notification.voice,
