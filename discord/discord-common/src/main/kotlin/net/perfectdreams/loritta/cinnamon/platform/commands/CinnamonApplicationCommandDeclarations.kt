@@ -19,7 +19,7 @@ class CinnamonSlashCommandDeclaration(
     override val subcommands: List<SlashCommandDeclaration>,
     override val subcommandGroups: List<SlashCommandGroupDeclaration>,
 ) : SlashCommandDeclaration() {
-    override val description = SlashTextUtils.shorten(languageManager.defaultI18nContext.get(descriptionI18n))
+    override val description = SlashTextUtils.buildDescription(languageManager.defaultI18nContext, descriptionI18n, category)
     override val descriptionLocalizations = SlashTextUtils.createShortenedLocalizedDescriptionMapExcludingDefaultLocale(languageManager, descriptionI18n, category)
     override val nameLocalizations: Map<Locale, String> = emptyMap()
 }
@@ -31,7 +31,7 @@ class CinnamonSlashCommandGroupDeclaration(
     val category: CommandCategory,
     override val subcommands: List<SlashCommandDeclaration>
 ) : SlashCommandGroupDeclaration() {
-    override val description = SlashTextUtils.shorten(languageManager.defaultI18nContext.get(descriptionI18n))
+    override val description = SlashTextUtils.buildDescription(languageManager.defaultI18nContext, descriptionI18n, category)
     override val descriptionLocalizations = SlashTextUtils.createShortenedLocalizedDescriptionMapExcludingDefaultLocale(languageManager, descriptionI18n, category)
     override val nameLocalizations: Map<Locale, String> = emptyMap()
 }
