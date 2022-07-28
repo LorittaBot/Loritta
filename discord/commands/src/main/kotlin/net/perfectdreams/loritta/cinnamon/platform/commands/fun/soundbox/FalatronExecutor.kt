@@ -44,7 +44,8 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
         }
 
         val text = string("text", SoundboxCommand.I18N_PREFIX.Falatron.Options.Text.Text) {
-            allowedLength = 5..300
+            // TODO: Change the allowedLength to 5..300 when Discord fixes a bug where the autocomplete doesn't work if any of the options aren't fulfilling their requirements
+            allowedLength = 0..300
         }
     }
 
