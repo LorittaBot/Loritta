@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.achievements
 
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.emotes.Emote
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.utils.Color
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
