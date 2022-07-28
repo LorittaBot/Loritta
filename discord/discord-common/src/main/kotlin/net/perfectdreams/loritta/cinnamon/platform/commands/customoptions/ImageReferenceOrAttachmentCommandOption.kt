@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import kotlin.streams.toList
 
 // ===[ OPTION ]===
-
 data class ImageReferenceOrAttachmentIntermediaryData(
     val dataValue: String?,
     val attachmentValue: DiscordAttachment?,
@@ -115,9 +114,9 @@ data class ImageReferenceOrAttachmentIntermediaryData(
 }
 
 class ImageReferenceOrAttachmentOption(
-    name: String,
+    override val name: String,
     val required: Boolean
-) : InteraKTionsCommandOption<ImageReferenceOrAttachmentIntermediaryData>(name) {
+) : InteraKTionsCommandOption<ImageReferenceOrAttachmentIntermediaryData> {
     override fun register(builder: BaseInputChatBuilder) {
         builder.string(name + "_data", "Image, URL or Emoji") {
             this.required = false
@@ -145,9 +144,9 @@ class ImageReferenceOrAttachmentOption(
 
 // ===[ BUILDER ]===
 class ImageReferenceOrAttachmentOptionBuilder(
-    name: String,
-    required: Boolean
-) : CommandOptionBuilder<ImageReferenceOrAttachmentIntermediaryData, ImageReferenceOrAttachmentIntermediaryData>(name, "", required) {
+    override val name: String,
+    override val required: Boolean
+) : CommandOptionBuilder<ImageReferenceOrAttachmentIntermediaryData, ImageReferenceOrAttachmentIntermediaryData>() {
     override fun build() = ImageReferenceOrAttachmentOption(
         name,
         required

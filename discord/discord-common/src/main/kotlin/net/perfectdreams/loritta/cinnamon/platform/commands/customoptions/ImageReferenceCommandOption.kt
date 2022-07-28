@@ -8,9 +8,14 @@ import dev.kord.rest.Image
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
 import net.perfectdreams.discordinteraktions.common.commands.options.*
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.images.URLImageReference
+import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.platform.utils.ContextStringToUserInfoConverter
+import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordResourceLimits
+import net.perfectdreams.loritta.cinnamon.platform.utils.SlashTextUtils
 import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
 import kotlin.streams.toList
 
@@ -59,16 +64,17 @@ value class ImageReferenceIntermediaryData(val value: String) {
 }
 
 class ImageReferenceCommandOption(
-    name: String,
-    description: String,
-    nameLocalizations: Map<Locale, String>?,
-    descriptionLocalizations: Map<Locale, String>?,
-    val required: Boolean
-) : NameableCommandOption<ImageReferenceIntermediaryData>(name, description, nameLocalizations, descriptionLocalizations) {
+    val languageManager: LanguageManager,
+    override val name: String,
+    val required: Boolean,
+) : NameableCommandOption<ImageReferenceIntermediaryData> {
+    override val description = "User, URL or Emoji"
+    override val nameLocalizations: Map<Locale, String> = emptyMap()
+    override val descriptionLocalizations: Map<Locale, String>  = emptyMap()
+
     override fun register(builder: BaseInputChatBuilder) {
         builder.string(name, description) {
-            this.nameLocalizations = this@ImageReferenceCommandOption.nameLocalizations?.toMutableMap()
-            this.descriptionLocalizations = this@ImageReferenceCommandOption.descriptionLocalizations?.toMutableMap()
+            this.nameLocalizations = this@ImageReferenceCommandOption.nameLocalizations.toMutableMap()
             this.required = this@ImageReferenceCommandOption.required
         }
     }
@@ -84,15 +90,13 @@ class ImageReferenceCommandOption(
 
 // ===[ BUILDER ]===
 class ImageReferenceCommandOptionBuilder(
-    name: String,
-    description: String,
-    required: Boolean
-) : CommandOptionBuilder<ImageReferenceIntermediaryData, ImageReferenceIntermediaryData>(name, description, required) {
+    val languageManager: LanguageManager,
+    override val name: String,
+    override val required: Boolean
+) : CommandOptionBuilder<ImageReferenceIntermediaryData, ImageReferenceIntermediaryData>() {
     override fun build() = ImageReferenceCommandOption(
+        languageManager,
         name,
-        description,
-        nameLocalizations,
-        descriptionLocalizations,
         required
     )
 }
