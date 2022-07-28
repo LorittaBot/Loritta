@@ -10,7 +10,7 @@ import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.doubleOrNull
 import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.cinnamon.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.microservices.brokertickersupdater.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TickerPrices

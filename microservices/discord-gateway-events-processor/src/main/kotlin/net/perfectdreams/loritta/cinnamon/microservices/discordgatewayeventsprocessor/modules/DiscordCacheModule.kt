@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.batchUpsert
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.upsert
-import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
 import org.jetbrains.exposed.sql.*
 import pw.forst.exposed.insertOrUpdate

@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.social
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
@@ -8,23 +8,24 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.utils.inlineField
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementCategory
-import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.cinnamon.achievements.AchievementCategory
+import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AchievementsCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.*
-import net.perfectdreams.loritta.cinnamon.platform.components.data.SingleUserComponentData
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.getUserAchievements
-import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.SingleUserComponentData
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.getUserAchievements
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 
 class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {

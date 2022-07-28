@@ -9,7 +9,6 @@ plugins {
 dependencies {
     implementation(project(":common"))
     implementation(project(":discord:discord-common"))
-    implementation(project(":discord:commands"))
 
     // Discord InteraKTions (Web Server)
     implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:${Versions.DISCORD_INTERAKTIONS}")
@@ -38,7 +37,7 @@ tasks.withType<KotlinCompile> {
 jib {
     container {
         ports = listOf("8080")
-        mainClass = "net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaCinnamonWebServerLauncher"
+        mainClass = "net.perfectdreams.loritta.cinnamon.discord.webserver.LorittaCinnamonWebServerLauncher"
     }
 
     to {

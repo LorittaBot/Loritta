@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaPermission
+import net.perfectdreams.loritta.cinnamon.utils.LorittaPermission
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.InviteBlockerConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.MiscellaneousConfig

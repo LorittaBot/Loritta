@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.data
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.cinnamon.common.utils.Gender
+import net.perfectdreams.loritta.cinnamon.utils.Gender
 
 @Serializable
 data class ProfileSettings(

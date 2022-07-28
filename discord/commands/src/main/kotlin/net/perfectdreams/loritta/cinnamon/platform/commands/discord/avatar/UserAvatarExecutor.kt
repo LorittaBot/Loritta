@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.datetime.Clock
@@ -7,9 +7,9 @@ import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.discordinteraktions.common.entities.Member
 import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import kotlin.time.Duration.Companion.minutes
 
 interface UserAvatarExecutor {

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.microservices.brokertickersupdater
 
 import io.ktor.client.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
+import net.perfectdreams.loritta.cinnamon.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.brokertickersupdater.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax
 
-import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils.DailyTaxTasks
 import net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding

@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.toJavaInstant
-import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingQueue
@@ -458,7 +458,7 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     }.orderBy(CoinFlipBetGlobalMatchmakingResults.timestamp, SortOrder.DESC)
                         .count() >= 500
 
-                    fun giveOutAchievementToUser(userThatWillReceiveTheAchievement: UserId, achievementType: AchievementType) {
+                    fun giveOutAchievementToUser(userThatWillReceiveTheAchievement: UserId, achievementType: net.perfectdreams.loritta.cinnamon.achievements.AchievementType) {
                         if (userThatWillReceiveTheAchievement == userId) {
                             results.add(SelfUserAchievementResult(achievementType))
                         } else {
@@ -473,20 +473,20 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                         }
                     }
 
-                    giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_WIN)
-                    giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_LOSE)
+                    giveOutAchievementToUser(winner, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.COIN_FLIP_BET_WIN)
+                    giveOutAchievementToUser(loser, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.COIN_FLIP_BET_LOSE)
 
                     if (giveOutSevenSequentiallyWinsAchievementToWinner)
-                        giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_WINS)
+                        giveOutAchievementToUser(winner, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_WINS)
 
                     if (giveOutSevenSequentiallyLossesAchievementToLoser)
-                        giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_LOSSES)
+                        giveOutAchievementToUser(loser, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.COIN_FLIP_BET_SEVEN_SEQUENTIAL_LOSSES)
 
                     if (giveOutFiveHundredMatchesAchievementToWinner)
-                        giveOutAchievementToUser(winner, AchievementType.COIN_FLIP_BET_PROFESSIONAL)
+                        giveOutAchievementToUser(winner, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.COIN_FLIP_BET_PROFESSIONAL)
 
                     if (giveOutFiveHundredMatchesAchievementToLoser)
-                        giveOutAchievementToUser(loser, AchievementType.COIN_FLIP_BET_PROFESSIONAL)
+                        giveOutAchievementToUser(loser, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.COIN_FLIP_BET_PROFESSIONAL)
 
                     return@transaction results
                 }
@@ -540,10 +540,10 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
         val language: String
     ) : CoinFlipGlobalMatchmakingResult()
     class SelfUserAchievementResult(
-        val achievementType: AchievementType
+        val achievementType: net.perfectdreams.loritta.cinnamon.achievements.AchievementType
     ) : CoinFlipGlobalMatchmakingResult()
     class OtherUserAchievementResult(
-        val achievementType: AchievementType,
+        val achievementType: net.perfectdreams.loritta.cinnamon.achievements.AchievementType,
         val user: UserId,
         val userInteractionToken: String,
         val language: String

@@ -12,7 +12,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.jsonPrimitive
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxy
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxyEvent
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.gatewayproxy.GatewayProxyEventWrapper
@@ -22,9 +22,9 @@ import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsproc
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.voice.LorittaAudioProvider
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.voice.LorittaVoiceConnection
-import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.PrometheusPushClient
-import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
+import net.perfectdreams.loritta.cinnamon.discord.LorittaDiscordStuff
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener

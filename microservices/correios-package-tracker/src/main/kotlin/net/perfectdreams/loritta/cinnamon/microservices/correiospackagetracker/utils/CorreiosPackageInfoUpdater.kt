@@ -9,11 +9,11 @@ import kotlinx.datetime.toKotlinLocalDateTime
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
+import net.perfectdreams.loritta.cinnamon.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker.CorreiosPackageTracker
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosFoundObjeto
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosUnknownObjeto
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.EventType
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosFoundObjeto
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosUnknownObjeto
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.EventType
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackagesEvents

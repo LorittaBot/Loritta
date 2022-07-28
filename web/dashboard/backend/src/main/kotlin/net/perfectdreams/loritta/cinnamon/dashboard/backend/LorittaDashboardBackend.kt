@@ -12,7 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
-import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.HomeRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.LocalizedRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.ShipEffectsRoute

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.users
 
 import io.ktor.server.application.*
-import net.perfectdreams.loritta.cinnamon.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.respondLoritta

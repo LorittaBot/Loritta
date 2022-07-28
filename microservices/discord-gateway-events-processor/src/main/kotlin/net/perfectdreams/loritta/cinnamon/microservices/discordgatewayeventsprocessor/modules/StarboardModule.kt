@@ -27,13 +27,13 @@ import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
-import net.perfectdreams.loritta.cinnamon.platform.utils.ContentTypeUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.ContentTypeUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardMessages

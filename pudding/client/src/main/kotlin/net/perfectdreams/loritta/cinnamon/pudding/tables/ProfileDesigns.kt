@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
-import net.perfectdreams.loritta.cinnamon.common.utils.Rarity
+import net.perfectdreams.loritta.cinnamon.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.array
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable

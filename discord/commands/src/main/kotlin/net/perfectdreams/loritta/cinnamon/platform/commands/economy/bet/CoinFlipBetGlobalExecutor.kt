@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.economy.bet
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet
 
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
@@ -8,24 +8,24 @@ import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuild
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.GACampaigns
-import net.perfectdreams.loritta.cinnamon.platform.InteractionContext
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.CoinFlipCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BetCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
+import net.perfectdreams.loritta.cinnamon.discord.InteractionContext
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.CoinFlipCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
-import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
-import net.perfectdreams.loritta.cinnamon.platform.utils.AchievementUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
+import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
@@ -214,7 +214,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
 
                         AchievementUtils.giveAchievementToUserAndNotifyThem(
                             context.loritta,
-                            net.perfectdreams.loritta.cinnamon.platform.BarebonesInteractionContext(otherUserContext),
+                            net.perfectdreams.loritta.cinnamon.discord.BarebonesInteractionContext(otherUserContext),
                             otherUserI18nContext,
                             result.user,
                             result.achievementType

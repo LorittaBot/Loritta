@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.metrics
 
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.PrometheusMetrics
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusMetrics
 
 object DiscordGatewayEventsProcessorMetrics : PrometheusMetrics() {
     val gatewayEventsReceived = createCounterWithLabels("gateway_events_received", "Gateway Events Received", "shard", "event")

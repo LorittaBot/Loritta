@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
 
 import kotlinx.coroutines.runBlocking
-import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds
-import net.perfectdreams.loritta.cinnamon.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.cinnamon.utils.DailyTaxThresholds
+import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments

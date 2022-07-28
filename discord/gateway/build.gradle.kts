@@ -9,7 +9,6 @@ plugins {
 dependencies {
     implementation(project(":common"))
     implementation(project(":discord:discord-common"))
-    implementation(project(":discord:commands"))
 
     // Discord InteraKTions (Web Server)
     implementation("net.perfectdreams.discordinteraktions:gateway-kord:${Versions.DISCORD_INTERAKTIONS}")
@@ -33,7 +32,7 @@ tasks.withType<KotlinCompile> {
 jib {
     container {
         ports = listOf("8080")
-        mainClass = "net.perfectdreams.loritta.cinnamon.platform.gateway.LorittaCinnamonGatewayLauncher"
+        mainClass = "net.perfectdreams.loritta.cinnamon.discord.gateway.LorittaCinnamonGatewayLauncher"
     }
 
     to {

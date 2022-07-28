@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
-import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
+import net.perfectdreams.loritta.cinnamon.locale.LorittaLanguageManager
+import net.perfectdreams.loritta.cinnamon.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*

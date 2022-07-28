@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventspro
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.locale.LorittaLanguageManager
-import net.perfectdreams.loritta.cinnamon.common.utils.HostnameUtils
-import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
+import net.perfectdreams.loritta.cinnamon.locale.LorittaLanguageManager
+import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
+import net.perfectdreams.loritta.cinnamon.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config.RootConfig
-import net.perfectdreams.loritta.cinnamon.platform.utils.metrics.JFRExports
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.JFRExports
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
 

@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
-import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.common.utils.Gender
+import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.utils.Gender
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserBannedState
@@ -96,7 +96,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @param  type the achievement type
      * @return if true, the achievement was successfully given, if false, the user already has the achievement
      */
-    suspend fun giveAchievement(id: UserId, type: AchievementType, achievedAt: Instant): Boolean {
+    suspend fun giveAchievement(id: UserId, type: net.perfectdreams.loritta.cinnamon.achievements.AchievementType, achievedAt: Instant): Boolean {
         return pudding.transaction {
             val alreadyHasAchievement = UserAchievements.selectFirstOrNull {
                 UserAchievements.user eq id.value.toLong() and (UserAchievements.type eq type)
