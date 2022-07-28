@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.modules
 
 import dev.kord.gateway.MessageCreate
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.metrics.DiscordGatewayEventsProcessorMetrics
@@ -39,7 +39,7 @@ class OwOGatewayModule(private val m: DiscordGatewayEventsProcessor) : ProcessDi
         m.rest.channel.createMessage(
             messageCreate.message.channelId
         ) {
-            content = "UwU! ${Emotes.LoriLick}"
+            content = "UwU! ${net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLick}"
         }
     }
 }

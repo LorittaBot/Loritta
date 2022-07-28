@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.toKotlinInstant
-import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
+import net.perfectdreams.loritta.cinnamon.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
 import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction

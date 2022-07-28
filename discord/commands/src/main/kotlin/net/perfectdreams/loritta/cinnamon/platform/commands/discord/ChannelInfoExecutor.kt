@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord
 
 import dev.kord.common.Color
 import dev.kord.common.entity.ChannelType
@@ -7,17 +7,17 @@ import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeys
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.ServerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 
 class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {

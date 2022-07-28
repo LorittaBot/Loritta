@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox
 
 import dev.kord.common.Color
 import dev.kord.common.entity.Permission
@@ -12,14 +12,14 @@ import net.perfectdreams.discordinteraktions.common.entities.messages.editMessag
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.*
-import net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.declarations.SoundboxCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.SoundboxCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.utils.falatron.FalatronModelsManager
-import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
+import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
 import java.util.*
 import kotlin.time.Duration.Companion.minutes

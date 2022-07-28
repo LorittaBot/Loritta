@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord.webhook
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.webhook
 
 import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.Snowflake
@@ -14,13 +14,13 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.putJsonArray
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.URLUtils
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.WebhookCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordResourceLimits
-import net.perfectdreams.loritta.cinnamon.platform.utils.WebhookUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.URLUtils
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.WebhookCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
+import net.perfectdreams.loritta.cinnamon.discord.utils.WebhookUtils
 
 object WebhookCommandUtils {
     suspend fun sendMessageViaWebhook(

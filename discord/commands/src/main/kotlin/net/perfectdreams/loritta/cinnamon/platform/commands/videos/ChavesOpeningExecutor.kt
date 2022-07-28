@@ -1,18 +1,18 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.videos
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos
 
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.ChavesOpeningRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.gabrielaimageserver.exceptions.InvalidChavesOpeningTextException
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.ChavesCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.ChavesCommand
 
 class ChavesOpeningExecutor(
     loritta: LorittaCinnamon,

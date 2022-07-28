@@ -11,10 +11,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
-import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.common.commands.ApplicationCommandType
-import net.perfectdreams.loritta.cinnamon.common.components.ComponentType
-import net.perfectdreams.loritta.cinnamon.common.utils.*
+import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType
+import net.perfectdreams.loritta.cinnamon.components.ComponentType
+import net.perfectdreams.loritta.cinnamon.utils.*
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.services.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
@@ -28,6 +28,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
+import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -238,9 +239,9 @@ class Pudding(
 
         if (schemas.isNotEmpty())
             transaction {
-                createOrUpdatePostgreSQLEnum(AchievementType.values())
-                createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
-                createOrUpdatePostgreSQLEnum(ComponentType.values())
+                createOrUpdatePostgreSQLEnum(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.values())
+                createOrUpdatePostgreSQLEnum(net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType.values())
+                createOrUpdatePostgreSQLEnum(net.perfectdreams.loritta.cinnamon.components.ComponentType.values())
                 createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
                 createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
                 createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())

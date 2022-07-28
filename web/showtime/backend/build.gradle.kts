@@ -11,7 +11,6 @@ dependencies {
     implementation(kotlin("stdlib-jdk8"))
     api(project(":web:showtime:web-common"))
     api(project(":discord:discord-common"))
-    api(project(":discord:commands"))
 
     // Logging Stuff
     implementation(libs.logback.classic)

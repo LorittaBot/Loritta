@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables
 
 import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
-import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
+import net.perfectdreams.loritta.cinnamon.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import org.jetbrains.exposed.dao.id.LongIdTable
 

@@ -1,9 +1,9 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.roleplay
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay
 
 import dev.kord.common.Color
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emote
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.emotes.Emote
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import net.perfectdreams.randomroleplaypictures.common.Gender
 import net.perfectdreams.randomroleplaypictures.common.data.api.PictureResponse

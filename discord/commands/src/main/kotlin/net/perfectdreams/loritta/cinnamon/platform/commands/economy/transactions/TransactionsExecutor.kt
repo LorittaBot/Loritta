@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions
 
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.rest.builder.message.EmbedBuilder
@@ -7,22 +7,22 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.common.utils.TransactionType
-import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.stripCodeBackticks
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers.*
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import net.perfectdreams.loritta.cinnamon.utils.TransactionType
+import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.TransactionsCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.transactiontransformers.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
-import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
-import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.selectMenu
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.*
 import kotlin.math.ceil
 

@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables
 
 import net.perfectdreams.exposedpowerutils.sql.javatime.timestampWithTimeZone
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
-import net.perfectdreams.loritta.cinnamon.common.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object UserAchievements : LongIdTable() {
     val user = reference("user", Profiles)
-    val type = postgresEnumeration<AchievementType>("type")
+    val type = postgresEnumeration<net.perfectdreams.loritta.cinnamon.achievements.AchievementType>("type")
     val achievedAt = timestampWithTimeZone("achieved_at")
 
     // Because "user" and "type" are primary keys, the database will reject things like

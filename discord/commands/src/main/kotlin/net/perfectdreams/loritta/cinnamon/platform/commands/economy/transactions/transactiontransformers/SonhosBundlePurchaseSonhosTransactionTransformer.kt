@@ -1,9 +1,9 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.economy.transactions.transactiontransformers
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.transactiontransformers
 
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.TransactionsCommand
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.TransactionsCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId

@@ -1,17 +1,17 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.broker
 
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BrokerCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.platform.utils.NumberUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 

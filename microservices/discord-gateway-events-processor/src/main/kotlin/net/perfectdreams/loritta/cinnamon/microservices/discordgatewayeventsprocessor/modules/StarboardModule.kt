@@ -27,13 +27,13 @@ import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
-import net.perfectdreams.loritta.cinnamon.platform.utils.ContentTypeUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.UserUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.ContentTypeUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardMessages
@@ -345,7 +345,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
         // Show the message's attachments in the embed
         if (message.attachments.isNotEmpty()) {
             field(
-                "${Emotes.FileFolder} ${i18nContext.get(I18nKeysData.Modules.Starboard.Files(message.attachments.size))}",
+                "${net.perfectdreams.loritta.cinnamon.emotes.Emotes.FileFolder} ${i18nContext.get(I18nKeysData.Modules.Starboard.Files(message.attachments.size))}",
                 message.attachments.joinToString("\n") {
                     "[${it.filename}](${it.url})"
                 }
@@ -368,7 +368,7 @@ class StarboardModule(private val m: DiscordGatewayEventsProcessor) : ProcessDis
     }
 
     private fun getStarEmojiForReactionCount(count: Int) = when {
-        count == 69 -> Emotes.LoriBonk.toString() // Easter Egg
+        count == 69 -> net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriBonk.toString() // Easter Egg
         count >= 20 -> "\uD83C\uDF0C"
         count >= 15 -> "\uD83D\uDCAB"
         count >= 10 -> "\uD83C\uDF20"

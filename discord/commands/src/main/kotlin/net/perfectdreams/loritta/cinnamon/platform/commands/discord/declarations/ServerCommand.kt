@@ -1,12 +1,12 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations
 
-import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.*
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandCategory
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.*
 
 class ServerCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {

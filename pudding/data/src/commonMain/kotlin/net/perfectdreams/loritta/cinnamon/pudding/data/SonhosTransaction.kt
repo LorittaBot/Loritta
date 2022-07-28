@@ -3,10 +3,10 @@ package net.perfectdreams.loritta.cinnamon.pudding.data
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
-import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
-import net.perfectdreams.loritta.cinnamon.common.utils.SparklyPowerLSXTransactionEntryAction
-import net.perfectdreams.loritta.cinnamon.common.utils.WebsiteVoteSource
+import net.perfectdreams.loritta.cinnamon.utils.DivineInterventionTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.cinnamon.utils.SparklyPowerLSXTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.utils.WebsiteVoteSource
 
 @Serializable
 sealed class SonhosTransaction {

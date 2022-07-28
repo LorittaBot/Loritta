@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds
-import net.perfectdreams.loritta.cinnamon.common.utils.DailyTaxThresholds.THRESHOLDS
-import net.perfectdreams.loritta.cinnamon.common.utils.PendingImportantNotificationState
-import net.perfectdreams.loritta.cinnamon.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.cinnamon.utils.DailyTaxThresholds
+import net.perfectdreams.loritta.cinnamon.utils.DailyTaxThresholds.THRESHOLDS
+import net.perfectdreams.loritta.cinnamon.utils.PendingImportantNotificationState
+import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications

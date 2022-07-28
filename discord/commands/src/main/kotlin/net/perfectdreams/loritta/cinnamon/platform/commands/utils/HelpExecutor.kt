@@ -1,17 +1,17 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.utils
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils
 
 import dev.kord.common.Color
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.mentionUser
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.HelpCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.HelpCommand
 
 class HelpExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {

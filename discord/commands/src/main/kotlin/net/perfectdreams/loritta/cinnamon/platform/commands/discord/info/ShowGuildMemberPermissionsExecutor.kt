@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord.info
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.info
 
 import dev.kord.common.Color
 import kotlinx.serialization.json.Json
@@ -6,18 +6,18 @@ import kotlinx.serialization.json.decodeFromJsonElement
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.utils.field
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.RawToFormated.toLocalized
-import net.perfectdreams.loritta.cinnamon.platform.utils.StoredGenericInteractionData
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
+import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
 
 class ShowGuildMemberPermissionsExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.SHOW_GUILD_MEMBER_PERMISSIONS_BUTTON_EXECUTOR)

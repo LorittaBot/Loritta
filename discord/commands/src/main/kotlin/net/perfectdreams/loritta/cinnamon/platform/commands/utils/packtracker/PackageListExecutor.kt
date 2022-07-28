@@ -1,20 +1,20 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker
 
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.loriEmoji
-import net.perfectdreams.loritta.cinnamon.platform.components.selectMenu
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
-import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.selectMenu
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class PackageListExecutor(loritta: LorittaCinnamon, val client: CorreiosClient) : CinnamonSlashCommandExecutor(loritta) {

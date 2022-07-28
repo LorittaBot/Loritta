@@ -1,14 +1,14 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord
 
 import dev.kord.common.Color
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.*
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
 
 class ServerIconExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {

@@ -1,12 +1,12 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.social
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social
 
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.social.declarations.AfkCommand
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AfkCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class AfkOffExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {

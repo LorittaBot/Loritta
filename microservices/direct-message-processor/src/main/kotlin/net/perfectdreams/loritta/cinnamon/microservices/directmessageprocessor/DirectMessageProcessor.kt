@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor
 
-import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils.DirectMessageProcessorTasks
 import net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils.config.RootConfig
-import net.perfectdreams.loritta.cinnamon.platform.LorittaDiscordStuff
+import net.perfectdreams.loritta.cinnamon.discord.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 
 class DirectMessageProcessor(

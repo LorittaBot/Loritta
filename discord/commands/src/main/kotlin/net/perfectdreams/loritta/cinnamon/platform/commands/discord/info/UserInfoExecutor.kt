@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.discord.info
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.info
 
 import dev.kord.common.Color
 import dev.kord.common.DiscordBitSet
@@ -25,21 +25,21 @@ import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.MessageTargetType
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGlobalAvatarExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.SwitchToGuildProfileAvatarExecutor
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.avatar.UserDataUtils
-import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.UserCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.StoredGenericInteractionData
-import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.MessageTargetType
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.SwitchToGlobalAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.SwitchToGuildProfileAvatarExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.UserDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import kotlin.time.Duration.Companion.minutes
 
 interface UserInfoExecutor {

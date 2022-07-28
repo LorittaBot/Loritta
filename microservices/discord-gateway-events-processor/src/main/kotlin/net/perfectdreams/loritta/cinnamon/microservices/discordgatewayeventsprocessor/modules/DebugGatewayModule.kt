@@ -4,8 +4,8 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.MessageCreate
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.HostnameUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 
@@ -64,7 +64,7 @@ class DebugGatewayModule(private val m: DiscordGatewayEventsProcessor) : Process
                 append("**Durations:**")
                 append("\n")
                 for ((clazz, duration) in context.durations) {
-                    append("${Emotes.SmallBlueDiamond}**${clazz.simpleName}:** $duration")
+                    append("${net.perfectdreams.loritta.cinnamon.emotes.Emotes.SmallBlueDiamond}**${clazz.simpleName}:** $duration")
                     append("\n")
                 }
             }

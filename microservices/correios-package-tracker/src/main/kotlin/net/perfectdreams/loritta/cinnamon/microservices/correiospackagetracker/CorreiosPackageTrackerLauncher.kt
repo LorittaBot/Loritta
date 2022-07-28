@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.utils.config.ConfigUtils
+import net.perfectdreams.loritta.cinnamon.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*

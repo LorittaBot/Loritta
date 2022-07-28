@@ -1,8 +1,8 @@
 import com.typesafe.config.ConfigFactory
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
-import net.perfectdreams.loritta.cinnamon.platform.webserver.LorittaCinnamonWebServer
-import net.perfectdreams.loritta.cinnamon.platform.webserver.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.discord.webserver.LorittaCinnamonWebServer
+import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.RootConfig
 import org.junit.jupiter.api.Test
 
 class CheckConfigTest {

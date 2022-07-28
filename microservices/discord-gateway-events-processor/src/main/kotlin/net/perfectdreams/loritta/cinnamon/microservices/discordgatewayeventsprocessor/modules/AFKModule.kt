@@ -8,12 +8,12 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.datetime.Instant
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.styled
-import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordInviteUtils
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import kotlin.reflect.KClass
 import kotlin.time.Duration
@@ -99,7 +99,7 @@ class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEv
                                 append(i18nContext.get(I18nKeysData.Modules.Afk.AfkReason(afkReason)))
                             }
                         },
-                        Emotes.LoriSleeping
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
                     )
                 } else {
                     styled(
@@ -120,7 +120,7 @@ class AFKModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEv
                                 }
                             }
                         },
-                        Emotes.LoriSleeping
+                        net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSleeping
                     )
                 }
 

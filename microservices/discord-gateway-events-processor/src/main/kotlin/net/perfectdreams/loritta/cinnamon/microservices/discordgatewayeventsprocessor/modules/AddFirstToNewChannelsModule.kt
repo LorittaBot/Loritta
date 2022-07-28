@@ -5,7 +5,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.ChannelCreate
 import dev.kord.gateway.Event
 import kotlinx.datetime.Instant
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.DiscordGatewayEventsProcessor
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.GatewayProxyEventContext
 import net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.metrics.DiscordGatewayEventsProcessorMetrics
@@ -15,16 +15,16 @@ import kotlin.time.Duration
 class AddFirstToNewChannelsModule(private val m: DiscordGatewayEventsProcessor) : ProcessDiscordEventsModule() {
     companion object {
         private val FUNNY_FIRST_EMOJIS = listOf(
-            Emotes.LoriCoffee,
-            Emotes.LoriHappy,
-            Emotes.LoriSmile,
-            Emotes.LoriSunglasses,
-            Emotes.LoriUwU,
-            Emotes.LoriWow,
-            Emotes.LoriStonks,
-            Emotes.LoriKiss,
-            Emotes.LoriLick,
-            Emotes.LoriFlushed
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriCoffee,
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriHappy,
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSmile,
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriSunglasses,
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriUwU,
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriWow,
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriStonks,
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriKiss,
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriLick,
+            net.perfectdreams.loritta.cinnamon.emotes.Emotes.LoriFlushed
         )
     }
 

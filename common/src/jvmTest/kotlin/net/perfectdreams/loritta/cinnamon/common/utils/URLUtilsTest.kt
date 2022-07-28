@@ -1,5 +1,6 @@
-package net.perfectdreams.loritta.cinnamon.common.utils
+package net.perfectdreams.loritta.cinnamon.utils
 
+import net.perfectdreams.loritta.cinnamon.utils.URLUtils
 import org.junit.Test
 
 class URLUtilsTest {

@@ -1,15 +1,15 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker
 
 import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.BarebonesSingleUserComponentData
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.ButtonExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.platform.components.CinnamonButtonExecutor
-import net.perfectdreams.loritta.cinnamon.platform.components.ComponentContext
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.BarebonesSingleUserComponentData
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class GoBackToPackageListButtonClickExecutor(

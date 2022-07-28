@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.microservices.discordgatewayeventsprocessor.utils.config
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.cinnamon.common.utils.config.LorittaConfig
-import net.perfectdreams.loritta.cinnamon.platform.utils.config.LorittaDiscordConfig
+import net.perfectdreams.loritta.cinnamon.utils.config.LorittaConfig
+import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig
 
 @Serializable
 data class RootConfig(

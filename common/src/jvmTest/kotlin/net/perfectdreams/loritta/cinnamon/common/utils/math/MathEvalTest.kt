@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.common.utils.math
+package net.perfectdreams.loritta.cinnamon.utils.math
 
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy

@@ -1,10 +1,14 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.`fun`.soundbox
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox
 
 import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.components.*
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.platform.utils.toLong
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.GuildComponentContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.SoundboardAudioRequest
 import java.util.*
 

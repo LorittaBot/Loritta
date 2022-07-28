@@ -10,7 +10,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.longOrNull
 import kotlinx.serialization.json.put
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.common.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
 
 object KordDiscordEventUtils {
     private val logger = KotlinLogging.logger {}

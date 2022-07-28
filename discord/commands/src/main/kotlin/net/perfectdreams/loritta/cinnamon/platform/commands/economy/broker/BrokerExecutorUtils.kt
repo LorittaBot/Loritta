@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.economy.broker
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.broker
 
 import dev.kord.common.Color
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
@@ -6,10 +6,10 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaBovespaBrokerUtils
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.economy.declarations.BrokerCommand
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerTickerInformation
 
 object BrokerExecutorUtils {

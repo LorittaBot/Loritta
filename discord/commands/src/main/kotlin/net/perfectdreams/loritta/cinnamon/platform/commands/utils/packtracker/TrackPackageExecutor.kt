@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.platform.commands.utils.packtracker
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker
 
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake
@@ -7,24 +7,24 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.common.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.common.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.platform.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.platform.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.platform.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.platform.commands.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.platform.components.interactiveButton
-import net.perfectdreams.loritta.cinnamon.platform.utils.ComponentDataUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.CorreiosUtils
-import net.perfectdreams.loritta.cinnamon.platform.utils.DiscordResourceLimits
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.CorreiosClient
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosFoundObjeto
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.CorreiosUnknownObjeto
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.entities.eventTypeWithStatus
-import net.perfectdreams.loritta.cinnamon.platform.utils.correios.exceptions.InvalidTrackingIdException
-import net.perfectdreams.loritta.cinnamon.platform.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.CorreiosUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosFoundObjeto
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosUnknownObjeto
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.eventTypeWithStatus
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.exceptions.InvalidTrackingIdException
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class TrackPackageExecutor(loritta: LorittaCinnamon, val client: CorreiosClient) : CinnamonSlashCommandExecutor(loritta) {
