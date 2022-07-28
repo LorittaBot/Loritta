@@ -6,6 +6,7 @@ import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.platform.commands.CinnamonSlashCommandDeclarationBuilder
 import net.perfectdreams.loritta.cinnamon.platform.commands.CommandCategory
+import net.perfectdreams.loritta.cinnamon.platform.commands.PublicLorittaCommands
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.InviteCommand
 import net.perfectdreams.loritta.cinnamon.platform.commands.discord.declarations.LorittaCommand
@@ -116,92 +117,9 @@ import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.
 import net.perfectdreams.loritta.cinnamon.platform.commands.videos.declarations.GigaChadCommand
 import kotlin.reflect.KClass
 
-class PublicApplicationCommands(val languageManager: LanguageManager) {
-    val cinnamonDeclarations = listOf(
-        // ===[ DISCORD ]===
-        UserCommand(languageManager),
-        ServerCommand(languageManager),
-        InviteCommand(languageManager),
-        EmojiCommand(languageManager),
-        WebhookCommand(languageManager),
-        LorittaCommand(languageManager),
-
-        // ===[ FUN ]===
-        CoinFlipCommand(languageManager),
-        RateCommand(languageManager),
-        ShipCommand(languageManager),
-        SummonCommand(languageManager),
-        VieirinhaCommand(languageManager),
-        RollCommand(languageManager),
-        TextTransformCommand(languageManager),
-        JankenponCommand(languageManager),
-        HungerGamesCommand(languageManager),
-
-        // ===[ MINECRAFT ]===
-        MinecraftCommand(languageManager),
-
-        // ===[ IMAGES ]===
-        DrakeCommand(languageManager),
-        SonicCommand(languageManager),
-        ArtCommand(languageManager),
-        BobBurningPaperCommand(languageManager),
-        BRMemesCommand(languageManager),
-        BuckShirtCommand(languageManager),
-        LoriSignCommand(languageManager),
-        PassingPaperCommand(languageManager),
-        PepeDreamCommand(languageManager),
-        PetPetCommand(languageManager),
-        WolverineFrameCommand(languageManager),
-        RipTvCommand(languageManager),
-        SustoCommand(languageManager),
-        GetOverHereCommand(languageManager),
-        NichijouYuukoPaperCommand(languageManager),
-        TrumpCommand(languageManager),
-        TerminatorAnimeCommand(languageManager),
-        ToBeContinuedCommand(languageManager),
-        InvertColorsCommand(languageManager),
-        MemeMakerCommand(languageManager),
-        MarkMetaCommand(languageManager),
-        DrawnMaskCommand(languageManager),
-        SadRealityCommand(languageManager),
-
-        // ===[ VIDEOS ]===
-        CarlyAaahCommand(languageManager),
-        AttackOnHeartCommand(languageManager),
-        FansExplainingCommand(languageManager),
-        GigaChadCommand(languageManager),
-        ChavesCommand(languageManager),
-
-        // ===[ UTILS ]===
-        HelpCommand(languageManager),
-        MoneyCommand(languageManager),
-        MorseCommand(languageManager),
-        DictionaryCommand(languageManager),
-        CalculatorCommand(languageManager),
-        AnagramCommand(languageManager),
-        ChooseCommand(languageManager),
-        PackageCommand(languageManager),
-        ColorInfoCommand(languageManager),
-
-        // ===[ ECONOMY ]===
-        SonhosCommand(languageManager),
-        DailyCommand(languageManager),
-        BrokerCommand(languageManager),
-        TransactionsCommand(languageManager),
-        BetCommand(languageManager),
-        AchievementsCommand(languageManager),
-        AfkCommand(languageManager),
-        GenderCommand(languageManager),
-        UndertaleCommand(languageManager),
-
-        // ===[ ROLEPLAY ]===
-        RoleplayCommand(languageManager),
-
-        // ===[ ROBLOX ]===
-        RobloxCommand(languageManager)
-    )
-
-    val dataDeclarations = cinnamonDeclarations.map { convertToData(it.declaration()) }
+class PublicApplicationCommands(languageManager: LanguageManager) {
+    val cinnamonCommands = PublicLorittaCommands(languageManager).commands()
+    val dataDeclarations = cinnamonCommands.map { convertToData(it.declaration()) }
 
     val flattenedDataDeclarations = dataDeclarations.flatMap { flattenData(it) }
 
@@ -424,7 +342,7 @@ class PublicApplicationCommands(val languageManager: LanguageManager) {
             declaration.name,
             declaration.description,
             declaration.category,
-            null, // (declaration.executor?.parent as KClass<*>?)?.simpleName,
+            if (declaration.executor != null) "Workaround" else null, // (declaration.executor?.parent as KClass<*>?)?.simpleName,
             declaration.subcommandGroups.map {
                 InteractionCommandGroup(
                     it.name,
@@ -433,7 +351,7 @@ class PublicApplicationCommands(val languageManager: LanguageManager) {
                             it.name,
                             it.description,
                             it.category,
-                            null, // (it.executor?.parent as KClass<*>?)?.simpleName,
+                            if (declaration.executor != null) "Workaround" else null, // (it.executor?.parent as KClass<*>?)?.simpleName,
                             listOf(),
                             listOf()
                         )
