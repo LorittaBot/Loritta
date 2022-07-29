@@ -66,7 +66,7 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
                             }
                         }
 
-                        logger.info { "Request ${event.id} was successfully forwarded to ${instance}! Guild ID: $guildId - Took $duration" }
+                        logger.info { "Request ${event.id} was successfully forwarded to ${instance.url}! Guild ID: $guildId - Took $duration" }
                     } catch (e: Exception) {
                         logger.warn(e) { "Something went wrong while trying to forward the request!" }
                     }
