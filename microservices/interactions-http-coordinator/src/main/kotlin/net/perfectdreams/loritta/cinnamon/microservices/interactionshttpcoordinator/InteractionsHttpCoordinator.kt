@@ -102,7 +102,7 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
 
                         // Set headers
                         for (header in headersToBeForwarded)
-                            call.response.header(header, httpResponseHeaders[header] ?: error("Missing header \"$header\" from the HTTP Response!"))
+                            call.response.header(header, call.request.header(header) ?: error("Missing header \"$header\" from the HTTP Request!"))
 
                         // Now relay the changes to the http request!
                         call.respondText(
