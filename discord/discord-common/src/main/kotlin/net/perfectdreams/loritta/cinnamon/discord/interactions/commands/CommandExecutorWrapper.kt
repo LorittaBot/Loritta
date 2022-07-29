@@ -124,7 +124,7 @@ interface CommandExecutorWrapper {
                     i18nContext.get(
                         I18nKeysData.Commands.CheckOutNews(
                             GACampaigns.patchNotesUrl(
-                                loritta.config.website,
+                                loritta.config.loritta.website,
                                 i18nContext.get(I18nKeysData.Website.LocalePathId),
                                 patchNote.path,
                                 "discord",
@@ -198,7 +198,7 @@ interface CommandExecutorWrapper {
             val expiresDateInEpochSeconds = userBannedState.expiresAt?.epochSeconds
 
             context.sendEphemeralMessage {
-                val banAppealPageUrl = loritta.config.website + "extras/faq-loritta/loritta-ban-appeal"
+                val banAppealPageUrl = loritta.config.loritta.website + "extras/faq-loritta/loritta-ban-appeal"
                 content = context.i18nContext.get(
                     if (expiresDateInEpochSeconds != null) {
                         I18nKeysData.Commands.YouAreLorittaBannedTemporary(

@@ -77,7 +77,7 @@ data class ImageReferenceOrAttachmentIntermediaryData(
         }
 
         // If no image was found, we will try to find the first recent message in this chat
-        val channelId = context.interaKTionsContext.channelId
+        val channelId = context.channelId
         try {
             val messages = context.loritta.rest.channel.getMessages(
                 channelId,

@@ -34,8 +34,8 @@ class InteractionsManager(
         private val logger = KotlinLogging.logger {}
     }
 
-    private val discordConfig = loritta.discordConfig
-    private val servicesConfig = loritta.servicesConfig
+    private val discordConfig = loritta.config.discord
+    private val servicesConfig = loritta.config.services
     private val rest = loritta.rest
 
     private val random = loritta.random

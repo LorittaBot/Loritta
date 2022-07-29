@@ -84,13 +84,13 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
 
         val url = if (context is GuildApplicationCommandContext)
             GACampaigns.dailyWebRewardDiscordCampaignUrl(
-                context.loritta.config.website,
+                context.loritta.config.loritta.website,
                 "daily",
                 "cmd-with-multiplier"
             ) + "&guild=${context.guildId.value}"
         else // Used for daily multiplier priority
             GACampaigns.dailyWebRewardDiscordCampaignUrl(
-                context.loritta.config.website,
+                context.loritta.config.loritta.website,
                 "daily",
                 "cmd-without-multiplier"
             )
@@ -187,14 +187,14 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
             }
 
             styled(
-                context.i18nContext.get(DailyCommand.I18N_PREFIX.DailyWarning("${context.loritta.config.website}guidelines")),
+                context.i18nContext.get(DailyCommand.I18N_PREFIX.DailyWarning("${context.loritta.config.loritta.website}guidelines")),
                 Emotes.LoriBanHammer
             )
 
             styled(
                 context.i18nContext.get(
                     GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                        context.loritta.config.website,
+                        context.loritta.config.loritta.website,
                         "daily",
                         "daily-reward"
                     )

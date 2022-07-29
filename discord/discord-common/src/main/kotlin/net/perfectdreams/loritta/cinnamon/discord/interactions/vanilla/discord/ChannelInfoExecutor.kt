@@ -39,7 +39,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
             if (argumentChannelId != null)
                 rest.channel.getChannel(argumentChannelId) // Channels not retrieved from the REST API only has a few fields, so we will query them from the REST API!
             else
-                rest.channel.getChannel(context.interaKTionsContext.channelId)
+                rest.channel.getChannel(context.channelId)
         } catch (e: KtorRequestException) {
             context.fail {
                 styled(

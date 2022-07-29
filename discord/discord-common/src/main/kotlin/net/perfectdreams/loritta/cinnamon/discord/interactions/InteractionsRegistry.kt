@@ -19,10 +19,10 @@ class InteractionsRegistry(
     fun register(declaration: Any, vararg executors: Any) {}
 
     suspend fun updateAllCommands() {
-        if (loritta.interactionsConfig.registerGlobally) {
+        if (loritta.config.interactions.registerGlobally) {
             interaKTionsRegistry.updateAllGlobalCommands()
         } else {
-            for (guildId in loritta.interactionsConfig.guildsToBeRegistered) {
+            for (guildId in loritta.config.interactions.guildsToBeRegistered) {
                 interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId))
             }
         }

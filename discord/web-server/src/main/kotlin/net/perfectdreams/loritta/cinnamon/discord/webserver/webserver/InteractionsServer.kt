@@ -11,8 +11,6 @@ import io.ktor.server.routing.*
 import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.webserver.DefaultInteractionRequestHandler
 import net.perfectdreams.discordinteraktions.webserver.installDiscordInteractions
-import net.perfectdreams.loritta.cinnamon.discord.webserver.webserver.routes.api.v1.cinnamon.GetPrometheusMetricsRoute
-import net.perfectdreams.sequins.ktor.BaseRoute
 
 /**
  * Class represents an Rest Interactions Server, which'll connect
@@ -24,19 +22,16 @@ import net.perfectdreams.sequins.ktor.BaseRoute
  * @param port HTTP server port to bind
  */
 class InteractionsServer(
+    val commandManager: CommandManager,
     val rest: RestClient,
     val applicationId: Long,
     val publicKey: String,
     val port: Int = 12212
 ) {
-    val commandManager = CommandManager()
     val interactionRequestHandler = DefaultInteractionRequestHandler(
         Snowflake(applicationId),
         commandManager,
         rest
-    )
-    val routes = listOf<BaseRoute>(
-        GetPrometheusMetricsRoute()
     )
 
     /**
@@ -55,10 +50,6 @@ class InteractionsServer(
                     "/",
                     interactionRequestHandler
                 )
-
-                for (route in routes) {
-                    route.register(this)
-                }
             }
         }
 

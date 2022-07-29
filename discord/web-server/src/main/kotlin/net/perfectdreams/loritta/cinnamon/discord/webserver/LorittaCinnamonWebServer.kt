@@ -1,67 +1,72 @@
 package net.perfectdreams.loritta.cinnamon.discord.webserver
 
 import io.ktor.client.*
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.config.LorittaConfig
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.DiscordInteractionsConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.ServicesConfig
-import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.InteractionsEndpointConfig
+import net.perfectdreams.loritta.cinnamon.discord.utils.EventAnalyticsTask
+import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProxyDiscordGatewayManager
+import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.gatewayproxy.GatewayProxy
+import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.discord.webserver.webserver.InteractionsServer
+import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 
 class LorittaCinnamonWebServer(
-    config: LorittaConfig,
-    discordConfig: LorittaDiscordConfig,
-    interactionsConfig: DiscordInteractionsConfig,
-    interactionsEndpointConfig: InteractionsEndpointConfig,
-    servicesConfig: ServicesConfig,
-    languageManager: LanguageManager,
-    services: Pudding,
-    http: HttpClient
-): LorittaCinnamon(
-    config,
-    discordConfig,
-    interactionsConfig,
-    servicesConfig,
-    languageManager,
-    services,
-    http
+    private val config: RootConfig,
+    private val languageManager: LanguageManager,
+    private val services: Pudding,
+    private val http: HttpClient,
+    private val replicaId: Int
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    val interactions = InteractionsServer(
-        rest = rest,
-        applicationId = discordConfig.applicationId,
-        publicKey = interactionsEndpointConfig.publicKey,
-    )
+    private val gatewayProxies = config.gatewayProxies.filter { it.replicaId == replicaId }.map {
+        GatewayProxy(it.url, it.authorizationToken, it.minShard, it.maxShard)
+    }
 
-    val interactionsManager = InteractionsManager(
-        this,
-        interactions.commandManager
-    )
-
-    override fun getCommandCount() = interactionsManager.interaKTionsManager.applicationCommandsExecutors.size
+    private var lastEventCountCheck = 0
+    private val eventsGatewayCount = gatewayProxies.associate {
+        it to 0
+    }.toMutableMap()
 
     fun start() {
-        runBlocking {
-            val tableNames = servicesConfig.pudding.tablesAllowedToBeUpdated
-            services.createMissingTablesAndColumns {
-                if (tableNames == null)
-                    true
-                else it in tableNames
-            }
-            services.startPuddingTasks()
+        val cinnamon = LorittaCinnamon(
+            ProxyDiscordGatewayManager(config.discordShards.totalShards, gatewayProxies),
+            config.cinnamon,
+            languageManager,
+            services,
+            http
+        )
 
-            interactionsManager.register()
+        cinnamon.start()
+
+        gatewayProxies.forEachIndexed { index, gatewayProxy ->
+            logger.info { "Starting Gateway Proxy $index (${gatewayProxy.url})" }
+            gatewayProxy.start()
         }
 
-        interactions.start()
+        cinnamon.addAnalyticHandler {
+            val totalEventsProcessed = gatewayProxies.sumOf { it.totalEventsReceived.get() }
+            EventAnalyticsTask.logger.info { "Total Discord Events processed: $totalEventsProcessed; (+${totalEventsProcessed - lastEventCountCheck})" }
+            lastEventCountCheck = totalEventsProcessed
+
+            for (gateway in gatewayProxies) {
+                val gatewayEventsProcessed = gateway.totalEventsReceived.get()
+                val previousEventsProcessed = eventsGatewayCount[gateway] ?: 0
+                EventAnalyticsTask.logger.info { "Discord Events processed on [${gateway.state} (${gateway.connectionTries})] ${gateway.url}: $gatewayEventsProcessed; (+${gatewayEventsProcessed - previousEventsProcessed}); Last connection: ${gateway.lastConnection}; Last disconnection: ${gateway.lastDisconnection}; Last event received at: ${gateway.lastEventReceivedAt}" }
+                eventsGatewayCount[gateway] = gatewayEventsProcessed
+            }
+        }
+
+        val interactionsServer = InteractionsServer(
+            cinnamon.interactionsManager.interaKTionsManager,
+            cinnamon.rest,
+            config.cinnamon.discord.applicationId,
+            config.httpInteractions.publicKey
+        )
+
+        interactionsServer.start()
     }
 }

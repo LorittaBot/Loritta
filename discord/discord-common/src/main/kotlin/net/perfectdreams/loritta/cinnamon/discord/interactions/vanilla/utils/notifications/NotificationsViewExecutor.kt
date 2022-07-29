@@ -31,7 +31,7 @@ class NotificationsViewExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                 NotificationUtils.buildUserNotificationMessage(
                     context.i18nContext,
                     notification,
-                    context.loritta.config.website
+                    context.loritta.config.loritta.website
                 )
             )
         }

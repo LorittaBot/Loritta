@@ -74,7 +74,7 @@ jobs:
           :microservices:daily-tax:jib
           :microservices:correios-package-tracker:jib
           :microservices:direct-message-processor:jib
-          :microservices:discord-gateway-events-processor:jib
+          :microservices:interactions-http-coordinator:jib
           :web:showtime:backend:jib
           :web:dashboard:backend:jib
           --scan

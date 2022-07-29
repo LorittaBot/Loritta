@@ -10,9 +10,8 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":discord:discord-common"))
 
-    // Discord InteraKTions (Web Server)
+    // Discord InteraKTions (Discord Gateway)
     implementation("net.perfectdreams.discordinteraktions:gateway-kord:${Versions.DISCORD_INTERAKTIONS}")
-    implementation("dev.kord:kord-gateway:${Versions.KORD}")
 
     // Logging
     api(libs.logback.classic)
@@ -45,7 +44,10 @@ jib {
     }
 
     from {
-        image = "openjdk:17-slim-bullseye"
+        // This image comes from the "docker" folder Dockerfile!
+        // Don't forget to build the image before compiling!
+        // https://github.com/GoogleContainerTools/jib/issues/1468
+        image = "tar://${File(rootDir, "docker/image.tar").absoluteFile}"
     }
 }
 

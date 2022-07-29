@@ -14,9 +14,6 @@ dependencies {
     implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:${Versions.DISCORD_INTERAKTIONS}")
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
 
-    // Sequins
-    api("net.perfectdreams.sequins.ktor:base-route:1.0.4")
-
     // Logging
     api(libs.logback.classic)
 
@@ -50,7 +47,10 @@ jib {
     }
 
     from {
-        image = "openjdk:17-slim-bullseye"
+        // This image comes from the "docker" folder Dockerfile!
+        // Don't forget to build the image before compiling!
+        // https://github.com/GoogleContainerTools/jib/issues/1468
+        image = "tar://${File(rootDir, "docker/image.tar").absoluteFile}"
     }
 }
 

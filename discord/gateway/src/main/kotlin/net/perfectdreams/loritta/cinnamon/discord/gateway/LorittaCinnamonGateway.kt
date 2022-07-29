@@ -1,72 +1,84 @@
 package net.perfectdreams.loritta.cinnamon.discord.gateway
 
-import dev.kord.common.annotation.KordPreview
+import dev.kord.common.entity.DiscordShard
 import dev.kord.common.entity.Snowflake
-import dev.kord.gateway.DefaultGateway
-import dev.kord.gateway.start
+import dev.kord.gateway.*
 import io.ktor.client.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.config.LorittaConfig
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.DiscordInteractionsConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.ServicesConfig
+import net.perfectdreams.loritta.cinnamon.discord.gateway.gateway.KordDiscordGatewayManager
+import net.perfectdreams.loritta.cinnamon.discord.gateway.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 
 class LorittaCinnamonGateway(
-    config: LorittaConfig,
-    discordConfig: LorittaDiscordConfig,
-    interactionsConfig: DiscordInteractionsConfig,
-    servicesConfig: ServicesConfig,
-    languageManager: LanguageManager,
-    services: Pudding,
-    http: HttpClient
-): LorittaCinnamon(
-    config,
-    discordConfig,
-    interactionsConfig,
-    servicesConfig,
-    languageManager,
-    services,
-    http
+    private val config: RootConfig,
+    private val languageManager: LanguageManager,
+    private val services: Pudding,
+    private val http: HttpClient
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val gateway = DefaultGateway()
-
-    private val interactionsManager = InteractionsManager(
-        this,
-        CommandManager()
-    )
-
-    override fun getCommandCount() = interactionsManager.interaKTionsManager.applicationCommandsExecutors.size
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     fun start() {
+        // Create all gateway instances
+        val gateways = (config.discordShards.minShard..config.discordShards.maxShard).associateWith { DefaultGateway {} }
+
+        val gatewayManager = KordDiscordGatewayManager(
+            config.discordShards.totalShards,
+            gateways
+        )
+
+        val cinnamon = LorittaCinnamon(
+            gatewayManager,
+            config.cinnamon,
+            languageManager,
+            services,
+            http
+        )
+
+        cinnamon.start()
+
         runBlocking {
-            val tableNames = servicesConfig.pudding.tablesAllowedToBeUpdated
-            services.createMissingTablesAndColumns {
-                if (tableNames == null)
-                    true
-                else it in tableNames
+            for ((shardId, gateway) in gateways) {
+                logger.info { "Setting up and starting shard $shardId..." }
+                gateway.installDiscordInteraKTions(
+                    Snowflake(config.cinnamon.discord.applicationId),
+                    cinnamon.rest,
+                    cinnamon.interactionsManager.interactionsRegistry.interaKTionsManager
+                )
+
+                scope.launch {
+                    gateway.start(config.cinnamon.discord.token) {
+                        @OptIn(PrivilegedIntent::class)
+                        intents += Intent.MessageContent
+                        @OptIn(PrivilegedIntent::class)
+                        intents += Intent.GuildMembers
+                        intents += Intent.DirectMessages
+                        intents += Intent.DirectMessagesReactions
+                        intents += Intent.GuildBans
+                        intents += Intent.GuildEmojis
+                        intents += Intent.GuildIntegrations
+                        intents += Intent.GuildInvites
+                        intents += Intent.GuildMessageReactions
+                        intents += Intent.GuildMessages
+                        intents += Intent.GuildVoiceStates
+                        intents += Intent.GuildWebhooks
+                        intents += Intent.Guilds
+
+                        shard = DiscordShard(shardId, config.discordShards.totalShards)
+                    }
+                }
             }
-            services.startPuddingTasks()
-
-            interactionsManager.register()
-
-            gateway.installDiscordInteraKTions(
-                Snowflake(discordConfig.applicationId),
-                rest,
-                interactionsManager.interactionsRegistry.interaKTionsManager
-            )
-
-            gateway.start(discordConfig.token)
         }
     }
 }

@@ -49,7 +49,7 @@ class LorittaInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                     )
                 ).joinToString("\n")
 
-                image = "${context.loritta.config.website}v3/assets/img/sonhos/lori-space.gif"
+                image = "${context.loritta.config.loritta.website}v3/assets/img/sonhos/lori-space.gif"
 
                 footer(context.i18nContext.get(LorittaCommand.I18N_PREFIX.Info.Embed.Footer("MrPowerGamerBR#4185", "https://mrpowergamerbr.com")), "https://mrpowergamerbr.com/assets/img/avatar.png")
             }

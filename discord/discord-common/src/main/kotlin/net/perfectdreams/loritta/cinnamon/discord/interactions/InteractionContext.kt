@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
+import dev.kord.common.entity.Snowflake
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.perfectdreams.discordinteraktions.common.InteractionContext
@@ -19,6 +20,9 @@ open class InteractionContext(
     // If you don't keep it "open", the type will always be "LorittaBot", which sucks.
     override val interaKTionsContext: InteractionContext
 ) : BarebonesInteractionContext(interaKTionsContext) {
+    val channelId: Snowflake
+        get() = interaKTionsContext.channelId
+
     /**
      * Gives an achievement to the [user] if they don't have it yet.
      *
