@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.soundboard
 
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.SoundboardAudio
 import org.gagravarr.ogg.OggFile
 import org.gagravarr.opus.OpusFile
 
