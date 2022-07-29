@@ -5,11 +5,17 @@ import dev.kord.common.entity.InteractionType
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.client.utils.*
+import io.ktor.client.utils.EmptyContent.headers
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.util.*
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
@@ -73,17 +79,27 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
                         logger.info { "Forwarding $id request to ${instance.url}! Type: $type" }
 
                         // Forward the request as is
-                        val (status, duration) = measureTimedValue {
+                        val (httpResponse, duration) = measureTimedValue {
                             http.post(instance.url) {
                                 headers {
                                     appendAll(call.request.headers)
                                 }
 
                                 setBody(body)
-                            }.status
+                            }
                         }
 
-                        logger.info { "Request $id was successfully forwarded to ${instance.url}! Status: $status - Took $duration" }
+                        val httpResponseStatus = httpResponse.status
+                        val httpResponseBody = httpResponse.bodyAsText()
+
+                        logger.info { "Request $id was successfully forwarded to ${instance.url}! Status: $httpResponseStatus - Took $duration" }
+
+                        // Now relay the changes to the http request!
+                        call.respondText(
+                            text = httpResponseBody,
+                            status = httpResponseStatus,
+                            contentType = ContentType.Application.Json
+                        )
                     } catch (e: Exception) {
                         logger.warn(e) { "Something went wrong while trying to forward the request!" }
                     }
