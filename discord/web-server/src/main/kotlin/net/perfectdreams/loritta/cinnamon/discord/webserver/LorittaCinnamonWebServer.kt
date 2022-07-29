@@ -40,12 +40,12 @@ class LorittaCinnamonWebServer(
             http
         )
 
-        cinnamon.start()
-
         gatewayProxies.forEachIndexed { index, gatewayProxy ->
             logger.info { "Starting Gateway Proxy $index (${gatewayProxy.url})" }
             gatewayProxy.start()
         }
+        
+        cinnamon.start()
 
         cinnamon.addAnalyticHandler {
             val totalEventsProcessed = gatewayProxies.sumOf { it.totalEventsReceived.get() }
