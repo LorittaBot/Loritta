@@ -86,9 +86,8 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
                         // Forward the request as is
                         val (httpResponse, duration) = measureTimedValue {
                             http.post(instance.url) {
-                                headers {
-                                    appendAll(call.request.headers)
-                                }
+                                for (header in headersToBeForwarded)
+                                    header(header, call.request.header(header) ?: error("Missing header \"$header\" from the HTTP Request!"))
 
                                 setBody(body)
                             }
@@ -96,13 +95,8 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
 
                         val httpResponseStatus = httpResponse.status
                         val httpResponseBody = httpResponse.bodyAsText()
-                        val httpResponseHeaders = httpResponse.headers
 
                         logger.info { "Request $id was successfully forwarded to ${instance.url}! Status: $httpResponseStatus - Took $duration" }
-
-                        // Set headers
-                        for (header in headersToBeForwarded)
-                            call.response.header(header, call.request.header(header) ?: error("Missing header \"$header\" from the HTTP Request!"))
 
                         // Now relay the changes to the http request!
                         call.respondText(
