@@ -56,7 +56,7 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
                             // Ping request, relay to first instance
                             logger.info { "Request $id is a ping request!" }
 
-                            config.instances.first()
+                            config.instances.random()
                         } else {
                             val event = JsonIgnoreUnknownKeys.decodeFromString<DiscordInteraction>(body)
 
