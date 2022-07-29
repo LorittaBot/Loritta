@@ -2,10 +2,9 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.so
 
 import dev.kord.common.Color
 import dev.kord.common.entity.Permission
-import dev.kord.common.entity.Snowflake
+import io.ktor.client.plugins.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.first
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.entities.messages.editMessage
@@ -19,10 +18,10 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnection
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
 import java.util.*
-import kotlin.time.Duration.Companion.minutes
+import kotlin.concurrent.thread
 
 class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManager: FalatronModelsManager) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -55,6 +54,9 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
         if (context !is GuildApplicationCommandContext) // Only guilds
             return
 
+        val guildId = context.guildId
+        val channelId = context.channelId
+
         context.sendMessage {
             styled(
                 "Isto é uma funcionalidade super hiper mega ultra experimental e ela pode *explodir* a qualquer momento! Ela ainda não está pronta e será melhorada com o passar do tempo... ou talvez até mesmo removida! ${Emotes.LoriSob}",
@@ -62,162 +64,195 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
             )
         }
 
-        try {
-            coroutineScope {
-                val guildId = context.guildId
+        // TODO: Reenable de defer after we remove the warning above
+        // context.deferChannelMessage()
 
-                // TODO: Reenable de defer after we remove the warning above
-                // context.deferChannelMessage()
-
-                val userConnectedVoiceChannelId = loritta.cache.getUserConnectedVoiceChannel(guildId, context.user.id) ?: context.fail {
-                    // Not in a voice channel
-                    content = "Você precisa estar conectado em um canal de voz para usar o Falatron!"
-                }
-
-                // Can we talk there?
-                if (!loritta.cache.lorittaHasPermission(context.guildId, userConnectedVoiceChannelId, Permission.Connect, Permission.Speak))
-                    context.fail {
-                        // Looks like we can't...
-                        content = "Desculpe, mas eu não tenho permissão para falar no canal <#${userConnectedVoiceChannelId}>!"
-                    }
-
-                // Are we already playing something in another channel already?
-                val voiceConnectionStatus = loritta.getLorittaVoiceConnectionStateOrNull(guildId) ?: context.fail {
-                    // Looks like something went wrong! Took too long to get if I'm in a voice channel or not
-                    content = "Deu ruim!"
-                }
-
-                val lorittaConnectedVoiceChannelId = voiceConnectionStatus.channelId?.let { Snowflake(it) }
-                if (voiceConnectionStatus.playing && voiceConnectionStatus.channelId != null && lorittaConnectedVoiceChannelId != userConnectedVoiceChannelId)
-                    context.fail {
-                        // We are already playing in another channel!
-                        content = "Eu já estou tocando áudio em outro canal! <#${voiceConnectionStatus.channelId}>"
-                    }
-
-                // Wait until we have a non-empty model list
-                val models = falatronModelsManager.models.filter { it.isNotEmpty() }
-                    .first()
-
-                val model = models.firstOrNull { it.name == args[options.voice] }
-                    ?: context.fail {
-                        styled(
-                            "Voz desconhecida!",
-                            Emotes.LoriSob
-                        )
-                    }
-
-                val uniqueNotificationId2 = UUID.randomUUID().toString()
-
-                val message = context.sendMessage {
-                    styled(
-                        "Pedindo para o Falatron gerar as vozes...",
-                        Emotes.LoriLick
-                    )
-                }
-
-                loritta.services.notify(
-                    FalatronVoiceRequest(
-                        uniqueNotificationId2,
-                        context.guildId.toLong(),
-                        userConnectedVoiceChannelId.toLong(),
-                        args[options.voice],
-                        args[options.text]
-                    )
-                )
-
-                val receivedResponse = withTimeoutOrNull(5_000) {
-                    loritta.filterNotificationsByUniqueId(uniqueNotificationId2)
-                        .filterIsInstance<FalatronVoiceRequestReceivedResponseX>()
-                        .first()
-                }
-
-                if (receivedResponse == null) {
-                    message.editMessage {
-                        styled(
-                            "Parece que deu algum problema e eu não recebi o pedido de geração de voz! Bug?",
-                            Emotes.LoriSleeping
-                        )
-                    }
-                    return@coroutineScope
-                }
-
-                // Timeout job
-                launch {
-                    delay(3.minutes) // If it takes more than 3 minutes to complete...
-
-                    // Edit the message to indicate that something went wrong...
-                    message.editMessage {
-                        styled(
-                            "Parece que algo deu errado!",
-                            Emotes.LoriSleeping
-                        )
-                    }
-
-                    // And then cancel the scope!
-                    this@coroutineScope.cancel()
-                }
-
-                loritta.filterNotificationsByUniqueId(uniqueNotificationId2)
-                    .filterIsInstance<FalatronNotification>()
-                    .collect {
-                        when (it) {
-                            is FalatronOfflineErrorResponse -> {
-                                message.editMessage {
-                                    styled(
-                                        "Parece que o Falatron está instável ou offline... Tente novamente mais tarde!",
-                                        Emotes.LoriSleeping
-                                    )
-                                }
-                                cancel()
-                            }
-                            is FailedToConnectToVoiceChannelResponse -> {
-                                message.editMessage {
-                                    styled(
-                                        "Eu não consegui entrar no canal de voz... Se eu estou conectada no canal de voz, tente me desconectar do canal e use o comando novamente!",
-                                        Emotes.LoriSob
-                                    )
-                                }
-                                cancel()
-                            }
-                            is FalatronVoiceResponse -> {
-                                message.editMessage {
-                                    styled(
-                                        "Voz gerada com sucesso! Tocando em <#${userConnectedVoiceChannelId}>",
-                                        Emotes.LoriHi
-                                    )
-
-                                    embed {
-                                        author(model.author)
-                                        url = "https://falatron.com/"
-
-                                        title = model.name
-                                        description = "*${args[options.text]}*"
-
-                                        if (model.image.isNotBlank())
-                                            thumbnailUrl = model.image
-
-                                        footer(
-                                            buildString {
-                                                append("Vozes geradas pelo Falatron")
-                                                if (model.description.isNotBlank()) {
-                                                    append(" • ${model.description}")
-                                                }
-                                            },
-                                            "https://falatron.com/static/images/logo.png"
-                                        )
-                                        color = Color(0, 207, 255)
-                                    }
-                                }
-                                cancel()
-                            }
-                            else -> {}
-                        }
-                    }
-
-                // TODO: Add a timeout somewhere to avoid suspending this forever if something goes extraordinarily wrong
-            }
-        } catch (e: CancellationException) {
-            // Will be thrown when cancelling the flow
+        val userConnectedVoiceChannelId = loritta.cache.getUserConnectedVoiceChannel(guildId, context.user.id) ?: context.fail {
+            // Not in a voice channel
+            content = "Você precisa estar conectado em um canal de voz para usar o Falatron!"
         }
+
+        // Can we talk there?
+        if (!loritta.cache.lorittaHasPermission(context.guildId, userConnectedVoiceChannelId, Permission.Connect, Permission.Speak))
+            context.fail {
+                // Looks like we can't...
+                content = "Desculpe, mas eu não tenho permissão para falar no canal <#${userConnectedVoiceChannelId}>!"
+            }
+
+        // Are we already playing something in another channel already?
+        val currentlyActiveVoiceConnection = loritta.voiceConnectionsManager.voiceConnections[guildId]
+
+        if (currentlyActiveVoiceConnection != null) {
+            if (currentlyActiveVoiceConnection.isPlaying() && currentlyActiveVoiceConnection.channelId != userConnectedVoiceChannelId)
+                context.fail {
+                    // We are already playing in another channel!
+                    content = "Eu já estou tocando áudio em outro canal! <#${currentlyActiveVoiceConnection.channelId}>"
+                }
+        }
+
+        // Wait until we have a non-empty model list
+        val models = falatronModelsManager.models.filter { it.isNotEmpty() }
+            .first()
+
+        // Validate if the modal exists
+        val model = models.firstOrNull { it.name == args[options.voice] }
+            ?: context.fail {
+                styled(
+                    "Voz desconhecida!",
+                    Emotes.LoriSob
+                )
+            }
+
+        // Notify that we are trying, ok :sobs:
+        val message = context.sendMessage {
+            styled(
+                "Pedindo para o Falatron gerar as vozes...",
+                Emotes.LoriLick
+            )
+        }
+
+        val result = generateTextAsOpusFrames(
+            args[options.voice],
+            args[options.text]
+        )
+
+        val opusFrames = when (result) {
+            is FalatronVoiceResult.Success -> result.opusFrames
+            is FalatronVoiceResult.FalatronOffline -> {
+                message.editMessage {
+                    styled(
+                        "Parece que o Falatron está instável ou offline... Tente novamente mais tarde!",
+                        Emotes.LoriSleeping
+                    )
+                }
+                return
+            }
+        }
+
+        // Let's create a voice connection!
+        val lorittaVoiceConnection = try {
+            loritta.voiceConnectionsManager.getOrCreateVoiceConnection(guildId, context.channelId)
+        } catch (e: Exception) {
+            // Welp, something went wrong
+            message.editMessage {
+                styled(
+                    "Eu não consegui entrar no canal de voz... Se eu estou conectada no canal de voz, tente me desconectar do canal e use o comando novamente!",
+                    Emotes.LoriSob
+                )
+            }
+            return
+        }
+
+        // Now let's queue the audio clip!
+        lorittaVoiceConnection.queue(
+            LorittaVoiceConnection.AudioClipInfo(
+                opusFrames,
+                channelId
+            )
+        )
+
+        message.editMessage {
+            styled(
+                "Voz gerada com sucesso! Tocando em <#${userConnectedVoiceChannelId}>",
+                Emotes.LoriHi
+            )
+
+            embed {
+                author(model.author)
+                url = "https://falatron.com/"
+
+                title = model.name
+                description = "*${args[options.text]}*"
+
+                if (model.image.isNotBlank())
+                    thumbnailUrl = model.image
+
+                footer(
+                    buildString {
+                        append("Vozes geradas pelo Falatron")
+                        if (model.description.isNotBlank()) {
+                            append(" • ${model.description}")
+                        }
+                    },
+                    "https://falatron.com/static/images/logo.png"
+                )
+                color = Color(0, 207, 255)
+            }
+        }
+    }
+
+    private suspend fun generateTextAsOpusFrames(
+        voice: String,
+        text: String
+    ): FalatronVoiceResult {
+        // First: Request Falatron voice
+        val generatedAudioInMP3Format = try {
+            loritta.falatron.generate(
+                voice,
+                text
+            )
+        } catch (e: Exception) {
+            if (e is IllegalStateException || e is HttpRequestTimeoutException) {
+                e.printStackTrace()
+
+                // We tried ok
+                return FalatronVoiceResult.FalatronOffline
+            }
+            throw e
+        }
+
+        // Second: Convert the audio
+        val generatedAudioInOGGFormat = convertAudio(generatedAudioInMP3Format)
+
+        // Third: Load the OGG data from the generated audio and extract the frames
+        return FalatronVoiceResult.Success(loritta.soundboard.extractOpusFrames(generatedAudioInOGGFormat))
+    }
+
+    private fun convertAudio(byteArray: ByteArray): ByteArray {
+        val processBuilder = ProcessBuilder(
+            loritta.config.binaries.ffmpeg,
+            // "-hide_banner",
+            // "-loglevel",
+            // "error",
+            "-f",
+            "mp3",
+            "-i",
+            "-", // We will write to output stream
+            "-ar",
+            "48000",
+            "-c:a",
+            "libopus",
+            "-ac",
+            "2",
+            "-f",
+            "ogg",
+            "-"
+        ).start()
+
+        val inputStream = processBuilder.inputStream
+        val outputStream = processBuilder.outputStream
+
+        val input = mutableListOf<Byte>()
+        // We can't use "readAllBytes" because ffmpeg stops writing to the InputStream until we read more things from it
+        thread {
+            while (true) {
+                val value = inputStream.read()
+                if (value == -1)
+                    break
+                input.add(value.toByte())
+            }
+        }
+
+        outputStream.write(byteArray)
+        outputStream.close()
+
+        processBuilder.waitFor()
+
+        return input.toByteArray()
+    }
+
+    private sealed class FalatronVoiceResult {
+        object FalatronOffline : FalatronVoiceResult()
+        class Success(val opusFrames: List<ByteArray>) : FalatronVoiceResult()
     }
 }

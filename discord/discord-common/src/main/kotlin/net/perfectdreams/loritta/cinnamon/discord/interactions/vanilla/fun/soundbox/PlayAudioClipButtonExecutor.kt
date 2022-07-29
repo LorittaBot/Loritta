@@ -7,9 +7,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.Cinnam
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.GuildComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.SoundboardAudioRequest
-import java.util.*
+import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnection
+import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 
 class PlayAudioClipButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.PLAY_AUDIO_CLIP_BUTTON_EXECUTOR)
@@ -20,33 +19,31 @@ class PlayAudioClipButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExec
 
         context.deferUpdateMessage()
 
-        when (val voiceStateResult = loritta.validateVoiceState(context.guildId, user.id)) {
-            is LorittaCinnamon.AlreadyPlayingInAnotherChannel -> context.failEphemerally {
+        when (val voiceStateResult = loritta.voiceConnectionsManager.validateVoiceState(context.guildId, user.id)) {
+            is LorittaVoiceConnectionManager.VoiceStateValidationResult.AlreadyPlayingInAnotherChannel -> context.failEphemerally {
                 // We are already playing in another channel!
                 content = "Eu já estou tocando áudio em outro canal! <#${voiceStateResult.lorittaConnectedVoiceChannel}>"
             }
-            is LorittaCinnamon.LorittaDoesntHavePermissionToTalkOnChannel -> context.failEphemerally {
+            is LorittaVoiceConnectionManager.VoiceStateValidationResult.LorittaDoesntHavePermissionToTalkOnChannel -> context.failEphemerally {
                 // Looks like we can't...
                 content = "Desculpe, mas eu não tenho permissão para falar no canal <#${voiceStateResult.userConnectedVoiceChannel}>!"
             }
-            LorittaCinnamon.UserNotConnectedToAVoiceChannel -> context.failEphemerally {
+            LorittaVoiceConnectionManager.VoiceStateValidationResult.UserNotConnectedToAVoiceChannel -> context.failEphemerally {
                 // Not in a voice channel
                 content = "Você precisa estar conectado em um canal de voz!"
             }
-            LorittaCinnamon.VoiceStateTimeout -> context.failEphemerally {
-                // Looks like something went wrong! Took too long to get if I'm in a voice channel or not
-                content = "Deu ruim!"
-            }
-            is LorittaCinnamon.VoiceStateValidationData -> {
+            is LorittaVoiceConnectionManager.VoiceStateValidationResult.VoiceStateValidationData -> {
                 // Success! Let's notify the user...
                 val audioClipData = context.decodeDataFromComponentOrFromDatabase<PlayAudioClipData>()
 
-                loritta.services.notify(
-                    SoundboardAudioRequest(
-                        UUID.randomUUID().toString(),
-                        context.guildId.toLong(),
-                        voiceStateResult.userConnectedVoiceChannel.toLong(),
-                        audioClipData.clip
+                val voiceConnection = loritta.voiceConnectionsManager.getOrCreateVoiceConnection(context.guildId, context.channelId)
+
+                val opusFrames = loritta.soundboard.getAudioClip(audioClipData.clip)
+
+                voiceConnection.queue(
+                    LorittaVoiceConnection.AudioClipInfo(
+                        opusFrames,
+                        context.channelId
                     )
                 )
             }

@@ -39,7 +39,7 @@ object SonhosUtils {
             styled(
                 i18nContext.get(
                     GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                        loritta.config.website,
+                        loritta.config.loritta.website,
                         upsellMedium,
                         upsellCampaignContent
                     )

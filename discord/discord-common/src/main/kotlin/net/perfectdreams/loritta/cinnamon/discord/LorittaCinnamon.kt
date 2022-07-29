@@ -1,58 +1,64 @@
 package net.perfectdreams.loritta.cinnamon.discord
 
-import dev.kord.common.entity.Permission
-import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import io.ktor.client.*
 import io.ktor.client.plugins.*
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.withTimeoutOrNull
+import kotlinx.datetime.Clock
+import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.commands.CommandManager
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.config.LorittaConfig
+import net.perfectdreams.loritta.cinnamon.discord.gateway.LorittaDiscordGatewayManager
+import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.DiscordInteractionsConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.ServicesConfig
+import net.perfectdreams.loritta.cinnamon.discord.utils.config.CinnamonConfig
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
+import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
+import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.CinnamonTasks
+import net.perfectdreams.loritta.cinnamon.discord.utils.EventAnalyticsTask
+import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaVoiceConnectionStateRequest
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaVoiceConnectionStateResponse
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
-import java.util.*
-import kotlin.random.Random
+import java.security.SecureRandom
+import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.reflect.KClass
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
 /**
  * Represents a Loritta Morenitta (Cinnamon) implementation.
- *
- * This should be extended by other modules :3
  */
-abstract class LorittaCinnamon(
-    val config: LorittaConfig,
-    discordConfig: LorittaDiscordConfig,
-    val interactionsConfig: DiscordInteractionsConfig,
-    val servicesConfig: ServicesConfig,
+class LorittaCinnamon(
+    val gatewayManager: LorittaDiscordGatewayManager,
+    val config: CinnamonConfig,
 
     val languageManager: LanguageManager,
     services: Pudding,
     val http: HttpClient
-) : LorittaDiscordStuff(discordConfig, services) {
+) : LorittaDiscordStuff(config.discord, services) {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     val gabrielaImageServerClient = GabrielaImageServerClient(
-        servicesConfig.gabrielaImageServer.url,
+        config.services.gabrielaImageServer.url,
         HttpClient {
             // Increase the default timeout for image generation, because some video generations may take too long to be generated
             install(HttpTimeout) {
@@ -65,25 +71,148 @@ abstract class LorittaCinnamon(
 
     val mojangApi = MinecraftMojangAPI()
     val correiosClient = CorreiosClient()
-    val randomRoleplayPicturesClient = RandomRoleplayPicturesClient(servicesConfig.randomRoleplayPictures.url)
+    val randomRoleplayPicturesClient = RandomRoleplayPicturesClient(config.services.randomRoleplayPictures.url)
     val falatronModelsManager = FalatronModelsManager().also {
         it.startUpdater()
     }
     val ecbManager = ECBManager()
+    val falatron = Falatron(config.falatron.url, config.falatron.key)
+    val soundboard = Soundboard()
 
-    // TODO: *Really* set a random seed
-    val random = Random(0)
+    val random = SecureRandom()
+
+    val activeEvents = ConcurrentLinkedQueue<Job>()
+
+    val prometheusPushClient = PrometheusPushClient("loritta-cinnamon", config.prometheusPush.url)
+
+    val voiceConnectionsManager = LorittaVoiceConnectionManager(this)
+
+    private val starboardModule = StarboardModule(this)
+    private val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)
+    private val discordCacheModule = DiscordCacheModule(this)
+    private val bomDiaECiaModule = BomDiaECiaModule(this)
+    private val debugGatewayModule = DebugGatewayModule(this)
+    private val owoGatewayModule = OwOGatewayModule(this)
+    private val inviteBlockerModule = InviteBlockerModule(this)
+    private val afkModule = AFKModule(this)
+
+    private val scope = CoroutineScope(Dispatchers.Default)
+
+    // This is executed sequentially!
+    val modules = listOf(
+        discordCacheModule,
+        inviteBlockerModule,
+        afkModule,
+        addFirstToNewChannelsModule,
+        starboardModule,
+        owoGatewayModule,
+        debugGatewayModule
+    )
 
     val notificationListener = LorittaNotificationListener(services)
         .apply {
             this.start()
         }
 
+    val interactionsManager = InteractionsManager(
+        this,
+        CommandManager()
+    )
+
+    val analyticHandlers = mutableListOf<EventAnalyticsTask.AnalyticHandler>()
+    val cinnamonTasks = CinnamonTasks(this)
+
+    fun start() {
+        runBlocking {
+            val tableNames = config.services.pudding.tablesAllowedToBeUpdated
+            services.createMissingTablesAndColumns {
+                if (tableNames == null)
+                    true
+                else it in tableNames
+            }
+            services.startPuddingTasks()
+
+            interactionsManager.register()
+
+            cinnamonTasks.start()
+
+            // On every gateway instance present on our gateway manager, collect and process events
+            gatewayManager.gateways.forEach { (shardId, gateway) ->
+                scope.launch {
+                    gateway.events.collect {
+                        launchEventProcessorJob(
+                            GatewayEventContext(
+                                it,
+                                shardId,
+                                Clock.System.now()
+                            )
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun launchEventJob(coroutineName: String, durations: Map<KClass<*>, Duration>, block: suspend CoroutineScope.() -> Unit) {
+        val start = System.currentTimeMillis()
+
+        val job = scope.launch(
+            CoroutineName(coroutineName),
+            block = block
+        )
+
+        activeEvents.add(job)
+        DiscordGatewayEventsProcessorMetrics.activeEvents.set(activeEvents.size.toDouble())
+
+        // Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
+        // added to the list, causing leaks.
+        // invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
+        job.invokeOnCompletion {
+            activeEvents.remove(job)
+            DiscordGatewayEventsProcessorMetrics.activeEvents.set(activeEvents.size.toDouble())
+
+            val diff = System.currentTimeMillis() - start
+            if (diff >= 60_000) {
+                logger.warn { "Coroutine $job ($coroutineName) took too long to process! ${diff}ms - Module Durations: $durations" }
+            }
+        }
+    }
+
+    @OptIn(ExperimentalTime::class)
+    private fun launchEventProcessorJob(context: GatewayEventContext) {
+        if (context.event != null) {
+            val coroutineName = "Event ${context.event::class.simpleName}"
+            launchEventJob(coroutineName, context.durations) {
+                try {
+                    for (module in modules) {
+                        val (result, duration) = measureTimedValue { module.processEvent(context) }
+                        context.durations[module::class] = duration
+                        DiscordGatewayEventsProcessorMetrics.executedModuleLatency
+                            .labels(module::class.simpleName!!, context.event::class.simpleName!!)
+                            .observe(duration.toDouble(DurationUnit.SECONDS))
+
+                        when (result) {
+                            ModuleResult.Cancel -> {
+                                // Module asked us to stop processing the events
+                                return@launchEventJob
+                            }
+                            ModuleResult.Continue -> {
+                                // Module asked us to continue processing the events
+                            }
+                        }
+                    }
+                } catch (e: Throwable) {
+                    logger.warn(e) { "Something went wrong while trying to process $coroutineName! We are going to ignore..." }
+                }
+            }
+        } else
+            logger.warn { "Unknown Discord event received! We are going to ignore the event... kthxbye!" }
+    }
+
     /**
-     * Gets the current registered commands count
+     * Gets the current registered application commands count
      */
-    // The reason this is abstract is because the CommandManager class is in the "commands" module, so we can't access it from here
-    abstract fun getCommandCount(): Int
+    fun getCommandCount() = interactionsManager.interaKTionsManager.applicationCommandsExecutors.size
 
     /**
      * Sends the [builder] message to the [userId] via the user's direct message channel.
@@ -98,74 +227,6 @@ abstract class LorittaCinnamon(
     )
 
     /**
-     * Validates Loritta's voice state in [guildId] for [userId]
-     */
-    suspend fun validateVoiceState(guildId: Snowflake, userId: Snowflake): VoiceStateValidationResult {
-        val userConnectedVoiceChannelId = cache.getUserConnectedVoiceChannel(guildId, userId) ?: return UserNotConnectedToAVoiceChannel
-
-        // Can we talk there?
-        if (!cache.lorittaHasPermission(guildId, userConnectedVoiceChannelId, Permission.Connect, Permission.Speak))
-            return LorittaDoesntHavePermissionToTalkOnChannel(userConnectedVoiceChannelId) // Looks like we can't...
-
-        // Are we already playing something in another channel already?
-        val voiceConnectionStatus = getLorittaVoiceConnectionStateOrNull(guildId) ?: return VoiceStateTimeout // Looks like something went wrong! Took too long to get if I'm in a voice channel or not
-        val lorittaConnectedVoiceChannelId = voiceConnectionStatus.channelId?.let { Snowflake(it) }
-        if (voiceConnectionStatus.playing && lorittaConnectedVoiceChannelId != null && lorittaConnectedVoiceChannelId != userConnectedVoiceChannelId)
-            return AlreadyPlayingInAnotherChannel(
-                userConnectedVoiceChannelId,
-                lorittaConnectedVoiceChannelId
-            )
-
-        return VoiceStateValidationData(
-            userConnectedVoiceChannelId,
-            lorittaConnectedVoiceChannelId
-        )
-    }
-
-    sealed class VoiceStateValidationResult
-    object UserNotConnectedToAVoiceChannel : VoiceStateValidationResult()
-    class LorittaDoesntHavePermissionToTalkOnChannel(val userConnectedVoiceChannel: Snowflake) : VoiceStateValidationResult()
-    object VoiceStateTimeout : VoiceStateValidationResult()
-    class AlreadyPlayingInAnotherChannel(
-        val userConnectedVoiceChannel: Snowflake,
-        val lorittaConnectedVoiceChannel: Snowflake
-    ) : VoiceStateValidationResult()
-    data class VoiceStateValidationData(
-        val userConnectedVoiceChannel: Snowflake,
-        val lorittaConnectedVoiceChannel: Snowflake?
-    ) : VoiceStateValidationResult()
-
-    /**
-     * Gets Loritta's coroutine state in [guildId], waits [timeout] until timing out.
-     *
-     * @param guildId the guild id
-     * @param timeout how much time we will wait for a response
-     * @return a [LorittaVoiceConnectionStateResponse] or null if it the request was timed out
-     */
-    suspend fun getLorittaVoiceConnectionStateOrNull(guildId: Snowflake, timeout: Duration = 5.seconds): LorittaVoiceConnectionStateResponse? {
-        return coroutineScope {
-            val uniqueNotificationId = UUID.randomUUID().toString()
-
-            val voiceConnectionStatusDeferred = async {
-                withTimeoutOrNull(timeout) {
-                    filterNotificationsByUniqueId(uniqueNotificationId)
-                        .filterIsInstance<LorittaVoiceConnectionStateResponse>()
-                        .first()
-                }
-            }
-
-            services.notify(
-                LorittaVoiceConnectionStateRequest(
-                    uniqueNotificationId,
-                    guildId.toLong()
-                )
-            )
-
-            voiceConnectionStatusDeferred.await()
-        }
-    }
-
-    /**
      * Filters received notifications by their [notificationUniqueId]
      *
      * @param notificationUniqueId the notification unique ID
@@ -175,4 +236,9 @@ abstract class LorittaCinnamon(
         return notificationListener.notifications.filterIsInstance<LorittaNotification>()
             .filter { it.uniqueId == notificationUniqueId }
     }
+
+    /**
+     * Adds an analytic handler, used for debugging logs on the [EventAnalyticsTask]
+     */
+    fun addAnalyticHandler(handler: EventAnalyticsTask.AnalyticHandler) = analyticHandlers.add(handler)
 }

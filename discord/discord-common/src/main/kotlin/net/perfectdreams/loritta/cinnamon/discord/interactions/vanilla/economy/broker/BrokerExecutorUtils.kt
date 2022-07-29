@@ -17,7 +17,7 @@ object BrokerExecutorUtils {
         author("Loritta's Home Broker")
         // TODO: Move this to an object
         color = Color(23, 62, 163)
-        thumbnailUrl = "${context.loritta.config.website}assets/img/loritta_stonks.png"
+        thumbnailUrl = "${context.loritta.config.loritta.website}assets/img/loritta_stonks.png"
         footer(context.i18nContext.get(BrokerCommand.I18N_PREFIX.FooterDataInfo))
         block()
     }

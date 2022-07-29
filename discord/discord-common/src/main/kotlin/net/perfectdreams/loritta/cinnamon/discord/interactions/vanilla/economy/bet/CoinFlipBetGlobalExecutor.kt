@@ -327,7 +327,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                             i18nContext.get(
                                 BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.DontWantTaxAnymorePremiumPlanUpsellOtherUserHasPremium(
                                     GACampaigns.premiumUpsellDiscordMessageUrl(
-                                        loritta.config.website,
+                                        loritta.config.loritta.website,
                                         "bet-coinflip-global",
                                         "victory-against-premium-users"
                                     )
