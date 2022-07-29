@@ -15,7 +15,7 @@ import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.microservices.interactionshttpcoordinator.config.InteractionsHttpCoordinatorConfig
 import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
+import kotlin.time.measureTimedValue
 
 /**
  * Coordinates HTTP interactions to their specific stateful instance, based on the interactions' guild ID.
@@ -73,17 +73,17 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
                         logger.info { "Forwarding $id request to ${instance.url}! Type: $type" }
 
                         // Forward the request as is
-                        val duration = measureTime {
+                        val (status, duration) = measureTimedValue {
                             http.post(instance.url) {
                                 headers {
                                     appendAll(call.request.headers)
                                 }
 
                                 setBody(body)
-                            }
+                            }.status
                         }
 
-                        logger.info { "Request $id was successfully forwarded to ${instance.url}! - Took $duration" }
+                        logger.info { "Request $id was successfully forwarded to ${instance.url}! Status: $status - Took $duration" }
                     } catch (e: Exception) {
                         logger.warn(e) { "Something went wrong while trying to forward the request!" }
                     }
