@@ -43,7 +43,7 @@ jib {
     }
 
     to {
-        image = "ghcr.io/lorittabot/discord-gateway-events-processor"
+        image = "ghcr.io/lorittabot/interactions-http-coordinator"
 
         auth {
             username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
