@@ -24,6 +24,10 @@ import kotlin.time.measureTime
 class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinatorConfig) {
     companion object {
         private val logger = KotlinLogging.logger {}
+
+        private val JsonIgnoreUnknownKeys = Json {
+            ignoreUnknownKeys = true
+        }
     }
 
     private val http = HttpClient(CIO)
@@ -35,7 +39,7 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
                 post("/") {
                     try {
                         val body = call.receiveText()
-                        val event = Json.decodeFromString<DiscordInteraction>(body)
+                        val event = JsonIgnoreUnknownKeys.decodeFromString<DiscordInteraction>(body)
 
                         // Let's coordinate!
                         val guildId = event.guildId.value
