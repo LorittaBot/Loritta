@@ -35,6 +35,11 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
         private val JsonIgnoreUnknownKeys = Json {
             ignoreUnknownKeys = true
         }
+
+        private val headersToBeForwarded = setOf(
+            "X-Signature-Ed25519",
+            "X-Signature-Timestamp"
+        )
     }
 
     private val http = HttpClient(CIO)
@@ -91,8 +96,13 @@ class InteractionsHttpCoordinator(private val config: InteractionsHttpCoordinato
 
                         val httpResponseStatus = httpResponse.status
                         val httpResponseBody = httpResponse.bodyAsText()
+                        val httpResponseHeaders = httpResponse.headers
 
                         logger.info { "Request $id was successfully forwarded to ${instance.url}! Status: $httpResponseStatus - Took $duration" }
+
+                        // Set headers
+                        for (header in headersToBeForwarded)
+                            call.response.header(header, httpResponseHeaders[header] ?: error("Missing header \"$header\" from the HTTP Response!"))
 
                         // Now relay the changes to the http request!
                         call.respondText(
