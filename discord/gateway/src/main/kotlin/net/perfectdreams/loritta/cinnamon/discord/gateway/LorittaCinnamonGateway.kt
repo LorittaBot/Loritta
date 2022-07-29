@@ -2,11 +2,11 @@ package net.perfectdreams.loritta.cinnamon.discord.gateway
 
 import dev.kord.common.entity.DiscordShard
 import dev.kord.common.entity.Snowflake
-import dev.kord.gateway.DefaultGateway
-import dev.kord.gateway.start
+import dev.kord.gateway.*
 import io.ktor.client.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
@@ -59,6 +59,22 @@ class LorittaCinnamonGateway(
 
                 scope.launch {
                     gateway.start(config.cinnamon.discord.token) {
+                        @OptIn(PrivilegedIntent::class)
+                        intents += Intent.MessageContent
+                        @OptIn(PrivilegedIntent::class)
+                        intents += Intent.GuildMembers
+                        intents += Intent.DirectMessages
+                        intents += Intent.DirectMessagesReactions
+                        intents += Intent.GuildBans
+                        intents += Intent.GuildEmojis
+                        intents += Intent.GuildIntegrations
+                        intents += Intent.GuildInvites
+                        intents += Intent.GuildMessageReactions
+                        intents += Intent.GuildMessages
+                        intents += Intent.GuildVoiceStates
+                        intents += Intent.GuildWebhooks
+                        intents += Intent.Guilds
+
                         shard = DiscordShard(shardId, config.discordShards.totalShards)
                     }
                 }

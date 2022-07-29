@@ -36,7 +36,7 @@ class PlayAudioClipButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExec
                 // Success! Let's notify the user...
                 val audioClipData = context.decodeDataFromComponentOrFromDatabase<PlayAudioClipData>()
 
-                val voiceConnection = loritta.voiceConnectionsManager.getOrCreateVoiceConnection(context.guildId, context.channelId)
+                val voiceConnection = loritta.voiceConnectionsManager.getOrCreateVoiceConnection(context.guildId, voiceStateResult.userConnectedVoiceChannel)
 
                 val opusFrames = loritta.soundboard.getAudioClip(audioClipData.clip)
 

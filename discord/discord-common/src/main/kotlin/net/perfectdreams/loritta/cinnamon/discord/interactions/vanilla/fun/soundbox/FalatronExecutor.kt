@@ -131,7 +131,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
 
         // Let's create a voice connection!
         val lorittaVoiceConnection = try {
-            loritta.voiceConnectionsManager.getOrCreateVoiceConnection(guildId, context.channelId)
+            loritta.voiceConnectionsManager.getOrCreateVoiceConnection(guildId, userConnectedVoiceChannelId)
         } catch (e: Exception) {
             // Welp, something went wrong
             message.editMessage {
