@@ -140,6 +140,9 @@ class LorittaCinnamon(
             gatewayManager.gateways.forEach { (shardId, gateway) ->
                 scope.launch {
                     gateway.events.collect {
+                        DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
+                            .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
+                        
                         launchEventProcessorJob(
                             GatewayEventContext(
                                 it,
