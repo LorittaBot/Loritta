@@ -142,6 +142,7 @@ class LorittaCinnamon(
                     gateway.events.collect {
                         DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
                             .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
+                            .inc()
                         
                         launchEventProcessorJob(
                             GatewayEventContext(
