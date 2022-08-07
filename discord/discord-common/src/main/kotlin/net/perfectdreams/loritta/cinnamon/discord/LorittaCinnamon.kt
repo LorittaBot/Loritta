@@ -63,7 +63,7 @@ class LorittaCinnamon(
     }
 
     @OptIn(KordExperimental::class)
-    val kord = Kord.restOnly("a") {
+    val kord = Kord.restOnly(config.discord.token) {
         requestHandler {
             StackTraceRecoveringKtorRequestHandler(KtorRequestHandler(it.token))
         }
