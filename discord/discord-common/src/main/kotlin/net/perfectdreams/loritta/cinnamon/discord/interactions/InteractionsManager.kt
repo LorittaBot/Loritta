@@ -2,10 +2,10 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
-import net.perfectdreams.discordinteraktions.platforms.kord.commands.KordCommandRegistry
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonUserCommandDeclarationWrapper
@@ -28,7 +28,7 @@ import kotlin.system.exitProcess
 
 class InteractionsManager(
     private val loritta: LorittaCinnamon,
-    val interaKTionsManager: net.perfectdreams.discordinteraktions.common.commands.CommandManager
+    val interaKTions: DiscordInteraKTions
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -43,12 +43,7 @@ class InteractionsManager(
 
     val interactionsRegistry = InteractionsRegistry(
         loritta,
-        interaKTionsManager,
-        KordCommandRegistry(
-            Snowflake(discordConfig.applicationId),
-            rest,
-            interaKTionsManager
-        )
+        this
     )
 
     val languageManager = loritta.languageManager
@@ -121,33 +116,33 @@ class InteractionsManager(
         register(ActivateInviteBlockerBypassButtonClickExecutor(loritta))
 
         // Validate if we don't have more commands than Discord allows
-        if (interactionsRegistry.interaKTionsManager.applicationCommandsDeclarations.size > 100) {
-            logger.error { "Currently there are ${interactionsRegistry.interaKTionsManager.applicationCommandsDeclarations.size} root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
+        if (interaKTions.manager.applicationCommandsDeclarations.size > 100) {
+            logger.error { "Currently there are ${interaKTions.manager.applicationCommandsDeclarations.size} root commands registered, however Discord has a 100 root command limit! You need to remove some of the commands!" }
             exitProcess(1)
         }
 
-        logger.info { "Total Root Commands: ${interactionsRegistry.interaKTionsManager.applicationCommandsDeclarations.size}/100" }
+        logger.info { "Total Root Commands: ${interaKTions.manager.applicationCommandsDeclarations.size}/100" }
 
         interactionsRegistry.updateAllCommands()
     }
 
     private fun register(declarationWrapper: CinnamonSlashCommandDeclarationWrapper) {
-        interaKTionsManager.register(declarationWrapper.declaration().build(loritta))
+        interaKTions.manager.register(declarationWrapper.declaration().build(loritta))
     }
 
     private fun register(declarationWrapper: CinnamonUserCommandDeclarationWrapper) {
-        interaKTionsManager.register(declarationWrapper.declaration().build(loritta))
+        interaKTions.manager.register(declarationWrapper.declaration().build(loritta))
     }
 
     private fun register(executor: ButtonExecutor) {
-        interaKTionsManager.register(executor)
+        interaKTions.manager.register(executor)
     }
 
     private fun register(executor: SelectMenuExecutor) {
-        interaKTionsManager.register(executor)
+        interaKTions.manager.register(executor)
     }
 
     private fun register(executor: ModalExecutor) {
-        interaKTionsManager.register(executor)
+        interaKTions.manager.register(executor)
     }
 }

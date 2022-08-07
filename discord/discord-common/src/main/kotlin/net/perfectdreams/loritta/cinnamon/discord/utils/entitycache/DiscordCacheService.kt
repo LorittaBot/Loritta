@@ -71,7 +71,7 @@ class DiscordCacheService(
     /**
      * Gets role informations of the following [roleIds] in [guildId]
      */
-    suspend fun getRoles(guildId: Snowflake, roleIds: List<Snowflake>): List<DiscordRole> {
+    suspend fun getRoles(guildId: Snowflake, roleIds: Collection<Snowflake>): List<DiscordRole> {
         return pudding.transaction {
             DiscordRoles.slice(DiscordRoles.data)
                 .select {

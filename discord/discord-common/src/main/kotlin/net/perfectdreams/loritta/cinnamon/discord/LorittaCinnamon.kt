@@ -1,6 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord
 
+import dev.kord.common.annotation.KordExperimental
+import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
+import dev.kord.rest.request.KtorRequestHandler
+import dev.kord.rest.request.StackTraceRecoveringKtorRequestHandler
 import io.ktor.client.*
 import io.ktor.client.plugins.*
 import kotlinx.coroutines.*
@@ -9,7 +14,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
+import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.discord.gateway.LorittaDiscordGatewayManager
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
@@ -56,6 +61,23 @@ class LorittaCinnamon(
     companion object {
         private val logger = KotlinLogging.logger {}
     }
+
+    @OptIn(KordExperimental::class)
+    val kord = Kord.restOnly("a") {
+        requestHandler {
+            StackTraceRecoveringKtorRequestHandler(KtorRequestHandler(it.token))
+        }
+    }
+
+    val interaKTions = DiscordInteraKTions(
+        kord,
+        Snowflake(discordConfig.applicationId)
+    )
+
+    val interactionsManager = InteractionsManager(
+        this,
+        interaKTions
+    )
 
     val gabrielaImageServerClient = GabrielaImageServerClient(
         config.services.gabrielaImageServer.url,
@@ -114,11 +136,6 @@ class LorittaCinnamon(
             this.start()
         }
 
-    val interactionsManager = InteractionsManager(
-        this,
-        CommandManager()
-    )
-
     val analyticHandlers = mutableListOf<EventAnalyticsTask.AnalyticHandler>()
     val cinnamonTasks = CinnamonTasks(this)
 
@@ -142,7 +159,7 @@ class LorittaCinnamon(
                     gateway.events.collect {
                         DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
                             .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
-                        
+
                         launchEventProcessorJob(
                             GatewayEventContext(
                                 it,
@@ -215,7 +232,7 @@ class LorittaCinnamon(
     /**
      * Gets the current registered application commands count
      */
-    fun getCommandCount() = interactionsManager.interaKTionsManager.applicationCommandsExecutors.size
+    fun getCommandCount() = interactionsManager.interaKTions.manager.applicationCommandsExecutors.size
 
     /**
      * Sends the [builder] message to the [userId] via the user's direct message channel.

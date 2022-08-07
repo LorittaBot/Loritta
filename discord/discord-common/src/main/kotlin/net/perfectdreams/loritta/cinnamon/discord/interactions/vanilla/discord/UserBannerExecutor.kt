@@ -42,7 +42,7 @@ class UserBannerExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
         context.sendMessage {
             embed {
-                title = "\uD83D\uDDBC ${user.name}"
+                title = "\uD83D\uDDBC ${user.username}"
 
                 image = bannerUrl
 

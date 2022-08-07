@@ -1,18 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.commands
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
-import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
-import kotlin.reflect.KClass
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 
 /**
@@ -28,12 +26,12 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserC
     val rest = loritta.rest
     val applicationId = Snowflake(loritta.discordConfig.applicationId)
 
-    abstract suspend fun execute(context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext, targetUser: User, targetMember: InteractionMember?)
+    abstract suspend fun execute(context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext, targetUser: User, targetMember: Member?)
 
     override suspend fun execute(
         context: ApplicationCommandContext,
         targetUser: User,
-        targetMember: InteractionMember?
+        targetMember: Member?
     ) {
         val rootDeclarationClazzName = (context.applicationCommandDeclaration as CinnamonUserCommandDeclaration)
             .declarationWrapper::class
@@ -85,7 +83,7 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserC
         context: ApplicationCommandContext,
         guildId: Snowflake?,
         targetUser: User,
-        targetMember: InteractionMember?
+        targetMember: Member?
     ): CommandExecutorWrapper.CommandExecutionResult {
         // These variables are used in the catch { ... } block, to make our lives easier
         var i18nContext: I18nContext? = null

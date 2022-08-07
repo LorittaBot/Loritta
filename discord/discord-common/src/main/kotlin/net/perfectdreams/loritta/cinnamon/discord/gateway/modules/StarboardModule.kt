@@ -6,6 +6,7 @@ import dev.kord.common.entity.DiscordMessage
 import dev.kord.common.entity.MessageStickerType
 import dev.kord.common.entity.Reaction
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
 import dev.kord.gateway.MessageReactionAdd
 import dev.kord.gateway.MessageReactionRemove
 import dev.kord.gateway.MessageReactionRemoveAll
@@ -289,7 +290,7 @@ class StarboardModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModu
 
         content = "$emoji **${reaction.count}** - <#${message.channelId}>"
 
-        val embed = createStarboardEmbed(i18nContext, message, reaction)
+        val embed = createStarboardEmbed(m.kord, i18nContext, message, reaction)
 
         embed(embed)
 
@@ -310,7 +311,7 @@ class StarboardModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModu
 
         content = "$emoji **${reaction.count}** - <#${message.channelId}>"
 
-        val embed = createStarboardEmbed(i18nContext, message, reaction)
+        val embed = createStarboardEmbed(m.kord, i18nContext, message, reaction)
 
         embed(embed)
 
@@ -322,6 +323,7 @@ class StarboardModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModu
     }
 
     private fun createStarboardEmbed(
+        kord: Kord,
         i18nContext: I18nContext,
         message: DiscordMessage,
         reaction: Reaction
@@ -332,6 +334,7 @@ class StarboardModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModu
             message.author.username + "#" + message.author.discriminator + " (${message.author.id})",
             null,
             UserUtils.createUserAvatarOrDefaultUserAvatar(
+                kord,
                 message.author.id,
                 message.author.avatar,
                 message.author.discriminator

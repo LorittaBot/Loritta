@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.entity.User
 import kotlinx.serialization.Serializable
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.utils.inlineField
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.achievements.AchievementCategory
@@ -30,12 +30,12 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 
 class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
-        suspend fun createMessage(
+        fun createMessage(
             loritta: LorittaCinnamon,
             user: User,
             i18nContext: I18nContext,
             achievements: List<PuddingAchievement>,
-            category: net.perfectdreams.loritta.cinnamon.achievements.AchievementCategory?
+            category: AchievementCategory?
         ): MessageBuilder.() -> (Unit) {
             val data = ChangeCategoryData(
                 user.id,
@@ -102,7 +102,7 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                         ChangeCategoryMenuExecutor,
                         ComponentDataUtils.encode(data)
                     ) {
-                        fun insertOption(optionCategory: net.perfectdreams.loritta.cinnamon.achievements.AchievementCategory) {
+                        fun insertOption(optionCategory: AchievementCategory) {
                             val userAchievementsInCategoryCount = achievements.count { it.type.category == optionCategory }
                             val totalAchievementsInCategoryCount = net.perfectdreams.loritta.cinnamon.achievements.AchievementType.values()
                                 .count { it.category == optionCategory }
@@ -190,6 +190,6 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
     class ChangeCategoryData(
         override val userId: Snowflake,
         val page: Int,
-        val category: net.perfectdreams.loritta.cinnamon.achievements.AchievementCategory?
+        val category: AchievementCategory?
     ) : SingleUserComponentData
 }

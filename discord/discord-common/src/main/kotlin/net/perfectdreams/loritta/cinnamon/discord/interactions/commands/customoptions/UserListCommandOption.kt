@@ -3,12 +3,13 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customo
 import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
+import dev.kord.core.cache.data.UserData
+import dev.kord.core.entity.User
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
 import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionBuilder
 import net.perfectdreams.discordinteraktions.common.commands.options.InteraKTionsCommandOption
-import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordUser
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
@@ -36,6 +37,7 @@ class UserListCommandOption(
     }
 
     override fun parse(
+        kord: Kord,
         args: List<CommandArgument<*>>,
         interaction: DiscordInteraction
     ): List<User> {
@@ -52,7 +54,7 @@ class UserListCommandOption(
             ?.filterKeys { it in foundSnowflakes }
             ?.values
             ?.map {
-                KordUser(it)
+                User(UserData.from(it), kord)
             } ?: emptyList()
     }
 }

@@ -6,7 +6,6 @@ import dev.kord.common.entity.optional.value
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordChannel
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeys
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -34,7 +33,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
 
         context.deferChannelMessage()
 
-        val argumentChannelId = (args[options.channel] as KordChannel?)?.channel?.id
+        val argumentChannelId = args[options.channel]?.id
         val channel = try {
             if (argumentChannelId != null)
                 rest.channel.getChannel(argumentChannelId) // Channels not retrieved from the REST API only has a few fields, so we will query them from the REST API!

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker
 
-import net.perfectdreams.discordinteraktions.common.entities.User
+import dev.kord.core.entity.User
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.BarebonesSingleUserComponentData

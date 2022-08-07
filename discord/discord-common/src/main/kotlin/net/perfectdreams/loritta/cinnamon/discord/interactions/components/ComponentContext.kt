@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.components
 
+import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes

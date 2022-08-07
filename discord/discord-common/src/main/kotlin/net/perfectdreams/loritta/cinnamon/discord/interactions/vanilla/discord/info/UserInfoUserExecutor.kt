@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.info
 
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import io.ktor.client.*
-import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonUserCommandExecutor
@@ -11,7 +11,7 @@ class UserInfoUserExecutor(loritta: LorittaCinnamon, override val http: HttpClie
     override suspend fun execute(
         context: ApplicationCommandContext,
         targetUser: User,
-        targetMember: InteractionMember?
+        targetMember: Member?
     ) {
         handleUserExecutor(
             context,

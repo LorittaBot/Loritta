@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import java.util.*
 
@@ -55,8 +56,8 @@ class SadRealityExecutor(
             user1FromArguments?.let {
                 SadRealityUser(
                     it.id,
-                    "${it.name}#${it.discriminator}",
-                    it.avatar.cdnUrl.toUrl {
+                    "${it.username}#${it.discriminator}",
+                    it.effectiveAvatar.cdnUrl.toUrl {
                         this.size = Image.Size.Size128
                         this.format = Image.Format.PNG
                     }
@@ -65,8 +66,8 @@ class SadRealityExecutor(
             user2FromArguments?.let {
                 SadRealityUser(
                     it.id,
-                    "${it.name}#${it.discriminator}",
-                    it.avatar.cdnUrl.toUrl {
+                    "${it.username}#${it.discriminator}",
+                    it.effectiveAvatar.cdnUrl.toUrl {
                         this.size = Image.Size.Size128
                         this.format = Image.Format.PNG
                     }
@@ -75,8 +76,8 @@ class SadRealityExecutor(
             user3FromArguments?.let {
                 SadRealityUser(
                     it.id,
-                    "${it.name}#${it.discriminator}",
-                    it.avatar.cdnUrl.toUrl {
+                    "${it.username}#${it.discriminator}",
+                    it.effectiveAvatar.cdnUrl.toUrl {
                         this.size = Image.Size.Size128
                         this.format = Image.Format.PNG
                     }
@@ -85,8 +86,8 @@ class SadRealityExecutor(
             user4FromArguments?.let {
                 SadRealityUser(
                     it.id,
-                    "${it.name}#${it.discriminator}",
-                    it.avatar.cdnUrl.toUrl {
+                    "${it.username}#${it.discriminator}",
+                    it.effectiveAvatar.cdnUrl.toUrl {
                         this.size = Image.Size.Size128
                         this.format = Image.Format.PNG
                     }
@@ -95,8 +96,8 @@ class SadRealityExecutor(
             user5FromArguments?.let {
                 SadRealityUser(
                     it.id,
-                    "${it.name}#${it.discriminator}",
-                    it.avatar.cdnUrl.toUrl {
+                    "${it.username}#${it.discriminator}",
+                    it.effectiveAvatar.cdnUrl.toUrl {
                         this.size = Image.Size.Size128
                         this.format = Image.Format.PNG
                     }
@@ -105,8 +106,8 @@ class SadRealityExecutor(
             user6FromArguments?.let {
                 SadRealityUser(
                     it.id,
-                    "${it.name}#${it.discriminator}",
-                    it.avatar.cdnUrl.toUrl {
+                    "${it.username}#${it.discriminator}",
+                    it.effectiveAvatar.cdnUrl.toUrl {
                         this.size = Image.Size.Size128
                         this.format = Image.Format.PNG
                     }
@@ -142,6 +143,7 @@ class SadRealityExecutor(
                             it.id,
                             "${it.username}#${it.discriminator}",
                             UserUtils.createUserAvatarOrDefaultUserAvatar(
+                                loritta.interaKTions.kord,
                                 it.id,
                                 it.avatar,
                                 it.discriminator
@@ -163,6 +165,7 @@ class SadRealityExecutor(
                             it.id,
                             "${it.username}#${it.discriminator}",
                             UserUtils.createUserAvatarOrDefaultUserAvatar(
+                                loritta.interaKTions.kord,
                                 it.id,
                                 it.avatar,
                                 it.discriminator

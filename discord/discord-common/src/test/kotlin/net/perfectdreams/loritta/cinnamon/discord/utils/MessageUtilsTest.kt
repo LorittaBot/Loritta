@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 import dev.kord.common.entity.DiscordEmoji
 import dev.kord.common.entity.DiscordUser
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.UserTokenSource
 import org.junit.jupiter.api.Test
 
@@ -15,6 +16,7 @@ class MessageUtilsTest {
             input,
             listOf(
                 UserTokenSource(
+                    Kord.restOnly(Constants.FAKE_TOKEN),
                     DiscordUser(
                         Snowflake(123170274651668480L),
                         "MrPowerGamerBR",

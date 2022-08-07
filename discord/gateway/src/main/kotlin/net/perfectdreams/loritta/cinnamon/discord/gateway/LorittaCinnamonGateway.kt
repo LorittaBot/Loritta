@@ -51,11 +51,7 @@ class LorittaCinnamonGateway(
         runBlocking {
             for ((shardId, gateway) in gateways) {
                 logger.info { "Setting up and starting shard $shardId..." }
-                gateway.installDiscordInteraKTions(
-                    Snowflake(config.cinnamon.discord.applicationId),
-                    cinnamon.rest,
-                    cinnamon.interactionsManager.interactionsRegistry.interaKTionsManager
-                )
+                gateway.installDiscordInteraKTions(cinnamon.interaKTions)
 
                 scope.launch {
                     gateway.start(config.cinnamon.discord.token) {

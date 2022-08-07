@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.inviteblocker
 
 import dev.kord.common.entity.ButtonStyle
+import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.utils.LorittaPermission
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -27,7 +27,7 @@ class ActivateInviteBlockerBypassButtonClickExecutor(loritta: LorittaCinnamon) :
         context.deferUpdateMessage()
         val (_, roleId) = context.decodeDataFromComponentOrFromDatabaseAndRequireUserToMatch<ActivateInviteBlockerData>()
 
-        if (roleId !in context.member.roles)
+        if (roleId !in context.member.roleIds)
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(I18nKeysData.Modules.InviteBlocker.YouDontHaveTheRoleAnymore("<@&$roleId>")),

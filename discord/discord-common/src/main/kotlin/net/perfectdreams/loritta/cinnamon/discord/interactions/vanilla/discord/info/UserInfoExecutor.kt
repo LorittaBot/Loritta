@@ -6,6 +6,8 @@ import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.UserFlag
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -19,9 +21,6 @@ import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import net.perfectdreams.discordinteraktions.common.entities.InteractionMember
-import net.perfectdreams.discordinteraktions.common.entities.Member
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
@@ -53,7 +52,7 @@ interface UserInfoExecutor {
     ) {
         val now = Clock.System.now()
 
-        val flags = user.publicFlags
+        val flags = user.publicFlags?.flags ?: emptyList()
         val flagsToEmotes = flags.mapNotNull {
             when (it) {
                 UserFlag.DiscordEmployee -> Emotes.DiscordEmployee
@@ -74,10 +73,10 @@ interface UserInfoExecutor {
         }
 
         // Discord's System User (643945264868098049) does not have the "System" flag, so we will add a special handling for it
-        val isSystemUser = UserFlag.System in flags || (user.name == "Discord" && user.discriminator == "0000")
+        val isSystemUser = UserFlag.System in flags || (user.username == "Discord" && user.discriminator == "0000")
 
         // Get application information
-        val applicationInfo = if (user.bot && !isSystemUser) {
+        val applicationInfo = if (user.isBot && !isSystemUser) {
             // It looks like system user do not have an application bound to it, so we will just ignore it
             getApplicationInfo(user.id)
         } else null
@@ -85,7 +84,7 @@ interface UserInfoExecutor {
         val roles = if (context is GuildApplicationCommandContext && member != null)
             context.loritta.cache.getRoles(
                 context.guildId,
-                member.roles
+                member.roleIds
             )
         else null
 
@@ -97,7 +96,7 @@ interface UserInfoExecutor {
             embed {
                 author(context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InfoAboutTheUser))
                 title = buildString {
-                    if (user.bot) {
+                    if (user.isBot) {
                         append(
                             when {
                                 isSystemUser -> Emotes.VerifiedSystemTag
@@ -116,15 +115,15 @@ interface UserInfoExecutor {
 
                     append(" ")
 
-                    append(user.name)
+                    append(user.username)
                 }
                 url = "https://discord.com/users/${user.id}"
 
                 field("\uD83D\uDCBB ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordId)}", "`${user.id}`", true)
-                field("\uD83C\uDFF7️ ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordTag)}", "`${user.name}#${user.discriminator}`", true)
+                field("\uD83C\uDFF7️ ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordTag)}", "`${user.username}#${user.discriminator}`", true)
                 field("\uD83D\uDCC5 ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.AccountCreationDate)}", "<t:${user.id.timestamp.epochSeconds}:f> (<t:${user.id.timestamp.epochSeconds}:R>)", true)
 
-                thumbnailUrl = user.avatar.cdnUrl.toUrl()
+                thumbnailUrl = user.avatar?.cdnUrl?.toUrl()
                 color = LorittaColors.DiscordBlurple.toKordColor()
             }
 
@@ -133,7 +132,7 @@ interface UserInfoExecutor {
 
                 embed {
                     author(context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InfoAboutTheMember))
-                    title = member.nick ?: user.name
+                    title = member.nickname ?: user.username
 
                     field(
                         "\uD83D\uDCC5 ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.AccountJoinDate)}",
@@ -177,17 +176,17 @@ interface UserInfoExecutor {
 
                     field(
                         "${Emotes.LoriZap} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InterestingTidbits)}",
-                        """${fancify(!member.pending)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.CompletedMembershipScreening)}
+                        """${fancify(!member.isPending)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.CompletedMembershipScreening)}
                                 |${fancify(communicationDisabledUntil != null && communicationDisabledUntil >= Clock.System.now())} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.IsTimedOut)}
                             """.trimMargin(),
                         false
                     )
 
-                    thumbnailUrl = (member.avatar ?: user.avatar).cdnUrl.toUrl()
+                    thumbnailUrl = (member.avatar ?: user.avatar)?.cdnUrl?.toUrl()
                 }
             }
 
-            if (user.bot && !isSystemUser) {
+            if (user.isBot && !isSystemUser) {
                 embed {
                     author(context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InfoAboutTheApplication))
 
@@ -268,10 +267,10 @@ interface UserInfoExecutor {
                 val globalInteractionId = loritta.services.interactionsData.insertInteractionData(
                     Json.encodeToJsonElement<UserDataUtils.ViewingUserAvatarData>(
                         UserDataUtils.ViewingGlobalUserAvatarData(
-                            user.name,
+                            user.username,
                             user.discriminator.toInt(),
-                            user.avatarHash,
-                            member?.avatarHash
+                            user.data.avatar,
+                            member?.memberData?.avatar?.value
                         )
                     ).jsonObject,
                     now,
@@ -295,14 +294,14 @@ interface UserInfoExecutor {
                 }
 
                 // ===[ GUILD AVATAR ]===
-                val guildAvatarHash = member?.avatarHash
+                val guildAvatarHash = member?.memberData?.avatar?.value
                 if (guildAvatarHash != null) {
                     val localInteractionId = loritta.services.interactionsData.insertInteractionData(
                         Json.encodeToJsonElement<UserDataUtils.ViewingUserAvatarData>(
                             UserDataUtils.ViewingGuildProfileUserAvatarData(
-                                user.name,
+                                user.username,
                                 user.discriminator.toInt(),
-                                user.avatarHash,
+                                user.data.avatar,
                                 guildAvatarHash
                             )
                         ).jsonObject,
@@ -328,13 +327,13 @@ interface UserInfoExecutor {
                 }
             }
 
-            if (member != null && member is InteractionMember) {
+            if (member != null) {
                 actionRow {
                     val memberPermissionsInteractionId = loritta.services.interactionsData.insertInteractionData(
                         Json.encodeToJsonElement(
                             GuildMemberPermissionsData(
-                                member.roles,
-                                member.permissions,
+                                member.roleIds,
+                                member.getPermissions(), // TODO: FIX THIS! GET THE PERMISSIONS FROM THE INTERACTION THEMSELVES!! However Kord Core doesn't expose this field... yet
                                 topRoleForColor?.color
                             )
                         ).jsonObject,

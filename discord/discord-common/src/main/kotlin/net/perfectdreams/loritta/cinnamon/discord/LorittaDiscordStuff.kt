@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord
 
 import dev.kord.common.annotation.KordUnsafe
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.entity.User
 import dev.kord.rest.ratelimit.ParallelRequestRateLimiter
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.request.KtorRequestHandler
@@ -12,7 +13,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.loritta.cinnamon.discord.utils.BetterSTRecoveringKtorRequestHandler
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
@@ -78,9 +78,9 @@ abstract class LorittaDiscordStuff(
     suspend fun insertOrUpdateCachedUserInfo(user: User) {
         services.users.insertOrUpdateCachedUserInfo(
             UserId(user.id.value),
-            user.name,
+            user.username,
             user.discriminator,
-            user.avatarHash
+            user.data.avatar
         )
     }
 

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox
 
-import net.perfectdreams.discordinteraktions.common.entities.User
+import dev.kord.core.entity.User
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds

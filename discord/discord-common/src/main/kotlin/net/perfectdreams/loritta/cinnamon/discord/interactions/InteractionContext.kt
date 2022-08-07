@@ -1,12 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.perfectdreams.discordinteraktions.common.InteractionContext
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId

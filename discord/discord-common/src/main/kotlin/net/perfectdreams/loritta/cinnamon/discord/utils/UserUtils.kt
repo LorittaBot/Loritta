@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
+import dev.kord.core.entity.Icon
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.json.request.DMCreateRequest
 import dev.kord.rest.json.request.MultipartMessageCreateRequest
@@ -9,7 +11,6 @@ import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
@@ -29,7 +30,7 @@ object UserUtils {
      * @param avatar        the user's avatar hash
      * @param discriminator the user's discriminator
      */
-    fun createUserAvatarOrDefaultUserAvatar(userId: Snowflake, avatar: String?, discriminator: String) = createUserAvatarOrDefaultUserAvatar(userId, avatar, discriminator.toInt())
+    fun createUserAvatarOrDefaultUserAvatar(kord: Kord, userId: Snowflake, avatar: String?, discriminator: String) = createUserAvatarOrDefaultUserAvatar(kord, userId, avatar, discriminator.toInt())
 
     /**
      * Creates a [Icon.UserAvatar] from the [userId] and [avatar]. If the [avatar] is null, a [Icon.DefaultUserAvatar] is created based on the [discriminator].
@@ -38,13 +39,14 @@ object UserUtils {
      * @param avatar        the user's avatar hash
      * @param discriminator the user's discriminator
      */
-    fun createUserAvatarOrDefaultUserAvatar(userId: Snowflake, avatar: String?, discriminator: Int) = if (avatar != null) {
+    fun createUserAvatarOrDefaultUserAvatar(kord: Kord, userId: Snowflake, avatar: String?, discriminator: Int) = if (avatar != null) {
         Icon.UserAvatar(
             userId,
-            avatar
+            avatar,
+            kord
         )
     } else {
-        Icon.DefaultUserAvatar(discriminator)
+        Icon.DefaultUserAvatar(discriminator, kord)
     }
 
     /**

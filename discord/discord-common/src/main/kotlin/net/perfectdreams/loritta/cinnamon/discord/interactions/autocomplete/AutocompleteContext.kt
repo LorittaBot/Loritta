@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete
 
 import dev.kord.common.entity.CommandArgument
+import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteContext
 import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 

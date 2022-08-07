@@ -20,9 +20,9 @@ object ContextStringToUserInfoConverter {
             val user = context.interaKTionsContext.interactionData.resolved?.users?.get(Snowflake(userId)) ?: return null // If there isn't any matching user, then return null
             return CachedUserInfo(
                 UserId(user.id.value),
-                user.name,
+                user.username,
                 user.discriminator,
-                user.avatarHash
+                user.data.avatar
             )
         }
 

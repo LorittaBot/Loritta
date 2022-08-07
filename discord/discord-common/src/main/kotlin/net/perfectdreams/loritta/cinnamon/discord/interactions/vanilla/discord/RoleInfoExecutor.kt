@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord
 
 import dev.kord.common.Color
+import dev.kord.rest.Image
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.discordinteraktions.platforms.kord.entities.KordRole
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
@@ -29,25 +29,25 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
                 content = context.i18nContext.get(I18nKeysData.Commands.CommandOnlyAvailableInGuilds)
             }
 
-        val role = args[options.role] as KordRole
+        val role = args[options.role]
 
-        val extension = if (role.handle.icon.value?.startsWith("a_") == true) "gif" else "png"
-        val iconUrl = "https://cdn.discordapp.com/role-icons/${role.id}/${role.handle.icon.value}.$extension?size=2048"
+        val iconUrl = role.icon?.cdnUrl?.toUrl {
+            this.size = Image.Size.Size2048
+        }
 
         // If the color is not 0, then it means that it has a color set!
-        val hasColor = role.color != 0
+        val hasColor = role.data.color != 0
 
         context.sendMessage {
             embed {
                 title = "${Emotes.BriefCase.asMention} ${role.name}"
                 color = if (hasColor)
-                    Color(role.color)
+                    Color(role.data.color)
                 else
                     Color(114, 137, 218) // TODO: Move this to an object
 
-                if (role.handle.icon.value != null)
+                if (role.icon != null)
                     thumbnailUrl = iconUrl
-
 
                 field {
                     name = "${Emotes.Eyes} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Mention)
@@ -65,7 +65,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
 
                 field {
                     name = "${Emotes.Eyes} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Hoisted)
-                    value = context.i18nContext.get(role.hoist.toLocalized())
+                    value = context.i18nContext.get(role.hoisted.toLocalized())
 
                     inline = true
                 }
@@ -87,7 +87,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
                 if (hasColor) {
                     field {
                         name = "${Emotes.Art} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Color)
-                        value = "`#${Integer.toHexString(role.color).uppercase()}`"
+                        value = "`#${Integer.toHexString(role.data.color).uppercase()}`"
 
                         inline = true
                     }
@@ -111,7 +111,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
                 }
             }
 
-            if (role.handle.icon.value != null)
+            if (iconUrl != null)
                 actionRow {
                     linkButton(iconUrl) {
                         label = context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.OpenRoleIconInBrowser)

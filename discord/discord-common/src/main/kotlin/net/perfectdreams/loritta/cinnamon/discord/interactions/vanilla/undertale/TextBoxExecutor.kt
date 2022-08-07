@@ -1,13 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale
 
 import dev.kord.common.entity.ButtonStyle
+import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.TobyTextBoxRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData

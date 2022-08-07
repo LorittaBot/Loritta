@@ -4,6 +4,7 @@ import dev.kord.common.Color
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.DiscordGuildMember
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.entity.Icon
 import dev.kord.rest.Image
 import dev.kord.rest.json.JsonErrorCode
 import dev.kord.rest.request.KtorRequestException
@@ -16,7 +17,6 @@ import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import net.perfectdreams.discordinteraktions.common.entities.Icon
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -100,12 +100,14 @@ object UserDataUtils {
                 userAvatar = Icon.MemberAvatar(
                     interactionData.guildId!!,
                     userId,
-                    data.memberAvatarId
+                    data.memberAvatarId,
+                    loritta.interaKTions.kord
                 )
             }
             is ViewingGlobalUserAvatarData -> {
                 avatarHash = data.userAvatarId
                 userAvatar = UserUtils.createUserAvatarOrDefaultUserAvatar(
+                    loritta.interaKTions.kord,
                     interactionData.viewingAvatarOfId,
                     avatarHash,
                     userDiscriminator
@@ -158,11 +160,14 @@ object UserDataUtils {
 
                 color = Color(114, 137, 218) // TODO: Move this to an object
 
-                val imageUrl = userAvatar.cdnUrl.toUrl {
-                    // Images that start with "a_" means that are an animated image
-                    this.format = if (avatarHash?.startsWith("a_") == true) Image.Format.GIF else Image.Format.PNG
-                    this.size = Image.Size.Size2048
+                // This should NEVER be null at this point!
+                val imageUrl = userAvatar.let {
+                    it.cdnUrl.toUrl {
+                        this.format = userAvatar.format
+                        this.size = Image.Size.Size2048
+                    }
                 }
+
                 image = imageUrl
 
                 actionRow {

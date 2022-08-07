@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.commands
 
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.entities.Member
-import net.perfectdreams.discordinteraktions.common.entities.User
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 

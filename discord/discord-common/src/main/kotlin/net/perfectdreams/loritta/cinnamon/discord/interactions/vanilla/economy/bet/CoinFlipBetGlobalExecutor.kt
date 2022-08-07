@@ -143,7 +143,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                         )
 
                         val otherUserContext = BarebonesInteractionContext(
-                            context.loritta.rest,
+                            context.loritta.interaKTions.kord,
                             context.interaKTionsContext.discordInteraction.applicationId, // Should be always the same app ID
                             result.userInteractionToken
                         )
@@ -152,7 +152,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                     }
                     is BetsService.AnotherUserRemovedFromMatchmakingQueueResult -> {
                         val otherUserContext = BarebonesInteractionContext(
-                            context.loritta.rest,
+                            context.loritta.interaKTions.kord,
                             context.interaKTionsContext.discordInteraction.applicationId, // Should be always the same app ID
                             result.userInteractionToken
                         )
@@ -205,7 +205,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                     }
                     is BetsService.OtherUserAchievementResult -> {
                         val otherUserContext = BarebonesInteractionContext(
-                            context.loritta.rest,
+                            context.loritta.interaKTions.kord,
                             context.interaKTionsContext.discordInteraction.applicationId, // Should be always the same app ID
                             result.userInteractionToken
                         )

@@ -5,7 +5,7 @@ import dev.kord.common.entity.Snowflake
 
 @kotlinx.serialization.Serializable
 data class GuildMemberPermissionsData(
-    val roles: List<Snowflake>,
+    val roles: Collection<Snowflake>,
     val permissions: Permissions,
     val color: Int?
 )

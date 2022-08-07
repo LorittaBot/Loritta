@@ -61,9 +61,7 @@ class LorittaCinnamonWebServer(
         }
 
         val interactionsServer = InteractionsServer(
-            cinnamon.interactionsManager.interaKTionsManager,
-            cinnamon.rest,
-            config.cinnamon.discord.applicationId,
+            cinnamon.interaKTions,
             config.httpInteractions.publicKey
         )
 

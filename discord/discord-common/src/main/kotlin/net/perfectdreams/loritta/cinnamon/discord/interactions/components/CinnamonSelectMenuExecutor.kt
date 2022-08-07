@@ -1,13 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.components
 
+import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon

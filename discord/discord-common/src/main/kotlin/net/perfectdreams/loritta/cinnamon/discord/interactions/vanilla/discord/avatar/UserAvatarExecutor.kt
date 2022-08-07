@@ -1,13 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.entity.Member
+import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
-import net.perfectdreams.discordinteraktions.common.entities.Member
-import net.perfectdreams.discordinteraktions.common.entities.User
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import kotlin.time.Duration.Companion.minutes
@@ -23,10 +22,10 @@ interface UserAvatarExecutor {
         val now = Clock.System.now()
 
         val data = UserDataUtils.ViewingGlobalUserAvatarData(
-            user.name,
+            user.username,
             user.discriminator.toInt(),
-            user.avatarHash,
-            member?.avatarHash
+            user.data.avatar,
+            member?.memberData?.avatar?.value
         )
 
         val id = context.loritta.services.interactionsData.insertInteractionData(

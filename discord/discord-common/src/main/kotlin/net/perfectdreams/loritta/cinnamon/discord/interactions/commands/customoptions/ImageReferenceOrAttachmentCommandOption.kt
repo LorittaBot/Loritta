@@ -4,6 +4,7 @@ import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
 import dev.kord.rest.Image
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.attachment
@@ -25,11 +26,11 @@ data class ImageReferenceOrAttachmentIntermediaryData(
     val attachmentValue: DiscordAttachment?,
     val required: Boolean
 ) {
-    suspend fun get(context: ApplicationCommandContext): net.perfectdreams.loritta.cinnamon.images.URLImageReference? {
+    suspend fun get(context: ApplicationCommandContext): URLImageReference? {
         // Attachments take priority
         if (attachmentValue != null) {
             if (attachmentValue.contentType.value in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES)
-                return net.perfectdreams.loritta.cinnamon.images.URLImageReference(attachmentValue.url)
+                return URLImageReference(attachmentValue.url)
 
             // This ain't an image dawg! Because the user explicitly provided the image, then let's fail
             context.fail(
@@ -46,12 +47,13 @@ data class ImageReferenceOrAttachmentIntermediaryData(
 
             if (cachedUserInfo != null) {
                 val icon = UserUtils.createUserAvatarOrDefaultUserAvatar(
+                    context.loritta.interaKTions.kord,
                     Snowflake(cachedUserInfo.id.value),
                     cachedUserInfo.avatarId,
                     cachedUserInfo.discriminator
                 )
 
-                return net.perfectdreams.loritta.cinnamon.images.URLImageReference(icon.cdnUrl.toUrl {
+                return URLImageReference(icon.cdnUrl.toUrl {
                     this.format = Image.Format.PNG
                     this.size = Image.Size.Size128
                 })
@@ -60,19 +62,19 @@ data class ImageReferenceOrAttachmentIntermediaryData(
             if (dataValue.startsWith("http")) {
                 // It is a URL!
                 // TODO: Use a RegEx to check if it is a valid URL
-                return net.perfectdreams.loritta.cinnamon.images.URLImageReference(dataValue)
+                return URLImageReference(dataValue)
             }
 
             // It is a emote!
             // Discord emotes always starts with "<" and ends with ">"
             return if (dataValue.startsWith("<") && dataValue.endsWith(">")) {
                 val emoteId = dataValue.substringAfterLast(":").substringBefore(">")
-                net.perfectdreams.loritta.cinnamon.images.URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
+                URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
             } else {
                 // If not, we are going to handle it as if it were a Unicode emoji
                 val emoteId = dataValue.codePoints().toList()
                     .joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
-                net.perfectdreams.loritta.cinnamon.images.URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
+                URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
             }
         }
 
@@ -95,7 +97,7 @@ data class ImageReferenceOrAttachmentIntermediaryData(
 
             if (attachmentUrl != null) {
                 // Found a valid URL, let's go!
-                return net.perfectdreams.loritta.cinnamon.images.URLImageReference(attachmentUrl)
+                return URLImageReference(attachmentUrl)
             }
         } catch (e: Exception) {
             // TODO: Catch the "permission required" exception and show a nice message
@@ -128,6 +130,7 @@ class ImageReferenceOrAttachmentOption(
     }
 
     override fun parse(
+        kord: Kord,
         args: List<CommandArgument<*>>,
         interaction: DiscordInteraction
     ): ImageReferenceOrAttachmentIntermediaryData {

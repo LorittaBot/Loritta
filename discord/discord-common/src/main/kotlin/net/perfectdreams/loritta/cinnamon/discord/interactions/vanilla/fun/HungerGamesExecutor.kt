@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import org.jsoup.Jsoup
 
 class HungerGamesExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
@@ -57,7 +58,7 @@ class HungerGamesExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
             "$hungerGamesUrl/personalize-24.php",
             formData {
                 append("seasonname", guild.name)
-                append("logourl", if (guild.icon != null) urlIcon else context.user.avatar.cdnUrl.toUrl {
+                append("logourl", if (guild.icon != null) urlIcon else context.user.effectiveAvatar.cdnUrl.toUrl {
                     this.size = Image.Size.Size128
                     this.format = Image.Format.PNG
                 })
@@ -66,9 +67,9 @@ class HungerGamesExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                 for ((index, user) in users.withIndex()) {
                     val numberWithPadding = (index + 1).toString().padStart(2, '0')
 
-                    append("cusTribute$numberWithPadding", user.name)
+                    append("cusTribute$numberWithPadding", user.username)
 
-                    append("cusTribute${numberWithPadding}img", user.avatar.cdnUrl.toUrl {
+                    append("cusTribute${numberWithPadding}img", context.user.effectiveAvatar.cdnUrl.toUrl {
                         this.size = Image.Size.Size128
                         this.format = Image.Format.PNG
                     })
@@ -85,7 +86,7 @@ class HungerGamesExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
 
                     append("cusTribute${numberWithPadding}custom", "000")
 
-                    append("cusTribute${numberWithPadding}nickname", user.name)
+                    append("cusTribute${numberWithPadding}nickname", user.username)
 
                     append("cusTribute${numberWithPadding}imgBW", "BW")
                 }

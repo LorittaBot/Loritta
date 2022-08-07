@@ -2,33 +2,28 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
-import net.perfectdreams.discordinteraktions.common.commands.CommandManager
-import net.perfectdreams.discordinteraktions.common.commands.CommandRegistry
 import net.perfectdreams.discordinteraktions.common.commands.options.NameableCommandOption
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 
 class InteractionsRegistry(
     val loritta: LorittaCinnamon,
-    val interaKTionsManager: CommandManager,
-    val interaKTionsRegistry: CommandRegistry
+    val manager: InteractionsManager
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    fun register(declaration: Any, vararg executors: Any) {}
-
     suspend fun updateAllCommands() {
         if (loritta.config.interactions.registerGlobally) {
-            interaKTionsRegistry.updateAllGlobalCommands()
+            manager.interaKTions.updateAllGlobalCommands()
         } else {
             for (guildId in loritta.config.interactions.guildsToBeRegistered) {
-                interaKTionsRegistry.updateAllCommandsInGuild(Snowflake(guildId))
+                manager.interaKTions.updateAllCommandsInGuild(Snowflake(guildId))
             }
         }
 
         logger.info { "Command Character Usage:" }
-        interaKTionsManager.applicationCommandsDeclarations
+        manager.interaKTions.manager.applicationCommandsDeclarations
             .filterIsInstance<net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration>()
             .forEach {
                 var sum = 0

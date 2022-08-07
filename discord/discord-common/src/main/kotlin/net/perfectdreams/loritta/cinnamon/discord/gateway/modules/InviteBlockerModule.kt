@@ -264,8 +264,8 @@ class InviteBlockerModule(val m: LorittaCinnamon) : ProcessDiscordEventsModule()
                             guildId,
                             warnMessage,
                             listOf(
-                                UserTokenSource(author),
-                                MemberTokenSource(author, member)
+                                UserTokenSource(m.kord, author),
+                                MemberTokenSource(m.kord, author, member)
                             ),
                             emptyMap()
                         )

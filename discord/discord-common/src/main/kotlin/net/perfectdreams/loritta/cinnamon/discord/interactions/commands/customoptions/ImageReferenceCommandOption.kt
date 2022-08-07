@@ -4,6 +4,7 @@ import dev.kord.common.Locale
 import dev.kord.common.entity.CommandArgument
 import dev.kord.common.entity.DiscordInteraction
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
 import dev.kord.rest.Image
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
@@ -22,7 +23,7 @@ import kotlin.streams.toList
 // ===[ OPTION ]===
 @JvmInline
 value class ImageReferenceIntermediaryData(val value: String) {
-    suspend fun get(context: ApplicationCommandContext): net.perfectdreams.loritta.cinnamon.images.URLImageReference {
+    suspend fun get(context: ApplicationCommandContext): URLImageReference {
         // Now check if it is a valid thing!
         // First, we will try matching via user mentions or user IDs
         val cachedUserInfo = ContextStringToUserInfoConverter.convert(
@@ -32,12 +33,13 @@ value class ImageReferenceIntermediaryData(val value: String) {
 
         if (cachedUserInfo != null) {
             val icon = UserUtils.createUserAvatarOrDefaultUserAvatar(
+                context.loritta.interaKTions.kord,
                 Snowflake(cachedUserInfo.id.value),
                 cachedUserInfo.avatarId,
                 cachedUserInfo.discriminator
             )
 
-            return net.perfectdreams.loritta.cinnamon.images.URLImageReference(icon.cdnUrl.toUrl {
+            return URLImageReference(icon.cdnUrl.toUrl {
                 this.format = Image.Format.PNG
                 this.size = Image.Size.Size128
             })
@@ -46,19 +48,19 @@ value class ImageReferenceIntermediaryData(val value: String) {
         if (value.startsWith("http")) {
             // It is a URL!
             // TODO: Use a RegEx to check if it is a valid URL
-            return net.perfectdreams.loritta.cinnamon.images.URLImageReference(value)
+            return URLImageReference(value)
         }
 
         // It is a emote!
         // Discord emotes always starts with "<" and ends with ">"
         return if (value.startsWith("<") && value.endsWith(">")) {
             val emoteId = value.substringAfterLast(":").substringBefore(">")
-            net.perfectdreams.loritta.cinnamon.images.URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
+            URLImageReference("https://cdn.discordapp.com/emojis/${emoteId}.png?v=1")
         } else {
             // If not, we are going to handle it as if it were a Unicode emoji
             val emoteId = value.codePoints().toList()
                 .joinToString(separator = "-") { String.format("\\u%04x", it).substring(2) }
-            net.perfectdreams.loritta.cinnamon.images.URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
+            URLImageReference("https://twemoji.maxcdn.com/2/72x72/$emoteId.png")
         }
     }
 }
@@ -80,6 +82,7 @@ class ImageReferenceCommandOption(
     }
 
     override fun parse(
+        kord: Kord,
         args: List<CommandArgument<*>>,
         interaction: DiscordInteraction
     ): ImageReferenceIntermediaryData {

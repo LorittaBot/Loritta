@@ -2,14 +2,11 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options
 
 import dev.kord.common.Locale
 import dev.kord.common.entity.ChannelType
-import dev.kord.common.entity.CommandArgument
-import dev.kord.common.entity.DiscordInteraction
-import dev.kord.rest.builder.interaction.BaseInputChatBuilder
+import dev.kord.core.entity.Role
+import dev.kord.core.entity.User
+import dev.kord.core.entity.channel.Channel
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteHandler
 import net.perfectdreams.discordinteraktions.common.commands.options.*
-import net.perfectdreams.discordinteraktions.common.entities.Channel
-import net.perfectdreams.discordinteraktions.common.entities.Role
-import net.perfectdreams.discordinteraktions.common.entities.User
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
