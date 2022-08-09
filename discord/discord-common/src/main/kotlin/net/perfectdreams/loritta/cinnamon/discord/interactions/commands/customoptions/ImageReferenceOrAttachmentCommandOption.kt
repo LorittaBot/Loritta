@@ -135,11 +135,11 @@ class ImageReferenceOrAttachmentOption(
         interaction: DiscordInteraction
     ): ImageReferenceOrAttachmentIntermediaryData {
         val dataValue = args.firstOrNull { it.name == name + "_data" }?.value as String?
-        val attachmentValue = args.firstOrNull { it.name == name + "_attachment" }?.value as DiscordAttachment?
+        val attachmentValue = args.firstOrNull { it.name == name + "_attachment" }?.value as Snowflake?
 
         return ImageReferenceOrAttachmentIntermediaryData(
             dataValue,
-            attachmentValue,
+            attachmentValue.let { interaction.data.resolved.value?.attachments?.value?.get(it) },
             required
         )
     }
