@@ -291,56 +291,6 @@ class LorittaWebsite(val loritta: Loritta) {
 					route.register(this)
 					logger.info { "Registered ${route.getMethod().value} ${route.path} (${route::class.simpleName})" }
 				}
-
-				webSocket("/api/v1/loritta/gateway/events") {
-					val result = RequiresAPIAuthenticationRoute.validate(call)
-
-					if (result) {
-						logger.info { "Someone connected to our gateway event relayer! ${this.call.request.userAgent()}" }
-
-						val channel = Channel<String>()
-						val gatewayProxyConnection = GatewayProxyConnection(this, channel)
-						loritta.connectedChannels.add(gatewayProxyConnection)
-						logger.info { "Connected channels: ${loritta.connectedChannels}" }
-
-						try {
-							val sender = launch {
-								for (event in channel) {
-									send(Frame.Text(event))
-								}
-							}
-							val relayer = launch {
-								for (event in incoming) {
-									when (event) {
-										is Frame.Text -> {
-											val eventAsString = event.readText()
-											val eventAsJson = Json.parseToJsonElement(eventAsString)
-												.jsonObject
-
-											val shardId = eventAsJson["shardId"]?.jsonPrimitive?.int ?: error("Missing shardId field!")
-											val event = eventAsJson["event"]?.jsonObject ?: error("Missing event field!")
-
-											val jdaShard = lorittaShards.shardManager.getShardById(shardId) as JDAImpl? ?: error("Unknown Shard $shardId!")
-											jdaShard.client.send(DataObject.fromJson(event.toString()))
-										}
-										else -> {}
-									}
-								}
-							}
-
-							sender.join()
-							relayer.join()
-						} catch (e: Exception) {
-							// Maybe the client disconnected?
-							// java.util.concurrent.CancellationException: ArrayChannel was cancelled
-							logger.warn(e) { "Something went wrong while sending data to the connected channel!" }
-						} finally {
-							logger.info { "Shutting down ${gatewayProxyConnection}'s connection" }
-							loritta.connectedChannels.remove(gatewayProxyConnection)
-							gatewayProxyConnection.close()
-						}
-					}
-				}
 			}
 
 			this.environment.monitor.subscribe(Routing.RoutingCallStarted) { call: RoutingApplicationCall ->

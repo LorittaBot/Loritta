@@ -8,6 +8,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
 import kotlinx.coroutines.debug.DebugProbes
+import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
 import net.perfectdreams.loritta.utils.readConfigurationFromFile
 import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
 import org.jetbrains.exposed.sql.Database
@@ -73,8 +74,15 @@ object LorittaLauncher {
 		// Used for Logback
 		System.setProperty("cluster.name", config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }.getUserAgent(config.loritta.environment))
 
+		val queueConnection = createPostgreSQLConnection(
+			config.queueDatabase.address,
+			config.queueDatabase.databaseName,
+			config.queueDatabase.username,
+			config.queueDatabase.password
+		)
+
 		// Iniciar instância da Loritta
-		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig)
+		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig, queueConnection)
 		loritta.start()
 	}
 
@@ -108,25 +116,24 @@ object LorittaLauncher {
 		DebugProbes.install()
 	}
 
-	fun createPostgreSQLDatabaseConnection(address: String, databaseName: String, username: String, password: String): Database {
-		val hikariConfig = createHikariConfig()
-		hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName"
+	// This is from Pudding, sightly modified
+	private fun createPostgreSQLConnection(
+		address: String,
+		databaseName: String,
+		username: String,
+		password: String,
+		builder: HikariConfig.() -> (Unit) = {}
+	): HikariDataSource {
+		val hikariConfig = createHikariConfig(builder)
+		hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${"Loritta Event Queue - " + HostnameUtils.getHostname()}"
 
 		hikariConfig.username = username
 		hikariConfig.password = password
 
-		val hikariDataSource = HikariDataSource(hikariConfig)
-
-		return Database.connect(
-			hikariDataSource,
-			databaseConfig = DatabaseConfig {
-				defaultRepetitionAttempts = DEFAULT_REPETITION_ATTEMPTS
-				defaultIsolationLevel = IsolationLevel.TRANSACTION_READ_COMMITTED.levelId // Change our default isolation level
-			}
-		)
+		return HikariDataSource(hikariConfig)
 	}
 
-	private fun createHikariConfig(): HikariConfig {
+	private fun createHikariConfig(builder: HikariConfig.() -> (Unit)): HikariConfig {
 		val hikariConfig = HikariConfig()
 
 		hikariConfig.driverClassName = "org.postgresql.Driver"
@@ -142,6 +149,14 @@ object LorittaLauncher {
 		// Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
 		hikariConfig.leakDetectionThreshold = 30L * 1000
 		hikariConfig.transactionIsolation = IsolationLevel.TRANSACTION_READ_COMMITTED.name
+
+		hikariConfig.maximumPoolSize = 100 // Let's allow 100 connections dedicated to just inserting things on the queue
+		hikariConfig.poolName = "QueuePool"
+		// Disable synchronous commit to increase throughput
+		// Because all of these connections will only be used for gateway event queue, we can set the synchronous_commit on the session itself
+		hikariConfig.connectionInitSql = "SET SESSION synchronous_commit = 'off'"
+
+		hikariConfig.apply(builder)
 
 		return hikariConfig
 	}

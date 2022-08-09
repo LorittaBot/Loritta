@@ -33,6 +33,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
 import net.perfectdreams.loritta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.commands.vanilla.economy.*
@@ -122,7 +123,23 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
         httpWithoutTimeout
     )
     // By lazy because this is a hacky workaround due to Databases.dataSourceLoritta requiring the "loritta" variable to be initialized
-    val pudding by lazy { Pudding(Databases.dataSourceLoritta, Pudding.connectToDatabase(Databases.dataSourceLoritta)) }
+    val pudding by lazy {
+        val threadPool = Executors.newCachedThreadPool()
+        Pudding(
+            Databases.dataSourceLoritta,
+            Pudding.connectToDatabase(Databases.dataSourceLoritta),
+            threadPool,
+            threadPool.asCoroutineDispatcher(),
+            128
+        )
+    }
+    // This is also by lazy due to the same reason described above
+    val notificationListener by lazy {
+        LorittaNotificationListener(pudding)
+            .apply {
+                this.start()
+            }
+    }
     override val random = Random(System.currentTimeMillis())
     private val logger = KotlinLogging.logger {}
 

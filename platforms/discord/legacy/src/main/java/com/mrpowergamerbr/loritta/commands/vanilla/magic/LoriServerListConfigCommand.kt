@@ -22,7 +22,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import net.perfectdreams.loritta.api.messages.LorittaReply
-import net.perfectdreams.loritta.cinnamon.common.utils.DivineInterventionTransactionEntryAction
+import net.perfectdreams.loritta.cinnamon.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
 import net.perfectdreams.loritta.common.commands.CommandCategory

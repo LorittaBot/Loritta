@@ -64,7 +64,6 @@ object DebugLog {
 		logger.info("fanArts.size: ${loritta.fanArts.size}")
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
 		logger.info("Cached Retrieved Users: ${lorittaShards.cachedRetrievedUsers.size()}")
-		logger.info("Connected Gateway Clients (${loritta.connectedChannels.size}): ${loritta.connectedChannels}")
 		logger.info("> Executors")
 
 		val pendingMessagesSize = loritta.pendingMessages.size
@@ -131,10 +130,6 @@ object DebugLog {
 			}
 			"dumpc" -> {
 				dumpCoroutinesToFile()
-			}
-			"clearproxy" -> {
-				loritta.connectedChannels.clear()
-				println("Connected channels list were cleared!")
 			}
 		}
 	}

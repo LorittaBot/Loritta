@@ -24,7 +24,7 @@ import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.cinnamon.common.utils.Rarity
+import net.perfectdreams.loritta.cinnamon.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation

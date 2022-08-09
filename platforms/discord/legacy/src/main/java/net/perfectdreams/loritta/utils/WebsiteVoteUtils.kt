@@ -81,7 +81,7 @@ object WebsiteVoteUtils {
 
 			BotVoteSonhosTransactionsLog.insert {
 				it[BotVoteSonhosTransactionsLog.timestampLog] = transactionLogId
-				it[BotVoteSonhosTransactionsLog.websiteSource] = net.perfectdreams.loritta.cinnamon.common.utils.WebsiteVoteSource.TOP_GG
+				it[BotVoteSonhosTransactionsLog.websiteSource] = net.perfectdreams.loritta.cinnamon.utils.WebsiteVoteSource.TOP_GG
 				it[BotVoteSonhosTransactionsLog.sonhos] = SONHOS_AMOUNT
 			}
 

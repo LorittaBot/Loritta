@@ -1,135 +1,75 @@
 package com.mrpowergamerbr.loritta
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.nullArray
-import com.github.salomonbrys.kotson.nullInt
-import com.github.salomonbrys.kotson.nullLong
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.obj
+import com.github.salomonbrys.kotson.*
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.mrpowergamerbr.loritta.commands.CommandManager
-import com.mrpowergamerbr.loritta.listeners.DiscordListener
-import com.mrpowergamerbr.loritta.listeners.DiscordMetricsListener
-import com.mrpowergamerbr.loritta.listeners.EventLogListener
-import com.mrpowergamerbr.loritta.listeners.GatewayEventRelayerListener
-import com.mrpowergamerbr.loritta.listeners.MessageListener
-import com.mrpowergamerbr.loritta.listeners.VoiceChannelListener
+import com.mrpowergamerbr.loritta.listeners.*
 import com.mrpowergamerbr.loritta.network.Databases
+import com.mrpowergamerbr.loritta.tables.*
 import com.mrpowergamerbr.loritta.tables.Dailies
-import com.mrpowergamerbr.loritta.tables.DonationConfigs
-import com.mrpowergamerbr.loritta.tables.DonationKeys
-import com.mrpowergamerbr.loritta.tables.GuildProfiles
 import com.mrpowergamerbr.loritta.tables.Marriages
-import com.mrpowergamerbr.loritta.tables.Mutes
 import com.mrpowergamerbr.loritta.tables.Profiles
-import com.mrpowergamerbr.loritta.tables.Reminders
-import com.mrpowergamerbr.loritta.tables.Reputations
-import com.mrpowergamerbr.loritta.tables.ServerConfigs
 import com.mrpowergamerbr.loritta.tables.ShipEffects
 import com.mrpowergamerbr.loritta.tables.StarboardMessages
-import com.mrpowergamerbr.loritta.tables.StoredMessages
 import com.mrpowergamerbr.loritta.tables.UserSettings
-import com.mrpowergamerbr.loritta.tables.Warns
 import com.mrpowergamerbr.loritta.threads.RaffleThread
 import com.mrpowergamerbr.loritta.threads.RemindersThread
 import com.mrpowergamerbr.loritta.threads.UpdateStatusThread
-import com.mrpowergamerbr.loritta.utils.BomDiaECia
-import com.mrpowergamerbr.loritta.utils.ConnectionManager
-import com.mrpowergamerbr.loritta.utils.LorittaShards
-import com.mrpowergamerbr.loritta.utils.LorittaTasks
-import com.mrpowergamerbr.loritta.utils.MessageInteractionFunctions
-import com.mrpowergamerbr.loritta.utils.PatchData
+import com.mrpowergamerbr.loritta.utils.*
 import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
-import com.mrpowergamerbr.loritta.utils.loritta
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
+import com.zaxxer.hikari.HikariDataSource
 import io.ktor.websocket.*
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroupEntries
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
+import net.dv8tion.jda.api.utils.data.DataObject
+import net.dv8tion.jda.internal.JDAImpl
+import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.DiscordGatewayCommandNotification
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.platform.discord.utils.RateLimitChecker
-import net.perfectdreams.loritta.tables.AuditLog
-import net.perfectdreams.loritta.tables.BannedIps
+import net.perfectdreams.loritta.tables.*
 import net.perfectdreams.loritta.tables.BannedUsers
-import net.perfectdreams.loritta.tables.BlacklistedGuilds
-import net.perfectdreams.loritta.tables.BomDiaECiaWinners
-import net.perfectdreams.loritta.tables.BotVotes
 import net.perfectdreams.loritta.tables.CachedDiscordUsers
-import net.perfectdreams.loritta.tables.CachedYouTubeChannelIds
-import net.perfectdreams.loritta.tables.CustomBackgroundSettings
-import net.perfectdreams.loritta.tables.DailyProfileShopItems
-import net.perfectdreams.loritta.tables.DailyShopItems
-import net.perfectdreams.loritta.tables.DailyShops
-import net.perfectdreams.loritta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.tables.Payments
-import net.perfectdreams.loritta.tables.ProfileDesignsPayments
-import net.perfectdreams.loritta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.tables.SonhosBundles
-import net.perfectdreams.loritta.tables.SonhosTransaction
-import net.perfectdreams.loritta.tables.SpicyStacktraces
-import net.perfectdreams.loritta.tables.Sponsors
 import net.perfectdreams.loritta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.tables.servers.Giveaways
 import net.perfectdreams.loritta.tables.servers.ServerRolePermissions
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.AutoroleConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.EconomyConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.EventLogConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.ExperienceRoleRates
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.InviteBlockerConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.LevelConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.MiscellaneousConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.ReactionOptions
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.RolesByExperience
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.StarboardConfigs
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitchAccounts
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedTwitterAccounts
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.WarnActions
-import net.perfectdreams.loritta.tables.servers.moduleconfigs.WelcomerConfigs
+import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.Emotes
 import net.perfectdreams.loritta.utils.Sponsor
 import net.perfectdreams.loritta.utils.metrics.Prometheus
-import net.perfectdreams.loritta.website.utils.GatewayProxyConnection
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
-import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
 import java.util.*
-import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
@@ -143,7 +83,8 @@ class Loritta(
 	discordConfig: GeneralDiscordConfig,
 	discordInstanceConfig: GeneralDiscordInstanceConfig,
 	config: GeneralConfig,
-	instanceConfig: GeneralInstanceConfig
+	instanceConfig: GeneralInstanceConfig,
+	val queueConnection: HikariDataSource
 ) : LorittaDiscord(discordConfig, discordInstanceConfig, config, instanceConfig) {
 	// ===[ STATIC ]===
 	companion object {
@@ -203,7 +144,8 @@ class Loritta(
 		.build<Long, Optional<CachedUserInfo>>()
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
-	val connectedChannels = CopyOnWriteArrayList<GatewayProxyConnection>()
+
+	var pendingGatewayEventsCount = 0L
 
 	init {
 		LorittaLauncher.loritta = this
@@ -323,15 +265,6 @@ class Loritta(
 			logger.info(e) { "Failed to start Loritta's webserver" }
 		}
 
-		if (config.gatewayProxy.waitUntilClientIsConnected) {
-			logger.info { "Waiting for a DiscordGatewayEventsProcessor instance to be connected..." }
-			while (connectedChannels.isEmpty()) {
-				logger.info { "There isn't a DiscordGatewayEventsProcessor instance connected yet, waiting 1000ms..." }
-				Thread.sleep(1_000)
-			}
-			logger.info { "DiscordGatewayEventsProcessor instance connected! $connectedChannels" }
-		}
-
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 
@@ -393,7 +326,49 @@ class Loritta(
 		}
 
 		DebugLog.startCommandListenerThread()
+
 		// Ou seja, agora a Loritta está funcionando, Yay!
+
+		GlobalScope.launch {
+			// Get DiscordGatewayCommandNotifications and send the gateway command to the shard
+			notificationListener.notifications.filterIsInstance<DiscordGatewayCommandNotification>()
+				.collectLatest {
+					val shardId = it.shardId
+					val payload = it.payload
+
+					val jdaShard = lorittaShards.shardManager.getShardById(shardId) as JDAImpl?
+
+					if (jdaShard != null) {
+						logger.info { "Sending gateway command $payload to $shardId" }
+						jdaShard.client.send(DataObject.fromJson(payload.toString()))
+					} else {
+						logger.warn { "Received a gateway event notification for a shard that we don't handle (shard ID: $shardId)! This is probably for another instance, so let's ignore it..." }
+					}
+				}
+		}
+
+		thread {
+			while (true) {
+				try {
+					// Every 15s, we will query how many events are pending
+					queueConnection.connection.use {
+						pendingGatewayEventsCount = it.createStatement().executeQuery("SELECT COUNT(*) FROM discordgatewayevents;")
+							.let {
+								it.next()
+								it.getLong(1)
+							}
+
+						// We need to commit to avoid a "Executed rollback on connection org.postgresql.jdbc.PgConnection@37d871c2 due to dirty commit state on close()."
+						it.commit()
+					}
+
+					logger.info { "Current pending gateway events: $pendingGatewayEventsCount events" }
+				} catch (e: Exception) {
+					logger.warn(e) { "Something went wrong while trying to check how many events are pending!" }
+				}
+				Thread.sleep(15_000)
+			}
+		}
 	}
 
 	fun initPostgreSql() {

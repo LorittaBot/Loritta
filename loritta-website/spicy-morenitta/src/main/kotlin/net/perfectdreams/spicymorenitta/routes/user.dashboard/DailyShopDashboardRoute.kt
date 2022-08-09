@@ -22,9 +22,9 @@ import kotlinx.html.span
 import kotlinx.html.style
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.cinnamon.common.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
+import net.perfectdreams.loritta.cinnamon.utils.Rarity
 import net.perfectdreams.loritta.serializable.DailyShopBackgroundEntry
 import net.perfectdreams.loritta.serializable.DailyShopResult
 import net.perfectdreams.loritta.serializable.ProfileDesign
