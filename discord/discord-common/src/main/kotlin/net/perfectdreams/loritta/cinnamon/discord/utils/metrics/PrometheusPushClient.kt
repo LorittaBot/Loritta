@@ -32,8 +32,10 @@ class PromPushClient internal constructor(
     internal fun start() {
         coroutineScope.launch {
             while (true) {
+                logger.info { "Posting stats to Prometheus..." }
                 try {
                     postStats()
+                    logger.info { "Successfully posted stats to Prometheus!" }
                 } catch (e: Exception) {
                     logger.warn(e) { "Something went wrong while trying to post stats to Prometheus!" }
                 }
