@@ -63,7 +63,9 @@ object LorittaCinnamonWebServerLauncher {
             rootConfig.queueDatabase.database,
             rootConfig.queueDatabase.username,
             rootConfig.queueDatabase.password,
-        )
+        ) {
+            this.maximumPoolSize = rootConfig.queueDatabase.connections
+        }
 
         val loritta = LorittaCinnamonWebServer(
             rootConfig,
@@ -118,7 +120,6 @@ object LorittaCinnamonWebServerLauncher {
         hikariConfig.leakDetectionThreshold = 30L * 1000
         hikariConfig.transactionIsolation = IsolationLevel.TRANSACTION_READ_COMMITTED.name
 
-        hikariConfig.maximumPoolSize = 1 // // Yes, only one, because only ONE transaction should be used in the ProcessDiscordGatewayEvents class
         hikariConfig.poolName = "QueuePool"
         // Disable synchronous commit to increase throughput
         // Because all of these connections will only be used for gateway event queue, we can set the synchronous_commit on the session itself

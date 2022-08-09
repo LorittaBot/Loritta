@@ -15,7 +15,9 @@ import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.Replica
  */
 class ProcessDiscordGatewayEvents(
     private val totalEventsPerBatch: Int,
-    private val replicaInstance: ReplicaInstanceConfig,
+    val totalConnections: Int,
+    val connectionId: Int,
+    replicaInstance: ReplicaInstanceConfig,
     private val queueDatabaseDataSource: HikariDataSource,
     // Shard ID -> ProxiedKordGateway
     private val proxiedKordGateways: Map<Int, ProxiedKordGateway>
@@ -25,16 +27,18 @@ class ProcessDiscordGatewayEvents(
         const val DISCORD_GATEWAY_EVENTS_TABLE = "discordgatewayevents"
     }
 
-    var totalEventsProcessed = 0
-    var totalPollLoopsCount = 0
+    var totalEventsProcessed = 0L
+    var totalPollLoopsCount = 0L
+
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    private val sql = """DELETE FROM $DISCORD_GATEWAY_EVENTS_TABLE USING (SELECT "id", "type", "shard", "payload" FROM $DISCORD_GATEWAY_EVENTS_TABLE WHERE shard BETWEEN ${replicaInstance.minShard} AND ${replicaInstance.maxShard} AND shard % $totalConnections = $connectionId ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $DISCORD_GATEWAY_EVENTS_TABLE.id RETURNING $DISCORD_GATEWAY_EVENTS_TABLE.*;"""
 
     override fun run() {
         while (true) {
             try {
                 val connection = queueDatabaseDataSource.connection
                 connection.use {
-                    val selectStatement = it.prepareStatement("""DELETE FROM $DISCORD_GATEWAY_EVENTS_TABLE USING (SELECT "id", "type", "shard", "payload" FROM $DISCORD_GATEWAY_EVENTS_TABLE WHERE shard BETWEEN ${replicaInstance.minShard} AND ${replicaInstance.maxShard} ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $DISCORD_GATEWAY_EVENTS_TABLE.id RETURNING $DISCORD_GATEWAY_EVENTS_TABLE.*;""")
+                    val selectStatement = it.prepareStatement(sql)
                     val rs = selectStatement.executeQuery()
 
                     var count = 0

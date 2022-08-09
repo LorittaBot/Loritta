@@ -11,6 +11,6 @@ data class RootConfig(
     val httpInteractions: InteractionsEndpointConfig,
     val discordShards: DiscordShardsConfig,
     val replicas: ReplicasConfig,
-    val queueDatabase: PuddingConfig,
+    val queueDatabase: QueueDatabaseConfig,
     val totalEventsPerBatch: Int,
 )

@@ -24,8 +24,26 @@ class LorittaCinnamonWebServer(
         private val logger = KotlinLogging.logger {}
     }
 
-    private var lastEventCountCheck = 0
-    private var lastPollLoopsCount = 0
+    private val replicaInstance = config.replicas.instances.firstOrNull { it.replicaId == replicaId } ?: error("Missing replica configuration for replica ID $replicaId")
+
+    private val proxyDiscordGatewayManager = ProxyDiscordGatewayManager(
+        config.totalEventsPerBatch,
+        config.replicas.instances.firstOrNull { it.replicaId == replicaId } ?: error("Missing replica configuration for replica ID $replicaId"),
+        services
+    )
+
+    private val discordGatewayEventsProcessors = (0 until config.queueDatabase.connections).map {
+        ProcessDiscordGatewayEvents(
+            config.totalEventsPerBatch,
+            config.queueDatabase.connections,
+            it,
+            replicaInstance,
+            queueConnection,
+            proxyDiscordGatewayManager.gateways
+        )
+    }
+
+    private val stats = mutableMapOf<Int, Pair<Long, Long>>()
 
     fun start() {
         // To avoid initializing Exposed for our "queueConnection" just to create a table, we will create the table manually with SQL statements (woo, scary!)
@@ -49,14 +67,6 @@ class LorittaCinnamonWebServer(
             it.commit()
         }
 
-        val proxyDiscordGatewayManager = ProxyDiscordGatewayManager(
-            config.totalEventsPerBatch,
-            config.discordShards.totalShards,
-            config.replicas.instances.firstOrNull { it.replicaId == replicaId } ?: error("Missing replica configuration for replica ID $replicaId"),
-            services,
-            queueConnection
-        )
-
         val cinnamon = LorittaCinnamon(
             proxyDiscordGatewayManager,
             config.cinnamon,
@@ -68,19 +78,29 @@ class LorittaCinnamonWebServer(
         cinnamon.start()
 
         // Start processing gateway events
-        Thread(
-            null,
-            proxyDiscordGatewayManager.discordGatewayEventsProcessor,
-            "Gateway Events Poller"
-        ).start()
+        for (processor in discordGatewayEventsProcessors) {
+            Thread(
+                null,
+                processor,
+                "GatewayEventsPoller-${processor.totalEventsProcessed}"
+            ).start()
+        }
 
         cinnamon.addAnalyticHandler {
-            val totalEventsProcessed = proxyDiscordGatewayManager.discordGatewayEventsProcessor.totalEventsProcessed
-            val totalPollLoopsCheck = proxyDiscordGatewayManager.discordGatewayEventsProcessor.totalPollLoopsCount
-            EventAnalyticsTask.logger.info { "Total Discord Events processed: $totalEventsProcessed; (+${totalEventsProcessed - lastEventCountCheck})" }
-            EventAnalyticsTask.logger.info { "Current Poll Loops Count: $totalPollLoopsCheck; (+${totalPollLoopsCheck - lastPollLoopsCount})" }
-            lastEventCountCheck = totalEventsProcessed
-            lastPollLoopsCount = totalPollLoopsCheck
+            val statsValues = stats.values
+            val previousEventsProcessed = statsValues.sumOf { it.first }
+            val previousPollLoopsCheck = statsValues.sumOf { it.second }
+
+            val totalEventsProcessed = discordGatewayEventsProcessors.sumOf { it.totalEventsProcessed }
+            val totalPollLoopsCheck = discordGatewayEventsProcessors.sumOf { it.totalPollLoopsCount }
+
+            logger.info { "Total Discord Events processed: $totalEventsProcessed; (+${totalEventsProcessed - previousEventsProcessed})" }
+            logger.info { "Total Poll Loops: $totalPollLoopsCheck; (+${totalPollLoopsCheck - previousPollLoopsCheck})" }
+            for (processor in discordGatewayEventsProcessors) {
+                val previousStats = stats[processor.connectionId] ?: Pair(0L, 0L)
+                logger.info { "Processor shardId % ${processor.totalConnections} == ${processor.connectionId}: Discord Events processed: ${processor.totalEventsProcessed} (+${processor.totalEventsProcessed - previousStats.first}); Current Poll Loops Count: ${processor.totalPollLoopsCount} (+${processor.totalPollLoopsCount - previousStats.second})"}
+                stats[processor.connectionId] = Pair(processor.totalEventsProcessed, processor.totalPollLoopsCount)
+            }
         }
 
         val interactionsServer = InteractionsServer(
