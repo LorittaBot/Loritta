@@ -27,8 +27,8 @@ class LorittaCinnamonWebServer(
     private val replicaInstance = config.replicas.instances.firstOrNull { it.replicaId == replicaId } ?: error("Missing replica configuration for replica ID $replicaId")
 
     private val proxyDiscordGatewayManager = ProxyDiscordGatewayManager(
-        config.totalEventsPerBatch,
-        config.replicas.instances.firstOrNull { it.replicaId == replicaId } ?: error("Missing replica configuration for replica ID $replicaId"),
+        config.discordShards.totalShards,
+        replicaInstance,
         services
     )
 
