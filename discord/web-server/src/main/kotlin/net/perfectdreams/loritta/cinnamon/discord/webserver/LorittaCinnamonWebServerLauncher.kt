@@ -120,6 +120,9 @@ object LorittaCinnamonWebServerLauncher {
 
         hikariConfig.maximumPoolSize = 1 // // Yes, only one, because only ONE transaction should be used in the ProcessDiscordGatewayEvents class
         hikariConfig.poolName = "QueuePool"
+        // Disable synchronous commit to increase throughput
+        // Because all of these connections will only be used for gateway event queue, we can set the synchronous_commit on the session itself
+        hikariConfig.connectionInitSql = "SET SESSION synchronous_commit = 'off'"
 
         hikariConfig.apply(builder)
 
