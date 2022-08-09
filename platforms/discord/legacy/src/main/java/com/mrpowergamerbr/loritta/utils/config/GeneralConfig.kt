@@ -92,7 +92,7 @@ class GeneralConfig(
 
 	@Serializable
 	data class GatewayProxyConfig(
-		val waitUntilClientIsConnected: Boolean,
+		val maxPendingEventsThreshold: Long,
 		val disableInviteBlocker: Boolean,
 		val disableAFK: Boolean
 	)

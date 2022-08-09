@@ -21,7 +21,6 @@ import java.time.OffsetDateTime
 class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
     companion object {
         private val logger = KotlinLogging.logger {}
-        private const val MAX_EVENTS_THRESHOLD = 100_000L
     }
 
     val permits = Semaphore(128)
@@ -29,7 +28,7 @@ class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
 
     override fun onRawGateway(event: RawGatewayEvent) {
         // We will limit the pending gateway events in 1_000_000 events
-        if (MAX_EVENTS_THRESHOLD > m.pendingGatewayEventsCount) {
+        if (m.config.gatewayProxy.maxPendingEventsThreshold > m.pendingGatewayEventsCount) {
             hasEventsBeenDroppedYet = false
             GlobalScope.launch(m.coroutineDispatcher) {
                 val packageAsString = event.`package`.toString()
@@ -51,7 +50,7 @@ class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
                 }
             }
         } else if (!hasEventsBeenDroppedYet) {
-            logger.warn { "Dropping Gateway Events because there is ${m.pendingGatewayEventsCount} pending events, more than the $MAX_EVENTS_THRESHOLD threshold!" }
+            logger.warn { "Dropping Gateway Events because there is ${m.pendingGatewayEventsCount} pending events, more than the ${m.config.gatewayProxy.maxPendingEventsThreshold} threshold!" }
 
             hasEventsBeenDroppedYet = true
         }
