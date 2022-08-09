@@ -149,7 +149,7 @@ class LorittaCinnamon(
             }
             services.startPuddingTasks()
 
-            interactionsManager.register()
+            // interactionsManager.register()
 
             cinnamonTasks.start()
 

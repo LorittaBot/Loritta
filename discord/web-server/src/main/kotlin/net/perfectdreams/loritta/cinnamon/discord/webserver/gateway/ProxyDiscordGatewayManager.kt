@@ -1,15 +1,36 @@
 package net.perfectdreams.loritta.cinnamon.discord.webserver.gateway
 
+import com.zaxxer.hikari.HikariDataSource
 import net.perfectdreams.loritta.cinnamon.discord.gateway.LorittaDiscordGatewayManager
-import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.gatewayproxy.GatewayProxy
-import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.gatewayproxy.ProxiedKordGateway
+import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
+import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 
 class ProxyDiscordGatewayManager(
+    totalEventsPerBatch: Int,
     totalShards: Int,
-    val gatewayProxies: List<GatewayProxy>
+    replicaInstance: ReplicaInstanceConfig,
+    pudding: Pudding,
+    queueConnection: HikariDataSource
 ) : LorittaDiscordGatewayManager(totalShards) {
+    private val proxiedKordGateways = mutableMapOf<Int, ProxiedKordGateway>()
     override val gateways: Map<Int, ProxiedKordGateway>
-        get() = gatewayProxies.flatMap { it.proxiedKordGateways.entries }.associate { it.key to it.value }
+        get() = proxiedKordGateways
+
+    val discordGatewayEventsProcessor = ProcessDiscordGatewayEvents(
+        totalEventsPerBatch,
+        replicaInstance,
+        queueConnection,
+        proxiedKordGateways
+    )
+
+    init {
+        for (shardId in replicaInstance.minShard..replicaInstance.maxShard) {
+            proxiedKordGateways[shardId] = ProxiedKordGateway(
+                shardId,
+                pudding
+            )
+        }
+    }
 
     override fun getGatewayForShardOrNull(shardId: Int) = gateways[shardId]
 }

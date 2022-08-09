@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.discord.webserver
 
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
+import com.zaxxer.hikari.util.IsolationLevel
 import io.ktor.client.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
@@ -55,10 +58,18 @@ object LorittaCinnamonWebServerLauncher {
 
         logger.info { "Started Pudding client!" }
 
+        val queueConnection = createPostgreSQLConnection(
+            rootConfig.queueDatabase.address,
+            rootConfig.queueDatabase.database,
+            rootConfig.queueDatabase.username,
+            rootConfig.queueDatabase.password,
+        )
+
         val loritta = LorittaCinnamonWebServer(
             rootConfig,
             languageManager,
             services,
+            queueConnection,
             http,
             replicaId
         )
@@ -71,5 +82,47 @@ object LorittaCinnamonWebServerLauncher {
         // It is recommended to set this to false, to avoid performance hits with the DebugProbes option!
         DebugProbes.enableCreationStackTraces = false
         DebugProbes.install()
+    }
+
+    // This is from Pudding, sightly modified
+    private fun createPostgreSQLConnection(
+        address: String,
+        databaseName: String,
+        username: String,
+        password: String,
+        builder: HikariConfig.() -> (Unit) = {}
+    ): HikariDataSource {
+        val hikariConfig = createHikariConfig(builder)
+        hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${"Loritta Event Queue - " + HostnameUtils.getHostname()}"
+
+        hikariConfig.username = username
+        hikariConfig.password = password
+
+        return HikariDataSource(hikariConfig)
+    }
+
+    private fun createHikariConfig(builder: HikariConfig.() -> (Unit)): HikariConfig {
+        val hikariConfig = HikariConfig()
+
+        hikariConfig.driverClassName = "org.postgresql.Driver"
+
+        // https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
+        hikariConfig.addDataSourceProperty("reWriteBatchedInserts", "true")
+
+        // Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
+        // autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
+        // https://stackoverflow.com/a/41206003/7271796
+        hikariConfig.isAutoCommit = false
+
+        // Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
+        hikariConfig.leakDetectionThreshold = 30L * 1000
+        hikariConfig.transactionIsolation = IsolationLevel.TRANSACTION_READ_COMMITTED.name
+
+        hikariConfig.maximumPoolSize = 1 // // Yes, only one, because only ONE transaction should be used in the ProcessDiscordGatewayEvents class
+        hikariConfig.poolName = "QueuePool"
+
+        hikariConfig.apply(builder)
+
+        return hikariConfig
     }
 }

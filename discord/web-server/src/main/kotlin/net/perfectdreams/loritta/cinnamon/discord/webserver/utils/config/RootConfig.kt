@@ -2,10 +2,8 @@ package net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.CinnamonConfig
-import net.perfectdreams.loritta.cinnamon.utils.config.LorittaConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.DiscordInteractionsConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.ServicesConfig
+import net.perfectdreams.loritta.cinnamon.discord.utils.config.PuddingConfig
+import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 
 @Serializable
 data class RootConfig(
@@ -13,5 +11,6 @@ data class RootConfig(
     val httpInteractions: InteractionsEndpointConfig,
     val discordShards: DiscordShardsConfig,
     val replicas: ReplicasConfig,
-    val gatewayProxies: List<GatewayProxyConfig>
+    val queueDatabase: PuddingConfig,
+    val totalEventsPerBatch: Int,
 )

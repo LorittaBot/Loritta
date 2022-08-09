@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.data.notifications
 
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 
 /**
  * Base class of notifications that are sent/received via PostgreSQL's `LISTEN`/`NOTIFY` system
@@ -14,3 +15,10 @@ sealed class LorittaNotification {
 
 interface LorittaNotificationRequest
 interface LorittaNotificationResponse
+
+@Serializable
+data class DiscordGatewayCommandNotification(
+    override val uniqueId: String,
+    val shardId: Int,
+    val payload: JsonObject
+) : LorittaNotification(), LorittaNotificationRequest

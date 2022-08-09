@@ -5,5 +5,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class ReplicasConfig(
     val getReplicaIdFromHostname: Boolean,
-    val replicaIdOverride: Int? = null
+    val replicaIdOverride: Int? = null,
+
+    val instances: List<ReplicaInstanceConfig>
 )
