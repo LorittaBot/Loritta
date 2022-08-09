@@ -26,6 +26,7 @@ class ProcessDiscordGatewayEvents(
     }
 
     var totalEventsProcessed = 0
+    var totalPollLoopsCount = 0
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun run() {
@@ -65,6 +66,7 @@ class ProcessDiscordGatewayEvents(
 
                     it.commit()
                 }
+                totalPollLoopsCount++
             } catch (e: Exception) {
                 logger.warn(e) { "Something went wrong while polling pending Discord gateway events!" }
             }

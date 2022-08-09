@@ -25,6 +25,7 @@ class LorittaCinnamonWebServer(
     }
 
     private var lastEventCountCheck = 0
+    private var lastPollLoopsCount = 0
 
     fun start() {
         // To avoid initializing Exposed for our "queueConnection" just to create a table, we will create the table manually with SQL statements (woo, scary!)
@@ -75,8 +76,11 @@ class LorittaCinnamonWebServer(
 
         cinnamon.addAnalyticHandler {
             val totalEventsProcessed = proxyDiscordGatewayManager.discordGatewayEventsProcessor.totalEventsProcessed
+            val totalPollLoopsCheck = proxyDiscordGatewayManager.discordGatewayEventsProcessor.totalPollLoopsCount
             EventAnalyticsTask.logger.info { "Total Discord Events processed: $totalEventsProcessed; (+${totalEventsProcessed - lastEventCountCheck})" }
+            EventAnalyticsTask.logger.info { "Current Poll Loops Count: $totalPollLoopsCheck; (+${totalPollLoopsCheck - lastPollLoopsCount})" }
             lastEventCountCheck = totalEventsProcessed
+            lastPollLoopsCount = totalPollLoopsCheck
         }
 
         val interactionsServer = InteractionsServer(
