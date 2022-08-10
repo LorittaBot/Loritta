@@ -51,38 +51,38 @@ object WebsiteVoteUtils {
 			TOP_GG_USER_VOTED_AT.put(userId, System.currentTimeMillis())
 
 			loritta.newSuspendedTransaction {
+
+			}
+
+			loritta.newSuspendedTransaction {
 				BotVote.new {
 					this.userId = userId
 					this.websiteSource = websiteSource
 					this.votedAt = System.currentTimeMillis()
 				}
-			}
 
-			loritta.newSuspendedTransaction {
 				Profiles.update({ Profiles.id eq userId }) {
 					with(SqlExpressionBuilder) {
 						it.update(money, money + SONHOS_AMOUNT)
 					}
 				}
-			}
 
-			loritta.newSuspendedTransaction {
 				PaymentUtils.addToTransactionLogNested(
 					SONHOS_AMOUNT,
 					SonhosPaymentReason.DISCORD_BOTS,
 					receivedBy = userId
 				)
-			}
 
-			val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-				it[SonhosTransactionsLog.user] = userId
-				it[SonhosTransactionsLog.timestamp] = Instant.now()
-			}
+				val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+					it[SonhosTransactionsLog.user] = userId
+					it[SonhosTransactionsLog.timestamp] = Instant.now()
+				}
 
-			BotVoteSonhosTransactionsLog.insert {
-				it[BotVoteSonhosTransactionsLog.timestampLog] = transactionLogId
-				it[BotVoteSonhosTransactionsLog.websiteSource] = net.perfectdreams.loritta.cinnamon.utils.WebsiteVoteSource.TOP_GG
-				it[BotVoteSonhosTransactionsLog.sonhos] = SONHOS_AMOUNT
+				BotVoteSonhosTransactionsLog.insert {
+					it[BotVoteSonhosTransactionsLog.timestampLog] = transactionLogId
+					it[BotVoteSonhosTransactionsLog.websiteSource] = net.perfectdreams.loritta.cinnamon.utils.WebsiteVoteSource.TOP_GG
+					it[BotVoteSonhosTransactionsLog.sonhos] = SONHOS_AMOUNT
+				}
 			}
 
 			val voteCount = loritta.newSuspendedTransaction {
