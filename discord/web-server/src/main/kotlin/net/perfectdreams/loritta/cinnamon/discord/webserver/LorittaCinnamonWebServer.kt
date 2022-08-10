@@ -95,7 +95,7 @@ class LorittaCinnamonWebServer(
             Thread(
                 null,
                 processor,
-                "GatewayEventsPoller-${processor.totalEventsProcessed}"
+                "GatewayEventsPoller-${processor.connectionId}"
             ).start()
         }
 
