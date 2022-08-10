@@ -175,6 +175,7 @@ class LorittaCinnamon(
                     }
                 }
             }
+            logger.info { "Loritta Cinnamon is now up and running! :3" }
         }
     }
 

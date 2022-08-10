@@ -8,5 +8,6 @@ data class QueueDatabaseConfig(
     val address: String,
     val username: String,
     val password: String,
-    val connections: Int
+    val connections: Int,
+    val commitOnEveryXStatements: Int
 )

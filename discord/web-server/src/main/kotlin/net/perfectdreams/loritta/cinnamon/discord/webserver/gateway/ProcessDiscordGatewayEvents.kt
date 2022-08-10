@@ -30,6 +30,7 @@ import kotlin.time.measureTime
  */
 class ProcessDiscordGatewayEvents(
     private val totalEventsPerBatch: Int,
+    private val commitOnEveryXStatements: Int,
     val totalConnections: Int,
     val connectionId: Int,
     replicaInstance: ReplicaInstanceConfig,
@@ -151,6 +152,8 @@ class ProcessDiscordGatewayEvents(
                         .filterKeys { it in shards }
 
                     val connection = queueDatabaseDataSource.connection
+                    var processedStatements = 0
+
                     val duration = measureTime {
                         val statements = LinkedBlockingQueue<String>()
                         statements.addAll(sqlStatementsForTheShards.values)
@@ -190,6 +193,13 @@ class ProcessDiscordGatewayEvents(
                                     logger.warn { "We received $processedOnThisStatement events on the current statement, which is the same value as the total events per batch! This may mean that there is more pending events than what the batch is retrieving, so we will requeue the statement..." }
                                     statements.add(sql)
                                 }
+
+                                processedStatements++
+
+                                // Auto commit on every X statements
+                                // This is useful because committing marks the tuple as dead on PostgreSQL side, and depending on how many events we are processing, it is useful to commit before we finish everything
+                                if (processedStatements % commitOnEveryXStatements == 0)
+                                    it.commit()
                             }
 
                             it.commit()
