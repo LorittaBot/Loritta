@@ -86,6 +86,7 @@ class LorittaCinnamonWebServer(
     }
 
     fun start() {
+        logger.info { "Creating gateway events queue tables..." }
         // To avoid initializing Exposed for our "queueConnection" just to create a table, we will create the table manually with SQL statements (woo, scary!)
         // It is more cumbersome, but hey, it works!
         queueConnection.connection.use {
@@ -119,6 +120,8 @@ class LorittaCinnamonWebServer(
             statement.executeUpdate(sql)
             it.commit()
         }
+
+        logger.info { "Successfully created gateway events queue tables!" }
 
         val cinnamon = LorittaCinnamon(
             proxyDiscordGatewayManager,
@@ -154,6 +157,7 @@ class LorittaCinnamonWebServer(
                 delay(1.seconds)
             }
         }
+
         cinnamon.addAnalyticHandler {
             val statsValues = stats.values
             val previousEventsProcessed = statsValues.sumOf { it.first }

@@ -147,13 +147,17 @@ class LorittaCinnamon(
                     true
                 else it in tableNames
             }
+            logger.info { "Starting Pudding tasks..." }
             services.startPuddingTasks()
 
+            logger.info { "Registering interactions features..." }
             interactionsManager.register()
 
+            logger.info { "Starting Cinnamon tasks..." }
             cinnamonTasks.start()
 
             // On every gateway instance present on our gateway manager, collect and process events
+            logger.info { "Preparing gateway event collectors for ${gatewayManager.gateways.size} gateway instances..." }
             gatewayManager.gateways.forEach { (shardId, gateway) ->
                 scope.launch {
                     gateway.events.collect {
