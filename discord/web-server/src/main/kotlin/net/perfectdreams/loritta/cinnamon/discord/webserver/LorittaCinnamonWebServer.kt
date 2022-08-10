@@ -2,10 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.webserver
 
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.client.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
@@ -22,6 +19,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.NewDiscordG
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PostgreSQLNotificationListener
 import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
+import kotlin.time.Duration.Companion.seconds
 
 class LorittaCinnamonWebServer(
     val config: RootConfig,
@@ -139,6 +137,23 @@ class LorittaCinnamonWebServer(
             }
         }
 
+        GlobalScope.launch {
+            while (true) {
+                // Sometimes processors can get stuck waiting for notifications, which can happen because Loritta can stop sending new gateway events
+                // if the queue is too large.
+                // But because Loritta stops sending new events, it also stops sending new events notifications, so it gets stuck waiting for new events
+                // To work around this, every second we will trigger a poll request for all shards
+                logger.info { "Triggering a manual gateway event poll..." }
+                discordGatewayEventsProcessors.forEach {
+                    it.shardsMutex.withLock {
+                        it.shardsWithNewEvents.addAll(it.shardsHandledByThisProcessor)
+                    }
+                    it.notificationChannelTrigger.trySend(Unit)
+                }
+
+                delay(1.seconds)
+            }
+        }
         cinnamon.addAnalyticHandler {
             val statsValues = stats.values
             val previousEventsProcessed = statsValues.sumOf { it.first }
