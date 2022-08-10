@@ -140,13 +140,13 @@ class ProcessDiscordGatewayEvents(
                         currentShardsWithNewEvents
                     }
 
-                    // After clearing the list, notifications can now begin to fill what shards have new events to be processed while we run the current loop :3
-                    // This way, we should *always* suspend when there isn't new events (because the notificationChannelTrigger won't have a Unit)
-
                     if (shards.isEmpty()) {
-                        logger.warn { "Shards list is empty! If we received an notification, it shouldn't be empty... oh well, let's ignore it and hope for the best..." }
+                        logger.warn { "Shards list is empty! If we received an notification, it shouldn't be empty... However there is a pesky race condition that can happen where the added shards to the list can be processed and cleared in the already executing event processor task... So don't worry, it still works and nothing was lost!" }
                         continue
                     }
+
+                    // After clearing the list, notifications can now begin to fill what shards have new events to be processed while we run the current loop :3
+                    // This way, we should *always* suspend when there isn't new events (because the notificationChannelTrigger won't have a Unit)
 
                     val sqlStatementsForTheShards = sqlStatements
                         .filterKeys { it in shards }
