@@ -48,10 +48,8 @@ class ProcessDiscordGatewayEvents(
                         val rs = selectStatement.executeQuery()
 
                         var count = 0
-                        val processedRows = mutableListOf<Long>()
 
                         while (rs.next()) {
-                            val id = rs.getLong("id")
                             val type = rs.getString("type")
                             val shardId = rs.getInt("shard")
                             val gatewayPayload = rs.getString("payload")
@@ -60,8 +58,7 @@ class ProcessDiscordGatewayEvents(
 
                             if (discordEvent != null) {
                                 // Emit the event to our proxied instances
-                                val proxiedKordGateway = proxiedKordGateways[shardId]
-                                    ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
+                                val proxiedKordGateway = proxiedKordGateways[shardId] ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
                                 coroutineScope.launch {
                                     proxiedKordGateway.events.emit(discordEvent)
                                 }
@@ -71,11 +68,7 @@ class ProcessDiscordGatewayEvents(
 
                             count++
                             totalEventsProcessed++
-
-                            processedRows.add(id)
                         }
-
-                        it.commit()
                     }
                 }
                 totalPollLoopsCount++

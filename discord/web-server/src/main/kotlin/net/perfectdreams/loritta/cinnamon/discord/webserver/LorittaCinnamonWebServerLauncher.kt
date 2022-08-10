@@ -108,10 +108,8 @@ object LorittaCinnamonWebServerLauncher {
         // https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
         hikariConfig.addDataSourceProperty("reWriteBatchedInserts", "true")
 
-        // Exposed uses autoCommit = false, so we need to set this to false to avoid HikariCP resetting the connection to
-        // autoCommit = true when the transaction goes back to the pool, because resetting this has a "big performance impact"
-        // https://stackoverflow.com/a/41206003/7271796
-        hikariConfig.isAutoCommit = false
+        // We want to use autocommit, mostly to avoid issuing a "COMMIT" statement on the gateway event loop
+        hikariConfig.isAutoCommit = true
 
         // Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
         hikariConfig.leakDetectionThreshold = 30L * 1000
