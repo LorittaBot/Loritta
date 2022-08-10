@@ -80,7 +80,7 @@ object LorittaLauncher {
 			config.queueDatabase.username,
 			config.queueDatabase.password
 		) {
-			hikariConfig.maximumPoolSize = config.queueDatabase.maximumPoolSize
+			this.maximumPoolSize = config.queueDatabase.maximumPoolSize
 		}
 
 		// Iniciar instância da Loritta
