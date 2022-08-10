@@ -8,6 +8,8 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
@@ -109,7 +111,8 @@ class ProcessDiscordGatewayEvents(
         while (true) {
             try {
                 val connection = queueDatabaseDataSource.connection
-                lastPollDuration = measureTime {
+                var processedOnThisRound = 0
+                val duration = measureTime {
                     connection.use {
                         for (sql in sqlStatements) {
                             val selectStatement = it.prepareStatement(sql)
@@ -137,13 +140,23 @@ class ProcessDiscordGatewayEvents(
 
                                 count++
                                 totalEventsProcessed++
+                                processedOnThisRound++
                             }
                         }
 
                         it.commit()
                     }
                 }
+                lastPollDuration = duration
                 totalPollLoopsCount++
+                if (processedOnThisRound != totalEventsPerBatch) {
+                    // Sleep for 100ms to avoid overloading the system's CPU (database and the app itself)
+                    // However, if our query took more than 100ms, we won't sleep!
+                    // TODO: Notification System: Make Loritta publish a notification when a new event is posted, instead of polling and sleeping
+                    val sleepTime = (100.milliseconds - duration).toLong(DurationUnit.MILLISECONDS)
+                    if (sleepTime > 0)
+                        Thread.sleep(sleepTime)
+                }
             } catch (e: Exception) {
                 logger.warn(e) { "Something went wrong while polling pending Discord gateway events!" }
             }
