@@ -35,10 +35,46 @@ class ProcessDiscordGatewayEvents(
     var lastPollDuration: Duration? = null
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val sql = """DELETE FROM $DISCORD_GATEWAY_EVENTS_TABLE USING (SELECT "id", "type", "shard", "payload" FROM $DISCORD_GATEWAY_EVENTS_TABLE WHERE shard BETWEEN ${replicaInstance.minShard} AND ${replicaInstance.maxShard} AND shard % $totalConnections = $connectionId ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $DISCORD_GATEWAY_EVENTS_TABLE.id RETURNING $DISCORD_GATEWAY_EVENTS_TABLE.*;"""
+    private val sql = buildString {
+        append("""DELETE FROM $DISCORD_GATEWAY_EVENTS_TABLE USING (SELECT "id", "type", "shard", "payload" FROM $DISCORD_GATEWAY_EVENTS_TABLE WHERE """)
+        // While using "shard BETWEEN ${replicaInstance.minShard} AND ${replicaInstance.maxShard} AND" and "shard % 8 = 0" seems obvious, using those seems to cause PostgreSQL to query
+        // EVERY SINGLE TABLE!!
+        // Limit  (cost=2.71..9.64 rows=1 width=103) (actual time=0.112..0.113 rows=0 loops=1)
+        //   ->  LockRows  (cost=2.71..425.57 rows=61 width=103) (actual time=0.112..0.113 rows=0 loops=1)
+        //         ->  Merge Append  (cost=2.71..424.96 rows=61 width=103) (actual time=0.111..0.113 rows=0 loops=1)
+        //               Sort Key: discordgatewayevents.id
+        //               ->  Index Scan using discordgatewayevents_shard_0_pkey on discordgatewayevents_shard_0 discordgatewayevents_1  (cost=0.14..23.36 rows=1 width=1115) (actual time=0.028..0.028 rows=0 loops=1)
+        //                     Filter: ((shard % 8) = 0)
+        //               ->  Index Scan using discordgatewayevents_shard_1_pkey on discordgatewayevents_shard_1 discordgatewayevents_2  (cost=0.15..26.65 rows=4 width=86) (actual time=0.010..0.010 rows=0 loops=1)
+        //                     Filter: ((shard % 8) = 0)
+        //               ->  Index Scan using discordgatewayevents_shard_2_pkey on discordgatewayevents_shard_2 discordgatewayevents_3  (cost=0.15..26.65 rows=4 width=86) (actual time=0.005..0.005 rows=0 loops=1)
+        //                     Filter: ((shard % 8) = 0)
+        //               ->  Index Scan using discordgatewayevents_shard_3_pkey on discordgatewayevents_shard_3 discordgatewayevents_4  (cost=0.15..26.65 rows=4 width=86) (actual time=0.009..0.009 rows=0 loops=1)
+        //                     Filter: ((shard % 8) = 0)
+        //               ->  Index Scan using discordgatewayevents_shard_4_pkey on discordgatewayevents_shard_4 discordgatewayevents_5  (cost=0.15..26.65 rows=4 width=86) (actual time=0.004..0.004 rows=0 loops=1)
+        //                     Filter: ((shard % 8) = 0)
+        //               ->  Index Scan using discordgatewayevents_shard_5_pkey on discordgatewayevents_shard_5 discordgatewayevents_6  (cost=0.15..26.65 rows=4 width=86) (actual time=0.004..0.004 rows=0 loops=1)
+        //                     Filter: ((shard % 8) = 0)
+        //               ->  Index Scan using discordgatewayevents_shard_6_pkey on discordgatewayevents_shard_6 discordgatewayevents_7  (cost=0.15..26.65 rows=4 width=86) (actual time=0.005..0.005 rows=0 loops=1)
+        //                     Filter: ((shard % 8) = 0)
+        // ...
+        // Thankfully we already know our targets, so we will build our query manually
+        val minShard = replicaInstance.minShard
+        val maxShard = replicaInstance.maxShard
+        val shards = minShard..maxShard step totalConnections
+        var isFirst = true
+        for (shard in shards) {
+            if (!isFirst)
+                append(" OR ")
+            append("shard = ${shard + connectionId}")
+            isFirst = false
+        }
+        append(""" ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $DISCORD_GATEWAY_EVENTS_TABLE.id RETURNING $DISCORD_GATEWAY_EVENTS_TABLE.*;""")
+    }
 
     @OptIn(ExperimentalTime::class)
     override fun run() {
+        println(sql)
         while (true) {
             try {
                 val connection = queueDatabaseDataSource.connection
