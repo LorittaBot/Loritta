@@ -121,7 +121,7 @@ data class DivineInterventionSonhosTransaction(
 ) : SonhosTransaction()
 
 @Serializable
-data class BotVoteTransaction(
+data class BotVoteSonhosTransaction(
     override val id: Long,
     override val timestamp: Instant,
     override val user: UserId,

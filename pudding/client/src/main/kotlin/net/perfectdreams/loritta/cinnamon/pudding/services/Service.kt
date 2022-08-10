@@ -6,39 +6,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.Achievement
-import net.perfectdreams.loritta.cinnamon.pudding.data.Background
-import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
-import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.CorreiosPackageUpdateUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
-import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.InviteBlockerConfig
-import net.perfectdreams.loritta.cinnamon.pudding.data.Marriage
-import net.perfectdreams.loritta.cinnamon.pudding.data.MiscellaneousConfig
-import net.perfectdreams.loritta.cinnamon.pudding.data.PatchNotesNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileDesignGroupBackgroundVariation
-import net.perfectdreams.loritta.cinnamon.pudding.data.ProfileSettings
-import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
-import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
-import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffect
-import net.perfectdreams.loritta.cinnamon.pudding.data.ShipEffectSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.SparklyPowerLSXSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
-import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownSonhosTransaction
-import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
+import net.perfectdreams.loritta.cinnamon.pudding.data.*
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingMarriage
@@ -70,14 +38,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.InviteBlockerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MiscellaneousConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.StarboardConfigs
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BrokerSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DailyTaxSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.PaymentSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ShipEffectSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SparklyPowerLSXSonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import org.jetbrains.exposed.sql.ResultRow
 
 open class Service(private val pudding: Pudding) {
@@ -278,6 +239,14 @@ fun SonhosTransaction.Companion.fromRow(row: ResultRow): SonhosTransaction {
             row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
             UserId(row[SonhosTransactionsLog.user].value),
             row[ShipEffectSonhosTransactionsLog.sonhos]
+        )
+    } else if (row.getOrNull(BotVoteSonhosTransactionsLog.id) != null) {
+        BotVoteSonhosTransaction(
+            row[SonhosTransactionsLog.id].value,
+            row[SonhosTransactionsLog.timestamp].toKotlinInstant(),
+            UserId(row[SonhosTransactionsLog.user].value),
+            row[BotVoteSonhosTransactionsLog.websiteSource],
+            row[BotVoteSonhosTransactionsLog.sonhos]
         )
     } else {
         UnknownSonhosTransaction(

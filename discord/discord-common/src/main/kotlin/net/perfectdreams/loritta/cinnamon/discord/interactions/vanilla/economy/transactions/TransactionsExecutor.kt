@@ -226,7 +226,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                         is DivineInterventionSonhosTransaction -> DivineInterventionSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         // ===[ BOT VOTE ]===
-                        is BotVoteTransaction -> BotVoteTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is BotVoteSonhosTransaction -> BotVoteTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
 
                         // ===[ SHIP EFFECT ]===
                         is ShipEffectSonhosTransaction -> ShipEffectSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
