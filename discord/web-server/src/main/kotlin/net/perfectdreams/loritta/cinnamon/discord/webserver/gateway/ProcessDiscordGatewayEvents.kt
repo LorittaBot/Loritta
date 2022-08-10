@@ -198,7 +198,7 @@ class ProcessDiscordGatewayEvents(
 
                                 // Auto commit on every X statements
                                 // This is useful because committing marks the tuple as dead on PostgreSQL side, and depending on how many events we are processing, it is useful to commit before we finish everything
-                                if (processedStatements % commitOnEveryXStatements == 0) {
+                                if (statements.isNotEmpty() && processedStatements % commitOnEveryXStatements == 0) {
                                     logger.info { "Processed $processedStatements statements, triggering a commit request..." }
                                     it.commit()
                                 }
