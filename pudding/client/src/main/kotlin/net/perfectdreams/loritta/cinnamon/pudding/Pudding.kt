@@ -11,9 +11,6 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType
-import net.perfectdreams.loritta.cinnamon.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.utils.*
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.services.*
@@ -32,7 +29,6 @@ import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
-import org.postgresql.jdbc.PgConnection
 import java.security.SecureRandom
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -228,6 +224,7 @@ class Pudding(
             CorreiosPackageUpdateUserNotifications,
             BomDiaECiaMatches,
             BotVoteSonhosTransactionsLog,
+            DiscordLorittaApplicationCommandHashes,
 
             DiscordGuilds,
             DiscordGuildMembers,
