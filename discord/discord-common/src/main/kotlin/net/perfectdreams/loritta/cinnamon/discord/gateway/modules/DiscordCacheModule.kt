@@ -44,11 +44,11 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         .asMap()
 
     /**
-     * To avoid all connections in the connection pool being used by GuildCreate events, we will limit to max 100 GuildCreate in parallel
+     * To avoid all connections in the connection pool being used by GuildCreate events, we will limit to max `connections in the pool - 5`, with a minimum of one permit GuildCreate in parallel
      *
      * This avoids issues where all events stop being processed due to a "explosion" of GuildCreates after a shard restart!
      */
-    private val guildCreateSemaphore = Semaphore(100)
+    private val guildCreateSemaphore = Semaphore((m.services.hikariDataSource.maximumPoolSize - 5).coerceAtLeast(1))
 
     private suspend inline fun withMutex(vararg ids: Snowflake, action: () -> Unit) = mutexes.getOrPut(ids.joinToString(":")) { Mutex() }.withLock(action = action)
 

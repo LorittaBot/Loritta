@@ -50,10 +50,7 @@ object LorittaCinnamonWebServerLauncher {
             rootConfig.cinnamon.services.pudding.database,
             rootConfig.cinnamon.services.pudding.username,
             rootConfig.cinnamon.services.pudding.password
-        ) {
-            // Because GuildCreates are very I/O intensive, so we are going to increase from the default 30 to 120
-            maximumPoolSize = 120
-        }
+        )
         services.setupShutdownHook()
 
         logger.info { "Started Pudding client!" }
