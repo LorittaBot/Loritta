@@ -29,5 +29,5 @@ class LorittaNotificationListener(m: Pudding) {
         )
     )
 
-    fun start() = Thread(postgreSQLNotificationListener).start()
+    fun start() = Thread(null, postgreSQLNotificationListener, "PostgreSQL Notification Listener").start()
 }
