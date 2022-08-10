@@ -22,3 +22,9 @@ data class DiscordGatewayCommandNotification(
     val shardId: Int,
     val payload: JsonObject
 ) : LorittaNotification(), LorittaNotificationRequest
+
+@Serializable
+data class NewDiscordGatewayEventNotification(
+    override val uniqueId: String,
+    val shardId: Int
+) : LorittaNotification(), LorittaNotificationRequest

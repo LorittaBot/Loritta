@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.pudding.utils
 
+import com.zaxxer.hikari.HikariDataSource
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import org.postgresql.jdbc.PgConnection
 
 class PostgreSQLNotificationListener(
-    private val pudding: Pudding,
+    private val hikariDataSource: HikariDataSource,
     private val callbacks: Map<String, (String) -> (Unit)>
 ) : Runnable {
     companion object {
@@ -15,7 +15,7 @@ class PostgreSQLNotificationListener(
     override fun run() {
         while (true) {
             try {
-                pudding.hikariDataSource.connection
+                hikariDataSource.connection
                     .unwrap(PgConnection::class.java)
                     .use { pgConnection ->
                         val stmt = pgConnection.createStatement()
