@@ -14,7 +14,9 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
+import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.LinkedBlockingQueue
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
@@ -149,10 +151,15 @@ class ProcessDiscordGatewayEvents(
                         .filterKeys { it in shards }
 
                     val connection = queueDatabaseDataSource.connection
-                    var processedOnThisRound = 0
                     val duration = measureTime {
+                        val statements = LinkedBlockingQueue<String>()
+                        statements.addAll(sqlStatementsForTheShards.values)
+
                         connection.use {
-                            for (sql in sqlStatementsForTheShards.values) {
+                            while (statements.isNotEmpty()) {
+                                val sql = statements.remove()
+
+                                var processedOnThisStatement = 0
                                 val selectStatement = it.prepareStatement(sql)
                                 val rs = selectStatement.executeQuery()
 
@@ -176,7 +183,12 @@ class ProcessDiscordGatewayEvents(
 
                                     count++
                                     totalEventsProcessed++
-                                    processedOnThisRound++
+                                    processedOnThisStatement++
+                                }
+
+                                if (processedOnThisStatement == totalEventsPerBatch) {
+                                    logger.warn { "We received $processedOnThisStatement events on the current statement, which is the same value as the total events per batch! This may mean that there is more pending events than what the batch is retrieving, so we will requeue the statement..." }
+                                    statements.add(sql)
                                 }
                             }
 
