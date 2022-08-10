@@ -22,7 +22,6 @@ class LorittaCinnamonWebServer(
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
-        private const val PARTITION_STEP = 32
     }
 
     private val replicaInstance = config.replicas.instances.firstOrNull { it.replicaId == replicaId } ?: error("Missing replica configuration for replica ID $replicaId")
@@ -67,12 +66,12 @@ class LorittaCinnamonWebServer(
                 CREATE INDEX IF NOT EXISTS ${ProcessDiscordGatewayEvents.DISCORD_GATEWAY_EVENTS_TABLE}_shard ON ${ProcessDiscordGatewayEvents.DISCORD_GATEWAY_EVENTS_TABLE} (shard);
             """.trimIndent())
 
-            // Now create each partition
-            for (i in 0 until config.discordShards.totalShards step PARTITION_STEP) {
+            // Now create a partition for each shard
+            repeat(config.discordShards.totalShards) { shardId ->
                 val statement2 = it.createStatement()
                 statement2.executeUpdate("""
-                    CREATE UNLOGGED TABLE IF NOT EXISTS ${ProcessDiscordGatewayEvents.DISCORD_GATEWAY_EVENTS_TABLE}_shards_${i}to${i + 16} PARTITION OF ${ProcessDiscordGatewayEvents.DISCORD_GATEWAY_EVENTS_TABLE}
-                        FOR VALUES FROM ($i) TO (${i + PARTITION_STEP});
+                    CREATE UNLOGGED TABLE IF NOT EXISTS ${ProcessDiscordGatewayEvents.DISCORD_GATEWAY_EVENTS_TABLE}_shard_$shardId PARTITION OF ${ProcessDiscordGatewayEvents.DISCORD_GATEWAY_EVENTS_TABLE}
+                        FOR VALUES FROM ($shardId) TO (${shardId + 1});
                 """.trimIndent())
             }
             it.commit()
