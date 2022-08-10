@@ -77,6 +77,7 @@ class LorittaCinnamonWebServer(
             }
 
             statement.executeUpdate(sql)
+            it.commit()
         }
 
         val cinnamon = LorittaCinnamon(

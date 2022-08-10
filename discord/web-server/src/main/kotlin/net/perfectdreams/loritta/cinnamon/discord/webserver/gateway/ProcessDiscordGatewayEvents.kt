@@ -35,8 +35,7 @@ class ProcessDiscordGatewayEvents(
     var lastPollDuration: Duration? = null
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val sql = buildString {
-        append("""DELETE FROM $DISCORD_GATEWAY_EVENTS_TABLE USING (SELECT "id", "type", "shard", "payload" FROM $DISCORD_GATEWAY_EVENTS_TABLE WHERE """)
+    private val sqlStatements = (replicaInstance.minShard..replicaInstance.maxShard step totalConnections).map {
         // While using "shard BETWEEN ${replicaInstance.minShard} AND ${replicaInstance.maxShard} AND" and "shard % 8 = 0" seems obvious, using those seems to cause PostgreSQL to query
         // EVERY SINGLE TABLE!!
         // Limit  (cost=2.71..9.64 rows=1 width=103) (actual time=0.112..0.113 rows=0 loops=1)
@@ -58,53 +57,90 @@ class ProcessDiscordGatewayEvents(
         //               ->  Index Scan using discordgatewayevents_shard_6_pkey on discordgatewayevents_shard_6 discordgatewayevents_7  (cost=0.15..26.65 rows=4 width=86) (actual time=0.005..0.005 rows=0 loops=1)
         //                     Filter: ((shard % 8) = 0)
         // ...
-        // Thankfully we already know our targets, so we will build our query manually
-        val minShard = replicaInstance.minShard
-        val maxShard = replicaInstance.maxShard
-        val shards = minShard..maxShard step totalConnections
-        var isFirst = true
-        for (shard in shards) {
-            if (!isFirst)
-                append(" OR ")
-            append("shard = ${shard + connectionId}")
-            isFirst = false
-        }
-        append(""" ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $DISCORD_GATEWAY_EVENTS_TABLE.id RETURNING $DISCORD_GATEWAY_EVENTS_TABLE.*;""")
+        // And trying to manually add shard = 1 OR shard = 2... does fix the performance issue a bit, but it is still bad
+        // loritta_queues=# EXPLAIN ANALYZE SELECT "id", "type", "shard", "payload" FROM discordgatewayevents WHERE shard = 695 OR shard = 703 ORDER BY id LIMIT 10000;
+        //                                                                                 QUERY PLAN
+        //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // Limit  (cost=13.04..13.05 rows=3 width=903) (actual time=0.544..0.546 rows=0 loops=1)
+        //   ->  Sort  (cost=13.04..13.05 rows=3 width=903) (actual time=0.544..0.545 rows=0 loops=1)
+        //         Sort Key: discordgatewayevents.id
+        //         Sort Method: quicksort  Memory: 25kB
+        //         ->  Append  (cost=2.47..13.01 rows=3 width=903) (actual time=0.540..0.541 rows=0 loops=1)
+        //               ->  Bitmap Heap Scan on discordgatewayevents_shard_695 discordgatewayevents_1  (cost=2.47..3.60 rows=1 width=1097) (actual time=0.333..0.334 rows=0 loops=1)
+        //                     Recheck Cond: ((shard = 695) OR (shard = 703))
+        //                     ->  BitmapOr  (cost=2.47..2.47 rows=1 width=0) (actual time=0.030..0.031 rows=0 loops=1)
+        //                           ->  Bitmap Index Scan on discordgatewayevents_shard_695_shard_idx  (cost=0.00..1.23 rows=1 width=0) (actual time=0.029..0.029 rows=1044 loops=1)
+        //                                 Index Cond: (shard = 695)
+        //                           ->  Bitmap Index Scan on discordgatewayevents_shard_695_shard_idx  (cost=0.00..1.23 rows=1 width=0) (actual time=0.001..0.001 rows=0 loops=1)
+        //                                 Index Cond: (shard = 703)
+        //               ->  Bitmap Heap Scan on discordgatewayevents_shard_703 discordgatewayevents_2  (cost=7.13..9.37 rows=2 width=807) (actual time=0.206..0.207 rows=0 loops=1)
+        //                     Recheck Cond: ((shard = 695) OR (shard = 703))
+        //                     ->  BitmapOr  (cost=7.13..7.13 rows=2 width=0) (actual time=0.029..0.030 rows=0 loops=1)
+        //                           ->  Bitmap Index Scan on discordgatewayevents_shard_703_shard_idx  (cost=0.00..2.46 rows=1 width=0) (actual time=0.006..0.006 rows=0 loops=1)
+        //                                 Index Cond: (shard = 695)
+        //                           ->  Bitmap Index Scan on discordgatewayevents_shard_703_shard_idx  (cost=0.00..4.67 rows=2 width=0) (actual time=0.023..0.023 rows=655 loops=1)
+        //                                 Index Cond: (shard = 703)
+        // ...
+        // What can we do?
+        // We will abuse the fact that we create a different table for each shard, and then query it directly using different statements!
+        // loritta_queues=# EXPLAIN ANALYZE SELECT "id", "type", "shard", "payload" FROM discordgatewayevents_shard_384 ORDER BY id LIMIT 10000;
+        //                                                                                  QUERY PLAN
+        //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+        // Limit  (cost=0.13..31.06 rows=8 width=1298) (actual time=0.047..0.047 rows=0 loops=1)
+        //   ->  Index Scan using discordgatewayevents_shard_384_pkey on discordgatewayevents_shard_384  (cost=0.13..31.06 rows=8 width=1298) (actual time=0.046..0.046 rows=0 loops=1)
+        // Planning Time: 0.053 ms
+        // Execution Time: 0.056 ms
+        // (4 rows)
+        // Look, ok, 0.056ms for each shard, let's do some calculations then
+        // The full:tm: 40 shards query with WHERE shard = 1 OR ... = 43.639 ms
+        // Direct Table access = 0.056
+        // 0.056 * 40 = 2.24 ms!!!
+        // So let's go... even further beyond!
+        val trueTableName = DISCORD_GATEWAY_EVENTS_TABLE + "_shard_${it + connectionId}"
+        """DELETE FROM $trueTableName USING (SELECT "id", "type", "shard", "payload" FROM $trueTableName ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $trueTableName.id RETURNING $trueTableName.*;"""
     }
 
     @OptIn(ExperimentalTime::class)
     override fun run() {
-        println(sql)
+        for (statement in sqlStatements) {
+            logger.info { "SQL Statement to be used in the event processor (conn ID: $connectionId): $statement" }
+        }
+
         while (true) {
             try {
                 val connection = queueDatabaseDataSource.connection
                 lastPollDuration = measureTime {
                     connection.use {
-                        val selectStatement = it.prepareStatement(sql)
-                        val rs = selectStatement.executeQuery()
+                        for (sql in sqlStatements) {
+                            val selectStatement = it.prepareStatement(sql)
+                            val rs = selectStatement.executeQuery()
 
-                        var count = 0
+                            var count = 0
 
-                        while (rs.next()) {
-                            val type = rs.getString("type")
-                            val shardId = rs.getInt("shard")
-                            val gatewayPayload = rs.getString("payload")
+                            while (rs.next()) {
+                                val type = rs.getString("type")
+                                val shardId = rs.getInt("shard")
+                                val gatewayPayload = rs.getString("payload")
 
-                            val discordEvent = KordDiscordEventUtils.parseEventFromString(gatewayPayload)
+                                val discordEvent = KordDiscordEventUtils.parseEventFromString(gatewayPayload)
 
-                            if (discordEvent != null) {
-                                // Emit the event to our proxied instances
-                                val proxiedKordGateway = proxiedKordGateways[shardId] ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
-                                coroutineScope.launch {
-                                    proxiedKordGateway.events.emit(discordEvent)
+                                if (discordEvent != null) {
+                                    // Emit the event to our proxied instances
+                                    val proxiedKordGateway = proxiedKordGateways[shardId]
+                                        ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
+                                    coroutineScope.launch {
+                                        proxiedKordGateway.events.emit(discordEvent)
+                                    }
+                                } else {
+                                    logger.warn { "Unknown Discord event received ($type)! We are going to ignore the event... kthxbye!" }
                                 }
-                            } else {
-                                logger.warn { "Unknown Discord event received ($type)! We are going to ignore the event... kthxbye!" }
-                            }
 
-                            count++
-                            totalEventsProcessed++
+                                count++
+                                totalEventsProcessed++
+                            }
                         }
+
+                        it.commit()
                     }
                 }
                 totalPollLoopsCount++

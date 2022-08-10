@@ -108,8 +108,7 @@ object LorittaCinnamonWebServerLauncher {
         // https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
         hikariConfig.addDataSourceProperty("reWriteBatchedInserts", "true")
 
-        // We want to use autocommit, mostly to avoid issuing a "COMMIT" statement on the gateway event loop
-        hikariConfig.isAutoCommit = true
+        hikariConfig.isAutoCommit = false
 
         // Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
         hikariConfig.leakDetectionThreshold = 30L * 1000
