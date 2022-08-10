@@ -7,6 +7,9 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
+import kotlin.time.Duration
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 /**
  * Processes Discord Gateway Events stored on a PostgreSQL table
@@ -29,46 +32,51 @@ class ProcessDiscordGatewayEvents(
 
     var totalEventsProcessed = 0L
     var totalPollLoopsCount = 0L
+    var lastPollDuration: Duration? = null
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val sql = """DELETE FROM $DISCORD_GATEWAY_EVENTS_TABLE USING (SELECT "id", "type", "shard", "payload" FROM $DISCORD_GATEWAY_EVENTS_TABLE WHERE shard BETWEEN ${replicaInstance.minShard} AND ${replicaInstance.maxShard} AND shard % $totalConnections = $connectionId ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $DISCORD_GATEWAY_EVENTS_TABLE.id RETURNING $DISCORD_GATEWAY_EVENTS_TABLE.*;"""
 
+    @OptIn(ExperimentalTime::class)
     override fun run() {
         while (true) {
             try {
                 val connection = queueDatabaseDataSource.connection
-                connection.use {
-                    val selectStatement = it.prepareStatement(sql)
-                    val rs = selectStatement.executeQuery()
+                lastPollDuration = measureTime {
+                    connection.use {
+                        val selectStatement = it.prepareStatement(sql)
+                        val rs = selectStatement.executeQuery()
 
-                    var count = 0
-                    val processedRows = mutableListOf<Long>()
+                        var count = 0
+                        val processedRows = mutableListOf<Long>()
 
-                    while (rs.next()) {
-                        val id = rs.getLong("id")
-                        val type = rs.getString("type")
-                        val shardId = rs.getInt("shard")
-                        val gatewayPayload = rs.getString("payload")
+                        while (rs.next()) {
+                            val id = rs.getLong("id")
+                            val type = rs.getString("type")
+                            val shardId = rs.getInt("shard")
+                            val gatewayPayload = rs.getString("payload")
 
-                        val discordEvent = KordDiscordEventUtils.parseEventFromString(gatewayPayload)
+                            val discordEvent = KordDiscordEventUtils.parseEventFromString(gatewayPayload)
 
-                        if (discordEvent != null) {
-                            // Emit the event to our proxied instances
-                            val proxiedKordGateway = proxiedKordGateways[shardId] ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
-                            coroutineScope.launch {
-                                proxiedKordGateway.events.emit(discordEvent)
+                            if (discordEvent != null) {
+                                // Emit the event to our proxied instances
+                                val proxiedKordGateway = proxiedKordGateways[shardId]
+                                    ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
+                                coroutineScope.launch {
+                                    proxiedKordGateway.events.emit(discordEvent)
+                                }
+                            } else {
+                                logger.warn { "Unknown Discord event received ($type)! We are going to ignore the event... kthxbye!" }
                             }
-                        } else {
-                            logger.warn { "Unknown Discord event received ($type)! We are going to ignore the event... kthxbye!" }
+
+                            count++
+                            totalEventsProcessed++
+
+                            processedRows.add(id)
                         }
 
-                        count++
-                        totalEventsProcessed++
-
-                        processedRows.add(id)
+                        it.commit()
                     }
-
-                    it.commit()
                 }
                 totalPollLoopsCount++
             } catch (e: Exception) {

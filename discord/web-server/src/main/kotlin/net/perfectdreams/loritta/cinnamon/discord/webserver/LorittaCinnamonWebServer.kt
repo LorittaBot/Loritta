@@ -98,7 +98,7 @@ class LorittaCinnamonWebServer(
             logger.info { "Total Poll Loops: $totalPollLoopsCheck; (+${totalPollLoopsCheck - previousPollLoopsCheck})" }
             for (processor in discordGatewayEventsProcessors) {
                 val previousStats = stats[processor.connectionId] ?: Pair(0L, 0L)
-                logger.info { "Processor shardId % ${processor.totalConnections} == ${processor.connectionId}: Discord Events processed: ${processor.totalEventsProcessed} (+${processor.totalEventsProcessed - previousStats.first}); Current Poll Loops Count: ${processor.totalPollLoopsCount} (+${processor.totalPollLoopsCount - previousStats.second})"}
+                logger.info { "Processor shardId % ${processor.totalConnections} == ${processor.connectionId}: Discord Events processed: ${processor.totalEventsProcessed} (+${processor.totalEventsProcessed - previousStats.first}); Current Poll Loops Count: ${processor.totalPollLoopsCount} (+${processor.totalPollLoopsCount - previousStats.second}); Last poll took ${processor.lastPollDuration} to complete" }
                 stats[processor.connectionId] = Pair(processor.totalEventsProcessed, processor.totalPollLoopsCount)
             }
         }
