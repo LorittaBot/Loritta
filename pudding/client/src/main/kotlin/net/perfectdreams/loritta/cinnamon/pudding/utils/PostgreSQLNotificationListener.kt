@@ -30,8 +30,6 @@ class PostgreSQLNotificationListener(
 
                             for (notification in notifications) {
                                 try {
-                                    logger.info { "Received notification ${notification.name}: ${notification.parameter}" }
-
                                     val callback = callbacks[notification.name]
                                     callback?.invoke(notification.parameter)
                                 } catch (e: Exception) {
