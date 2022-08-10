@@ -41,7 +41,7 @@ class InteractionsRegistry(
                     logger.info { "Updating Loritta global commands... Hash: $currentHash" }
                     manager.interaKTions.updateAllGlobalCommands()
 
-                    val updateStatement = connection.prepareStatement("INSERT ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash) VALUES (0, $currentHash) ON CONFLICT (id) DO UPDATE SET hash = $currentHash;")
+                    val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash) VALUES (0, $currentHash) ON CONFLICT (id) DO UPDATE SET hash = $currentHash;")
                     updateStatement.executeUpdate()
 
                     logger.info { "Successfully updated Loritta's global commands! Hash: $currentHash" }
