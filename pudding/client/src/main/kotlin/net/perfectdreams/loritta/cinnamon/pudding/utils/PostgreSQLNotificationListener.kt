@@ -14,25 +14,34 @@ class PostgreSQLNotificationListener(
 
     override fun run() {
         while (true) {
-            val pgConnection = pudding.hikariDataSource.connection
-                .unwrap(PgConnection::class.java)
+            try {
+                pudding.hikariDataSource.connection
+                    .unwrap(PgConnection::class.java)
+                    .use { pgConnection ->
+                        val stmt = pgConnection.createStatement()
+                        for (channel in callbacks.keys) {
+                            stmt.execute("LISTEN $channel;")
+                        }
+                        stmt.close()
+                        pgConnection.commit()
 
-            val stmt = pgConnection.createStatement()
-            for (channel in callbacks.keys) {
-                stmt.execute("LISTEN $channel;")
-            }
-            stmt.close()
-            pgConnection.commit()
+                        while (true) {
+                            val notifications = pgConnection.getNotifications(Int.MAX_VALUE)
 
-            while (true) {
-                val notifications = pgConnection.getNotifications(Int.MAX_VALUE)
+                            for (notification in notifications) {
+                                try {
+                                    logger.info { "Received notification ${notification.name}: ${notification.parameter}" }
 
-                for (notification in notifications) {
-                    logger.info { "Received notification ${notification.name}: ${notification.parameter}" }
-
-                    val callback = callbacks[notification.name]
-                    callback?.invoke(notification.parameter)
-                }
+                                    val callback = callbacks[notification.name]
+                                    callback?.invoke(notification.parameter)
+                                } catch (e: Exception) {
+                                    logger.warn(e) { "Something went wrong while processing PostgreSQL notification ${notification.name}! We will ignore it..." }
+                                }
+                            }
+                        }
+                    }
+            } catch (e: Exception) {
+                logger.warn(e) { "Something went wrong while listening for PostgreSQL notifications! We will restart the connection..." }
             }
         }
     }
