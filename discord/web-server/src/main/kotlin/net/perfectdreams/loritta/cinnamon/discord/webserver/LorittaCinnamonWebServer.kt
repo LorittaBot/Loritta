@@ -74,7 +74,6 @@ class LorittaCinnamonWebServer(
                         FOR VALUES FROM ($shardId) TO (${shardId + 1});
                 """.trimIndent())
             }
-            it.commit()
         }
 
         val cinnamon = LorittaCinnamon(
