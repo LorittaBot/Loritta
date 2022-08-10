@@ -79,7 +79,9 @@ object LorittaLauncher {
 			config.queueDatabase.databaseName,
 			config.queueDatabase.username,
 			config.queueDatabase.password
-		)
+		) {
+			hikariConfig.maximumPoolSize = config.queueDatabase.maximumPoolSize
+		}
 
 		// Iniciar instância da Loritta
 		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig, queueConnection)
@@ -150,7 +152,6 @@ object LorittaLauncher {
 		hikariConfig.leakDetectionThreshold = 30L * 1000
 		hikariConfig.transactionIsolation = IsolationLevel.TRANSACTION_READ_COMMITTED.name
 
-		hikariConfig.maximumPoolSize = 100 // Let's allow 100 connections dedicated to just inserting things on the queue
 		hikariConfig.poolName = "QueuePool"
 		// Disable synchronous commit to increase throughput
 		// Because all of these connections will only be used for gateway event queue, we can set the synchronous_commit on the session itself
