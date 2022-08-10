@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
+import mu.KLogger
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 
@@ -13,7 +14,7 @@ class EventAnalyticsTask(private val m: LorittaCinnamon) : Runnable {
         val runtime = Runtime.getRuntime()
 
         for (analyticHandler in m.analyticHandlers)
-            analyticHandler.send()
+            analyticHandler.send(logger)
 
         logger.info { "Active Events (${m.activeEvents.size})" }
         logger.info { "Used Memory: ${(runtime.totalMemory() - runtime.freeMemory()) / mb}MiB" }
@@ -23,6 +24,6 @@ class EventAnalyticsTask(private val m: LorittaCinnamon) : Runnable {
     }
 
     fun interface AnalyticHandler {
-        fun send()
+        fun send(logger: KLogger)
     }
 }

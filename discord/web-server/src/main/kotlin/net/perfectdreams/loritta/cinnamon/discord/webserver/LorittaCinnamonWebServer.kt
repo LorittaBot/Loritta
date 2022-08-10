@@ -8,6 +8,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.utils.EventAnalyticsTask
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProcessDiscordGatewayEvents
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProxyDiscordGatewayManager
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.RootConfig
@@ -159,7 +160,7 @@ class LorittaCinnamonWebServer(
             }
         }
 
-        cinnamon.addAnalyticHandler {
+        cinnamon.addAnalyticHandler { logger ->
             val statsValues = stats.values
             val previousEventsProcessed = statsValues.sumOf { it.first }
             val previousPollLoopsCheck = statsValues.sumOf { it.second }
