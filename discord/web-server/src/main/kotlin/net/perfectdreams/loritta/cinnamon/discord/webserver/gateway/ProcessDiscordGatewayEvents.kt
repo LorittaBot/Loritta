@@ -120,7 +120,7 @@ class ProcessDiscordGatewayEvents(
     val shardsMutex = Mutex()
     val shardsWithNewEvents = mutableSetOf<Int>()
     // We don't want to suspend if it is overflowing, so we will just drop the latest and that's it
-    val notificationChannelTrigger = Channel<Unit>(onBufferOverflow = BufferOverflow.DROP_LATEST)
+    val notificationChannelTrigger = Channel<Unit>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     @OptIn(ExperimentalTime::class)
     suspend fun run() {
