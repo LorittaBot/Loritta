@@ -44,6 +44,7 @@ class LorittaCinnamonWebServer(
     private val discordGatewayEventsProcessors = (0 until config.queueDatabase.connections).map {
         ProcessDiscordGatewayEvents(
             config.totalEventsPerBatch,
+            config.queueDatabase.commitOnEveryXStatements,
             config.queueDatabase.connections,
             it,
             replicaInstance,
