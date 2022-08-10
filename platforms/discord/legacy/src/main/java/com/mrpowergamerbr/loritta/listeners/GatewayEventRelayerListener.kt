@@ -6,6 +6,7 @@ import kotlinx.coroutines.channels.ClosedSendChannelException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.jsonObject
@@ -13,10 +14,13 @@ import kotlinx.serialization.json.put
 import mu.KotlinLogging
 import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
+import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.NewDiscordGatewayEventNotification
 import org.postgresql.util.PGobject
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.OffsetDateTime
+import java.util.*
 
 class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
     companion object {
@@ -27,7 +31,7 @@ class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
     var hasEventsBeenDroppedYet = false
 
     override fun onRawGateway(event: RawGatewayEvent) {
-        // We will limit the pending gateway events in 1_000_000 events
+        // We will limit the pending gateway events to avoid having too many pending events to be processed
         if (m.config.gatewayProxy.maxPendingEventsThreshold > m.pendingGatewayEventsCount) {
             hasEventsBeenDroppedYet = false
             GlobalScope.launch(m.coroutineDispatcher) {
@@ -45,6 +49,12 @@ class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
                         pgObject.value = packageAsString
                         statement.setObject(4, pgObject)
                         statement.executeUpdate()
+
+                        // Submit new gateway event notification
+                        val notificationStatement = it.prepareStatement("SELECT pg_notify('gateway_events', ?)")
+                        notificationStatement.setString(1, Json.encodeToString<LorittaNotification>(NewDiscordGatewayEventNotification(UUID.randomUUID().toString(), event.jda.shardInfo.shardId)))
+                        notificationStatement.execute()
+
                         it.commit()
                     }
                 }

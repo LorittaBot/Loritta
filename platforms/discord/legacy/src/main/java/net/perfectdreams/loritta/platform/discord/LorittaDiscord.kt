@@ -135,7 +135,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
     }
     // This is also by lazy due to the same reason described above
     val notificationListener by lazy {
-        LorittaNotificationListener(pudding)
+        LorittaNotificationListener(pudding.hikariDataSource)
             .apply {
                 this.start()
             }
