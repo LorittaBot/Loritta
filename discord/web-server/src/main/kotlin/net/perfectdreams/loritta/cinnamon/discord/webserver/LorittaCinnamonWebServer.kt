@@ -2,15 +2,26 @@ package net.perfectdreams.loritta.cinnamon.discord.webserver
 
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.client.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.utils.EventAnalyticsTask
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProcessDiscordGatewayEvents
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProxyDiscordGatewayManager
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.discord.webserver.webserver.InteractionsServer
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
+import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.NewDiscordGatewayEventNotification
+import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PostgreSQLNotificationListener
+import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
 
 class LorittaCinnamonWebServer(
     val config: RootConfig,
@@ -43,7 +54,38 @@ class LorittaCinnamonWebServer(
         )
     }
 
+    // The same thing as a above, but in a ShardId -> Processor Map, to improve performance (yay)
+    private val shardToDiscordGatewayEventsProcessors = discordGatewayEventsProcessors.flatMap {
+        it.shardsHandledByThisProcessor.map { shardId -> shardId to it }
+    }.toMap()
+
     private val stats = mutableMapOf<Int, Pair<Long, Long>>()
+
+    private val gatewayQueueNotificationCoroutineScope = CoroutineScope(Dispatchers.IO)
+
+    val gatewayQueueNotificationListener = PostgreSQLNotificationListener(
+        queueConnection,
+        mapOf(
+            "gateway_events" to {
+                val lorittaNotification = JsonIgnoreUnknownKeys.decodeFromString<LorittaNotification>(it)
+
+                if (lorittaNotification is NewDiscordGatewayEventNotification) {
+                    gatewayQueueNotificationCoroutineScope.launch {
+                        val processor = shardToDiscordGatewayEventsProcessors[lorittaNotification.shardId] ?: return@launch // Not for us, bye
+
+                        processor.shardsMutex.withLock {
+                            processor.shardsWithNewEvents.add(lorittaNotification.shardId)
+                        }
+
+                        // We will use trySend because we don't care if the notification is lost
+                        processor.notificationChannelTrigger.trySend(Unit)
+                    }
+                }
+            }
+        )
+    ).also {
+        Thread(null, it, "Gateway Events PostgreSQL Notification Listener").start()
+    }
 
     fun start() {
         // To avoid initializing Exposed for our "queueConnection" just to create a table, we will create the table manually with SQL statements (woo, scary!)
@@ -92,11 +134,9 @@ class LorittaCinnamonWebServer(
 
         // Start processing gateway events
         for (processor in discordGatewayEventsProcessors) {
-            Thread(
-                null,
-                processor,
-                "GatewayEventsPoller-${processor.connectionId}"
-            ).start()
+            GlobalScope.launch(Dispatchers.IO) {
+                processor.run()
+            }
         }
 
         cinnamon.addAnalyticHandler {

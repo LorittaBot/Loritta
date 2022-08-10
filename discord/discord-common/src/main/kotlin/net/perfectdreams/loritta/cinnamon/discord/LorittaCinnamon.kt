@@ -131,7 +131,7 @@ class LorittaCinnamon(
         debugGatewayModule
     )
 
-    val notificationListener = LorittaNotificationListener(services)
+    val notificationListener = LorittaNotificationListener(services.hikariDataSource)
         .apply {
             this.start()
         }

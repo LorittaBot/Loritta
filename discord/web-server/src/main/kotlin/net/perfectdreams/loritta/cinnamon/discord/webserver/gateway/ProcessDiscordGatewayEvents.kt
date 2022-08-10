@@ -3,10 +3,18 @@ package net.perfectdreams.loritta.cinnamon.discord.webserver.gateway
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.DurationUnit
@@ -26,7 +34,7 @@ class ProcessDiscordGatewayEvents(
     private val queueDatabaseDataSource: HikariDataSource,
     // Shard ID -> ProxiedKordGateway
     private val proxiedKordGateways: Map<Int, ProxiedKordGateway>
-) : Runnable {
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
         const val DISCORD_GATEWAY_EVENTS_TABLE = "discordgatewayevents"
@@ -37,7 +45,11 @@ class ProcessDiscordGatewayEvents(
     var lastPollDuration: Duration? = null
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val sqlStatements = (replicaInstance.minShard..replicaInstance.maxShard step totalConnections).map {
+    val shardsHandledByThisProcessor = (replicaInstance.minShard..replicaInstance.maxShard step totalConnections).map {
+        it + connectionId
+    }
+    // Shard ID -> SQL Statement
+    private val sqlStatements = shardsHandledByThisProcessor.associate {
         // While using "shard BETWEEN ${replicaInstance.minShard} AND ${replicaInstance.maxShard} AND" and "shard % 8 = 0" seems obvious, using those seems to cause PostgreSQL to query
         // EVERY SINGLE TABLE!!
         // Limit  (cost=2.71..9.64 rows=1 width=103) (actual time=0.112..0.113 rows=0 loops=1)
@@ -98,64 +110,82 @@ class ProcessDiscordGatewayEvents(
         // Direct Table access = 0.056
         // 0.056 * 40 = 2.24 ms!!!
         // So let's go... even further beyond!
-        val trueTableName = DISCORD_GATEWAY_EVENTS_TABLE + "_shard_${it + connectionId}"
-        """DELETE FROM $trueTableName USING (SELECT "id", "type", "shard", "payload" FROM $trueTableName ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $trueTableName.id RETURNING $trueTableName.*;"""
+        val trueTableName = DISCORD_GATEWAY_EVENTS_TABLE + "_shard_$it"
+        it to """DELETE FROM $trueTableName USING (SELECT "id", "shard", "payload" FROM $trueTableName ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $trueTableName.id RETURNING $trueTableName.*;"""
     }
 
+    val shardsMutex = Mutex()
+    val shardsWithNewEvents = mutableSetOf<Int>()
+    // We don't want to suspend if it is overflowing, so we will just drop the latest and that's it
+    val notificationChannelTrigger = Channel<Unit>(onBufferOverflow = BufferOverflow.DROP_LATEST)
+
     @OptIn(ExperimentalTime::class)
-    override fun run() {
-        for (statement in sqlStatements) {
-            logger.info { "SQL Statement to be used in the event processor (conn ID: $connectionId): $statement" }
+    suspend fun run() {
+        for ((shardId, statement) in sqlStatements) {
+            logger.info { "SQL Statement to be used in the event processor (shard ID: $shardId, conn ID: $connectionId): $statement" }
         }
 
         while (true) {
             try {
-                val connection = queueDatabaseDataSource.connection
-                var processedOnThisRound = 0
-                val duration = measureTime {
-                    connection.use {
-                        for (sql in sqlStatements) {
-                            val selectStatement = it.prepareStatement(sql)
-                            val rs = selectStatement.executeQuery()
-
-                            var count = 0
-
-                            while (rs.next()) {
-                                val type = rs.getString("type")
-                                val shardId = rs.getInt("shard")
-                                val gatewayPayload = rs.getString("payload")
-
-                                val discordEvent = KordDiscordEventUtils.parseEventFromString(gatewayPayload)
-
-                                if (discordEvent != null) {
-                                    // Emit the event to our proxied instances
-                                    val proxiedKordGateway = proxiedKordGateways[shardId]
-                                        ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
-                                    coroutineScope.launch {
-                                        proxiedKordGateway.events.emit(discordEvent)
-                                    }
-                                } else {
-                                    logger.warn { "Unknown Discord event received ($type)! We are going to ignore the event... kthxbye!" }
-                                }
-
-                                count++
-                                totalEventsProcessed++
-                                processedOnThisRound++
-                            }
-                        }
-
-                        it.commit()
+                // This will suspend until we receive a new notification
+                for (notification in notificationChannelTrigger) {
+                    // hey babe wake up new gateway event on shard ID 5 just dropped
+                    val shards = shardsMutex.withLock {
+                        // Within the mutex, we will clone the set and clear the current set
+                        val currentShardsWithNewEvents = shardsWithNewEvents.toSet()
+                        shardsWithNewEvents.clear()
+                        currentShardsWithNewEvents
                     }
-                }
-                lastPollDuration = duration
-                totalPollLoopsCount++
-                if (processedOnThisRound != totalEventsPerBatch) {
-                    // Sleep for 100ms to avoid overloading the system's CPU (database and the app itself)
-                    // However, if our query took more than 100ms, we won't sleep!
-                    // TODO: Notification System: Make Loritta publish a notification when a new event is posted, instead of polling and sleeping
-                    val sleepTime = (100.milliseconds - duration).toLong(DurationUnit.MILLISECONDS)
-                    if (sleepTime > 0)
-                        Thread.sleep(sleepTime)
+
+                    // After clearing the list, notifications can now begin to fill what shards have new events to be processed while we run the current loop :3
+                    // This way, we should *always* suspend when there isn't new events (because the notificationChannelTrigger won't have a Unit)
+
+                    if (shards.isEmpty()) {
+                        logger.warn { "Shards list is empty! If we received an notification, it shouldn't be empty... oh well, let's ignore it and hope for the best..." }
+                        continue
+                    }
+
+                    val sqlStatementsForTheShards = sqlStatements
+                        .filterKeys { it in shards }
+
+                    val connection = queueDatabaseDataSource.connection
+                    var processedOnThisRound = 0
+                    val duration = measureTime {
+                        connection.use {
+                            for (sql in sqlStatementsForTheShards.values) {
+                                val selectStatement = it.prepareStatement(sql)
+                                val rs = selectStatement.executeQuery()
+
+                                var count = 0
+
+                                while (rs.next()) {
+                                    val shardId = rs.getInt("shard")
+                                    val gatewayPayload = rs.getString("payload")
+
+                                    val discordEvent = KordDiscordEventUtils.parseEventFromString(gatewayPayload)
+
+                                    if (discordEvent != null) {
+                                        // Emit the event to our proxied instances
+                                        val proxiedKordGateway = proxiedKordGateways[shardId] ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
+                                        coroutineScope.launch {
+                                            proxiedKordGateway.events.emit(discordEvent)
+                                        }
+                                    } else {
+                                        logger.warn { "Unknown Discord event received! We are going to ignore the event... kthxbye!" }
+                                    }
+
+                                    count++
+                                    totalEventsProcessed++
+                                    processedOnThisRound++
+                                }
+                            }
+
+                            it.commit()
+                        }
+                    }
+
+                    lastPollDuration = duration
+                    totalPollLoopsCount++
                 }
             } catch (e: Exception) {
                 logger.warn(e) { "Something went wrong while polling pending Discord gateway events!" }
