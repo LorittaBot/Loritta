@@ -151,14 +151,13 @@ class ProcessDiscordGatewayEvents(
                     val sqlStatementsForTheShards = sqlStatements
                         .filterKeys { it in shards }
 
-                    val connection = queueDatabaseDataSource.connection
                     var processedStatements = 0
 
                     val duration = measureTime {
                         val statements = LinkedBlockingQueue<String>()
                         statements.addAll(sqlStatementsForTheShards.values)
 
-                        connection.use {
+                        queueDatabaseDataSource.connection.use {
                             while (statements.isNotEmpty()) {
                                 val sql = statements.remove()
 
