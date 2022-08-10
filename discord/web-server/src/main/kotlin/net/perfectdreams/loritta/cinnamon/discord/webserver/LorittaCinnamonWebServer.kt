@@ -22,6 +22,7 @@ class LorittaCinnamonWebServer(
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
+        private const val PARTITION_STEP = 32
     }
 
     private val replicaInstance = config.replicas.instances.firstOrNull { it.replicaId == replicaId } ?: error("Missing replica configuration for replica ID $replicaId")
@@ -67,11 +68,11 @@ class LorittaCinnamonWebServer(
             """.trimIndent())
 
             // Now create each partition
-            for (i in 0 until config.discordShards.totalShards step 32) {
+            for (i in 0 until config.discordShards.totalShards step PARTITION_STEP) {
                 val statement2 = it.createStatement()
                 statement2.executeUpdate("""
                     CREATE UNLOGGED TABLE IF NOT EXISTS ${ProcessDiscordGatewayEvents.DISCORD_GATEWAY_EVENTS_TABLE}_shards_${i}to${i + 16} PARTITION OF ${ProcessDiscordGatewayEvents.DISCORD_GATEWAY_EVENTS_TABLE}
-                        FOR VALUES FROM ($i) TO (${i + 16});
+                        FOR VALUES FROM ($i) TO (${i + PARTITION_STEP});
                 """.trimIndent())
             }
             it.commit()
