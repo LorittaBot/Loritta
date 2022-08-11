@@ -11,9 +11,15 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.serialization.decodeFromString
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
+import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
+import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.NewDiscordGatewayEventNotification
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PostgreSQLNotificationListener
+import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
+import org.postgresql.jdbc.PgConnection
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingQueue
@@ -46,9 +52,10 @@ class ProcessDiscordGatewayEvents(
     var totalEventsProcessed = 0L
     var totalPollLoopsCount = 0L
     var lastPollDuration: Duration? = null
+    var lastBlockDuration: Duration? = null
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    val shardsHandledByThisProcessor = (replicaInstance.minShard..replicaInstance.maxShard step totalConnections).map {
+    private val shardsHandledByThisProcessor = (replicaInstance.minShard..replicaInstance.maxShard step totalConnections).map {
         it + connectionId
     }
     // Shard ID -> SQL Statement
@@ -117,11 +124,6 @@ class ProcessDiscordGatewayEvents(
         it to """DELETE FROM $trueTableName USING (SELECT "id", "shard", "payload" FROM $trueTableName ORDER BY id FOR UPDATE SKIP LOCKED LIMIT $totalEventsPerBatch) q WHERE q.id = $trueTableName.id RETURNING $trueTableName.*;"""
     }
 
-    val shardsMutex = Mutex()
-    val shardsWithNewEvents = mutableSetOf<Int>()
-    // We don't want to suspend if it is overflowing, so we will just drop the latest and that's it
-    val notificationChannelTrigger = Channel<Unit>(capacity = 1, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-
     @OptIn(ExperimentalTime::class)
     suspend fun run() {
         for ((shardId, statement) in sqlStatements) {
@@ -130,86 +132,109 @@ class ProcessDiscordGatewayEvents(
 
         while (true) {
             try {
-                // This will suspend until we receive a new notification
-                for (notification in notificationChannelTrigger) {
-                    // hey babe wake up new gateway event on shard ID 5 just dropped
-                    val shards = shardsMutex.withLock {
-                        // Within the mutex, we will clone the set and clear the current set
-                        val currentShardsWithNewEvents = shardsWithNewEvents.toSet()
-                        shardsWithNewEvents.clear()
-                        currentShardsWithNewEvents
-                    }
+                // Instead of using the PostgreSQLNotificationListener class, we will listen it here
+                // Why? Because we want the notification listener connection to BLOCK while we are processing events
+                // This way, we avoid a hot loop where a lot of CPU usage is being used by getting all received notifications
+                queueDatabaseDataSource.connection
+                    .unwrap(PgConnection::class.java)
+                    .use { connection ->
+                        for (shardId in shardsHandledByThisProcessor) {
+                            val stmt = connection.createStatement()
+                            stmt.execute("LISTEN gateway_events_shard_$shardId;")
+                            stmt.close()
+                        }
+                        connection.commit()
 
-                    if (shards.isEmpty()) {
-                        logger.warn { "Shards list is empty! If we received an notification, it shouldn't be empty... However there is a pesky race condition that can happen where the added shards to the list can be processed and cleared in the already executing event processor task... So don't worry, it still works and nothing was lost!" }
-                        continue
-                    }
+                        while (true) {
+                            // We will use a 60s timeout, to avoid blocking forever
+                            // If the notification list is empty, we will add all shards of this processor to the shardsWithNewEvents set
+                            val notifications = connection.getNotifications(60_000)
 
-                    // After clearing the list, notifications can now begin to fill what shards have new events to be processed while we run the current loop :3
-                    // This way, we should *always* suspend when there isn't new events (because the notificationChannelTrigger won't have a Unit)
+                            val shardsWithNewEvents = mutableSetOf<Int>()
 
-                    val sqlStatementsForTheShards = sqlStatements
-                        .filterKeys { it in shards }
-
-                    var processedStatements = 0
-
-                    val duration = measureTime {
-                        val statements = LinkedBlockingQueue<String>()
-                        statements.addAll(sqlStatementsForTheShards.values)
-
-                        queueDatabaseDataSource.connection.use {
-                            while (statements.isNotEmpty()) {
-                                val sql = statements.remove()
-
-                                var processedOnThisStatement = 0
-                                val selectStatement = it.prepareStatement(sql)
-                                val rs = selectStatement.executeQuery()
-
-                                var count = 0
-
-                                while (rs.next()) {
-                                    val shardId = rs.getInt("shard")
-                                    val gatewayPayload = rs.getString("payload")
-
-                                    val discordEvent = KordDiscordEventUtils.parseEventFromString(gatewayPayload)
-
-                                    if (discordEvent != null) {
-                                        // Emit the event to our proxied instances
-                                        val proxiedKordGateway = proxiedKordGateways[shardId] ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
-                                        coroutineScope.launch {
-                                            proxiedKordGateway.events.emit(discordEvent)
-                                        }
-                                    } else {
-                                        logger.warn { "Unknown Discord event received! We are going to ignore the event... kthxbye!" }
-                                    }
-
-                                    count++
-                                    totalEventsProcessed++
-                                    processedOnThisStatement++
-                                }
-
-                                if (processedOnThisStatement == totalEventsPerBatch) {
-                                    logger.warn { "We received $processedOnThisStatement events on the current statement, which is the same value as the total events per batch! This may mean that there is more pending events than what the batch is retrieving, so we will requeue the statement..." }
-                                    statements.add(sql)
-                                }
-
-                                processedStatements++
-
-                                // Auto commit on every X statements
-                                // This is useful because committing marks the tuple as dead on PostgreSQL side, and depending on how many events we are processing, it is useful to commit before we finish everything
-                                if (statements.isNotEmpty() && processedStatements % commitOnEveryXStatements == 0) {
-                                    logger.info { "Processed $processedStatements statements, triggering a commit request..." }
-                                    it.commit()
+                            if (notifications.isEmpty()) {
+                                logger.warn { "The last successful gateway notification check on $connectionId was more than 60s ago, so maybe new gateway events notifications aren't being triggered, so we will manually handle all shards..." }
+                                shardsWithNewEvents.addAll(shardsHandledByThisProcessor)
+                            } else {
+                                for (notification in notifications) {
+                                    // While we *could* parse the "parameter", let's just avoid parsing it to avoid unnecessary memory allocations
+                                    // Besides, we already know that the only notification that will come from the channel is "babe wake up new gateway event on shard 5 just dropped"
+                                    val shardId = notification.name.substringAfterLast("_").toInt()
+                                    shardsWithNewEvents.add(shardId)
                                 }
                             }
 
-                            it.commit()
+                            // Let's get out of here if there isn't any shards for us
+                            // This also should never happen!
+                            if (shardsWithNewEvents.isEmpty()) {
+                                logger.warn { "Shards with new events set was empty on connection ID $connectionId! Bug?" }
+                                continue
+                            }
+
+                            println("Processing $shardsWithNewEvents")
+
+                            // The shardsWithNewEvents set should have what shards have new events, yay!
+                            val sqlStatementsForTheShards = sqlStatements
+                                .filterKeys { it in shardsWithNewEvents }
+
+                            var processedStatements = 0
+
+                            val duration = measureTime {
+                                val statements = LinkedBlockingQueue<String>()
+                                statements.addAll(sqlStatementsForTheShards.values)
+
+                                while (statements.isNotEmpty()) {
+                                    val sql = statements.remove()
+
+                                    var processedOnThisStatement = 0
+                                    val selectStatement = connection.prepareStatement(sql)
+                                    val rs = selectStatement.executeQuery()
+
+                                    var count = 0
+
+                                    while (rs.next()) {
+                                        val shardId = rs.getInt("shard")
+                                        val gatewayPayload = rs.getString("payload")
+
+                                        val discordEvent = KordDiscordEventUtils.parseEventFromString(gatewayPayload)
+
+                                        if (discordEvent != null) {
+                                            // Emit the event to our proxied instances
+                                            val proxiedKordGateway = proxiedKordGateways[shardId] ?: error("Received event for shard ID $shardId, but we don't have a ProxiedKordGateway instance associated with it!")
+                                            coroutineScope.launch {
+                                                proxiedKordGateway.events.emit(discordEvent)
+                                            }
+                                        } else {
+                                            logger.warn { "Unknown Discord event received! We are going to ignore the event... kthxbye!" }
+                                        }
+
+                                        count++
+                                        totalEventsProcessed++
+                                        processedOnThisStatement++
+                                    }
+
+                                    if (processedOnThisStatement == totalEventsPerBatch) {
+                                        logger.warn { "We received $processedOnThisStatement events on the current statement, which is the same value as the total events per batch! This may mean that there is more pending events than what the batch is retrieving, so we will requeue the statement..." }
+                                        statements.add(sql)
+                                    }
+
+                                    processedStatements++
+
+                                    // Auto commit on every X statements
+                                    // This is useful because committing marks the tuple as dead on PostgreSQL side, and depending on how many events we are processing, it is useful to commit before we finish everything
+                                    if (statements.isNotEmpty() && processedStatements % commitOnEveryXStatements == 0) {
+                                        logger.info { "Processed $processedStatements statements, triggering a commit request..." }
+                                        connection.commit()
+                                    }
+                                }
+
+                                connection.commit()
+                            }
+
+                            lastPollDuration = duration
+                            totalPollLoopsCount++
                         }
                     }
-
-                    lastPollDuration = duration
-                    totalPollLoopsCount++
-                }
             } catch (e: Exception) {
                 logger.warn(e) { "Something went wrong while polling pending Discord gateway events!" }
             }

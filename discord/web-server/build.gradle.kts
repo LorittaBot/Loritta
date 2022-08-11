@@ -13,6 +13,7 @@ dependencies {
     // Discord InteraKTions (Web Server)
     implementation("net.perfectdreams.discordinteraktions:webserver-ktor-kord:${Versions.DISCORD_INTERAKTIONS}")
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
+    implementation("org.postgresql:postgresql:42.2.23")
 
     // Logging
     api(libs.logback.classic)

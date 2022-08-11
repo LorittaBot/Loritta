@@ -54,38 +54,7 @@ class LorittaCinnamonWebServer(
         )
     }
 
-    // The same thing as a above, but in a ShardId -> Processor Map, to improve performance (yay)
-    private val shardToDiscordGatewayEventsProcessors = discordGatewayEventsProcessors.flatMap {
-        it.shardsHandledByThisProcessor.map { shardId -> shardId to it }
-    }.toMap()
-
     private val stats = mutableMapOf<Int, Pair<Long, Long>>()
-
-    private val gatewayQueueNotificationCoroutineScope = CoroutineScope(Dispatchers.IO)
-
-    val gatewayQueueNotificationListener = PostgreSQLNotificationListener(
-        queueConnection,
-        mapOf(
-            "gateway_events" to {
-                val lorittaNotification = JsonIgnoreUnknownKeys.decodeFromString<LorittaNotification>(it)
-
-                if (lorittaNotification is NewDiscordGatewayEventNotification) {
-                    gatewayQueueNotificationCoroutineScope.launch {
-                        val processor = shardToDiscordGatewayEventsProcessors[lorittaNotification.shardId] ?: return@launch // Not for us, bye
-
-                        processor.shardsMutex.withLock {
-                            processor.shardsWithNewEvents.add(lorittaNotification.shardId)
-                        }
-
-                        // We will use trySend because we don't care if the notification is lost
-                        processor.notificationChannelTrigger.trySend(Unit)
-                    }
-                }
-            }
-        )
-    ).also {
-        Thread(null, it, "Gateway Events PostgreSQL Notification Listener").start()
-    }
 
     fun start() {
         logger.info { "Creating gateway events queue tables..." }
@@ -170,24 +139,6 @@ class LorittaCinnamonWebServer(
             }
         }
 
-        GlobalScope.launch {
-            while (true) {
-                // Sometimes processors can get stuck waiting for notifications, which can happen because Loritta can stop sending new gateway events
-                // if the queue is too large.
-                // But because Loritta stops sending new events, it also stops sending new events notifications, so it gets stuck waiting for new events
-                // To work around this, every second we will trigger a poll request for all shards
-                logger.info { "Triggering a manual gateway event poll..." }
-                discordGatewayEventsProcessors.forEach {
-                    it.shardsMutex.withLock {
-                        it.shardsWithNewEvents.addAll(it.shardsHandledByThisProcessor)
-                    }
-                    it.notificationChannelTrigger.trySend(Unit)
-                }
-
-                delay(1.seconds)
-            }
-        }
-
         cinnamon.addAnalyticHandler { logger ->
             val statsValues = stats.values
             val previousEventsProcessed = statsValues.sumOf { it.first }
@@ -200,7 +151,7 @@ class LorittaCinnamonWebServer(
             logger.info { "Total Poll Loops: $totalPollLoopsCheck; (+${totalPollLoopsCheck - previousPollLoopsCheck})" }
             for (processor in discordGatewayEventsProcessors) {
                 val previousStats = stats[processor.connectionId] ?: Pair(0L, 0L)
-                logger.info { "Processor shardId % ${processor.totalConnections} == ${processor.connectionId}: Discord Events processed: ${processor.totalEventsProcessed} (+${processor.totalEventsProcessed - previousStats.first}); Current Poll Loops Count: ${processor.totalPollLoopsCount} (+${processor.totalPollLoopsCount - previousStats.second}); Last poll took ${processor.lastPollDuration} to complete" }
+                logger.info { "Processor shardId % ${processor.totalConnections} == ${processor.connectionId}: Discord Events processed: ${processor.totalEventsProcessed} (+${processor.totalEventsProcessed - previousStats.first}); Current Poll Loops Count: ${processor.totalPollLoopsCount} (+${processor.totalPollLoopsCount - previousStats.second}); Last poll took ${processor.lastPollDuration} to complete; Blocked for notifications: ${processor.lastBlockDuration}" }
                 stats[processor.connectionId] = Pair(processor.totalEventsProcessed, processor.totalPollLoopsCount)
             }
         }
