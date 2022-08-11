@@ -42,6 +42,8 @@ class ProcessDiscordGatewayEvents(
     private val shardsHandledByThisProcessor = (replicaInstance.minShard..replicaInstance.maxShard step totalConnections).map {
         it + connectionId
     }
+    private val lastTimeShardsChecked = mutableMapOf<Int, Long>()
+
     // Shard ID -> SQL Statement
     private val sqlStatements = shardsHandledByThisProcessor.associate {
         // While using "shard BETWEEN ${replicaInstance.minShard} AND ${replicaInstance.maxShard} AND" and "shard % 8 = 0" seems obvious, using those seems to cause PostgreSQL to query
@@ -141,14 +143,16 @@ class ProcessDiscordGatewayEvents(
 
                             val shardsWithNewEvents = mutableSetOf<Int>()
 
-                            if (notifications.isEmpty()) {
-                                logger.warn { "The last successful gateway notification check on $connectionId was more than ${NOTIFICATION_TIMEOUT_MILLIS}ms ago, so maybe new gateway events notifications aren't being triggered, so we will manually handle all shards..." }
-                                shardsWithNewEvents.addAll(shardsHandledByThisProcessor)
-                            } else {
-                                for (notification in notifications) {
-                                    // While we *could* parse the "parameter", let's just avoid parsing it to avoid unnecessary memory allocations
-                                    // Besides, we already know that the only notification that will come from the channel is "babe wake up new gateway event on shard 5 just dropped"
-                                    val shardId = notification.name.substringAfterLast("_").toInt()
+                            for (notification in notifications) {
+                                // While we *could* parse the "parameter", let's just avoid parsing it to avoid unnecessary memory allocations
+                                // Besides, we already know that the only notification that will come from the channel is "babe wake up new gateway event on shard 5 just dropped"
+                                val shardId = notification.name.substringAfterLast("_").toInt()
+                                shardsWithNewEvents.add(shardId)
+                            }
+
+                            for ((shardId, lastCheck) in lastTimeShardsChecked) {
+                                if (lastCheck - System.currentTimeMillis() >= NOTIFICATION_TIMEOUT_MILLIS) {
+                                    logger.warn { "The last successful gateway notification check on $connectionId shard $shardId was more than ${NOTIFICATION_TIMEOUT_MILLIS}ms ago, so maybe new gateway events notifications aren't being triggered, so we will handle it manually..." }
                                     shardsWithNewEvents.add(shardId)
                                 }
                             }
@@ -158,6 +162,11 @@ class ProcessDiscordGatewayEvents(
                             if (shardsWithNewEvents.isEmpty()) {
                                 logger.warn { "Shards with new events set was empty on connection ID $connectionId! Bug?" }
                                 continue
+                            }
+
+                            val now = System.currentTimeMillis()
+                            for (shard in shardsWithNewEvents) {
+                                lastTimeShardsChecked[shard] = now
                             }
 
                             // The shardsWithNewEvents set should have what shards have new events, yay!
