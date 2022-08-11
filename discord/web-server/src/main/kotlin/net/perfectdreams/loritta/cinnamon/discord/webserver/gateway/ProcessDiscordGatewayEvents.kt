@@ -23,11 +23,8 @@ import org.postgresql.jdbc.PgConnection
 import java.util.concurrent.BlockingQueue
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingQueue
-import kotlin.time.Duration
+import kotlin.time.*
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.DurationUnit
-import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
 
 /**
  * Processes Discord Gateway Events stored on a PostgreSQL table
@@ -148,7 +145,10 @@ class ProcessDiscordGatewayEvents(
                         while (true) {
                             // We will use a 60s timeout, to avoid blocking forever
                             // If the notification list is empty, we will add all shards of this processor to the shardsWithNewEvents set
-                            val notifications = connection.getNotifications(60_000)
+                            val (notifications, time) = measureTimedValue {
+                                connection.getNotifications(60_000)
+                            }
+                            this.lastBlockDuration = time
 
                             val shardsWithNewEvents = mutableSetOf<Int>()
 
