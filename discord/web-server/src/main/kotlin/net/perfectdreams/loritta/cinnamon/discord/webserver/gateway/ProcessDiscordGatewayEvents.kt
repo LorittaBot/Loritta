@@ -3,28 +3,13 @@ package net.perfectdreams.loritta.cinnamon.discord.webserver.gateway
 import com.zaxxer.hikari.HikariDataSource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.decodeFromString
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.NewDiscordGatewayEventNotification
-import net.perfectdreams.loritta.cinnamon.pudding.utils.PostgreSQLNotificationListener
-import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
 import org.postgresql.jdbc.PgConnection
-import java.util.concurrent.BlockingQueue
-import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.time.*
-import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Processes Discord Gateway Events stored on a PostgreSQL table
@@ -44,12 +29,14 @@ class ProcessDiscordGatewayEvents(
     companion object {
         private val logger = KotlinLogging.logger {}
         const val DISCORD_GATEWAY_EVENTS_TABLE = "discordgatewayevents"
+        private const val NOTIFICATION_TIMEOUT_MILLIS = 1_000
     }
 
     var totalEventsProcessed = 0L
     var totalPollLoopsCount = 0L
     var lastPollDuration: Duration? = null
     var lastBlockDuration: Duration? = null
+    var isBlockedForNotifications = false
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val shardsHandledByThisProcessor = (replicaInstance.minShard..replicaInstance.maxShard step totalConnections).map {
@@ -145,15 +132,17 @@ class ProcessDiscordGatewayEvents(
                         while (true) {
                             // We will use a 60s timeout, to avoid blocking forever
                             // If the notification list is empty, we will add all shards of this processor to the shardsWithNewEvents set
+                            isBlockedForNotifications = true
                             val (notifications, time) = measureTimedValue {
-                                connection.getNotifications(60_000)
+                                connection.getNotifications(NOTIFICATION_TIMEOUT_MILLIS)
                             }
+                            isBlockedForNotifications = false
                             this.lastBlockDuration = time
 
                             val shardsWithNewEvents = mutableSetOf<Int>()
 
                             if (notifications.isEmpty()) {
-                                logger.warn { "The last successful gateway notification check on $connectionId was more than 60s ago, so maybe new gateway events notifications aren't being triggered, so we will manually handle all shards..." }
+                                logger.warn { "The last successful gateway notification check on $connectionId was more than ${NOTIFICATION_TIMEOUT_MILLIS}ms ago, so maybe new gateway events notifications aren't being triggered, so we will manually handle all shards..." }
                                 shardsWithNewEvents.addAll(shardsHandledByThisProcessor)
                             } else {
                                 for (notification in notifications) {
