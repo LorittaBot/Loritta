@@ -42,7 +42,7 @@ class ProcessDiscordGatewayEvents(
     private val shardsHandledByThisProcessor = (replicaInstance.minShard..replicaInstance.maxShard step totalConnections).map {
         it + connectionId
     }
-    private val lastTimeShardsChecked = mutableMapOf<Int, Long>()
+    private val lastTimeShardsChecked = shardsHandledByThisProcessor.associateWith { 0L }.toMutableMap()
 
     // Shard ID -> SQL Statement
     private val sqlStatements = shardsHandledByThisProcessor.associate {
