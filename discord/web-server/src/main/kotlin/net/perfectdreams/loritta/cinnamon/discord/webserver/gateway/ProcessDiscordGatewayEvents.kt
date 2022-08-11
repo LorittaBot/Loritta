@@ -171,8 +171,6 @@ class ProcessDiscordGatewayEvents(
                                 continue
                             }
 
-                            println("Processing $shardsWithNewEvents")
-
                             // The shardsWithNewEvents set should have what shards have new events, yay!
                             val sqlStatementsForTheShards = sqlStatements
                                 .filterKeys { it in shardsWithNewEvents }
