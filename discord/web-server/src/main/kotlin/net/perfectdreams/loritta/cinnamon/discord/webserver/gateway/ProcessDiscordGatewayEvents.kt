@@ -151,18 +151,16 @@ class ProcessDiscordGatewayEvents(
                             }
 
                             for ((shardId, lastCheck) in lastTimeShardsChecked) {
-                                if (lastCheck - System.currentTimeMillis() >= NOTIFICATION_TIMEOUT_MILLIS) {
+                                if (System.currentTimeMillis() - lastCheck >= NOTIFICATION_TIMEOUT_MILLIS) {
                                     logger.warn { "The last successful gateway notification check on $connectionId shard $shardId was more than ${NOTIFICATION_TIMEOUT_MILLIS}ms ago, so maybe new gateway events notifications aren't being triggered, so we will handle it manually..." }
                                     shardsWithNewEvents.add(shardId)
                                 }
                             }
 
                             // Let's get out of here if there isn't any shards for us
-                            // This also should never happen!
-                            if (shardsWithNewEvents.isEmpty()) {
-                                logger.warn { "Shards with new events set was empty on connection ID $connectionId! Bug?" }
+                            // This can happen if the notification returns an empty list, and we didn't have any shards triggered via the lastTimeShardsChecked
+                            if (shardsWithNewEvents.isEmpty())
                                 continue
-                            }
 
                             val now = System.currentTimeMillis()
                             for (shard in shardsWithNewEvents) {
