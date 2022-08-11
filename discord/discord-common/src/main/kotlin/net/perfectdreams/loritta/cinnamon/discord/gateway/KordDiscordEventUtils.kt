@@ -44,7 +44,10 @@ object KordDiscordEventUtils {
                     }
                 }.toString()
             )
-        } catch (e: SerializationException) {
+        } catch (e: Exception) {
+            // This can throw...
+            // SerializationException
+            // NumberFormatException: For input string: "9033969170"
             logger.warn(e) { "Something went wrong while trying to deserialize $gatewayPayload" }
             return null
         }
