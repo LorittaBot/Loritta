@@ -147,7 +147,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
         lorittaVoiceConnection.queue(
             LorittaVoiceConnection.AudioClipInfo(
                 opusFrames,
-                channelId
+                userConnectedVoiceChannelId
             )
         )
 

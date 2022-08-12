@@ -43,7 +43,7 @@ class PlayAudioClipButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExec
                 voiceConnection.queue(
                     LorittaVoiceConnection.AudioClipInfo(
                         opusFrames,
-                        context.channelId
+                        voiceStateResult.userConnectedVoiceChannel
                     )
                 )
             }
