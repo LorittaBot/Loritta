@@ -29,7 +29,7 @@ class ProcessDiscordGatewayEvents(
     companion object {
         private val logger = KotlinLogging.logger {}
         const val DISCORD_GATEWAY_EVENTS_TABLE = "discordgatewayevents"
-        private const val NOTIFICATION_TIMEOUT_MILLIS = 1_000
+        private const val NOTIFICATION_TIMEOUT_MILLIS = 15_000
     }
 
     var totalEventsProcessed = 0L
