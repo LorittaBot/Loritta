@@ -65,7 +65,7 @@ class InteractionsRegistry(
                     if (currentHash != storedHash) {
                         // Needs to be updated!
                         logger.info { "Updating Loritta guild commands on $guildId... Hash: $currentHash" }
-                        manager.interaKTions.updateAllGlobalCommands()
+                        manager.interaKTions.updateAllCommandsInGuild(Snowflake(guildId))
 
                         val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash) VALUES ($guildId, $currentHash) ON CONFLICT (id) DO UPDATE SET hash = $currentHash;")
                         updateStatement.executeUpdate()
