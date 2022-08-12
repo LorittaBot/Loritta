@@ -150,12 +150,17 @@ class ProcessDiscordGatewayEvents(
                                 shardsWithNewEvents.add(shardId)
                             }
 
+                            val manuallyQueuedShards = mutableSetOf<Int>()
+
                             for ((shardId, lastCheck) in lastTimeShardsChecked) {
                                 if (System.currentTimeMillis() - lastCheck >= NOTIFICATION_TIMEOUT_MILLIS) {
-                                    logger.warn { "The last successful gateway notification check on $connectionId shard $shardId was more than ${NOTIFICATION_TIMEOUT_MILLIS}ms ago, so maybe new gateway events notifications aren't being triggered, so we will handle it manually..." }
+                                    manuallyQueuedShards.add(shardId)
                                     shardsWithNewEvents.add(shardId)
                                 }
                             }
+
+                            if (manuallyQueuedShards.isNotEmpty())
+                                logger.warn { "Manually queueing shards $manuallyQueuedShards beause their last successful gateway notification check on $connectionId was more than ${NOTIFICATION_TIMEOUT_MILLIS}ms ago, so maybe new gateway events notifications aren't being triggered, so we will handle it manually..." }
 
                             // Let's get out of here if there isn't any shards for us
                             // This can happen if the notification returns an empty list, and we didn't have any shards triggered via the lastTimeShardsChecked
