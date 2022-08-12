@@ -172,6 +172,7 @@ class ProcessDiscordGatewayEvents(
                                 .filterKeys { it in shardsWithNewEvents }
 
                             var processedStatements = 0
+                            var statementsRequeued = 0
 
                             val duration = measureTime {
                                 val statements = LinkedBlockingQueue<String>()
@@ -208,7 +209,7 @@ class ProcessDiscordGatewayEvents(
                                     }
 
                                     if (processedOnThisStatement == totalEventsPerBatch) {
-                                        logger.warn { "We received $processedOnThisStatement events on the current statement, which is the same value as the total events per batch! This may mean that there is more pending events than what the batch is retrieving, so we will requeue the statement..." }
+                                        statementsRequeued++
                                         statements.add(sql)
                                     }
 
@@ -227,6 +228,10 @@ class ProcessDiscordGatewayEvents(
 
                             lastPollDuration = duration
                             totalPollLoopsCount++
+
+                            // To avoid flooding the console with "owo let's requeue the statement!" we will only send how many statements were requeued
+                            if (statementsRequeued != 0)
+                                logger.warn { "On this query, we requeued $statementsRequeued statements because the query count was the same value as the total events per batch! This may mean that there is more pending events than what the batch is retrieving, and that's why it was requeued... Consider increasing the totalEventsPerBatch setting!" }
                         }
                     }
             } catch (e: Exception) {
