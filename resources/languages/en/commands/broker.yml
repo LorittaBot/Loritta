@@ -40,9 +40,8 @@ buy:
   description: "Buy stock market shares in a company"
   successfullyBought: "You bought **{sharesCount, plural, one {# share} other {# shares}}** of `{ticker}` for {price, plural, one {# sonho} other {# sonhos}}! Now just keep an eye on `/broker portfolio` to figure out if it worth selling your shares or not! Good luck!!"
   tooManyShares: "You already have too many shares! You can have, at most, {maxShares,number} shares."
-  youDontHaveEnoughSonhos: "You don't have enough sonhos!"
-  tryingToBuyZeroShares: "Wow, awesome! You are going to buy *no* shares, amazing! I wonder how can you buy zero shares!"
-  tryingToBuyLessThanZeroShares: "Wow, outstanding! You are going to buy *negative* shares, amazing! Isn't buying negative shares the same as... just *selling* shares? I know, I know... I'm a genius."
+  tryingToBuyZeroShares: "Wow, awesome! You are going to buy *no* shares, wonderful! I wonder how can you buy zero shares!"
+  tryingToBuyLessThanZeroShares: "Wow, outstanding! You are going to buy *negative* shares, extraordinary! Isn't buying negative shares the same as... just *selling* shares? I know, I know... I'm a genius."
   options:
     ticker:
       text: "The ticker ID of the stock that you want to buy"
