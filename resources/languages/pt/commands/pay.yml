@@ -1,4 +1,4 @@
-description: "Transferia sonhos para outros usuários"
+description: "Transfira sonhos para outros usuários"
 acceptTransfer: "Aceitar Transferência"
 cancel: "Cancelar"
 youAreGoingToTransfer: "Você está prestes a transferir **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para {receiver}!"
