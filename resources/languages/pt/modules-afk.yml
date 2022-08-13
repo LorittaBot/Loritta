@@ -1,0 +1,6 @@
+modules:
+  afk:
+    userIsAfk: "{userMention} está AFK!"
+    usersAreAfk: "{userMentions} estão AFK!"
+    afkReason: "**Motivo** » `{afkReason}`"
+    afkUserReason: "{userMention} » `{afkReason}`"
