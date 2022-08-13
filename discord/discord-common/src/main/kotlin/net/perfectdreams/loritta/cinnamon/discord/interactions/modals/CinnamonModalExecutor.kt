@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.modals
 
+import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
@@ -99,10 +100,13 @@ abstract class CinnamonModalExecutor(
                 I18nKeysData.Commands.ErrorWhileExecutingCommand(
                     loriRage = Emotes.LoriRage,
                     loriSob = Emotes.LoriSob,
-                    stacktrace = if (!e.message.isNullOrEmpty())
-                        " `${e.message}`" // TODO: Sanitize
-                    else
-                        ""
+                    // To avoid leaking important things (example: Interaction Webhook URL when a request to Discord timeouts), let's not send errors to everyone
+                    stacktrace = if (context.sender.id == Snowflake(123170274651668480)) {// TODO: Stop hardcoding this
+                        if (!e.message.isNullOrEmpty())
+                            " `${e.message}`" // TODO: Sanitize
+                        else
+                            " `${e::class.simpleName}`"
+                    } else ""
                 )
             )
 
