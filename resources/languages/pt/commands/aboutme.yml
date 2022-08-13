@@ -1,0 +1,5 @@
+description: "Altere a seção de \"Sobre Mim\" do seu perfil para que fique do jeitinho que você gosta"
+successfullyChanged: "Sua mensagem do seu perfil foi alterada para `{aboutMe}`!"
+options:
+  aboutme:
+    text: "O texto que estará em sua seção de \"Sobre Mim\""
