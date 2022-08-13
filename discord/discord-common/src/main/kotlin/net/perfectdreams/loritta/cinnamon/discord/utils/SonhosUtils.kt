@@ -11,10 +11,14 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import java.time.LocalDateTime
 import java.time.ZoneId
 
 object SonhosUtils {
+    fun insufficientSonhos(profile: PuddingUserProfile?, howMuch: Long) = insufficientSonhos(profile?.money ?: 0L, howMuch)
+    fun insufficientSonhos(sonhos: Long, howMuch: Long) = I18nKeysData.Commands.InsufficientFunds(howMuch, howMuch - sonhos)
+
     suspend fun MessageBuilder.userHaventGotDailyTodayOrUpsellSonhosBundles(
         loritta: LorittaCinnamon,
         i18nContext: I18nContext,

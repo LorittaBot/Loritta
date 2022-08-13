@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
@@ -75,7 +76,7 @@ class BrokerBuyStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExe
         } catch (e: BovespaBrokerService.NotEnoughSonhosException) {
             context.failEphemerally {
                 styled(
-                    context.i18nContext.get(BrokerCommand.I18N_PREFIX.Buy.YouDontHaveEnoughSonhos),
+                    context.i18nContext.get(SonhosUtils.insufficientSonhos(e.userSonhos, e.howMuch)),
                     Emotes.LoriSob
                 )
 

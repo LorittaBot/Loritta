@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.DiscordCache
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
 abstract class LorittaDiscordStuff(
@@ -84,10 +85,37 @@ abstract class LorittaDiscordStuff(
         )
     }
 
+    suspend inline fun <reified T> encodeDataForComponentOnDatabase(data: T, ttl: Duration = 15.minutes): ComponentOnDatabaseStoreResult<T> {
+        // Can't fit on a button... Let's store it on the database!
+        val now = Clock.System.now()
+
+        val interactionDataId = services.interactionsData.insertInteractionData(
+            Json.encodeToJsonElement<T>(
+                data
+            ).jsonObject,
+            now,
+            now + ttl
+        )
+
+        return ComponentOnDatabaseStoreResult(
+            interactionDataId,
+            ComponentDataUtils.encode(StoredGenericInteractionData(ComponentDataUtils.KTX_SERIALIZATION_SIMILAR_PROTOBUF_STRUCTURE_ISSUES_WORKAROUND_DUMMY, interactionDataId))
+        )
+    }
+
+    suspend inline fun <reified T> decodeDataFromComponentOnDatabase(data: String): ComponentOnDatabaseQueryResult<T> {
+        val genericInteractionData = ComponentDataUtils.decode<StoredGenericInteractionData>(data)
+
+        val dataFromDatabase = services.interactionsData.getInteractionData(genericInteractionData.interactionDataId)
+            ?.jsonObject ?: return ComponentOnDatabaseQueryResult(genericInteractionData, null)
+
+        return ComponentOnDatabaseQueryResult(genericInteractionData, Json.decodeFromJsonElement<T>(dataFromDatabase))
+    }
+
     /**
      * Encodes the [data] to fit on a button. If it doesn't fit in a button, a [StoredGenericInteractionData] will be encoded instead and the data will be stored on the database.
      */
-    suspend inline fun <reified T> encodeDataForComponentOrStoreInDatabase(data: T): String {
+    suspend inline fun <reified T> encodeDataForComponentOrStoreInDatabase(data: T, ttl: Duration = 15.minutes): String {
         val encoded = ComponentDataUtils.encode(data)
 
         // Let's suppose that all components always have 5 characters at the start
@@ -99,17 +127,7 @@ abstract class LorittaDiscordStuff(
             return encoded
         } else {
             // Can't fit on a button... Let's store it on the database!
-            val now = Clock.System.now()
-
-            val interactionDataId = services.interactionsData.insertInteractionData(
-                Json.encodeToJsonElement<T>(
-                    data
-                ).jsonObject,
-                now,
-                now + 15.minutes
-            )
-
-            return ComponentDataUtils.encode(StoredGenericInteractionData(ComponentDataUtils.KTX_SERIALIZATION_SIMILAR_PROTOBUF_STRUCTURE_ISSUES_WORKAROUND_DUMMY, interactionDataId))
+            return encodeDataForComponentOnDatabase(data, ttl).data
         }
     }
 
@@ -121,16 +139,22 @@ abstract class LorittaDiscordStuff(
      * This should be used in conjuction with [encodeDataForComponentOrStoreInDatabase]
      */
     suspend inline fun <reified T> decodeDataFromComponentOrFromDatabase(data: String): T? {
-        val genericInteractionData = try {
-            ComponentDataUtils.decode<StoredGenericInteractionData>(data)
+        return try {
+            val result = decodeDataFromComponentOnDatabase<T>(data)
+            result.data
         } catch (e: SerializationException) {
             // If the deserialization failed, then let's try deserializing as T
-            return ComponentDataUtils.decode<T>(data)
+            ComponentDataUtils.decode<T>(data)
         }
-
-        val dataFromDatabase = services.interactionsData.getInteractionData(genericInteractionData.interactionDataId)
-            ?.jsonObject ?: return null
-
-        return Json.decodeFromJsonElement<T>(dataFromDatabase)
     }
+
+    data class ComponentOnDatabaseStoreResult<T>(
+        val interactionDataId: Long,
+        val data: String
+    )
+
+    data class ComponentOnDatabaseQueryResult<T>(
+        val genericInteractionData: StoredGenericInteractionData,
+        val data: T?
+    )
 }

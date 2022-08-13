@@ -115,6 +115,17 @@ open class ComponentContext(
     }
 
     /**
+     * Decodes the [data] to [T].
+     *
+     * @see ComponentDataUtils
+     * @see failEphemerally
+     * @see requireUserToMatchOrFailEphemerally
+     */
+    inline fun <reified T> decodeDataFromComponent(): T {
+        return ComponentDataUtils.decode<T>(data)
+    }
+
+    /**
      * Decodes the [data] and checks if the [user] has the same user ID present in the [data].
      *
      * If it isn't equal, the context will [fail] or [failEphemerally], depending on the current request state, halting execution.

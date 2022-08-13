@@ -1,29 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
 import kotlinx.datetime.toKotlinInstant
-import net.perfectdreams.loritta.cinnamon.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
 import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalSonhosTransactionsLog
-import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Dailies
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosBundles
-import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
+import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.or
-import org.jetbrains.exposed.sql.select
+import net.perfectdreams.loritta.cinnamon.utils.TransactionType
+import org.jetbrains.exposed.sql.*
 
 class SonhosService(private val pudding: Pudding) : Service(pudding) {
     /**
@@ -31,15 +17,11 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
      *
      * @return in what rank position the user is
      */
-    suspend fun getSonhosRankPositionBySonhos(sonhos: Long): Long {
-        // TODO: This is not a *good* way to get an user's ranking if there are duplicates, maybe use DENSE_RANK? https://www.postgresqltutorial.com/postgresql-dense_rank-function/
-        val position = pudding.transaction {
-            Profiles.select { Profiles.money greaterEq sonhos }
-                .count()
-        }
+    suspend fun getSonhosRankPositionBySonhos(sonhos: Long) = pudding.transaction { _getSonhosRankPositionBySonhos(sonhos) }
 
-        return position
-    }
+    // TODO: This is not a *good* way to get an user's ranking if there are duplicates, maybe use DENSE_RANK? https://www.postgresqltutorial.com/postgresql-dense_rank-function/
+    fun _getSonhosRankPositionBySonhos(sonhos: Long) = Profiles.select { Profiles.money greaterEq sonhos }
+        .count()
 
     suspend fun getUserTotalTransactions(
         userId: UserId,

@@ -48,7 +48,7 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     fun _getUserProfile(id: UserId) = Profiles.selectFirstOrNull { Profiles.id eq id.value.toLong() }
         ?.let { PuddingUserProfile.fromRow(it) }
 
-    internal fun _getOrCreateUserProfile(id: UserId): PuddingUserProfile {
+    fun _getOrCreateUserProfile(id: UserId): PuddingUserProfile {
         val profile = _getUserProfile(id)
         if (profile != null)
             return profile

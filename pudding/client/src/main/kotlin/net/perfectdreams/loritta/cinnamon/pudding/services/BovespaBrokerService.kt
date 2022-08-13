@@ -127,7 +127,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
             val money = userProfile.money
             val howMuchValue = valueOfStock * quantity
             if (howMuchValue > money)
-                throw NotEnoughSonhosException()
+                throw NotEnoughSonhosException(money, howMuchValue)
 
             logger.info { "User $userId is trying to buy $quantity $tickerId for $howMuchValue" }
 
@@ -295,7 +295,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
         val profit: Long
     )
 
-    class NotEnoughSonhosException : RuntimeException()
+    class NotEnoughSonhosException(val userSonhos: Long, val howMuch: Long) : RuntimeException()
     class OutOfSessionException(val currentSession: String) : RuntimeException()
     class TooManySharesException(val currentSharesCount: Long) : RuntimeException()
     class NotEnoughSharesException(val currentBoughtSharesCount: Int) : RuntimeException()
