@@ -30,7 +30,7 @@ import kotlin.time.Duration.Companion.minutes
 class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val user = user("user", PayCommand.I18N_PREFIX.Options.User.Text)
-        val quantity = integer("quantity", PayCommand.I18N_PREFIX.Options.Quantity.Text) {
+        val quantity = string("quantity", PayCommand.I18N_PREFIX.Options.Quantity.Text) {
             autocomplete(ShortenedToLongSonhosAutocompleteExecutor(loritta))
         }
         val ttlDuration = optionalString("expires_after", PayCommand.I18N_PREFIX.Options.ExpiresAfter.Text) {
@@ -50,7 +50,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val receiver = args[options.user]
-        val howMuch = args[options.quantity]
+        val howMuch = args[options.quantity].toLongOrNull()
         val ttlDuration = args[options.ttlDuration]?.let { Duration.parse(it) } ?: 15.minutes
 
         checkIfSelfAccountIsOldEnough(context)
@@ -58,7 +58,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         checkIfSelfAccountGotDailyRecently(context)
 
         // Too small
-        if (howMuch == 0L)
+        if (howMuch == null || howMuch == 0L)
             context.failEphemerally(
                 context.i18nContext.get(PayCommand.I18N_PREFIX.TryingToTransferZeroSonhos),
                 Emotes.LoriHmpf
