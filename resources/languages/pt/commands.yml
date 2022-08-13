@@ -13,6 +13,7 @@ commands:
   wantingMoreSonhosDaily: "Psiu, você ainda não pegou a sua Recompensa Diária de Sonhos de hoje! Resgate-a agora e divirta-se! `/daily`"
   checkOutNews: "Tenho novidades para você! Descubra tudo que há de novo [clicando aqui]({link})!"
   interactionDataIsMissingFromDatabaseGeneric: "Opa, parece que os dados de interação desapareceram porque você demorou muito para usá-los! Por favor, use o comando novamente... Desculpe!"
+  insufficientFunds: "Você não tem **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para fazer isso! Você precisa conseguir mais **{howMuchIsNeeded,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para continuar."
   youAreLorittaBannedPermanent:
     - "Você está **banido(a) permanentemente**! {loriHmpf}"
     - ""
