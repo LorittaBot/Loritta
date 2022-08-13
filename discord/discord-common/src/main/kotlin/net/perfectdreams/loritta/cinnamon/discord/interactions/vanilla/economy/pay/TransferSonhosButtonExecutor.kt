@@ -33,7 +33,9 @@ class TransferSonhosButtonExecutor(
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.TRANSFER_SONHOS_BUTTON_EXECUTOR) {
         private val HANGLOOSE_EMOTES = listOf(
             Emotes.LoriHanglooseRight,
-            Emotes.GabrielaHanglooseRight
+            Emotes.GabrielaHanglooseRight,
+            Emotes.PantufaHanglooseRight,
+            Emotes.PowerHanglooseRight
         )
     }
 

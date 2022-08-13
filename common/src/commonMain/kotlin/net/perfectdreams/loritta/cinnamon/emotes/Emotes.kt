@@ -57,6 +57,8 @@ object Emotes {
         DiscordEmote(964702587645489183L, "lori_megaphone", false)
     val LoriHanglooseRight = DiscordEmote(982764105918205952L, "lori_hangloose", false)
     val GabrielaHanglooseRight = DiscordEmote(982764945236176919L, "gabi_hangloose", false)
+    val PantufaHanglooseRight = DiscordEmote(1008059742356250759L, "pantufa_hangloose_right", false)
+    val PowerHanglooseRight = DiscordEmote(1008059744717635624L, "power_hangloose_right", false)
     val PantufaGaming =
         DiscordEmote(853048446922784819L, "pantufa_gaming", false)
 
