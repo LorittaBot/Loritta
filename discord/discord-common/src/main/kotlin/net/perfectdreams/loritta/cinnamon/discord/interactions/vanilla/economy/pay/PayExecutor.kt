@@ -42,7 +42,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             choice(I18nKeysData.Time.Minutes(12), "12h")
             choice(I18nKeysData.Time.Minutes(24), "24h")
             choice(I18nKeysData.Time.Days(3), "3d")
-            choice(I18nKeysData.Time.Minutes(7), "7d")
+            choice(I18nKeysData.Time.Days(7), "7d")
         }
     }
 
