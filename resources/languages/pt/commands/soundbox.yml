@@ -1,0 +1,4 @@
+falatron:
+  options:
+    voice:
+      text: "A voz que falará o texto fornecido"
