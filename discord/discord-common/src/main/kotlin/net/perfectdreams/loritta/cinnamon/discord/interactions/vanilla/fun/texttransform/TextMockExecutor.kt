@@ -8,12 +8,10 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import kotlin.random.Random
 
-class TextMockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
-
-        inner class Options : LocalizedApplicationCommandOptions(loritta) {
-            val text = string("text", TextTransformCommand.I18N_PREFIX.Mock.Description)
-                
-        }
+class TextMockExecutor(loritta: LorittaCinnamon) : TextExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val text = string("text", TextTransformCommand.I18N_PREFIX.Mock.Description)
+    }
 
     override val options = Options()
 
@@ -26,7 +24,8 @@ class TextMockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
         val mockedText = text.mapIndexed { index, c -> if (random.nextBoolean()) c.uppercaseChar() else c.lowercaseChar() }
             .joinToString("")
 
-        context.sendReply(
+        sendPublicOrEphemeralReplyIfTheMessageHasInvite(
+            context,
             content = mockedText,
             prefix = "✍"
         )

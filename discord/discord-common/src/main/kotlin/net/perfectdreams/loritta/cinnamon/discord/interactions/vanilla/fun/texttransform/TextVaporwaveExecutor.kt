@@ -8,12 +8,10 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 
-class TextVaporwaveExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
-
-        inner class Options : LocalizedApplicationCommandOptions(loritta) {
-            val text = string("text", TextTransformCommand.I18N_PREFIX.Vaporwave.Description)
-                
-        }
+class TextVaporwaveExecutor(loritta: LorittaCinnamon) : TextExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val text = string("text", TextTransformCommand.I18N_PREFIX.Vaporwave.Description)
+    }
 
     override val options = Options()
 
@@ -22,7 +20,8 @@ class TextVaporwaveExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExec
 
         // TODO: Fix Escape Mentions
         val vaporwave = VaporwaveUtils.vaporwave(text)
-        context.sendReply(
+        sendPublicOrEphemeralReplyIfTheMessageHasInvite(
+            context,
             content = vaporwave,
             prefix = "✍"
         )

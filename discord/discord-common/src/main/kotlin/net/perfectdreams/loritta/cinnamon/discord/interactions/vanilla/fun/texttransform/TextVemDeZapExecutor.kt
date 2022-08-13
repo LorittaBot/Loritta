@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 
-class TextVemDeZapExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class TextVemDeZapExecutor(loritta: LorittaCinnamon) : TextExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val mood = string("mood", TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Text) {
             choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy, "happy")
@@ -88,7 +88,8 @@ class TextVemDeZapExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
         }
 
         // TODO: Fix Escape Mentions
-        context.sendReply(
+        sendPublicOrEphemeralReplyIfTheMessageHasInvite(
+            context,
             output,
             "✍"
         )

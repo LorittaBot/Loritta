@@ -6,16 +6,14 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.TextTransformCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 
-class TextClapExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class TextClapExecutor(loritta: LorittaCinnamon) : TextExecutor(loritta) {
+    inner class Options : LocalizedApplicationCommandOptions(loritta) {
+        val text = string("text", TextTransformCommand.I18N_PREFIX.Clap.Options.Text(TextTransformCommand.CLAP_EMOJI))
 
-        inner class Options : LocalizedApplicationCommandOptions(loritta) {
-            val text = string("text", TextTransformCommand.I18N_PREFIX.Clap.Options.Text(TextTransformCommand.CLAP_EMOJI))
-                
-
-            val emoji = optionalString("emoji", TextTransformCommand.I18N_PREFIX.Clap.Options.Emoji)
-                
-        }
+        val emoji = optionalString("emoji", TextTransformCommand.I18N_PREFIX.Clap.Options.Emoji)
+    }
 
     override val options = Options()
 
@@ -23,7 +21,8 @@ class TextClapExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
         val text = args[options.text]
         val emoji = args[options.emoji] ?: TextTransformCommand.CLAP_EMOJI
 
-        context.sendReply(
+        sendPublicOrEphemeralReplyIfTheMessageHasInvite(
+            context,
             content = "$emoji${text.split(" ").joinToString(emoji)}$emoji",
             prefix = "✍"
         )
