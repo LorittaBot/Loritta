@@ -21,4 +21,10 @@ class PuddingProfileSettings(
             it[UserSettings.gender] = gender
         }
     }
+
+    suspend fun setAboutMe(aboutMe: String) = pudding.transaction {
+        UserSettings.update({ UserSettings.id eq this@PuddingProfileSettings.id.value.toLong() }) {
+            it[UserSettings.aboutMe] = aboutMe
+        }
+    }
 }
