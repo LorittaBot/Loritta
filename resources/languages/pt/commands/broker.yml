@@ -37,9 +37,6 @@ buy:
   description: "Compre ações de uma empresa na bolsa de valores"
   successfullyBought: "Você comprou **{sharesCount, plural, one {# ação} other {# ações}}** de `{ticker}` por {price, plural, one {# sonho} other {# sonhos}}! Agora fique de olho no `/broker portfolio` para descobrir se vale a pena vender as suas ações ou não! Boa sorte!!"
   tooManyShares: "Você já tem muitas ações! Você pode ter, no máximo, {maxShares,number} ações."
-  youDontHaveEnoughSonhos: "Você não tem sonhos suficientes!"
-  tryingToBuyZeroShares: "Uau, incrível! Você vai comprar *nenhuma* ação, incrível! Eu imagino como você conseguiria comprar zero ações!"
-  tryingToBuyLessThanZeroShares: "Uau, excelente! Você vai comprar ações *negativas*, incrível! Comprar ações negativas não seria a mesma coisa que... *vender* ações? Eu sei, eu sei... Sou um gênio."
   options:
     ticker:
       text: "O símbolo do ativo que você deseja comprar"
