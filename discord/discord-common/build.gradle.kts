@@ -37,6 +37,9 @@ dependencies {
     api("net.perfectdreams.randomroleplaypictures:client:1.0.1")
     implementation("org.gagravarr:vorbis-java-core:0.8")
 
+    // Used for the debug webserver
+    implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
+
     testImplementation(libs.logback.classic)
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.testcontainers:testcontainers:1.16.3")

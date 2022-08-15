@@ -16,36 +16,44 @@ import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.LorittaDiscordGatewayManager
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.CinnamonTasks
+import net.perfectdreams.loritta.cinnamon.discord.utils.DebugWebServer
+import net.perfectdreams.loritta.cinnamon.discord.utils.EventAnalyticsTask
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.CinnamonConfig
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.ecb.ECBManager
-import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
-import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
-import net.perfectdreams.loritta.cinnamon.discord.utils.CinnamonTasks
-import net.perfectdreams.loritta.cinnamon.discord.utils.EventAnalyticsTask
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
+import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
+import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
+import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
+import java.net.StandardProtocolFamily
+import java.net.UnixDomainSocketAddress
+import java.nio.channels.ServerSocketChannel
+import java.nio.channels.SocketChannel
+import java.nio.file.Path
 import java.security.SecureRandom
 import java.util.concurrent.ConcurrentLinkedQueue
+import kotlin.io.path.deleteIfExists
 import kotlin.reflect.KClass
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
+
 
 /**
  * Represents a Loritta Morenitta (Cinnamon) implementation.
@@ -120,6 +128,8 @@ class LorittaCinnamon(
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
+    private val debugWebServer = DebugWebServer()
+
     // This is executed sequentially!
     val modules = listOf(
         discordCacheModule,
@@ -141,6 +151,9 @@ class LorittaCinnamon(
 
     fun start() {
         runBlocking {
+            logger.info { "Starting Debug Web Server..." }
+            debugWebServer.start()
+
             val tableNames = config.services.pudding.tablesAllowedToBeUpdated
             services.createMissingTablesAndColumns {
                 if (tableNames == null)
@@ -267,4 +280,22 @@ class LorittaCinnamon(
      * Adds an analytic handler, used for debugging logs on the [EventAnalyticsTask]
      */
     fun addAnalyticHandler(handler: EventAnalyticsTask.AnalyticHandler) = analyticHandlers.add(handler)
+
+    /**
+     * Creates a debug socket at the current root folder, "loritta.sock"
+     */
+    fun startDebugSocket() {
+        logger.info { "Starting debug socket at \"loritta.sock\"..." }
+        val socketPath = Path
+            .of(".")
+            .resolve("loritta.sock")
+        socketPath.deleteIfExists() // If it already exists, delete it! The file may already exist from previous initializations
+
+        val address: UnixDomainSocketAddress = UnixDomainSocketAddress.of(socketPath)
+
+        val serverChannel: ServerSocketChannel = ServerSocketChannel.open(StandardProtocolFamily.UNIX)
+        serverChannel.bind(address)
+
+        val channel: SocketChannel = serverChannel.accept()
+    }
 }
