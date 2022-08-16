@@ -14,15 +14,15 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import mu.KotlinLogging
+import net.perfectdreams.exposedpowerutils.sql.batchUpsert
+import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.discord.utils.PuddingDiscordRolesList
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.batchUpsert
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.upsert
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.notInList
@@ -361,7 +361,7 @@ class DiscordCacheService(
             val allEntityIds = entities.map { entityId.invoke(it) }
 
             if (requiresUpdateEntities.isNotEmpty())
-                table.batchUpsert(requiresUpdateEntities, *keys, body = { it, e ->
+                table.batchUpsert(requiresUpdateEntities, *keys, shouldReturnGeneratedValues = false, body = { it, e ->
                     body.invoke(table, it, e, hashedEntities[entityId.invoke(e)]!!)
                 })
 

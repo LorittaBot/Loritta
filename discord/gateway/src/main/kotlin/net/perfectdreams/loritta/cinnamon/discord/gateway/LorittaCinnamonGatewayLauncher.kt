@@ -4,12 +4,11 @@ import io.ktor.client.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.locale.LorittaLanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.discord.gateway.utils.config.RootConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.CinnamonConfig
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
+import net.perfectdreams.loritta.cinnamon.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.utils.config.ConfigUtils
 import java.util.*
 
 object LorittaCinnamonGatewayLauncher {

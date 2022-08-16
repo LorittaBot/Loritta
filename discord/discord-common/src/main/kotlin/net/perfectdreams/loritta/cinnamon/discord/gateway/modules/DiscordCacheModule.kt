@@ -11,10 +11,10 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
+import net.perfectdreams.exposedpowerutils.sql.batchUpsert
+import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.batchUpsert
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.upsert
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
 import org.jetbrains.exposed.sql.*
@@ -124,7 +124,8 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                                     DiscordVoiceStates.batchUpsert(
                                         guildVoiceStates,
                                         DiscordVoiceStates.user,
-                                        DiscordVoiceStates.guild
+                                        DiscordVoiceStates.guild,
+                                        shouldReturnGeneratedValues = false
                                     ) { it, voiceState ->
                                         it[DiscordVoiceStates.guild] =
                                             guildId.toLong() // The voiceState.guildId is missing on a GuildCreate event!

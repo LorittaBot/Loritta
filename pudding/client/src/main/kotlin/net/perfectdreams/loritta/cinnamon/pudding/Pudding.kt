@@ -385,44 +385,22 @@ class Pudding(
         return createTableSuffixed + indicesDDL + alter
     }
 
-    // https://github.com/JetBrains/Exposed/issues/1003
-    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T): T {
-        // Handle nested transactions
-        // TECHNICALLY Exposed should handle this correctly if you are using coroutines, but it doesn't
-        // So we are going to handle it ourselves
-        //
-        // If a CoroutineTransaction is present, we will use it to invoke the statement
-        // This allows nested transactions to reuse an already executing coroutine
-        // And because it is nested, an exception SHOULD roll back without issues
-        val coroutineTransaction = coroutineContext[CoroutineTransaction]
-        if (coroutineTransaction != null)
-            return statement.invoke(coroutineTransaction.transaction)
+    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T) = net.perfectdreams.exposedpowerutils.sql.transaction(
+        dispatcher,
+        database,
+        repetitions,
+        transactionIsolation,
+        {
+            PuddingMetrics.availablePermits
+                .labels(hikariDataSource.poolName)
+                .set(semaphore.availablePermits.toDouble())
 
-        var lastException: Exception? = null
-        for (i in 1..repetitions) {
-            try {
-                PuddingMetrics.availablePermits
-                    .labels(hikariDataSource.poolName)
-                    .set(semaphore.availablePermits.toDouble())
-
-                semaphore.withPermit {
-                    return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(
-                        dispatcher,
-                        database,
-                        transactionIsolation
-                    ) {
-                        withContext(coroutineContext + CoroutineTransaction(this)) {
-                            statement.invoke(this@newSuspendedTransaction)
-                        }
-                    }
-                }
-            } catch (e: ExposedSQLException) {
-                logger.warn(e) { "Exception while trying to execute query. Tries: $i" }
-                lastException = e
+            semaphore.withPermit {
+                it.invoke()
             }
-        }
-        throw lastException ?: RuntimeException("This should never happen")
-    }
+        },
+        statement
+    )
 
     fun shutdown() {
         puddingTasks.shutdown()

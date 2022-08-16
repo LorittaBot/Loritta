@@ -39,7 +39,7 @@ class PatchNotesNotificationsService(private val pudding: Pudding) : Service(pud
 
             receivedPatchNotesResultRows.forEach { row ->
                 // Only create the user profile if there are pending received patch notes
-                profile = pudding.users._getOrCreateUserProfile(user)
+                profile = pudding.users.getOrCreateUserProfile(user)
 
                 ReceivedPatchNotesNotifications.insert {
                     it[ReceivedPatchNotesNotifications.patchNotesNotification] = row[PatchNotesNotifications.id]
