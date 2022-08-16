@@ -39,7 +39,7 @@ class PutShipEffectsRoute(m: LorittaDashboardBackend) : RequiresAPIDiscordLoginR
         val request = call.receiveAndDecodeRequest<PutShipEffectsRequest>()
 
         m.pudding.transaction {
-            val userProfile = m.pudding.users._getUserProfile(UserId(userIdentification.id.toLong()))
+            val userProfile = m.pudding.users.getUserProfile(UserId(userIdentification.id.toLong()))
             if (userProfile == null || SHIP_EFFECT_COST > userProfile.money) {
                 // If the user profile is null, or they don't have enough money, quit
                 // TODO: Move it outside of here

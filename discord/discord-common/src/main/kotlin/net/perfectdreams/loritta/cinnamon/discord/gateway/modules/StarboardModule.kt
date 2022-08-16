@@ -240,10 +240,9 @@ class StarboardModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModu
         messageId: Snowflake
     ): StarboardMessageDatabaseResult {
         return m.services.transaction {
-            val serverConfig = m.services.serverConfigs._getServerConfigRoot(guildId.value)
+            val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value)
                 ?: return@transaction StarboardMessageDatabaseResult.ServerConfigDoesNotExist
-            val starboardConfig =
-                serverConfig._getStarboardConfig() ?: return@transaction StarboardMessageDatabaseResult.StarboardConfigDoesNotExist
+            val starboardConfig = serverConfig.getStarboardConfig() ?: return@transaction StarboardMessageDatabaseResult.StarboardConfigDoesNotExist
 
             val starboardId = starboardConfig.starboardChannelId
             // Ignore if someone is trying to be "haha i'm so funni" trying to add stars to the starboard channel
