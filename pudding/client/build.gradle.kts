@@ -18,9 +18,9 @@ dependencies {
     implementation("org.postgresql:postgresql:42.2.23")
     implementation(libs.hikaricp)
     api("pw.forst", "exposed-upsert", "1.1.0")
-    api("net.perfectdreams.exposedpowerutils:exposed-power-utils:1.1.0-SNAPSHOT")
-    api("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.1.0-SNAPSHOT")
-    api("net.perfectdreams.exposedpowerutils:postgres-java-time:1.1.0-SNAPSHOT")
+    api("net.perfectdreams.exposedpowerutils:exposed-power-utils:1.1.0")
+    api("net.perfectdreams.exposedpowerutils:postgres-power-utils:1.1.0")
+    api("net.perfectdreams.exposedpowerutils:postgres-java-time:1.1.0")
 
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.5.2")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
