@@ -17,17 +17,17 @@ import org.jetbrains.exposed.sql.select
 import java.util.*
 
 class ServerConfigsService(private val pudding: Pudding) : Service(pudding) {
-    suspend fun getServerConfigRoot(guildId: ULong): PuddingServerConfigRoot? = pudding.transaction { _getServerConfigRoot(guildId) }
+    suspend fun getServerConfigRoot(guildId: ULong): PuddingServerConfigRoot? = pudding.transaction {
+        ServerConfigs.selectFirstOrNull {
+            ServerConfigs.id eq guildId.toLong()
+        }?.let { PuddingServerConfigRoot.fromRow(it) }
+    }
 
-    fun _getServerConfigRoot(guildId: ULong): PuddingServerConfigRoot? = ServerConfigs.selectFirstOrNull {
-        ServerConfigs.id eq guildId.toLong()
-    }?.let { PuddingServerConfigRoot.fromRow(it) }
-
-    suspend fun getStarboardConfigById(id: Long): StarboardConfig? = pudding.transaction {  _getStarboardConfigById(id) }
-
-    fun _getStarboardConfigById(id: Long): StarboardConfig? = StarboardConfigs.selectFirstOrNull {
-        StarboardConfigs.id eq id
-    }?.let { StarboardConfig.fromRow(it) }
+    suspend fun getStarboardConfigById(id: Long): StarboardConfig? = pudding.transaction {
+        StarboardConfigs.selectFirstOrNull {
+            StarboardConfigs.id eq id
+        }?.let { StarboardConfig.fromRow(it) }
+    }
 
     suspend fun getMiscellaneousConfigById(id: Long): MiscellaneousConfig? {
         return pudding.transaction {

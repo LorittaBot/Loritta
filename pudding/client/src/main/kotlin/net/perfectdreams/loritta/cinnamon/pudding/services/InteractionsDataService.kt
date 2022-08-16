@@ -16,32 +16,22 @@ class InteractionsDataService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getInteractionData(
         interactionId: Long
     ): JsonObject? {
-        return pudding.transaction { _getInteractionData(interactionId) }
-    }
-
-    fun _getInteractionData(
-        interactionId: Long
-    ): JsonObject? {
-        return Json.parseToJsonElement(
-            InteractionsData.selectFirstOrNull {
-                InteractionsData.id eq interactionId
-            }?.getOrNull(InteractionsData.data) ?: return null
-        ).jsonObject
+        return pudding.transaction {
+            Json.parseToJsonElement(
+                InteractionsData.selectFirstOrNull {
+                    InteractionsData.id eq interactionId
+                }?.getOrNull(InteractionsData.data) ?: return@transaction null
+            ).jsonObject
+        }
     }
 
     suspend fun deleteInteractionData(
         interactionId: Long
     ) {
         pudding.transaction {
-            _deleteInteractionData(interactionId)
-        }
-    }
-
-    fun _deleteInteractionData(
-        interactionId: Long
-    ) {
-        InteractionsData.deleteWhere {
-            InteractionsData.id eq interactionId
+            InteractionsData.deleteWhere {
+                InteractionsData.id eq interactionId
+            }
         }
     }
 

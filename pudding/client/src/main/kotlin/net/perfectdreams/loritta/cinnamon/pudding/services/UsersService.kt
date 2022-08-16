@@ -35,23 +35,10 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
      * @param  id the profile's ID
      * @return the user profile
      */
-    suspend fun getOrCreateUserProfile(id: UserId) = pudding.transaction { _getOrCreateUserProfile(id) }
-
-    /**
-     * Gets a [PuddingUserProfile], if the profile doesn't exist, then null is returned
-     *
-     * @param id the profile's ID
-     * @return the user profile or null if it doesn't exist
-     */
-    suspend fun getUserProfile(id: UserId) = pudding.transaction { _getUserProfile(id) }
-
-    fun _getUserProfile(id: UserId) = Profiles.selectFirstOrNull { Profiles.id eq id.value.toLong() }
-        ?.let { PuddingUserProfile.fromRow(it) }
-
-    fun _getOrCreateUserProfile(id: UserId): PuddingUserProfile {
-        val profile = _getUserProfile(id)
+    suspend fun getOrCreateUserProfile(id: UserId) = pudding.transaction {
+        val profile = getUserProfile(id)
         if (profile != null)
-            return profile
+            return@transaction profile
 
         val profileSettings = UserSettings.insert {
             it[gender] = Gender.UNKNOWN
@@ -68,13 +55,24 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
             it[Profiles.settings] = profileSettings[UserSettings.id]
         }
 
-        return Profiles.select { Profiles.id eq insertId }
+        return@transaction Profiles.select { Profiles.id eq insertId }
             .limit(1)
             .first() // Should NEVER be null!
             .let {
                 PuddingUserProfile
                     .fromRow(it)
             }
+    }
+
+    /**
+     * Gets a [PuddingUserProfile], if the profile doesn't exist, then null is returned
+     *
+     * @param id the profile's ID
+     * @return the user profile or null if it doesn't exist
+     */
+    suspend fun getUserProfile(id: UserId) = pudding.transaction {
+        Profiles.selectFirstOrNull { Profiles.id eq id.value.toLong() }
+            ?.let { PuddingUserProfile.fromRow(it) }
     }
 
     /**
@@ -274,10 +272,6 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     suspend fun insertSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
-        _insertSkipUserDailyTaxDirectMessageEntry(userId)
-    }
-
-    fun _insertSkipUserDailyTaxDirectMessageEntry(userId: UserId) {
         DailyTaxUsersToSkipDirectMessages.insert {
             it[DailyTaxUsersToSkipDirectMessages.userId] = userId.value.toLong()
             it[DailyTaxUsersToSkipDirectMessages.timestamp] = java.time.Instant.now()
@@ -285,10 +279,6 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     suspend fun deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) = pudding.transaction {
-        _deleteSkipUserDailyTaxDirectMessageEntry(userId)
-    }
-
-    fun _deleteSkipUserDailyTaxDirectMessageEntry(userId: UserId) {
         DailyTaxUsersToSkipDirectMessages.deleteWhere {
             DailyTaxUsersToSkipDirectMessages.userId eq userId.value.toLong()
         }

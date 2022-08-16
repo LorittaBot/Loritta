@@ -21,12 +21,6 @@ class PuddingServerConfigRoot(
         )
     }
 
-    fun _getStarboardConfig(): StarboardConfig? = data.starboardConfigId?.let {
-        pudding.serverConfigs._getStarboardConfigById(
-            it
-        )
-    }
-
     suspend fun getMiscellaneousConfig(): MiscellaneousConfig? = data.miscellaneousConfigId?.let {
         pudding.serverConfigs.getMiscellaneousConfigById(
             it

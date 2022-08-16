@@ -10,12 +10,8 @@ import kotlin.math.ceil
 
 class PaymentsService(private val pudding: Pudding) : Service(pudding) {
     suspend fun getActiveMoneyFromDonations(userId: UserId) = pudding.transaction {
-        _getActiveMoneyFromDonations(userId)
-    }
-
-    internal fun _getActiveMoneyFromDonations(userId: UserId): Double {
         // This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.98)
-        return ceil(
+        return@transaction ceil(
             Payments.select {
                 (Payments.expiresAt greaterEq System.currentTimeMillis()) and
                         (Payments.reason eq PaymentReason.DONATION) and

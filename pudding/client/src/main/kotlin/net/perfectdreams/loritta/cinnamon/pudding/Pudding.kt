@@ -33,6 +33,9 @@ import java.security.SecureRandom
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.coroutineContext
 
 class Pudding(
     val hikariDataSource: HikariDataSource,
@@ -383,7 +386,18 @@ class Pudding(
     }
 
     // https://github.com/JetBrains/Exposed/issues/1003
-    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: Transaction.() -> T): T {
+    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T): T {
+        // Handle nested transactions
+        // TECHNICALLY Exposed should handle this correctly if you are using coroutines, but it doesn't
+        // So we are going to handle it ourselves
+        //
+        // If a CoroutineTransaction is present, we will use it to invoke the statement
+        // This allows nested transactions to reuse an already executing coroutine
+        // And because it is nested, an exception SHOULD roll back without issues
+        val coroutineTransaction = coroutineContext[CoroutineTransaction]
+        if (coroutineTransaction != null)
+            return statement.invoke(coroutineTransaction.transaction)
+
         var lastException: Exception? = null
         for (i in 1..repetitions) {
             try {
@@ -397,7 +411,9 @@ class Pudding(
                         database,
                         transactionIsolation
                     ) {
-                        statement.invoke(this)
+                        withContext(coroutineContext + CoroutineTransaction(this)) {
+                            statement.invoke(this@newSuspendedTransaction)
+                        }
                     }
                 }
             } catch (e: ExposedSQLException) {
@@ -433,5 +449,11 @@ class Pudding(
                 shutdown()
             }
         )
+    }
+
+    private class CoroutineTransaction(
+        val transaction: Transaction
+    ) : AbstractCoroutineContextElement(CoroutineTransaction) {
+        companion object Key : CoroutineContext.Key<CoroutineTransaction>
     }
 }
