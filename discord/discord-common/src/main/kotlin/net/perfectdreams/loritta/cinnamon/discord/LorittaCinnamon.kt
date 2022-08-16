@@ -258,6 +258,16 @@ class LorittaCinnamon(
      *
      * The ID of the direct message channel is cached.
      */
+    suspend fun sendMessageToUserViaDirectMessage(userId: Snowflake, builder: UserMessageCreateBuilder.() -> (Unit)) = sendMessageToUserViaDirectMessage(
+        net.perfectdreams.loritta.cinnamon.discord.utils.UserId(userId),
+        builder
+    )
+
+    /**
+     * Sends the [builder] message to the [userId] via the user's direct message channel.
+     *
+     * The ID of the direct message channel is cached.
+     */
     suspend fun sendMessageToUserViaDirectMessage(userId: UserId, builder: UserMessageCreateBuilder.() -> (Unit)) = UserUtils.sendMessageToUserViaDirectMessage(
         services,
         rest,

@@ -10,6 +10,7 @@ import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
+import net.perfectdreams.cookedsql.CookedSQL
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.loritta.cinnamon.utils.*
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
@@ -23,6 +24,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxW
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
+import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingExperimental
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
 import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
@@ -125,6 +127,9 @@ class Pudding(
                 }
             )
     }
+
+    @PuddingExperimental
+    val cooked = CookedSQL(hikariDataSource)
 
     val users = UsersService(this)
     val serverConfigs = ServerConfigsService(this)
@@ -392,12 +397,13 @@ class Pudding(
                     .set(semaphore.availablePermits.toDouble())
 
                 semaphore.withPermit {
-                    return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(
-                        dispatcher,
-                        database,
-                        transactionIsolation
-                    ) {
-                        statement.invoke(this)
+                    withContext(dispatcher) {
+                        return@withContext transaction(
+                            repetitions,
+                            transactionIsolation
+                        ) {
+                            statement.invoke(this)
+                        }
                     }
                 }
             } catch (e: ExposedSQLException) {

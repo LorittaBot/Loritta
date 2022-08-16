@@ -45,6 +45,7 @@ class LocalizedIntegerCommandOption(
     override val maxValue: Long?,
     override val autocompleteExecutor: AutocompleteHandler<Long>?
 ) : LocalizedCommandOption<Long>(languageManager, descriptionI18n), IntegerCommandOption
+
 // ===[ NUMBER ]===
 class LocalizedNumberCommandOption(
     languageManager: LanguageManager,
@@ -56,6 +57,14 @@ class LocalizedNumberCommandOption(
     override val maxValue: Double?,
     override val autocompleteExecutor: AutocompleteHandler<Double>?
 ) : LocalizedCommandOption<Double>(languageManager, descriptionI18n), NumberCommandOption
+
+// ===[ BOOLEAN ]===
+class LocalizedBooleanCommandOption(
+    languageManager: LanguageManager,
+    override val name: String,
+    descriptionI18n: StringI18nData,
+    override val required: Boolean
+) : LocalizedCommandOption<Boolean>(languageManager, descriptionI18n), BooleanCommandOption
 
 // ===[ USER ]===
 class LocalizedUserCommandOption(
