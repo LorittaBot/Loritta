@@ -27,8 +27,8 @@ data class LorittaJsonWebSession(
         val username: String,
         val discriminator: String,
         val verified: Boolean,
-        val email: String?,
-        val avatar: String?,
+        val email: String? = null, // Looks like this can be missing
+        val avatar: String? = null, // Looks like this can be missing
         val createdAt: Long,
         val updatedAt: Long
     )
