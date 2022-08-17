@@ -280,22 +280,4 @@ class LorittaCinnamon(
      * Adds an analytic handler, used for debugging logs on the [EventAnalyticsTask]
      */
     fun addAnalyticHandler(handler: EventAnalyticsTask.AnalyticHandler) = analyticHandlers.add(handler)
-
-    /**
-     * Creates a debug socket at the current root folder, "loritta.sock"
-     */
-    fun startDebugSocket() {
-        logger.info { "Starting debug socket at \"loritta.sock\"..." }
-        val socketPath = Path
-            .of(".")
-            .resolve("loritta.sock")
-        socketPath.deleteIfExists() // If it already exists, delete it! The file may already exist from previous initializations
-
-        val address: UnixDomainSocketAddress = UnixDomainSocketAddress.of(socketPath)
-
-        val serverChannel: ServerSocketChannel = ServerSocketChannel.open(StandardProtocolFamily.UNIX)
-        serverChannel.bind(address)
-
-        val channel: SocketChannel = serverChannel.accept()
-    }
 }
