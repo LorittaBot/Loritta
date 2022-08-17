@@ -4,13 +4,16 @@ import net.perfectdreams.loritta.cinnamon.utils.LorittaPermission
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.InviteBlockerConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.MiscellaneousConfig
+import net.perfectdreams.loritta.cinnamon.pudding.data.ModerationConfig
 import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.InviteBlockerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MiscellaneousConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.StarboardConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirst
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -21,6 +24,12 @@ class ServerConfigsService(private val pudding: Pudding) : Service(pudding) {
         ServerConfigs.selectFirstOrNull {
             ServerConfigs.id eq guildId.toLong()
         }?.let { PuddingServerConfigRoot.fromRow(it) }
+    }
+
+    suspend fun getModerationConfigByGuildId(guildId: ULong): ModerationConfig? = pudding.transaction {
+        ModerationConfigs.innerJoin(ServerConfigs).selectFirstOrNull {
+            ServerConfigs.id eq guildId.toLong()
+        }?.let { ModerationConfig.fromRow(it) }
     }
 
     suspend fun getStarboardConfigById(id: Long): StarboardConfig? = pudding.transaction {

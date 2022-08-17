@@ -2,6 +2,8 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderati
 
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.cache.data.GuildData
+import dev.kord.core.cache.data.MemberData
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Member
 import dev.kord.core.entity.User
@@ -12,11 +14,56 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanData
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 
 object AdminUtils {
     private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
+
+    suspend fun banUsers(loritta: LorittaCinnamon, confirmBanData: ConfirmBanData) {
+        val guild = Guild(confirmBanData.guild, loritta.kord)
+
+        val sendPunishmentViaDirectMessage = confirmBanData.sendPunishmentViaDirectMessage
+        val sendPunishmentToPunishmentLog = confirmBanData.sendPunishmentToPunishmentLog
+        val reason = confirmBanData.reason
+        val users = confirmBanData.users
+        val punisher = User(confirmBanData.punisher, loritta.kord)
+
+        // TODO: Check if the server already has too many bans and, if it has, fallback to a "we will only ban after they join the server"
+        // (Because in this case, Discord will reject the ban)
+        for (userWithMemberData in users) {
+            val userData = userWithMemberData.userData
+            val memberData = userWithMemberData.memberData
+
+            val user = User(userData, loritta.kord)
+            val member = memberData?.let { Member(it, userData, loritta.kord) }
+
+            try {
+                // Don't try to send a direct message if the user is a bot
+                // Also don't send a DM if the member isn't in the server, this avoids users using Loritta to send DM spam to users by
+                // using the punishment feature
+                if (sendPunishmentViaDirectMessage && member != null && !user.isBot) {
+                    loritta.sendMessageToUserViaDirectMessage(
+                        user.id,
+                        createDirectMessagePunishmentMessage(guild, punisher, reason)
+                    )
+                }
+            } catch (e: Exception) {
+                // DMs can fail
+                e.printStackTrace()
+            }
+
+            // TODO: The reason should include who banned
+            /* loritta.rest.guild.addGuildBan(
+                context.guildId,
+                user.id
+            ) {
+                this.reason = reason
+            } */
+        }
+    }
 
     fun createDirectMessagePunishmentMessage(guild: Guild, punisher: User, reason: String): UserMessageCreateBuilder.() -> (Unit) = {
         embed {

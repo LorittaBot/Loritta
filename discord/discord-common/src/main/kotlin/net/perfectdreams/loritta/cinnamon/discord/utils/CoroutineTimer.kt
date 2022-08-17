@@ -17,7 +17,7 @@ fun scheduleCoroutineAtFixedRate(scope: CoroutineScope, period: Duration, initia
                     async {
                         delay(initialDelay)
 
-                        while (true) {
+                        while (isActive) {
                             channel.send(Unit)
                             delay(period)
                         }

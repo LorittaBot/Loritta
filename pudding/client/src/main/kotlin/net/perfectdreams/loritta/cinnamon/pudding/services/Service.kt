@@ -37,6 +37,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotif
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.InviteBlockerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.MiscellaneousConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.StarboardConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import org.jetbrains.exposed.sql.ResultRow
@@ -328,4 +329,11 @@ fun InviteBlockerConfig.Companion.fromRow(row: ResultRow) = InviteBlockerConfig(
     row[InviteBlockerConfigs.deleteMessage],
     row[InviteBlockerConfigs.tellUser],
     row[InviteBlockerConfigs.warnMessage],
+)
+
+fun ModerationConfig.Companion.fromRow(row: ResultRow) = ModerationConfig(
+    row[ModerationConfigs.sendPunishmentViaDm],
+    row[ModerationConfigs.sendPunishmentToPunishLog],
+    row[ModerationConfigs.punishLogChannelId],
+    row[ModerationConfigs.punishLogMessage]
 )
