@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
+package net.perfectdreams.loritta.cinnamon.discord.utils.dailytax
 
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.utils.DailyTaxThresholds

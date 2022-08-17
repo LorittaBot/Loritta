@@ -1,16 +1,12 @@
-package net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker.utils
+package net.perfectdreams.loritta.cinnamon.discord.utils.correios
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.UtcOffset
-import kotlinx.datetime.toInstant
-import kotlinx.datetime.toJavaInstant
-import kotlinx.datetime.toJavaZoneOffset
-import kotlinx.datetime.toKotlinLocalDateTime
+import kotlinx.datetime.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.utils.PendingImportantNotificationState
-import net.perfectdreams.loritta.cinnamon.microservices.correiospackagetracker.CorreiosPackageTracker
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosFoundObjeto
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosUnknownObjeto
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.EventType
@@ -20,23 +16,19 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
-import org.jetbrains.exposed.sql.SortOrder
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import net.perfectdreams.loritta.cinnamon.utils.PendingImportantNotificationState
+import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.time.LocalDateTime
 
-class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCoroutineWrapper() {
+class CorreiosPackageInfoUpdater(val m: LorittaCinnamon) : RunnableCoroutine {
     companion object {
         private val logger = KotlinLogging.logger {}
         val KTX_DATETIME_CORREIOS_OFFSET = UtcOffset(-3)
         private val JAVA_TIME_CORREIOS_OFFSET = KTX_DATETIME_CORREIOS_OFFSET.toJavaZoneOffset()
     }
 
-    override suspend fun runCoroutine() {
+    override suspend fun run() {
         logger.info { "Updating packages information..." }
 
         try {
@@ -95,7 +87,9 @@ class CorreiosPackageInfoUpdater(val m: CorreiosPackageTracker) : RunnableCorout
                                         it[TrackedCorreiosPackagesEvents.event] = Json.encodeToString(event)
                                     }
 
-                                    val whoIsTrackingThisPackage = UsersFollowingCorreiosPackages.innerJoin(TrackedCorreiosPackages).select {
+                                    val whoIsTrackingThisPackage = UsersFollowingCorreiosPackages.innerJoin(
+                                        TrackedCorreiosPackages
+                                    ).select {
                                         TrackedCorreiosPackages.trackingId eq correiosPackage.numero
                                     }.map { it[UsersFollowingCorreiosPackages.user] }
 

@@ -1,10 +1,11 @@
-package net.perfectdreams.loritta.cinnamon.microservices.dailytax.utils
+package net.perfectdreams.loritta.cinnamon.discord.utils.dailytax
 
 import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.microservices.dailytax.DailyTax
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import org.jetbrains.exposed.sql.insert
@@ -13,12 +14,12 @@ import java.sql.Connection
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-class DailyTaxWarner(val m: DailyTax) : RunnableCoroutineWrapper() {
+class DailyTaxWarner(val m: LorittaCinnamon) : RunnableCoroutine {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override suspend fun runCoroutine() {
+    override suspend fun run() {
         // TODO: proper i18n
         val i18nContext = m.languageManager.getI18nContextById("pt")
 

@@ -1,39 +1,29 @@
-package net.perfectdreams.loritta.cinnamon.microservices.directmessageprocessor.utils
+package net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor
 
-import dev.kord.rest.service.RestClient
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.PendingImportantNotificationState
-import net.perfectdreams.loritta.cinnamon.utils.config.LorittaConfig
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotificationUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordUserMessageCreateBuilder
-import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
+import net.perfectdreams.loritta.cinnamon.utils.PendingImportantNotificationState
 
-/**
- * Processes correios pending messages from our message queue.
- */
-class PendingImportantNotificationsProcessor(
-    private val lorittaConfig: LorittaConfig,
-    private val languageManager: LanguageManager,
-    private val pudding: Pudding,
-    private val rest: RestClient
-) : Runnable {
+class PendingImportantNotificationsProcessor(val loritta: LorittaCinnamon) : RunnableCoroutine {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    override fun run() {
+    override suspend fun run() {
         // TODO: proper i18nContext
-        val i18nContext = languageManager.getI18nContextById("pt")
+        val i18nContext = loritta.languageManager.getI18nContextById("pt")
 
         try {
             logger.info { "Processing pending important notifications in the queue..." }
 
-            val connection = pudding.hikariDataSource.connection
+            val connection = loritta.services.hikariDataSource.connection
             connection.use {
                 val selectStatement = it.prepareStatement("""SELECT id, "user", state, notification FROM ${PendingImportantNotifications.tableName} WHERE state = '${PendingImportantNotificationState.PENDING.name}' ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 10;""")
                 val rs = selectStatement.executeQuery()
@@ -47,7 +37,7 @@ class PendingImportantNotificationsProcessor(
 
                     // TODO: This could be improved to reuse the same connection, however I don't know how this could be done without replacing everything with Exposed
                     val messageWasSuccessfullySent = runBlocking {
-                        val notification = pudding.notifications.getUserNotification(
+                        val notification = loritta.services.notifications.getUserNotification(
                             UserId(userId),
                             notificationId
                         )
@@ -60,12 +50,12 @@ class PendingImportantNotificationsProcessor(
                             val message = NotificationUtils.buildUserNotificationMessage(
                                 i18nContext,
                                 notification,
-                                lorittaConfig.website
+                                loritta.config.loritta.website
                             )
 
                             return@runBlocking UserUtils.sendMessageToUserViaDirectMessage(
-                                pudding,
-                                rest,
+                                loritta.services,
+                                loritta.rest,
                                 UserId(userId),
                                 message.toKordUserMessageCreateBuilder()
                             )

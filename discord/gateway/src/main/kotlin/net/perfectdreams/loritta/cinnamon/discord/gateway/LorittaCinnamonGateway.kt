@@ -39,6 +39,7 @@ class LorittaCinnamonGateway(
         )
 
         val cinnamon = LorittaCinnamon(
+            true,
             gatewayManager,
             config.cinnamon,
             languageManager,

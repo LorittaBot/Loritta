@@ -20,12 +20,13 @@ import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.LorittaDiscordGatewayManager
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
-import net.perfectdreams.loritta.cinnamon.discord.utils.CinnamonTasks
-import net.perfectdreams.loritta.cinnamon.discord.utils.DebugWebServer
-import net.perfectdreams.loritta.cinnamon.discord.utils.EventAnalyticsTask
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.CinnamonConfig
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosPackageInfoUpdater
+import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxCollector
+import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxWarner
+import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.PendingImportantNotificationsProcessor
 import net.perfectdreams.loritta.cinnamon.discord.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
@@ -40,16 +41,15 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNoti
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
-import java.net.StandardProtocolFamily
-import java.net.UnixDomainSocketAddress
-import java.nio.channels.ServerSocketChannel
-import java.nio.channels.SocketChannel
-import java.nio.file.Path
 import java.security.SecureRandom
+import java.time.*
 import java.util.concurrent.ConcurrentLinkedQueue
-import kotlin.io.path.deleteIfExists
+import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Duration.Companion.days
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
@@ -59,6 +59,10 @@ import kotlin.time.measureTimedValue
  * Represents a Loritta Morenitta (Cinnamon) implementation.
  */
 class LorittaCinnamon(
+    /**
+     * Gets if this replica is the main replica.
+     */
+    val isMainReplica: Boolean,
     val gatewayManager: LorittaDiscordGatewayManager,
     val config: CinnamonConfig,
 
@@ -148,6 +152,7 @@ class LorittaCinnamon(
 
     val analyticHandlers = mutableListOf<EventAnalyticsTask.AnalyticHandler>()
     val cinnamonTasks = CinnamonTasks(this)
+    val tasksScope = CoroutineScope(Dispatchers.Default)
 
     fun start() {
         runBlocking {
@@ -168,6 +173,7 @@ class LorittaCinnamon(
 
             logger.info { "Starting Cinnamon tasks..." }
             cinnamonTasks.start()
+            startTasks()
 
             // On every gateway instance present on our gateway manager, collect and process events
             logger.info { "Preparing gateway event collectors for ${gatewayManager.gateways.size} gateway instances..." }
@@ -192,7 +198,11 @@ class LorittaCinnamon(
         }
     }
 
-    private fun launchEventJob(coroutineName: String, durations: Map<KClass<*>, Duration>, block: suspend CoroutineScope.() -> Unit) {
+    private fun launchEventJob(
+        coroutineName: String,
+        durations: Map<KClass<*>, Duration>,
+        block: suspend CoroutineScope.() -> Unit
+    ) {
         val start = System.currentTimeMillis()
 
         val job = scope.launch(
@@ -258,12 +268,13 @@ class LorittaCinnamon(
      *
      * The ID of the direct message channel is cached.
      */
-    suspend fun sendMessageToUserViaDirectMessage(userId: UserId, builder: UserMessageCreateBuilder.() -> (Unit)) = UserUtils.sendMessageToUserViaDirectMessage(
-        services,
-        rest,
-        userId,
-        builder
-    )
+    suspend fun sendMessageToUserViaDirectMessage(userId: UserId, builder: UserMessageCreateBuilder.() -> (Unit)) =
+        UserUtils.sendMessageToUserViaDirectMessage(
+            services,
+            rest,
+            userId,
+            builder
+        )
 
     /**
      * Filters received notifications by their [notificationUniqueId]
@@ -280,4 +291,78 @@ class LorittaCinnamon(
      * Adds an analytic handler, used for debugging logs on the [EventAnalyticsTask]
      */
     fun addAnalyticHandler(handler: EventAnalyticsTask.AnalyticHandler) = analyticHandlers.add(handler)
+
+    /**
+     * Schedules [action] to be executed on [tasksScope] every [period] with a [initialDelay]
+     */
+    private fun scheduleCoroutineAtFixedRate(
+        period: Duration,
+        initialDelay: Duration = Duration.ZERO,
+        action: RunnableCoroutine
+    ) {
+        logger.info { "Scheduling ${action::class.simpleName} to be ran every $period with a $initialDelay initial delay" }
+        scheduleCoroutineAtFixedRate(tasksScope, period, initialDelay, action)
+    }
+
+    /**
+     * Schedules [action] to be executed on [tasksScope] every [period] with a [initialDelay] if this [isMainReplica]
+     */
+    private fun scheduleCoroutineAtFixedRateIfMainReplica(
+        period: Duration,
+        initialDelay: Duration = Duration.ZERO,
+        action: RunnableCoroutine
+    ) {
+        if (isMainReplica)
+            scheduleCoroutineAtFixedRate(period, initialDelay, action)
+    }
+
+    private fun scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(time: LocalTime, action: RunnableCoroutine) {
+        val now = Instant.now()
+        val today = LocalDate.now(ZoneOffset.UTC)
+        val todayAtTime = LocalDateTime.of(today, time)
+        val gonnaBeScheduledAtTime =  if (now > todayAtTime.toInstant(ZoneOffset.UTC)) {
+            // If today at time is larger than today, then it means that we need to schedule it for tomorrow
+            todayAtTime.plusDays(1)
+        } else todayAtTime
+
+        val diff = gonnaBeScheduledAtTime.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
+
+        scheduleCoroutineAtFixedRateIfMainReplica(
+            1.days,
+            diff.milliseconds,
+            action
+        )
+    }
+
+    private fun startTasks() {
+        scheduleCoroutineAtFixedRateIfMainReplica(15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaCinnamon))
+        scheduleCoroutineAtFixedRateIfMainReplica(1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaCinnamon))
+
+        val dailyTaxWarner = DailyTaxWarner(this)
+        val dailyTaxCollector = DailyTaxCollector(this)
+
+        // 12 hours before
+        scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+            LocalTime.of(12, 0),
+            dailyTaxWarner
+        )
+
+        // 4 hours before
+        scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+            LocalTime.of(20, 0),
+            dailyTaxWarner
+        )
+
+        // 1 hour before
+        scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+            LocalTime.of(23, 0),
+            dailyTaxWarner
+        )
+
+        // at midnight + notify about the user about taxes
+        scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+            LocalTime.MIDNIGHT,
+            dailyTaxCollector
+        )
+    }
 }
