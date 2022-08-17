@@ -12,6 +12,9 @@ dependencies {
     // Logging Stuff
     implementation(libs.logback.classic)
 
+    // Logback GELF, used for Graylog logging
+    implementation("de.siegmar:logback-gelf:3.0.0")
+
     implementation("commons-codec:commons-codec:1.15")
 
     // Ktor
@@ -50,7 +53,7 @@ jib {
     }
 
     from {
-        image = "openjdk:17-slim-bullseye"
+        image = "eclipse-temurin:17-focal"
     }
 }
 
