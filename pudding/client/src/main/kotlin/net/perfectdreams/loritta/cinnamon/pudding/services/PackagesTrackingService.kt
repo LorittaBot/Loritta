@@ -29,7 +29,7 @@ class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
                 }
             }
 
-            val profile = pudding.users._getOrCreateUserProfile(user)
+            val profile = pudding.users.getOrCreateUserProfile(user)
 
             if (UsersFollowingCorreiosPackages.select { UsersFollowingCorreiosPackages.user eq profile.id.value.toLong() and (UsersFollowingCorreiosPackages.trackedPackage eq trackingPackageEntryId) }.count() > 0)
                 throw UserIsAlreadyTrackingPackageException()

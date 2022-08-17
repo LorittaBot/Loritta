@@ -123,6 +123,7 @@ class LorittaCinnamonWebServer(
         logger.info { "Successfully created gateway events queue tables!" }
 
         val cinnamon = LorittaCinnamon(
+            replicaId == 1,
             proxyDiscordGatewayManager,
             config.cinnamon,
             languageManager,

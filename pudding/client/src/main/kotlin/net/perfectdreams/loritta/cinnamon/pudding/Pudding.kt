@@ -4,15 +4,14 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory
 import com.zaxxer.hikari.util.IsolationLevel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.cookedsql.CookedSQL
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
-import net.perfectdreams.loritta.cinnamon.utils.*
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.services.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
@@ -24,17 +23,17 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxW
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
-import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingExperimental
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
-import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
-import org.jetbrains.exposed.exceptions.ExposedSQLException
+import net.perfectdreams.loritta.cinnamon.utils.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
+import kotlin.coroutines.AbstractCoroutineContextElement
+import kotlin.coroutines.CoroutineContext
 
 class Pudding(
     val hikariDataSource: HikariDataSource,
@@ -127,9 +126,6 @@ class Pudding(
                 }
             )
     }
-
-    @PuddingExperimental
-    val cooked = CookedSQL(hikariDataSource)
 
     val users = UsersService(this)
     val serverConfigs = ServerConfigsService(this)
@@ -387,32 +383,22 @@ class Pudding(
         return createTableSuffixed + indicesDDL + alter
     }
 
-    // https://github.com/JetBrains/Exposed/issues/1003
-    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: Transaction.() -> T): T {
-        var lastException: Exception? = null
-        for (i in 1..repetitions) {
-            try {
-                PuddingMetrics.availablePermits
-                    .labels(hikariDataSource.poolName)
-                    .set(semaphore.availablePermits.toDouble())
+    suspend fun <T> transaction(repetitions: Int = 5, transactionIsolation: Int? = null, statement: suspend Transaction.() -> T) = net.perfectdreams.exposedpowerutils.sql.transaction(
+        dispatcher,
+        database,
+        repetitions,
+        transactionIsolation,
+        {
+            PuddingMetrics.availablePermits
+                .labels(hikariDataSource.poolName)
+                .set(semaphore.availablePermits.toDouble())
 
-                semaphore.withPermit {
-                    withContext(dispatcher) {
-                        return@withContext transaction(
-                            repetitions,
-                            transactionIsolation
-                        ) {
-                            statement.invoke(this)
-                        }
-                    }
-                }
-            } catch (e: ExposedSQLException) {
-                logger.warn(e) { "Exception while trying to execute query. Tries: $i" }
-                lastException = e
+            semaphore.withPermit {
+                it.invoke()
             }
-        }
-        throw lastException ?: RuntimeException("This should never happen")
-    }
+        },
+        statement
+    )
 
     fun shutdown() {
         puddingTasks.shutdown()
@@ -439,5 +425,11 @@ class Pudding(
                 shutdown()
             }
         )
+    }
+
+    private class CoroutineTransaction(
+        val transaction: Transaction
+    ) : AbstractCoroutineContextElement(CoroutineTransaction) {
+        companion object Key : CoroutineContext.Key<CoroutineTransaction>
     }
 }

@@ -17,11 +17,11 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
      *
      * @return in what rank position the user is
      */
-    suspend fun getSonhosRankPositionBySonhos(sonhos: Long) = pudding.transaction { _getSonhosRankPositionBySonhos(sonhos) }
-
     // TODO: This is not a *good* way to get an user's ranking if there are duplicates, maybe use DENSE_RANK? https://www.postgresqltutorial.com/postgresql-dense_rank-function/
-    fun _getSonhosRankPositionBySonhos(sonhos: Long) = Profiles.select { Profiles.money greaterEq sonhos }
-        .count()
+    suspend fun getSonhosRankPositionBySonhos(sonhos: Long) = pudding.transaction {
+        Profiles.select { Profiles.money greaterEq sonhos }
+            .count()
+    }
 
     suspend fun getUserTotalTransactions(
         userId: UserId,
@@ -151,29 +151,18 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
      */
     suspend fun getUserLastDailyRewardReceived(userId: UserId, afterTime: kotlinx.datetime.Instant): Daily? {
         return pudding.transaction {
-            _getUserLastDailyRewardReceived(userId, afterTime)
+            val timeInMillis = afterTime.toEpochMilliseconds()
+
+            val dailyResult = Dailies.select {
+                Dailies.receivedById eq userId.value.toLong() and (Dailies.receivedAt greaterEq timeInMillis)
+            }
+                .orderBy(Dailies.receivedAt, SortOrder.DESC)
+                .limit(1)
+                .firstOrNull()
+
+            return@transaction if (dailyResult != null)
+                Daily.fromRow(dailyResult)
+            else null
         }
-    }
-
-    /**
-     * Gets the user's last received daily reward
-     *
-     * @param userId    the user's ID
-     * @param afterTime allows filtering dailies by time, only dailies [afterTime] will be retrieven
-     * @return the last received daily reward, if it exists
-     */
-    private fun _getUserLastDailyRewardReceived(userId: UserId, afterTime: kotlinx.datetime.Instant): Daily? {
-        val timeInMillis = afterTime.toEpochMilliseconds()
-
-        val dailyResult = Dailies.select {
-            Dailies.receivedById eq userId.value.toLong() and (Dailies.receivedAt greaterEq timeInMillis)
-        }
-            .orderBy(Dailies.receivedAt, SortOrder.DESC)
-            .limit(1)
-            .firstOrNull()
-
-        return if (dailyResult != null)
-            Daily.fromRow(dailyResult)
-        else null
     }
 }

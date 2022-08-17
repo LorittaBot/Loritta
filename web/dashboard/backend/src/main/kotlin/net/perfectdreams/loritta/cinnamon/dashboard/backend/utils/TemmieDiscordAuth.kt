@@ -21,6 +21,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.longOrNull
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
 
 class TemmieDiscordAuth(val clientId: String,
                         val clientSecret: String,
@@ -141,7 +142,7 @@ class TemmieDiscordAuth(val clientId: String,
             val resultAsJson = Json.parseToJsonElement(result)
             checkForRateLimit(resultAsJson)
 
-            return@doStuff Json.decodeFromJsonElement(resultAsJson)
+            return@doStuff JsonIgnoreUnknownKeys.decodeFromJsonElement(resultAsJson)
         }
     }
 
@@ -161,7 +162,7 @@ class TemmieDiscordAuth(val clientId: String,
             val resultAsJson = Json.parseToJsonElement(result)
             checkForRateLimit(resultAsJson)
 
-            return@doStuff Json.decodeFromJsonElement(resultAsJson)
+            return@doStuff JsonIgnoreUnknownKeys.decodeFromJsonElement(resultAsJson)
         }
     }
 
@@ -181,7 +182,7 @@ class TemmieDiscordAuth(val clientId: String,
             val resultAsJson = Json.parseToJsonElement(result)
             checkForRateLimit(resultAsJson)
 
-            return@doStuff Json.decodeFromJsonElement(resultAsJson)
+            return@doStuff JsonIgnoreUnknownKeys.decodeFromJsonElement(resultAsJson)
         }
     }
 

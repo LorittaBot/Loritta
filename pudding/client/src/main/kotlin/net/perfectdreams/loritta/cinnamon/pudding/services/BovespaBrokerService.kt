@@ -51,11 +51,18 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
     }
 
     /**
-     * Gets all ticker informations in the database
+     * Gets ticker [tickerId] information in the database
      *
      * @return a list of all tickers
      */
-    suspend fun getTicker(tickerId: String) = pudding.transaction {
+    suspend fun getTicker(tickerId: String) = getTickerOrNull(tickerId) ?: error("Ticker $tickerId is not present in the database!")
+
+    /**
+     * Gets ticker [tickerId] information in the database
+     *
+     * @return a list of all tickers
+     */
+    suspend fun getTickerOrNull(tickerId: String) = pudding.transaction {
         TickerPrices.selectFirstOrNull { TickerPrices.ticker eq tickerId }
             ?.let {
                 BrokerTickerInformation(
@@ -109,14 +116,14 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
             throw TransactionActionWithLessThanOneShareException()
 
         return pudding.transaction {
-            val tickerInformation = _getTicker(tickerId)
+            val tickerInformation = getTicker(tickerId)
 
             val valueOfStock = LorittaBovespaBrokerUtils.convertToBuyingPrice(tickerInformation.value)
 
             checkIfTickerIsInactive(tickerInformation)
             checkIfTickerDataIsStale(tickerInformation)
 
-            val userProfile = pudding.users._getUserProfile(UserId(userId)) ?: error("User does not have a profile!")
+            val userProfile = pudding.users.getUserProfile(UserId(userId)) ?: error("User does not have a profile!")
             val currentStockCount = BoughtStocks.select {
                 BoughtStocks.user eq userProfile.id.value.toLong()
             }.count()
@@ -188,7 +195,7 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
             throw TransactionActionWithLessThanOneShareException()
 
         return pudding.transaction {
-            val tickerInformation = _getTicker(tickerId)
+            val tickerInformation = getTicker(tickerId)
 
             checkIfTickerIsInactive(tickerInformation)
             checkIfTickerDataIsStale(tickerInformation)
@@ -261,19 +268,6 @@ class BovespaBrokerService(private val pudding: Pudding) : Service(pudding) {
         if (LorittaBovespaBrokerUtils.checkIfTickerDataIsStale(tickerInformation.lastUpdatedAt))
             throw StaleTickerDataException()
     }
-
-    private fun _getTicker(tickerId: String) = _getTickerOrNull(tickerId) ?: error("Ticker $tickerId is not present in the database!")
-
-    private fun _getTickerOrNull(tickerId: String) = TickerPrices.selectFirstOrNull { TickerPrices.ticker eq tickerId }
-        ?.let {
-            BrokerTickerInformation(
-                it[TickerPrices.ticker].value,
-                it[TickerPrices.status],
-                it[TickerPrices.value],
-                it[TickerPrices.dailyPriceVariation],
-                it[TickerPrices.lastUpdatedAt].toKotlinInstant()
-            )
-        }
 
     data class BrokerUserStockShares(
         val ticker: String,

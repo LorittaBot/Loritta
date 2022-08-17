@@ -62,9 +62,6 @@ include(":discord:gateway")
 // ===[ MICROSERVICES ]===
 include(":microservices:broker-tickers-updater")
 include(":microservices:stats-collector")
-include(":microservices:direct-message-processor")
-include(":microservices:daily-tax")
-include(":microservices:correios-package-tracker")
 include(":microservices:interactions-http-coordinator")
 
 // ===[ SHOWTIME ]===

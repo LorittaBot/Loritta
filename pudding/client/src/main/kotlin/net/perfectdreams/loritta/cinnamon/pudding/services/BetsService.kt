@@ -239,14 +239,14 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
             }
 
             // Create self profile
-            val profile = pudding.users._getOrCreateUserProfile(userId)
+            val profile = pudding.users.getOrCreateUserProfile(userId)
 
             if (quantity > profile.money)
                 return@transaction results.apply { add(YouDontHaveEnoughSonhosToBetResult()) }
 
             if (anotherUserMatchmakingData != null) {
                 // Check if both users have enough sonhos
-                val anotherUserProfile = pudding.users._getOrCreateUserProfile(
+                val anotherUserProfile = pudding.users.getOrCreateUserProfile(
                     UserId(
                         anotherUserMatchmakingData[CoinFlipBetGlobalMatchmakingQueue.user].value
                     )
@@ -274,8 +274,8 @@ class BetsService(private val pudding: Pudding) : Service(pudding) {
                     }
 
                     // Check if any of the two users are premium users
-                    val selfActiveDonations = pudding.payments._getActiveMoneyFromDonations(userId)
-                    val otherUserActiveDonations = pudding.payments._getActiveMoneyFromDonations(otherUserId)
+                    val selfActiveDonations = pudding.payments.getActiveMoneyFromDonations(userId)
+                    val otherUserActiveDonations = pudding.payments.getActiveMoneyFromDonations(otherUserId)
 
                     val selfUserPremiumPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
                     val otherUserPremiumPlan = UserPremiumPlans.getPlanFromValue(otherUserActiveDonations)
