@@ -29,7 +29,9 @@ class ProcessDiscordGatewayEvents(
     companion object {
         private val logger = KotlinLogging.logger {}
         const val DISCORD_GATEWAY_EVENTS_TABLE = "discordgatewayevents"
-        private const val NOTIFICATION_TIMEOUT_MILLIS = 15_000
+        // I've already tried 1s, 5s, 15s, however this was still triggering event checks during low peak times (like early morning)
+        // So now it is 60s!
+        private const val NOTIFICATION_TIMEOUT_MILLIS = 60_000
     }
 
     var totalEventsProcessed = 0L
@@ -153,7 +155,7 @@ class ProcessDiscordGatewayEvents(
                             val manuallyQueuedShards = mutableSetOf<Int>()
 
                             for ((shardId, lastCheck) in lastTimeShardsChecked) {
-                                if (System.currentTimeMillis() - lastCheck >= NOTIFICATION_TIMEOUT_MILLIS) {
+                                if (shardId !in shardsWithNewEvents && System.currentTimeMillis() - lastCheck >= NOTIFICATION_TIMEOUT_MILLIS) {
                                     manuallyQueuedShards.add(shardId)
                                     shardsWithNewEvents.add(shardId)
                                 }
