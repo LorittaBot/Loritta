@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.Replica
 import org.postgresql.jdbc.PgConnection
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.time.*
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * Processes Discord Gateway Events stored on a PostgreSQL table
@@ -135,7 +136,7 @@ class ProcessDiscordGatewayEvents(
                         }
                         connection.commit()
 
-                        while (true) {
+                        while (connection.isValid(3.seconds.inWholeSeconds.toInt())) { // Validate if the connection is still alive to avoid network issues - https://github.com/pgjdbc/pgjdbc/issues/1144#issuecomment-1219818764
                             // We will use a notification timeout, to avoid blocking forever
                             // If the notification list is empty, we will add all shards of this processor to the shardsWithNewEvents set
                             isBlockedForNotifications = true
@@ -148,8 +149,7 @@ class ProcessDiscordGatewayEvents(
                             val shardsWithNewEvents = mutableSetOf<Int>()
 
                             for (notification in notifications) {
-                                // While we *could* parse the "parameter", let's just avoid parsing it to avoid unnecessary memory allocations
-                                // Besides, we already know that the only notification that will come from the channel is "babe wake up new gateway event on shard 5 just dropped"
+                                // "babe wake up new gateway event on shard 5 just dropped"
                                 val shardId = notification.name.substringAfterLast("_").toInt()
                                 shardsWithNewEvents.add(shardId)
                             }
@@ -246,6 +246,8 @@ class ProcessDiscordGatewayEvents(
             } catch (e: Exception) {
                 logger.warn(e) { "Something went wrong while polling pending Discord gateway events!" }
             }
+
+            logger.warn { "Left the notification connection block, this may mean that the connection is dead! Trying to reconnect..." }
         }
     }
 }

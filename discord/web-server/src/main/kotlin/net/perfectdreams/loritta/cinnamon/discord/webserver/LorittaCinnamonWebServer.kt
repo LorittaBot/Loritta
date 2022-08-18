@@ -2,25 +2,17 @@ package net.perfectdreams.loritta.cinnamon.discord.webserver
 
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.client.*
-import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.withLock
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.utils.EventAnalyticsTask
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProcessDiscordGatewayEvents
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProxyDiscordGatewayManager
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.discord.webserver.webserver.InteractionsServer
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.NewDiscordGatewayEventNotification
-import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
-import net.perfectdreams.loritta.cinnamon.pudding.utils.PostgreSQLNotificationListener
-import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
-import kotlin.time.Duration.Companion.seconds
 
 class LorittaCinnamonWebServer(
     val config: RootConfig,
@@ -39,7 +31,7 @@ class LorittaCinnamonWebServer(
     private val proxyDiscordGatewayManager = ProxyDiscordGatewayManager(
         config.discordShards.totalShards,
         replicaInstance,
-        services
+        queueConnection
     )
 
     private val discordGatewayEventsProcessors = (0 until config.queueDatabase.connections).map {
