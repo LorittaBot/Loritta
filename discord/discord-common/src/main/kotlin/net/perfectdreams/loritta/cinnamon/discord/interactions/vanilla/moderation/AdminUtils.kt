@@ -2,25 +2,71 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderati
 
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
-import dev.kord.core.cache.data.GuildData
-import dev.kord.core.cache.data.MemberData
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Member
 import dev.kord.core.entity.User
+import dev.kord.rest.builder.message.create.MessageCreateBuilder
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.toList
 import kotlinx.datetime.Clock
+import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanData
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 
 object AdminUtils {
     private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
+
+    suspend fun appendCheckResultReason(loritta: LorittaCinnamon, builder: MessageBuilder, check: InteractionCheck) {
+        val (issuer, target, result) = check
+
+        builder.apply {
+            when (result) {
+                InteractionCheckResult.TARGET_IS_OWNER -> {
+                    styled(
+                        "O usuário ${target.mention} não poderá ser punido, pois ele é o dono do servidor! Tá tentando fazer motim hein?",
+                        Emotes.LoriBonk
+                    )
+                }
+                InteractionCheckResult.TARGET_ROLE_POSITION_HIGHER_OR_EQUAL_TO_ISSUER -> {
+                    if (issuer.id == Snowflake(loritta.config.discord.applicationId)) {
+                        styled(
+                            "O usuário ${target.mention} não poderá ser punido, pois o meu cargo é menor ou igual ao dele!",
+                            Emotes.LoriBonk
+                        )
+                    } else {
+                        styled(
+                            "O usuário ${target.mention} não poderá ser punido, pois o seu cargo é menor ou igual ao dele!",
+                            Emotes.LoriBonk
+                        )
+                    }
+                }
+                InteractionCheckResult.TRYING_TO_INTERACT_WITH_SELF -> {
+                    if (issuer.id == Snowflake(loritta.config.discord.applicationId)) {
+                        styled(
+                            "O usuário ${target.mention} não poderá ser punido, pois eu não vou me banir grr",
+                            Emotes.LoriBonk
+                        )
+                    } else {
+                        styled(
+                            "O usuário ${target.mention} não poderá ser punido, pois você está tentando se punir!",
+                            Emotes.LoriBonk
+                        )
+                    }
+                }
+                InteractionCheckResult.SUCCESS -> {
+                    error("This should never happen!")
+                }
+            }
+        }
+    }
 
     suspend fun banUsers(loritta: LorittaCinnamon, confirmBanData: ConfirmBanData) {
         val guild = Guild(confirmBanData.guild, loritta.kord)

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderati
 
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Permission
+import dev.kord.common.entity.Snowflake
 import dev.kord.core.cache.data.GuildData
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Member
@@ -54,6 +55,14 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             }
 
         val users = AdminUtils.checkAndRetrieveAllValidUsersFromString(context, args[options.users])
+
+        if (users.isEmpty()) {
+            context.failEphemerally {
+                content = "Nenhum usuário encontrado!"
+            }
+            return
+        }
+
         val reason = args[options.reason]
 
         // TODO: Check if the user can interact with the user (banning them)
@@ -73,10 +82,24 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
         val nonInteractableUsers = interactResults.filterValues { it.any { it.result != AdminUtils.InteractionCheckResult.SUCCESS } }
         val interactableUsers = interactResults - nonInteractableUsers.keys
-        if (false && interactableUsers.isEmpty()) {
-            // Okay, so none of the users are interactable... now what?
+
+        if (interactableUsers.isEmpty()) {
             context.failEphemerally {
-                content = "None of the users are interactable! ${interactResults.values.flatMap { it }.map { it.result } }"
+                styled(
+                    "Nenhum dos usuários podem ser punidos!",
+                    Emotes.LoriSob
+                )
+
+                for (nonInteractableUser in nonInteractableUsers) {
+                    val whyTheyArentGoingToBePunished =
+                        nonInteractableUser.value.first { it.result != AdminUtils.InteractionCheckResult.SUCCESS }
+
+                    AdminUtils.appendCheckResultReason(
+                        loritta,
+                        this,
+                        whyTheyArentGoingToBePunished
+                    )
+                }
             }
         }
 
@@ -102,7 +125,6 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         )
 
         // TODO: If the user has selected the option to "skip_confirmation" or they have quickpunishment enabled, skip the confirmation below
-        // TODO: If the interact fail list is not empty, tell the user why those users weren't banned
         if (args[options.skipConfirmation] == true) {
             AdminUtils.banUsers(
                 loritta,
@@ -115,7 +137,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         } else {
             context.sendEphemeralMessage {
                 styled(
-                    "Você está prestes a banir ${interactResults.keys.joinToString { it.mention }} do seu servidor!",
+                    "Você está prestes a banir ${interactableUsers.keys.joinToString { it.mention }} do seu servidor!",
                     Emotes.LoriBanHammer
                 )
 
@@ -140,9 +162,12 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                 }
 
                 for (nonInteractableUser in nonInteractableUsers) {
-                    styled(
-                        "O usuário ${nonInteractableUser.key.mention} não poderá ser punido, pois ${nonInteractableUser.value.map { it.result }}",
-                        Emotes.LoriBonk
+                    val whyTheyArentGoingToBePunished = nonInteractableUser.value.first { it.result != AdminUtils.InteractionCheckResult.SUCCESS }
+
+                    AdminUtils.appendCheckResultReason(
+                        loritta,
+                        this,
+                        whyTheyArentGoingToBePunished
                     )
                 }
 
