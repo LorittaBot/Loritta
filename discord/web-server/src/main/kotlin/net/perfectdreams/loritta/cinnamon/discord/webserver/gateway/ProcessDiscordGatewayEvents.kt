@@ -124,8 +124,10 @@ class ProcessDiscordGatewayEvents(
                 // Why? Because we want the notification listener connection to BLOCK while we are processing events
                 // This way, we avoid a hot loop where a lot of CPU usage is being used by getting all received notifications
                 queueDatabaseDataSource.connection
-                    .unwrap(PgConnection::class.java)
-                    .use { connection ->
+                    .use {
+                        // Unwrap must be within the ".use" block to avoid connection leaks when PostgreSQL goes down!
+                        val connection = it.unwrap(PgConnection::class.java)
+
                         for (shardId in shardsHandledByThisProcessor) {
                             val stmt = connection.createStatement()
                             stmt.execute("LISTEN gateway_events_shard_$shardId;")
@@ -134,7 +136,7 @@ class ProcessDiscordGatewayEvents(
                         connection.commit()
 
                         while (true) {
-                            // We will use a 60s timeout, to avoid blocking forever
+                            // We will use a notification timeout, to avoid blocking forever
                             // If the notification list is empty, we will add all shards of this processor to the shardsWithNewEvents set
                             isBlockedForNotifications = true
                             val (notifications, time) = measureTimedValue {

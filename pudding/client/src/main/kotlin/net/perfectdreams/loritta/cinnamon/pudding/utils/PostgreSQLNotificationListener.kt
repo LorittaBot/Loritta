@@ -16,8 +16,10 @@ class PostgreSQLNotificationListener(
         while (true) {
             try {
                 hikariDataSource.connection
-                    .unwrap(PgConnection::class.java)
-                    .use { pgConnection ->
+                    .use {
+                        // Unwrap must be within the ".use" block to avoid connection leaks when PostgreSQL goes down!
+                        val pgConnection = it.unwrap(PgConnection::class.java)
+
                         val stmt = pgConnection.createStatement()
                         for (channel in callbacks.keys) {
                             stmt.execute("LISTEN $channel;")
