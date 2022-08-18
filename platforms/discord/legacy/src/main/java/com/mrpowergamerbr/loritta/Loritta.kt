@@ -59,6 +59,7 @@ import net.perfectdreams.loritta.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.twitch.TwitchAPI
 import net.perfectdreams.loritta.utils.CachedUserInfo
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.ProcessDiscordGatewayCommands
 import net.perfectdreams.loritta.utils.Sponsor
 import net.perfectdreams.loritta.utils.metrics.Prometheus
 import okhttp3.Dispatcher
@@ -329,23 +330,10 @@ class Loritta(
 
 		// Ou seja, agora a Loritta está funcionando, Yay!
 
-		GlobalScope.launch {
-			// Get DiscordGatewayCommandNotifications and send the gateway command to the shard
-			notificationListener.notifications.filterIsInstance<DiscordGatewayCommandNotification>()
-				.collectLatest {
-					val shardId = it.shardId
-					val payload = it.payload
-
-					val jdaShard = lorittaShards.shardManager.getShardById(shardId) as JDAImpl?
-
-					if (jdaShard != null) {
-						logger.info { "Sending gateway command $payload to $shardId" }
-						jdaShard.client.send(DataObject.fromJson(payload.toString()))
-					} else {
-						logger.warn { "Received a gateway event notification for a shard that we don't handle (shard ID: $shardId)! This is probably for another instance, so let's ignore it..." }
-					}
-				}
-		}
+		Thread(
+			ProcessDiscordGatewayCommands(this, queueConnection),
+			"Loritta Gateway Commands Processor Notification Listener"
+		).start()
 
 		thread {
 			while (true) {

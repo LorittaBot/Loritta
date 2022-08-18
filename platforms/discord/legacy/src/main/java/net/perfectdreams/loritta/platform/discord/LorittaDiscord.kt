@@ -133,13 +133,7 @@ abstract class LorittaDiscord(var discordConfig: GeneralDiscordConfig, var disco
             128
         )
     }
-    // This is also by lazy due to the same reason described above
-    val notificationListener by lazy {
-        LorittaNotificationListener(pudding.hikariDataSource)
-            .apply {
-                this.start()
-            }
-    }
+
     override val random = Random(System.currentTimeMillis())
     private val logger = KotlinLogging.logger {}
 

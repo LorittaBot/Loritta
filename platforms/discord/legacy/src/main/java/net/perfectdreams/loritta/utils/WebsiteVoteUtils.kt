@@ -51,10 +51,6 @@ object WebsiteVoteUtils {
 			TOP_GG_USER_VOTED_AT.put(userId, System.currentTimeMillis())
 
 			loritta.newSuspendedTransaction {
-
-			}
-
-			loritta.newSuspendedTransaction {
 				BotVote.new {
 					this.userId = userId
 					this.websiteSource = websiteSource

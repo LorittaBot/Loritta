@@ -51,8 +51,7 @@ class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
                         statement.executeUpdate()
 
                         // Submit new gateway event notification
-                        val notificationStatement = it.prepareStatement("SELECT pg_notify('gateway_events_shard_${event.jda.shardInfo.shardId}', ?)")
-                        notificationStatement.setString(1, Json.encodeToString<LorittaNotification>(NewDiscordGatewayEventNotification(UUID.randomUUID().toString(), event.jda.shardInfo.shardId)))
+                        val notificationStatement = it.prepareStatement("SELECT pg_notify('gateway_events_shard_${event.jda.shardInfo.shardId}', NULL)")
                         notificationStatement.execute()
 
                         it.commit()

@@ -402,9 +402,9 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 					dailyPayout.toLong(),
 					SonhosPaymentReason.DAILY
 				)
-
-				loritta.pudding.users._deleteSkipUserDailyTaxDirectMessageEntry(UserId(id))
 			}
+
+			loritta.pudding.users.deleteSkipUserDailyTaxDirectMessageEntry(UserId(id))
 
 			payload["receivedDailyAt"] = receivedDailyAt
 			payload["dailyPayout"] = dailyPayout
