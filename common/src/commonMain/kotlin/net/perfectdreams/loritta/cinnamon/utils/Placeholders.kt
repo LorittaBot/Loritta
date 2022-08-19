@@ -35,6 +35,7 @@ object Placeholders {
     val PUNISHMENT_TYPE = LorittaPlaceholder("$PUNISHMENT_PREFIX.type")
     val PUNISHMENT_REASON_SHORT = LorittaPlaceholder("reason")
     val PUNISHMENT_TYPE_SHORT = LorittaPlaceholder("punishment")
+    val PUNISHMENT_DURATION = LorittaPlaceholder("duration")
 
     val STAFF_MENTION = LorittaPlaceholder("@staff")
     val STAFF_NAME_SHORT = LorittaPlaceholder("staff")
@@ -43,7 +44,7 @@ object Placeholders {
     val STAFF_TAG = LorittaPlaceholder("$STAFF_PREFIX.tag")
     val STAFF_ID = LorittaPlaceholder("$STAFF_PREFIX.id")
     val STAFF_AVATAR_URL = LorittaPlaceholder("$STAFF_PREFIX.avatar")
-    // val STAFF_NICKNAME = LorittaPlaceholder("$STAFF_PREFIX.nickname")
+    val STAFF_NICKNAME = LorittaPlaceholder("$STAFF_PREFIX.nickname")
 
     object Deprecated {
         val USER_ID = LorittaPlaceholder("user-id")

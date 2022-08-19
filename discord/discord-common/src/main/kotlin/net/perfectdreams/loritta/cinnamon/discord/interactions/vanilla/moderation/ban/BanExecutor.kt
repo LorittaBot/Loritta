@@ -7,6 +7,7 @@ import dev.kord.core.cache.data.GuildData
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Member
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.autocomplete.GuildAutocompleteContext
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
@@ -15,13 +16,13 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButtonWithDatabaseData
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButtonWithHybridData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.AdminUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
+import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
 
 class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
@@ -33,7 +34,21 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         val users = string("users", TodoFixThisData)
 
         // TODO: Pre-defined reasons with autocomplete
-        val reason = string("reason", TodoFixThisData)
+        val reason = optionalString("reason", TodoFixThisData) {
+            cinnamonAutocomplete { autocompleteContext, focusedCommandOption ->
+                val interaKTionsContext = autocompleteContext.interaKTionsContext as? GuildAutocompleteContext ?: return@cinnamonAutocomplete emptyMap()
+
+                loritta.services.serverConfigs.getPredefinedPunishmentMessagesByGuildId(
+                    interaKTionsContext.guildId.value
+                ).filter {
+                    it.short.startsWith(focusedCommandOption.value, true)
+                }.associate {
+                    "[${it.short}] ${it.message}".shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length) to it.short
+                }
+            }
+
+            allowedLength = 0..512
+        }
 
         // TODO: Delete days
         val skipConfirmation = optionalBoolean("skip_confirmation", TodoFixThisData)
@@ -60,10 +75,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             context.failEphemerally {
                 content = "Nenhum usuário encontrado!"
             }
-            return
         }
-
-        val reason = args[options.reason]
 
         // TODO: Check if the user can interact with the user (banning them)
         // To do this, we need to query the guild information
@@ -108,13 +120,20 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         val sendPunishmentViaDirectMessage = args[options.sendViaDirectMessage] ?: moderationConfig?.sentPunishmentViaDm ?: false
         val sendPunishmentToPunishLog = args[options.sendToPunishmentLog] ?: moderationConfig?.sendPunishmentToPunishLog ?: false
 
+        val reason = args[options.reason]?.let { rawReason ->
+            loritta.services.serverConfigs.getPredefinedPunishmentMessagesByGuildId(context.guildId.value)
+                .firstOrNull { it.short.equals(rawReason, true) }
+                ?.message ?: rawReason
+        }
+
         val confirmBanData = ConfirmBanData(
-            args[options.reason],
+            reason,
             sendPunishmentViaDirectMessage,
             sendPunishmentToPunishLog,
+            moderationConfig?.punishLogChannelId?.let { Snowflake(it) },
             guild.data,
             context.user.data,
-            interactResults.keys.map {
+            interactableUsers.keys.map {
                 val member = it as? Member
 
                 ConfirmBanData.UserWithMemberData(
@@ -137,7 +156,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         } else {
             context.sendEphemeralMessage {
                 styled(
-                    "Você está prestes a banir ${interactableUsers.keys.joinToString { it.mention }} do seu servidor!",
+                    "Você está prestes a banir ${interactableUsers.keys.joinToString { it.mention }} do seu servidor pelo motivo `$reason`!",
                     Emotes.LoriBanHammer
                 )
 

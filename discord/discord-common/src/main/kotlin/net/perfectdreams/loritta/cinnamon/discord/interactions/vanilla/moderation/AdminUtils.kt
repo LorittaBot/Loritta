@@ -5,7 +5,6 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Member
 import dev.kord.core.entity.User
-import dev.kord.rest.builder.message.create.MessageCreateBuilder
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.builder.message.create.embed
 import kotlinx.coroutines.flow.filter
@@ -18,13 +17,18 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanData
+import net.perfectdreams.loritta.cinnamon.discord.utils.MessageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
+import net.perfectdreams.loritta.cinnamon.discord.utils.sources.StaffTokenSource
+import net.perfectdreams.loritta.cinnamon.discord.utils.sources.UserTokenSource
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.Placeholders
+import net.perfectdreams.loritta.cinnamon.utils.PunishmentAction
 
 object AdminUtils {
     private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
 
-    suspend fun appendCheckResultReason(loritta: LorittaCinnamon, builder: MessageBuilder, check: InteractionCheck) {
+    fun appendCheckResultReason(loritta: LorittaCinnamon, builder: MessageBuilder, check: InteractionCheck) {
         val (issuer, target, result) = check
 
         builder.apply {
@@ -77,6 +81,16 @@ object AdminUtils {
         val users = confirmBanData.users
         val punisher = User(confirmBanData.punisher, loritta.kord)
 
+        val punishmentMessageForType = loritta.services.serverConfigs.getMessageForPunishmentTypeOnGuildId(
+            guild.id.value,
+            PunishmentAction.BAN
+        )
+
+        val punishmentLogChannelId = confirmBanData.punishmentLogChannelId
+
+        // We will check if we really need to
+        var canTalkInPunishmentLogChannel: Boolean? = null
+
         // TODO: Check if the server already has too many bans and, if it has, fallback to a "we will only ban after they join the server"
         // (Because in this case, Discord will reject the ban)
         for (userWithMemberData in users) {
@@ -101,6 +115,42 @@ object AdminUtils {
                 e.printStackTrace()
             }
 
+            if (sendPunishmentToPunishmentLog && punishmentLogChannelId != null && punishmentMessageForType != null) {
+                if (canTalkInPunishmentLogChannel == null) {
+                    val cachedLorittaPermissions =
+                        loritta.cache.getLazyCachedLorittaPermissions(guild.id, punishmentLogChannelId)
+                    canTalkInPunishmentLogChannel = cachedLorittaPermissions.canTalk()
+                }
+
+                if (canTalkInPunishmentLogChannel == true) {
+                    // Okay, do we have permission to send a message there?
+                    val message = MessageUtils.createMessage(
+                        loritta,
+                        guild.id,
+                        punishmentMessageForType,
+                        listOf(
+                            UserTokenSource(loritta.kord, user.data, memberData),
+                            StaffTokenSource(loritta.kord, punisher.data, null) // TODO: Punisher Member Data
+                        ),
+                        mapOf(
+                            Placeholders.PUNISHMENT_REASON to "Forever", // TODO: Proper i18n
+                            Placeholders.PUNISHMENT_REASON to reason,
+                            Placeholders.PUNISHMENT_REASON_SHORT to reason,
+
+                            Placeholders.PUNISHMENT_TYPE to PunishmentAction.BAN.name, // TODO: Proper i18n
+                            Placeholders.PUNISHMENT_TYPE_SHORT to PunishmentAction.BAN.name // TODO: Proper i18n
+                        )
+                    )
+
+                    // Yay, we do have permission! Then let's create a message there...
+                    loritta.rest.channel.createMessage(
+                        punishmentLogChannelId,
+                    ) {
+                        message.apply(this)
+                    }
+                }
+            }
+
             // TODO: The reason should include who banned
             /* loritta.rest.guild.addGuildBan(
                 context.guildId,
@@ -111,12 +161,12 @@ object AdminUtils {
         }
     }
 
-    fun createDirectMessagePunishmentMessage(guild: Guild, punisher: User, reason: String): UserMessageCreateBuilder.() -> (Unit) = {
+    fun createDirectMessagePunishmentMessage(guild: Guild, punisher: User, reason: String?): UserMessageCreateBuilder.() -> (Unit) = {
         embed {
             author("${punisher.username}#${punisher.discriminator}", null, punisher.effectiveAvatar.url)
             title = "\uD83D\uDEAB Você foi banido de ${guild.name}!"
             field("Punido por", "${punisher.username}#${punisher.discriminator}", false)
-            field("Motivo", reason, false)
+            field("Motivo", reason ?: "???", false) // TODO: Don't show "???" to the user lmao
             color = Color(221, 0, 0)
             timestamp = Clock.System.now()
         }

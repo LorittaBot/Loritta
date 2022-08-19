@@ -23,6 +23,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxW
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPredefinedPunishmentMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
@@ -228,6 +230,8 @@ class Pudding(
             BotVoteSonhosTransactionsLog,
             DiscordLorittaApplicationCommandHashes,
             ModerationConfigs,
+            ModerationPunishmentMessagesConfig,
+            ModerationPredefinedPunishmentMessages,
 
             DiscordGuilds,
             DiscordGuildMembers,

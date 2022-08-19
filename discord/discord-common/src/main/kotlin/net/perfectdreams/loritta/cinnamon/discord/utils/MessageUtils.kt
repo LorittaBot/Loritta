@@ -13,6 +13,8 @@ import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.discord.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.discord.utils.parallax.ParallaxMessage
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.TokenSource
+import net.perfectdreams.loritta.cinnamon.utils.LorittaPlaceholder
+import net.perfectdreams.loritta.cinnamon.utils.Placeholders
 
 object MessageUtils {
     private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
@@ -22,13 +24,13 @@ object MessageUtils {
         guildId: Snowflake,
         message: String,
         sources: List<TokenSource>,
-        tokens: Map<String, String?>
+        tokens: Map<LorittaPlaceholder, String?>
     ): ParallaxMessage {
         val (roles, channels, emojis) = stuff.cache.getDiscordEntitiesOfGuild(guildId)
         return createMessage(
             message,
             sources,
-            tokens,
+            tokens.entries.associate { it.key.name to it.value },
             roles,
             channels,
             emojis

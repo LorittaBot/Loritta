@@ -16,13 +16,15 @@ class ConfirmBanButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecuto
         if (context !is GuildComponentContext)
             return
 
+        context.deferChannelMessageEphemerally()
+        
         val data = context.decodeDataFromComponentOrFromDatabaseAndRequireUserToMatch<ConfirmBanData>()
+
+        AdminUtils.banUsers(loritta, data)
 
         // TODO: Apply the ban
         context.sendEphemeralMessage {
-            content = "TODO: do stuff - ${data.users}"
+            content = "TODO: mensagem legal"
         }
-
-        AdminUtils.banUsers(loritta, data)
     }
 }
