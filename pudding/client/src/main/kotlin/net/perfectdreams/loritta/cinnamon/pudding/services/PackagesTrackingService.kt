@@ -56,7 +56,7 @@ class PackagesTrackingService(private val pudding: Pudding) : Service(pudding) {
             // If no one is tracking the package
             if (
                 UsersFollowingCorreiosPackages.select {
-                    UsersFollowingCorreiosPackages.user eq user.value.toLong() and (UsersFollowingCorreiosPackages.trackedPackage eq trackingPackageEntryId)
+                    UsersFollowingCorreiosPackages.trackedPackage eq trackingPackageEntryId
                 }.count() == 0L
             ) {
                 TrackedCorreiosPackages.deleteWhere { TrackedCorreiosPackages.id eq trackingPackageEntryId }
