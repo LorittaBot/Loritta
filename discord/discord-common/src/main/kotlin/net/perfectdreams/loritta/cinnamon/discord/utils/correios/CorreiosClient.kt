@@ -9,6 +9,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosResponse
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.exceptions.InvalidTrackingIdException
+import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
 import java.io.Closeable
 
 class CorreiosClient : Closeable {
@@ -48,7 +49,7 @@ class CorreiosClient : Closeable {
         }
 
         val r = httpResponse.bodyAsText()
-        return Json.decodeFromString(r)
+        return JsonIgnoreUnknownKeys.decodeFromString(r)
     }
 
     override fun close() {

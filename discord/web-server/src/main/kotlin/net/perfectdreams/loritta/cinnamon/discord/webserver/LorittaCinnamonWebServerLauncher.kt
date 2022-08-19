@@ -61,7 +61,7 @@ object LorittaCinnamonWebServerLauncher {
             rootConfig.queueDatabase.username,
             rootConfig.queueDatabase.password,
         ) {
-            this.maximumPoolSize = rootConfig.queueDatabase.connections
+            this.maximumPoolSize = rootConfig.queueDatabase.connections + 1 // +1 because one of the connections must be free to NOTIFY gateway commands
         }
 
         val loritta = LorittaCinnamonWebServer(
