@@ -107,7 +107,7 @@ data class CorreiosUnidadeBrasil(
     override val codigo: String,
     override val sto: String,
     override val tipounidade: String,
-    val cidade: String,
+    val cidade: String? = null,
     val uf: String,
     val endereco: CorreiosEnderecoBrasil
 ) : CorreiosUnidade()
