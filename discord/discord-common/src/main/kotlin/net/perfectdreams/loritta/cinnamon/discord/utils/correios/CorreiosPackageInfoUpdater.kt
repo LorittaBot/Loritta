@@ -134,7 +134,7 @@ class CorreiosPackageInfoUpdater(val m: LorittaCinnamon) : RunnableCoroutine {
                 }
             }
         } catch (e: Exception) {
-            logger.warn { "Something went wrong while updating packages information!" }
+            logger.warn(e) { "Something went wrong while updating packages information!" }
         }
     }
 }
