@@ -96,6 +96,15 @@ abstract class NavbarView(
                             }
                         }
 
+                        // Daily
+                        div(classes = "entry") {
+                            a(classes = "daily", href = "$base/daily") {
+                                iconManager.gift.apply(this)
+
+                                +" Daily"
+                            }
+                        }
+
                         // Premium
                         div(classes = "entry") {
                             a(classes = "donate", href = "$base/donate") {
