@@ -37,7 +37,7 @@ class FalatronModelsManager {
 
     @Serializable
     data class FalatronModel(
-        val author: String,
+        val author: String? = null,
         val category: String,
         val description: String,
         val dublador: String,
