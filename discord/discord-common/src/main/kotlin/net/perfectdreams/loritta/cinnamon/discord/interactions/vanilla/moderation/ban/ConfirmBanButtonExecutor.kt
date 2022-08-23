@@ -2,12 +2,15 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderati
 
 import dev.kord.core.entity.User
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.GuildComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.AdminUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 
 class ConfirmBanButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.CONFIRM_BAN_BUTTON_EXECUTOR)
@@ -22,9 +25,11 @@ class ConfirmBanButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecuto
 
         AdminUtils.banUsers(loritta, data)
 
-        // TODO: Apply the ban
         context.sendEphemeralMessage {
-            content = "TODO: mensagem legal"
+            styled(
+                context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.SuccessfullyPunished),
+                Emotes.LoriBanHammer
+            )
         }
     }
 }

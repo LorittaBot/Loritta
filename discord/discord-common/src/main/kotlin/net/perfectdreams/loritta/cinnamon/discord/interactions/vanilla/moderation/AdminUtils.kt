@@ -1,7 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation
 
 import dev.kord.common.Color
+import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.behavior.ban
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Member
 import dev.kord.core.entity.User
@@ -13,10 +15,12 @@ import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanData
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.MessageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.StaffTokenSource
@@ -28,39 +32,55 @@ import net.perfectdreams.loritta.cinnamon.utils.PunishmentAction
 object AdminUtils {
     private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
 
-    fun appendCheckResultReason(loritta: LorittaCinnamon, builder: MessageBuilder, check: InteractionCheck) {
+    suspend fun appendCheckResultReason(loritta: LorittaCinnamon, i18nContext: I18nContext, punisherMember: Member, builder: MessageBuilder, check: InteractionCheck) {
         val (issuer, target, result) = check
+
+        val punisherMemberPermissions = punisherMember.getPermissions() // TODO: Get permissions from the interaction itself
 
         builder.apply {
             when (result) {
                 InteractionCheckResult.TARGET_IS_OWNER -> {
                     styled(
-                        "O usuário ${target.mention} não poderá ser punido, pois ele é o dono do servidor! Tá tentando fazer motim hein?",
+                        i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.TargetIsOwner(target.mention)),
                         Emotes.LoriBonk
                     )
                 }
                 InteractionCheckResult.TARGET_ROLE_POSITION_HIGHER_OR_EQUAL_TO_ISSUER -> {
                     if (issuer.id == Snowflake(loritta.config.discord.applicationId)) {
                         styled(
-                            "O usuário ${target.mention} não poderá ser punido, pois o meu cargo é menor ou igual ao dele!",
+                            i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.RoleTooLow(target.mention)),
                             Emotes.LoriBonk
                         )
+
+                        if (Permission.ManageRoles in punisherMemberPermissions) {
+                            styled(
+                                i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.RoleTooLowHowToFix),
+                                Emotes.LoriReading
+                            )
+                        }
                     } else {
                         styled(
-                            "O usuário ${target.mention} não poderá ser punido, pois o seu cargo é menor ou igual ao dele!",
+                            i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.PunisherRoleTooLow(target.mention)),
                             Emotes.LoriBonk
                         )
+
+                        if (Permission.ManageRoles in punisherMemberPermissions) {
+                            styled(
+                                i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.PunisherRoleTooLowHowToFix),
+                                Emotes.LoriReading
+                            )
+                        }
                     }
                 }
                 InteractionCheckResult.TRYING_TO_INTERACT_WITH_SELF -> {
                     if (issuer.id == Snowflake(loritta.config.discord.applicationId)) {
                         styled(
-                            "O usuário ${target.mention} não poderá ser punido, pois eu não vou me banir grr",
+                            i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.TargetIsLoritta),
                             Emotes.LoriBonk
                         )
                     } else {
                         styled(
-                            "O usuário ${target.mention} não poderá ser punido, pois você está tentando se punir!",
+                            i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.TargetIsSelf(issuer.mention)),
                             Emotes.LoriBonk
                         )
                     }
@@ -100,19 +120,14 @@ object AdminUtils {
             val user = User(userData, loritta.kord)
             val member = memberData?.let { Member(it, userData, loritta.kord) }
 
-            try {
-                // Don't try to send a direct message if the user is a bot
-                // Also don't send a DM if the member isn't in the server, this avoids users using Loritta to send DM spam to users by
-                // using the punishment feature
-                if (sendPunishmentViaDirectMessage && member != null && !user.isBot) {
-                    loritta.sendMessageToUserViaDirectMessage(
-                        user.id,
-                        createDirectMessagePunishmentMessage(guild, punisher, reason)
-                    )
-                }
-            } catch (e: Exception) {
-                // DMs can fail
-                e.printStackTrace()
+            // Don't try to send a direct message if the user is a bot
+            // Also don't send a DM if the member isn't in the server, this avoids users using Loritta to send DM spam to users by
+            // using the punishment feature
+            if (sendPunishmentViaDirectMessage && member != null && !user.isBot) {
+                loritta.sendMessageToUserViaDirectMessage(
+                    user.id,
+                    createDirectMessagePunishmentMessage(guild, punisher, reason)
+                )
             }
 
             if (sendPunishmentToPunishmentLog && punishmentLogChannelId != null && punishmentMessageForType != null) {
@@ -152,18 +167,17 @@ object AdminUtils {
             }
 
             // TODO: The reason should include who banned
-            /* loritta.rest.guild.addGuildBan(
-                context.guildId,
+            guild.ban(
                 user.id
             ) {
-                this.reason = reason
-            } */
+                this.reason = "Punido por ${punisher.tag} — Motivo: ${reason ?: "Motivo não informado"}"
+            }
         }
     }
 
     fun createDirectMessagePunishmentMessage(guild: Guild, punisher: User, reason: String?): UserMessageCreateBuilder.() -> (Unit) = {
         embed {
-            author("${punisher.username}#${punisher.discriminator}", null, punisher.effectiveAvatar.url)
+            author(punisher.tag, null, punisher.effectiveAvatar.url)
             title = "\uD83D\uDEAB Você foi banido de ${guild.name}!"
             field("Punido por", "${punisher.username}#${punisher.discriminator}", false)
             field("Motivo", reason ?: "???", false) // TODO: Don't show "???" to the user lmao

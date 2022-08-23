@@ -19,8 +19,10 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButtonWithDatabaseData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.AdminUtils
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
 
@@ -108,6 +110,8 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
                     AdminUtils.appendCheckResultReason(
                         loritta,
+                        context.i18nContext,
+                        context.member,
                         this,
                         whyTheyArentGoingToBePunished
                     )
@@ -151,7 +155,10 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             )
 
             context.sendEphemeralMessage {
-                content = "Usuários banidos!"
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.SuccessfullyPunished),
+                    Emotes.LoriBanHammer
+                )
             }
         } else {
             context.sendEphemeralMessage {
@@ -162,21 +169,21 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
                 if (sendPunishmentViaDirectMessage) {
                     styled(
-                        "A punição SERÁ ENVIADA via mensagem direta para a pessoa"
+                        context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentWillBeSentViaDirectMessage)
                     )
                 } else {
                     styled(
-                        "A punição NÃO SERÁ ENVIADA via mensagem direta para a pessoa"
+                        context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentWillNotBeSentViaDirectMessage)
                     )
                 }
 
                 if (sendPunishmentToPunishLog) {
                     styled(
-                        "A punição SERÁ ENVIADA para o log de punições do servidor"
+                        context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentWillBeSentToPunishmentLog)
                     )
                 } else {
                     styled(
-                        "A punição NÃO SERÁ ENVIADA para o log de punições do servidor"
+                        context.i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentWillNotBeSentToPunishmentLog)
                     )
                 }
 
@@ -185,6 +192,8 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
                     AdminUtils.appendCheckResultReason(
                         loritta,
+                        context.i18nContext,
+                        context.member,
                         this,
                         whyTheyArentGoingToBePunished
                     )
@@ -209,9 +218,4 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             }
         }
     }
-
-    data class ModerationSettings(
-        val sendPunishmentViaDm: Boolean,
-        val sendToPunishmentLog: Boolean
-    )
 }
