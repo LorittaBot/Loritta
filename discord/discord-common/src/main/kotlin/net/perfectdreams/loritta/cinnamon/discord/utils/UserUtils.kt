@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.entity.Icon
+import dev.kord.core.entity.User
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.json.request.DMCreateRequest
 import dev.kord.rest.json.request.MultipartMessageCreateRequest
@@ -12,6 +13,9 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -22,6 +26,48 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 object UserUtils {
     private val logger = KotlinLogging.logger {}
+
+    suspend fun handleIfUserIsBanned(loritta: LorittaCinnamon, context: InteractionContext, user: User): Boolean {
+        // Check if the user is banned from using Loritta
+        val userBannedState = loritta.services.users.getUserBannedState(UserId(user.id))
+
+        if (userBannedState != null) {
+            val banDateInEpochSeconds = userBannedState.bannedAt.epochSeconds
+            val expiresDateInEpochSeconds = userBannedState.expiresAt?.epochSeconds
+
+            val messageBuilder: MessageBuilder.() -> (Unit) = {
+                content = context.i18nContext.get(
+                    if (expiresDateInEpochSeconds != null) {
+                        I18nKeysData.Commands.UserIsLorittaBannedTemporary(
+                            mention = user.mention,
+                            loriHmpf = Emotes.LoriHmpf,
+                            reason = userBannedState.reason,
+                            banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
+                            expiresDate = "<t:$expiresDateInEpochSeconds:R> (<t:$expiresDateInEpochSeconds:f>)",
+                            loriSob = Emotes.LoriSob
+                        )
+                    } else {
+                        I18nKeysData.Commands.UserIsLorittaBannedPermanent(
+                            mention = user.mention,
+                            loriHmpf = Emotes.LoriHmpf,
+                            reason = userBannedState.reason,
+                            banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
+                            loriSob = Emotes.LoriSob
+                        )
+                    }
+                ).joinToString("\n")
+            }
+
+            if (context.interaKTionsContext.isDeferred && !context.interaKTionsContext.wasInitiallyDeferredEphemerally) {
+                context.sendMessage(messageBuilder)
+            } else {
+                context.sendEphemeralMessage(messageBuilder)
+            }
+            return true
+        }
+
+        return false
+    }
 
     /**
      * Creates a [Icon.UserAvatar] from the [userId] and [avatar]. If the [avatar] is null, a [Icon.DefaultUserAvatar] is created based on the [discriminator].

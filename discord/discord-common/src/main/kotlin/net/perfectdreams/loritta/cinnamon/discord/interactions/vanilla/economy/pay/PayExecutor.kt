@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.d
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
+import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.getUserProfile
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
@@ -75,6 +76,9 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                 context.i18nContext.get(PayCommand.I18N_PREFIX.CantTransferToSelf),
                 Emotes.Error
             )
+        
+        if (UserUtils.handleIfUserIsBanned(loritta, context, receiver))
+            return
 
         // All prelimary checks have passed, let's defer!
         context.deferChannelMessage() // Defer because this sometimes takes too long
