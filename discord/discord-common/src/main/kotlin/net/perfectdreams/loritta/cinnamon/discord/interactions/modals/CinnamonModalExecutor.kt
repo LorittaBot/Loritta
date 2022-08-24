@@ -71,6 +71,10 @@ abstract class CinnamonModalExecutor(
                 )
             }
 
+            // Don't let users that are banned from using Loritta
+            if (CommandExecutorWrapper.handleIfBanned(loritta, cinnamonContext))
+                return
+
             onSubmit(
                 cinnamonContext,
                 args

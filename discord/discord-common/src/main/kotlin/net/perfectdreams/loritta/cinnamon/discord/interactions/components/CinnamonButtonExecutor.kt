@@ -70,6 +70,10 @@ abstract class CinnamonButtonExecutor(val loritta: LorittaCinnamon) : ButtonExec
                 )
             }
 
+            // Don't let users that are banned from using Loritta
+            if (CommandExecutorWrapper.handleIfBanned(loritta, cinnamonContext))
+                return
+
             onClick(
                 user,
                 cinnamonContext
