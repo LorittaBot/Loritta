@@ -158,7 +158,8 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
             )
 
             embed {
-                author(model.author)
+                if (model.author != null)
+                    author(model.author)
                 url = "https://falatron.com/"
 
                 title = model.name

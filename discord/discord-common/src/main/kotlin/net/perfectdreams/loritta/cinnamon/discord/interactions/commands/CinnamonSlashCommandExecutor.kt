@@ -96,7 +96,7 @@ abstract class CinnamonSlashCommandExecutor(val loritta: LorittaCinnamon) : Slas
             cinnamonContext = convertInteraKTionsContextToCinnamonContext(loritta, context, i18nContext)
 
             // Don't let users that are banned from using Loritta
-            if (handleIfBanned(loritta, cinnamonContext))
+            if (CommandExecutorWrapper.handleIfBanned(loritta, cinnamonContext))
                 return CommandExecutorWrapper.CommandExecutionSuccess
 
             launchUserInfoCacheUpdater(loritta, context, args)

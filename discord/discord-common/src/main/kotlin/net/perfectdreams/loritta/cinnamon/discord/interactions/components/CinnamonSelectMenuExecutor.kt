@@ -71,6 +71,10 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaCinnamon) : Select
                 )
             }
 
+            // Don't let users that are banned from using Loritta
+            if (CommandExecutorWrapper.handleIfBanned(loritta, cinnamonContext))
+                return
+
             onSelect(
                 user,
                 cinnamonContext,
