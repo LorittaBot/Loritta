@@ -274,7 +274,7 @@ object AdminUtils {
                 val firstTargetRoleRawPosition = firstTargetRole?.rawPosition ?: Int.MIN_VALUE
 
                 // The issuer raw position must be higher than the target raw position
-                if (firstTargetRoleRawPosition > firstIssuerRoleRawPosition) {
+                if (firstTargetRoleRawPosition >= firstIssuerRoleRawPosition) {
                     targetInteractionChecks.add(
                         InteractionCheck(
                             issuer,
