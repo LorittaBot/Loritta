@@ -59,6 +59,39 @@ commands:
       name: "Moderação"
       description:
         - "Comandos para tornar sua vida como moderador em seus servidores mais fácil!"
+      skipConfirmationTip: "Cansado de confirmar as suas punições? Então use {quickPunishmentCommand} para burlar as confirmações de punições, para que você possa sentir a satisfação de banir aquele usuário chato enquanto ele está digitando um textão para te xingar!"
+      successfullyPunished: "Usuário punido. Ninguém mandou quebrar as regras, seu boboca!"
+      youAreReadyToPunish: "Você está prestes a punir {mentions} do seu servidor pelo motivo `{reason}`!"
+      confirmPunishment: "Confirmar Punição"
+      noneOfTheUsersCanBePunished: "Nenhum dos usuários podem ser punidos!"
+      punishmentWillBeSentViaDirectMessage: "A punição SERÁ ENVIADA via mensagem direta para o usuário"
+      punishmentWillNotBeSentViaDirectMessage: "A punição NÃO SERÁ ENVIADA via mensagem direta para o usuário"
+      punishmentWillBeSentToPunishmentLog: "A punição SERÁ ENVIADA para o registro de punições do servidor"
+      punishmentWillNotBeSentToPunishmentLog: "A punição NÃO SERÁ ENVIADA para o registro de punições do servidor"
+      auditLogPunishmentLog: "Punido por {user} — Motivo: {reason}"
+      reasonNotGiven: "Motivo não informado"
+      punishedBy: "Punido por"
+      reason: "Motivo"
+      forever: "Permanente"
+      punishmentInteractFailures:
+        roleTooLow: "O usuário {mention} não poderá ser punido, pois o meu cargo é menor ou igual ao dele!"
+        roleTooLowHowToFix: "Para que eu possa punir, suba o meu cargo para acima do cargo da pessoa que você deseja punir na lista de cargos, obrigada!"
+        punisherRoleTooLow: "O usuário {mention} não poderá ser punido, pois o seu cargo é menor ou igual ao dele!"
+        punisherRoleTooLowHowToFix: "Para que você possa punir, suba o seu cargo acima do cargo da pessoa que você deseja punir na lista de cargos, obrigada!"
+        targetIsOwner: "O usuário {mention} não poderá ser punido, pois ele é o dono do servidor! Tá tentando fazer um motim, hein?"
+        targetIsLoritta: "Seu safade, eu não vou me punir grr, vai ver se eu tô na esquina"
+        targetIsSelf: "O usuário {mention} não poderá ser punido, pois ele é... você mesmo. Por o acaso você é masoquista para tentar se punir?"
+      options:
+        users:
+          text: "Os usuários que serão punidos"
+        reason:
+          text: "O motivo da punição"
+        skipConfirmation:
+          text: "Pula a confirmação da punição"
+        sendViaDirectMessage:
+          text: "Se a punição será enviada ao usuário via mensagem direta"
+        sendToPunishmentLog:
+          text: "Se a punição será enviada ao registro de punições do servidor"
     utils:
       name: "Utilitários"
       description:

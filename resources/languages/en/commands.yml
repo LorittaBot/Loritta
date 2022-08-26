@@ -2,6 +2,7 @@ commands:
   errorWhileExecutingCommand: "Something went very wrong while executing this command... {loriRage} Sorry for the inconvenience... {loriSob} I hope this issue is fixed soon! {stacktrace}"
   commandOnlyAvailableInGuilds: "This command is only available within a server! If you really want to use it, please create a nice and cosy server, add me in there, and use the command there!"
   noValidImageFound: "Sorry, but I wasn't able to find an image that I could use! I tried getting images in links, attached images, mentioned user avatars, emojis... but I didn't find anything like that in your message."
+  noValidUserFound: "Sorry, but I wasn't able to find any valid user!"
   sentImageIsTooLarge: "Sorry, I wanted to use that amazing image on the command... but it is just too big! I don't wanna risk it by opening the image and crashing... Please send a smaller picture so I can use it!"
   imageUrlIsUntrusted: "Sorry, but that link seems a bit sus so I don't wanna risk my security by opening it... If you really want to use that picture, please download it and send it to me!"
   youArentTheUserGeneric: "Wait a minute... This isn't for you! Shoo, shoo! Go away!" # Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them
@@ -13,6 +14,7 @@ commands:
   checkOutNews: "I have updates for you! Find out everything that's new by [clicking here]({link})!"
   interactionDataIsMissingFromDatabaseGeneric: "Whoops, looks like the interaction data has vanished because you took too long to use it! Please use the command again... Sorry!"
   insufficientFunds: "You don't have **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** to do this! You need to get more **{howMuchIsNeeded,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** to continue."
+  loriDoesntHavePermissionDiscord: "I wanted to execute this command, but unfortunately I don't have permission to {requiredPermissions}... Ask someone from your server's staff team to give that permission to me! Thank you!"
   youAreLorittaBannedPermanent:
     - "You are **permanently banned**! {loriHmpf}"
     - ""

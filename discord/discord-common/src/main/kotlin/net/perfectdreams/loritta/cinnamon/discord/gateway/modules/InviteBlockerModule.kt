@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.cinnamon.discord.gateway.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.Optional
+import dev.kord.core.cache.data.MemberData
+import dev.kord.core.cache.data.UserData
 import dev.kord.gateway.*
 import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.builder.message.create.allowedMentions
@@ -24,7 +26,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.inviteblocker.Act
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.MessageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.hasLorittaPermission
-import net.perfectdreams.loritta.cinnamon.discord.utils.sources.MemberTokenSource
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.UserTokenSource
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import java.util.concurrent.TimeUnit
@@ -259,13 +260,15 @@ class InviteBlockerModule(val m: LorittaCinnamon) : ProcessDiscordEventsModule()
                     if (lorittaPermissions.canTalk()) {
                         logger.info { "Sending blocked invite message in $channelId on $guildId..." }
 
+                        val userData = UserData.from(author)
+                        val memberData = MemberData.from(userData.id, guildId, member)
+
                         val toBeSent = MessageUtils.createMessage(
                             m,
                             guildId,
                             warnMessage,
                             listOf(
-                                UserTokenSource(m.kord, author),
-                                MemberTokenSource(m.kord, author, member)
+                                UserTokenSource(m.kord, userData, memberData)
                             ),
                             emptyMap()
                         )

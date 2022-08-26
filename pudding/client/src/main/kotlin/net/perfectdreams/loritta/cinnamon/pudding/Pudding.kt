@@ -4,14 +4,14 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.metrics.prometheus.PrometheusMetricsTrackerFactory
 import com.zaxxer.hikari.util.IsolationLevel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
-import net.perfectdreams.loritta.cinnamon.utils.*
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.services.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
@@ -22,11 +22,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxT
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPredefinedPunishmentMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
-import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
-import org.jetbrains.exposed.exceptions.ExposedSQLException
+import net.perfectdreams.loritta.cinnamon.utils.*
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
@@ -35,7 +37,6 @@ import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.coroutineContext
 
 class Pudding(
     val hikariDataSource: HikariDataSource,
@@ -228,6 +229,9 @@ class Pudding(
             BomDiaECiaMatches,
             BotVoteSonhosTransactionsLog,
             DiscordLorittaApplicationCommandHashes,
+            ModerationConfigs,
+            ModerationPunishmentMessagesConfig,
+            ModerationPredefinedPunishmentMessages,
 
             DiscordGuilds,
             DiscordGuildMembers,
