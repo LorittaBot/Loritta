@@ -65,6 +65,22 @@ abstract class LocalizedApplicationCommandOptions(val loritta: LorittaCinnamon) 
         .apply(builder)
         .let { register(it) }
 
+    fun boolean(
+        name: String,
+        description: StringI18nData,
+        builder: LocalizedBooleanCommandOptionBuilder.() -> (Unit) = {}
+    ) = LocalizedBooleanCommandOptionBuilder(languageManager, name, description)
+        .apply(builder)
+        .let { register(it) }
+
+    fun optionalBoolean(
+        name: String,
+        description: StringI18nData,
+        builder: NullableLocalizedBooleanCommandOptionBuilder.() -> (Unit) = {}
+    ) = NullableLocalizedBooleanCommandOptionBuilder(languageManager, name, description)
+        .apply(builder)
+        .let { register(it) }
+
     fun user(
         name: String,
         description: StringI18nData,

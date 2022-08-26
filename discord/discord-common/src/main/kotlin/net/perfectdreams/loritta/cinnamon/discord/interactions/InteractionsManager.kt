@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.p
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox.PlayAudioClipButtonExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.retribute.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.source.SourcePictureExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
@@ -63,6 +64,9 @@ class InteractionsManager(
 
         register(UserInfoUserCommand(languageManager))
         register(ShowGuildMemberPermissionsExecutor(loritta))
+
+        // ===[ MODERATION ]===
+        register(ConfirmBanButtonExecutor(loritta))
 
         // ===[ FUN ]===
         register(PlayAudioClipButtonExecutor(loritta))

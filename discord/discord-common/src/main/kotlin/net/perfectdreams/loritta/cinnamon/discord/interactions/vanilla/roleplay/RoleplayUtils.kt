@@ -8,7 +8,6 @@ import net.perfectdreams.discordinteraktions.common.builder.message.create.Messa
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.utils.Gender
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData

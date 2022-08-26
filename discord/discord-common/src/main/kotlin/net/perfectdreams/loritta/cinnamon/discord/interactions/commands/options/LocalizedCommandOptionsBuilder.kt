@@ -109,6 +109,36 @@ class NullableLocalizedNumberCommandOptionBuilder(
     descriptionI18n: StringI18nData
 ) : LocalizedNumberCommandOptionBuilderBase<Double?>(languageManager, name, descriptionI18n, false)
 
+// ===[ BOOLEAN ]===
+abstract class LocalizedBooleanCommandOptionBuilderBase<T>(
+    val languageManager: LanguageManager,
+    override val name: String,
+    val descriptionI18n: StringI18nData,
+    override val required: Boolean
+) : BooleanCommandOptionBuilderBase<T>() {
+    override val description: String
+        get() = error("String description is not supported in a ${this::class.simpleName}!")
+
+    override fun build() = LocalizedBooleanCommandOption(
+        languageManager,
+        name,
+        descriptionI18n,
+        required
+    )
+}
+
+class LocalizedBooleanCommandOptionBuilder(
+    languageManager: LanguageManager,
+    name: String,
+    descriptionI18n: StringI18nData
+) : LocalizedBooleanCommandOptionBuilderBase<Boolean>(languageManager, name, descriptionI18n, true)
+
+class NullableLocalizedBooleanCommandOptionBuilder(
+    languageManager: LanguageManager,
+    name: String,
+    descriptionI18n: StringI18nData
+) : LocalizedBooleanCommandOptionBuilderBase<Boolean?>(languageManager, name, descriptionI18n, false)
+
 // ===[ USER ]===
 abstract class LocalizedUserCommandOptionBuilderBase<T>(
     val languageManager: LanguageManager,
