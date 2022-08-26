@@ -13,9 +13,12 @@ import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.discord.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.discord.utils.parallax.ParallaxMessage
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.TokenSource
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 
 object MessageUtils {
     private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
+    // TODO: Proper i18n
+    private val INVALID_MESSAGE_CONFIGURED = ParallaxMessage("*Invalid Message Configured* ${Emotes.LoriSob}", listOf())
 
     suspend fun createMessage(
         stuff: LorittaDiscordStuff,
@@ -59,8 +62,14 @@ object MessageUtils {
                 ParallaxMessage(message, listOf())
             } catch (e: Exception) {
                 // Okay now you are just being annoying, the message couldn't be validated!
-                return ParallaxMessage("Invalid Message", listOf())
+                return INVALID_MESSAGE_CONFIGURED
             }
+        }
+
+        if ((rawParallaxMessage.content == null || rawParallaxMessage.content.isBlank()) && rawParallaxMessage.embeds.isEmpty()) {
+            // The user configured a message with no content, let's bail out.
+            // TODO: More verifications
+            return INVALID_MESSAGE_CONFIGURED
         }
 
         val parsedTokens = mutableMapOf<String, String?>()
