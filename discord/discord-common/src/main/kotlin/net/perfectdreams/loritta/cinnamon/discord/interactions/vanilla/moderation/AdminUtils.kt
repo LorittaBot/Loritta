@@ -106,7 +106,7 @@ object AdminUtils {
         val punishmentMessageForType = loritta.services.serverConfigs.getMessageForPunishmentTypeOnGuildId(
             guild.id.value,
             PunishmentAction.BAN
-        )
+        )?.ifBlank { null } // Because some stupid users love putting an empty message in the dashboard
 
         val punishmentLogChannelId = confirmBanData.punishmentLogChannelId
 
