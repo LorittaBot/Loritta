@@ -21,6 +21,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Applicat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.MessageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.StaffTokenSource
@@ -191,7 +192,7 @@ object AdminUtils {
             author(punisher.tag, null, punisher.effectiveAvatar.url)
             title = "\uD83D\uDEAB ${i18nContext.get(I18nKeysData.Commands.Command.Ban.YouGotPunished(guild.name))}"
             field(i18nContext.get(I18nKeysData.Commands.Category.Moderation.PunishedBy), "${punisher.username}#${punisher.discriminator}", false)
-            field(i18nContext.get(I18nKeysData.Commands.Category.Moderation.Reason), reason, false)
+            field(i18nContext.get(I18nKeysData.Commands.Category.Moderation.Reason), reason.shortenWithEllipsis(1024), false)
             color = Color(221, 0, 0)
             timestamp = Clock.System.now()
         }
