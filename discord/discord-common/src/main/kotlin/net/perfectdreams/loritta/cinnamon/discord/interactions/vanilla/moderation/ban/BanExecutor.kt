@@ -168,7 +168,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                     context.i18nContext.get(
                         I18nKeysData.Commands.Category.Moderation.YouAreReadyToPunish(
                             interactableUsers.keys.joinToString { it.mention },
-                            reason ?: "Unknown"
+                            reason ?: context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ReasonNotGiven)
                         )
                     ),
                     Emotes.LoriBanHammer
