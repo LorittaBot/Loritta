@@ -3,6 +3,7 @@ commands:
   errorWhileExecutingCommand: "Algo deu extremamente errado ao executar este comando... {loriRage} Desculpe pela inconveniência... {loriSob} Espero que este problema seja resolvido em breve! {stacktrace}"
   commandOnlyAvailableInGuilds: "Este comando só está disponível em um servidor! Se você realmente quiser usá-lo, por favor crie um servidor agradável e aconchegante, me adicione, e use o comando lá!"
   noValidImageFound: "Desculpe, mas eu não achei nenhuma imagem que eu possa usar! Eu tentei pegar imagens em links, imagens anexadas, avatares de usuários mencionados, emojis... mas eu não achei nada disso na sua mensagem."
+  noValidUserFound: "Desculpe, mas não consegui encontrar nenhum usuário válido!"
   sentImageIsTooLarge: "Desculpe, eu queria usar essa imagem incrível para o comando... mas ela é muito grande! Não quero arriscar abrindo a imagem e acabar morrendo... Por favor, envie uma imagem menor para que eu possa usá-la!"
   imageUrlIsUntrusted: "Desculpe, mas esse link parece um pouco sus, então eu não quero arriscar a minha segurança acessando ele... Se você realmente quer usar essa imagem, faça o download e envie-a para mim!"
   youArentTheUserGeneric: "Espere um pouquinho... Isso não é para você! Xô, xô! Sai daqui!" #Used in button/select menu reponses if the user tries to interact with a button/component that isn't for them
@@ -14,6 +15,7 @@ commands:
   checkOutNews: "Tenho novidades para você! Descubra tudo que há de novo [clicando aqui]({link})!"
   interactionDataIsMissingFromDatabaseGeneric: "Opa, parece que os dados de interação desapareceram porque você demorou muito para usá-los! Por favor, use o comando novamente... Desculpe!"
   insufficientFunds: "Você não tem **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para fazer isso! Você precisa conseguir mais **{howMuchIsNeeded,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** para continuar."
+  loriDoesntHavePermissionDiscord: "Eu queria executar esse comando, mas infelizmente eu não tenho permissão para {requiredPermissions}... Peça para alguém da equipe do servidor dar as permissões para mim! Obrigada!"
   youAreLorittaBannedPermanent:
     - "Você está **banido(a) permanentemente**! {loriHmpf}"
     - ""
@@ -38,3 +40,21 @@ commands:
     - "Se você deseja fazer um apelo do seu ban temporário, então por favor leia a nossa [página de apelo de bans]({banAppealPageUrl})! Entretanto nós recomendamos esperar o banimento expirar em vez de fazer apelo do seu ban temporário. {loriAmeno}"
     - ""
     - "*Será que é tarde demais para pedir desculpas?* {loriSob}"
+  userIsLorittaBannedPermanent:
+    - "{mention} está **banido(a) permanentemente**! {loriHmpf}"
+    - ""
+    - "**Motivo do Banimento:**"
+    - "> {reason}"
+    - "**Banido:** {banDate}"
+    - "**Expira:** Nunca (Permanente)"
+    - ""
+    - "*Será que é tarde demais para ele pedir desculpas?* {loriSob}"
+  userIsLorittaBannedTemporary:
+    - "{mention} está **temporariamente banido(a)**! {loriHmpf}"
+    - ""
+    - "**Motivo do Banimento:**"
+    - "> {reason}"
+    - "**Banido:** {banDate}"
+    - "**Expira:** {expiresDate}"
+    - ""
+    - "*Será que é tarde demais para ele pedir desculpas?* {loriSob}"
