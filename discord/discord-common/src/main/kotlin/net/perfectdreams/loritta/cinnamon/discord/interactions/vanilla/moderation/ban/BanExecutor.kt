@@ -6,7 +6,6 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.cache.data.GuildData
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.Member
-import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.autocomplete.GuildAutocompleteContext
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
@@ -23,20 +22,14 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderatio
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
 
 class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
-
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         // May be multiple in the same string
-        val users = string("users", TodoFixThisData)
+        val users = string("users", BanCommand.CATEGORY_I18N_PREFIX.Options.Users.Text)
 
-        // TODO: Pre-defined reasons with autocomplete
-        val reason = optionalString("reason", TodoFixThisData) {
+        val reason = optionalString("reason", BanCommand.CATEGORY_I18N_PREFIX.Options.Reason.Text) {
             cinnamonAutocomplete { autocompleteContext, focusedCommandOption ->
                 val interaKTionsContext = autocompleteContext.interaKTionsContext as? GuildAutocompleteContext ?: return@cinnamonAutocomplete emptyMap()
 
@@ -53,9 +46,9 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         }
 
         // TODO: Delete days
-        val skipConfirmation = optionalBoolean("skip_confirmation", TodoFixThisData)
-        val sendViaDirectMessage = optionalBoolean("send_via_direct_message", TodoFixThisData)
-        val sendToPunishmentLog = optionalBoolean("send_to_punishment_log", TodoFixThisData)
+        val skipConfirmation = optionalBoolean("skip_confirmation", BanCommand.CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
+        val sendViaDirectMessage = optionalBoolean("send_via_direct_message", BanCommand.CATEGORY_I18N_PREFIX.Options.SendViaDirectMessage.Text)
+        val sendToPunishmentLog = optionalBoolean("send_to_punishment_log", BanCommand.CATEGORY_I18N_PREFIX.Options.SendToPunishmentLog.Text)
     }
 
     override val options = Options()
@@ -68,14 +61,22 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
         if (Permission.BanMembers !in context.interaKTionsContext.appPermissions)
             context.failEphemerally {
-                content = "Eu não tenho permissão para banir membros!"
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.LoriDoesntHavePermissionDiscord(
+                        context.i18nContext.get(I18nKeysData.Permissions.BanMembers)
+                    )),
+                    Emotes.LoriSob
+                )
             }
 
         val users = AdminUtils.checkAndRetrieveAllValidUsersFromString(context, args[options.users])
 
         if (users.isEmpty()) {
             context.failEphemerally {
-                content = "Nenhum usuário encontrado!"
+                styled(
+                    context.i18nContext.get(I18nKeysData.Commands.NoValidUserFound),
+                    Emotes.LoriSob
+                )
             }
         }
 
@@ -100,7 +101,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         if (interactableUsers.isEmpty()) {
             context.failEphemerally {
                 styled(
-                    "Nenhum dos usuários podem ser punidos!",
+                    context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.NoneOfTheUsersCanBePunished),
                     Emotes.LoriSob
                 )
 
@@ -151,6 +152,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         if (args[options.skipConfirmation] == true) {
             AdminUtils.banUsers(
                 loritta,
+                context.i18nContext,
                 confirmBanData
             )
 
@@ -163,7 +165,12 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         } else {
             context.sendEphemeralMessage {
                 styled(
-                    "Você está prestes a banir ${interactableUsers.keys.joinToString { it.mention }} do seu servidor pelo motivo `$reason`!",
+                    context.i18nContext.get(
+                        I18nKeysData.Commands.Category.Moderation.YouAreReadyToPunish(
+                            interactableUsers.keys.joinToString { it.mention },
+                            reason ?: "Unknown"
+                        )
+                    ),
                     Emotes.LoriBanHammer
                 )
 
@@ -199,9 +206,10 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                     )
                 }
 
-                styled(
-                    "Cansado de confirmar punições? Então use `/quickpunishment`!"
-                )
+                // TODO: Implement this
+                // styled(
+                //     "Cansado de confirmar punições? Então use `/quickpunishment`!"
+                // )
 
                 actionRow {
                     interactiveButtonWithDatabaseData(
@@ -212,7 +220,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                     ) {
                         loriEmoji = Emotes.LoriBanHammer
 
-                        label = "Confirmar Punição"
+                        label = context.i18nContext.get(I18nKeysData.Commands.Category.Moderation.ConfirmPunishment)
                     }
                 }
             }

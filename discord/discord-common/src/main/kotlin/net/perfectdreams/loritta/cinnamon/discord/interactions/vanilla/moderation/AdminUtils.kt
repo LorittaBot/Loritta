@@ -26,8 +26,10 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.StaffTokenSource
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.UserTokenSource
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.utils.Placeholders
 import net.perfectdreams.loritta.cinnamon.utils.PunishmentAction
+import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
 
 object AdminUtils {
     private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
@@ -92,12 +94,12 @@ object AdminUtils {
         }
     }
 
-    suspend fun banUsers(loritta: LorittaCinnamon, confirmBanData: ConfirmBanData) {
+    suspend fun banUsers(loritta: LorittaCinnamon, i18nContext: I18nContext, confirmBanData: ConfirmBanData) {
         val guild = Guild(confirmBanData.guild, loritta.kord)
 
         val sendPunishmentViaDirectMessage = confirmBanData.sendPunishmentViaDirectMessage
         val sendPunishmentToPunishmentLog = confirmBanData.sendPunishmentToPunishmentLog
-        val reason = confirmBanData.reason
+        val reason = confirmBanData.reason ?: i18nContext.get(I18nKeysData.Commands.Category.Moderation.ReasonNotGiven)
         val users = confirmBanData.users
         val punisher = User(confirmBanData.punisher, loritta.kord)
 
@@ -126,18 +128,22 @@ object AdminUtils {
             if (sendPunishmentViaDirectMessage && member != null && !user.isBot) {
                 loritta.sendMessageToUserViaDirectMessage(
                     user.id,
-                    createDirectMessagePunishmentMessage(guild, punisher, reason)
+                    createDirectMessagePunishmentMessage(i18nContext, guild, punisher, reason)
                 )
             }
 
             if (sendPunishmentToPunishmentLog && punishmentLogChannelId != null && punishmentMessageForType != null) {
                 if (canTalkInPunishmentLogChannel == null) {
-                    val cachedLorittaPermissions =
-                        loritta.cache.getLazyCachedLorittaPermissions(guild.id, punishmentLogChannelId)
+                    val cachedLorittaPermissions = loritta.cache.getLazyCachedLorittaPermissions(guild.id, punishmentLogChannelId)
                     canTalkInPunishmentLogChannel = cachedLorittaPermissions.canTalk()
                 }
 
                 if (canTalkInPunishmentLogChannel == true) {
+                    val punishAction = when (PunishmentAction.BAN) {
+                        PunishmentAction.BAN -> i18nContext.get(I18nKeysData.Commands.Command.Ban.PunishAction)
+                        else -> TODO()
+                    }
+
                     // Okay, do we have permission to send a message there?
                     val message = MessageUtils.createMessage(
                         loritta,
@@ -148,12 +154,12 @@ object AdminUtils {
                             StaffTokenSource(loritta.kord, punisher.data, null) // TODO: Punisher Member Data
                         ),
                         mapOf(
-                            Placeholders.PUNISHMENT_REASON to "Forever", // TODO: Proper i18n
+                            Placeholders.PUNISHMENT_REASON to i18nContext.get(I18nKeysData.Commands.Category.Moderation.Forever),
                             Placeholders.PUNISHMENT_REASON to reason,
                             Placeholders.PUNISHMENT_REASON_SHORT to reason,
 
-                            Placeholders.PUNISHMENT_TYPE to PunishmentAction.BAN.name, // TODO: Proper i18n
-                            Placeholders.PUNISHMENT_TYPE_SHORT to PunishmentAction.BAN.name // TODO: Proper i18n
+                            Placeholders.PUNISHMENT_TYPE to punishAction,
+                            Placeholders.PUNISHMENT_TYPE_SHORT to punishAction
                         )
                     )
 
@@ -166,21 +172,26 @@ object AdminUtils {
                 }
             }
 
-            // TODO: The reason should include who banned
             guild.ban(
                 user.id
             ) {
-                this.reason = "Punido por ${punisher.tag} — Motivo: ${reason ?: "Motivo não informado"}"
+                this.reason = i18nContext.get(I18nKeysData.Commands.Category.Moderation.AuditLogPunishmentLog(punisher.tag, reason))
+                    .shortenWithEllipsis(512) // Max audit log entry size
             }
         }
     }
 
-    fun createDirectMessagePunishmentMessage(guild: Guild, punisher: User, reason: String?): UserMessageCreateBuilder.() -> (Unit) = {
+    private fun createDirectMessagePunishmentMessage(
+        i18nContext: I18nContext,
+        guild: Guild,
+        punisher: User,
+        reason: String
+    ): UserMessageCreateBuilder.() -> (Unit) = {
         embed {
             author(punisher.tag, null, punisher.effectiveAvatar.url)
-            title = "\uD83D\uDEAB Você foi banido de ${guild.name}!"
-            field("Punido por", "${punisher.username}#${punisher.discriminator}", false)
-            field("Motivo", reason ?: "???", false) // TODO: Don't show "???" to the user lmao
+            title = "\uD83D\uDEAB ${i18nContext.get(I18nKeysData.Commands.Command.Ban.YouGotPunished(guild.name))}"
+            field(i18nContext.get(I18nKeysData.Commands.Category.Moderation.PunishedBy), "${punisher.username}#${punisher.discriminator}", false)
+            field(i18nContext.get(I18nKeysData.Commands.Category.Moderation.Reason), reason, false)
             color = Color(221, 0, 0)
             timestamp = Clock.System.now()
         }
@@ -261,11 +272,6 @@ object AdminUtils {
                 val firstIssuerRoleRawPosition = firstIssuerRole?.rawPosition ?: Int.MIN_VALUE
                 val firstTargetRoleRawPosition = firstTargetRole?.rawPosition ?: Int.MIN_VALUE
 
-                println(firstIssuerRole)
-                println(firstTargetRole)
-
-                println("Target Role raw position: $firstTargetRoleRawPosition")
-                println("Issuer Role raw position: $firstIssuerRoleRawPosition")
                 // The issuer raw position must be higher than the target raw position
                 if (firstTargetRoleRawPosition > firstIssuerRoleRawPosition) {
                     targetInteractionChecks.add(

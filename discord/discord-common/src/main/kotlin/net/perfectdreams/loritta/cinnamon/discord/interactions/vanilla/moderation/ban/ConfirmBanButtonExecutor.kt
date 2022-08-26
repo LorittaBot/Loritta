@@ -23,7 +23,7 @@ class ConfirmBanButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecuto
         
         val data = context.decodeDataFromComponentOrFromDatabaseAndRequireUserToMatch<ConfirmBanData>()
 
-        AdminUtils.banUsers(loritta, data)
+        AdminUtils.banUsers(loritta, context.i18nContext, data)
 
         context.sendEphemeralMessage {
             styled(

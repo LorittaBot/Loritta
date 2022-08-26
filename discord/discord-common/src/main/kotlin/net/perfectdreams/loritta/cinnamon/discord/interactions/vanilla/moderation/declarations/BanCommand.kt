@@ -11,11 +11,11 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderatio
 
 class BanCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
-        val I18N_PREFIX = I18nKeysData.Commands.Command.Dashboard
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Ban
         val CATEGORY_I18N_PREFIX = I18nKeysData.Commands.Category.Moderation
     }
 
-    override fun declaration() = slashCommand("ban", CommandCategory.MODERATION, TodoFixThisData) {
+    override fun declaration() = slashCommand("ban", CommandCategory.MODERATION, I18N_PREFIX.Description) {
         dmPermission = false
         defaultMemberPermissions = Permissions {
             + Permission.BanMembers

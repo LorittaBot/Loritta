@@ -69,20 +69,39 @@ commands:
       name: "Moderation"
       description:
         - "Commands to make your life as a moderator on your servers easier!"
-      skipConfirmationTip: "Cansado de confirmar as suas punições? Então use {quickPunishmentCommand} para burlar as confirmações de punições, para que você possa sentir a satisfação de banir aquele usuário chato enquanto ele está digitando um textão para te xingar!"
-      successfullyPunished: "Usuário punido. Ninguém mandou quebrar as regras, seu boboca!"
-      punishmentWillBeSentViaDirectMessage: "A punição SERÁ ENVIADA via mensagem direta para a pessoa"
-      punishmentWillNotBeSentViaDirectMessage: "A punição NÃO SERÁ ENVIADA via mensagem direta para a pessoa"
-      punishmentWillBeSentToPunishmentLog: "A punição SERÁ ENVIADA para o registro de punições do servidor"
-      punishmentWillNotBeSentToPunishmentLog: "A punição NÃO SERÁ ENVIADA para o registro de punições do servidor"
+      skipConfirmationTip: "Tired of confirming your punishments? Then use {quickPunishmentCommand} to automatically bypass the punishment confirmations, so you can get the satisfaction of banning that annoying user while they are typing that big text with the sole intent of harrassing you!"
+      successfullyPunished: "User punished. No one told you to break the rules, you stupid!"
+      youAreReadyToPunish: "You are about to punish {mentions} from your server with the reason `{reason}`!"
+      confirmPunishment: "Confirm Punishment"
+      noneOfTheUsersCanBePunished: "None of the users can be punished!"
+      punishmentWillBeSentViaDirectMessage: "The punishment WILL BE SENT via direct message to the user"
+      punishmentWillNotBeSentViaDirectMessage: "The punishment WILL NOT BE SENT via direct message to the user"
+      punishmentWillBeSentToPunishmentLog: "The punishment WILL BE SENT to the server's punishment log"
+      punishmentWillNotBeSentToPunishmentLog: "The punishment WILL NOT BE SENT to the server's punishment log"
+      auditLogPunishmentLog: "Punished by {user} — Reason: {reason}"
+      reasonNotGiven: "Reason not given"
+      punishedBy: "Punished by"
+      reason: "Reason"
+      forever: "Forever"
       punishmentInteractFailures:
-        roleTooLow: "O usuário {mention} não poderá ser punido, pois o meu cargo é menor ou igual ao dele!"
-        roleTooLowHowToFix: "Para que eu possa punir, suba o meu cargo para acima do cargo da pessoa que você deseja punir na lista de cargos, obrigada!"
-        punisherRoleTooLow: "O usuário {mention} não poderá ser punido, pois o seu cargo é menor ou igual ao dele!"
-        punisherRoleTooLowHowToFix: "Para que você possa punir, suba o seu cargo acima do cargo da pessoa que você deseja punir na lista de cargos, obrigada!"
-        targetIsOwner: "O usuário {mention} não poderá ser punido, pois ele é o dono do servidor! Tá tentando fazer um motim, hein?"
-        targetIsLoritta: "Seu safade, eu não vou me punir grr, vai ver se eu tô na esquina"
-        targetIsSelf: "O usuário {mention} não poderá ser punido, pois ele é... você mesmo. Por o acaso você é masoquista para tentar se punir?"
+        roleTooLow: "User {mention} cannot be punished, because my role is lower or equal to theirs!"
+        roleTooLowHowToFix: "To fix this, move my role up to above the role of the person you wish to punish in the role list, thank you!"
+        punisherRoleTooLow: "User {mention} cannot be punished, because your role is lower or equal to theirs!"
+        punisherRoleTooLowHowToFix: "To fix this, move your role up to above the role of the person you wish to punish in the role list, thank you!"
+        targetIsOwner: "The user {mention} cannot be punished, because they are the owner of the server! Are you trying to start a riot?"
+        targetIsLoritta: "You rascal, I ain't gonna punish myself, get lost"
+        targetIsSelf: "The user {mention} cannot be punished, because they are... yourself. Are you, by any chance, a masochist trying to punish yourself?"
+      options:
+        users:
+          text: "The users that will be punished"
+        reason:
+          text: "The punishment reason"
+        skipConfirmation:
+          text: "Skips the punishment confirmation"
+        sendViaDirectMessage:
+          text: "Sets if the punishment will be sent to the user via direct message"
+        sendToPunishmentLog:
+          text: "Sets if the punishment will be sent to the punishment log"
 
     utils:
       name: "Utilities"

@@ -11,7 +11,7 @@ import kotlin.time.Duration
 fun scheduleCoroutineAtFixedRate(scope: CoroutineScope, period: Duration, initialDelay: Duration = Duration.ZERO, action: RunnableCoroutine) {
     scope.launch {
         delay(initialDelay)
-        
+
         val mutex = Mutex()
 
         while (true) {
