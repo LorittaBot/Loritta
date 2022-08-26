@@ -16,8 +16,8 @@ class BrokerStockQuantityAutocompleteExecutor(loritta: LorittaCinnamon, val tick
     override suspend fun handle(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
         val currentInput = focusedOption.value
 
-        val ticker = context.getArgument(tickerOption)
-        val tickerInfo = loritta.services.bovespaBroker.getTicker(ticker.uppercase()) ?: error("User is trying to autocomplete \"$ticker\", but that ticker doesn't exist!")
+        val ticker = context.getArgument(tickerOption) ?: return mapOf()
+        val tickerInfo = loritta.services.bovespaBroker.getTicker(ticker.uppercase())
 
         val quantity = NumberUtils.convertShortenedNumberToLong(context.i18nContext, currentInput) ?: return mapOf(
             context.i18nContext.get(
