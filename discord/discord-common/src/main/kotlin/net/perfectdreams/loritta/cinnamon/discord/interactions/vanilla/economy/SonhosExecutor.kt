@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.getUserProfile
 
 class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
-        val user = optionalUser("user", SonhosCommand.I18N_PREFIX.Options.User)
+        val user = optionalUser("user", SonhosCommand.SONHOS_I18N_PREFIX.Options.User)
     }
 
     override val options = Options()
@@ -39,10 +39,10 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
             context.sendMessage {
                 styled(
                     context.i18nContext.get(
-                        SonhosCommand.I18N_PREFIX.YouHaveSonhos(
+                        SonhosCommand.SONHOS_I18N_PREFIX.YouHaveSonhos(
                             userSonhos,
                             if (sonhosRankPosition != null) {
-                                SonhosCommand.I18N_PREFIX.YourCurrentRankPosition(
+                                SonhosCommand.SONHOS_I18N_PREFIX.YourCurrentRankPosition(
                                     sonhosRankPosition,
                                     "+sonhos top" // TODO: Change to slash command
                                 )
@@ -68,11 +68,11 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
             context.sendMessage {
                 styled(
                     context.i18nContext.get(
-                        SonhosCommand.I18N_PREFIX.UserHasSonhos(
+                        SonhosCommand.SONHOS_I18N_PREFIX.UserHasSonhos(
                             mentionUser(user, false), // We don't want to notify the user!
                             userSonhos,
                             if (sonhosRankPosition != null) {
-                                SonhosCommand.I18N_PREFIX.UserCurrentRankPosition(
+                                SonhosCommand.SONHOS_I18N_PREFIX.UserCurrentRankPosition(
                                     mentionUser(user, false), // Again, we don't want to notify the user!
                                     sonhosRankPosition,
                                     "+sonhos top" // TODO: Change to slash command

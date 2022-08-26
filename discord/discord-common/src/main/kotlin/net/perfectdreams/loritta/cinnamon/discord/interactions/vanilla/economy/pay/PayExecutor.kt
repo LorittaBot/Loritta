@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.ShortenedToLongSonhosAutocompleteExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.PayCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
@@ -26,11 +26,11 @@ import kotlin.time.Duration.Companion.minutes
 
 class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
-        val user = user("user", PayCommand.I18N_PREFIX.Options.User.Text)
-        val quantity = string("quantity", PayCommand.I18N_PREFIX.Options.Quantity.Text) {
+        val user = user("user", SonhosCommand.PAY_I18N_PREFIX.Options.User.Text)
+        val quantity = string("quantity", SonhosCommand.PAY_I18N_PREFIX.Options.Quantity.Text) {
             autocomplete(ShortenedToLongSonhosAutocompleteExecutor(loritta))
         }
-        val ttlDuration = optionalString("expires_after", PayCommand.I18N_PREFIX.Options.ExpiresAfter.Text) {
+        val ttlDuration = optionalString("expires_after", SonhosCommand.PAY_I18N_PREFIX.Options.ExpiresAfter.Text) {
             choice(I18nKeysData.Time.Minutes(1), "1m")
             choice(I18nKeysData.Time.Minutes(5), "5m")
             choice(I18nKeysData.Time.Minutes(15), "15m")
@@ -57,19 +57,19 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         // Too small
         if (howMuch == null || howMuch == 0L)
             context.failEphemerally(
-                context.i18nContext.get(PayCommand.I18N_PREFIX.TryingToTransferZeroSonhos),
+                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TryingToTransferZeroSonhos),
                 Emotes.LoriHmpf
             )
 
         if (0L > howMuch)
             context.failEphemerally(
-                context.i18nContext.get(PayCommand.I18N_PREFIX.TryingToTransferLessThanZeroSonhos),
+                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TryingToTransferLessThanZeroSonhos),
                 Emotes.LoriHmpf
             )
 
         if (context.user.id == receiver.id)
             context.failEphemerally(
-                context.i18nContext.get(PayCommand.I18N_PREFIX.CantTransferToSelf),
+                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.CantTransferToSelf),
                 Emotes.Error
             )
         
@@ -101,7 +101,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         // TODO: Loritta is grateful easter egg
         // Easter Eggs
         val quirkyMessage = when {
-            howMuch >= 500_000 -> context.i18nContext.get(PayCommand.I18N_PREFIX.RandomQuirkyRichMessages).random()
+            howMuch >= 500_000 -> context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.RandomQuirkyRichMessages).random()
             // tellUserLorittaIsGrateful -> context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()
             else -> null
         }
@@ -123,7 +123,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         context.sendMessage {
             styled(
                 buildString {
-                    append(context.i18nContext.get(PayCommand.I18N_PREFIX.YouAreGoingToTransfer(howMuch, mentionUser(receiver))))
+                    append(context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.YouAreGoingToTransfer(howMuch, mentionUser(receiver))))
                     if (quirkyMessage != null) {
                         append(" ")
                         append(quirkyMessage)
@@ -132,14 +132,14 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                 Emotes.LoriRich
             )
             styled(
-                context.i18nContext.get(PayCommand.I18N_PREFIX.ConfirmTheTransaction(mentionUser(receiver), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.LongDateTime), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.RelativeTime))),
+                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.ConfirmTheTransaction(mentionUser(receiver), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.LongDateTime), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.RelativeTime))),
                 Emotes.LoriZap
             )
 
             actionRow {
                 interactiveButton(
                     ButtonStyle.Primary,
-                    context.i18nContext.get(PayCommand.I18N_PREFIX.AcceptTransfer),
+                    context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer),
                     TransferSonhosButtonExecutor,
                     data
                 ) {
@@ -148,7 +148,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
                 interactiveButton(
                     ButtonStyle.Danger,
-                    context.i18nContext.get(PayCommand.I18N_PREFIX.Cancel),
+                    context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.Cancel),
                     CancelSonhosTransferButtonExecutor,
                     context.loritta.encodeDataForComponentOrStoreInDatabase(
                         CancelSonhosTransferData(
@@ -174,7 +174,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
         if (!gotDailyRewardInTheLastXDays)
             context.failEphemerally(
-                context.i18nContext.get(PayCommand.I18N_PREFIX.SelfAccountNeedsToGetDaily("`/daily`")), // TODO: Command mention?
+                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SelfAccountNeedsToGetDaily("`/daily`")), // TODO: Command mention?
                 Emotes.LoriSob
             )
     }
@@ -186,7 +186,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
         if (allowedAfterTimestamp > now) // 14 dias
             context.failEphemerally(
-                context.i18nContext.get(PayCommand.I18N_PREFIX.SelfAccountIsTooNew(allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.LongDateTime), allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.RelativeTime))),
+                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SelfAccountIsTooNew(allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.LongDateTime), allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.RelativeTime))),
                 Emotes.LoriSob
             )
     }
@@ -200,7 +200,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(
-                        PayCommand.I18N_PREFIX.OtherAccountIsTooNew(
+                        SonhosCommand.PAY_I18N_PREFIX.OtherAccountIsTooNew(
                             mentionUser(target),
                             allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.LongDateTime),
                             allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.RelativeTime)

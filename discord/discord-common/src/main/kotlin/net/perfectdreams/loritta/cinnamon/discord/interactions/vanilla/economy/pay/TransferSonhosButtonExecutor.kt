@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.PayCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
@@ -129,7 +129,7 @@ class TransferSonhosButtonExecutor(
                     actionRow {
                         disabledButton(
                             ButtonStyle.Primary,
-                            context.i18nContext.get(PayCommand.I18N_PREFIX.TransferAccepted)
+                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferAccepted)
                         ) {
                             loriEmoji = Emotes.LoriCard
                         }
@@ -138,7 +138,7 @@ class TransferSonhosButtonExecutor(
 
                 context.sendMessage {
                     styled(
-                        context.i18nContext.get(PayCommand.I18N_PREFIX.SuccessfullyTransferred(mentionUser(user), result.howMuch)),
+                        context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SuccessfullyTransferred(mentionUser(user), result.howMuch)),
                         Emotes.Handshake
                     )
 
@@ -148,23 +148,23 @@ class TransferSonhosButtonExecutor(
 
                     if (result.giverRanking != null) {
                         styled(
-                            context.i18nContext.get(PayCommand.I18N_PREFIX.TransferredSonhosWithRanking(mentionUser(result.giverId), result.giverQuantity, result.giverRanking)),
+                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(mentionUser(result.giverId), result.giverQuantity, result.giverRanking)),
                             user1Emote
                         )
                     } else {
                         styled(
-                            context.i18nContext.get(PayCommand.I18N_PREFIX.TransferredSonhos(mentionUser(result.giverId), result.giverQuantity)),
+                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(mentionUser(result.giverId), result.giverQuantity)),
                             user1Emote
                         )
                     }
                     if (result.receiverRanking != null) {
                         styled(
-                            context.i18nContext.get(PayCommand.I18N_PREFIX.TransferredSonhosWithRanking(mentionUser(result.receiverId), result.receiverQuantity, result.receiverRanking)),
+                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(mentionUser(result.receiverId), result.receiverQuantity, result.receiverRanking)),
                             user2Emote
                         )
                     } else {
                         styled(
-                            context.i18nContext.get(PayCommand.I18N_PREFIX.TransferredSonhos(mentionUser(result.receiverId), result.giverQuantity)),
+                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(mentionUser(result.receiverId), result.giverQuantity)),
                             user2Emote
                         )
                     }
@@ -187,7 +187,7 @@ class TransferSonhosButtonExecutor(
                     actionRow {
                         disabledButton(
                             ButtonStyle.Danger,
-                            context.i18nContext.get(PayCommand.I18N_PREFIX.TransferFailed(PayCommand.I18N_PREFIX.FailReasons.Expired))
+                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferFailed(SonhosCommand.PAY_I18N_PREFIX.FailReasons.Expired))
                         ) {
                             loriEmoji = Emotes.LoriSob
                         }
@@ -199,7 +199,7 @@ class TransferSonhosButtonExecutor(
                     actionRow {
                         disabledButton(
                             ButtonStyle.Danger,
-                            context.i18nContext.get(PayCommand.I18N_PREFIX.TransferFailed(PayCommand.I18N_PREFIX.FailReasons.InsufficientSonhos))
+                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferFailed(SonhosCommand.PAY_I18N_PREFIX.FailReasons.InsufficientSonhos))
                         ) {
                             loriEmoji = Emotes.LoriSob
                         }

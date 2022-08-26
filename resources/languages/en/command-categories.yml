@@ -117,7 +117,8 @@ commands:
       name: "Economy"
       description:
         - "Getting rich in real life is super hard... so why not get rich here?"
-        - "Commands related to sonhos, my currency!"
+        - "Commands related to sonhos, my virtual currency!"
+      rootCommandDescription: "Commands related to sonhos, my virtual currency!"
 
     roleplay:
       name: "Roleplay"
