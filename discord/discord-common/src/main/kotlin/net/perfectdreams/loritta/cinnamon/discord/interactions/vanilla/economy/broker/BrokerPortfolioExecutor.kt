@@ -19,7 +19,7 @@ class BrokerPortfolioExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
 
         if (userStockAssets.isEmpty())
             context.fail(
-                context.i18nContext.get(BrokerCommand.I18N_PREFIX.Portfolio.YouDontHaveAnyShares),
+                context.i18nContext.get(BrokerCommand.I18N_PREFIX.Portfolio.YouDontHaveAnyShares(loritta.commandMentions.brokerInfo, loritta.commandMentions.brokerBuy)),
                 Emotes.LoriSob
             )
 

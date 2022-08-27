@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
+import net.perfectdreams.exposedpowerutils.sql.jsonb
+
 /**
  * Stores a Guild ID -> Hash for Loritta's application commands
  *
@@ -9,4 +11,5 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables
  */
 object DiscordLorittaApplicationCommandHashes : SnowflakeTable() {
     val hash = long("hash")
+    val data = jsonb("data")
 }

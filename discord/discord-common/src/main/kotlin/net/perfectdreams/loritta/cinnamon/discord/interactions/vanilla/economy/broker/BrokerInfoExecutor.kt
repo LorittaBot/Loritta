@@ -24,7 +24,10 @@ class BrokerInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                         loriSob = Emotes.LoriSob,
                         tickerOutOfMarket = Emotes.DoNotDisturb,
                         openTime = LorittaBovespaBrokerUtils.TIME_OPEN_DISCORD_TIMESTAMP,
-                        closingTime = LorittaBovespaBrokerUtils.TIME_CLOSING_DISCORD_TIMESTAMP
+                        closingTime = LorittaBovespaBrokerUtils.TIME_CLOSING_DISCORD_TIMESTAMP,
+                        brokerBuyCommandMention = loritta.commandMentions.brokerBuy,
+                        brokerSellCommandMention = loritta.commandMentions.brokerSell,
+                        brokerPortfolioCommandMention = loritta.commandMentions.brokerPortfolio,
                     )
                 ).joinToString("\n")
 

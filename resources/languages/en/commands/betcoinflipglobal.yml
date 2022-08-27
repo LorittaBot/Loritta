@@ -3,7 +3,7 @@ invalidQuantity: "You used an invalid sonhos quantity! Valid quantities: {validQ
 
 quittedMatchmakingQueue: "You left the waiting queue!"
 youArentInTheMatchmakingQueueToLeaveIt: "You are not in the waiting queue to leave it!"
-addedToMatchmakingQueue: "You joined the waiting queue! When another user joins the queue, a match will be done between you and them! If no match is found in five minutes, I will remove you from the queue. If you want to leave the queue, use `/bet coinflip global` e select to leave the current queue, but keep in mind that you can only do this before a match is found!"
+addedToMatchmakingQueue: "You joined the waiting queue! When another user joins the queue, a match will be done between you and them! If no match is found in five minutes, I will remove you from the queue. If you want to leave the queue, use {betCoinflipGlobalCommandMention} and select to leave the current queue, but keep in mind that you can only do this before a match is found!"
 youAreAlreadyInTheMatchmakingQueue: "You are already in the waiting queue!" # This is only shown if the user uses the command to leave the matchmaking queue directly, because autocomplete would never display this option to the user
 leftMatchmakingQueueDueToNotEnoughSonhos: "I found someone to bet with you, but I needed to remove you from the waiting queue because you don't have enough sonhos for the bet..."
 notEnoughSonhosToBet: "How are you going to bet a quantity that you don't have? Short payment bets don't exist my dude!"

@@ -53,7 +53,7 @@ object SonhosUtils {
         } else {
             // Recommend the user to get their daily reward
             styled(
-                i18nContext.get(I18nKeysData.Commands.WantingMoreSonhosDaily),
+                i18nContext.get(I18nKeysData.Commands.WantingMoreSonhosDaily(loritta.commandMentions.daily)),
                 Emotes.Gift
             )
         }

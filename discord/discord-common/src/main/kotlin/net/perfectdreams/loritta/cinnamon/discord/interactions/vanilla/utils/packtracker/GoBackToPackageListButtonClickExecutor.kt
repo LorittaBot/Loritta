@@ -26,7 +26,7 @@ class GoBackToPackageListButtonClickExecutor(
 
         if (packageIds.isEmpty())
             context.failEphemerally(
-                context.i18nContext.get(PackageCommand.I18N_PREFIX.List.YouAreNotFollowingAnyPackage),
+                context.i18nContext.get(PackageCommand.I18N_PREFIX.List.YouAreNotFollowingAnyPackage(loritta.commandMentions.packageTrack)),
                 Emotes.LoriSob
             )
 

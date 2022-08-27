@@ -10,7 +10,7 @@ commands:
   invalidNumber: "Sorry, but I don't think `{number}` is a valid number... Or maybe it's just me being dumb, after all, I'm wasting my time on Discord instead of paying attention to my math class."
   sonhosWithQuantity: "{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}"
   wantingMoreSonhosBundlesUpsell: "Hey, do wanna have more sonhos? Then buy more at my store! We accept payments via boleto, credit card and Pix and buying there you help me stay online while you have fun with more sonhos! But don't worry, the choice is yours and you can stay using Loritta without worrying about paying anything. Interested? Then [click here]({sonhosShopWebsiteLink})!"
-  wantingMoreSonhosDaily: "Hey, you haven't redeemed your Daily Sonhos Reward today! Redeem it now and have fun! `/daily`"
+  wantingMoreSonhosDaily: "Hey, you haven't redeemed your Daily Sonhos Reward today! Redeem it now and have fun! {dailyCommandMention}"
   checkOutNews: "I have updates for you! Find out everything that's new by [clicking here]({link})!"
   interactionDataIsMissingFromDatabaseGeneric: "Whoops, looks like the interaction data has vanished because you took too long to use it! Please use the command again... Sorry!"
   insufficientFunds: "You don't have **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** to do this! You need to get more **{howMuchIsNeeded,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** to continue."

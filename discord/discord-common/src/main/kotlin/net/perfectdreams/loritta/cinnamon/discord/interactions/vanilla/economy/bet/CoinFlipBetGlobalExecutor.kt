@@ -75,7 +75,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                     is BetsService.AddedToQueueResult -> context.sendEphemeralMessage {
                         styled(
                             context.i18nContext.get(
-                                BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.AddedToMatchmakingQueue
+                                BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.AddedToMatchmakingQueue(context.loritta.commandMentions.betCoinflipGlobal)
                             ),
                             Emotes.LoriRich
                         )

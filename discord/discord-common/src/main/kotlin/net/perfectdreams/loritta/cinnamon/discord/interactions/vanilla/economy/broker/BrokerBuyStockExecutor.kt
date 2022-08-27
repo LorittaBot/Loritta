@@ -39,7 +39,7 @@ class BrokerBuyStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExe
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
-            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker))
+            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
 
         val quantity = NumberUtils.convertShortenedNumberToLong(context.i18nContext, quantityAsString) ?: context.failEphemerally(
             context.i18nContext.get(
@@ -103,7 +103,8 @@ class BrokerBuyStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExe
                 BrokerCommand.I18N_PREFIX.Buy.SuccessfullyBought(
                     sharesCount = boughtQuantity,
                     ticker = tickerId,
-                    price = value
+                    price = value,
+                    brokerPortfolioCommandMention = loritta.commandMentions.brokerPortfolio
                 )
             ),
             Emotes.LoriRich

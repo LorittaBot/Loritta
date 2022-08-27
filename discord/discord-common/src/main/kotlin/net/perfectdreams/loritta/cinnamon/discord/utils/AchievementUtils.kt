@@ -70,7 +70,7 @@ object AchievementUtils {
                 )
 
                 styled(
-                    i18nContext.get(I18nKeysData.Achievements.ViewYourAchievements("/achievements")),
+                    i18nContext.get(I18nKeysData.Achievements.ViewYourAchievements(loritta.commandMentions.achievements)),
                     prefix = Emotes.LoriWow
                 )
             }

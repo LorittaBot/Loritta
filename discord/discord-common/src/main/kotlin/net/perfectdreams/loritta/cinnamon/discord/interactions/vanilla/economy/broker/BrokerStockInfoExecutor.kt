@@ -30,10 +30,10 @@ class BrokerStockInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
-            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker))
+            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
 
         val stockInformation = context.loritta.services.bovespaBroker.getTicker(tickerId)
-            ?: context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker))
+            ?: context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
 
         val stockAsset = context.loritta.services.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
             .firstOrNull { it.ticker == tickerId }

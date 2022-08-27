@@ -174,7 +174,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
 
         if (!gotDailyRewardInTheLastXDays)
             context.failEphemerally(
-                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SelfAccountNeedsToGetDaily("`/daily`")), // TODO: Command mention?
+                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SelfAccountNeedsToGetDaily(loritta.commandMentions.daily)),
                 Emotes.LoriSob
             )
     }

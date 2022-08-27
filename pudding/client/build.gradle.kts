@@ -15,7 +15,7 @@ dependencies {
     api(libs.exposed.core)
     api(libs.exposed.jdbc)
     api(libs.exposed.javatime)
-    implementation("org.postgresql:postgresql:42.2.23")
+    api("org.postgresql:postgresql:42.2.23")
     implementation(libs.hikaricp)
     api("pw.forst", "exposed-upsert", "1.1.0")
     api("net.perfectdreams.exposedpowerutils:exposed-power-utils:1.1.0")

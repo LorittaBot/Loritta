@@ -62,7 +62,7 @@ class FollowPackageButtonClickExecutor(
                     }
 
                     context.sendEphemeralReply(
-                        context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.FollowPackage.YouAreNowFollowingThePackage(decoded.trackingId)),
+                        context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.FollowPackage.YouAreNowFollowingThePackage(decoded.trackingId, loritta.commandMentions.packageList)),
                         Emotes.LoriSunglasses
                     )
                 } catch (e: PackagesTrackingService.UserIsAlreadyTrackingPackageException) {

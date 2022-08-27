@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.LorittaDiscordGatewayManager
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.CinnamonConfig
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
@@ -141,7 +142,8 @@ class LorittaCinnamon(
     val falatron = Falatron(config.falatron.url, config.falatron.key)
     val soundboard = Soundboard()
     val profileDesignManager = ProfileDesignManager(this)
-
+    // TODO: This is very hacky, maybe this could be improved somehow?
+    lateinit var commandMentions: CommandMentions
     val random = SecureRandom()
 
     val activeEvents = ConcurrentLinkedQueue<Job>()
@@ -301,7 +303,7 @@ class LorittaCinnamon(
      * The ID of the direct message channel is cached.
      */
     suspend fun sendMessageToUserViaDirectMessage(userId: Snowflake, builder: UserMessageCreateBuilder.() -> (Unit)) = sendMessageToUserViaDirectMessage(
-        net.perfectdreams.loritta.cinnamon.discord.utils.UserId(userId),
+        UserId(userId),
         builder
     )
 

@@ -24,7 +24,7 @@ achievements:
       description: "Achievements that are still trying to figure out what category they should be in" # Used in the Miscellaneous Achievements category. It is a joke, like "trying to find their purpose in life"
 
   achievementUnlocked: "Achievement Unlocked!" # Shown to the user when an achievement is unlocked
-  viewYourAchievements: "Check out your achievements using `{command}`"
+  viewYourAchievements: "Check out your achievements using {achievementsCommandMention}"
 
   achievement:
     # ===[ SHIP ]===

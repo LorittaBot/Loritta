@@ -182,7 +182,7 @@ object WebhookCommandUtils {
         } catch (e: Exception) {
             // Invalid message
             if (!input.startsWith("{")) // Doesn't seem to be a valid JSON, maybe they would prefer using "/webhook send simple"?
-                context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidJsonMessageNoCurlyBraces))
+                context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidJsonMessageNoCurlyBraces(context.loritta.commandMentions.webhookSendSimple, context.loritta.commandMentions.webhookSendRepost)))
             else
                 context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidJsonMessage))
         }

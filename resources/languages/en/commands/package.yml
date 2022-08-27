@@ -9,7 +9,7 @@ track:
   unfollowPackageUpdates: "Unfollow Package Updates"
   followPackage:
     packageAlreadyDelivered: "This package was already delivered to its recipient!"
-    youAreNowFollowingThePackage: "You are now following the package `{trackingId}`! You will receive updates about it in your direct messages, so keep your direct messages open in a server where I'm in! You can check all packages that you are following with `/package list`."
+    youAreNowFollowingThePackage: "You are now following the package `{trackingId}`! You will receive updates about it in your direct messages, so keep your direct messages open in a server where I'm in! You can check all packages that you are following with {packageListCommandMention}."
     youAreAlreadyFollowingThePackage: "You are already following this package!"
     youAreAlreadyFollowingTooManyPackages: "You are following too many packages!"
   unfollowPackage:
@@ -20,7 +20,7 @@ track:
 
 list:
   description: "View all packages that you are following"
-  youAreNotFollowingAnyPackage: "You are not following any packages! You can view a package's status and follow them with `/package track`."
+  youAreNotFollowingAnyPackage: "You are not following any packages! You can view a package's status and follow them with {packageTrackCommandMention}."
   followedPackages: "Followed Packages"
 
   youAreFollowingXPackages: "You are following {packageCount,plural, =0 {# packages} one {# package} other {# packages}}!"
