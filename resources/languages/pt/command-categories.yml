@@ -104,7 +104,8 @@ commands:
       name: "Economia"
       description:
         - "Ficar rico na vida real é super difícil... então por que você não tenta ficar rico na minha economia?"
-        - "Commands related to sonhos, my virtual currency!"
+        - "Comandos relacionados aos sonhos, a minha moeda virtual!"
+      rootCommandDescription: "Comandos relacionados aos sonhos, a minha moeda virtual!"
     roleplay:
       name: "Roleplay"
       description:
