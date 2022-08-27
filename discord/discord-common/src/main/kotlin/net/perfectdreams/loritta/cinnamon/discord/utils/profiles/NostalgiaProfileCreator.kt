@@ -156,7 +156,7 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 				graphics.font = whitneyMedium20
 				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), whitneyMedium20)
 				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(locale, marriage.marriedSince.toEpochMilliseconds(), System.currentTimeMillis()), Rectangle(545, 108 + 14  + 18, 256, 14), whitneySemiBold16)
+				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(locale, marriage.marriedSince.toEpochMilliseconds(), System.currentTimeMillis(), maxParts = 3), Rectangle(545, 108 + 14  + 18, 256, 14), whitneySemiBold16)
 			}
 		}
 

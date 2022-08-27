@@ -1,4 +1,6 @@
 time:
+  timeSpanInTheFuture: "in {timeSpan}"
+  timeSpanInThePast: "{timeSpan} ago"
   aFewMilliseconds: "a few milliseconds"
   seconds: "{unit,plural, =0 {# seconds} one {# second} other {# seconds}}"
   minutes: "{unit,plural, =0 {# minutes} one {# minute} other {# minutes}}"

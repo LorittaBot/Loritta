@@ -66,6 +66,15 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
             mutualGuildsInAllClusters
         )
 
+        val aboutMe = profileSettings.aboutMe ?: context.i18nContext.get(I18nKeysData.Profiles.DefaultAboutMe)
+
+        val modifiedAboutMe = aboutMe
+            // Discord Relative Time Formatting
+            .replace(Regex("<t:(\\d+):R>")) {
+                val epochSecond = it.groupValues[1].toLong()
+                DateUtils.formatDiscordLikeRelativeDate(context.i18nContext, epochSecond * 1_000, System.currentTimeMillis())
+            }
+
         val byteArray = when (profileCreator) {
             is StaticProfileCreator -> {
                 profileCreator.create(
@@ -76,7 +85,7 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
                     badges,
                     context.i18nContext,
                     loritta.getUserProfileBackground(userProfile),
-                    profileSettings.aboutMe ?: context.i18nContext.get(I18nKeysData.Profiles.DefaultAboutMe)
+                    modifiedAboutMe
                 ).toByteArray(ImageFormatType.PNG)
             }
             else -> error("Unsupported Profile Creator Type $profileCreator")
