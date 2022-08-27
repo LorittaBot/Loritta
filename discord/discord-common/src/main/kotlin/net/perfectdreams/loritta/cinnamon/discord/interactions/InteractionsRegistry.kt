@@ -144,16 +144,4 @@ class InteractionsRegistry(
 
         loritta.commandMentions = CommandMentions(registeredCommands ?: error("At this point, the registeredCommands should be already initialized... So if you are seeing this, then it means that something went terribly wrong!"))
     }
-
-    /**
-     * Hashes [value]'s primitives with [Objects.hash] to create a hash that identifies the object.
-     */
-    // TODO: This is the same implementation used in the DiscordCacheService... maybe
-    inline fun <reified T> hashEntity(value: T): Int {
-        // We use our own custom hash encoder because ProtoBuf can't encode the "Optional" fields, because it can't serialize null values
-        // on a field that isn't marked as null
-        val encoder = HashEncoder()
-        encoder.encodeSerializableValue(serializer(), value)
-        return Objects.hash(*encoder.list.toTypedArray())
-    }
 }
