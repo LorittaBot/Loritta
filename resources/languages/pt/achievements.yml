@@ -24,7 +24,6 @@ achievements:
       title: "Miscelânea"
       description: "Conquistas que ainda estão tentando descobrir em qual categoria deveriam estar" #Used in the Miscellaneous Achievements category. It is a joke, like "trying to find their purpose in life"
   achievementUnlocked: "Conquista Desbloqueada!" #Shown to the user when an achievement is unlocked
-  viewYourAchievements: "Veja todas as suas conquistas usando `{command}`"
   achievement:
     #===[ SHIP ]===
     natural100Ship:
