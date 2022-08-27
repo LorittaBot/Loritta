@@ -36,6 +36,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsM
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileDesignManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
@@ -139,6 +140,7 @@ class LorittaCinnamon(
     val ecbManager = ECBManager()
     val falatron = Falatron(config.falatron.url, config.falatron.key)
     val soundboard = Soundboard()
+    val profileDesignManager = ProfileDesignManager(this)
 
     val random = SecureRandom()
 

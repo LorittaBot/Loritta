@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social
 
 import dev.kord.core.entity.User
 import dev.kord.rest.Image
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
@@ -14,9 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
-import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.NostalgiaProfileCreator
 import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileUserInfoData
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
@@ -24,11 +20,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
 import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
 import kotlin.time.Duration.Companion.hours
 
 class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
@@ -44,9 +38,10 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
 
         context.deferChannelMessage()
 
-        val profileCreator = NostalgiaProfileCreator.NostalgiaDarkProfileCreator(loritta)
         val userProfile = loritta.services.users.getOrCreateUserProfile(UserId(userToBeViewed.id))
         val profileSettings = userProfile.getProfileSettings()
+        val profileCreator = loritta.profileDesignManager.designs.firstOrNull { it.internalName == profileSettings.activeProfileDesign }
+            ?: loritta.profileDesignManager.defaultProfileDesign
 
         // We need the mutual guilds to retrieve the user's guild badges.
         // However, because bots can be in a LOT of guilds (causing GC pressure), so we will just return a empty array.
