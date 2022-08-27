@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileUserInfoData
+import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.StaticProfileCreator
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
@@ -44,7 +45,7 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
             ?: loritta.profileDesignManager.defaultProfileDesign
 
         // We need the mutual guilds to retrieve the user's guild badges.
-        // However, because bots can be in a LOT of guilds (causing GC pressure), so we will just return a empty array.
+        // However, because bots can be in a LOT of guilds (causing GC pressure), so we will just return an empty array.
         // Bots could also cause a lot of badges to be downloaded, because they are in a lot of guilds.
         //
         // After all, does it *really* matter that bots won't have any badges? ¯\_(ツ)_/¯
@@ -64,41 +65,39 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
             mutualGuildsInAllClusters
         )
 
-        val image = profileCreator.create(
-            ProfileUserInfoData(
-                context.user.id,
-                context.user.username,
-                context.user.discriminator,
-                context.user.effectiveAvatar
-                    .cdnUrl
-                    .toUrl {
-                        this.format = Image.Format.PNG
-                    }
-            ),
-            ProfileUserInfoData(
-                userToBeViewed.id,
-                userToBeViewed.username,
-                userToBeViewed.discriminator,
-                userToBeViewed.effectiveAvatar
-                    .cdnUrl
-                    .toUrl {
-                        this.format = Image.Format.PNG
-                    }
-            ),
-            userProfile,
-            if (context is GuildApplicationCommandContext) loritta.kord.getGuild(context.guildId) else null,
-            badges,
-            context.i18nContext,
-            loritta.getUserProfileBackground(userProfile),
-            profileSettings.aboutMe ?: "" // TODO: Fix this by providing a proper default description
-        )
+        val byteArray = when (profileCreator) {
+            is StaticProfileCreator -> {
+                profileCreator.create(
+                    transformUserToProfileUserInfoData(context.user),
+                    transformUserToProfileUserInfoData(userToBeViewed),
+                    userProfile,
+                    if (context is GuildApplicationCommandContext) loritta.kord.getGuild(context.guildId) else null,
+                    badges,
+                    context.i18nContext,
+                    loritta.getUserProfileBackground(userProfile),
+                    profileSettings.aboutMe ?: "" // TODO: Fix this by providing a proper default description
+                ).toByteArray(ImageFormatType.PNG)
+            }
+            else -> error("Unsupported Profile Creator Type $profileCreator")
+        }
 
         context.sendMessage {
             content = "O comando ainda não está pronto! Use `+perfil` para ver o seu perfil com todos os frufrus dele!"
 
-            addFile("profile.png", image.toByteArray(ImageFormatType.PNG).inputStream())
+            addFile("profile.png", byteArray.inputStream())
         }
     }
+
+    private fun transformUserToProfileUserInfoData(user: User) = ProfileUserInfoData(
+        user.id,
+        user.username,
+        user.discriminator,
+        user.effectiveAvatar
+            .cdnUrl
+            .toUrl {
+                this.format = Image.Format.PNG
+            }
+    )
 
     /**
      * Gets the user's badges, the user's mutual guilds will be retrieved

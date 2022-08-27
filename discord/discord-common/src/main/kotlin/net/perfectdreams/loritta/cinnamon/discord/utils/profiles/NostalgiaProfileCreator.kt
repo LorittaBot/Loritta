@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
@@ -22,7 +21,7 @@ import java.awt.Font
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 
-open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: String, val folderName: String) : ProfileCreator(loritta, internalName) {
+open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: String, val folderName: String) : StaticProfileCreator(loritta, internalName) {
 	class NostalgiaDarkProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultDark", "dark")
 	class NostalgiaBlurpleProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultBlurple", "blurple")
 	class NostalgiaRedProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultRed", "red")

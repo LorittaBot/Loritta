@@ -4,8 +4,8 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 
 class ProfileDesignManager(val loritta: LorittaCinnamon) {
     val designs = mutableListOf<ProfileCreator>()
-    val defaultProfileDesign: ProfileCreator
-        get() = designs.first { it.internalName == "defaultDark" }
+    val defaultProfileDesign: StaticProfileCreator
+        get() = designs.first { it.internalName == "defaultDark" } as StaticProfileCreator
 
     // val badges = mutableListOf<Badge>()
 
@@ -18,12 +18,12 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
         badges.remove(badge)
     } */
 
-    fun registerDesign(design: ProfileCreator) {
+    fun registerDesign(design: StaticProfileCreator) {
         designs.removeIf { it.internalName == design.internalName }
         designs.add(design)
     }
 
-    fun unregisterDesign(design: ProfileCreator) {
+    fun unregisterDesign(design: StaticProfileCreator) {
         designs.removeIf { it.internalName == design.internalName }
     }
 
