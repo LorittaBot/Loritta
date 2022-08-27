@@ -30,6 +30,10 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         val users = string("users", BanCommand.CATEGORY_I18N_PREFIX.Options.Users.Text)
 
         val reason = optionalString("reason", BanCommand.CATEGORY_I18N_PREFIX.Options.Reason.Text) {
+            allowedLength = 0..512
+        }
+
+        val predefinedReason = optionalString("predefined_reason", BanCommand.CATEGORY_I18N_PREFIX.Options.PredefinedReason.Text) {
             cinnamonAutocomplete { autocompleteContext, focusedCommandOption ->
                 val interaKTionsContext = autocompleteContext.interaKTionsContext as? GuildAutocompleteContext ?: return@cinnamonAutocomplete emptyMap()
 
@@ -125,10 +129,17 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         val sendPunishmentViaDirectMessage = args[options.sendViaDirectMessage] ?: moderationConfig?.sentPunishmentViaDm ?: false
         val sendPunishmentToPunishLog = args[options.sendToPunishmentLog] ?: moderationConfig?.sendPunishmentToPunishLog ?: false
 
-        val reason = args[options.reason]?.let { rawReason ->
+        // Time to get the proper reason
+        // If the user set a predefined reason, we will use it
+        // If the user didn't, we will use the provided reason
+        // If nothing is set, then the reason will be null
+        val predefinedReason = args[options.predefinedReason]
+        val reason = if (predefinedReason != null) {
             loritta.services.serverConfigs.getPredefinedPunishmentMessagesByGuildId(context.guildId.value)
-                .firstOrNull { it.short.equals(rawReason, true) }
-                ?.message ?: rawReason
+                .firstOrNull { it.short.equals(predefinedReason, true) }
+                ?.message
+        } else {
+            args[options.reason]
         }
 
         val confirmBanData = ConfirmBanData(
