@@ -9,7 +9,6 @@ track:
   unfollowPackageUpdates: "Parar de receber atualizações sobre o pacote"
   followPackage:
     packageAlreadyDelivered: "Este pacote já foi entregue ao seu destinatário!"
-    youAreNowFollowingThePackage: "Agora você receberá atualizações sobre o pacote `{trackingId}`! Você receberá atualizações sobre ele em suas mensagens diretas, então mantenha suas mensagens diretas abertas em pelo ou menos um servidor que eu compartilho com você! Você pode verificar todos os pacotes que você está recebendo atualizações usando `/package list`."
     youAreAlreadyFollowingThePackage: "Você já está recebendo atualizações sobre este pacote!"
     youAreAlreadyFollowingTooManyPackages: "Você já está recebendo atualizações de muitos pacotes!"
   unfollowPackage:
@@ -19,7 +18,6 @@ track:
       text: "O ID de rastreamento do pacote que você deseja rastrear"
 list:
   description: "Ver todos os pacotes que você configurou para receber atualizações"
-  youAreNotFollowingAnyPackage: "Você não está seguindo nenhum pacote! Você pode ver o status de um pacote e configurar para receber atualizações dele usando `/package track`."
   followedPackages: "Pacotes que você está seguindo"
   youAreFollowingXPackages: "Você está seguindo {packageCount,plural, =0 {# pacotes} one {# pacote} other {# pacotes}}!"
   trackPackage: "Rastrear pacote"
