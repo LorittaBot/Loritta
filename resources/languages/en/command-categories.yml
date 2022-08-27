@@ -96,6 +96,8 @@ commands:
           text: "The users that will be punished"
         reason:
           text: "The punishment reason"
+        predefinedReason:
+          text: "The predefined punishment reason, if any predefined punishment reasons are configured in the dashboard"
         skipConfirmation:
           text: "Skips the punishment confirmation"
         sendViaDirectMessage:
