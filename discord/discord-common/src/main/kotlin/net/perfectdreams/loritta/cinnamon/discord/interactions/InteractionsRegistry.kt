@@ -49,12 +49,13 @@ class InteractionsRegistry(
                     logger.info { "Updating Loritta global commands... Hash: $currentHash" }
                     val updatedCommands = manager.interaKTions.updateAllGlobalCommands()
 
-                    val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES (0, $currentHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $currentHash;")
+                    val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES (0, $currentHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $currentHash, data = ?;")
 
                     val pgObject = PGobject()
                     pgObject.type = "jsonb"
                     pgObject.value = Json.encodeToString(updatedCommands)
                     updateStatement.setObject(1, pgObject)
+                    updateStatement.setObject(2, pgObject)
                     updateStatement.executeUpdate()
 
                     logger.info { "Successfully updated Loritta's global commands! Hash: $currentHash" }
@@ -82,12 +83,13 @@ class InteractionsRegistry(
                         logger.info { "Updating Loritta guild commands on $guildId... Hash: $currentHash" }
                         val updatedCommands = manager.interaKTions.updateAllCommandsInGuild(Snowflake(guildId))
 
-                        val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES ($guildId, $currentHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $currentHash;")
+                        val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES ($guildId, $currentHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $currentHash, data = ?;")
 
                         val pgObject = PGobject()
                         pgObject.type = "jsonb"
                         pgObject.value = Json.encodeToString(updatedCommands)
                         updateStatement.setObject(1, pgObject)
+                        updateStatement.setObject(2, pgObject)
                         updateStatement.executeUpdate()
 
                         logger.info { "Successfully updated Loritta's guild commands on $guildId! Hash: $currentHash" }
