@@ -24,6 +24,7 @@ class UserTokenSource(
         Placeholders.Deprecated.USER_NICKNAME to (member?.nick?.value ?: user.username),
 
         Placeholders.Deprecated.USER_ID to user.id.toString(),
+        Placeholders.Deprecated.USER_DISCRIMINATOR to user.discriminator,
         Placeholders.Deprecated.USER_AVATAR_URL to DiscordUserAvatar(kord, user.id, user.discriminator, user.avatar).cdnUrl.toUrl()
     )
 }

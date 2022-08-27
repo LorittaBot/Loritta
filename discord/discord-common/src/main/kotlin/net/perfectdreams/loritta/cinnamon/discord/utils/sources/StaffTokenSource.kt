@@ -23,6 +23,7 @@ class StaffTokenSource(
         Placeholders.STAFF_NICKNAME to (member?.nick?.value ?: user.username),
 
         Placeholders.Deprecated.STAFF_ID to user.id.toString(),
+        Placeholders.Deprecated.STAFF_DISCRIMINATOR to user.discriminator,
         Placeholders.Deprecated.STAFF_AVATAR_URL to DiscordUserAvatar(kord, user.id, user.discriminator, user.avatar).cdnUrl.toUrl()
     )
 }
