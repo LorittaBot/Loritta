@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByte
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
 import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileUserInfoData
 import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.StaticProfileCreator
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
@@ -75,7 +76,7 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
                     badges,
                     context.i18nContext,
                     loritta.getUserProfileBackground(userProfile),
-                    profileSettings.aboutMe ?: "" // TODO: Fix this by providing a proper default description
+                    profileSettings.aboutMe ?: context.i18nContext.get(I18nKeysData.Profiles.DefaultAboutMe)
                 ).toByteArray(ImageFormatType.PNG)
             }
             else -> error("Unsupported Profile Creator Type $profileCreator")
