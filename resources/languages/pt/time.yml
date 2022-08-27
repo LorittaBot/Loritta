@@ -1,4 +1,8 @@
 time:
+  aFewMilliseconds: "alguns milissegundos"
+  seconds: "{unit,plural, =0 {# segundos} one {# segundo} other {# segundos}}"
   minutes: "{unit,plural, =0 {# minutos} one {# minuto} other {# minutos}}"
   hours: "{unit,plural, =0 {# horas} one {# hora} other {# horas}}"
   days: "{unit,plural, =0 {# dias} one {# dia} other {# dias}}"
+  months: "{unit,plural, =0 {# meses} one {# mês} other {# meses}}"
+  years: "{unit,plural, =0 {# anos} one {# ano} other {# anos}}"

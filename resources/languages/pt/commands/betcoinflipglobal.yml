@@ -3,7 +3,7 @@ description: "O clássico \"Gire uma moeda e veja se irá cair cara ou coroa!\",
 invalidQuantity: "Você colocou uma quantidade inválida de sonhos! Quantidades válidas: {validQuantities}"
 quittedMatchmakingQueue: "Você saiu da fila de espera!"
 youArentInTheMatchmakingQueueToLeaveIt: "Você não está na fila de espera para sair dela!"
-addedToMatchmakingQueue: "Você entrou na fila de espera! Quando outro usuário entrar na fila, uma partida será feita entre vocês dois! Caso nenhuma partida seja encontrada em até 5 minutos, eu irei te remover da fila. Caso você queira sair da fila, use `/bet coinflip global` e escolha para sair da fila atual, mas lembre-se que você só pode fazer isso antes de uma partida ser encontrada!"
+addedToMatchmakingQueue: "Você entrou na fila de espera! Quando outro usuário entrar na fila, uma partida será feita entre vocês dois! Caso nenhuma partida seja encontrada em até 5 minutos, eu irei te remover da fila. Caso você queira sair da fila, use {betCoinflipGlobalCommandMention} e escolha para sair da fila atual, mas lembre-se que você só pode fazer isso antes de uma partida ser encontrada!"
 youAreAlreadyInTheMatchmakingQueue: "Você já está na fila de espera!" #This is only shown if the user uses the command to leave the matchmaking queue directly, because autocomplete would never display this option to the user
 leftMatchmakingQueueDueToNotEnoughSonhos: "Eu tinha encontrado alguém para apostar com você, mas tive que te remover da fila de espera pois você não possui sonhos suficientes para a aposta..."
 notEnoughSonhosToBet: "Como você vai apostar uma quantidade que você não tem? Não existe aposta fiada!"
