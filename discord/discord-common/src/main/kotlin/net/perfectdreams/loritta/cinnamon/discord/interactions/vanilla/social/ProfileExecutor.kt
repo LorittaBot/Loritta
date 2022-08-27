@@ -164,11 +164,11 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
         val money = loritta.services.payments.getActiveMoneyFromDonations(UserId(user.id))
 
         if (money != 0.0) {
-            badges += readImageFromResources("/badges/donator.png")
-
             if (money >= 99.99) {
                 badges += readImageFromResources("/badges/super_donator.png")
             }
+
+            badges += readImageFromResources("/badges/donator.png")
         }
 
         // TODO: Fix this
