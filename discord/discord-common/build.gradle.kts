@@ -40,6 +40,9 @@ dependencies {
     // Used for the debug webserver
     implementation("io.ktor:ktor-server-netty:${Versions.KTOR}")
 
+    // DreamStorageService
+    api("net.perfectdreams.dreamstorageservice:client:2.0.2")
+
     testImplementation(libs.logback.classic)
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.testcontainers:testcontainers:1.16.3")

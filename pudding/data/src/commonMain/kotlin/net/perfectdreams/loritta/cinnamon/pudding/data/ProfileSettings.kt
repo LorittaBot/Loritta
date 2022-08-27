@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.cinnamon.utils.Gender
 
 @Serializable
 data class ProfileSettings(
-    val id: UserId,
+    val id: Long,
     val aboutMe: String?,
     val gender: Gender,
     val activeProfileDesign: String?,

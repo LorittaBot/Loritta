@@ -8,6 +8,8 @@ import dev.kord.rest.request.KtorRequestHandler
 import dev.kord.rest.request.StackTraceRecoveringKtorRequestHandler
 import io.ktor.client.*
 import io.ktor.client.plugins.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
@@ -15,6 +17,7 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
+import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.gateway.LorittaDiscordGatewayManager
@@ -30,17 +33,30 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.P
 import net.perfectdreams.loritta.cinnamon.discord.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.cinnamon.pudding.data.Background
+import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
+import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
+import net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
+import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.select
+import java.awt.image.BufferedImage
 import java.security.SecureRandom
 import java.time.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -95,6 +111,17 @@ class LorittaCinnamon(
         config.services.gabrielaImageServer.url,
         HttpClient {
             // Increase the default timeout for image generation, because some video generations may take too long to be generated
+            install(HttpTimeout) {
+                this.socketTimeoutMillis = 60_000
+                this.requestTimeoutMillis = 60_000
+                this.connectTimeoutMillis = 60_000
+            }
+        }
+    )
+    val dreamStorageService = DreamStorageServiceClient(
+        config.services.dreamStorageService.url,
+        config.services.dreamStorageService.token,
+        HttpClient {
             install(HttpTimeout) {
                 this.socketTimeoutMillis = 60_000
                 this.requestTimeoutMillis = 60_000
@@ -165,6 +192,9 @@ class LorittaCinnamon(
                     true
                 else it in tableNames
             }
+            // TODO: Fix this
+            // TrinketsStuff.updateTrinkets(services)
+
             logger.info { "Starting Pudding tasks..." }
             services.startPuddingTasks()
 
@@ -285,7 +315,6 @@ class LorittaCinnamon(
         builder
     )
 
-
     /**
      * Filters received notifications by their [notificationUniqueId]
      *
@@ -374,5 +403,132 @@ class LorittaCinnamon(
             LocalTime.MIDNIGHT,
             dailyTaxCollector
         )
+    }
+
+    /**
+     * Gets an user's profile background image or, if the user has a custom background, loads the custom background.
+     *
+     * To avoid exceeding the available memory, profiles are loaded from the "cropped_profiles" folder,
+     * which has all the images in 800x600 format.
+     *
+     * @param background the user's background
+     * @return the background image
+     */
+    suspend fun getUserProfileBackground(profile: PuddingUserProfile): BufferedImage {
+        val backgroundUrl = getUserProfileBackgroundUrl(profile)
+        val response = http.get(backgroundUrl) {
+            // TODO: Hostname somewhere?
+            // userAgent(loritta.lorittaCluster.getUserAgent())
+        }
+
+        val bytes = response.readBytes()
+
+        return readImage(bytes.inputStream())
+    }
+
+    /**
+     * Gets an user's profile background URL
+     *
+     * This does *not* crop the profile background
+     *
+     * @param profile the user's profile
+     * @return the background image
+     */
+    suspend fun getUserProfileBackgroundUrl(profile: PuddingUserProfile): String {
+        val profileSettings = profile.getProfileSettings()
+        val activeProfileDesignInternalName = profileSettings.activeProfileDesign
+        val activeBackgroundInternalName = profileSettings.activeBackground
+        // TODO: Fix default profile design ID
+        return getUserProfileBackgroundUrl(profile.id.value.toLong(), profileSettings.id, activeProfileDesignInternalName ?: "defaultDark" /* ProfileDesign.DEFAULT_PROFILE_DESIGN_ID */, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
+    }
+
+    /**
+     * Gets an user's profile background URL
+     *
+     * This does *not* crop the profile background
+     *
+     * @param profile the user's profile
+     * @return the background image
+     */
+    suspend fun getUserProfileBackgroundUrl(
+        userId: Long,
+        settingsId: Long,
+        activeProfileDesignInternalName: String,
+        activeBackgroundInternalName: String
+    ): String {
+        val defaultBlueBackground = services.backgrounds.getBackground(Background.DEFAULT_BACKGROUND_ID)!!
+        var background = services.backgrounds.getBackground(activeBackgroundInternalName) ?: defaultBlueBackground
+
+        if (background.id == Background.RANDOM_BACKGROUND_ID) {
+            // If the user selected a random background, we are going to get all the user's backgrounds and choose a random background from the list
+            val allBackgrounds = mutableListOf(defaultBlueBackground)
+
+            allBackgrounds.addAll(
+                services.transaction {
+                    (BackgroundPayments innerJoin Backgrounds).select {
+                        BackgroundPayments.userId eq userId
+                    }.map {
+                        val data = Background.fromRow(it)
+                        PuddingBackground(
+                            services,
+                            data
+                        )
+                    }
+                }
+            )
+
+            background = allBackgrounds.random()
+        }
+
+        if (background.id == Background.CUSTOM_BACKGROUND_ID) {
+            // Custom background
+            val donationValue = services.payments.getActiveMoneyFromDonations(UserId(userId))
+            val plan = UserPremiumPlans.getPlanFromValue(donationValue)
+
+            if (plan.customBackground) {
+                val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
+                val resultRow = services.transaction {
+                    CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq settingsId }
+                        .firstOrNull()
+                }
+
+                // If the path exists, then the background (probably!) exists
+                if (resultRow != null) {
+                    val file = resultRow[CustomBackgroundSettings.file]
+                    val extension = MediaTypeUtils.convertContentTypeToExtension(resultRow[CustomBackgroundSettings.preferredMediaType])
+                    return "${config.services.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBackground(userId, file).join()}.$extension"
+                }
+            }
+
+            // If everything fails, change the background to the default blue background
+            // This is required because the current background is "CUSTOM", so Loritta will try getting the default variation of the custom background...
+            // but that doesn't exist!
+            background = defaultBlueBackground
+        }
+
+        val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
+        val variation = background.getVariationForProfileDesign(activeProfileDesignInternalName)
+        return getBackgroundUrlWithCropParameters(config.services.dreamStorageService.url, dssNamespace, variation)
+    }
+
+    private fun getBackgroundUrl(
+        dreamStorageServiceUrl: String,
+        namespace: String,
+        background: BackgroundVariation
+    ): String {
+        val extension = MediaTypeUtils.convertContentTypeToExtension(background.preferredMediaType)
+        return "$dreamStorageServiceUrl/$namespace/${StoragePaths.Background(background.file).join()}.$extension"
+    }
+
+    private fun getBackgroundUrlWithCropParameters(
+        dreamStorageServiceUrl: String,
+        namespace: String,
+        variation: BackgroundVariation
+    ): String {
+        var url = getBackgroundUrl(dreamStorageServiceUrl, namespace, variation)
+        val crop = variation.crop
+        if (crop != null)
+            url += "?crop_x=${crop.x}&crop_y=${crop.y}&crop_width=${crop.width}&crop_height=${crop.height}"
+        return url
     }
 }

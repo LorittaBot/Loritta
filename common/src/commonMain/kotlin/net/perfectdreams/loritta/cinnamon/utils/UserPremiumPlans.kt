@@ -5,6 +5,7 @@ interface UserPremiumPlans {
     val coinFlipRewardTax: Double
     val hasDailyInactivityTax: Boolean
     val displayAds: Boolean
+    val customBackground: Boolean
 
     val isCoinFlipBetRewardTaxed: Boolean
         get() = coinFlipRewardTax != 0.0
@@ -34,6 +35,7 @@ interface UserPremiumPlans {
         override val coinFlipRewardTax = 0.05
         override val hasDailyInactivityTax = true
         override val displayAds = true
+        override val customBackground = false
     }
 
     object Essential : UserPremiumPlans {
@@ -41,6 +43,7 @@ interface UserPremiumPlans {
         override val coinFlipRewardTax = 0.05
         override val hasDailyInactivityTax = true
         override val displayAds = false
+        override val customBackground = false
     }
 
     object Recommended : UserPremiumPlans {
@@ -48,6 +51,7 @@ interface UserPremiumPlans {
         override val coinFlipRewardTax = 0.0
         override val hasDailyInactivityTax = true
         override val displayAds = false
+        override val customBackground = true
     }
 
     object Complete : UserPremiumPlans {
@@ -55,5 +59,6 @@ interface UserPremiumPlans {
         override val coinFlipRewardTax = 0.0
         override val hasDailyInactivityTax = false
         override val displayAds = false
+        override val customBackground = true
     }
 }

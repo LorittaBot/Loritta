@@ -57,7 +57,7 @@ open class Service(private val pudding: Pudding) {
     fun PuddingProfileSettings.Companion.fromRow(row: ResultRow) = PuddingProfileSettings(
         pudding,
         ProfileSettings(
-            UserId(row[UserSettings.id].value.toULong()),
+            row[UserSettings.id].value,
             row[UserSettings.aboutMe],
             row[UserSettings.gender],
             row[UserSettings.activeBackground]?.value,

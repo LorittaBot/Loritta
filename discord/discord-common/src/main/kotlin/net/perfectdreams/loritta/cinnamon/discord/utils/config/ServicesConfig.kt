@@ -8,4 +8,5 @@ class ServicesConfig(
     val pudding: PuddingConfig,
     val gabrielaImageServer: GabrielaImageServerConfig,
     val randomRoleplayPictures: RandomRoleplayPicturesConfig,
+    val dreamStorageService: DreamStorageServiceConfig
 )

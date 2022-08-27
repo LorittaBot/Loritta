@@ -21,7 +21,9 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosP
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPredefinedPunishmentMessages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
@@ -232,6 +234,11 @@ class Pudding(
             ModerationConfigs,
             ModerationPunishmentMessagesConfig,
             ModerationPredefinedPunishmentMessages,
+            Reputations,
+            CustomBackgroundSettings,
+            BotVotes,
+            GuildProfiles,
+            DonationConfigs,
 
             DiscordGuilds,
             DiscordGuildMembers,
