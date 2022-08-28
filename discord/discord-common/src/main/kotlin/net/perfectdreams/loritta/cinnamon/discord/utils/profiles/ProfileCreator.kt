@@ -73,6 +73,7 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
         var currentY = startY // Y atual
 
         val emojiWidth = fontMetrics.ascent
+        val emojiYOffset = (fontMetrics.descent / 2)
 
         for (section in sections) {
             when (section) {
@@ -108,7 +109,7 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
                                     emojiWidth,
                                     emojiWidth,
                                     BufferedImage.SCALE_SMOOTH
-                                ), currentX, currentY - emojiWidth, null
+                                ), currentX, currentY - emojiWidth + emojiYOffset, null
                             )
                             currentX += emojiWidth
                         }
@@ -118,7 +119,7 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
                     val emoteImage = loritta.emojiImageCache.getTwitterEmoji(section.emoji.codePoints().toList())
 
                     if (emoteImage != null) {
-                        graphics.drawImage(emoteImage.getScaledInstance(emojiWidth, emojiWidth, BufferedImage.SCALE_SMOOTH), currentX, currentY - emojiWidth, null)
+                        graphics.drawImage(emoteImage.getScaledInstance(emojiWidth, emojiWidth, BufferedImage.SCALE_SMOOTH), currentX, currentY - emojiWidth + emojiYOffset, null)
                         currentX += emojiWidth
                     }
                 }
