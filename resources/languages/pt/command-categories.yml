@@ -86,6 +86,8 @@ commands:
           text: "Os usuários que serão punidos"
         reason:
           text: "O motivo da punição"
+        predefinedReason:
+          text: "A razão de punição predefinida, se alguma punição predefinida estiver configurada no painel de controle"
         skipConfirmation:
           text: "Pula a confirmação da punição"
         sendViaDirectMessage:
