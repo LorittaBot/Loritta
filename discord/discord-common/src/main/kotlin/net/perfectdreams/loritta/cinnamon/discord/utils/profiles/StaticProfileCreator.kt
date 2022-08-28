@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.profiles
 
+import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
@@ -12,5 +13,15 @@ import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
 
 abstract class StaticProfileCreator(loritta: LorittaCinnamon, internalName: String) : ProfileCreator(loritta, internalName) {
-    abstract suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: PuddingUserProfile, guild: Guild?, badges: List<BufferedImage>, locale: I18nContext, background: BufferedImage, aboutMe: String): BufferedImage
+    abstract suspend fun create(
+        sender: ProfileUserInfoData,
+        user: ProfileUserInfoData,
+        userProfile: PuddingUserProfile,
+        guild: Guild?,
+        badges: List<BufferedImage>,
+        locale: I18nContext,
+        background: BufferedImage,
+        aboutMe: String,
+        allowedDiscordEmojis: List<Snowflake>?
+    ): BufferedImage
 }

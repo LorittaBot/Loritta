@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.profiles
 
+import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Guild
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,7 +33,17 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 	class NostalgiaYellowProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultYellow", "yellow")
 	class NostalgiaOrangeProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultOrange", "orange")
 
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: PuddingUserProfile, guild: Guild?, badges: List<BufferedImage>, locale: I18nContext, background: BufferedImage, aboutMe: String): BufferedImage {
+	override suspend fun create(
+		sender: ProfileUserInfoData,
+		user: ProfileUserInfoData,
+		userProfile: PuddingUserProfile,
+		guild: Guild?,
+		badges: List<BufferedImage>,
+		locale: I18nContext,
+		background: BufferedImage,
+		aboutMe: String,
+		allowedDiscordEmojis: List<Snowflake>?
+	): BufferedImage {
 		val profileWrapper = readImageFromResources("/profile/nostalgia/profile_wrapper_$folderName.png")
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
@@ -89,7 +100,7 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawStringWrapSpaces(aboutMe, 6, 522, 800 - 6, 600, graphics.fontMetrics, graphics)
+		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 6, 522, 800 - 6, 600, allowedDiscordEmojis)
 
 		val shiftY = 42
 

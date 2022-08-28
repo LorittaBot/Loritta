@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.P
 import net.perfectdreams.loritta.cinnamon.discord.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.EmojiImageCache
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushClient
@@ -144,6 +145,9 @@ class LorittaCinnamon(
     val profileDesignManager = ProfileDesignManager(this)
     // TODO: This is very hacky, maybe this could be improved somehow?
     lateinit var commandMentions: CommandMentions
+    val unicodeEmojiManager = UnicodeEmojiManager()
+    val emojiImageCache = EmojiImageCache()
+
     val random = SecureRandom()
 
     val activeEvents = ConcurrentLinkedQueue<Job>()

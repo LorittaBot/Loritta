@@ -1,7 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social
 
+import dev.kord.common.entity.DiscordEmoji
+import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.User
 import dev.kord.rest.Image
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
@@ -18,16 +22,28 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.StaticProfileCr
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
+import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordEmojis
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
 import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
+import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
 import kotlin.time.Duration.Companion.hours
 
 class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+    companion object {
+        private val FREE_EMOJIS_GUILDS = listOf(
+            Snowflake(297732013006389252), // Apartamento da Loritta
+            Snowflake(320248230917046282), // SparklyPower
+            Snowflake(417061847489839106), // Rede Dark
+            Snowflake(769892417025212497), // Kuraminha's House
+            Snowflake(769030809159073795)  // Saddest of the Sads
+        )
+    }
+
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val user = optionalUser("user", TodoFixThisData)
     }
@@ -66,6 +82,19 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
             mutualGuildsInAllClusters
         )
 
+        val premiumPlan = UserPremiumPlans.getPlanFromValue(loritta.services.payments.getActiveMoneyFromDonations(userProfile.id))
+
+        val allowedDiscordEmojis = if (premiumPlan.customEmojisInAboutMe)
+            null // Null = All emojis are allowed
+        else {
+            // If the user does not have the custom emojis in about me feature, let's allow them to use specific guild's emojis
+            loritta.services.transaction {
+                DiscordEmojis.slice(DiscordEmojis.data)
+                    .select { DiscordEmojis.guild inList FREE_EMOJIS_GUILDS.map { it.value.toLong() } }
+                    .map { Json.decodeFromString<DiscordEmoji>(it[DiscordEmojis.data]) }
+            }.mapNotNull { it.id }
+        }
+
         val aboutMe = profileSettings.aboutMe ?: context.i18nContext.get(I18nKeysData.Profiles.DefaultAboutMe)
 
         val modifiedAboutMe = aboutMe
@@ -85,7 +114,8 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
                     badges,
                     context.i18nContext,
                     loritta.getUserProfileBackground(userProfile),
-                    modifiedAboutMe
+                    modifiedAboutMe,
+                    allowedDiscordEmojis
                 ).toByteArray(ImageFormatType.PNG)
             }
             else -> error("Unsupported Profile Creator Type $profileCreator")
