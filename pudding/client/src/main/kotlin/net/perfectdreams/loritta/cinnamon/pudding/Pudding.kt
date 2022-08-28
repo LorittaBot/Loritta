@@ -12,6 +12,10 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
+import net.perfectdreams.exposedpowerutils.sql.upsert
+import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType
+import net.perfectdreams.loritta.cinnamon.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.services.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
@@ -32,8 +36,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
 import net.perfectdreams.loritta.cinnamon.utils.*
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.security.SecureRandom
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.concurrent.thread
@@ -52,6 +58,8 @@ class Pudding(
         private val DRIVER_CLASS_NAME = "org.postgresql.Driver"
         private val ISOLATION_LEVEL =
             IsolationLevel.TRANSACTION_REPEATABLE_READ // We use repeatable read to avoid dirty and non-repeatable reads! Very useful and safe!!
+        private val SCHEMA_VERSION = 1 // Bump this every time any table is added/updated!
+        private val SCHEMA_ID = UUID.fromString("600556aa-2920-41c7-b26c-7717eff2d392")
 
         /**
          * Creates a Pudding instance backed by a PostgreSQL database
@@ -170,7 +178,7 @@ class Pudding(
      * @param shouldBeUpdated checks if a table should be created/updated or not, if true, it will be included to be updated, if false, it won't
      */
     suspend fun createMissingTablesAndColumns(shouldBeUpdated: (String) -> Boolean) {
-        val schemas = mutableListOf<Table>()
+        val schemas = mutableListOf<Table>(SchemaVersion) // The schema version should always be created
         fun insertIfValid(vararg tables: Table) =
             schemas.addAll(tables.filter { shouldBeUpdated.invoke(it::class.simpleName!!) })
         insertIfValid(
@@ -250,9 +258,42 @@ class Pudding(
 
         if (schemas.isNotEmpty())
             transaction {
-                createOrUpdatePostgreSQLEnum(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.values())
-                createOrUpdatePostgreSQLEnum(net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType.values())
-                createOrUpdatePostgreSQLEnum(net.perfectdreams.loritta.cinnamon.components.ComponentType.values())
+                // SchemaUtils is dangerous: If PostgreSQL is running a VACUUM, the app will wait until the lock is released, because Exposed
+                // tries loading the table info data from the table, and that conflicts with VACUUM.
+                // (Yes, Exposed will query the table info data EVEN IF there isn't updates to be done, smh)
+                //
+                // To work around this, we will store the current schema version on the database and ONLY THEN update the data.
+                // This also allows us to implement data migration steps down the road, yay!
+
+                // We will first lock to avoid multiple processes trying to update the data at the same time
+                val xactLockStatement = (this.connection as JdbcConnectionImpl).connection.prepareStatement("SELECT pg_advisory_xact_lock(?);")
+                xactLockStatement.setInt(1, "loritta-cinnamon-pudding-schema-updater".hashCode())
+                xactLockStatement.execute()
+
+                if (checkIfTableExists(SchemaVersion)) {
+                    val schemaVersion =
+                        SchemaVersion.slice(SchemaVersion.version).select { SchemaVersion.id eq SCHEMA_ID }
+                            .firstOrNull()
+                            ?.get(SchemaVersion.version)
+
+                    if (schemaVersion == SCHEMA_VERSION) {
+                        logger.info { "Database schema version matches (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we won't update any tables, yay!" }
+                        return@transaction
+                    } else {
+                        if (schemaVersion != null && schemaVersion > SCHEMA_VERSION) {
+                            logger.warn { "Database schema version is newer (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will not update the tables to avoid issues..." }
+                            return@transaction
+                        } else {
+                            logger.info { "Database schema version is older (database: ${schemaVersion}; schema: $SCHEMA_VERSION), so we will update the tables, yay!" }
+                        }
+                    }
+                } else {
+                    logger.warn { "SchemaVersion doesn't seem to exist, we will ignore the schema version check..." }
+                }
+
+                createOrUpdatePostgreSQLEnum(AchievementType.values())
+                createOrUpdatePostgreSQLEnum(ApplicationCommandType.values())
+                createOrUpdatePostgreSQLEnum(ComponentType.values())
                 createOrUpdatePostgreSQLEnum(LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.values())
                 createOrUpdatePostgreSQLEnum(SparklyPowerLSXTransactionEntryAction.values())
                 createOrUpdatePostgreSQLEnum(DivineInterventionTransactionEntryAction.values())
@@ -324,6 +365,13 @@ class Pudding(
                     exec("ALTER TABLE ${DiscordRoles.tableName} SET UNLOGGED;")
                 if (DiscordVoiceStates in schemas)
                     exec("ALTER TABLE ${DiscordVoiceStates.tableName} SET UNLOGGED;")
+
+                logger.info { "Updating database schema version to $SCHEMA_VERSION..." }
+
+                SchemaVersion.upsert(SchemaVersion.id) {
+                    it[SchemaVersion.id] = SCHEMA_ID
+                    it[SchemaVersion.version] = SCHEMA_VERSION
+                }
             }
     }
 
