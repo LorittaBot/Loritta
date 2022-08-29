@@ -12,6 +12,7 @@ loriTipsAndTricks: "Loritta Morenitta's Tips and Tricks"
 keepTalkingToEarnXp: "Keep talking to earn XP and level up. I believe in you!"
 xp: "{xp,number} XP"
 level: "Level {level,number}"
+learnAboutXpButton: "Learn about XP"
 
 options:
   user:

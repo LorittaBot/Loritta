@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social
 
 import dev.kord.core.entity.Member
+import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.author
@@ -10,12 +11,14 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Applicat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.ExperienceUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.RolesByExperience
@@ -107,9 +110,14 @@ class ViewXpExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                 color = LorittaColors.LorittaAqua.toKordColor()
             }
 
-            /* actionRow {
-                // TODO: "View Profile Button"
-            } */
+            actionRow {
+                linkButton("${loritta.config.loritta.website}extras/faq-loritta/experience") {
+                    label = context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.LearnAboutXpButton)
+                    loriEmoji = Emotes.LoriReading
+                }
+
+                // TODO: "View profile button"
+            }
         }
     }
 }
