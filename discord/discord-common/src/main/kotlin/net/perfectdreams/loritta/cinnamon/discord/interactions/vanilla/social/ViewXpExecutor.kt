@@ -28,7 +28,7 @@ import org.jetbrains.exposed.sql.select
 
 class ViewXpExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
-        val user = optionalUser("user", TodoFixThisData)
+        val user = optionalUser("user", XpCommand.XP_VIEW_I18N_PREFIX.Options.User.Text)
     }
 
     override val options = Options()
