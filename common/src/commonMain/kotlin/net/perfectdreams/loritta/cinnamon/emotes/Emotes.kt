@@ -120,6 +120,8 @@ object Emotes {
     val FileFolder = UnicodeEmote("\uD83D\uDCC1")
     val Dancer = UnicodeEmote("\uD83D\uDC83")
     val Handshake = UnicodeEmote("\uD83E\uDD1D")
+    // TODO: Replace with https://emojipedia.org/identification-card/ when Discord updates to Unicode 14.0
+    val IdentificationCard = DiscordEmote(1013846914887864350L, "identification_card", false)
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)
