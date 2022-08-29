@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.core.entity.Member
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserCommand
 import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
@@ -18,12 +19,10 @@ class UserAvatarSlashExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val user = args[options.user] ?: context.user
 
-        // TODO: Fix this workaround, it would be nice if Discord InteraKTions provided a "UserAndMember" object to us
-        // (Or maybe expose it correctly?)
         val member = if (user == context.user && context is GuildApplicationCommandContext)
             context.member
         else
-            context.interaKTionsContext.interactionData.resolved?.members?.get(user.id)
+            user as Member?
 
         handleAvatarCommand(context, applicationId, user, member, false)
     }
