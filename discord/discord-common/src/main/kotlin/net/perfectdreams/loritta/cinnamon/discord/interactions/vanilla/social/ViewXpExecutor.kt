@@ -91,7 +91,7 @@ class ViewXpExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                 field("${Emotes.LoriZap} ${context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.XpNeededForTheNextLevel(nextLevel, nextLevelTotalXp))}", nextLevelRequiredXp.toString(), true)
 
                 if (nextRoleReward != null) {
-                    val rolesMentions = nextRoleReward[RolesByExperience.roles].joinToString(", ") { "<@${it}>" }
+                    val rolesMentions = nextRoleReward[RolesByExperience.roles].joinToString(", ") { "<@&${it}>" }
                     val diff = nextRoleReward[RolesByExperience.requiredExperience] - xp
 
                     field("${Emotes.LoriCard} ${context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.NextReward)}", context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.GetXPToEarnRoles(diff, rolesMentions)), true)
