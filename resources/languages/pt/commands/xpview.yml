@@ -1,0 +1,8 @@
+description: "Verifique quanta experiência você, ou outro usuário, possuem no servidor!"
+serverProfileCard: "Cartão de Perfil do Servidor"
+currentLevel: "Nível atual"
+currentXp: "XP Atual"
+placement: "Colocação"
+xpNeededForTheNextLevel: "XP necessário para o próximo nível ({nextLevel,number} / {xpCount,number} XP)"
+nextReward: "Próxima Recompensa"
+getXPToEarnRoles: "Ganhe +{xpCount,number} XP para ganhar {roleMentions}!"
