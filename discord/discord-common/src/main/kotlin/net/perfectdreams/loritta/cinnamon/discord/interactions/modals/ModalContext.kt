@@ -18,5 +18,10 @@ open class ModalContext(
     loritta: LorittaCinnamon,
     i18nContext: I18nContext,
     user: User,
-    interaKTionsContext: net.perfectdreams.discordinteraktions.common.modals.ModalContext
-) : InteractionContext(loritta, i18nContext, user, interaKTionsContext)
+    val interaKTionsModalContext: net.perfectdreams.discordinteraktions.common.modals.ModalContext
+) : InteractionContext(loritta, i18nContext, user, interaKTionsModalContext) {
+    val data: String
+        get() = interaKTionsModalContext.data
+    val dataOrNull: String?
+        get() = interaKTionsModalContext.dataOrNull
+}

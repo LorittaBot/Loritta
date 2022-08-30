@@ -25,6 +25,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderatio
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.retribute.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.source.SourcePictureExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.profile.ChangeAboutMeButtonExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.profile.ChangeAboutMeModalExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker.*
 import kotlin.system.exitProcess
@@ -99,6 +101,8 @@ class InteractionsManager(
 
         // ===[ SOCIAL ]===
         register(AchievementsExecutor.ChangeCategoryMenuExecutor(loritta))
+        register(ChangeAboutMeButtonExecutor(loritta))
+        register(ChangeAboutMeModalExecutor(loritta))
 
         // ===[ UNDERTALE ]===
         register(PortraitSelectMenuExecutor(loritta, loritta.gabrielaImageServerClient))

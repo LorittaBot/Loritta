@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.profile
 
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.utils.Gender

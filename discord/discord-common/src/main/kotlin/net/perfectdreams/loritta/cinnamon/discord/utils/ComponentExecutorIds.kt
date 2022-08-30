@@ -41,6 +41,8 @@ object ComponentExecutorIds {
     val TRANSFER_SONHOS_BUTTON_EXECUTOR = register("0030")
     val CANCEL_SONHOS_TRANSFER_BUTTON_EXECUTOR = register("0031")
     val CONFIRM_BAN_BUTTON_EXECUTOR = register("0032")
+    val CHANGE_ABOUT_ME_BUTTON_EXECUTOR = register("0033")
+    val CHANGE_ABOUT_ME_MODAL_SUBMIT_EXECUTOR = register("0034")
 
     /**
      * Verifies if the [id] matches our constraints
