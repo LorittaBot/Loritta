@@ -12,3 +12,7 @@ loriTipsAndTricks: "Dicas e Manhas de Loritta Morenitta"
 keepTalkingToEarnXp: "Continue conversando para passar de nível. Eu sei que você vai conseguir!"
 xp: "{xp,number} XP"
 level: "Nível {level,number}"
+learnAboutXpButton: "Aprenda mais sobre XP"
+options:
+  user:
+    text: "O usuário que você deseja ver o cartão de perfil do servidor dele"
