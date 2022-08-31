@@ -1,0 +1,4 @@
+description: "View the richest users"
+youCantSeeTheLocalSonhosRankOutsideOfAServer: "You can't see the local sonhos rank outside of an server! After all, the local rank here would be only you and me."
+globalSonhosRank: "Global Sonhos Rank"
+localSonhosRank: "Local Sonhos Rank"

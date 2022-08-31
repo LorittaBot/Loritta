@@ -1,21 +1,35 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.images
 
+import dev.kord.common.entity.Snowflake
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.gabrielaimageserver.exceptions.ContentLengthTooLargeException
 import net.perfectdreams.gabrielaimageserver.exceptions.ImageTooLargeException
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
+import net.perfectdreams.loritta.cinnamon.discord.utils.UnicodeEmojiManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileCreator
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.io.FileNotFoundException
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.imageio.ImageIO
+import kotlin.streams.toList
 
 object ImageUtils {
     private val logger = KotlinLogging.logger {}
     private const val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:61.0) Gecko/20100101 Firefox/61.0"
+    val DEFAULT_DISCORD_AVATAR = runBlocking { readImageFromResources("/avatars/0.png") }
+
+    /**
+     * List of drawable types that are in unicode, and the user expects them to be drawn correctly (text, emojis, etc)
+     */
+    val ALLOWED_UNICODE_DRAWABLE_TYPES = listOf(DrawableType.TEXT, DrawableType.UNICODE_EMOJI)
 
     /**
      * Converts a given Image into a BufferedImage
@@ -38,6 +52,166 @@ object ImageUtils {
 
         // Return the buffered image
         return bimage
+    }
+
+    /**
+     * Parses the [text] to multiple drawable sections
+     */
+    fun parseStringToDrawableSections(
+        unicodeEmojiManager: UnicodeEmojiManager,
+        text: String,
+        allowedDrawableTypes: List<DrawableType> = DrawableType.values().toList()
+    ): MutableList<DrawableSection> {
+        val sections = mutableListOf<DrawableSection>()
+
+        val matches = mutableListOf<RegexMatch>()
+
+        if (DrawableType.DISCORD_EMOJI in allowedDrawableTypes) {
+            DiscordRegexes.DiscordEmote.findAll(text)
+                .forEach {
+                    matches.add(DiscordEmoteRegexMatch(it))
+                }
+        }
+
+        if (DrawableType.UNICODE_EMOJI in allowedDrawableTypes) {
+            unicodeEmojiManager.regex.findAll(text)
+                .forEach {
+                    matches.add(UnicodeEmoteRegexMatch(it))
+                }
+        }
+
+        var firstMatchedCharacterIndex = 0
+        var lastMatchedCharacterIndex = 0
+
+        for (match in matches.sortedBy { it.match.range.first }) {
+            val matchResult = match.match
+            if (DrawableType.TEXT in allowedDrawableTypes) {
+                sections.add(
+                    DrawableText(
+                        text.substring(
+                            firstMatchedCharacterIndex until matchResult.range.first
+                        )
+                    )
+                )
+            }
+
+            when (match) {
+                is DiscordEmoteRegexMatch -> {
+                    val animated = matchResult.groupValues[1] == "a"
+                    val emoteName = matchResult.groupValues[2]
+                    val emoteId = matchResult.groupValues[3]
+                    sections.add(DrawableDiscordEmote(Snowflake(emoteId), animated))
+                }
+                is UnicodeEmoteRegexMatch -> {
+                    sections.add(DrawableUnicodeEmote(matchResult.value))
+                }
+            }
+
+            lastMatchedCharacterIndex = matchResult.range.last + 1
+            firstMatchedCharacterIndex = lastMatchedCharacterIndex
+        }
+
+        if (DrawableType.TEXT in allowedDrawableTypes) {
+            sections.add(
+                DrawableText(
+                    text.substring(
+                        lastMatchedCharacterIndex until text.length
+                    )
+                )
+            )
+        }
+
+        return sections
+    }
+
+    suspend fun drawString(
+        loritta: LorittaCinnamon,
+        graphics: Graphics,
+        text: String,
+        x: Int,
+        y: Int,
+        allowedDrawableTypes: List<DrawableType> = DrawableType.values().toList()
+    ) = drawString(
+        loritta.unicodeEmojiManager,
+        loritta.emojiImageCache,
+        graphics,
+        text,
+        x,
+        y,
+        allowedDrawableTypes
+    )
+
+    suspend fun drawString(
+        unicodeEmojiManager: UnicodeEmojiManager,
+        emojiImageCache: EmojiImageCache,
+        graphics: Graphics,
+        text: String,
+        x: Int,
+        y: Int,
+        allowedDrawableTypes: List<DrawableType> = DrawableType.values().toList()
+    ) {
+        val sections = parseStringToDrawableSections(unicodeEmojiManager, text, allowedDrawableTypes)
+
+        val fontMetrics = graphics.fontMetrics
+        val emojiWidth = fontMetrics.ascent
+        val emojiYOffset = (fontMetrics.descent / 2)
+
+        var currentX = x // X atual
+        val currentY = y // Y atual
+
+        for (section in sections) {
+            when (section) {
+                is DrawableText -> {
+                    val split = section.text.split("((?<= )|(?= ))".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() // Nós precisamos deixar os espaços entre os splits!
+                    for (str in split) {
+                        var width = fontMetrics.stringWidth(str) // Width do texto que nós queremos colocar
+                        for (c in str.toCharArray()) { // E agora nós iremos printar todos os chars
+                            width = fontMetrics.charWidth(c)
+                            if (!graphics.font.canDisplay(c))
+                                continue
+                            graphics.drawString(c.toString(), currentX, currentY) // Escreva o char na imagem
+                            currentX += width // E adicione o width no nosso currentX
+                        }
+                    }
+                }
+                is DrawableDiscordEmote -> {
+                    val emoteImage = emojiImageCache.getDiscordEmoji(section.emoteId, dev.kord.rest.Image.Size.Size64)
+
+                    if (emoteImage != null) {
+                        graphics.drawImage(
+                            emoteImage.getScaledInstance(
+                                emojiWidth,
+                                emojiWidth,
+                                BufferedImage.SCALE_SMOOTH
+                            ),
+                            currentX,
+                            currentY - emojiWidth + emojiYOffset,
+                            null
+                        )
+
+                        currentX += emojiWidth
+                    }
+                }
+                is DrawableUnicodeEmote -> {
+                    val emoteImage = emojiImageCache.getTwitterEmoji(section.emoji.codePoints().toList())
+
+                    if (emoteImage != null) {
+                        graphics.drawImage(
+                            emoteImage.getScaledInstance(
+                                emojiWidth,
+                                emojiWidth,
+                                BufferedImage.SCALE_SMOOTH
+                            ),
+                            currentX,
+                            currentY - emojiWidth + emojiYOffset,
+                            null
+                        )
+
+                        currentX += emojiWidth
+                    }
+                }
+            }
+        }
     }
 
     fun drawStringAndShortenWithEllipsisIfOverflow(graphics: Graphics, text: String, x: Int, y: Int, maxX: Int? = null) {
@@ -146,7 +320,14 @@ object ImageUtils {
      * @param text The String to draw.
      * @param rect The Rectangle to center the text in.
      */
-    fun drawCenteredString(graphics: Graphics, text: String, rect: Rectangle, font: Font) {
+    suspend fun drawCenteredString(
+        loritta: LorittaCinnamon,
+        graphics: Graphics,
+        text: String,
+        rect: Rectangle,
+        font: Font,
+        allowedDrawableTypes: List<DrawableType> = DrawableType.values().toList()
+    ) {
         // Get the FontMetrics
         val metrics = graphics.getFontMetrics(font)
         // Determine the X coordinate for the text
@@ -154,7 +335,8 @@ object ImageUtils {
         // Determine the Y coordinate for the text (note we add the ascent, as in java 2d 0 is top of the screen)
         val y = rect.y + (rect.height - metrics.height) / 2 + metrics.ascent
         // Draw the String
-        graphics.drawString(text, x, y)
+
+        drawString(loritta, graphics, text, x, y, allowedDrawableTypes)
     }
 
     /**
@@ -250,15 +432,19 @@ object ImageUtils {
 
         logger.debug { "Reading image $url; connectTimeout = $connectTimeout; readTimeout = $readTimeout; maxSize = $maxSize bytes; overrideTimeoutsForSafeDomains = $overrideTimeoutsForSafeDomains; maxWidth = $maxWidth; maxHeight = $maxHeight"}
 
-        val imageBytes = withContext(Dispatchers.IO) {
-            if (contentLength != 0) {
-                // If the Content-Length is known (example: images on Discord's CDN do have Content-Length on the response header)
-                // we can allocate the array with exactly the same size that the Content-Length provides, this way we avoid a lot of unnecessary Arrays.copyOf!
-                // Of course, this could be abused to allocate a gigantic array that causes Loritta to crash, but if the Content-Length is present, Loritta checks the size
-                // before trying to download it, so no worries :)
-                connection.inputStream.readAllBytes(maxSize, contentLength)
-            } else
-                connection.inputStream.readAllBytes(maxSize)
+        val imageBytes = try {
+            withContext(Dispatchers.IO) {
+                if (contentLength != 0) {
+                    // If the Content-Length is known (example: images on Discord's CDN do have Content-Length on the response header)
+                    // we can allocate the array with exactly the same size that the Content-Length provides, this way we avoid a lot of unnecessary Arrays.copyOf!
+                    // Of course, this could be abused to allocate a gigantic array that causes Loritta to crash, but if the Content-Length is present, Loritta checks the size
+                    // before trying to download it, so no worries :)
+                    connection.inputStream.readAllBytes(maxSize, contentLength)
+                } else
+                    connection.inputStream.readAllBytes(maxSize)
+            }
+        } catch (e: FileNotFoundException) {
+            return null
         }
 
         val imageInfo = SimpleImageInfo(imageBytes)
@@ -277,5 +463,20 @@ object ImageUtils {
         val output = ByteArrayOutputStream()
         ImageIO.write(this@toByteArray, formatType.name, output)
         output.toByteArray()
+    }
+
+    private sealed class RegexMatch(val match: MatchResult)
+    private class DiscordEmoteRegexMatch(match: MatchResult) : RegexMatch(match)
+    private class UnicodeEmoteRegexMatch(match: MatchResult) : RegexMatch(match)
+
+    sealed class DrawableSection
+    data class DrawableText(val text: String) : DrawableSection()
+    data class DrawableDiscordEmote(val emoteId: Snowflake, val animated: Boolean) : DrawableSection()
+    data class DrawableUnicodeEmote(val emoji: String) : DrawableSection()
+
+    enum class DrawableType {
+        TEXT,
+        DISCORD_EMOJI,
+        UNICODE_EMOJI
     }
 }

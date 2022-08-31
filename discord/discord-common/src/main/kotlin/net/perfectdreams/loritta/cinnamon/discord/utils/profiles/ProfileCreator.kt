@@ -4,6 +4,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
@@ -65,7 +66,7 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
         endY: Int,
         allowedDiscordEmojis: List<Snowflake>?
     ): Int {
-        val sections = parseAboutMe(text)
+        val sections = ImageUtils.parseStringToDrawableSections(loritta.unicodeEmojiManager, text)
 
         val lineHeight = fontMetrics.height // Aqui é a altura da nossa fonte
 
@@ -77,7 +78,7 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
 
         for (section in sections) {
             when (section) {
-                is AboutMeText -> {
+                is ImageUtils.DrawableText -> {
                     val split = section.text.split("((?<= )|(?= ))".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() // Nós precisamos deixar os espaços entre os splits!
                     for (str in split) {
                         var width = fontMetrics.stringWidth(str) // Width do texto que nós queremos colocar
@@ -99,27 +100,51 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
                         }
                     }
                 }
-                is AboutMeDiscordEmote -> {
+                is ImageUtils.DrawableDiscordEmote -> {
                     if (allowedDiscordEmojis == null || section.emoteId in allowedDiscordEmojis) {
                         val emoteImage = loritta.emojiImageCache.getDiscordEmoji(section.emoteId, Image.Size.Size64)
 
                         if (emoteImage != null) {
+                            if (currentX + emojiWidth > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
+                                currentX = startX // Nós iremos fazer wrapping do texto
+                                currentY += lineHeight
+                            }
+
                             graphics.drawImage(
                                 emoteImage.getScaledInstance(
                                     emojiWidth,
                                     emojiWidth,
                                     BufferedImage.SCALE_SMOOTH
-                                ), currentX, currentY - emojiWidth + emojiYOffset, null
+                                ),
+                                currentX,
+                                currentY - emojiWidth + emojiYOffset,
+                                null
                             )
+
                             currentX += emojiWidth
                         }
                     }
                 }
-                is AboutMeUnicodeEmote -> {
+                is ImageUtils.DrawableUnicodeEmote -> {
                     val emoteImage = loritta.emojiImageCache.getTwitterEmoji(section.emoji.codePoints().toList())
 
                     if (emoteImage != null) {
-                        graphics.drawImage(emoteImage.getScaledInstance(emojiWidth, emojiWidth, BufferedImage.SCALE_SMOOTH), currentX, currentY - emojiWidth + emojiYOffset, null)
+                        if (currentX + emojiWidth > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
+                            currentX = startX // Nós iremos fazer wrapping do texto
+                            currentY += lineHeight
+                        }
+
+                        graphics.drawImage(
+                            emoteImage.getScaledInstance(
+                                emojiWidth,
+                                emojiWidth,
+                                BufferedImage.SCALE_SMOOTH
+                            ),
+                            currentX,
+                            currentY - emojiWidth + emojiYOffset,
+                            null
+                        )
+
                         currentX += emojiWidth
                     }
                 }
@@ -128,71 +153,4 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
 
         return currentY
     }
-
-    /**
-     * Parses [aboutMe] and creates multiple [AboutMeSection] of it.
-     */
-    private fun parseAboutMe(aboutMe: String): MutableList<AboutMeSection> {
-        val sections = mutableListOf<AboutMeSection>()
-
-        val matches = mutableListOf<RegexMatch>()
-
-        DiscordRegexes.DiscordEmote.findAll(aboutMe)
-            .forEach {
-                matches.add(DiscordEmoteRegexMatch(it))
-            }
-
-        loritta.unicodeEmojiManager.regex.findAll(aboutMe)
-            .forEach {
-                matches.add(UnicodeEmoteRegexMatch(it))
-            }
-
-        var firstMatchedCharacterIndex = 0
-        var lastMatchedCharacterIndex = 0
-
-        for (match in matches.sortedBy { it.match.range.first }) {
-            val matchResult = match.match
-            sections.add(
-                AboutMeText(
-                    aboutMe.substring(
-                        firstMatchedCharacterIndex until matchResult.range.first
-                    )
-                )
-            )
-
-            when (match) {
-                is DiscordEmoteRegexMatch -> {
-                    val animated = matchResult.groupValues[1] == "a"
-                    val emoteName = matchResult.groupValues[2]
-                    val emoteId = matchResult.groupValues[3]
-                    sections.add(AboutMeDiscordEmote(Snowflake(emoteId), animated))
-                }
-                is UnicodeEmoteRegexMatch -> {
-                    sections.add(AboutMeUnicodeEmote(matchResult.value))
-                }
-            }
-
-            lastMatchedCharacterIndex = matchResult.range.last + 1
-            firstMatchedCharacterIndex = lastMatchedCharacterIndex
-        }
-
-        sections.add(
-            AboutMeText(
-                aboutMe.substring(
-                    lastMatchedCharacterIndex until aboutMe.length
-                )
-            )
-        )
-
-        return sections
-    }
-
-    private sealed class RegexMatch(val match: MatchResult)
-    private class DiscordEmoteRegexMatch(match: MatchResult) : RegexMatch(match)
-    private class UnicodeEmoteRegexMatch(match: MatchResult) : RegexMatch(match)
-
-    private sealed class AboutMeSection
-    private data class AboutMeText(val text: String) : AboutMeSection()
-    private data class AboutMeDiscordEmote(val emoteId: Snowflake, val animated: Boolean) : AboutMeSection()
-    private data class AboutMeUnicodeEmote(val emoji: String) : AboutMeSection()
 }

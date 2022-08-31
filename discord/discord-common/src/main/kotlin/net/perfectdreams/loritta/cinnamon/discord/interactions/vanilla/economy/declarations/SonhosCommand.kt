@@ -7,12 +7,14 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandC
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.SonhosExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.PayExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank.SonhosRankExecutor
 import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
 
 class SonhosCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
         val CATEGORY_I18N_PREFIX = I18nKeysData.Commands.Category.Economy
         val SONHOS_I18N_PREFIX = I18nKeysData.Commands.Command.Sonhos
+        val SONHOS_RANK_I18N_PREFIX = I18nKeysData.Commands.Command.Sonhosrank
         val PAY_I18N_PREFIX = I18nKeysData.Commands.Command.Pay
     }
 
@@ -23,6 +25,10 @@ class SonhosCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
 
         subcommand("pay", PAY_I18N_PREFIX.Description) {
             executor = { PayExecutor(it) }
+        }
+
+        subcommand("rank", SONHOS_RANK_I18N_PREFIX.Description) {
+            executor = { SonhosRankExecutor(it) }
         }
     }
 }

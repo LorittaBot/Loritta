@@ -42,7 +42,9 @@ class InteractionsRegistry(
                             null
                     }
 
-                val currentHash = loritta.cache.hashEntity(manager.interaKTions.createGlobalApplicationCommandCreateRequests())
+                // Kord uses "JsonPrimitive" on the min_value/max_value, so Pudding's hashEntity fails to serialize it, because JsonPrimitive can only be serialized by the Json encoder.
+                // loritta.cache.hashEntity(manager.interaKTions.createGlobalApplicationCommandCreateRequests())
+                val currentHash = Json.encodeToString(manager.interaKTions.createGlobalApplicationCommandCreateRequests()).hashCode()
 
                 if (pairData == null || currentHash != pairData.first) {
                     // Needs to be updated!
@@ -76,7 +78,9 @@ class InteractionsRegistry(
                                 null
                         }
 
-                    val currentHash = loritta.cache.hashEntity(manager.interaKTions.createGlobalApplicationCommandCreateRequests())
+                    // Kord uses "JsonPrimitive" on the min_value/max_value, so Pudding's hashEntity fails to serialize it, because JsonPrimitive can only be serialized by the Json encoder.
+                    // loritta.cache.hashEntity(manager.interaKTions.createGuildApplicationCommandCreateRequests())
+                    val currentHash = Json.encodeToString(manager.interaKTions.createGuildApplicationCommandCreateRequests()).hashCode()
 
                     if (pairData == null || currentHash != pairData.first) {
                         // Needs to be updated!

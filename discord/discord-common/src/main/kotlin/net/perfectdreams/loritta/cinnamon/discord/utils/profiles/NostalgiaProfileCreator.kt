@@ -73,9 +73,9 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 		graphics.font = oswaldRegular50
 		ImageUtils.drawStringAndShortenWithEllipsisIfOverflow(graphics, user.name, 159, 46) // Nome do usuário
 		graphics.font = oswaldRegular42
-		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(598, 54, 202, 54), oswaldRegular42)
+		ImageUtils.drawCenteredString(loritta, graphics, "$reputations reps", Rectangle(598, 54, 202, 54), oswaldRegular42)
 		graphics.font = oswaldRegular29
-		ImageUtils.drawCenteredString(graphics, locale.get(I18nKeysData.Profiles.AboutMe), Rectangle(0, 465, 132, 38), oswaldRegular29)
+		ImageUtils.drawCenteredString(loritta, graphics, locale.get(I18nKeysData.Profiles.AboutMe), Rectangle(0, 465, 132, 38), oswaldRegular29)
 
 		var x = 162
 		for (badge in badges) {
@@ -163,11 +163,11 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
 				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
 				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, locale.get(I18nKeysData.Profiles.MarriedWith), Rectangle(545, 108, 256, 14), whitneySemiBold16)
+				ImageUtils.drawCenteredString(loritta, graphics, locale.get(I18nKeysData.Profiles.MarriedWith), Rectangle(545, 108, 256, 14), whitneySemiBold16)
 				graphics.font = whitneyMedium20
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), whitneyMedium20)
+				ImageUtils.drawCenteredString(loritta, graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), whitneyMedium20)
 				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(locale, marriage.marriedSince.toEpochMilliseconds(), System.currentTimeMillis(), maxParts = 3), Rectangle(545, 108 + 14  + 18, 256, 14), whitneySemiBold16)
+				ImageUtils.drawCenteredString(loritta, graphics, DateUtils.formatDateDiff(locale, marriage.marriedSince.toEpochMilliseconds(), System.currentTimeMillis(), maxParts = 3), Rectangle(545, 108 + 14  + 18, 256, 14), whitneySemiBold16)
 			}
 		}
 

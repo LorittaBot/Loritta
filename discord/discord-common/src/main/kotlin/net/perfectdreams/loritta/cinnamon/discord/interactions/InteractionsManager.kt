@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.i
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.StartCoinFlipGlobalBetMatchmakingButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.CancelSonhosTransferButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.TransferSonhosButtonExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank.ChangeSonhosRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionFilterSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.ChangeTransactionPageButtonClickExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox.PlayAudioClipButtonExecutor
@@ -27,6 +28,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.AchievementsExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.profile.ChangeAboutMeButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.profile.ChangeAboutMeModalExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.ChangeXpRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker.*
 import kotlin.system.exitProcess
@@ -99,10 +101,13 @@ class InteractionsManager(
         register(TransferSonhosButtonExecutor(loritta))
         register(CancelSonhosTransferButtonExecutor(loritta))
 
+        register(ChangeSonhosRankPageButtonExecutor(loritta))
+
         // ===[ SOCIAL ]===
         register(AchievementsExecutor.ChangeCategoryMenuExecutor(loritta))
         register(ChangeAboutMeButtonExecutor(loritta))
         register(ChangeAboutMeModalExecutor(loritta))
+        register(ChangeXpRankPageButtonExecutor(loritta))
 
         // ===[ UNDERTALE ]===
         register(PortraitSelectMenuExecutor(loritta, loritta.gabrielaImageServerClient))
