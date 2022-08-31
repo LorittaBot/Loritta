@@ -4,4 +4,4 @@ level: "Nível {level,number}"
 
 options:
   page:
-    text: "The page that you want to look"
+    text: "The page that you want to jump to"

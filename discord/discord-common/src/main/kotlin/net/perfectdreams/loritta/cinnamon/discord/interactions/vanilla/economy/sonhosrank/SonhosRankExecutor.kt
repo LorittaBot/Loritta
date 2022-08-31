@@ -30,12 +30,12 @@ import kotlin.math.ceil
 
 class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
-        val rankType = string("rank_type", TodoFixThisData) {
-            choice("Global", SonhosRankType.GLOBAL.name)
-            choice("Local", SonhosRankType.LOCAL.name)
+        val rankType = string("rank_type", SonhosCommand.SONHOS_RANK_I18N_PREFIX.Options.RankType.Text) {
+            choice(SonhosCommand.SONHOS_RANK_I18N_PREFIX.GlobalSonhosRank, SonhosRankType.GLOBAL.name)
+            choice(SonhosCommand.SONHOS_RANK_I18N_PREFIX.LocalSonhosRank, SonhosRankType.LOCAL.name)
         }
 
-        val page = optionalInteger("page", TodoFixThisData) {
+        val page = optionalInteger("page", SonhosCommand.SONHOS_RANK_I18N_PREFIX.Options.Page.Text) {
             range = RankingGenerator.VALID_RANKING_PAGES
         }
     }
@@ -193,7 +193,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
         val userPage = args[options.page]?.minus(1) ?: 1L
         val page = userPage - 1
-        
+
         val message = if (type == SonhosRankType.LOCAL) {
             if (context !is GuildApplicationCommandContext)
                 context.fail {
