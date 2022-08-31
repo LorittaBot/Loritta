@@ -14,8 +14,10 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Applicat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButtonWithHybridData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.TransactionsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.XpCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
@@ -42,6 +44,11 @@ class XpRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
             guild: Guild,
             page: Long
         ): suspend MessageBuilder.() -> (Unit) = {
+            styled(
+                context.i18nContext.get(TransactionsCommand.I18N_PREFIX.Page(page + 1)),
+                Emotes.LoriReading
+            )
+
             val (totalCount, profiles) = loritta.services.transaction {
                 val totalCount = GuildProfiles.select {
                     (GuildProfiles.guildId eq guild.id.toLong()) and
