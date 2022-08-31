@@ -1,6 +1,6 @@
 description: "View which users have the most chat experience on the server!"
 totalXp: "Total XP // {xp,number}"
-level: "Nível {level,number}"
+level: "Level {level,number}"
 
 options:
   page:
