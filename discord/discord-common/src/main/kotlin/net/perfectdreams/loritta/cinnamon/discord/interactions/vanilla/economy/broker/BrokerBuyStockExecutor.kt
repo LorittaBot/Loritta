@@ -12,7 +12,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 
@@ -80,7 +80,7 @@ class BrokerBuyStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExe
                     Emotes.LoriSob
                 )
 
-                userHaventGotDailyTodayOrUpsellSonhosBundles(
+                appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
                     context.loritta,
                     context.i18nContext,
                     UserId(context.user.id.value),

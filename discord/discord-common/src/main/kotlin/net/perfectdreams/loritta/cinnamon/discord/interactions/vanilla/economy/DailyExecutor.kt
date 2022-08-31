@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.DailyCommand
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.discord.utils.getUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.data.Daily
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -58,7 +58,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
                     Emotes.Error
                 )
 
-                userHaventGotDailyTodayOrUpsellSonhosBundles(
+                appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
                     context.loritta,
                     context.i18nContext,
                     UserId(context.user.id.value),

@@ -25,7 +25,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEm
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
@@ -173,7 +173,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                 Emotes.LoriSob
                             )
 
-                            userHaventGotDailyTodayOrUpsellSonhosBundles(
+                            appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
                                 context.loritta,
                                 context.i18nContext,
                                 UserId(context.user.id.value),
@@ -194,7 +194,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                                 Emotes.LoriSob
                             )
 
-                            userHaventGotDailyTodayOrUpsellSonhosBundles(
+                            appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
                                 context.loritta,
                                 context.i18nContext,
                                 UserId(context.user.id.value),

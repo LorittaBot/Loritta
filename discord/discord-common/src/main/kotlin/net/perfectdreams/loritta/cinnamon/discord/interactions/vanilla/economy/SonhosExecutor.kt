@@ -9,7 +9,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionU
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.getUserProfile
 
@@ -55,15 +56,11 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                 )
             }
 
-            context.sendEphemeralMessage {
-                userHaventGotDailyTodayOrUpsellSonhosBundles(
-                    context.loritta,
-                    context.i18nContext,
-                    UserId(user.id),
-                    "sonhos",
-                    "viewing-own-sonhos"
-                )
-            }
+            SonhosUtils.sendEphemeralMessageIfUserHaventGotDailyRewardToday(
+                context.loritta,
+                context,
+                UserId(user.id)
+            )
         } else {
             context.sendMessage {
                 styled(

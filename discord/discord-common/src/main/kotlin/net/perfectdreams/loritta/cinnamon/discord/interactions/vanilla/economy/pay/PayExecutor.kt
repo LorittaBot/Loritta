@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEm
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.ShortenedToLongSonhosAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.userHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -88,7 +88,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                     Emotes.LoriSob
                 )
 
-                userHaventGotDailyTodayOrUpsellSonhosBundles(
+                appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
                     loritta,
                     context.i18nContext,
                     UserId(context.user.id),
