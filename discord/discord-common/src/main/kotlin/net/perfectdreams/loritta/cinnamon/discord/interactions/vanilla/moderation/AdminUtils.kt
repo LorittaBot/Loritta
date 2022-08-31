@@ -332,12 +332,22 @@ object AdminUtils {
         // Now, we will get all the user IDs in the input
         usersAsString.replace(USER_MENTION_REGEX, " ")
             .split(" ")
+            .asSequence()
             .filter { it.isNotBlank() }
             .mapNotNull { it.toLongOrNull() }
             .map { Snowflake(it) }
-            .forEach {
-                // TODO: Manually parse the user IDs
+            .toList() // We need to have a terminal operator here, because a sequence is not suspendable
+            .mapNotNull {
+                try {
+                    context.loritta.kord.getUser(it)
+                } catch (e: Exception) {
+                    null
+                } // Probably not a valid user
             }
+            .map {
+                UserQueryResult(it, false)
+            }
+            .toCollection(users)
 
         return users
     }
