@@ -1,7 +1,6 @@
 ---
 label: "undertale"
 textbox:
-  label: "caixadetexto"
   description: "Crie uma caixa de texto do Undertale/DELTARUNE com seu próprio texto!"
   descriptionGame: "Crie uma caixa de texto do Undertale/DELTARUNE com seu próprio texto e retratos de personagens do Undertale/DELTARUNE!"
   descriptionCustom: "Crie uma caixa de texto do Undertale/DELTARUNE com seu próprio texto e sua própria imagem!"
