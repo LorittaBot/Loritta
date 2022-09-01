@@ -1,4 +1,5 @@
 ---
+label: "moeda"
 description: "Converte o valor de uma moeda para outra. Útil se você quiser saber quanto custa um Discord Nitro na sua moeda!"
 result: "**{input,number,#.##} {fromCurrency} em {toCurrency}**: {result,number,#.##} {toCurrency}"
 invalidCurrency: "`{currency}` não é uma moeda válida!"
