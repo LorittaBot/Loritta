@@ -13,31 +13,31 @@ class WebhookCommand(languageManager: LanguageManager) : CinnamonSlashCommandDec
         val I18N_PREFIX = I18nKeysData.Commands.Command.Webhook
     }
 
-    override fun declaration() = slashCommand("webhook", CommandCategory.DISCORD, I18N_PREFIX.Description) {
-        subcommandGroup("send", TodoFixThisData) {
-            subcommand("simple", I18N_PREFIX.Send.Simple.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.DISCORD, I18N_PREFIX.Description) {
+        subcommandGroup(I18N_PREFIX.Send.Label, TodoFixThisData) {
+            subcommand(I18N_PREFIX.Send.Simple.Label, I18N_PREFIX.Send.Simple.Description) {
                 executor = { WebhookSendSimpleExecutor(it) }
             }
 
-            subcommand("json", I18N_PREFIX.Send.Json.Description) {
+            subcommand(I18N_PREFIX.Send.Json.Label, I18N_PREFIX.Send.Json.Description) {
                 executor = { WebhookSendJsonExecutor(it) }
             }
 
-            subcommand("repost", I18N_PREFIX.Send.Repost.Description) {
+            subcommand(I18N_PREFIX.Send.Repost.Label, I18N_PREFIX.Send.Repost.Description) {
                 executor = { WebhookSendRepostExecutor(it) }
             }
         }
 
-        subcommandGroup("edit", TodoFixThisData) {
-            subcommand("simple", I18N_PREFIX.Edit.Simple.Description) {
+        subcommandGroup(I18N_PREFIX.Edit.Label, TodoFixThisData) {
+            subcommand(I18N_PREFIX.Edit.Simple.Label, I18N_PREFIX.Edit.Simple.Description) {
                 executor = { WebhookEditSimpleExecutor(it) }
             }
 
-            subcommand("json", I18N_PREFIX.Edit.Json.Description) {
+            subcommand(I18N_PREFIX.Edit.Json.Label, I18N_PREFIX.Edit.Json.Description) {
                 executor = { WebhookEditJsonExecutor(it) }
             }
 
-            subcommand("repost", I18N_PREFIX.Send.Repost.Description) {
+            subcommand(I18N_PREFIX.Edit.Repost.Label, I18N_PREFIX.Send.Repost.Description) {
                 executor = { WebhookEditRepostExecutor(it) }
             }
         }

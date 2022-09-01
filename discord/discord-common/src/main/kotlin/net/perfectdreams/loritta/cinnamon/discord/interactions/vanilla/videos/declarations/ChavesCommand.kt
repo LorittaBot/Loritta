@@ -14,12 +14,12 @@ class ChavesCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_PREFIX = I18nKeysData.Commands.Command.Chaves
     }
 
-    override fun declaration() = slashCommand("chaves", CommandCategory.VIDEOS, I18N_PREFIX.Description) {
-        subcommand("opening", I18N_PREFIX.Opening.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.VIDEOS, I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.Opening.Label, I18N_PREFIX.Opening.Description) {
             executor = { ChavesOpeningExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("cocielo", I18N_PREFIX.Cocielo.Description) {
+        subcommand(I18N_PREFIX.Cocielo.Label, I18N_PREFIX.Cocielo.Description) {
             executor = { ChavesCocieloExecutor(it, it.gabrielaImageServerClient) }
         }
     }

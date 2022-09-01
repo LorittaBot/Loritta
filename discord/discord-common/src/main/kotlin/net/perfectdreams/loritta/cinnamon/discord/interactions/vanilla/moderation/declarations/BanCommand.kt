@@ -15,7 +15,7 @@ class BanCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclara
         val CATEGORY_I18N_PREFIX = I18nKeysData.Commands.Category.Moderation
     }
 
-    override fun declaration() = slashCommand("ban", CommandCategory.MODERATION, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.MODERATION, I18N_PREFIX.Description) {
         dmPermission = false
         defaultMemberPermissions = Permissions {
             + Permission.BanMembers

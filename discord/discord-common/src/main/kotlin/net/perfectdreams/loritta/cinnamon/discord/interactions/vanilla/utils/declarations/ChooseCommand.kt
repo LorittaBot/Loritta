@@ -12,7 +12,7 @@ class ChooseCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_PREFIX = I18nKeysData.Commands.Command.Choose
     }
 
-    override fun declaration() = slashCommand("choose", CommandCategory.UTILS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, I18N_PREFIX.Description) {
         executor = { ChooseExecutor(it) }
     }
 }

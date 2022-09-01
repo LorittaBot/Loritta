@@ -1,3 +1,4 @@
+label: "colorinfo"
 description: "View details about a color"
 analogous: "Analogous"
 complementary: "Complementary"
@@ -6,6 +7,7 @@ tints: "Tints"
 triadic: "Triadic"
 
 rgbColorInfo:
+  label: "rgb"
   description: "View details about a color in RGB format"
   invalidColor: "Invalid RGB color! RGB color values must be between 0 and 255."
   options:
@@ -17,6 +19,7 @@ rgbColorInfo:
       text: "Quantity of Blue in the Color (in (R, G, B) format, it is the third number)"
 
 hexColorInfo:
+  label: "hex"
   description: "View details about a color in hexadecimal format"
   invalidColor: "Invalid hexadecimal color! Hexadecimal colors must be in `#rrggbb` format."
   options:
@@ -24,6 +27,7 @@ hexColorInfo:
       text: "Color in Hexadecimal format (Example: \"#29a6fe\")"
 
 decimalColorInfo:
+  label: "decimal"
   description: "View details about a color in decimal format"
   options:
     decimal:

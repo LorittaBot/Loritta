@@ -13,7 +13,7 @@ class HungerGamesCommand(languageManager: LanguageManager) : CinnamonSlashComman
         val I18N_PREFIX = I18nKeysData.Commands.Command.Hungergames
     }
 
-    override fun declaration() = slashCommand("hungergames", CommandCategory.FUN, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, I18N_PREFIX.Description) {
         dmPermission = false
 
         executor = { HungerGamesExecutor(it) }

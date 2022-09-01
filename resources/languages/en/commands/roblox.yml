@@ -1,4 +1,6 @@
+label: "roblox"
 user:
+  label: "user"
   description: "Shows information about a ROBLOX user"
   unknownPlayer: "Sorry, but I couldn't find a ROBLOX user named `{playerName}`..."
   userId: "User ID"
@@ -14,6 +16,7 @@ user:
       text: "The name of the user that you want to find their information"
 
 game:
+  label: "game"
   description: "Shows information about a ROBLOX experience"
   unknownGame: "Sorry, but I couldn't find a ROBLOX experience named `{gameName}`..."
   placeId: "Place ID"

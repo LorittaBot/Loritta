@@ -12,7 +12,7 @@ class CalculatorCommand(languageManager: LanguageManager) : CinnamonSlashCommand
         val I18N_PREFIX = I18nKeysData.Commands.Command.Calc
     }
 
-    override fun declaration() = slashCommand("calc", CommandCategory.UTILS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, I18N_PREFIX.Description) {
         executor = { CalculatorExecutor(it) }
     }
 }

@@ -12,7 +12,7 @@ class CancelledCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_PREFIX = I18nKeysData.Commands.Command.Cancelled
     }
 
-    override fun declaration() = slashCommand("cancelled", CommandCategory.FUN, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, I18N_PREFIX.Description) {
         executor = { CancelledExecutor(it) }
     }
 }

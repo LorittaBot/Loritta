@@ -12,7 +12,7 @@ class DailyCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecla
         val I18N_PREFIX = I18nKeysData.Commands.Command.Daily
     }
 
-    override fun declaration() = slashCommand("daily", CommandCategory.ECONOMY, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.ECONOMY, I18N_PREFIX.Description) {
         executor = { DailyExecutor(it) }
     }
 }

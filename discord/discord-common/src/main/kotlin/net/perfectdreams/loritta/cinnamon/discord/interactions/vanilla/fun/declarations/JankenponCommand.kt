@@ -12,7 +12,7 @@ class JankenponCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_PREFIX = I18nKeysData.Commands.Command.Jankenpon
     }
 
-    override fun declaration() = slashCommand("jankenpon", CommandCategory.FUN, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, I18N_PREFIX.Description) {
         executor = { JankenponExecutor(it) }
     }
 }

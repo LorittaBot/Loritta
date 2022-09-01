@@ -13,16 +13,16 @@ class UserCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclar
         val I18N_PREFIX = I18nKeysData.Commands.Command.User
     }
 
-    override fun declaration() = slashCommand("user", CommandCategory.DISCORD, I18N_PREFIX.Description) {
-        subcommand("avatar", I18N_PREFIX.Avatar.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.DISCORD, I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.Avatar.Label, I18N_PREFIX.Avatar.Description) {
             executor = { UserAvatarSlashExecutor(it) }
         }
 
-        subcommand("info", I18N_PREFIX.Info.Description) {
+        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description) {
             executor = { UserInfoSlashExecutor(it, it.http) }
         }
 
-        subcommand("banner", I18N_PREFIX.Banner.Description) {
+        subcommand(I18N_PREFIX.Banner.Label, I18N_PREFIX.Banner.Description) {
             executor = { UserBannerExecutor(it) }
         }
     }

@@ -51,7 +51,7 @@ class MoneyCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecla
         )
     }
 
-    override fun declaration() = slashCommand("money", CommandCategory.UTILS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, I18N_PREFIX.Description) {
         executor = { MoneyExecutor(it, it.ecbManager) }
     }
 }

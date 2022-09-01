@@ -15,16 +15,16 @@ class DrakeCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecla
         val I18N_PREFIX = I18nKeysData.Commands.Command.Drake
     }
 
-    override fun declaration() = slashCommand("drake", CommandCategory.IMAGES, I18N_PREFIX.Description) {
-        subcommand("drake", I18N_PREFIX.Drake.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Drake.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.Drake.Label, I18N_PREFIX.Drake.Description) {
             executor = { DrakeExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("bolsonaro", I18N_PREFIX.Bolsonaro.Description) {
+        subcommand(I18N_PREFIX.Bolsonaro.Label, I18N_PREFIX.Bolsonaro.Description) {
             executor = { BolsoDrakeExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("lori", I18N_PREFIX.Lori.Description) {
+        subcommand(I18N_PREFIX.Lori.Label, I18N_PREFIX.Lori.Description) {
             executor = { LoriDrakeExecutor(it, it.gabrielaImageServerClient) }
         }
     }

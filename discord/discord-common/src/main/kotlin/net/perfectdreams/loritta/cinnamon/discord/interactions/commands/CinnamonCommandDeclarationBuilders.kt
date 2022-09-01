@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
 fun slashCommand(
     declarationWrapper: CinnamonSlashCommandDeclarationWrapper,
     languageManager: LanguageManager,
-    name: String,
+    name: StringI18nData,
     description: StringI18nData,
     category: CommandCategory,
     block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit)
@@ -28,7 +28,7 @@ fun slashCommand(
 class CinnamonSlashCommandDeclarationBuilder(
     val declarationWrapper: CinnamonSlashCommandDeclarationWrapper,
     val languageManager: LanguageManager,
-    val name: String,
+    val name: StringI18nData,
     val description: StringI18nData,
     val category: CommandCategory
 ) {
@@ -40,11 +40,11 @@ class CinnamonSlashCommandDeclarationBuilder(
     var defaultMemberPermissions: Permissions? = null
     var dmPermission: Boolean? = null
 
-    fun subcommand(name: String, description: StringI18nData, block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit)) {
+    fun subcommand(name: StringI18nData, description: StringI18nData, block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands += CinnamonSlashCommandDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
     }
 
-    fun subcommandGroup(name: String, description: StringI18nData, block: CinnamonSlashCommandGroupDeclarationBuilder.() -> (Unit)) {
+    fun subcommandGroup(name: StringI18nData, description: StringI18nData, block: CinnamonSlashCommandGroupDeclarationBuilder.() -> (Unit)) {
         subcommandGroups += CinnamonSlashCommandGroupDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
     }
 
@@ -68,14 +68,14 @@ class CinnamonSlashCommandDeclarationBuilder(
 class CinnamonSlashCommandGroupDeclarationBuilder(
     val declarationWrapper: CinnamonSlashCommandDeclarationWrapper,
     val languageManager: LanguageManager,
-    val name: String,
+    val name: StringI18nData,
     val description: StringI18nData,
     val category: CommandCategory
 ) {
     // Groups can't have executors!
     val subcommands = mutableListOf<CinnamonSlashCommandDeclarationBuilder>()
 
-    fun subcommand(name: String, description: StringI18nData, block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit)) {
+    fun subcommand(name: StringI18nData, description: StringI18nData, block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit)) {
         subcommands += CinnamonSlashCommandDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
     }
 

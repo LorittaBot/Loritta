@@ -13,7 +13,7 @@ class ToBeContinuedCommand(languageManager: LanguageManager) : CinnamonSlashComm
         val I18N_PREFIX = I18nKeysData.Commands.Command.Tobecontinued
     }
 
-    override fun declaration() = slashCommand("tobecontinued", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { ToBeContinuedExecutor(it, it.gabrielaImageServerClient) }
     }
 }

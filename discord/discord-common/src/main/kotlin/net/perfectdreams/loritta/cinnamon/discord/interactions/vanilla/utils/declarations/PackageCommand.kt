@@ -15,12 +15,12 @@ class PackageCommand(languageManager: LanguageManager) : CinnamonSlashCommandDec
         val I18N_PREFIX = I18nKeysData.Commands.Command.Package
     }
 
-    override fun declaration() = slashCommand("package", CommandCategory.UTILS, TodoFixThisData) {
-        subcommand("track", I18N_PREFIX.Track.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, TodoFixThisData) {
+        subcommand(I18N_PREFIX.Track.Label, I18N_PREFIX.Track.Description) {
             executor = { TrackPackageExecutor(it, it.correiosClient) }
         }
 
-        subcommand("list", I18N_PREFIX.List.Description) {
+        subcommand(I18N_PREFIX.List.Label, I18N_PREFIX.List.Description) {
             executor = { PackageListExecutor(it, it.correiosClient) }
         }
     }

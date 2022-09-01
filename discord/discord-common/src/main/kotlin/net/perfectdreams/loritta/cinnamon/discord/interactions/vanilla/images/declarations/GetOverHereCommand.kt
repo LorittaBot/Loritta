@@ -13,7 +13,7 @@ class GetOverHereCommand(languageManager: LanguageManager) : CinnamonSlashComman
         val I18N_PREFIX = I18nKeysData.Commands.Command.Getoverhere
     }
 
-    override fun declaration() = slashCommand("getoverhere", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { GetOverHereExecutor(it, it.gabrielaImageServerClient) }
     }
 }

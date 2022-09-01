@@ -13,7 +13,7 @@ class PetPetCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_PREFIX = I18nKeysData.Commands.Command.Petpet
     }
 
-    override fun declaration() = slashCommand("petpet", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { PetPetExecutor(it, it.gabrielaImageServerClient) }
     }
 }

@@ -13,7 +13,7 @@ class NichijouYuukoPaperCommand(languageManager: LanguageManager) : CinnamonSlas
         val I18N_PREFIX = I18nKeysData.Commands.Command.Discordping
     }
 
-    override fun declaration() = slashCommand("discordping", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { NichijouYuukoPaperExecutor(it, it.gabrielaImageServerClient) }
     }
 }

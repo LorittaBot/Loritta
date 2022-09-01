@@ -15,16 +15,16 @@ class SummonCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_PREFIX = I18nKeysData.Commands.Command.Summon
     }
 
-    override fun declaration() = slashCommand("summon", CommandCategory.FUN, TodoFixThisData) {
-        subcommand("tiodopavê", I18N_PREFIX.Tiodopave.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, TodoFixThisData) {
+        subcommand(I18N_PREFIX.Tiodopave.Label, I18N_PREFIX.Tiodopave.Description) {
             executor = { TioDoPaveExecutor(it) }
         }
 
-        subcommand("faustão", I18N_PREFIX.Faustao.Description) {
+        subcommand(I18N_PREFIX.Faustao.Label, I18N_PREFIX.Faustao.Description) {
             executor = { FaustaoExecutor(it) }
         }
 
-        subcommand("kenji", I18N_PREFIX.Kenji.Description) {
+        subcommand(I18N_PREFIX.Kenji.Label, I18N_PREFIX.Kenji.Description) {
             executor = { BemBoladaExecutor(it) }
         }
     }

@@ -13,12 +13,12 @@ class NotificationsCommand(languageManager: LanguageManager) : CinnamonSlashComm
         val I18N_PREFIX = I18nKeysData.Commands.Command.Notifications
     }
 
-    override fun declaration() = slashCommand("notifications", CommandCategory.UTILS, I18N_PREFIX.Description) {
-        subcommand("list", I18N_PREFIX.List.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.List.Label, I18N_PREFIX.List.Description) {
             executor = { NotificationsListExecutor(it) }
         }
 
-        subcommand("view", I18N_PREFIX.View.Description) {
+        subcommand(I18N_PREFIX.View.Label, I18N_PREFIX.View.Description) {
             executor = { NotificationsViewExecutor(it) }
         }
     }

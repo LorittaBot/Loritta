@@ -1,3 +1,4 @@
+label: "notifications"
 description: "View notifications"
 
 dailyTaxTaxedUserNotification: "Daily Reward Inactivity Tax (Taxed)"
@@ -6,10 +7,12 @@ correiosPackageUpdate: "Correios Package Update"
 unknownNotification: "Unknown Notification"
 
 list:
+  label: "list"
   description: "View all notifications"
   title: "Notifications"
 
 view:
+  label: "view"
   description: "View a notification"
   couldntFindTheNotification: "I couldn't find that notification! Are you sure it does exist?"
   options:

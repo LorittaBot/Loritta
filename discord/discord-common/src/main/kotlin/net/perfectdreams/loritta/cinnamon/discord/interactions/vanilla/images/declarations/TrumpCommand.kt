@@ -13,7 +13,7 @@ class TrumpCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecla
         val I18N_PREFIX = I18nKeysData.Commands.Command.Trump
     }
 
-    override fun declaration() = slashCommand("trump", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { TrumpExecutor(it, it.gabrielaImageServerClient) }
     }
 }

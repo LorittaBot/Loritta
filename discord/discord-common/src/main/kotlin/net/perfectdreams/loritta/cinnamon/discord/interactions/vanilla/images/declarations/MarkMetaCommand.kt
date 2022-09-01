@@ -14,7 +14,7 @@ class MarkMetaCommand(languageManager: LanguageManager) : CinnamonSlashCommandDe
         val I18N_PREFIX = I18nKeysData.Commands.Command.Markmeta
     }
 
-    override fun declaration() = slashCommand("markmeta", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { MarkMetaExecutor(it, it.gabrielaImageServerClient) }
     }
 }

@@ -15,12 +15,12 @@ class ProfileCommand(languageManager: LanguageManager) : CinnamonSlashCommandDec
         val ABOUT_ME_I18N_PREFIX = I18nKeysData.Commands.Command.Aboutme
     }
 
-    override fun declaration() = slashCommand("profile", CommandCategory.SOCIAL, I18N_PREFIX.Description) {
-        subcommand("view", PROFILE_VIEW_I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.SOCIAL, I18N_PREFIX.Description) {
+        subcommand(PROFILE_VIEW_I18N_PREFIX.Label, PROFILE_VIEW_I18N_PREFIX.Description) {
             executor = { ProfileExecutor(it) }
         }
 
-        subcommand("aboutme", ABOUT_ME_I18N_PREFIX.Description) {
+        subcommand(ABOUT_ME_I18N_PREFIX.Label, ABOUT_ME_I18N_PREFIX.Description) {
             executor = { AboutMeExecutor(it) }
         }
     }

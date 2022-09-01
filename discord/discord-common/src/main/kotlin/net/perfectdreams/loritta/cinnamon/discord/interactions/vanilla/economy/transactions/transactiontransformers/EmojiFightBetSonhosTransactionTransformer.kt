@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.TransactionsCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.EmojiFightBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -29,7 +29,7 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
                 appendMoneyEarnedEmoji()
                 append(
                     i18nContext.get(
-                        TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.WonTaxed(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.EmojiFightBet.WonTaxed(
                             quantity = transaction.entryPrice * userCountExcludingTheWinner,
                             quantityAfterTax = transaction.entryPriceAfterTax * userCountExcludingTheWinner,
                             userInEmojiFight = userCountExcludingTheWinner,
@@ -41,7 +41,7 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
                 appendMoneyLostEmoji()
                 append(
                     i18nContext.get(
-                        TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.LostTaxed(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.EmojiFightBet.LostTaxed(
                             quantity = transaction.entryPrice,
                             quantityAfterTax = transaction.entryPriceAfterTax,
                             winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
@@ -56,7 +56,7 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
                 appendMoneyEarnedEmoji()
                 append(
                     i18nContext.get(
-                        TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.Won(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.EmojiFightBet.Won(
                             quantityAfterTax = transaction.entryPriceAfterTax * userCountExcludingTheWinner,
                             userInEmojiFight = userCountExcludingTheWinner,
                             emojiFightEmoji = transaction.emoji
@@ -67,7 +67,7 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
                 appendMoneyLostEmoji()
                 append(
                     i18nContext.get(
-                        TransactionsCommand.I18N_PREFIX.Types.EmojiFightBet.Lost(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.EmojiFightBet.Lost(
                             quantity = transaction.entryPrice,
                             winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
                             winnerId = transaction.winner.value,

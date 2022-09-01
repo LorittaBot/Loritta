@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.TransactionsCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -26,7 +26,7 @@ object CoinFlipBetSonhosTransactionTransformer : SonhosTransactionTransformer<Co
                 appendMoneyEarnedEmoji()
                 append(
                     i18nContext.get(
-                        TransactionsCommand.I18N_PREFIX.Types.CoinFlipBet.WonTaxed(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.WonTaxed(
                             quantity = transaction.quantity,
                             quantityAfterTax = transaction.quantityAfterTax,
                             loserTag = "${loserUserInfo?.name?.stripCodeBackticks()}#${loserUserInfo?.discriminator}",
@@ -38,7 +38,7 @@ object CoinFlipBetSonhosTransactionTransformer : SonhosTransactionTransformer<Co
                 appendMoneyLostEmoji()
                 append(
                     i18nContext.get(
-                        TransactionsCommand.I18N_PREFIX.Types.CoinFlipBet.LostTaxed(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.LostTaxed(
                             quantity = transaction.quantity,
                             quantityAfterTax = transaction.quantityAfterTax,
                             winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
@@ -52,7 +52,7 @@ object CoinFlipBetSonhosTransactionTransformer : SonhosTransactionTransformer<Co
                 appendMoneyEarnedEmoji()
                 append(
                     i18nContext.get(
-                        TransactionsCommand.I18N_PREFIX.Types.CoinFlipBet.Won(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.Won(
                             quantityAfterTax = transaction.quantity,
                             loserTag = "${loserUserInfo?.name?.stripCodeBackticks()}#${loserUserInfo?.discriminator}",
                             loserId = transaction.loser.value
@@ -63,7 +63,7 @@ object CoinFlipBetSonhosTransactionTransformer : SonhosTransactionTransformer<Co
                 appendMoneyLostEmoji()
                 append(
                     i18nContext.get(
-                        TransactionsCommand.I18N_PREFIX.Types.CoinFlipBet.Lost(
+                        SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.CoinFlipBet.Lost(
                             quantity = transaction.quantity,
                             winnerTag = "${winnerUserInfo?.name?.stripCodeBackticks()}#${winnerUserInfo?.discriminator}",
                             winnerId = transaction.winner.value

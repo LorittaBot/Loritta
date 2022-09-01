@@ -1,3 +1,4 @@
+label: "money"
 description: "Converts the value of a currency to another. Useful if you want to know how much a Discord Nitro costs in your currency!"
 result: "**{input,number,#.##} {fromCurrency} in {toCurrency}**: {result,number,#.##} {toCurrency}"
 invalidCurrency: "`{currency}` is not a valid currency!"

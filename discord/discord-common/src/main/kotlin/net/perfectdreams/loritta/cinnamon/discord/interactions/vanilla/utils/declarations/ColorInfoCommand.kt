@@ -15,16 +15,16 @@ class ColorInfoCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_PREFIX = I18nKeysData.Commands.Command.Colorinfo
     }
 
-    override fun declaration() = slashCommand("colorinfo", CommandCategory.UTILS, I18N_PREFIX.Description) {
-        subcommand("rgb", I18N_PREFIX.RgbColorInfo.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.RgbColorInfo.Label, I18N_PREFIX.RgbColorInfo.Description) {
             executor = { RgbColorInfoExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("hex", I18N_PREFIX.HexColorInfo.Description) {
+        subcommand(I18N_PREFIX.HexColorInfo.Label, I18N_PREFIX.HexColorInfo.Description) {
             executor = { HexColorInfoExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("decimal", I18N_PREFIX.DecimalColorInfo.Description) {
+        subcommand(I18N_PREFIX.DecimalColorInfo.Label, I18N_PREFIX.DecimalColorInfo.Description) {
             executor = { DecimalColorInfoExecutor(it, it.gabrielaImageServerClient) }
         }
     }

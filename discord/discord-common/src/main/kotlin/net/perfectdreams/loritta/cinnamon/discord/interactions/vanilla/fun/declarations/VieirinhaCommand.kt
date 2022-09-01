@@ -16,7 +16,7 @@ class VieirinhaCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         )
     }
 
-    override fun declaration() = slashCommand("vieirinha", CommandCategory.FUN, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, I18N_PREFIX.Description) {
         executor = { VieirinhaExecutor(it) }
     }
 }

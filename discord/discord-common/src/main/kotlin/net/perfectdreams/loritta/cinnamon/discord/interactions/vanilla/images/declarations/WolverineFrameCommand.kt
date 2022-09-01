@@ -13,7 +13,7 @@ class WolverineFrameCommand(languageManager: LanguageManager) : CinnamonSlashCom
         val I18N_PREFIX = I18nKeysData.Commands.Command.Wolverineframe
     }
 
-    override fun declaration() = slashCommand("wolverineframe", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { WolverineFrameExecutor(it, it.gabrielaImageServerClient) }
     }
 }

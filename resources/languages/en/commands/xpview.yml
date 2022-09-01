@@ -1,3 +1,4 @@
+label: "view"
 description: "View how much experience you, or another user, have in the server!"
 serverProfileCard: "Server Profile Card"
 currentLevel: "Current Level"

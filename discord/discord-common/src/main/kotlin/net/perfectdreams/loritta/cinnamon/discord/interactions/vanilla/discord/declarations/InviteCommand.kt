@@ -13,8 +13,8 @@ class InviteCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_PREFIX = I18nKeysData.Commands.Command.Invite
     }
 
-    override fun declaration() = slashCommand("invite", CommandCategory.DISCORD, TodoFixThisData) {
-        subcommand("info", I18N_PREFIX.Info.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.DISCORD, TodoFixThisData) {
+        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description) {
             executor = { InviteInfoExecutor(it) }
         }
     }

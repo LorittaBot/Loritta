@@ -13,7 +13,7 @@ class PassingPaperCommand(languageManager: LanguageManager) : CinnamonSlashComma
         val I18N_PREFIX = I18nKeysData.Commands.Command.Passingpaper
     }
 
-    override fun declaration() = slashCommand("passingpaper", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { PassingPaperExecutor(it, it.gabrielaImageServerClient) }
     }
 }

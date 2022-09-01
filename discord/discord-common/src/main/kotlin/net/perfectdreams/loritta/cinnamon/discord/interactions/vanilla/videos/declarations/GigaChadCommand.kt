@@ -13,7 +13,7 @@ class GigaChadCommand(languageManager: LanguageManager) : CinnamonSlashCommandDe
         val I18N_PREFIX = I18nKeysData.Commands.Command.Gigachad
     }
 
-    override fun declaration() = slashCommand("gigachad", CommandCategory.VIDEOS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.VIDEOS, I18N_PREFIX.Description) {
         executor = { GigaChadExecutor(it, it.gabrielaImageServerClient) }
     }
 }

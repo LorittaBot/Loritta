@@ -14,17 +14,17 @@ class SoundboxCommand(languageManager: LanguageManager) : CinnamonSlashCommandDe
         val I18N_PREFIX = I18nKeysData.Commands.Command.Soundbox
     }
 
-    override fun declaration() = slashCommand("soundbox", CommandCategory.FUN, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, I18N_PREFIX.Description) {
         defaultMemberPermissions = Permissions {
             + Permission.MoveMembers
         }
         dmPermission = false
 
-        subcommand("falatron", I18N_PREFIX.Falatron.Description) {
+        subcommand(I18N_PREFIX.Falatron.Label, I18N_PREFIX.Falatron.Description) {
             executor = { FalatronExecutor(it, it.falatronModelsManager) }
         }
 
-        subcommand("board", I18N_PREFIX.Board.Description) {
+        subcommand(I18N_PREFIX.Board.Label, I18N_PREFIX.Board.Description) {
             executor = { SoundboardBoardExecutor(it) }
         }
     }

@@ -14,12 +14,12 @@ class RobloxCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_CATEGORY_PREFIX = I18nKeysData.Commands.Category.Roblox
     }
 
-    override fun declaration() = slashCommand("roblox", CommandCategory.ROBLOX, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */) {
-        subcommand("user", I18N_PREFIX.User.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.ROBLOX, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */) {
+        subcommand(I18N_PREFIX.User.Label, I18N_PREFIX.User.Description) {
             executor = { RobloxUserExecutor(it, it.http) }
         }
 
-        subcommand("game", I18N_PREFIX.Game.Description) {
+        subcommand(I18N_PREFIX.Game.Label, I18N_PREFIX.Game.Description) {
             executor = { RobloxGameExecutor(it, it.http) }
         }
     }

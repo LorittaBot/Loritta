@@ -12,7 +12,7 @@ class HelpCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclar
         val I18N_PREFIX = I18nKeysData.Commands.Command.Help
     }
 
-    override fun declaration() = slashCommand("help", CommandCategory.UTILS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, I18N_PREFIX.Description) {
         executor = { HelpExecutor(it) }
     }
 }

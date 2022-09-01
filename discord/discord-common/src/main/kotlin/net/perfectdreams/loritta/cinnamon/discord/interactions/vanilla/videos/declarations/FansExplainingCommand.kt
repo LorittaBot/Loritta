@@ -13,7 +13,7 @@ class FansExplainingCommand(languageManager: LanguageManager) : CinnamonSlashCom
         val I18N_PREFIX = I18nKeysData.Commands.Command.Fansexplaining
     }
 
-    override fun declaration() = slashCommand("fansexplaining", CommandCategory.VIDEOS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.VIDEOS, I18N_PREFIX.Description) {
         executor = { FansExplainingExecutor(it, it.gabrielaImageServerClient) }
     }
 }

@@ -13,7 +13,7 @@ class SustoCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecla
         val I18N_PREFIX = I18nKeysData.Commands.Command.Fright
     }
 
-    override fun declaration() = slashCommand("scared", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { SustoExecutor(it, it.gabrielaImageServerClient) }
     }
 }

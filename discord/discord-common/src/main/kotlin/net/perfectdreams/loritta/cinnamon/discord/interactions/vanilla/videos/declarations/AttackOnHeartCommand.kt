@@ -13,7 +13,7 @@ class AttackOnHeartCommand(languageManager: LanguageManager) : CinnamonSlashComm
         val I18N_PREFIX = I18nKeysData.Commands.Command.Attackonheart
     }
 
-    override fun declaration() = slashCommand("attackonheart", CommandCategory.VIDEOS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.VIDEOS, I18N_PREFIX.Description) {
         executor = { AttackOnHeartExecutor(it, it.gabrielaImageServerClient) }
     }
 }

@@ -15,12 +15,12 @@ class AfkCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclara
         val I18N_PREFIX = I18nKeysData.Commands.Command.Afk
     }
 
-    override fun declaration() = slashCommand("afk", CommandCategory.SOCIAL, TodoFixThisData) {
-        subcommand("on", I18N_PREFIX.On.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.SOCIAL, TodoFixThisData) {
+        subcommand(I18N_PREFIX.On.Label, I18N_PREFIX.On.Description) {
             executor = { AfkOnExecutor(it) }
         }
 
-        subcommand("off", I18N_PREFIX.Off.Description) {
+        subcommand(I18N_PREFIX.Off.Label, I18N_PREFIX.Off.Description) {
             executor = { AfkOffExecutor(it) }
         }
     }

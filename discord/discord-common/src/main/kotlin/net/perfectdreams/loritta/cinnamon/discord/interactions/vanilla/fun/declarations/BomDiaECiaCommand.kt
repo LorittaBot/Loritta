@@ -11,7 +11,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.Bom
 class BomDiaECiaCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     val I18N_PREFIX = I18nKeysData.Commands.Command.Cancelled
 
-    override fun declaration() = slashCommand("40028922", CommandCategory.FUN, TodoFixThisData) {
+    // TODO: Update the label
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, TodoFixThisData) {
         executor = { BomDiaECiaExecutor(it) }
     }
 }

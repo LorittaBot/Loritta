@@ -13,11 +13,11 @@ class MorseCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecla
         val I18N_PREFIX = I18nKeysData.Commands.Command.Morse
     }
 
-    override fun declaration() = slashCommand("morse", CommandCategory.UTILS,  I18N_PREFIX.Description) {
-        subcommand("to", I18N_PREFIX.DescriptionToMorse) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS,  I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.ToMorseLabel, I18N_PREFIX.DescriptionToMorse) {
             executor = { MorseToExecutor(it) }
         }
-        subcommand("from", I18N_PREFIX.DescriptionFromMorse) {
+        subcommand(I18N_PREFIX.FromMorseLabel, I18N_PREFIX.DescriptionFromMorse) {
             executor = { MorseFromExecutor(it) }
         }
     }

@@ -13,23 +13,23 @@ class ServerCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_PREFIX = I18nKeysData.Commands.Command.Server
     }
 
-    override fun declaration() = slashCommand("server", CommandCategory.DISCORD, TodoFixThisData) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.DISCORD, TodoFixThisData) {
         dmPermission = false
 
-        subcommand("icon", I18N_PREFIX.Icon.Description) {
+        subcommand(I18N_PREFIX.Icon.Label, I18N_PREFIX.Icon.Description) {
             executor = { ServerIconExecutor(it) }
         }
 
-        subcommand("banner", I18N_PREFIX.Banner.Description) {
+        subcommand(I18N_PREFIX.Banner.Label, I18N_PREFIX.Banner.Description) {
             executor = { ServerBannerExecutor(it) }
         }
 
-        subcommand("splash", I18N_PREFIX.Splash.Description) {
+        subcommand(I18N_PREFIX.Splash.Label, I18N_PREFIX.Splash.Description) {
             executor = { ServerSplashExecutor(it) }
         }
 
-        subcommandGroup("channel", TodoFixThisData) {
-            subcommand("info", I18N_PREFIX.Channel.Info.Description) {
+        subcommandGroup(I18N_PREFIX.Channel.Label, TodoFixThisData) {
+            subcommand(I18N_PREFIX.Channel.Info.Label, I18N_PREFIX.Channel.Info.Description) {
                 executor = {
                     net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.ChannelInfoExecutor(
                         it
@@ -38,8 +38,8 @@ class ServerCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
             }
         }
 
-        subcommandGroup("role", TodoFixThisData) {
-            subcommand("info", I18N_PREFIX.Role.Info.Description) {
+        subcommandGroup(I18N_PREFIX.Role.Label, TodoFixThisData) {
+            subcommand(I18N_PREFIX.Role.Info.Label, I18N_PREFIX.Role.Info.Description) {
                 executor = { RoleInfoExecutor(it) }
             }
         }

@@ -13,8 +13,8 @@ class EmojiCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecla
         val I18N_PREFIX = I18nKeysData.Commands.Command.Emoji
     }
 
-    override fun declaration() = slashCommand("emoji", CommandCategory.DISCORD, TodoFixThisData) {
-        subcommand("info", I18nKeysData.Commands.Command.Emoji.Info.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.DISCORD, TodoFixThisData) {
+        subcommand(I18N_PREFIX.Info.Label, I18nKeysData.Commands.Command.Emoji.Info.Description) {
             executor = { EmojiInfoExecutor(it) }
         }
     }

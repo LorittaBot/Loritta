@@ -13,7 +13,7 @@ class AchievementsCommand(languageManager: LanguageManager) : CinnamonSlashComma
         val I18N_PREFIX = I18nKeysData.Commands.Command.Achievements
     }
 
-    override fun declaration() = slashCommand("achievements", CommandCategory.SOCIAL, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.SOCIAL, I18N_PREFIX.Description) {
         executor = { AchievementsExecutor(it) }
     }
 }

@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
 class CinnamonSlashCommandDeclaration(
     val declarationWrapper: CinnamonSlashCommandDeclarationWrapper,
     val languageManager: LanguageManager,
-    override val name: String,
+    val nameI18n: StringI18nData,
     val descriptionI18n: StringI18nData,
     val category: CommandCategory,
     override val executor: SlashCommandExecutor?,
@@ -19,21 +19,23 @@ class CinnamonSlashCommandDeclaration(
     override val subcommands: List<SlashCommandDeclaration>,
     override val subcommandGroups: List<SlashCommandGroupDeclaration>,
 ) : SlashCommandDeclaration() {
+    override val name = languageManager.defaultI18nContext.get(nameI18n)
+    override val nameLocalizations: Map<Locale, String> = SlashTextUtils.createLocalizedStringMapExcludingDefaultLocale(languageManager, nameI18n)
     override val description = SlashTextUtils.buildDescription(languageManager.defaultI18nContext, descriptionI18n, category)
     override val descriptionLocalizations = SlashTextUtils.createShortenedLocalizedDescriptionMapExcludingDefaultLocale(languageManager, descriptionI18n, category)
-    override val nameLocalizations: Map<Locale, String> = emptyMap()
 }
 
 class CinnamonSlashCommandGroupDeclaration(
     val languageManager: LanguageManager,
-    override val name: String,
+    val nameI18n: StringI18nData,
     val descriptionI18n: StringI18nData,
     val category: CommandCategory,
     override val subcommands: List<SlashCommandDeclaration>
 ) : SlashCommandGroupDeclaration() {
+    override val name = languageManager.defaultI18nContext.get(nameI18n)
+    override val nameLocalizations: Map<Locale, String> = SlashTextUtils.createLocalizedStringMapExcludingDefaultLocale(languageManager, nameI18n)
     override val description = SlashTextUtils.buildDescription(languageManager.defaultI18nContext, descriptionI18n, category)
     override val descriptionLocalizations = SlashTextUtils.createShortenedLocalizedDescriptionMapExcludingDefaultLocale(languageManager, descriptionI18n, category)
-    override val nameLocalizations: Map<Locale, String> = emptyMap()
 }
 
 class CinnamonUserCommandDeclaration(

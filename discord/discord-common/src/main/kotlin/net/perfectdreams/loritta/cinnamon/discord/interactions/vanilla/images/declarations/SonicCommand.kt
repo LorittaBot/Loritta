@@ -16,20 +16,19 @@ class SonicCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecla
         val I18N_PREFIX = I18nKeysData.Commands.Command.Sonic
     }
 
-    override fun declaration() = slashCommand("sonic", CommandCategory.IMAGES, TodoFixThisData) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, TodoFixThisData) {
         subcommand(
-            "knuxthrow",
-            I18N_PREFIX.Knuxthrow
-                .Description
+            I18N_PREFIX.Knuxthrow.Label,
+            I18N_PREFIX.Knuxthrow.Description
         ) {
             executor = { KnuxThrowExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("maniatitlecard", I18N_PREFIX.Maniatitlecard.Description) {
+        subcommand(I18N_PREFIX.Maniatitlecard.Label, I18N_PREFIX.Maniatitlecard.Description) {
             executor = { ManiaTitleCardExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("studiopolistv", I18N_PREFIX.Studiopolistv.Description) {
+        subcommand(I18N_PREFIX.Studiopolistv.Label, I18N_PREFIX.Studiopolistv.Description) {
             executor = { StudiopolisTvExecutor(it, it.gabrielaImageServerClient) }
         }
     }

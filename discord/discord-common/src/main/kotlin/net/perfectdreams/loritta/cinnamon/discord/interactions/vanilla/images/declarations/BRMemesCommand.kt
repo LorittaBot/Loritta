@@ -51,73 +51,73 @@ class BRMemesCommand(languageManager: LanguageManager) : CinnamonSlashCommandDec
        )
    }
 
-    override fun declaration() = slashCommand("brmemes", CommandCategory.IMAGES, TodoFixThisData) {
-        subcommandGroup("bolsonaro", I18N_PREFIX.Bolsonaro.Description) {
-            subcommand("tv", I18N_PREFIX.Bolsonaro.Tv.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, TodoFixThisData) {
+        subcommandGroup(I18N_PREFIX.Bolsonaro.Label, I18N_PREFIX.Bolsonaro.Description) {
+            subcommand(I18N_PREFIX.Bolsonaro.Tv.Label, I18N_PREFIX.Bolsonaro.Tv.Description) {
                 executor = { BolsonaroExecutor(it, it.gabrielaImageServerClient) }
             }
 
-            subcommand("tv2", I18N_PREFIX.Bolsonaro.Tv.Description) {
+            subcommand(I18N_PREFIX.Bolsonaro.Tv2.Label, I18N_PREFIX.Bolsonaro.Tv.Description) {
                 executor = { Bolsonaro2Executor(it, it.gabrielaImageServerClient) }
             }
 
-            subcommand("frame", I18N_PREFIX.Bolsonaro.Frame.Description) {
+            subcommand(I18N_PREFIX.Bolsonaro.Frame.Label, I18N_PREFIX.Bolsonaro.Frame.Description) {
                 executor = { BolsoFrameExecutor(it, it.gabrielaImageServerClient) }
             }
         }
 
-        subcommandGroup("ata", I18N_PREFIX.Ata.Description) {
-            subcommand("monica", I18N_PREFIX.Ata.Monica.Description) {
+        subcommandGroup(I18N_PREFIX.Ata.Label, I18N_PREFIX.Ata.Description) {
+            subcommand(I18N_PREFIX.Ata.Monica.Label, I18N_PREFIX.Ata.Monica.Description) {
                 executor = { MonicaAtaExecutor(it, it.gabrielaImageServerClient) }
             }
 
-            subcommand("chico", I18N_PREFIX.Ata.Chico.Description) {
+            subcommand(I18N_PREFIX.Ata.Chico.Label, I18N_PREFIX.Ata.Chico.Description) {
                 executor = { ChicoAtaExecutor(it, it.gabrielaImageServerClient) }
             }
 
-            subcommand("lori", I18N_PREFIX.Ata.Lori.Description) {
+            subcommand(I18N_PREFIX.Ata.Lori.Label, I18N_PREFIX.Ata.Lori.Description) {
                 executor = { LoriAtaExecutor(it, it.gabrielaImageServerClient) }
             }
 
-            subcommand("gessy", I18N_PREFIX.Ata.Gessy.Description) {
+            subcommand(I18N_PREFIX.Ata.Gessy.Label, I18N_PREFIX.Ata.Gessy.Description) {
                 executor = { GessyAtaExecutor(it, it.gabrielaImageServerClient) }
             }
         }
 
-        subcommandGroup("ednaldo", TodoFixThisData) {
+        subcommandGroup(I18N_PREFIX.Ednaldo.Label, TodoFixThisData) {
             subcommand(
-                "flag",
+                I18N_PREFIX.Ednaldo.Bandeira.Label,
                 I18N_PREFIX.Ednaldo.Bandeira.Description
             ) {
                 executor = { EdnaldoBandeiraExecutor(it, it.gabrielaImageServerClient) }
             }
 
-            subcommand("tv", I18N_PREFIX.Ednaldo.Tv.Description) {
+            subcommand(I18N_PREFIX.Ednaldo.Tv.Label, I18N_PREFIX.Ednaldo.Tv.Description) {
                 executor = { EdnaldoTvExecutor(it, it.gabrielaImageServerClient) }
             }
         }
 
-        subcommand("cortesflow", I18N_PREFIX.Cortesflow.Description) {
+        subcommand(I18N_PREFIX.Cortesflow.Label, I18N_PREFIX.Cortesflow.Description) {
             executor = { CortesFlowExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("sam", I18N_PREFIX.Sam.Description) {
+        subcommand(I18N_PREFIX.Sam.Label, I18N_PREFIX.Sam.Description) {
             executor = { SAMExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("canelladvd", I18N_PREFIX.Canelladvd.Description) {
+        subcommand(I18N_PREFIX.Canelladvd.Label, I18N_PREFIX.Canelladvd.Description) {
             executor = { CanellaDvdExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("cepo", I18N_PREFIX.Cepo.Description) {
+        subcommand(I18N_PREFIX.Cepo.Label, I18N_PREFIX.Cepo.Description) {
             executor = { CepoDeMadeiraExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("romerobritto", I18N_PREFIX.Romerobritto.Description) {
+        subcommand(I18N_PREFIX.Romerobritto.Label, I18N_PREFIX.Romerobritto.Description) {
             executor = { RomeroBrittoExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("briggscover", I18N_PREFIX.Briggscover.Description) {
+        subcommand(I18N_PREFIX.Briggscover.Label, I18N_PREFIX.Briggscover.Description) {
             executor = { BriggsCoverExecutor(it, it.gabrielaImageServerClient) }
         }
     }

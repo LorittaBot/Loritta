@@ -12,7 +12,7 @@ class CoinFlipCommand(languageManager: LanguageManager) : CinnamonSlashCommandDe
         val I18N_PREFIX = I18nKeysData.Commands.Command.Coinflip
     }
 
-    override fun declaration() = slashCommand("coinflip", CommandCategory.FUN, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, I18N_PREFIX.Description) {
         executor = { CoinFlipExecutor(it) }
     }
 }

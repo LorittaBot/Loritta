@@ -33,16 +33,16 @@ class RateCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclar
         )
     }
 
-    override fun declaration() = slashCommand("rate", CommandCategory.FUN, I18N_PREFIX.Description) {
-        subcommand("waifu", I18N_PREFIX.WaifuHusbando.Description(WAIFU_SINGULAR)) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.WaifuHusbando.WaifuLabel, I18N_PREFIX.WaifuHusbando.Description(WAIFU_SINGULAR)) {
             executor = { RateWaifuExecutor(it) }
         }
 
-        subcommand("husbando", I18N_PREFIX.WaifuHusbando.Description(HUSBANDO_SINGULAR)) {
+        subcommand(I18N_PREFIX.WaifuHusbando.HusbandoLabel, I18N_PREFIX.WaifuHusbando.Description(HUSBANDO_SINGULAR)) {
             executor = { RateHusbandoExecutor(it) }
         }
 
-        subcommand("loli", I18N_PREFIX.Loli.Description) {
+        subcommand(I18N_PREFIX.Loli.Label, I18N_PREFIX.Loli.Description) {
             executor = { RateLoliExecutor(it) }
         }
     }

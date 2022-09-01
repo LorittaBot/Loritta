@@ -1,3 +1,4 @@
+label: "pay"
 description: "Transfer sonhos to other users"
 acceptTransfer: "Accept Transfer"
 cancel: "Cancel"

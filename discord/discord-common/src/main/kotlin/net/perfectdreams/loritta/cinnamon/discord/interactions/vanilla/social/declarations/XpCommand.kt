@@ -12,16 +12,17 @@ class XpCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarat
     companion object {
         val XP_VIEW_I18N_PREFIX = I18nKeysData.Commands.Command.Xpview
         val XP_RANK_I18N_PREFIX = I18nKeysData.Commands.Command.Xprank
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Xp
     }
 
-    override fun declaration() = slashCommand("xp", CommandCategory.SOCIAL, TodoFixThisData) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.SOCIAL, TodoFixThisData) {
         dmPermission = false
 
-        subcommand("view", XP_VIEW_I18N_PREFIX.Description) {
+        subcommand(XP_VIEW_I18N_PREFIX.Label, XP_VIEW_I18N_PREFIX.Description) {
             executor = { ViewXpExecutor(it) }
         }
 
-        subcommand("rank", XP_RANK_I18N_PREFIX.Description) {
+        subcommand(XP_RANK_I18N_PREFIX.Label, XP_RANK_I18N_PREFIX.Description) {
             executor = { XpRankExecutor(it) }
         }
     }

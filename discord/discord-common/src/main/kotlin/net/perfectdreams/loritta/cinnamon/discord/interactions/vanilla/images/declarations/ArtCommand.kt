@@ -13,7 +13,7 @@ class ArtCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclara
         val I18N_PREFIX = I18nKeysData.Commands.Command.Art
     }
 
-    override fun declaration() = slashCommand("art", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { ArtExecutor(it, it.gabrielaImageServerClient) }
     }
 }

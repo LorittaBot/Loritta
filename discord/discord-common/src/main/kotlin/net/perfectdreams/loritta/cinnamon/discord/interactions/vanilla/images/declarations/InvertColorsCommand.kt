@@ -13,7 +13,7 @@ class InvertColorsCommand(languageManager: LanguageManager) : CinnamonSlashComma
         val I18N_PREFIX = I18nKeysData.Commands.Command.Invertcolors
     }
 
-    override fun declaration() = slashCommand("invert", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { InvertColorsExecutor(it, it.gabrielaImageServerClient) }
     }
 }

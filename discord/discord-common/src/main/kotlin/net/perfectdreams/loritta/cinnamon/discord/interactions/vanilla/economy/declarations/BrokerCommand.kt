@@ -16,24 +16,24 @@ class BrokerCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_PREFIX = I18nKeysData.Commands.Command.Broker
     }
 
-    override fun declaration() = slashCommand("broker", CommandCategory.ECONOMY, I18N_PREFIX.Description) {
-        subcommand("info", I18N_PREFIX.Info.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.ECONOMY, I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.Info.Label, I18N_PREFIX.Info.Description) {
             executor = { BrokerInfoExecutor(it) }
         }
 
-        subcommand("portfolio", I18N_PREFIX.Portfolio.Description) {
+        subcommand(I18N_PREFIX.Portfolio.Label, I18N_PREFIX.Portfolio.Description) {
             executor = { BrokerPortfolioExecutor(it) }
         }
 
-        subcommand("stock", I18N_PREFIX.Stock.Description) {
+        subcommand(I18N_PREFIX.Stock.Label, I18N_PREFIX.Stock.Description) {
             executor = { BrokerStockInfoExecutor(it) }
         }
 
-        subcommand("buy", I18N_PREFIX.Buy.Description) {
+        subcommand(I18N_PREFIX.Buy.Label, I18N_PREFIX.Buy.Description) {
             executor = { BrokerBuyStockExecutor(it) }
         }
 
-        subcommand("sell", I18N_PREFIX.Sell.Description) {
+        subcommand(I18N_PREFIX.Sell.Label, I18N_PREFIX.Sell.Description) {
             executor = { BrokerSellStockExecutor(it) }
         }
     }

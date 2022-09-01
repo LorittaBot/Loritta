@@ -13,7 +13,7 @@ class TerminatorAnimeCommand(languageManager: LanguageManager) : CinnamonSlashCo
         val I18N_PREFIX = I18nKeysData.Commands.Command.Terminatoranime
     }
 
-    override fun declaration() = slashCommand("terminatoranime", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { TerminatorAnimeExecutor(it, it.gabrielaImageServerClient) }
     }
 }

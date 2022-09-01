@@ -14,13 +14,13 @@ class UndertaleCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_TEXTBOX_PREFIX = I18nKeysData.Commands.Command.Undertale.Textbox
     }
 
-    override fun declaration() = slashCommand("undertale", CommandCategory.UNDERTALE, TodoFixThisData) {
-        subcommandGroup("textbox", I18N_TEXTBOX_PREFIX.Description) {
-            subcommand("game", I18N_TEXTBOX_PREFIX.DescriptionGame) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UNDERTALE, TodoFixThisData) {
+        subcommandGroup(I18N_TEXTBOX_PREFIX.Label, I18N_TEXTBOX_PREFIX.Description) {
+            subcommand(I18N_TEXTBOX_PREFIX.LabelGame, I18N_TEXTBOX_PREFIX.DescriptionGame) {
                 executor = { TextBoxExecutor(it, it.gabrielaImageServerClient) }
             }
 
-            subcommand("custom", I18N_TEXTBOX_PREFIX.DescriptionCustom) {
+            subcommand(I18N_TEXTBOX_PREFIX.LabelCustom, I18N_TEXTBOX_PREFIX.DescriptionCustom) {
                 executor = { CustomTextBoxExecutor(it, it.gabrielaImageServerClient) }
             }
         }

@@ -346,36 +346,36 @@ class TextTransformCommand(languageManager: LanguageManager) : CinnamonSlashComm
         val CLAP_EMOJI = "\uD83D\uDC4F"
     }
 
-    override fun declaration() = slashCommand("text", CommandCategory.FUN, TodoFixThisData) {
-        subcommand("vaporwave", I18N_PREFIX.Vaporwave.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, TodoFixThisData) {
+        subcommand(I18N_PREFIX.Vaporwave.Label, I18N_PREFIX.Vaporwave.Description) {
             executor = { TextVaporwaveExecutor(it) }
         }
 
-        subcommand("uppercase", I18N_PREFIX.Uppercase.Description) {
+        subcommand(I18N_PREFIX.Uppercase.Label, I18N_PREFIX.Uppercase.Description) {
             executor = { TextUppercaseExecutor(it) }
         }
 
-        subcommand("lowercase", I18N_PREFIX.Lowercase.Description) {
+        subcommand(I18N_PREFIX.Lowercase.Label, I18N_PREFIX.Lowercase.Description) {
             executor = { TextLowercaseExecutor(it) }
         }
 
-        subcommand("clap", I18N_PREFIX.Clap.Description(CLAP_EMOJI)) {
+        subcommand(I18N_PREFIX.Clap.Label, I18N_PREFIX.Clap.Description(CLAP_EMOJI)) {
             executor = { TextClapExecutor(it) }
         }
 
-        subcommand("mock", I18N_PREFIX.Mock.Description) {
+        subcommand(I18N_PREFIX.Mock.Label, I18N_PREFIX.Mock.Description) {
             executor = { TextMockExecutor(it) }
         }
 
-        subcommand("quality", I18N_PREFIX.Quality.Description) {
+        subcommand(I18N_PREFIX.Quality.Label, I18N_PREFIX.Quality.Description) {
             executor = { TextQualityExecutor(it) }
         }
 
-        subcommand("vaporquality", I18N_PREFIX.Vaporquality.Description) {
+        subcommand(I18N_PREFIX.Vaporquality.Label, I18N_PREFIX.Vaporquality.Description) {
             executor = { TextVaporQualityExecutor(it) }
         }
 
-        subcommand("vemdezap", VEMDEZAP_I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.Vemdezap.Label, VEMDEZAP_I18N_PREFIX.Description) {
             executor = { TextVemDeZapExecutor(it) }
         }
     }

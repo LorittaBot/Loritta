@@ -10,17 +10,18 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.b
 
 class BetCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Bet
         val COINFLIP_GLOBAL_I18N_PREFIX = I18nKeysData.Commands.Command.Betcoinflipglobal
     }
 
-    override fun declaration() = slashCommand("bet", CommandCategory.ECONOMY, TodoFixThisData) {
-        subcommandGroup("coinflip", TodoFixThisData) {
-            subcommand("global", COINFLIP_GLOBAL_I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.ECONOMY, TodoFixThisData) {
+        subcommandGroup(I18nKeysData.Commands.Command.Coinflip.Label, TodoFixThisData) {
+            subcommand(COINFLIP_GLOBAL_I18N_PREFIX.Label, COINFLIP_GLOBAL_I18N_PREFIX.Description) {
                 executor = { CoinFlipBetGlobalExecutor(it) }
             }
         }
 
-        subcommand("coinflipglobal", COINFLIP_GLOBAL_I18N_PREFIX.Description) {
+        subcommand(COINFLIP_GLOBAL_I18N_PREFIX.DiscordOldDiscordAppWorkaroundLabel, COINFLIP_GLOBAL_I18N_PREFIX.Description) {
             executor = { CoinFlipBetGlobalExecutor(it) }
         }
     }

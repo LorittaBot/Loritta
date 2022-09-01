@@ -13,7 +13,7 @@ class CarlyAaahCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_PREFIX = I18nKeysData.Commands.Command.Carlyaaah
     }
 
-    override fun declaration() = slashCommand("carlyaaah", CommandCategory.VIDEOS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.VIDEOS, I18N_PREFIX.Description) {
         executor = { CarlyAaahExecutor(it, it.gabrielaImageServerClient) }
     }
 }

@@ -12,7 +12,7 @@ class AnagramCommand(languageManager: LanguageManager) : CinnamonSlashCommandDec
         val I18N_PREFIX = I18nKeysData.Commands.Command.Anagram
     }
 
-    override fun declaration() = slashCommand("anagram", CommandCategory.UTILS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, I18N_PREFIX.Description) {
         executor = { AnagramExecutor(it) }
     }
 }

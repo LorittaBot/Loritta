@@ -1,6 +1,8 @@
+label: "user"
 description: "Commands related to Discord users"
 
 avatar:
+  label: "avatar"
   description: "Shows your, or another user's, profile avatar"
 
   yourselfEasterEgg: "Despite everything, it's still you."
@@ -22,6 +24,7 @@ avatar:
     user: "The user that you want to steal... I mean, view, their avatar (*/ω＼*)"
 
 banner:
+  label: "banner"
   description: "Shows your, or another user's, profile banner"
   userDoesNotHaveAnBanner: "{user} does not have a banner in their profile! Maybe they don't have Discord Nitro... Or maybe they were just too lazy to set a nice banner."
   openBannerInBrowser: "Open banner in browser" # Used in a button, when clicking the button, Discord opens the user's banner in the user's browser
@@ -32,6 +35,7 @@ banner:
     user: "The user that you want to steal... I mean, view, their banner (*/ω＼*)"
 
 info:
+  label: "info"
   description: "Shows your, or another user's, Discord account information"
 
   infoAboutTheUser: "User Information"

@@ -106,7 +106,6 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(SonhosCommand(languageManager))
             register(DailyCommand(languageManager))
             register(BrokerCommand(languageManager))
-            register(TransactionsCommand(languageManager))
             register(BetCommand(languageManager))
 
             // ===[ SOCIAL ]===

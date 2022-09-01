@@ -10,7 +10,7 @@ interface CinnamonApplicationCommandDeclarationWrapper
 abstract class CinnamonSlashCommandDeclarationWrapper(val languageManager: LanguageManager) : CinnamonApplicationCommandDeclarationWrapper {
     abstract fun declaration(): CinnamonSlashCommandDeclarationBuilder
 
-    fun slashCommand(label: String, category: CommandCategory, description: StringI18nData, block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit))
+    fun slashCommand(label: StringI18nData, category: CommandCategory, description: StringI18nData, block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit))
             = slashCommand(this, languageManager, label, description, category, block)
 }
 

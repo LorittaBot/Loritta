@@ -46,7 +46,7 @@ object SlashTextUtils {
 
         // We will ignore the default i18nContext because that would be redundant
         for ((languageId, i18nContext) in languageManager.languageContexts.filter { it.value != defaultI18nContext }) {
-            if (i18nContext.language.textBundle.strings.containsKey(key.key.key)) {
+            if (i18nContext.language.textBundle.strings.containsKey(key.key.key) && i18nContext.language.textBundle.strings[key.key.key] != defaultI18nContext.language.textBundle.strings[key.key.key]) {
                 val kordLocale = I18nContextUtils.convertLanguageIdToKordLocale(languageId)
                 if (kordLocale != null)
                     this[kordLocale] = i18nContext.get(key)
@@ -74,7 +74,7 @@ object SlashTextUtils {
 
         // We will ignore the default i18nContext because that would be redundant
         for ((languageId, i18nContext) in languageManager.languageContexts.filter { it.value != defaultI18nContext }) {
-            if (i18nContext.language.textBundle.strings.containsKey(description.key.key)) {
+            if (i18nContext.language.textBundle.strings.containsKey(description.key.key) && i18nContext.language.textBundle.strings[description.key.key] != defaultI18nContext.language.textBundle.strings[description.key.key]) {
                 val kordLocale = I18nContextUtils.convertLanguageIdToKordLocale(languageId)
                 if (kordLocale != null)
                     this[kordLocale] = buildDescription(i18nContext, description, category)

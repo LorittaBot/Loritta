@@ -1,3 +1,4 @@
+label: "dictionary"
 description: "Find the meaning of an word in the dictionary!"
 
 wordNotFound: "I read and reread my dictionary multiple times, and I still didn't find that word! Are you sure it exists?"

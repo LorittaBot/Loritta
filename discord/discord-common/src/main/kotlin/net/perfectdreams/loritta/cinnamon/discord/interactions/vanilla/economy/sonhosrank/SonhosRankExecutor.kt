@@ -17,7 +17,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButtonWithHybridData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.TransactionsCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
@@ -48,7 +47,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
             page: Long
         ): suspend MessageBuilder.() -> (Unit) = {
             styled(
-                context.i18nContext.get(TransactionsCommand.I18N_PREFIX.Page(page + 1)),
+                context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
                 Emotes.LoriReading
             )
 
@@ -122,7 +121,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
             page: Long
         ): suspend MessageBuilder.() -> (Unit) = {
             styled(
-                context.i18nContext.get(TransactionsCommand.I18N_PREFIX.Page(page + 1)),
+                context.i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)),
                 Emotes.LoriReading
             )
 

@@ -13,7 +13,7 @@ class SadRealityCommand(languageManager: LanguageManager) : CinnamonSlashCommand
         val I18N_PREFIX = I18nKeysData.Commands.Command.Sadreality
     }
 
-    override fun declaration() = slashCommand("sadreality", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { SadRealityExecutor(it, it.gabrielaImageServerClient) }
     }
 }

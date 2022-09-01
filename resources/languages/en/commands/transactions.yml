@@ -1,3 +1,4 @@
+label: "transactions"
 description: "View all the sonhos transactions you sent and received!"
 yourTransactions: "Your Transactions"
 userTransactions: "{user}'s Transactions"

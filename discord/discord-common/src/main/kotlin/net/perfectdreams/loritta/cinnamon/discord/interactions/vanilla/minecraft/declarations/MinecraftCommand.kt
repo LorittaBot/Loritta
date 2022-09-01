@@ -22,34 +22,34 @@ class MinecraftCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_CATEGORY_PREFIX = I18nKeysData.Commands.Category.Minecraft
     }
 
-    override fun declaration() = slashCommand("minecraft", CommandCategory.MINECRAFT, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */) {
-        subcommandGroup("player", I18N_PREFIX.Player.Description) {
-            subcommand("skin", I18N_PREFIX.Player.Skin.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.MINECRAFT, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */) {
+        subcommandGroup(I18N_PREFIX.Player.Label, I18N_PREFIX.Player.Description) {
+            subcommand(I18N_PREFIX.Player.Skin.Label, I18N_PREFIX.Player.Skin.Description) {
                 executor = { McSkinExecutor(it, it.mojangApi) }
             }
 
-            subcommand("avatar", I18N_PREFIX.Player.Avatar.Description) {
+            subcommand(I18N_PREFIX.Player.Avatar.Label, I18N_PREFIX.Player.Avatar.Description) {
                 executor = { McAvatarExecutor(it, it.mojangApi) }
             }
 
-            subcommand("head", I18N_PREFIX.Player.Head.Description) {
+            subcommand(I18N_PREFIX.Player.Head.Label, I18N_PREFIX.Player.Head.Description) {
                 executor = { McHeadExecutor(it, it.mojangApi) }
             }
 
-            subcommand("body", I18N_PREFIX.Player.Body.Description) {
+            subcommand(I18N_PREFIX.Player.Body.Label, I18N_PREFIX.Player.Body.Description) {
                 executor = { McBodyExecutor(it, it.mojangApi) }
             }
 
-            subcommand("onlineuuid", I18N_PREFIX.Player.Onlineuuid.Description) {
+            subcommand(I18N_PREFIX.Player.Onlineuuid.Label, I18N_PREFIX.Player.Onlineuuid.Description) {
                 executor = { McUUIDExecutor(it, it.mojangApi) }
             }
 
-            subcommand("offlineuuid", I18N_PREFIX.Player.Offlineuuid.Description) {
+            subcommand(I18N_PREFIX.Player.Offlineuuid.Label, I18N_PREFIX.Player.Offlineuuid.Description) {
                 executor = { McOfflineUUIDExecutor(it) }
             }
         }
 
-        subcommand("sweatshirt", I18N_PREFIX.Sweatshirt.Description) {
+        subcommand(I18N_PREFIX.Sweatshirt.Label, I18N_PREFIX.Sweatshirt.Description) {
             executor = { McSkinLorittaSweatshirtExecutor(it, it.gabrielaImageServerClient, it.mojangApi) }
         }
     }

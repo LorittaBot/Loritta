@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.TransactionsCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.PaymentSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -24,14 +24,14 @@ object PaymentSonhosTransactionTransformer : SonhosTransactionTransformer<Paymen
             appendMoneyEarnedEmoji()
             append(
                 i18nContext.get(
-                    TransactionsCommand.I18N_PREFIX.Types.Payment.Received(transaction.sonhos, "${giverUserInfo?.name?.stripCodeBackticks()}#${giverUserInfo?.discriminator}", transaction.givenBy.value)
+                    SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Payment.Received(transaction.sonhos, "${giverUserInfo?.name?.stripCodeBackticks()}#${giverUserInfo?.discriminator}", transaction.givenBy.value)
                 )
             )
         } else {
             appendMoneyLostEmoji()
             append(
                 i18nContext.get(
-                    TransactionsCommand.I18N_PREFIX.Types.Payment.Sent(transaction.sonhos, "${receiverUserInfo?.name?.stripCodeBackticks()}#${receiverUserInfo?.discriminator}", transaction.receivedBy.value)
+                    SonhosCommand.TRANSACTIONS_I18N_PREFIX.Types.Payment.Sent(transaction.sonhos, "${receiverUserInfo?.name?.stripCodeBackticks()}#${receiverUserInfo?.discriminator}", transaction.receivedBy.value)
                 )
             )
         }

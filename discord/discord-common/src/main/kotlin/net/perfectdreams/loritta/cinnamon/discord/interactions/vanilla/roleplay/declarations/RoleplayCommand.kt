@@ -20,32 +20,32 @@ class RoleplayCommand(languageManager: LanguageManager) : CinnamonSlashCommandDe
         val I18N_PREFIX = I18nKeysData.Commands.Command.Roleplay
     }
 
-    override fun declaration() = slashCommand("roleplay", CommandCategory.ROLEPLAY, TodoFixThisData) {
-        subcommand("hug", I18N_PREFIX.Hug.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.ROLEPLAY, TodoFixThisData) {
+        subcommand(I18N_PREFIX.Hug.Label, I18N_PREFIX.Hug.Description) {
             executor = { RoleplayHugExecutor(it, it.randomRoleplayPicturesClient) }
         }
 
-        subcommand("kiss", I18N_PREFIX.Kiss.Description) {
+        subcommand(I18N_PREFIX.Kiss.Label, I18N_PREFIX.Kiss.Description) {
             executor = { RoleplayKissExecutor(it, it.randomRoleplayPicturesClient) }
         }
 
-        subcommand("slap", I18N_PREFIX.Slap.Description) {
+        subcommand(I18N_PREFIX.Slap.Label, I18N_PREFIX.Slap.Description) {
             executor = { RoleplaySlapExecutor(it, it.randomRoleplayPicturesClient) }
         }
 
-        subcommand("headpat", I18N_PREFIX.Headpat.Description) {
+        subcommand(I18N_PREFIX.Headpat.Label, I18N_PREFIX.Headpat.Description) {
             executor = { RoleplayHeadPatExecutor(it, it.randomRoleplayPicturesClient) }
         }
 
-        subcommand("highfive", I18N_PREFIX.Highfive.Description) {
+        subcommand(I18N_PREFIX.Highfive.Label, I18N_PREFIX.Highfive.Description) {
             executor = { RoleplayHighFiveExecutor(it, it.randomRoleplayPicturesClient) }
         }
 
-        subcommand("attack", I18N_PREFIX.Attack.Description) {
+        subcommand(I18N_PREFIX.Attack.Label, I18N_PREFIX.Attack.Description) {
             executor = { RoleplayAttackExecutor(it, it.randomRoleplayPicturesClient) }
         }
 
-        subcommand("dance", I18N_PREFIX.Dance.Description) {
+        subcommand(I18N_PREFIX.Dance.Label, I18N_PREFIX.Dance.Description) {
             executor = { RoleplayDanceExecutor(it, it.randomRoleplayPicturesClient) }
         }
     }

@@ -13,7 +13,7 @@ class GenderCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_PREFIX = I18nKeysData.Commands.Command.Gender
     }
 
-    override fun declaration() = slashCommand("gender", CommandCategory.SOCIAL, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.SOCIAL, I18N_PREFIX.Description) {
         executor = { GenderExecutor(it) }
     }
 }

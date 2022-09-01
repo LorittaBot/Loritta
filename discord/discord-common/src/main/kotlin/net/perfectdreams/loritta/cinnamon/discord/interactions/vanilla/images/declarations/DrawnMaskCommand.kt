@@ -15,16 +15,16 @@ class DrawnMaskCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_PREFIX = I18nKeysData.Commands.Command.Drawnmask
     }
 
-    override fun declaration() = slashCommand("drawnmask", CommandCategory.IMAGES, I18N_PREFIX.Description) {
-        subcommand("atendente", I18N_PREFIX.Atendente.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
+        subcommand(I18N_PREFIX.Atendente.Label, I18N_PREFIX.Atendente.Description) {
             executor = { DrawnMaskAtendenteExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("sign", I18N_PREFIX.Sign.Description) {
+        subcommand(I18N_PREFIX.Sign.Label, I18N_PREFIX.Sign.Description) {
             executor = { DrawnMaskSignExecutor(it, it.gabrielaImageServerClient) }
         }
 
-        subcommand("word", I18N_PREFIX.Word.Description) {
+        subcommand(I18N_PREFIX.Word.Label, I18N_PREFIX.Word.Description) {
             executor = { DrawnMaskWordExecutor(it, it.gabrielaImageServerClient) }
         }
     }

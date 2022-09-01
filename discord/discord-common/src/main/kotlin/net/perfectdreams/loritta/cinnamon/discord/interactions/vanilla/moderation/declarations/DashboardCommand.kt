@@ -12,7 +12,7 @@ class DashboardCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_PREFIX = I18nKeysData.Commands.Command.Dashboard
     }
 
-    override fun declaration() = slashCommand("dashboard", CommandCategory.MODERATION, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.MODERATION, I18N_PREFIX.Description) {
         executor = { DashboardExecutor(it) }
     }
 }

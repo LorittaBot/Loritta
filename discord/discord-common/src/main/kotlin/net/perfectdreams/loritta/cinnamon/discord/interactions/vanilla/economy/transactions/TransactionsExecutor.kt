@@ -14,13 +14,13 @@ import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBacktick
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.TransactionsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.transactiontransformers.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.selectMenu
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.*
@@ -53,7 +53,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
 
             val cachedUserInfo = loritta.getCachedUserInfo(data.viewingTransactionsOfUserId) ?: error("Missing cached user info!")
 
-            content = i18nContext.get(TransactionsCommand.I18N_PREFIX.NotAllTransactionsAreHere)
+            content = i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.NotAllTransactionsAreHere)
 
             if (data.page >= totalPages && totalPages != 0L) {
                 // ===[ EASTER EGG: USER INPUT TOO MANY PAGES ]===
@@ -185,12 +185,12 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
 
             title = buildString {
                 if (isSelf)
-                    append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
-                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo.name.stripCodeBackticks()}#${cachedUserInfo?.discriminator}")))
+                    append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.YourTransactions))
+                else append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.UserTransactions("${cachedUserInfo.name.stripCodeBackticks()}#${cachedUserInfo?.discriminator}")))
 
                 append(" — ")
 
-                append(i18nContext.get(TransactionsCommand.I18N_PREFIX.Page(data.page + 1)))
+                append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(data.page + 1)))
             }
 
             color = LorittaColors.LorittaAqua.toKordColor()
@@ -242,7 +242,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                 }
             }
 
-            footer(i18nContext.get(TransactionsCommand.I18N_PREFIX.TransactionsQuantity(totalTransactions)))
+            footer(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.TransactionsQuantity(totalTransactions)))
         }
 
         private fun createNoMatchingTransactionsEmbed(
@@ -253,13 +253,13 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
         ): EmbedBuilder.() -> (Unit) = {
             title = buildString {
                 if (isSelf)
-                    append(i18nContext.get(TransactionsCommand.I18N_PREFIX.YourTransactions))
-                else append(i18nContext.get(TransactionsCommand.I18N_PREFIX.UserTransactions("${cachedUserInfo?.name?.stripCodeBackticks()}#${cachedUserInfo?.discriminator}")))
+                    append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.YourTransactions))
+                else append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.UserTransactions("${cachedUserInfo?.name?.stripCodeBackticks()}#${cachedUserInfo?.discriminator}")))
             }
 
             color = LorittaColors.LorittaRed.toKordColor()
 
-            description = i18nContext.get(TransactionsCommand.I18N_PREFIX.NoTransactionsFunnyMessages).random()
+            description = i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.NoTransactionsFunnyMessages).random()
 
             image = "https://assets.perfectdreams.media/loritta/emotes/lori-sob.png"
         }
@@ -270,9 +270,9 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
             totalPages: Long
         ): MessageBuilder.() -> (Unit) = {
             embed {
-                title = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.Title)
+                title = i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.UnknownPage.Title)
 
-                description = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.Description)
+                description = i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.UnknownPage.Description)
                     .joinToString("\n")
 
                 color = LorittaColors.LorittaRed.toKordColor()
@@ -291,7 +291,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                         )
                     )
                 ) {
-                    label = i18nContext.get(TransactionsCommand.I18N_PREFIX.UnknownPage.GoToTheLastPage)
+                    label = i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.UnknownPage.GoToTheLastPage)
                     loriEmoji = Emotes.LoriSob
                 }
             }
@@ -299,9 +299,9 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
     }
 
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
-        val user = optionalUser("user", TransactionsCommand.I18N_PREFIX.Options.User.Text)
+        val user = optionalUser("user", SonhosCommand.TRANSACTIONS_I18N_PREFIX.Options.User.Text)
 
-        val page = optionalInteger("page", TransactionsCommand.I18N_PREFIX.Options.Page.Text)
+        val page = optionalInteger("page", SonhosCommand.TRANSACTIONS_I18N_PREFIX.Options.Page.Text)
     }
 
     override val options = Options()

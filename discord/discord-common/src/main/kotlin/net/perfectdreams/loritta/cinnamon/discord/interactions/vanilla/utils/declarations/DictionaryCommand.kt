@@ -12,7 +12,7 @@ class DictionaryCommand(languageManager: LanguageManager) : CinnamonSlashCommand
         val I18N_PREFIX = I18nKeysData.Commands.Command.Dictionary
     }
 
-    override fun declaration() = slashCommand("dictionary", CommandCategory.UTILS, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, I18N_PREFIX.Description) {
         executor = { DictionaryExecutor(it, it.http) }
     }
 }

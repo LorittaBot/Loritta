@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderatio
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.PredefinedReasonsExecutor
 
 class PredefinedReasonsCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
-    override fun declaration() = slashCommand("predefinedreasons", CommandCategory.MODERATION, TodoFixThisData) {
+    override fun declaration() = slashCommand(I18nKeysData.Commands.Command.Predefinedreasons.Label, CommandCategory.MODERATION, TodoFixThisData) {
         dmPermission = false
         defaultMemberPermissions = Permissions {
             + Permission.BanMembers

@@ -13,7 +13,7 @@ class PepeDreamCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_PREFIX = I18nKeysData.Commands.Command.Pepedream
     }
 
-    override fun declaration() = slashCommand("pepedream", CommandCategory.IMAGES, I18N_PREFIX.Description) {
+    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, I18N_PREFIX.Description) {
         executor = { PepeDreamExecutor(it, it.gabrielaImageServerClient) }
     }
 }
