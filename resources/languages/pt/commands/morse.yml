@@ -1,4 +1,7 @@
 ---
+label: "morse"
+fromMorseLabel: "de"
+toMorseLabel: "para"
 description: "Codifica e decodifica e o texto de/para o código Morse. Muito útil se você estiver em uma missão super secreta e precisa codificar/decodificar código Morse!"
 descriptionFromMorse: "Decodifica código Morse para texto"
 descriptionToMorse: "Codifica o texto para código Morse"
