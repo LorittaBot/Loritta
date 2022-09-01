@@ -50,7 +50,6 @@ buy:
     quantity:
       text: "Quantas ações você deseja comprar"
 sell:
-  label: "vender"
   description: "Venda ações de uma empresa na bolsa de valores"
   successfullySold: "Você vendeu **{sharesCount, plural, one {# ação} other {# ações}}** de `{ticker}`! {sellResult}"
   successfullySoldLoss: "Com esta venda, você **ganhou {earnings, plural, one {# sonho} other {# sonhos}} (perda de {profit, plural, one {# sonho} other {# sonhos}})**! Nem todos os dias somos vitoriosos... Sempre fique de olho no seu {brokerPortfolioCommandMention} para saber se vale a pena vender suas ações!"
