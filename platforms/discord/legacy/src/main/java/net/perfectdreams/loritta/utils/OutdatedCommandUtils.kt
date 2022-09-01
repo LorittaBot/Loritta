@@ -56,14 +56,15 @@ object OutdatedCommandUtils {
             locale.getList(
                 "commands.outdatedCommand.description",
                 slashCommandName,
-                loritta.discordInstanceConfig.discord.addBotUrl,
-                "${loritta.instanceConfig.loritta.website.url}support",
+                "https://discord.gg/lori",
+                "https://discord.gg/loritta",
                 locale["commands.outdatedCommand.discordUrl"],
-                Emotes.LORI_OWO,
-                Emotes.LORI_NICE,
-                Emotes.LORI_PRAY,
-                Emotes.LORI_SMILE,
-                Emotes.LORI_COFFEE
+                "<:lori_yay:1014022521739280454>",
+                "<:lori_bonk:956402010712834078>",
+                "<:lori_hangloose:982764105918205952>",
+                "<:lori_lurk:1012854272817381487>",
+                "<:lori_smart:964697508204908554>",
+                "<:lori_zap:956404868417990776>"
             ).joinToString("\n")
         )
         .setImage(locale["commands.outdatedCommand.slashCommandsTutorial"])
