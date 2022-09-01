@@ -22,7 +22,7 @@ class UserAvatarSlashExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
         val member = if (user == context.user && context is GuildApplicationCommandContext)
             context.member
         else
-            user as Member?
+            user as? Member
 
         handleAvatarCommand(context, applicationId, user, member, false)
     }

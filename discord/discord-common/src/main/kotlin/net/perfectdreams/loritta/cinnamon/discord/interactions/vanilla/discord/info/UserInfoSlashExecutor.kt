@@ -22,7 +22,7 @@ class UserInfoSlashExecutor(loritta: LorittaCinnamon, override val http: HttpCli
         val member = if (user == context.user && context is GuildApplicationCommandContext)
             context.member
         else
-            user as Member?
+            user as? Member
 
         handleUserExecutor(
             context,
