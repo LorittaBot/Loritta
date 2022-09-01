@@ -35,7 +35,6 @@ ednaldo:
     label: "bandeira"
     description: "Olha! Nosso querido deus Ednaldo Pereira está tentando nos mostrar algo incrível em sua bandeira! Vamos conferir!"
 cortesflow:
-  label: "cortesflow"
   description: "Salve salve família, faça suas próprias thumbnails do Cortes do Flow com seu próprio texto!"
   thumbnails:
     arthurBenozzatiSmile: "Arthur Benozzati Sorrindo"
@@ -72,14 +71,11 @@ sam:
       sam2: "Logo Cópia Barata"
       sam3: "Logo sarrada no ar"
 canelladvd:
-  label: "canelladvd"
   description: "Faça Matheus Canella ter um dos melhores DVDs do mundo, por apenas R$ 1,95! (erre cifrão um vírgula noventa e cinco reais!!!)" #References this video: https://youtu.be/c3f7uSpnrhk
 cepo:
   label: "cepo"
   description: "Destrua alguém, estilo Gugu Gaiteiro!"
 briggscover:
-  label: "briggscapa"
   description: "Olha! @GuilhermeBriggs comprou um novo jogo e está se exibindo para todos!"
 romerobritto:
-  label: "romerobritto"
   description: "Faça Romero Britto pintar a sua arte incrível!"
