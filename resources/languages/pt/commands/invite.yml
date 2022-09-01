@@ -1,4 +1,5 @@
 ---
+label: "convidar"
 info:
   label: "info"
   description: "Mostra informações sobre um convite do servidor"
