@@ -3,7 +3,7 @@ ata:
   label: "ata"
   description: "ata."
   monica:
-    label: "monica"
+    label: "mônica"
     description: "Mônica seen one of your images and reacted in the best way possible."
   chico:
     label: "chico"
@@ -33,7 +33,7 @@ ednaldo:
     label: "tv"
     description: "I wonder what amazing and extraordinary thing Ednaldo Pereira is watching on his television"
   bandeira:
-    label: "bandeira"
+    label: "flag"
     description: "Look! Our beloved god Ednaldo Pereira is trying to show us something amazing on his flag! Let's check it out!"
 
 cortesflow:
