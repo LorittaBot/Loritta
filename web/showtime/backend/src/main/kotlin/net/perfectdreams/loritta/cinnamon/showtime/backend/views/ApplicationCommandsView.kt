@@ -413,7 +413,7 @@ class ApplicationCommandsView(
         // We change the first compare by to negative because we want it in a descending order (most commands in category -> less commands)
         for (command in publicCommands.sortedWith(compareBy({
             -(commands.groupBy { it.category }[it.category]?.size ?: 0)
-        }, net.perfectdreams.loritta.cinnamon.showtime.backend.PublicApplicationCommands.InteractionCommand::category, net.perfectdreams.loritta.cinnamon.showtime.backend.PublicApplicationCommands.InteractionCommand::label))) {
+        }, net.perfectdreams.loritta.cinnamon.showtime.backend.PublicApplicationCommands.InteractionCommand::category))) { // TODO: Fix sorting commands alphabetically
             val commandDescriptionKey = command.description
             // TODO: Fix this
             // val commandExamplesKey = command.examples
@@ -454,7 +454,7 @@ class ApplicationCommandsView(
                                         style =
                                             "font-size: 1.5em; font-weight: bold; box-shadow: inset 0 0px 0 white, inset 0 -1px 0 rgb(${color.red}, ${color.green}, ${color.blue});"
                                         +"/"
-                                        +(command.label)
+                                        +(command.label.joinToString(" ") { i18nContext.get(it) })
                                     }
                                 }
 

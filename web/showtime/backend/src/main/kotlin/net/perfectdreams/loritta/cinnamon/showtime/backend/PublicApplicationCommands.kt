@@ -280,7 +280,7 @@ class PublicApplicationCommands(languageManager: LanguageManager) {
      */
     private fun convertToData(declaration: CinnamonSlashCommandDeclarationBuilder): InteractionCommand {
         return InteractionCommand(
-            declaration.name,
+            listOf(declaration.name),
             declaration.description,
             declaration.category,
             if (declaration.executor != null) "Workaround" else null, // (declaration.executor?.parent as KClass<*>?)?.simpleName,
@@ -289,7 +289,7 @@ class PublicApplicationCommands(languageManager: LanguageManager) {
                     it.name,
                     it.subcommands.map {
                         InteractionCommand(
-                            it.name,
+                            listOf(it.name),
                             it.description,
                             it.category,
                             if (declaration.executor != null) "Workaround" else null, // (it.executor?.parent as KClass<*>?)?.simpleName,
@@ -318,13 +318,29 @@ class PublicApplicationCommands(languageManager: LanguageManager) {
         if (rootCommand.executor != null)
             flattenedData.add(rootCommand)
 
+        // TODO: Improve this label work around by having "proper" subcommands and command groups
         for (command in rootCommand.subcommands) {
-            flattenedData.add(command.copy(label = "${rootCommand.label} ${command.label}"))
+            flattenedData.add(
+                command.copy(
+                    label = rootCommand.label.toMutableList()
+                        .apply {
+                            addAll(command.label)
+                        }
+                )
+            )
         }
 
         for (group in rootCommand.groups) {
             for (command in group.subcommands) {
-                flattenedData.add(command.copy(label = "${rootCommand.label} ${group.label} ${command.label}"))
+                flattenedData.add(
+                    command.copy(
+                        label = rootCommand.label.toMutableList()
+                            .apply {
+                                add(group.label)
+                                addAll(command.label)
+                            }
+                    )
+                )
             }
         }
 
@@ -333,7 +349,7 @@ class PublicApplicationCommands(languageManager: LanguageManager) {
 
     @Serializable
     data class InteractionCommand(
-        val label: String,
+        val label: List<StringI18nData>,
         val description: StringI18nData,
         val category: CommandCategory,
         val executor: String?,
@@ -343,7 +359,7 @@ class PublicApplicationCommands(languageManager: LanguageManager) {
 
     @Serializable
     data class InteractionCommandGroup(
-        val label: String,
+        val label: StringI18nData,
         val subcommands: List<InteractionCommand>
     )
 
