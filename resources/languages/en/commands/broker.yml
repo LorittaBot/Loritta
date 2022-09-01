@@ -54,7 +54,7 @@ buy:
       text: "How many shares do you want to buy"
 
 sell:
-  label: "vender"
+  label: "sell"
   description: "Sell stock market shares in a company"
   successfullySold: "You sold **{sharesCount, plural, one {# share} other {# shares}}** of `{ticker}`! {sellResult}"
   successfullySoldLoss: "With this sale, you **earned {earnings, plural, one {# sonho} other {# sonhos}} (loss of {profit, plural, one {# sonho} other {# sonhos}})**! Not every day we are victorious... Always keep an eye on your {brokerPortfolioCommandMention} to know if it is worth selling your shares!"
