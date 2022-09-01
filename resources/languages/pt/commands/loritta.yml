@@ -1,5 +1,6 @@
 ---
 info:
+  label: "info"
   description: "Mostra informações sobre a garotinha mais fofa deste universo!"
   embed:
     title: "Olá, eu me chamo Loritta!"
