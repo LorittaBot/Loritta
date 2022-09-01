@@ -25,6 +25,7 @@ banner:
   options:
     user: "O usuário que você deseja roubar... Quero dizer, ver o banner (*/ω＼*)"
 info:
+  label: "info"
   description: "Mostra as suas informações da sua conta do Discord ou as informações de outro usuário"
   infoAboutTheUser: "Informações sobre o Usuário"
   infoAboutTheMember: "Informações sobre o Membro"
