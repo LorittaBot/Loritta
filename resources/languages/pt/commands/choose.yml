@@ -1,4 +1,5 @@
 ---
+label: "escolher"
 description: "Precisando de ajuda para escolher algo? Então deixe-me escolher para você!"
 result: "Eu escolhi `{result}`, eu espero que você esteja feliz com o resultado! {emote}"
 options:
