@@ -37,7 +37,7 @@ ednaldo:
     description: "Look! Our beloved god Ednaldo Pereira is trying to show us something amazing on his flag! Let's check it out!"
 
 cortesflow:
-  label: "cortesflow"
+  label: "cortes-flow"
   description: "Salve salve família, make your own Cortes do Flow thumbnails with your own text!"
   thumbnails:
     arthurBenozzatiSmile: "Arthur Benozzati Smiling"
@@ -76,7 +76,7 @@ sam:
       sam3: "Logo sarrada in the air"
 
 canelladvd:
-  label: "canelladvd"
+  label: "canella-dvd"
   description: "Make Matheus Canella hold one of the best DVDs of the world, for only R$ 1.95! (arr dollar sign one dot ninety and five brazilian reais!!!)" #References this video: https://youtu.be/c3f7uSpnrhk
 
 cepo:
@@ -84,9 +84,9 @@ cepo:
   description: "Destroy someone, Gugu Gaiteiro style!"
 
 briggscover:
-  label: "briggscover"
+  label: "briggs-cover"
   description: "Look! @GuilhermeBriggs bought a new game and is showing off to everyone!"
 
 romerobritto:
-  label: "romerobritto"
+  label: "romero-britto"
   description: "Make Romero Britto paint your amazing art!"

@@ -1,5 +1,5 @@
 label: "global"
-discordOldDiscordAppWorkaroundLabel: "coinflipglobal"
+discordOldDiscordAppWorkaroundLabel: "coin-flip-global"
 description: "The classic \"flip a coin and see on what side it will be!\", but now with sonhos! I don't take responsibility if you lose everything with bets"
 invalidQuantity: "You used an invalid sonhos quantity! Valid quantities: {validQuantities}"
 
