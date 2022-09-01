@@ -1,5 +1,4 @@
 ---
-label: "jogos-vorazes"
 description: "Cria uma simulação personalizada de BrantSteele Hunger Games com os usuários escolhidos"
 simulationCreated: "Simulação de Hunger Games criada! Boa sorte aos jogadores na simulação. {hungerGamesLink}"
 options:
