@@ -318,6 +318,7 @@ fun Permission.localized(locale: BaseLocale): String {
 		USE_PUBLIC_THREADS -> locale["discord.permissions.usePublicThreads"]
 		USE_PRIVATE_THREADS -> locale["discord.permissions.usePrivateThreads"]
 		REQUEST_TO_SPEAK -> locale["discord.permissions.requestToSpeak"]
+		VOICE_START_ACTIVITIES -> locale["discord.permissions.voiceStartActivities"]
 		UNKNOWN -> "This should never, ever happen!"
 	}
 }
