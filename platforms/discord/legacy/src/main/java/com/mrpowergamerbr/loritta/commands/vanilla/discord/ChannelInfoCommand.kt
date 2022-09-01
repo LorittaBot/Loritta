@@ -35,7 +35,7 @@ class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 		canUseInPrivateChannel = false
 
 		executesDiscord {
-			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "server channel info")
+			OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "server channel info")
 
 			val context = this
 			val channelId = args.getOrNull(0)
