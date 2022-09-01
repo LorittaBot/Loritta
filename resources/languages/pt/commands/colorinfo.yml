@@ -1,4 +1,5 @@
 ---
+label: "cor-info"
 description: "Mostra detalhes sobre uma cor"
 analogous: "Análogas"
 complementary: "Complementárias"
