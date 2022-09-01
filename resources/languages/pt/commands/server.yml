@@ -13,6 +13,7 @@ splash:
   openSplashInBrowser: "Abrir o fundo de convites no navegador" #Used in a button, when clicking the button, Discord opens the server's splash in the user's browser
 channel:
   info:
+    label: "info"
     description: "Mostra informações de um canal do servidor"
     missingAccessToChannel: "Eu não tenho permissão para acessar esse canal"
     infoFrom: "Informações de {channelName}"
@@ -36,6 +37,7 @@ channel:
       channel: "Um canal para mostrar informações sobre ele"
 role:
   info:
+    label: "info"
     description: "Mostra informações de um cargo no servidor"
     mention: "Menção"
     roleId: "ID do cargo"
