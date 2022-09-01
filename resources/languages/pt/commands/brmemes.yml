@@ -4,6 +4,7 @@ ata:
   label: "ata"
   description: "ata."
   monica:
+    label: "mônica"
     description: "Mônica viu uma de suas imagens e reagiu da melhor maneira possível."
   chico:
     label: "chico"
@@ -31,6 +32,7 @@ ednaldo:
     label: "tv"
     description: "Qual será a coisa incrível e extraordinária que Ednaldo Pereira esteja vendo na televisão"
   bandeira:
+    label: "bandeira"
     description: "Olha! Nosso querido deus Ednaldo Pereira está tentando nos mostrar algo incrível em sua bandeira! Vamos conferir!"
 cortesflow:
   label: "cortesflow"
