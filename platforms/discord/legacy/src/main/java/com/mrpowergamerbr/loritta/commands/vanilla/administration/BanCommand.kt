@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.utils.PunishmentAction
 
 class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban"), CommandCategory.MODERATION) {
@@ -34,6 +35,8 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "ban")
+
 			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
 			for (user in users) {

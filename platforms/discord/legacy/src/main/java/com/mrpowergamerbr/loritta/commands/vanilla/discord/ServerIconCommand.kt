@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "iconeserver", "iconeguild", "iconedoserver", "iconedaguild", "íconedoserver", "iconedoservidor", "íconeguild", "íconedoserver", "íconedaguild", "íconedoservidor"), category = CommandCategory.DISCORD) {
 	companion object {
@@ -27,6 +28,8 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "server icon")
+
 		var guild: JsonObject? = null
 
 		var guildId = context.guild.idLong

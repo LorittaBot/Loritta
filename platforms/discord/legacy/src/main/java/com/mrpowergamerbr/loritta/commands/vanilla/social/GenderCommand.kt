@@ -11,11 +11,14 @@ import com.mrpowergamerbr.loritta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class GenderCommand : AbstractCommand("gender", listOf("gênero", "genero"), CommandCategory.SOCIAL) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.gender.description")
 
     override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "gender")
+
         val embed = EmbedBuilder()
                 .setTitle(locale["commands.command.gender.whatAreYou"])
                 .setDescription(locale["commands.command.gender.whyShouldYouSelect"])

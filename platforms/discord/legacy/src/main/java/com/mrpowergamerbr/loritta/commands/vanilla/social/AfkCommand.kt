@@ -10,12 +10,15 @@ import com.mrpowergamerbr.loritta.utils.stripNewLines
 import com.mrpowergamerbr.loritta.utils.substringIfNeeded
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.afk.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.afk.examples")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "afk on")
+
 		var profile = context.lorittaUser.profile
 
 		if (profile.isAfk) {

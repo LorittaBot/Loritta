@@ -23,10 +23,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.utils.AccountUtils
-import net.perfectdreams.loritta.utils.Emotes
-import net.perfectdreams.loritta.utils.GACampaigns
-import net.perfectdreams.loritta.utils.NumberUtils
+import net.perfectdreams.loritta.utils.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
@@ -42,6 +39,8 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECO
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.rawArgs.size >= 2) {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "sonhos pay")
+
 			var economySource = "global"
 			var currentIdx = 0
 

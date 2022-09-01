@@ -20,6 +20,7 @@ import com.mrpowergamerbr.loritta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.inviteinfo.description")
@@ -29,6 +30,8 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCatego
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var inviteId = context.args.getOrNull(0)
+
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "invite info")
 
 		if (inviteId != null) {
 			if (!inviteId.matches(Regex("[A-z0-9]+"))) {

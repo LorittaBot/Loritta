@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.say.description")
@@ -31,6 +32,8 @@ class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MODER
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "webhook send")
+
 			var args = context.rawArgs
 			var currentIdx = 0
 

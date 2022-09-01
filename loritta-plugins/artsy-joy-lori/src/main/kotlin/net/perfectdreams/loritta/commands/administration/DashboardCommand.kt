@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class DashboardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("dashboard", "painel", "configurar", "config"), CommandCategory.MODERATION) {
     override fun command() = create {
@@ -21,6 +22,8 @@ class DashboardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
         }
 
         executesDiscord {
+            OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "dashboard")
+
             val dashboardUrl = "${loritta.instanceConfig.loritta.website.url}dashboard"
             var url = dashboardUrl
 

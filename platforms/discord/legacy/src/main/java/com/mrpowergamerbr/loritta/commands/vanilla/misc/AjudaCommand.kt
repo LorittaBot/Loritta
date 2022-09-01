@@ -9,11 +9,14 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), CommandCategory.MISC) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.help.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "help")
+
 		val embed = EmbedBuilder()
 				.setTitle("${Emotes.LORI_HEART} ${context.locale["commands.command.help.lorittaHelp"]}")
 				.setDescription(context.locale.getList("commands.command.help.intro").joinToString("\n\n", transform = { it.replace("{0}", context.asMention) }))

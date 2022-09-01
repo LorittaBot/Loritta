@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class RoleInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("roleinfo", "taginfo"), CommandCategory.DISCORD) {
     companion object {
@@ -27,6 +28,8 @@ class RoleInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lori
         }
 
         executesDiscord {
+            OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "server role info")
+
             val context = this
 
             if (args.isEmpty()) explainAndExit()

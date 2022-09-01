@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -28,6 +29,8 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "xp rank")
+
 		var page = context.args.getOrNull(0)?.toLongOrNull()
 
 		if (page != null && !RankingGenerator.isValidRankingPage(page)) {

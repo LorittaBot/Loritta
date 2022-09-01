@@ -8,6 +8,7 @@ import com.mrpowergamerbr.loritta.utils.loritta
 import net.perfectdreams.loritta.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCategory.SOCIAL) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.aboutme.description")
@@ -18,6 +19,8 @@ class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), CommandCa
     }
 
     override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "profile aboutme")
+
         val settings = loritta.newSuspendedTransaction { context.lorittaUser.profile.settings }
         if (context.args.isNotEmpty()) {
             loritta.newSuspendedTransaction {

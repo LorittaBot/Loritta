@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.api.messages.LorittaReply
 import net.perfectdreams.loritta.api.utils.image.JVMImage
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
@@ -16,6 +17,8 @@ class SonhosTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
 		localizedDescription("commands.command.sonhostop.description")
 
 		executesDiscord {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "sonhos rank")
+
 			var page = args.getOrNull(0)?.toLongOrNull()
 
 			if (page != null && !RankingGenerator.isValidRankingPage(page)) {

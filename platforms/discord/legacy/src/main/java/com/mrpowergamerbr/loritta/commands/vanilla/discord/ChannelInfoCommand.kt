@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("channelinfo", "channel"), CommandCategory.DISCORD) {
 	companion object {
@@ -34,6 +35,8 @@ class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 		canUseInPrivateChannel = false
 
 		executesDiscord {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "server channel info")
+
 			val context = this
 			val channelId = args.getOrNull(0)
 					?.replace("<#", "")

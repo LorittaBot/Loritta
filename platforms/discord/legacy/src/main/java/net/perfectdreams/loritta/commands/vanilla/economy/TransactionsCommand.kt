@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstrac
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.tables.SonhosTransaction
 import net.perfectdreams.loritta.utils.Emotes
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.utils.RankingGenerator.isValidRankingPage
 import net.perfectdreams.loritta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.SortOrder
@@ -40,6 +41,7 @@ class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(
 		}
 
 		executesDiscord {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "sonhos transactions")
 
 			var customPage = if (user(0) != null) {
 				args.getOrNull(1)?.toLongOrNull()

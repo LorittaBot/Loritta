@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 
 class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("guildbanner", "serverbanner"), CommandCategory.MODERATION) {
     override fun command() = create {
@@ -21,6 +22,8 @@ class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
         canUseInPrivateChannel = false
 
         executesDiscord {
+            OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "server banner")
+
             val discordGuild = guild
 
             // Verificar se a guild tem banner

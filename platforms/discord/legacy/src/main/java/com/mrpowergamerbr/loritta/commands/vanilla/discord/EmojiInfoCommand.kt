@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.api.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.arguments
 import net.perfectdreams.loritta.api.messages.LorittaReply
+import net.perfectdreams.loritta.utils.OutdatedCommandUtils
 import kotlin.streams.toList
 
 class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory.DISCORD) {
@@ -30,6 +31,8 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		if (context.rawArgs.isNotEmpty()) {
+			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "emoji info")
+
 			val arg0 = context.rawArgs[0]
 			val firstEmote = context.message.emotes.firstOrNull()
 			if (arg0 == firstEmote?.asMention) {
