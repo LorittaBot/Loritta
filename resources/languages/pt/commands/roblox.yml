@@ -1,5 +1,7 @@
 ---
+label: "roblox"
 user:
+  label: "usuário"
   description: "Mostra informações sobre um usuário do ROBLOX"
   unknownPlayer: "Desculpe, mas eu não encontrei um usuário do ROBLOX chamado `{playerName}`..."
   userId: "ID do usuário"
@@ -13,6 +15,7 @@ user:
     username:
       text: "O nome do usuário que você deseja encontrar as suas informações"
 game:
+  label: "game"
   description: "Mostra informações sobre uma experiência do ROBLOX"
   unknownGame: "Desculpe, mas eu não encontrei uma experiência do ROBLOX chamada `{gameName}`..."
   placeId: "ID do Local"

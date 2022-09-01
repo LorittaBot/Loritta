@@ -1,12 +1,15 @@
+label: "notificações"
 description: "Ver notificações"
 dailyTaxTaxedUserNotification: "Imposto de Inatividade no Prêmio Diário (Taxado)"
 dailyTaxWarnUserNotification: "Imposto de Inatividade no Prêmio Diário (Aviso)"
 correiosPackageUpdate: "Atualização sobre um pacote dos Correios"
 unknownNotification: "Notificação Desconhecida"
 list:
+  label: "lista"
   description: "Ver todas as notificações"
   title: "Notificações"
 view:
+  label: "ver"
   description: "Ver uma notificação"
   couldntFindTheNotification: "Não consegui encontrar essa notificação! Você tem certeza que ela existe?"
   options:

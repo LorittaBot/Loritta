@@ -1,5 +1,7 @@
 ---
+label: "emoji"
 info:
+  label: "info"
   description: "Mostra as informações de um emoji"
   aboutEmoji: "Sobre o emoji"
   emojiName: "Nome do emoji"

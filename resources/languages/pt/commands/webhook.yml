@@ -1,4 +1,5 @@
 ---
+label: "webhook"
 description: "Faça seu servidor mais chique enviando mensagens personalizadas através de webhooks!"
 watchOutDontSendTheWebhookUrlToOtherUsers: "Cuidado! Não envie a URL da Webhook para outros usuários! Se outra pessoa tiver a URL da Webhook eles podem enviar mensagens com ela! Então, se você acabar enviando a URL da webhook para alguém que você não confia, exclua a webhook na aba \"Integrações\" do canal de texto, fique seguro!!"
 messageId: "**ID da mensagem:** `{messageId}`"
@@ -49,18 +50,26 @@ options:
   embedColor:
     text: "A cor da embed, a cor pode estar em formato hexadecimal, RGB ou decimal"
 send:
+  label: "enviar"
   simple:
+    label: "simples"
     description: "Envia uma mensagem através de um webhook"
   json:
+    label: "json"
     description: "Envia uma mensagem através de uma webhook, a mensagem deve estar no formato JSON!"
   repost:
+    label: "repostar"
     description: "Envia uma mensagem através de um webhook, repostando o conteúdo de uma mensagem já existente"
   success: "Mensagem enviada com sucesso!"
 edit:
+  label: "editar"
   simple:
+    label: "simples"
     description: "Edita uma mensagem enviada através de um webhook"
   json:
+    label: "json"
     description: "Envia uma mensagem enviada através de uma webhook, a mensagem deve estar no formato JSON!"
   repost:
+    label: "repostar"
     description: "Edita uma mensagem enviada através de um webhook, editando com o conteúdo de uma mensagem já existente"
   success: "Mensagem editada com sucesso!"

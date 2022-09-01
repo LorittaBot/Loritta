@@ -1,12 +1,16 @@
 ---
+label: "avaliar"
 description: "Já que você precisa de validação de alguém para ser feliz, então deixe-me dar uma nota para você!"
 result: "A minha nota para `{input}` é... **{score}**! **{reason}**"
 loli:
+  label: "loli"
   description: "Uh... Eu acho que você quis dizer \"lori\", certo? Afinal, por que você gostaria que eu avaliasse uma criança?"
   isThatATypo: "Hah, eu entendi! Você quis me avaliar, certo? Afinal de contas, porque você quer saber a pontuação de uma criança. A menos que você seja uns daqueles esquisitos, que eu espero que você não seja, néééé?"
   options:
     loli: "Você tem certeza mesmo de que não quis dizer \"lori\"?"
 waifuHusbando:
+  waifuLabel: "waifu"
+  husbandoLabel: "husbando"
   description: "Já que você precisa de validação de alguém para amar o seu {type}, então deixe-me dar uma nota para você!"
   score0:
     - "Por favor, mude {type, select, waifu {a sua} other {o seu}} {type}. Como você pode viver com algo assim?"

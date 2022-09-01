@@ -1,18 +1,24 @@
 ---
+label: "servidor"
 icon:
+  label: "ícone"
   description: "Mostra o ícone do servidor"
   noIcon: "Awww, que triste, o servidor não tem um ícone para eu mostrar... Espere, não fique triste! Aqui, olhe este emoji fofin para te alegrar! {loriPat}"
   openIconInBrowser: "Abrir ícone no navegador" #Used in a button, when clicking the button, Discord opens the server's icon in the user's browser
 banner:
+  label: "banner"
   description: "Mostra o banner do servidor"
   noBanner: "Awww, que triste, o servidor não tem um banner para eu mostrar... Espere, não fique triste! Aqui, olhe este emoji fofin para te alegrar! {loriPat}"
   openBannerInBrowser: "Abrir banner no navegador" #Used in a button, when clicking the button, Discord opens the server's banner in the user's browser
 splash:
+  label: "splash"
   description: "Mostra o fundo de convites do servidor"
   noSplash: "Awww, que triste, o servidor não tem um fundo de convites para eu mostrar... Espere, não fique triste! Aqui, olhe este emoji fofin para te alegrar! {loriPat}"
   openSplashInBrowser: "Abrir o fundo de convites no navegador" #Used in a button, when clicking the button, Discord opens the server's splash in the user's browser
 channel:
+  label: "canal"
   info:
+    label: "info"
     description: "Mostra informações de um canal do servidor"
     missingAccessToChannel: "Eu não tenho permissão para acessar esse canal"
     infoFrom: "Informações de {channelName}"
@@ -35,7 +41,9 @@ channel:
     options:
       channel: "Um canal para mostrar informações sobre ele"
 role:
+  label: "cargo"
   info:
+    label: "info"
     description: "Mostra informações de um cargo no servidor"
     mention: "Menção"
     roleId: "ID do cargo"

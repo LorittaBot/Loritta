@@ -1,4 +1,5 @@
 ---
+label: "daily"
 description: "Pegue a sua Recompensa Diária de Sonhos para ganhar sonhos!"
 dailyLink: "Receba a sua Recompensa Diária de Sonhos [aqui]({dailyLink})! Lembrando que você pode pegar a recompensa diária todos os dias e, se você pegar agora, você poderá pegar a recompensa diária novamente em {nextTimeYouCanGetTheDailyReward}!"
 pleaseWait: "Você já recebeu a sua Recompensa dos Sonhos Diárias hoje! Você poderá pegar novamente {timeUntilReset}!"

@@ -1,3 +1,4 @@
+label: "rank"
 description: "Veja os usuários mais ricos"
 youCantSeeTheLocalSonhosRankOutsideOfAServer: "Você não pode ver os sonhos locais fora de um servidor! Afinal, o ranking local aqui seria apenas você e eu."
 globalSonhosRank: "Rank Global de Sonhos"

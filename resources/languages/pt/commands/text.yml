@@ -1,34 +1,43 @@
 ---
+label: "texto"
 vaporwave:
+  label: "vaporwave"
   description: "Transforma a sua mensagem para ter ａｅｓｔｈｅｔｉｃｓ"
   options:
     text: "O texto que terá ａｅｓｔｈｅｔｉｃｓ"
 quality:
+  label: "qualidade"
   description: "Cria uma mensagem com Q U A L I D A D E & S I N C R O N I A" #In Brazil, this references South America Memes' "Q U A L I D A D E & S I N C R O N I A" meme
   options:
     text: "O texto que será transformado em Q U A L I D A D E & S I N C R O N I A" #In Brazil, this references South America Memes' "Q U A L I D A D E & S I N C R O N I A" meme
 vaporquality:
+  label: "vaporqualidade"
   description: "Transforma a sua mensagem para misturar Q U A L I D A D E e ａｅｓｔｈｅｔｉｃｓ" #In Brazil, this references South America Memes' "Q U A L I D A D E & S I N C R O N I A" meme
   options:
     text: "O texto que será transformado em Q U A L I D A D E e ａｅｓｔｈｅｔｉｃｓ" #In Brazil, this references South America Memes' "Q U A L I D A D E & S I N C R O N I A" meme
 uppercase:
+  label: "maiúsculo"
   description: "Transforma sua mensagem em MAÍUSCULO. POR QUE ESTAMOS GRITANDO?"
   options:
     text: "O texto que será transformado em caixa alta"
 lowercase:
+  label: "minúsculo"
   description: "Transforma sua mensagem em minúsculo. *é como se você estivesse sussurrando*"
   options:
     text: "O texto que será convertido em letras minúsculas"
 clap:
+  label: "palmas"
   description: "Transforma sua mensagem para {clap}bater{clap}palmas{clap}de volta{clap}contra{clap}seus{clap}haters!{clap}"
   options:
     text: "O texto que será {clap}convertido{clap}em{clap}palmas{clap}"
     emoji: "Quer bater palmas de volta aos seus haters no seu próprio estilo? Aqui você pode mudar o emote que será utilizado!"
 mock:
+  label: "zombar"
   description: "Transforma sua mensagem para ZoMbaR dE AlGO estÚpIdo"
   options:
     text: "O texto que será zOmbAdo"
 vemdezap:
+  label: "vemdezap"
   description: "Bom dia catilangaiada! Vem de Zap bb, aplique o poder do zapzap na sua mensagem para mostrar como você é chave com as 9inhas do zapzap!" #In Brazil, this is a command referencing the Matheus Canella's Emojo meme and ZapZap memes, so it should use that meme as a base if possible, if not, just say it is a command that adds emojis to your message.
   options:
     mood:

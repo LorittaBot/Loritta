@@ -1,3 +1,4 @@
+label: "rank"
 description: "Veja quais usuários têm mais experiência de bate-papo no servidor!"
 totalXp: "XP Total // {xp,number}"
 level: "Nível {level,number}"

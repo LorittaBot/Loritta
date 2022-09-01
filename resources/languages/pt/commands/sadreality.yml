@@ -1,4 +1,5 @@
 ---
+label: "tristerealidade"
 description: "Cria uma triste realidade com os membros do seu servidor... É, nem sempre a gente sai ganhando."
 notEnoughUsers: "Não existem membros suficientes para fazer uma triste realidade, sorry ;w;"
 notEnoughUsersPermissionsTip: "Eu poderia pegar membros das mensagens mais recentes do servidor, mas para isso eu preciso ter permissão para ler o histórico de mensagens do canal!"
