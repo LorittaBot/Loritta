@@ -28,6 +28,7 @@ import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.websocket.*
+import io.lettuce.core.RedisClient
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.filterIsInstance
@@ -85,7 +86,7 @@ class Loritta(
 	discordInstanceConfig: GeneralDiscordInstanceConfig,
 	config: GeneralConfig,
 	instanceConfig: GeneralInstanceConfig,
-	val queueConnection: HikariDataSource
+	val redisClient: RedisClient
 ) : LorittaDiscord(discordConfig, discordInstanceConfig, config, instanceConfig) {
 	// ===[ STATIC ]===
 	companion object {
@@ -147,6 +148,8 @@ class Loritta(
 	val rateLimitChecker = RateLimitChecker(this)
 
 	var pendingGatewayEventsCount = 0L
+
+	fun redisKey(key: String) = config.redis.keyPrefix + key
 
 	init {
 		LorittaLauncher.loritta = this
@@ -331,32 +334,9 @@ class Loritta(
 		// Ou seja, agora a Loritta está funcionando, Yay!
 
 		Thread(
-			ProcessDiscordGatewayCommands(this, queueConnection),
+			ProcessDiscordGatewayCommands(this, redisClient),
 			"Loritta Gateway Commands Processor Notification Listener"
 		).start()
-
-		thread {
-			while (true) {
-				try {
-					// Every 15s, we will query how many events are pending
-					queueConnection.connection.use {
-						pendingGatewayEventsCount = it.createStatement().executeQuery("SELECT COUNT(*) FROM discordgatewayevents;")
-							.let {
-								it.next()
-								it.getLong(1)
-							}
-
-						// We need to commit to avoid a "Executed rollback on connection org.postgresql.jdbc.PgConnection@37d871c2 due to dirty commit state on close()."
-						it.commit()
-					}
-
-					logger.info { "Current pending gateway events: $pendingGatewayEventsCount events" }
-				} catch (e: Exception) {
-					logger.warn(e) { "Something went wrong while trying to check how many events are pending!" }
-				}
-				Thread.sleep(15_000)
-			}
-		}
 	}
 
 	fun initPostgreSql() {

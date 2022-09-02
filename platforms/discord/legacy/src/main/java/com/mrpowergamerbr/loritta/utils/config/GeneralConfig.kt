@@ -10,7 +10,7 @@ class GeneralConfig(
 		val loritta: LorittaConfig,
 		val clusters: List<LorittaClusterConfig>,
 		val database: DatabaseConfig,
-		val queueDatabase: DatabaseConfig,
+		val redis: RedisConfig,
 		val gatewayProxy: GatewayProxyConfig,
 		val connectionManager: ConnectionManagerConfig,
 		val perfectPayments: PerfectPaymentsConfig,
