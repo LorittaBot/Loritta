@@ -5,12 +5,14 @@ import dev.kord.gateway.Command
 import dev.kord.gateway.Event
 import dev.kord.gateway.Gateway
 import dev.kord.gateway.GatewayConfiguration
+import io.lettuce.core.api.StatefulRedisConnection
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
+import net.perfectdreams.loritta.cinnamon.discord.webserver.LorittaCinnamonWebServer
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.DiscordGatewayCommandNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
@@ -20,33 +22,27 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 
 /**
- * Proxied Kord Gateway, sending events via [hikariDataSource].
+ * Proxied Kord Gateway, sending events via [redisConnection].
  */
 class ProxiedKordGateway(
+    private val loritta: LorittaCinnamonWebServer,
     private val shardId: Int,
-    private val hikariDataSource: HikariDataSource
+    private val redisConnection: StatefulRedisConnection<String, String>,
 ) : Gateway {
     override val events = MutableSharedFlow<Event>(extraBufferCapacity = Int.MAX_VALUE) // The extraBufferCapacity is the same used in Kord's DefaultGatewayBuilder!
 
+    private val syncCommands = redisConnection.sync()
+
     override suspend fun send(command: Command) {
-        hikariDataSource.connection.use {
-            val statement = it.prepareStatement("SELECT pg_notify(?, ?)")
-
-            statement.setString(1, "gateway_commands_shard_$shardId")
-            statement.setString(
-                2,
-                Json.encodeToString(
-                    Json.encodeToJsonElement(
-                        Command.SerializationStrategy,
-                        command
-                    ).jsonObject
-                )
+        syncCommands.rpush(
+            loritta.redisKey("discord_gateway_commands_shard_$shardId"),
+            Json.encodeToString(
+                Json.encodeToJsonElement(
+                    Command.SerializationStrategy,
+                    command
+                ).jsonObject
             )
-
-            statement.execute()
-
-            it.commit()
-        }
+        )
     }
 
     // We don't need to implement these

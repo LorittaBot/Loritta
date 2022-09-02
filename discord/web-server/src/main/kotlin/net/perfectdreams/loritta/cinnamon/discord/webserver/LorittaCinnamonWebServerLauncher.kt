@@ -4,6 +4,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import com.zaxxer.hikari.util.IsolationLevel
 import io.ktor.client.*
+import io.lettuce.core.RedisClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
@@ -55,20 +56,13 @@ object LorittaCinnamonWebServerLauncher {
 
         logger.info { "Started Pudding client!" }
 
-        val queueConnection = createPostgreSQLConnection(
-            rootConfig.queueDatabase.address,
-            rootConfig.queueDatabase.database,
-            rootConfig.queueDatabase.username,
-            rootConfig.queueDatabase.password,
-        ) {
-            this.maximumPoolSize = rootConfig.queueDatabase.connections + 1 // +1 because one of the connections must be free to NOTIFY gateway commands
-        }
+        val redisClient = RedisClient.create("redis://${rootConfig.redis.address}/0")
 
         val loritta = LorittaCinnamonWebServer(
             rootConfig,
             languageManager,
             services,
-            queueConnection,
+            redisClient,
             http,
             replicaId
         )
@@ -81,46 +75,5 @@ object LorittaCinnamonWebServerLauncher {
         // It is recommended to set this to false, to avoid performance hits with the DebugProbes option!
         DebugProbes.enableCreationStackTraces = false
         DebugProbes.install()
-    }
-
-    // This is from Pudding, sightly modified
-    private fun createPostgreSQLConnection(
-        address: String,
-        databaseName: String,
-        username: String,
-        password: String,
-        builder: HikariConfig.() -> (Unit) = {}
-    ): HikariDataSource {
-        val hikariConfig = createHikariConfig(builder)
-        hikariConfig.jdbcUrl = "jdbc:postgresql://$address/$databaseName?ApplicationName=${"Loritta Event Queue - " + HostnameUtils.getHostname()}"
-
-        hikariConfig.username = username
-        hikariConfig.password = password
-
-        return HikariDataSource(hikariConfig)
-    }
-
-    private fun createHikariConfig(builder: HikariConfig.() -> (Unit)): HikariConfig {
-        val hikariConfig = HikariConfig()
-
-        hikariConfig.driverClassName = "org.postgresql.Driver"
-
-        // https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
-        hikariConfig.addDataSourceProperty("reWriteBatchedInserts", "true")
-
-        hikariConfig.isAutoCommit = false
-
-        // Useful to check if a connection is not returning to the pool, will be shown in the log as "Apparent connection leak detected"
-        hikariConfig.leakDetectionThreshold = 30L * 1000
-        hikariConfig.transactionIsolation = IsolationLevel.TRANSACTION_READ_COMMITTED.name
-
-        hikariConfig.poolName = "QueuePool"
-        // Disable synchronous commit to increase throughput
-        // Because all of these connections will only be used for gateway event queue, we can set the synchronous_commit on the session itself
-        hikariConfig.connectionInitSql = "SET SESSION synchronous_commit = 'off'"
-
-        hikariConfig.apply(builder)
-
-        return hikariConfig
     }
 }
