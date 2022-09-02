@@ -9,6 +9,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.discord.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.discord.utils.parallax.ParallaxMessage
@@ -22,7 +23,7 @@ object MessageUtils {
     private val INVALID_MESSAGE_CONFIGURED = ParallaxMessage("*Invalid Message Configured* ${Emotes.LoriSob}", listOf())
 
     suspend fun createMessage(
-        stuff: LorittaDiscordStuff,
+        stuff: LorittaCinnamon,
         guildId: Snowflake,
         message: String,
         sources: List<TokenSource>,

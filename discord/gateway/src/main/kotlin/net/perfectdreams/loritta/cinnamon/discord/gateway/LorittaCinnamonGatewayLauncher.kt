@@ -1,10 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.discord.gateway
 
 import io.ktor.client.*
+import io.lettuce.core.RedisClient
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
@@ -44,10 +46,14 @@ object LorittaCinnamonGatewayLauncher {
 
         logger.info { "Started Pudding client!" }
 
+        val redisClient = RedisClient.create("redis://${rootConfig.cinnamon.services.redis.address}/0")
+
         val loritta = LorittaCinnamonGateway(
             rootConfig,
             languageManager,
             services,
+            redisClient,
+            RedisKeys(rootConfig.cinnamon.services.redis.keyPrefix),
             http
         )
 

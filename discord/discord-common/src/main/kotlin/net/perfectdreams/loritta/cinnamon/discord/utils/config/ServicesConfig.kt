@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.cinnamon.utils.config.GabrielaImageServerConfig
 @Serializable
 class ServicesConfig(
     val pudding: PuddingConfig,
+    val redis: RedisConfig,
     val gabrielaImageServer: GabrielaImageServerConfig,
     val randomRoleplayPictures: RandomRoleplayPicturesConfig,
     val dreamStorageService: DreamStorageServiceConfig

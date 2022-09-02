@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNoti
 import net.perfectdreams.loritta.cinnamon.pudding.services.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxTaxedUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
@@ -246,13 +245,6 @@ class Pudding(
             DonationConfigs,
             RolesByExperience,
             ExperienceRoleRates,
-
-            DiscordGuilds,
-            DiscordGuildMembers,
-            DiscordRoles,
-            DiscordChannels,
-            DiscordEmojis,
-            DiscordVoiceStates
         )
 
         if (schemas.isNotEmpty())
@@ -313,57 +305,6 @@ class Pudding(
                     createPartitionedTable(ExecutedApplicationCommandsLog)
                 if (ExecutedComponentsLog in schemas)
                     createPartitionedTable(ExecutedComponentsLog)
-
-                // UNLOGGED tables are faster, however all the data WILL BE LOST if PostgreSQL crashes!
-                //
-                // perftest=# create unlogged table test(n int,n1 int);
-                // CREATE TABLE
-                // Time: 0.617 ms
-                // perftest=# insert into test values (generate_series(1,10000000));
-                // INSERT 0 10000000
-                // Time: 2629.792 ms (00:02.630)
-                // perftest=# insert into test values (generate_series(1,10000000));
-                // INSERT 0 10000000
-                // Time: 2683.421 ms (00:02.683)
-                // perftest=# insert into test values (generate_series(1,10000000));
-                // INSERT 0 10000000
-                // Time: 2640.459 ms (00:02.640)
-                // perftest=# drop table test;
-                // ...
-                // perftest=# create table test(n int,n1 int);
-                // CREATE TABLE
-                // Time: 0.572 ms
-                // perftest=# insert into test values (generate_series(1,10000000));
-                // INSERT 0 10000000
-                // Time: 3603.589 ms (00:03.604)
-                // perftest=# insert into test values (generate_series(1,10000000));
-                // INSERT 0 10000000
-                // Time: 3609.758 ms (00:03.610)
-                // perftest=# insert into test values (generate_series(1,10000000));
-                // INSERT 0 10000000
-                // Time: 12499.528 ms (00:12.500)
-                // perftest=# insert into test values (generate_series(1,10000000));
-                // INSERT 0 10000000
-                // Time: 12436.178 ms (00:12.436)
-                //
-                // However, because those tables are used for caching, we don't really care if all data is lost :P
-                // Because if the data is lost, we can query the required data via Discord's REST API and then update our cache with the queried data.
-                // https://www.compose.com/articles/faster-performance-with-unlogged-tables-in-postgresql/
-                // https://www.enterprisedb.com/postgres-tutorials/how-test-unlogged-tables-performance-postgresql
-                // http://postgresqlbr.blogspot.com/2011/10/unlogged-tables-funcionalidade-para.html
-                // http://pgsnaga.blogspot.com/2011/10/pgbench-on-unlogged-tables-round-2.html (while this shows that synchronous_commit=off has the same performance as UNLOGGED, in my experience it doesn't :()
-                if (DiscordGuilds in schemas)
-                    exec("ALTER TABLE ${DiscordGuilds.tableName} SET UNLOGGED;")
-                if (DiscordChannels in schemas)
-                    exec("ALTER TABLE ${DiscordChannels.tableName} SET UNLOGGED;")
-                if (DiscordEmojis in schemas)
-                    exec("ALTER TABLE ${DiscordEmojis.tableName} SET UNLOGGED;")
-                if (DiscordGuildMembers in schemas)
-                    exec("ALTER TABLE ${DiscordGuildMembers.tableName} SET UNLOGGED;")
-                if (DiscordRoles in schemas)
-                    exec("ALTER TABLE ${DiscordRoles.tableName} SET UNLOGGED;")
-                if (DiscordVoiceStates in schemas)
-                    exec("ALTER TABLE ${DiscordVoiceStates.tableName} SET UNLOGGED;")
 
                 logger.info { "Updating database schema version to $SCHEMA_VERSION..." }
 

@@ -1,12 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.profiles
 
-import dev.kord.common.entity.DiscordEmoji
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Guild
 import dev.kord.core.entity.User
 import dev.kord.rest.Image
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.flow.toList
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
@@ -14,11 +12,11 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.toMap
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.DiscordEmojis
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
@@ -129,11 +127,13 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
             null // Null = All emojis are allowed
         else {
             // If the user does not have the custom emojis in about me feature, let's allow them to use specific guild's emojis
-            loritta.services.transaction {
-                DiscordEmojis.slice(DiscordEmojis.data)
-                    .select { DiscordEmojis.guild inList FREE_EMOJIS_GUILDS.map { it.value.toLong() } }
-                    .map { Json.decodeFromString<DiscordEmoji>(it[DiscordEmojis.data]) }
-            }.mapNotNull { it.id }
+            FREE_EMOJIS_GUILDS.flatMap {
+                loritta.redisCommands.hgetall(loritta.redisKeys.discordGuildEmojis(it))
+                    .toList(mutableListOf())
+                    .toMap()
+                    .keys
+                    .map { Snowflake(it) }
+            }
         }
 
         val aboutMe = profileSettings.aboutMe ?: i18nContext.get(I18nKeysData.Profiles.DefaultAboutMe)

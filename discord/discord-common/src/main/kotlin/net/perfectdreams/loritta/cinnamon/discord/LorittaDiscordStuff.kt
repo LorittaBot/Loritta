@@ -39,7 +39,6 @@ abstract class LorittaDiscordStuff(
             )
         )
     )
-    val cache = DiscordCacheService(rest, discordConfig, services)
 
     suspend fun getCachedUserInfo(userId: Snowflake) = getCachedUserInfo(UserId(userId.value))
 

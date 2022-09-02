@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config
+package net.perfectdreams.loritta.cinnamon.discord.utils.config
 
 import kotlinx.serialization.Serializable
 

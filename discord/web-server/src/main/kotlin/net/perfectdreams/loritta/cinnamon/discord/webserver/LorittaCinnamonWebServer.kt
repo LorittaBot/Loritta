@@ -1,24 +1,32 @@
 package net.perfectdreams.loritta.cinnamon.discord.webserver
 
 import io.ktor.client.*
+import io.lettuce.core.ExperimentalLettuceCoroutinesApi
 import io.lettuce.core.RedisClient
+import io.lettuce.core.api.coroutines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProcessDiscordGatewayEvents
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProxyDiscordGatewayManager
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.RootConfig
 import net.perfectdreams.loritta.cinnamon.discord.webserver.webserver.InteractionsServer
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import java.io.File
 
+@OptIn(ExperimentalLettuceCoroutinesApi::class)
 class LorittaCinnamonWebServer(
     val config: RootConfig,
     private val languageManager: LanguageManager,
     private val services: Pudding,
     private val redisClient: RedisClient,
+    private val redisKeys: RedisKeys,
     private val http: HttpClient,
     private val replicaId: Int
 ) {
@@ -29,17 +37,17 @@ class LorittaCinnamonWebServer(
     private val replicaInstance = config.replicas.instances.firstOrNull { it.replicaId == replicaId } ?: error("Missing replica configuration for replica ID $replicaId")
 
     private val proxyDiscordGatewayManager = ProxyDiscordGatewayManager(
-        this,
+        redisKeys,
         config.discordShards.totalShards,
         replicaInstance,
-        redisClient
+        redisClient.connect()
     )
 
     private val discordGatewayEventsProcessor = ProcessDiscordGatewayEvents(
-        this,
+        redisKeys,
         config.totalEventsPerBatch,
         replicaInstance,
-        redisClient.connect(),
+        redisClient.connect(), // We will use a separate connection because we need to block the connection to wait for new events
         proxyDiscordGatewayManager.gateways
     )
 
@@ -52,6 +60,10 @@ class LorittaCinnamonWebServer(
             config.cinnamon,
             languageManager,
             services,
+            redisClient,
+            redisClient.connect().coroutines(),
+            redisClient.connect().sync(),
+            redisKeys,
             http
         )
 
@@ -83,6 +95,4 @@ class LorittaCinnamonWebServer(
 
         interactionsServer.start()
     }
-
-    fun redisKey(key: String) = config.redis.keyPrefix + key
 }

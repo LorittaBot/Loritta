@@ -4,6 +4,9 @@ import dev.kord.common.entity.DiscordShard
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.*
 import io.ktor.client.*
+import io.lettuce.core.ExperimentalLettuceCoroutinesApi
+import io.lettuce.core.RedisClient
+import io.lettuce.core.api.coroutines
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -14,13 +17,17 @@ import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordIntera
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.gateway.gateway.KordDiscordGatewayManager
 import net.perfectdreams.loritta.cinnamon.discord.gateway.utils.config.RootConfig
+import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 
+@OptIn(ExperimentalLettuceCoroutinesApi::class)
 class LorittaCinnamonGateway(
     private val config: RootConfig,
     private val languageManager: LanguageManager,
     private val services: Pudding,
+    private val redisClient: RedisClient,
+    private val redisKeys: RedisKeys,
     private val http: HttpClient
 ) {
     companion object {
@@ -44,6 +51,10 @@ class LorittaCinnamonGateway(
             config.cinnamon,
             languageManager,
             services,
+            redisClient,
+            redisClient.connect().coroutines(),
+            redisClient.connect().sync(),
+            redisKeys,
             http
         )
 

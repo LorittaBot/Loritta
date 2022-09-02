@@ -30,6 +30,8 @@ dependencies {
     implementation(libs.exposed.javatime)
     api(libs.hikaricp)
     api("io.lettuce:lettuce-core:6.2.0.RELEASE")
+    // Required for Lettuce
+    api("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.4")
 
     // Logback GELF, used for Graylog logging
     implementation("de.siegmar:logback-gelf:3.0.0")

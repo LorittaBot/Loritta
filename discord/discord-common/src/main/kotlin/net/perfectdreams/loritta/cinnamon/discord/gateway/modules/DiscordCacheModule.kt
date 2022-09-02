@@ -4,24 +4,20 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
+import io.lettuce.core.ExperimentalLettuceCoroutinesApi
 import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.sync.withPermit
-import kotlinx.serialization.*
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.exposedpowerutils.sql.batchUpsert
-import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
-import org.jetbrains.exposed.sql.*
-import pw.forst.exposed.insertOrUpdate
+import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildMember
+import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildVoiceState
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetIfMapNotEmpty
 import java.util.concurrent.TimeUnit
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.disableSynchronousCommit
 
+@OptIn(ExperimentalLettuceCoroutinesApi::class)
 class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -42,13 +38,6 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         .expireAfterAccess(1L, TimeUnit.MINUTES)
         .build<Snowflake, Int>()
         .asMap()
-
-    /**
-     * To avoid all connections in the connection pool being used by GuildCreate events, we will limit to max `connections in the pool - 5`, with a minimum of one permit GuildCreate in parallel
-     *
-     * This avoids issues where all events stop being processed due to a "explosion" of GuildCreates after a shard restart!
-     */
-    private val guildCreateSemaphore = Semaphore((m.services.hikariDataSource.maximumPoolSize - 5).coerceAtLeast(1))
 
     private suspend inline fun withMutex(vararg ids: Snowflake, action: () -> Unit) = mutexes.getOrPut(ids.joinToString(":")) { Mutex() }.withLock(action = action)
 
@@ -92,51 +81,40 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                     }
 
                     withMutex(guildId) {
-                        guildCreateSemaphore.withPermit {
-                            m.services.transaction {
-                                disableSynchronousCommit()
+                        m.cache.createOrUpdateGuild(
+                            guildId,
+                            guildName,
+                            guildIcon,
+                            guildOwnerId,
+                            guildRoles,
+                            guildChannels,
+                            guildEmojis
+                        )
 
-                                m.cache.createOrUpdateGuild(
-                                    guildId,
-                                    guildName,
-                                    guildIcon,
-                                    guildOwnerId,
-                                    guildRoles,
-                                    guildChannels,
-                                    guildEmojis
-                                )
+                        for (member in guildMembers) {
+                            createOrUpdateGuildMember(
+                                guildId,
+                                member.user.value!!.id,
+                                member
+                            )
+                        }
 
-                                for (member in guildMembers) {
-                                    createOrUpdateGuildMember(
-                                        guildId,
-                                        member.user.value!!.id,
-                                        member
+                        m.redisTransaction {
+                            // Delete all voice states
+                            del(m.redisKeys.discordGuildVoiceStates(guildId))
+
+                            // Reinsert them
+                            hsetIfMapNotEmpty(
+                                m.redisKeys.discordGuildVoiceStates(guildId),
+                                guildVoiceStates.associate {
+                                    it.userId.toString() to Json.encodeToString(
+                                        PuddingGuildVoiceState(
+                                            it.channelId!!, // Shouldn't be null because they are in a channel
+                                            it.userId
+                                        )
                                     )
                                 }
-
-                                // Delete all voice states
-                                DiscordVoiceStates.deleteWhere {
-                                    DiscordVoiceStates.guild eq guildId.toLong()
-                                }
-
-                                // Reinsert them
-                                if (guildVoiceStates.isNotEmpty()) {
-                                    DiscordVoiceStates.batchUpsert(
-                                        guildVoiceStates,
-                                        DiscordVoiceStates.user,
-                                        DiscordVoiceStates.guild,
-                                        shouldReturnGeneratedValues = false
-                                    ) { it, voiceState ->
-                                        it[DiscordVoiceStates.guild] =
-                                            guildId.toLong() // The voiceState.guildId is missing on a GuildCreate event!
-                                        it[DiscordVoiceStates.channel] =
-                                            voiceState.channelId!!.toLong() // Also shouldn't be null because they are in a channel
-                                        it[DiscordVoiceStates.user] = voiceState.userId.toLong()
-                                        it[DiscordVoiceStates.dataHashCode] = m.cache.hashEntity(voiceState)
-                                        it[DiscordVoiceStates.data] = Json.encodeToString(voiceState)
-                                    }
-                                }
-                            }
+                            )
                         }
                     }
 
@@ -156,19 +134,15 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                     val guildEmojis = event.guild.emojis
 
                     withMutex(guildId) {
-                        m.services.transaction {
-                            disableSynchronousCommit()
-
-                            m.cache.createOrUpdateGuild(
-                                guildId,
-                                guildName,
-                                guildIcon,
-                                guildOwnerId,
-                                guildRoles,
-                                guildChannels,
-                                guildEmojis
-                            )
-                        }
+                        m.cache.createOrUpdateGuild(
+                            guildId,
+                            guildName,
+                            guildIcon,
+                            guildOwnerId,
+                            guildRoles,
+                            guildChannels,
+                            guildEmojis
+                        )
                     }
 
                     logger.info { "GuildUpdate for $guildId took ${System.currentTimeMillis() - start}ms" }
@@ -179,11 +153,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                 val discordEmojis = event.emoji.emojis
 
                 withMutex(guildId) {
-                    m.services.transaction {
-                        disableSynchronousCommit()
-
-                        m.cache.updateGuildEmojis(guildId, discordEmojis)
-                    }
+                    m.cache.updateGuildEmojis(guildId, discordEmojis)
                 }
             }
             is MessageCreate -> {
@@ -199,100 +169,60 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                         withMutex(guildId, event.message.author.id) {
                             userRolesHashes[event.message.author.id] = member.roles.hashCode()
 
-                            m.services.transaction {
-                                disableSynchronousCommit()
-
-                                createOrUpdateGuildMember(guildId, event.message.author.id, member)
-                            }
+                            createOrUpdateGuildMember(guildId, event.message.author.id, member)
                         }
                     }
                 }
             }
             is GuildMemberAdd -> {
                 withMutex(event.member.guildId, event.member.user.value!!.id) {
-                    m.services.transaction {
-                        disableSynchronousCommit()
-
-                        createOrUpdateGuildMember(event.member)
-                    }
+                    createOrUpdateGuildMember(event.member)
                 }
             }
             is GuildMemberUpdate -> {
                 withMutex(event.member.guildId, event.member.user.id) {
-                    m.services.transaction {
-                        disableSynchronousCommit()
-
-                        createOrUpdateGuildMember(event.member)
-                    }
+                    createOrUpdateGuildMember(event.member)
                 }
             }
             is GuildMemberRemove -> {
                 withMutex(event.member.guildId, event.member.user.id) {
-                    m.services.transaction {
-                        disableSynchronousCommit()
-
-                        deleteGuildMember(event.member)
-                    }
+                    deleteGuildMember(event.member)
                 }
             }
             is ChannelCreate -> {
                 val guildId = event.channel.guildId.value
                 if (guildId != null)
                     withMutex(guildId, event.channel.id) {
-                        m.services.transaction {
-                            disableSynchronousCommit()
-
-                            createOrUpdateGuildChannel(guildId, event.channel)
-                        }
+                        createOrUpdateGuildChannel(guildId, event.channel)
                     }
             }
             is ChannelUpdate -> {
                 val guildId = event.channel.guildId.value
                 if (guildId != null)
                     withMutex(guildId, event.channel.id) {
-                        m.services.transaction {
-                            disableSynchronousCommit()
-
-                            createOrUpdateGuildChannel(guildId, event.channel)
-                        }
+                        createOrUpdateGuildChannel(guildId, event.channel)
                     }
             }
             is ChannelDelete -> {
                 val guildId = event.channel.guildId.value
                 if (guildId != null)
                     withMutex(guildId, event.channel.id) {
-                        m.services.transaction {
-                            disableSynchronousCommit()
-
-                            deleteGuildChannel(guildId, event.channel)
-                        }
+                        deleteGuildChannel(guildId, event.channel)
                     }
             }
             is GuildRoleCreate -> {
                 withMutex(event.role.guildId, event.role.role.id) {
-                    m.services.transaction {
-                        disableSynchronousCommit()
-
-                        createOrUpdateRole(event.role.guildId, event.role.role)
-                    }
+                    createOrUpdateRole(event.role.guildId, event.role.role)
                 }
             }
             is GuildRoleUpdate -> {
                 withMutex(event.role.guildId, event.role.role.id) {
-                    m.services.transaction {
-                        disableSynchronousCommit()
-
-                        createOrUpdateRole(event.role.guildId, event.role.role)
-                    }
+                    createOrUpdateRole(event.role.guildId, event.role.role)
                 }
             }
             is GuildRoleDelete -> {
                 withMutex(event.role.guildId, event.role.id) {
-                    m.services.transaction {
-                        disableSynchronousCommit()
-
-                        deleteRole(event.role.guildId, event.role.id)
-                    }
+                    deleteRole(event.role.guildId, event.role.id)
                 }
             }
             is GuildDelete -> {
@@ -300,11 +230,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                 if (event.guild.unavailable.value == null) {
                     logger.info { "Someone removed me @ ${event.guild.id}! :(" }
                     withMutex(event.guild.id) {
-                        m.services.transaction {
-                            disableSynchronousCommit()
-
-                            removeGuildData(event.guild.id)
-                        }
+                        removeGuildData(event.guild.id)
                     }
                 }
             }
@@ -329,27 +255,22 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
 
                 withMutex(guildId) {
                     val voiceState = event.voiceState
-                    m.services.transaction {
-                        disableSynchronousCommit()
 
-                        // Delete all voice states related to the user
-                        DiscordVoiceStates.deleteWhere {
-                            DiscordVoiceStates.guild eq guildId.toLong() and (DiscordVoiceStates.user eq voiceState.userId.toLong())
-                        }
-
-                        if (channelId != null) {
-                            // Reinsert them
-                            DiscordVoiceStates.upsert(
-                                DiscordVoiceStates.user,
-                                DiscordVoiceStates.guild
-                            ) {
-                                it[DiscordVoiceStates.guild] = guildId.toLong() // The voiceState.guildId is missing on a GuildCreate event!
-                                it[DiscordVoiceStates.channel] = channelId.toLong() // Also shouldn't be null because they are in a channel
-                                it[DiscordVoiceStates.user] = userId.toLong()
-                                it[DiscordVoiceStates.dataHashCode] = m.cache.hashEntity(voiceState)
-                                it[DiscordVoiceStates.data] = Json.encodeToString(voiceState)
-                            }
-                        }
+                    // Channel is null, so let's delete voice states in the guild related to the user
+                    if (channelId == null) {
+                        m.redisCommands.hdel(m.redisKeys.discordGuildVoiceStates(guildId), voiceState.userId.toString())
+                    } else {
+                        // Channel is not null, let's upsert
+                        m.redisCommands.hset(
+                            m.redisKeys.discordGuildVoiceStates(guildId),
+                            userId.toString(),
+                            Json.encodeToString(
+                                PuddingGuildVoiceState(
+                                    channelId,
+                                    userId
+                                )
+                            )
+                        )
                     }
                 }
             }
@@ -358,7 +279,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         return ModuleResult.Continue
     }
 
-    private fun createOrUpdateGuildMember(guildMember: DiscordAddedGuildMember) {
+    private suspend fun createOrUpdateGuildMember(guildMember: DiscordAddedGuildMember) {
         createOrUpdateGuildMember(
             guildMember.guildId,
             guildMember.user.value!!.id,
@@ -366,7 +287,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         )
     }
 
-    private fun createOrUpdateGuildMember(guildMember: DiscordUpdatedGuildMember) {
+    private suspend fun createOrUpdateGuildMember(guildMember: DiscordUpdatedGuildMember) {
         createOrUpdateGuildMember(
             guildMember.guildId,
             guildMember.user.id,
@@ -374,7 +295,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         )
     }
 
-    private fun createOrUpdateGuildMember(guildId: Snowflake, userId: Snowflake, guildMember: DiscordGuildMember) {
+    private suspend fun createOrUpdateGuildMember(guildId: Snowflake, userId: Snowflake, guildMember: DiscordGuildMember) {
         createOrUpdateGuildMember(
             guildId,
             userId,
@@ -382,76 +303,70 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         )
     }
 
-    private fun createOrUpdateGuildMember(
+    private suspend fun createOrUpdateGuildMember(
         guildId: Snowflake,
         userId: Snowflake,
         roles: List<Snowflake>
     ) {
-        DiscordGuildMembers.insertOrUpdate(DiscordGuildMembers.guildId, DiscordGuildMembers.userId) {
-            it[DiscordGuildMembers.guildId] = guildId.toLong()
-            it[DiscordGuildMembers.userId] = userId.toLong()
-            it[DiscordGuildMembers.roles] = Json.encodeToString(roles.map { it.toString() })
-        }
+        m.redisCommands.hset(
+            m.redisKeys.discordGuildMembers(guildId),
+            userId.toString(),
+            Json.encodeToString(
+                PuddingGuildMember(
+                    userId,
+                    roles
+                )
+            )
+        )
     }
 
-    private fun deleteGuildMember(guildMember: DiscordRemovedGuildMember) {
-        DiscordGuildMembers.deleteWhere {
-            DiscordGuildMembers.guildId eq guildMember.guildId.toLong() and (DiscordGuildMembers.userId eq guildMember.user.id.toLong())
-        }
+    private suspend fun deleteGuildMember(guildMember: DiscordRemovedGuildMember) {
+        m.redisCommands.hdel(
+            m.redisKeys.discordGuildMembers(guildMember.guildId),
+            guildMember.user.id.toString()
+        )
     }
 
-    private fun createOrUpdateGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
-        DiscordChannels.upsert(DiscordChannels.guild, DiscordChannels.channel) {
-            it[DiscordChannels.guild] = guildId.toLong()
-            it[DiscordChannels.channel] = channel.id.toLong()
-            it[DiscordChannels.dataHashCode] = m.cache.hashEntity(channel)
-            it[DiscordChannels.data] = Json.encodeToString(channel)
-        }
+    private suspend fun createOrUpdateGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
+        m.redisCommands.hset(
+            m.redisKeys.discordGuildChannels(guildId),
+            channel.id.toString(),
+            Json.encodeToString(channel)
+        )
     }
 
-    private fun createOrUpdateRole(guildId: Snowflake, role: DiscordRole) {
-        DiscordRoles.upsert(DiscordRoles.guild, DiscordRoles.role) {
-            it[DiscordRoles.guild] = guildId.toLong()
-            it[DiscordRoles.role] = role.id.toLong()
-            it[DiscordRoles.dataHashCode] = m.cache.hashEntity(role)
-            it[DiscordRoles.data] = Json.encodeToString(role)
-        }
+    private suspend fun deleteGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
+        m.redisCommands.hdel(
+            m.redisKeys.discordGuildChannels(guildId),
+            channel.id.toString()
+        )
     }
 
-    private fun deleteRole(guildId: Snowflake, roleId: Snowflake) {
-        DiscordRoles.deleteWhere {
-            DiscordRoles.guild eq guildId.toLong() and (DiscordRoles.role eq roleId.toLong())
-        }
+    private suspend fun createOrUpdateRole(guildId: Snowflake, role: DiscordRole) {
+        m.redisCommands.hset(
+            m.redisKeys.discordGuildRoles(guildId),
+            role.id.toString(),
+            Json.encodeToString(role)
+        )
     }
 
-    private fun deleteGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
-        DiscordChannels.deleteWhere {
-            DiscordChannels.guild eq guildId.toLong() and (DiscordChannels.channel eq channel.id.toLong())
-        }
+    private suspend fun deleteRole(guildId: Snowflake, roleId: Snowflake) {
+        m.redisCommands.hdel(
+            m.redisKeys.discordGuildRoles(guildId),
+            roleId.toString()
+        )
     }
 
-    private fun removeGuildData(guildId: Snowflake) {
+    private suspend fun removeGuildData(guildId: Snowflake) {
         logger.info { "Removing $guildId's cached data..." }
-        val guildIdAsLong = guildId.toLong()
 
-        DiscordGuildMembers.deleteWhere {
-            DiscordGuildMembers.guildId eq guildIdAsLong
-        }
-
-        DiscordChannels.deleteWhere {
-            DiscordChannels.guild eq guildIdAsLong
-        }
-
-        DiscordEmojis.deleteWhere {
-            DiscordEmojis.guild eq guildIdAsLong
-        }
-
-        DiscordRoles.deleteWhere {
-            DiscordRoles.guild eq guildIdAsLong
-        }
-
-        DiscordGuilds.deleteWhere {
-            DiscordGuilds.id eq guildIdAsLong
+        m.redisTransaction {
+            del(m.redisKeys.discordGuilds(guildId))
+            del(m.redisKeys.discordGuildMembers(guildId))
+            del(m.redisKeys.discordGuildRoles(guildId))
+            del(m.redisKeys.discordGuildChannels(guildId))
+            del(m.redisKeys.discordGuildEmojis(guildId))
+            del(m.redisKeys.discordGuildVoiceStates(guildId))
         }
     }
 }

@@ -9,6 +9,5 @@ data class RootConfig(
     val httpInteractions: InteractionsEndpointConfig,
     val discordShards: DiscordShardsConfig,
     val replicas: ReplicasConfig,
-    val redis: RedisConfig,
     val totalEventsPerBatch: Long,
 )

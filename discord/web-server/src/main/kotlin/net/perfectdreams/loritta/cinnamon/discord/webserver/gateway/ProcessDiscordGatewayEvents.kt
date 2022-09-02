@@ -1,13 +1,17 @@
 package net.perfectdreams.loritta.cinnamon.discord.webserver.gateway
 
+import io.lettuce.core.ExperimentalLettuceCoroutinesApi
 import io.lettuce.core.LMPopArgs
 import io.lettuce.core.api.StatefulRedisConnection
+import io.lettuce.core.api.coroutines
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
-import net.perfectdreams.loritta.cinnamon.discord.webserver.LorittaCinnamonWebServer
+import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
@@ -18,7 +22,7 @@ import kotlin.time.measureTimedValue
  * Processes Discord Gateway Events stored on Redis
  */
 class ProcessDiscordGatewayEvents(
-    private val loritta: LorittaCinnamonWebServer,
+    private val redisKeys: RedisKeys,
     private val totalEventsPerBatch: Long,
     replicaInstance: ReplicaInstanceConfig,
     private val redisConnection: StatefulRedisConnection<String, String>,
@@ -27,10 +31,10 @@ class ProcessDiscordGatewayEvents(
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
-        const val DISCORD_GATEWAY_EVENTS_QUEUE_PREFIX = "discord_gateway_events"
     }
 
-    private val syncCommands = redisConnection.sync()
+    @OptIn(ExperimentalLettuceCoroutinesApi::class)
+    private val redisCommands = redisConnection.coroutines()
 
     var totalEventsProcessed = 0L
     var totalPollLoopsCount = 0L
@@ -41,10 +45,10 @@ class ProcessDiscordGatewayEvents(
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val shardsHandledByThisProcessor = (replicaInstance.minShard..replicaInstance.maxShard)
     private val keys = shardsHandledByThisProcessor.map {
-        loritta.redisKey("${DISCORD_GATEWAY_EVENTS_QUEUE_PREFIX}_shard_$it")
+        redisKeys.discordGatewayEvents(it)
     }.toTypedArray()
 
-    @OptIn(ExperimentalTime::class)
+    @OptIn(ExperimentalTime::class, ExperimentalLettuceCoroutinesApi::class)
     suspend fun run() {
         while (true) {
             try {
@@ -54,8 +58,8 @@ class ProcessDiscordGatewayEvents(
                 // This will return all availables event of the first queue that has any pending event to be processed
                 isBlockedForNotifications = true
                 val (eventsBlock, time) = measureTimedValue {
-                    syncCommands.blmpop(
-                        0,
+                    redisCommands.blmpop(
+                        0.0,
                         LMPopArgs.Builder.left().count(1),
                         *keys
                     )
@@ -63,18 +67,28 @@ class ProcessDiscordGatewayEvents(
                 isBlockedForNotifications = false
                 this.lastBlockDuration = time
 
+                if (eventsBlock == null) {
+                    logger.warn { "eventsBlock is null! This should never happen!" }
+                    continue
+                }
+
                 this.lastPollDuration = measureTime {
                     receivedShardEvents.getOrPut(getShardIdFromQueue(eventsBlock.key)) { mutableListOf() }
                         .addAll(eventsBlock.value)
 
                     // Events were received, check the length of every list... (We need to check every list because we don't know if any other queue may have events)
                     val queueLengths = keys.associateWith {
-                        syncCommands.llen(it).coerceAtMost(totalEventsPerBatch)
+                        (redisCommands.llen(it) ?: 0L).coerceAtMost(totalEventsPerBatch)
                     }
 
                     for ((queue, length) in queueLengths.filterValues { it != 0L }) {
                         // Then do a lmpop to get all the pending events
-                        val r = syncCommands.lmpop(LMPopArgs.Builder.left().count(length), queue)
+                        val r = redisCommands.lmpop(LMPopArgs.Builder.left().count(length), queue)
+
+                        if (r == null) {
+                            logger.warn { "lmpop on $queue is null! This should never happen!" }
+                            continue
+                        }
 
                         receivedShardEvents.getOrPut(getShardIdFromQueue(r.key)) { mutableListOf() }
                             .addAll(r.value)

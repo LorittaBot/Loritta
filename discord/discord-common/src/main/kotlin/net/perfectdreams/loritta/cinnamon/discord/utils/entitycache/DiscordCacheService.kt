@@ -8,59 +8,64 @@ import dev.kord.common.entity.OverwriteType
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.service.RestClient
+import io.lettuce.core.ExperimentalLettuceCoroutinesApi
+import kotlinx.coroutines.flow.toList
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import mu.KotlinLogging
-import net.perfectdreams.exposedpowerutils.sql.batchUpsert
-import net.perfectdreams.exposedpowerutils.sql.upsert
-import net.perfectdreams.loritta.cinnamon.discord.utils.PuddingDiscordRolesList
-import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import net.perfectdreams.loritta.cinnamon.pudding.tables.cache.*
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetIfMapNotEmpty
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.toMap
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.valueOrNull
 import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
-import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.notInList
-import org.jetbrains.exposed.sql.statements.BatchInsertStatement
 import java.util.*
 
 /**
  * Services related to Discord entity caching
  */
+@OptIn(ExperimentalLettuceCoroutinesApi::class)
 class DiscordCacheService(
-    private val rest: RestClient,
-    private val lorittaDiscordConfig: LorittaDiscordConfig,
-    private val pudding: Pudding
+    private val loritta: LorittaCinnamon
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
+    private val rest = loritta.rest
+    private val lorittaDiscordConfig = loritta.discordConfig
+    private val pudding = loritta.services
+    private val redisCommands = loritta.redisCommands
+
     suspend fun getDiscordEntitiesOfGuild(guildId: Snowflake): GuildEntities {
-        return pudding.transaction {
-            val roles = DiscordRoles.slice(DiscordRoles.data)
-                .select { DiscordRoles.guild eq guildId.toLong() }
-                .map { Json.decodeFromString<DiscordRole>(it[DiscordRoles.data]) }
+        val roles = loritta.redisCommands.hgetall(loritta.redisKeys.discordGuildRoles(guildId))
+            .toList(mutableListOf())
+            .toMap()
+            .mapNotNull {
+                it.value.valueOrNull?.let { Json.decodeFromString<DiscordRole>(it) }
+            }
 
-            val channels = DiscordChannels.slice(DiscordChannels.data)
-                .select { DiscordChannels.guild eq guildId.toLong() }
-                .map { Json.decodeFromString<DiscordChannel>(it[DiscordChannels.data]) }
+        val channels = loritta.redisCommands.hgetall(loritta.redisKeys.discordGuildChannels(guildId))
+            .toList(mutableListOf())
+            .toMap()
+            .mapNotNull {
+                it.value.valueOrNull?.let { Json.decodeFromString<DiscordChannel>(it) }
+            }
 
-            val emojis = DiscordEmojis.slice(DiscordEmojis.data)
-                .select { DiscordEmojis.guild eq guildId.toLong() }
-                .map { Json.decodeFromString<DiscordEmoji>(it[DiscordEmojis.data]) }
+        val emojis = loritta.redisCommands.hgetall(loritta.redisKeys.discordGuildEmojis(guildId))
+            .toList(mutableListOf())
+            .toMap()
+            .mapNotNull {
+                it.value.valueOrNull?.let { Json.decodeFromString<DiscordEmoji>(it) }
+            }
 
-            return@transaction GuildEntities(
-                roles,
-                channels,
-                emojis
-            )
-        }
+        return GuildEntities(
+            roles,
+            channels,
+            emojis
+        )
     }
 
     /**
@@ -72,12 +77,9 @@ class DiscordCacheService(
      * Gets role informations of the following [roleIds] in [guildId]
      */
     suspend fun getRoles(guildId: Snowflake, roleIds: Collection<Snowflake>): List<DiscordRole> {
-        return pudding.transaction {
-            DiscordRoles.slice(DiscordRoles.data)
-                .select {
-                    DiscordRoles.guild eq guildId.toLong() and (DiscordRoles.role inList roleIds.map { it.toLong() })
-                }.map { Json.decodeFromString(it[DiscordRoles.data]) }
-        }
+        val value = loritta.redisCommands.hget(loritta.redisKeys.discordGuilds(guildId), "roles")
+
+        return value?.let { Json.decodeFromString<List<DiscordRole>>(it).let { it.filter { it.id in roleIds } } } ?: emptyList()
     }
 
     /**
@@ -132,94 +134,90 @@ class DiscordCacheService(
         // Create an empty permissions object
         var permissions = Permissions()
 
-        return pudding.transaction {
-            var missingRoles = false
-            var missingChannels = false
-
-            val guildRolesResultRow = DiscordGuildMembers
-                .slice(DiscordGuildMembers.roles)
-                .selectFirstOrNull { DiscordGuildMembers.guildId eq guildId.toLong() and (DiscordGuildMembers.userId eq userId.toLong()) }
-                ?: return@transaction PermissionsResult( // They aren't in the server, no need to continue then
-                    permissions,
-                    userNotInGuild = true,
-                    missingRoles = false, // This is actually "Unknown"
-                    missingChannels = false // This is also "Unknown"
-                )
-
-            val userRoleIds = Json.decodeFromString<PuddingDiscordRolesList>(guildRolesResultRow.get(DiscordGuildMembers.roles)) + guildId.toString() // Because the user always have the "@everyone" role!
-
-            val userRoles = DiscordRoles.slice(DiscordRoles.data).select {
-                DiscordRoles.guild eq guildId.toLong() and (DiscordRoles.role inList userRoleIds.map { it.toLong() })
-            }.map { Json.decodeFromString<DiscordRole>(it[DiscordRoles.data]) }
-
-            val guildChannel = DiscordChannels.selectFirstOrNull {
-                DiscordChannels.guild eq guildId.toLong() and (DiscordChannels.channel eq channelId.toLong())
-            }?.let { Json.decodeFromString<DiscordChannel>(it[DiscordChannels.data]) }
-
-            // We are going to validate if there are any missing roles
-            for (userRoleId in userRoleIds) {
-                if (!userRoles.any { it.id.toString() == userRoleId }) {
-                    logger.warn { "Missing role $userRoleId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
-                    missingRoles = true
-                }
-            }
-
-            // And also validate if the channel is null
-            if (guildChannel == null) {
-                logger.warn { "Missing channel $channelId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
-                missingChannels = true
-            }
-
-            // The order of the roles doesn't matter!
-            userRoles
-                .forEach {
-                    // Keep "plus"'ing the permissions!
-                    permissions = permissions.plus(it.permissions)
-                }
-
-            val entityIds = mutableSetOf(userId)
-            entityIds.addAll(userRoleIds.map { Snowflake(it) })
-
-            // Now we will get permission overwrites
-            val permissionOverwrites = guildChannel?.permissionOverwrites?.value
-
-            // https://discord.com/developers/docs/topics/permissions#permission-overwrites
-            if (permissionOverwrites != null) {
-                // First, the "@everyone" role permission overwrite
-                val everyonePermissionOverwrite = permissionOverwrites.firstOrNull { it.id == guildId }
-                if (everyonePermissionOverwrite != null) {
-                    permissions = permissions.minus(everyonePermissionOverwrite.deny)
-                    permissions = permissions.plus(everyonePermissionOverwrite.allow)
-                }
-
-                // Then, permission overwrites for specific roles
-                val rolePermissionOverwrites = permissionOverwrites.filter {
-                    it.type == OverwriteType.Role
-                }.filter { it.id in entityIds }
-
-                for (permissionOverwrite in rolePermissionOverwrites) {
-                    permissions = permissions.minus(permissionOverwrite.deny)
-                    permissions = permissions.plus(permissionOverwrite.allow)
-                }
-
-                // And finally, permission overwrites for specific members
-                val memberPermissionOverwrites = permissionOverwrites.filter {
-                    it.type == OverwriteType.Member
-                }.filter { it.id in entityIds }
-
-                for (permissionOverwrite in memberPermissionOverwrites) {
-                    permissions = permissions.minus(permissionOverwrite.deny)
-                    permissions = permissions.plus(permissionOverwrite.allow)
-                }
-            }
-
-            return@transaction PermissionsResult(
+        val discordGuildMember = loritta.redisCommands
+            .hget(loritta.redisKeys.discordGuildMembers(guildId), userId.toString())
+            ?: return PermissionsResult( // They aren't in the server, no need to continue then
                 permissions,
-                userNotInGuild = false,
-                missingRoles = missingRoles,
-                missingChannels = missingChannels
+                userNotInGuild = true,
+                missingRoles = false, // This is actually "Unknown"
+                missingChannels = false // This is also "Unknown"
             )
+
+        val userRoleIds = Json.decodeFromString<PuddingGuildMember>(discordGuildMember).roles
+
+        val userRoles = userRoleIds.mapNotNull {
+            loritta.redisCommands.hget(loritta.redisKeys.discordGuildRoles(guildId), it.toString())
+        }.map { Json.decodeFromString<DiscordRole>(it) }
+
+        var missingRoles = false
+        var missingChannels = false
+
+        val guildChannel = loritta.redisCommands.hget(loritta.redisKeys.discordGuildChannels(guildId), channelId.toString())
+            ?.let { Json.decodeFromString<DiscordChannel>(it) }
+
+        // We are going to validate if there are any missing roles
+        for (userRoleId in userRoleIds) {
+            if (!userRoles.any { it.id == userRoleId }) {
+                logger.warn { "Missing role $userRoleId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
+                missingRoles = true
+            }
         }
+
+        // And also validate if the channel is null
+        if (guildChannel == null) {
+            logger.warn { "Missing channel $channelId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
+            missingChannels = true
+        }
+
+        // The order of the roles doesn't matter!
+        userRoles
+            .forEach {
+                // Keep "plus"'ing the permissions!
+                permissions = permissions.plus(it.permissions)
+            }
+
+        val entityIds = mutableSetOf(userId)
+        entityIds.addAll(userRoleIds.map { it })
+
+        // Now we will get permission overwrites
+        val permissionOverwrites = guildChannel?.permissionOverwrites?.value
+
+        // https://discord.com/developers/docs/topics/permissions#permission-overwrites
+        if (permissionOverwrites != null) {
+            // First, the "@everyone" role permission overwrite
+            val everyonePermissionOverwrite = permissionOverwrites.firstOrNull { it.id == guildId }
+            if (everyonePermissionOverwrite != null) {
+                permissions = permissions.minus(everyonePermissionOverwrite.deny)
+                permissions = permissions.plus(everyonePermissionOverwrite.allow)
+            }
+
+            // Then, permission overwrites for specific roles
+            val rolePermissionOverwrites = permissionOverwrites.filter {
+                it.type == OverwriteType.Role
+            }.filter { it.id in entityIds }
+
+            for (permissionOverwrite in rolePermissionOverwrites) {
+                permissions = permissions.minus(permissionOverwrite.deny)
+                permissions = permissions.plus(permissionOverwrite.allow)
+            }
+
+            // And finally, permission overwrites for specific members
+            val memberPermissionOverwrites = permissionOverwrites.filter {
+                it.type == OverwriteType.Member
+            }.filter { it.id in entityIds }
+
+            for (permissionOverwrite in memberPermissionOverwrites) {
+                permissions = permissions.minus(permissionOverwrite.deny)
+                permissions = permissions.plus(permissionOverwrite.allow)
+            }
+        }
+
+        return PermissionsResult(
+            permissions,
+            userNotInGuild = false,
+            missingRoles = missingRoles,
+            missingChannels = missingChannels
+        )
     }
 
     /**
@@ -230,17 +228,12 @@ class DiscordCacheService(
      * @return the voice channel ID, if they are connected to a voice channel
      */
     suspend fun getUserConnectedVoiceChannel(guildId: Snowflake, userId: Snowflake): Snowflake? {
-        return pudding.transaction {
-            DiscordVoiceStates.slice(DiscordVoiceStates.channel).selectFirstOrNull {
-                DiscordVoiceStates.guild eq guildId.toLong() and (DiscordVoiceStates.user eq userId.toLong())
-            }?.get(DiscordVoiceStates.channel)?.let { Snowflake(it) }
-        }
+        return loritta.redisCommands.hget(loritta.redisKeys.discordGuildVoiceStates(guildId), userId.toString())
+            ?.let { Json.decodeFromString<PuddingGuildVoiceState>(it) }
+            ?.channelId
     }
 
-    /**
-     * **THIS SHOULD BE CALLED WITHIN A TRANSACTION!!**
-     */
-    fun createOrUpdateGuild(
+    suspend fun createOrUpdateGuild(
         guildId: Snowflake,
         guildName: String,
         guildIcon: String?,
@@ -249,125 +242,52 @@ class DiscordCacheService(
         guildChannels: List<DiscordChannel>?,
         guildEmojis: List<DiscordEmoji>
     ) {
-        val guildIdAsLong = guildId.toLong()
-
+        // TODO: Where to store general info about the guild?
         // Does not exist, let's insert it
-        DiscordGuilds.upsert(DiscordGuilds.id) {
+        /* DiscordGuilds.upsert(DiscordGuilds.id) {
             it[DiscordGuilds.id] = guildIdAsLong
             it[DiscordGuilds.name] = guildName
             it[DiscordGuilds.icon] = guildIcon
             it[DiscordGuilds.ownerId] = guildOwnerId.toLong()
-        }
+        } */
 
-        updateEntitiesInDatabaseIfNeeded(
-            DiscordRoles,
-            DiscordRoles.guild,
-            DiscordRoles.dataHashCode,
-            DiscordRoles.role,
-            guildId,
-            guildRoles,
-            DiscordRole::id,
-            DiscordRoles.guild,
-            DiscordRoles.role
-        ) { it, role, hash ->
-            it[DiscordRoles.guild] = guildIdAsLong
-            it[DiscordRoles.role] = role.id.toLong()
-            it[DiscordRoles.dataHashCode] = hash
-            it[DiscordRoles.data] = Json.encodeToString(role)
-        }
+        loritta.redisTransaction {
+            // Delete all because we want to upsert everything
+            del(loritta.redisKeys.discordGuildRoles(guildId))
+            del(loritta.redisKeys.discordGuildChannels(guildId))
+            del(loritta.redisKeys.discordGuildEmojis(guildId))
 
-        if (guildChannels != null) {
-            updateEntitiesInDatabaseIfNeeded(
-                DiscordChannels,
-                DiscordChannels.guild,
-                DiscordChannels.dataHashCode,
-                DiscordChannels.channel,
-                guildId,
-                guildChannels,
-                DiscordChannel::id,
-                DiscordChannels.guild,
-                DiscordChannels.channel
-            ) { it, channel, hash ->
-                it[DiscordChannels.guild] = guildIdAsLong
-                it[DiscordChannels.channel] = channel.id.toLong()
-                it[DiscordChannels.dataHashCode] = hash
-                it[DiscordChannels.data] = Json.encodeToString(channel)
+            hsetIfMapNotEmpty(
+                loritta.redisKeys.discordGuildRoles(guildId),
+                guildRoles.associate {
+                    it.id.toString() to Json.encodeToString(it)
+                }
+            )
+
+            if (guildChannels != null) {
+                hsetIfMapNotEmpty(
+                    loritta.redisKeys.discordGuildChannels(guildId),
+                    guildChannels.associate {
+                        it.id.toString() to Json.encodeToString(it)
+                    }
+                )
             }
-        }
 
-        updateGuildEmojis(guildId, guildEmojis)
-    }
-
-    /**
-     * **THIS SHOULD BE CALLED WITHIN A TRANSACTION!!**
-     */
-    fun updateGuildEmojis(guildId: Snowflake, guildEmojis: List<DiscordEmoji>) {
-        val guildIdAsLong = guildId.toLong()
-
-        updateEntitiesInDatabaseIfNeeded(
-            DiscordEmojis,
-            DiscordEmojis.guild,
-            DiscordEmojis.dataHashCode,
-            DiscordEmojis.emoji,
-            guildId,
-            guildEmojis,
-            { it.id!! },
-            DiscordEmojis.guild,
-            DiscordEmojis.emoji
-        ) { it, emoji, hash ->
-            it[DiscordEmojis.guild] = guildIdAsLong
-            it[DiscordEmojis.emoji] = emoji.id!!.toLong() // Shouldn't be null because guild emojis always have IDs
-            it[DiscordEmojis.dataHashCode] = hash
-            it[DiscordEmojis.data] = Json.encodeToString(emoji)
+            hsetIfMapNotEmpty(
+                loritta.redisKeys.discordGuildEmojis(guildId),
+                guildEmojis.associate {
+                    // Guild Emojis always have an ID
+                    it.id!!.toString() to Json.encodeToString(it)
+                }
+            )
         }
     }
 
-    /**
-     * **THIS SHOULD BE CALLED WITHIN A TRANSACTION!!**
-     *
-     * Check if the stored [entities] contains the same elements and, if not, batch upsert and delete outdated entries
-     *
-     * This stores a [dataHashColumn] of the entity, to optimize the upserting procedure to avoid multiple upserts.
-     *
-     * This reduces the query time quite a bit if we don't need to update the roles/channels/emojis
-     */
-    inline fun <T : Table, reified E> updateEntitiesInDatabaseIfNeeded(
-        table: T,
-        guildColumn: Column<Long>,
-        dataHashColumn: Column<Int>,
-        entityIdColumn: Column<Long>,
-        guildId: Snowflake,
-        entities: List<E>,
-        crossinline entityId: (E) -> (Snowflake),
-        vararg keys: Column<*>,
-        noinline body: T.(BatchInsertStatement, E, Int) -> Unit
-    ) {
-        val guildIdAsLong = guildId.toLong()
-
-        val storedEntitiesHashCodes = table.slice(dataHashColumn)
-            .select {
-                guildColumn eq guildIdAsLong
-            }
-            .map { it[dataHashColumn] }
-
-        val hashedEntities = entities.associate { entityId.invoke(it) to hashEntity(it) }
-
-        val currentEntitiesHashes = hashedEntities.values
-
-        val requiresUpdates = !currentEntitiesHashes.containsSameElements(storedEntitiesHashCodes)
-
-        if (requiresUpdates) {
-            val requiresUpdateEntities = entities.filter { hashedEntities[entityId.invoke(it)]!! !in storedEntitiesHashCodes }
-            val allEntityIds = entities.map { entityId.invoke(it) }
-
-            if (requiresUpdateEntities.isNotEmpty())
-                table.batchUpsert(requiresUpdateEntities, *keys, shouldReturnGeneratedValues = false, body = { it, e ->
-                    body.invoke(table, it, e, hashedEntities[entityId.invoke(e)]!!)
-                })
-
-            // Delete unknown roles
-            table.deleteWhere { guildColumn eq guildIdAsLong and (entityIdColumn notInList allEntityIds.map { it.toLong() }) }
-        }
+    suspend fun updateGuildEmojis(guildId: Snowflake, guildEmojis: List<DiscordEmoji>) {
+        redisCommands.hset(
+            loritta.redisKeys.discordGuilds(guildId),
+            mapOf("emojis" to Json.encodeToString(guildEmojis))
+        )
     }
 
     /**
