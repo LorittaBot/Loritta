@@ -71,8 +71,11 @@ class DiscordCacheService(
      */
     suspend fun getRoles(guildId: Snowflake, roleIds: Collection<Snowflake>): List<DiscordRole> {
         return loritta.redisConnection {
-            it.hget(loritta.redisKeys.discordGuilds(guildId), "roles")
-                ?.let { Json.decodeFromString<List<DiscordRole>>(it).let { it.filter { it.id in roleIds } } } ?: emptyList()
+            it.hgetAll(loritta.redisKeys.discordGuildRoles(guildId))
+                .filterKeys { Snowflake(it.toLong()) in roleIds }
+                .map {
+                    Json.decodeFromString(it.value)
+                }
         }
     }
 
@@ -284,8 +287,11 @@ class DiscordCacheService(
     suspend fun updateGuildEmojis(guildId: Snowflake, guildEmojis: List<DiscordEmoji>) {
         loritta.redisConnection {
             it.hset(
-                loritta.redisKeys.discordGuilds(guildId),
-                mapOf("emojis" to Json.encodeToString(guildEmojis))
+                loritta.redisKeys.discordGuildEmojis(guildId),
+                guildEmojis.associate {
+                    // Guild Emojis always have an ID
+                    it.id!!.toString() to Json.encodeToString(it)
+                }
             )
         }
     }
