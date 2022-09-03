@@ -75,12 +75,12 @@ class ProcessDiscordGatewayEvents(
 
                                 // Events were received, check the length of every list... (We need to check every list because we don't know if any other queue may have events)
                                 val queueLengths = keys.associateWith { queue ->
-                                    (it.llen(queue) ?: 0L).coerceAtMost(totalEventsPerBatch)
+                                    it.llen(queue).coerceAtMost(totalEventsPerBatch)
                                 }
 
                                 for ((queue, length) in queueLengths.filterValues { it != 0L }) {
                                     // Then do a lmpop to get all the pending events
-                                    val r = it.lmpop(ListDirection.LEFT, queue)
+                                    val r = it.lmpop(ListDirection.LEFT, length.toInt(), queue)
 
                                     if (r == null) {
                                         logger.warn { "lmpop on $queue is null! This should never happen!" }
