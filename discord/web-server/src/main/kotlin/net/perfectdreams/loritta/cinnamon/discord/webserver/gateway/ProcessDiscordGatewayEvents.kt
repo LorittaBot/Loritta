@@ -85,7 +85,7 @@ class ProcessDiscordGatewayEvents(
                                     val r = it.lmpop(ListDirection.LEFT, length.toInt(), queue)
 
                                     if (r == null) {
-                                        logger.warn { "lmpop on $queue is null! This should never happen!" }
+                                        logger.warn { "lmpop on $queue is null, even though the length of the list was $length! This should never happen!" }
                                         continue
                                     }
 
