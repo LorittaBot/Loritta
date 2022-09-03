@@ -1,17 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.webserver
 
-import dev.kord.common.entity.Snowflake
 import io.ktor.client.*
-import io.lettuce.core.ExperimentalLettuceCoroutinesApi
-import io.lettuce.core.RedisClient
-import io.lettuce.core.api.coroutines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProcessDiscordGatewayEvents
 import net.perfectdreams.loritta.cinnamon.discord.webserver.gateway.ProxyDiscordGatewayManager
@@ -19,14 +13,13 @@ import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.RootCon
 import net.perfectdreams.loritta.cinnamon.discord.webserver.webserver.InteractionsServer
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
-import java.io.File
+import redis.clients.jedis.JedisPool
 
-@OptIn(ExperimentalLettuceCoroutinesApi::class)
 class LorittaCinnamonWebServer(
     val config: RootConfig,
     private val languageManager: LanguageManager,
     private val services: Pudding,
-    private val redisClient: RedisClient,
+    private val jedisPool: JedisPool,
     private val redisKeys: RedisKeys,
     private val http: HttpClient,
     private val replicaId: Int
@@ -41,14 +34,14 @@ class LorittaCinnamonWebServer(
         redisKeys,
         config.discordShards.totalShards,
         replicaInstance,
-        redisClient.connect()
+        jedisPool
     )
 
     private val discordGatewayEventsProcessor = ProcessDiscordGatewayEvents(
+        jedisPool,
         redisKeys,
         config.totalEventsPerBatch,
         replicaInstance,
-        redisClient.connect(), // We will use a separate connection because we need to block the connection to wait for new events
         proxyDiscordGatewayManager.gateways
     )
 
@@ -61,9 +54,7 @@ class LorittaCinnamonWebServer(
             config.cinnamon,
             languageManager,
             services,
-            redisClient,
-            redisClient.connect().coroutines(),
-            redisClient.connect().sync(),
+            jedisPool,
             redisKeys,
             http
         )

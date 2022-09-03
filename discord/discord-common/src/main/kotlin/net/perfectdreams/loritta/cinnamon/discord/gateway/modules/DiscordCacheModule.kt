@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
-import io.lettuce.core.ExperimentalLettuceCoroutinesApi
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.encodeToString
@@ -17,7 +16,6 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuild
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetIfMapNotEmpty
 import java.util.concurrent.TimeUnit
 
-@OptIn(ExperimentalLettuceCoroutinesApi::class)
 class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -101,10 +99,10 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
 
                         m.redisTransaction {
                             // Delete all voice states
-                            del(m.redisKeys.discordGuildVoiceStates(guildId))
+                            it.del(m.redisKeys.discordGuildVoiceStates(guildId))
 
                             // Reinsert them
-                            hsetIfMapNotEmpty(
+                            it.hsetIfMapNotEmpty(
                                 m.redisKeys.discordGuildVoiceStates(guildId),
                                 guildVoiceStates.associate {
                                     it.userId.toString() to Json.encodeToString(
@@ -256,21 +254,23 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                 withMutex(guildId) {
                     val voiceState = event.voiceState
 
-                    // Channel is null, so let's delete voice states in the guild related to the user
-                    if (channelId == null) {
-                        m.redisCommands.hdel(m.redisKeys.discordGuildVoiceStates(guildId), voiceState.userId.toString())
-                    } else {
-                        // Channel is not null, let's upsert
-                        m.redisCommands.hset(
-                            m.redisKeys.discordGuildVoiceStates(guildId),
-                            userId.toString(),
-                            Json.encodeToString(
-                                PuddingGuildVoiceState(
-                                    channelId,
-                                    userId
+                    m.redisConnection {
+                        // Channel is null, so let's delete voice states in the guild related to the user
+                        if (channelId == null) {
+                            it.hdel(m.redisKeys.discordGuildVoiceStates(guildId), voiceState.userId.toString())
+                        } else {
+                            // Channel is not null, let's upsert
+                            it.hset(
+                                m.redisKeys.discordGuildVoiceStates(guildId),
+                                userId.toString(),
+                                Json.encodeToString(
+                                    PuddingGuildVoiceState(
+                                        channelId,
+                                        userId
+                                    )
                                 )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -308,65 +308,77 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         userId: Snowflake,
         roles: List<Snowflake>
     ) {
-        m.redisCommands.hset(
-            m.redisKeys.discordGuildMembers(guildId),
-            userId.toString(),
-            Json.encodeToString(
-                PuddingGuildMember(
-                    userId,
-                    roles
+        m.redisConnection {
+            it.hset(
+                m.redisKeys.discordGuildMembers(guildId),
+                userId.toString(),
+                Json.encodeToString(
+                    PuddingGuildMember(
+                        userId,
+                        roles
+                    )
                 )
             )
-        )
+        }
     }
 
     private suspend fun deleteGuildMember(guildMember: DiscordRemovedGuildMember) {
-        m.redisCommands.hdel(
-            m.redisKeys.discordGuildMembers(guildMember.guildId),
-            guildMember.user.id.toString()
-        )
+        m.redisConnection {
+            it.hdel(
+                m.redisKeys.discordGuildMembers(guildMember.guildId),
+                guildMember.user.id.toString()
+            )
+        }
     }
 
     private suspend fun createOrUpdateGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
-        m.redisCommands.hset(
-            m.redisKeys.discordGuildChannels(guildId),
-            channel.id.toString(),
-            Json.encodeToString(channel)
-        )
+        m.redisConnection {
+            it.hset(
+                m.redisKeys.discordGuildChannels(guildId),
+                channel.id.toString(),
+                Json.encodeToString(channel)
+            )
+        }
     }
 
     private suspend fun deleteGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
-        m.redisCommands.hdel(
-            m.redisKeys.discordGuildChannels(guildId),
-            channel.id.toString()
-        )
+        m.redisConnection {
+            it.hdel(
+                m.redisKeys.discordGuildChannels(guildId),
+                channel.id.toString()
+            )
+        }
     }
 
     private suspend fun createOrUpdateRole(guildId: Snowflake, role: DiscordRole) {
-        m.redisCommands.hset(
-            m.redisKeys.discordGuildRoles(guildId),
-            role.id.toString(),
-            Json.encodeToString(role)
-        )
+        m.redisConnection {
+            it.hset(
+                m.redisKeys.discordGuildRoles(guildId),
+                role.id.toString(),
+                Json.encodeToString(role)
+            )
+        }
     }
 
     private suspend fun deleteRole(guildId: Snowflake, roleId: Snowflake) {
-        m.redisCommands.hdel(
-            m.redisKeys.discordGuildRoles(guildId),
-            roleId.toString()
-        )
+        m.redisConnection {
+            it.hdel(
+                m.redisKeys.discordGuildRoles(guildId),
+                roleId.toString()
+            )
+        }
     }
 
     private suspend fun removeGuildData(guildId: Snowflake) {
         logger.info { "Removing $guildId's cached data..." }
 
         m.redisTransaction {
-            del(m.redisKeys.discordGuilds(guildId))
-            del(m.redisKeys.discordGuildMembers(guildId))
-            del(m.redisKeys.discordGuildRoles(guildId))
-            del(m.redisKeys.discordGuildChannels(guildId))
-            del(m.redisKeys.discordGuildEmojis(guildId))
-            del(m.redisKeys.discordGuildVoiceStates(guildId))
+            it.del(m.redisKeys.discordGuilds(guildId))
+            it.del(m.redisKeys.discordGuildMembers(guildId))
+            it.del(m.redisKeys.discordGuildRoles(guildId))
+            it.del(m.redisKeys.discordGuildChannels(guildId))
+            it.del(m.redisKeys.discordGuildEmojis(guildId))
+            it.del(m.redisKeys.discordGuildVoiceStates(guildId))
         }
     }
 }

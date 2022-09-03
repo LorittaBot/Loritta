@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.toMap
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
@@ -127,12 +126,12 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
             null // Null = All emojis are allowed
         else {
             // If the user does not have the custom emojis in about me feature, let's allow them to use specific guild's emojis
-            FREE_EMOJIS_GUILDS.flatMap {
-                loritta.redisCommands.hgetall(loritta.redisKeys.discordGuildEmojis(it))
-                    .toList(mutableListOf())
-                    .toMap()
-                    .keys
-                    .map { Snowflake(it) }
+            loritta.redisConnection {
+                FREE_EMOJIS_GUILDS.flatMap { snowflake ->
+                    it.hgetAll(loritta.redisKeys.discordGuildEmojis(snowflake))
+                        .keys
+                        .map { Snowflake(it) }
+                }
             }
         }
 

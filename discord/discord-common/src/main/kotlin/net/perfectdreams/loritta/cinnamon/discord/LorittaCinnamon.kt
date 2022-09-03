@@ -10,13 +10,6 @@ import io.ktor.client.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
-import io.lettuce.core.ExperimentalLettuceCoroutinesApi
-import io.lettuce.core.RedisClient
-import io.lettuce.core.TransactionResult
-import io.lettuce.core.api.async.RedisAsyncCommands
-import io.lettuce.core.api.coroutines.RedisCoroutinesCommands
-import io.lettuce.core.api.coroutines.multi
-import io.lettuce.core.api.sync.RedisCommands
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
@@ -67,27 +60,26 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListe
 import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.select
+import redis.clients.jedis.Jedis
+import redis.clients.jedis.JedisPool
+import redis.clients.jedis.Transaction
 import java.awt.image.BufferedImage
 import java.security.SecureRandom
 import java.time.*
 import java.util.concurrent.ConcurrentLinkedQueue
-import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
-import kotlin.time.Duration.Companion.days
 import kotlin.time.DurationUnit
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
-
 /**
  * Represents a Loritta Morenitta (Cinnamon) implementation.
  */
-@OptIn(ExperimentalLettuceCoroutinesApi::class)
 class LorittaCinnamon(
     /**
      * Gets if this replica is the main replica.
@@ -98,9 +90,7 @@ class LorittaCinnamon(
 
     val languageManager: LanguageManager,
     services: Pudding,
-    val redisClient: RedisClient,
-    val redisCommands: RedisCoroutinesCommands<String, String>,
-    private val transactionalRedisCommands: RedisCommands<String, String>,
+    val jedisPool: JedisPool,
     val redisKeys: RedisKeys,
     val http: HttpClient
 ) : LorittaDiscordStuff(config.discord, services) {
@@ -557,27 +547,20 @@ class LorittaCinnamon(
         return url
     }
 
-    private val redisTransactionMutex = Mutex()
+    suspend fun <T> redisConnection(action: (Jedis) -> (T)) = withContext(Dispatchers.IO) {
+        jedisPool.resource.use {
+            action.invoke(it)
+        }
+    }
 
-    /**
-     * Transactional use requires external synchronization when a single connection is used by multiple threads/processes.
-     * This can be achieved either by serializing transactions or by providing a dedicated connection to each concurrent process.
-     * Lettuce itself does not synchronize transactional/non-transactional invocations regardless of the used API facade.
-     *
-     * https://lettuce.io/core/release/reference/#_transactionsmulti
-     */
-    suspend fun redisTransaction(action: RedisCommands<String, String>.() -> Unit): TransactionResult? = redisTransactionMutex.withLock {
-        // We can't use Lettuce's ".multi" DSL block here, see https://github.com/lettuce-io/lettuce-core/issues/1954
-        // So we are going to use Lettuce's synchronous calls here
-        withContext(Dispatchers.IO) {
-            try {
-                transactionalRedisCommands.multi()
-                action.invoke(transactionalRedisCommands)
-                transactionalRedisCommands.exec()
-            } catch (thr: Throwable) {
-                transactionalRedisCommands.discard()
-                throw thr
-            }
+    suspend fun <T> redisTransaction(action: (Transaction) -> (T)) = redisConnection {
+        val t = it.multi()
+        try {
+            action.invoke(t)
+            t.exec()
+        } catch (e: Throwable) {
+            t.discard()
+            throw e
         }
     }
 }
