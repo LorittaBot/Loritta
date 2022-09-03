@@ -6,11 +6,11 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.Response
 import redis.clients.jedis.args.ListDirection
-import redis.clients.jedis.exceptions.JedisConnectionException
 import redis.clients.jedis.exceptions.JedisException
 import redis.clients.jedis.util.KeyValue
 import kotlin.time.Duration
@@ -119,6 +119,25 @@ class ProcessDiscordGatewayEvents(
                             }
 
                             totalPollLoopsCount++
+
+                            // Store how many events are pending in each queue
+                            val llenResponses = mutableMapOf<String, Response<Long>>()
+                            val llenPipeline = it.pipelined()
+
+                            for (queue in keys) {
+                                // Do a lmpop to get all the pending events
+                                llenResponses[queue] = llenPipeline.llen(queue)
+                            }
+
+                            llenPipeline.sync()
+
+                            for ((queue, response) in llenResponses) {
+                                val r = response.get()
+
+                                DiscordGatewayEventsProcessorMetrics.pendingEvents
+                                    .labels(getShardIdFromQueue(queue).toString())
+                                    .set(r.toDouble())
+                            }
                         } catch (e: JedisException) {
                             logger.warn(e) { "Something went wrong with the Jedis' connection!" }
                             throw e
