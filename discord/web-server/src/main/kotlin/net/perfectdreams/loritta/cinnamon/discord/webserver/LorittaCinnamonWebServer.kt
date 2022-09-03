@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.webserver
 
+import dev.kord.common.entity.Snowflake
 import io.ktor.client.*
 import io.lettuce.core.ExperimentalLettuceCoroutinesApi
 import io.lettuce.core.RedisClient
