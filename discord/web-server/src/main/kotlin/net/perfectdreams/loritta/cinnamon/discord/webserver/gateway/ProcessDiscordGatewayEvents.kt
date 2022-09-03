@@ -9,6 +9,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.args.ListDirection
+import redis.clients.jedis.exceptions.JedisConnectionException
+import redis.clients.jedis.exceptions.JedisException
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
@@ -112,6 +114,9 @@ class ProcessDiscordGatewayEvents(
                                     }
                                 }
                             }
+                        } catch (e: JedisException) {
+                            logger.warn(e) { "Something went wrong with the Jedis' connection!" }
+                            throw e
                         } catch (e: Exception) {
                             logger.warn(e) { "Something went wrong while polling pending Discord gateway events!" }
                         }
