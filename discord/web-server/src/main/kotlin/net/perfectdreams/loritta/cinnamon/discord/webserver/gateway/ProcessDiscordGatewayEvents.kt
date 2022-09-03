@@ -77,39 +77,22 @@ class ProcessDiscordGatewayEvents(
                                 receivedShardEvents.getOrPut(getShardIdFromQueue(eventsBlock.key)) { mutableListOf() }
                                     .addAll(eventsBlock.value)
 
-                                // Events were received, check the length of every list... (We need to check every list because we don't know if any other queue may have events)
+                                // Events were received, try popping every list... (We need to check every list because we don't know if any other queue may have events)
                                 // We will use pipelining to reduce round trips
-                                val llenResponses = mutableMapOf<String, Response<Long>>()
-                                val llenPipeline = it.pipelined()
-
-                                for (queue in keys) {
-                                    llenResponses[queue] = llenPipeline.llen(queue)
-                                }
-
-                                llenPipeline.sync()
-
-                                val queueLengths = llenResponses.mapValues { it.value.get() }
-
-                                // Once again a new pipeline
                                 val lmpopResponses = mutableMapOf<String, Response<KeyValue<String, List<String>>>>()
                                 val lmpopPipelines = it.pipelined()
 
-                                for ((queue, length) in queueLengths.filterValues { it != 0L }) {
-                                    // Then do a lmpop to get all the pending events
-                                    lmpopResponses[queue] = lmpopPipelines.lmpop(ListDirection.LEFT, length.toInt(), queue)
+                                for (queue in keys) {
+                                    // Do a lmpop to get all the pending events
+                                    lmpopResponses[queue] = lmpopPipelines.lmpop(ListDirection.LEFT, totalEventsPerBatch.toInt(), queue)
                                 }
 
                                 lmpopPipelines.sync()
 
                                 for ((queue, response) in lmpopResponses) {
-                                    val r = response.get()
+                                    val r = response.get() ?: continue // If null, then it means there wasn't anything to pop
 
-                                    if (r == null) {
-                                        logger.warn { "lmpop on $queue is null, even though the length of the list was ${queueLengths[queue]}! This should never happen!" }
-                                        continue
-                                    }
-
-                                    receivedShardEvents.getOrPut(getShardIdFromQueue(r.key)) { mutableListOf() }
+                                    receivedShardEvents.getOrPut(getShardIdFromQueue(queue)) { mutableListOf() }
                                         .addAll(r.value)
                                 }
 
