@@ -114,6 +114,8 @@ class ProcessDiscordGatewayEvents(
                                     }
                                 }
                             }
+
+                            totalPollLoopsCount++
                         } catch (e: JedisException) {
                             logger.warn(e) { "Something went wrong with the Jedis' connection!" }
                             throw e
