@@ -43,6 +43,11 @@ class ProcessDiscordGatewayCommands(
                     *keys
                 )
 
+                if (eventsBlock == null) {
+                    logger.info { "List pop block call has timed out! This means that there wasn't any new events to be processed. Trying again..." }
+                    continue
+                }
+
                 receivedShardCommands.getOrPut(getShardIdFromQueue(eventsBlock.key)) { mutableListOf() }
                     .addAll(eventsBlock.value)
 
