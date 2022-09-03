@@ -55,7 +55,7 @@ object LorittaCinnamonGatewayLauncher {
             rootConfig.cinnamon.services.redis.address.substringBefore(":"),
             rootConfig.cinnamon.services.redis.address.substringAfter(":").toIntOrNull() ?: 6379,
             null,
-            rootConfig.cinnamon.services.redis.address.substringBefore("@").ifEmpty { null }
+            rootConfig.cinnamon.services.redis.password
         )
 
         val loritta = LorittaCinnamonGateway(
