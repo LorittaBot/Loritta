@@ -149,7 +149,7 @@ class Loritta(
 
 	var pendingGatewayEventsCount = 0L
 
-	fun redisKey(key: String) = config.redis.keyPrefix + key
+	fun redisKey(key: String) = "${config.redis.keyPrefix}:$key"
 
 	init {
 		LorittaLauncher.loritta = this

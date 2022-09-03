@@ -35,7 +35,10 @@ class ProcessDiscordGatewayCommands(
                 // Wait until new command is received...
                 // This will return all available command of the first queue that has any pending command to be processed
                 val eventsBlock = syncCommands.blmpop(
-                    0,
+                    // Why the timeout can't be infinite: https://lettuce.io/core/release/reference/#faq.timeout.blpop
+                    // The reason it is 60s is because Lettuce's default timeout is also 60s, and if you don't set a timeout here,
+                    // the command will still be in Lettuce's command queue, so Lettuce will execute the command and just discard the response.
+                    60,
                     LMPopArgs.Builder.left().count(1),
                     *keys
                 )
@@ -72,8 +75,6 @@ class ProcessDiscordGatewayCommands(
             } catch (e: Exception) {
                 logger.warn(e) { "Something went wrong while polling pending Discord gateway events!" }
             }
-
-            logger.warn { "Left the notification connection block, this may mean that the connection is dead! Trying to reconnect..." }
         }
     }
 
