@@ -8,9 +8,11 @@ import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.discord.webserver.utils.config.ReplicaInstanceConfig
 import redis.clients.jedis.JedisPool
+import redis.clients.jedis.Response
 import redis.clients.jedis.args.ListDirection
 import redis.clients.jedis.exceptions.JedisConnectionException
 import redis.clients.jedis.exceptions.JedisException
+import redis.clients.jedis.util.KeyValue
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
@@ -76,16 +78,34 @@ class ProcessDiscordGatewayEvents(
                                     .addAll(eventsBlock.value)
 
                                 // Events were received, check the length of every list... (We need to check every list because we don't know if any other queue may have events)
-                                val queueLengths = keys.associateWith { queue ->
-                                    it.llen(queue).coerceAtMost(totalEventsPerBatch)
+                                // We will use pipelining to reduce round trips
+                                val llenResponses = mutableMapOf<String, Response<Long>>()
+                                val llenPipeline = it.pipelined()
+
+                                for (queue in keys) {
+                                    llenResponses[queue] = llenPipeline.llen(queue)
                                 }
+
+                                llenPipeline.sync()
+
+                                val queueLengths = llenResponses.mapValues { it.value.get() }
+
+                                // Once again a new pipeline
+                                val lmpopResponses = mutableMapOf<String, Response<KeyValue<String, List<String>>>>()
+                                val lmpopPipelines = it.pipelined()
 
                                 for ((queue, length) in queueLengths.filterValues { it != 0L }) {
                                     // Then do a lmpop to get all the pending events
-                                    val r = it.lmpop(ListDirection.LEFT, length.toInt(), queue)
+                                    lmpopResponses[queue] = lmpopPipelines.lmpop(ListDirection.LEFT, length.toInt(), queue)
+                                }
+
+                                lmpopPipelines.sync()
+
+                                for ((queue, response) in lmpopResponses) {
+                                    val r = response.get()
 
                                     if (r == null) {
-                                        logger.warn { "lmpop on $queue is null, even though the length of the list was $length! This should never happen!" }
+                                        logger.warn { "lmpop on $queue is null, even though the length of the list was ${queueLengths[queue]}! This should never happen!" }
                                         continue
                                     }
 
