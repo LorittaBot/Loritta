@@ -26,22 +26,13 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
 import com.mrpowergamerbr.loritta.utils.debug.DebugLog
 import com.mrpowergamerbr.loritta.website.LorittaWebsite
-import com.zaxxer.hikari.HikariDataSource
 import io.ktor.websocket.*
-import io.lettuce.core.RedisClient
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
-import net.dv8tion.jda.api.utils.data.DataObject
-import net.dv8tion.jda.internal.JDAImpl
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.DiscordGatewayCommandNotification
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.platform.discord.DiscordEmoteManager
@@ -68,6 +59,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import redis.clients.jedis.JedisPool
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.Proxy
@@ -86,7 +78,7 @@ class Loritta(
 	discordInstanceConfig: GeneralDiscordInstanceConfig,
 	config: GeneralConfig,
 	instanceConfig: GeneralInstanceConfig,
-	val redisClient: RedisClient
+	val jedisPool: JedisPool
 ) : LorittaDiscord(discordConfig, discordInstanceConfig, config, instanceConfig) {
 	// ===[ STATIC ]===
 	companion object {
@@ -334,7 +326,7 @@ class Loritta(
 		// Ou seja, agora a Loritta está funcionando, Yay!
 
 		Thread(
-			ProcessDiscordGatewayCommands(this, redisClient),
+			ProcessDiscordGatewayCommands(this, jedisPool),
 			"Loritta Gateway Commands Processor Notification Listener"
 		).start()
 	}

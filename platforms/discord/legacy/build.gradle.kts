@@ -63,9 +63,7 @@ dependencies {
         exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7
         exclude(group = "net.perfectdreams.minecraftmojangapi")
     }
-    api("io.lettuce:lettuce-core:6.2.0.RELEASE")
-    // Required for Lettuce
-    api("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.6.4")
+    api("redis.clients:jedis:4.3.0-m1")
 
     // DreamStorageService
     api("net.perfectdreams.dreamstorageservice:client:2.0.0-SNAPSHOT")

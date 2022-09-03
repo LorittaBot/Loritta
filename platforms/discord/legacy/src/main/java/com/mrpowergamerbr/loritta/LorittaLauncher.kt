@@ -4,16 +4,10 @@ import com.mrpowergamerbr.loritta.utils.config.GeneralConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralDiscordInstanceConfig
 import com.mrpowergamerbr.loritta.utils.config.GeneralInstanceConfig
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
-import com.zaxxer.hikari.util.IsolationLevel
-import io.lettuce.core.RedisClient
 import kotlinx.coroutines.debug.DebugProbes
-import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
 import net.perfectdreams.loritta.utils.readConfigurationFromFile
-import org.jetbrains.exposed.sql.DEFAULT_REPETITION_ATTEMPTS
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.DatabaseConfig
+import redis.clients.jedis.JedisPool
+import redis.clients.jedis.JedisPoolConfig
 import java.io.File
 import java.io.FileNotFoundException
 import java.nio.file.Paths
@@ -72,13 +66,22 @@ object LorittaLauncher {
 		val instanceConfig = readConfigurationFromFile<GeneralInstanceConfig>(configurationInstanceFile)
 		val discordInstanceConfig = readConfigurationFromFile<GeneralDiscordInstanceConfig>(discordInstanceConfigurationFile)
 
-		val redisClient = RedisClient.create("redis://${config.redis.address}/0")
+		val jedisPoolConfig = JedisPoolConfig()
+		jedisPoolConfig.maxTotal = 10
+
+		val jedisPool = JedisPool(
+			jedisPoolConfig,
+			config.redis.address.substringBefore(":"),
+			config.redis.address.substringAfter(":").toIntOrNull() ?: 6379,
+			null,
+			config.redis.password
+		)
 
 		// Used for Logback
 		System.setProperty("cluster.name", config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }.getUserAgent(config.loritta.environment))
 
 		// Iniciar instância da Loritta
-		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig, redisClient)
+		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig, jedisPool)
 		loritta.start()
 	}
 
