@@ -71,7 +71,7 @@ class ProcessDiscordGatewayEvents(
                 this.lastBlockDuration = time
 
                 if (eventsBlock == null) {
-                    logger.warn { "eventsBlock is null! This should never happen!" }
+                    logger.info { "List pop block call has timed out! This means that there wasn't any new events to be processed. Trying again..." }
                     continue
                 }
 
