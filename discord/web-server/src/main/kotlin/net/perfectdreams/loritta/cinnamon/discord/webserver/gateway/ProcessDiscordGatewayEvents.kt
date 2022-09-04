@@ -25,6 +25,8 @@ class ProcessDiscordGatewayEvents(
     private val jedisPool: JedisPool,
     private val redisKeys: RedisKeys,
     private val totalEventsPerBatch: Long,
+    val totalConnections: Int,
+    val connectionId: Int,
     replicaInstance: ReplicaInstanceConfig,
     // Shard ID -> ProxiedKordGateway
     private val proxiedKordGateways: Map<Int, ProxiedKordGateway>
@@ -40,7 +42,9 @@ class ProcessDiscordGatewayEvents(
     var isBlockedForNotifications = false
 
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
-    private val shardsHandledByThisProcessor = (replicaInstance.minShard..replicaInstance.maxShard)
+    private val shardsHandledByThisProcessor = (replicaInstance.minShard..replicaInstance.maxShard step totalConnections).map {
+        it + connectionId
+    }
     private val keys = shardsHandledByThisProcessor.map {
         redisKeys.discordGatewayEvents(it)
     }.toTypedArray()
@@ -79,20 +83,17 @@ class ProcessDiscordGatewayEvents(
 
                                 // Events were received, try popping every list... (We need to check every list because we don't know if any other queue may have events)
                                 // We will use pipelining to reduce round trips
-                                val lmpopResponses = mutableMapOf<String, Response<KeyValue<String, List<String>>>>()
-                                val lmpopPipelines = it.pipelined()
+                                val lmpopPipeline = it.pipelined()
 
-                                for (queue in keys) {
-                                    // Do a lmpop to get all the pending events
-                                    lmpopResponses[queue] = lmpopPipelines.lmpop(ListDirection.LEFT, totalEventsPerBatch.toInt(), queue)
-                                }
+                                // Do a lmpop to get all the pending events
+                                val lmpopResponses = keys.map { lmpopPipeline.lmpop(ListDirection.LEFT, totalEventsPerBatch.toInt(), it) }
 
-                                lmpopPipelines.sync()
+                                lmpopPipeline.sync()
 
-                                for ((queue, response) in lmpopResponses) {
+                                for (response in lmpopResponses) {
                                     val r = response.get() ?: continue // If null, then it means there wasn't anything to pop
 
-                                    receivedShardEvents.getOrPut(getShardIdFromQueue(queue)) { mutableListOf() }
+                                    receivedShardEvents.getOrPut(getShardIdFromQueue(r.key)) { mutableListOf() }
                                         .addAll(r.value)
                                 }
 
@@ -121,13 +122,10 @@ class ProcessDiscordGatewayEvents(
                             totalPollLoopsCount++
 
                             // Store how many events are pending in each queue
-                            val llenResponses = mutableMapOf<String, Response<Long>>()
                             val llenPipeline = it.pipelined()
 
-                            for (queue in keys) {
-                                // Do a lmpop to get all the pending events
-                                llenResponses[queue] = llenPipeline.llen(queue)
-                            }
+                            // Do a lmlen to get all the pending events
+                            val llenResponses = keys.associateWith { llenPipeline.llen(it) }
 
                             llenPipeline.sync()
 

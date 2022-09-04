@@ -37,15 +37,19 @@ class LorittaCinnamonWebServer(
         jedisPool
     )
 
-    private val discordGatewayEventsProcessor = ProcessDiscordGatewayEvents(
-        jedisPool,
-        redisKeys,
-        config.totalEventsPerBatch,
-        replicaInstance,
-        proxyDiscordGatewayManager.gateways
-    )
+    private val discordGatewayEventsProcessors = (0 until config.eventProcessors).map {
+        ProcessDiscordGatewayEvents(
+            jedisPool,
+            redisKeys,
+            config.totalEventsPerBatch,
+            config.eventProcessors,
+            it,
+            replicaInstance,
+            proxyDiscordGatewayManager.gateways
+        )
+    }
 
-    private var stats = Pair(0L, 0L)
+    private val stats = mutableMapOf<Int, Pair<Long, Long>>()
 
     fun start() {
         val cinnamon = LorittaCinnamon(
@@ -62,22 +66,27 @@ class LorittaCinnamonWebServer(
         cinnamon.start()
 
         // Start processing gateway events
-        GlobalScope.launch(Dispatchers.IO) {
-            discordGatewayEventsProcessor.run()
+        for (processor in discordGatewayEventsProcessors) {
+            GlobalScope.launch(Dispatchers.IO) {
+                processor.run()
+            }
         }
 
         cinnamon.addAnalyticHandler { logger ->
-            val (previousEventsProcessed, previousPollLoopsCheck) = stats
+            val statsValues = stats.values
+            val previousEventsProcessed = statsValues.sumOf { it.first }
+            val previousPollLoopsCheck = statsValues.sumOf { it.second }
 
-            val totalEventsProcessed = discordGatewayEventsProcessor.totalEventsProcessed
-            val totalPollLoopsCheck = discordGatewayEventsProcessor.totalPollLoopsCount
+            val totalEventsProcessed = discordGatewayEventsProcessors.sumOf { it.totalEventsProcessed }
+            val totalPollLoopsCheck = discordGatewayEventsProcessors.sumOf { it.totalPollLoopsCount }
 
             logger.info { "Total Discord Events processed: $totalEventsProcessed; (+${totalEventsProcessed - previousEventsProcessed})" }
             logger.info { "Total Poll Loops: $totalPollLoopsCheck; (+${totalPollLoopsCheck - previousPollLoopsCheck})" }
-
-            val previousStats = stats
-            logger.info { "Discord Events processed: ${discordGatewayEventsProcessor.totalEventsProcessed} (+${discordGatewayEventsProcessor.totalEventsProcessed - previousStats.first}); Current Poll Loops Count: ${discordGatewayEventsProcessor.totalPollLoopsCount} (+${discordGatewayEventsProcessor.totalPollLoopsCount - previousStats.second}); Last poll took ${discordGatewayEventsProcessor.lastPollDuration} to complete; Blocked for notifications? ${discordGatewayEventsProcessor.isBlockedForNotifications}; Last notification block duration: ${discordGatewayEventsProcessor.lastBlockDuration}" }
-            stats = Pair(discordGatewayEventsProcessor.totalEventsProcessed, discordGatewayEventsProcessor.totalPollLoopsCount)
+            for (processor in discordGatewayEventsProcessors) {
+                val previousStats = stats[processor.connectionId] ?: Pair(0L, 0L)
+                logger.info { "Processor shardId % ${processor.totalConnections} == ${processor.connectionId}: Discord Events processed: ${processor.totalEventsProcessed} (+${processor.totalEventsProcessed - previousStats.first}); Current Poll Loops Count: ${processor.totalPollLoopsCount} (+${processor.totalPollLoopsCount - previousStats.second}); Last poll took ${processor.lastPollDuration} to complete; Blocked for notifications? ${processor.isBlockedForNotifications}; Last notification block duration: ${processor.lastBlockDuration}" }
+                stats[processor.connectionId] = Pair(processor.totalEventsProcessed, processor.totalPollLoopsCount)
+            }
         }
 
         val interactionsServer = InteractionsServer(

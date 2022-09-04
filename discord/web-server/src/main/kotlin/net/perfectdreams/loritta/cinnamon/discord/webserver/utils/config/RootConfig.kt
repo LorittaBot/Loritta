@@ -9,5 +9,6 @@ data class RootConfig(
     val httpInteractions: InteractionsEndpointConfig,
     val discordShards: DiscordShardsConfig,
     val replicas: ReplicasConfig,
-    val totalEventsPerBatch: Long,
+    val eventProcessors: Int,
+    val totalEventsPerBatch: Long
 )
