@@ -89,25 +89,33 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
 
                     withMutex(guildId) {
                         guildCreateSemaphore.withPermit {
-                            m.cache.createOrUpdateGuild(
-                                guildId,
-                                guildName,
-                                guildIcon,
-                                guildOwnerId,
-                                guildRoles,
-                                guildChannels,
-                                guildEmojis
-                            )
-
-                            for (member in guildMembers) {
-                                createOrUpdateGuildMember(
-                                    guildId,
-                                    member.user.value!!.id,
-                                    member
-                                )
-                            }
-
+                            // We are going to do this within a transaction because this needs to be an "atomic" change
+                            // Also because Jedis transactions are pipelined, which improves performance (yay)
                             m.redisTransaction {
+                                m.cache.createOrUpdateGuild(
+                                    it,
+                                    guildId,
+                                    guildName,
+                                    guildIcon,
+                                    guildOwnerId,
+                                    guildRoles,
+                                    guildChannels,
+                                    guildEmojis
+                                )
+
+                                for (member in guildMembers) {
+                                    it.hset(
+                                        m.redisKeys.discordGuildMembers(guildId),
+                                        member.user.value!!.id.toString(),
+                                        Json.encodeToString(
+                                            PuddingGuildMember(
+                                                member.user.value!!.id,
+                                                member.roles
+                                            )
+                                        )
+                                    )
+                                }
+
                                 // Delete all voice states
                                 it.del(m.redisKeys.discordGuildVoiceStates(guildId))
 
@@ -143,15 +151,18 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                     val guildEmojis = event.guild.emojis
 
                     withMutex(guildId) {
-                        m.cache.createOrUpdateGuild(
-                            guildId,
-                            guildName,
-                            guildIcon,
-                            guildOwnerId,
-                            guildRoles,
-                            guildChannels,
-                            guildEmojis
-                        )
+                        m.redisTransaction {
+                            m.cache.createOrUpdateGuild(
+                                it,
+                                guildId,
+                                guildName,
+                                guildIcon,
+                                guildOwnerId,
+                                guildRoles,
+                                guildChannels,
+                                guildEmojis
+                            )
+                        }
                     }
 
                     logger.info { "GuildUpdate for $guildId took ${System.currentTimeMillis() - start}ms" }

@@ -86,7 +86,7 @@ class DiscordCacheService(
      *
      * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
      */
-    fun getLazyCachedLorittaPermissions(guildId: Snowflake, channelId: Snowflake) = LazyCachedPermissions(rest, pudding, this, guildId, channelId, Snowflake(lorittaDiscordConfig.applicationId))
+    fun getLazyCachedLorittaPermissions(guildId: Snowflake, channelId: Snowflake) = LazyCachedPermissions(rest, loritta, this, guildId, channelId, Snowflake(lorittaDiscordConfig.applicationId))
 
     /**
      * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
@@ -95,7 +95,7 @@ class DiscordCacheService(
      *
      * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
      */
-    fun getLazyCachedPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake) = LazyCachedPermissions(rest, pudding, this, guildId, channelId, userId)
+    fun getLazyCachedPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake) = LazyCachedPermissions(rest, loritta, this, guildId, channelId, userId)
 
     /**
      * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
@@ -234,7 +234,8 @@ class DiscordCacheService(
         }
     }
 
-    suspend fun createOrUpdateGuild(
+    fun createOrUpdateGuild(
+        redisTransaction: redis.clients.jedis.Transaction,
         guildId: Snowflake,
         guildName: String,
         guildIcon: String?,
@@ -252,36 +253,34 @@ class DiscordCacheService(
             it[DiscordGuilds.ownerId] = guildOwnerId.toLong()
         } */
 
-        loritta.redisTransaction {
-            // Delete all because we want to upsert everything
-            it.del(loritta.redisKeys.discordGuildRoles(guildId))
-            it.del(loritta.redisKeys.discordGuildChannels(guildId))
-            it.del(loritta.redisKeys.discordGuildEmojis(guildId))
+        // Delete all because we want to upsert everything
+        redisTransaction.del(loritta.redisKeys.discordGuildRoles(guildId))
+        redisTransaction.del(loritta.redisKeys.discordGuildChannels(guildId))
+        redisTransaction.del(loritta.redisKeys.discordGuildEmojis(guildId))
 
-            it.hsetIfMapNotEmpty(
-                loritta.redisKeys.discordGuildRoles(guildId),
-                guildRoles.associate {
+        redisTransaction.hsetIfMapNotEmpty(
+            loritta.redisKeys.discordGuildRoles(guildId),
+            guildRoles.associate {
+                it.id.toString() to Json.encodeToString(it)
+            }
+        )
+
+        if (guildChannels != null) {
+            redisTransaction.hsetIfMapNotEmpty(
+                loritta.redisKeys.discordGuildChannels(guildId),
+                guildChannels.associate {
                     it.id.toString() to Json.encodeToString(it)
                 }
             )
-
-            if (guildChannels != null) {
-                it.hsetIfMapNotEmpty(
-                    loritta.redisKeys.discordGuildChannels(guildId),
-                    guildChannels.associate {
-                        it.id.toString() to Json.encodeToString(it)
-                    }
-                )
-            }
-
-            it.hsetIfMapNotEmpty(
-                loritta.redisKeys.discordGuildEmojis(guildId),
-                guildEmojis.associate {
-                    // Guild Emojis always have an ID
-                    it.id!!.toString() to Json.encodeToString(it)
-                }
-            )
         }
+
+        redisTransaction.hsetIfMapNotEmpty(
+            loritta.redisKeys.discordGuildEmojis(guildId),
+            guildEmojis.associate {
+                // Guild Emojis always have an ID
+                it.id!!.toString() to Json.encodeToString(it)
+            }
+        )
     }
 
     suspend fun updateGuildEmojis(guildId: Snowflake, guildEmojis: List<DiscordEmoji>) {
