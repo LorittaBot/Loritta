@@ -5,7 +5,9 @@ import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
@@ -36,6 +38,13 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         .expireAfterAccess(1L, TimeUnit.MINUTES)
         .build<Snowflake, Int>()
         .asMap()
+
+    /**
+     * To avoid all connections in the connection pool being used by GuildCreate events, we will limit to max `connections in the pool - 5`, with a minimum of one permit GuildCreate in parallel
+     *
+     * This avoids issues where all events stop being processed due to a "explosion" of GuildCreates after a shard restart!
+     */
+    private val guildCreateSemaphore = Semaphore((m.jedisPool.maxTotal - 5).coerceAtLeast(1))
 
     private suspend inline fun withMutex(vararg ids: Snowflake, action: () -> Unit) = mutexes.getOrPut(ids.joinToString(":")) { Mutex() }.withLock(action = action)
 
@@ -79,40 +88,42 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                     }
 
                     withMutex(guildId) {
-                        m.cache.createOrUpdateGuild(
-                            guildId,
-                            guildName,
-                            guildIcon,
-                            guildOwnerId,
-                            guildRoles,
-                            guildChannels,
-                            guildEmojis
-                        )
-
-                        for (member in guildMembers) {
-                            createOrUpdateGuildMember(
+                        guildCreateSemaphore.withPermit {
+                            m.cache.createOrUpdateGuild(
                                 guildId,
-                                member.user.value!!.id,
-                                member
+                                guildName,
+                                guildIcon,
+                                guildOwnerId,
+                                guildRoles,
+                                guildChannels,
+                                guildEmojis
                             )
-                        }
 
-                        m.redisTransaction {
-                            // Delete all voice states
-                            it.del(m.redisKeys.discordGuildVoiceStates(guildId))
+                            for (member in guildMembers) {
+                                createOrUpdateGuildMember(
+                                    guildId,
+                                    member.user.value!!.id,
+                                    member
+                                )
+                            }
 
-                            // Reinsert them
-                            it.hsetIfMapNotEmpty(
-                                m.redisKeys.discordGuildVoiceStates(guildId),
-                                guildVoiceStates.associate {
-                                    it.userId.toString() to Json.encodeToString(
-                                        PuddingGuildVoiceState(
-                                            it.channelId!!, // Shouldn't be null because they are in a channel
-                                            it.userId
+                            m.redisTransaction {
+                                // Delete all voice states
+                                it.del(m.redisKeys.discordGuildVoiceStates(guildId))
+
+                                // Reinsert them
+                                it.hsetIfMapNotEmpty(
+                                    m.redisKeys.discordGuildVoiceStates(guildId),
+                                    guildVoiceStates.associate {
+                                        it.userId.toString() to Json.encodeToString(
+                                            PuddingGuildVoiceState(
+                                                it.channelId!!, // Shouldn't be null because they are in a channel
+                                                it.userId
+                                            )
                                         )
-                                    )
-                                }
-                            )
+                                    }
+                                )
+                            }
                         }
                     }
 
