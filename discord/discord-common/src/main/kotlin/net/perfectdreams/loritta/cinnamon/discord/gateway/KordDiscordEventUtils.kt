@@ -2,13 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.gateway
 
 import dev.kord.gateway.Event
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import kotlinx.serialization.json.longOrNull
-import kotlinx.serialization.json.put
+import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
 
@@ -21,14 +15,13 @@ object KordDiscordEventUtils {
     )
 
     fun parseEventFromJsonObject(gatewayPayload: JsonObject): Event? {
-        // kotlinx.serialization doesn't deserialize this well because it relies on the order
-        // Using decodeFromJsonElement crashes with "Index -1 out of bounds for length 0", why?
+        // Kord doesn't deserialize this well because it relies on the order
         try {
-            return JsonIgnoreUnknownKeys.decodeFromString(
+            return JsonIgnoreUnknownKeys.decodeFromJsonElement(
                 Event.DeserializationStrategy,
                 buildJsonObject {
                     gatewayPayload["op"]?.let {
-                        put("op", it.jsonPrimitive.longOrNull)
+                        put("op", it.jsonPrimitive.intOrNull)
                     }
 
                     gatewayPayload["t"]?.let {
@@ -42,7 +35,7 @@ object KordDiscordEventUtils {
                     gatewayPayload["d"]?.let {
                         put("d", it)
                     }
-                }.toString()
+                }
             )
         } catch (e: Exception) {
             // This can throw...
