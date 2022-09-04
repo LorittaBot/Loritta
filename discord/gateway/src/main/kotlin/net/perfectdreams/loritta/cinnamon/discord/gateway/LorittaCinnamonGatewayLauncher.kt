@@ -48,12 +48,19 @@ object LorittaCinnamonGatewayLauncher {
         logger.info { "Started Pudding client!" }
 
         val jedisPoolConfig = JedisPoolConfig()
-        jedisPoolConfig.maxTotal = 25
+        jedisPoolConfig.maxTotal = 100
+        // No reason to keep disconnecting and reconnecting from Jedis, let's keep a constant connection pool (like how HikariCP works)
+        jedisPoolConfig.minIdle = jedisPoolConfig.maxTotal
+        jedisPoolConfig.maxIdle = jedisPoolConfig.maxIdle
 
         val jedisPool = JedisPool(
             jedisPoolConfig,
             rootConfig.cinnamon.services.redis.address.substringBefore(":"),
             rootConfig.cinnamon.services.redis.address.substringAfter(":").toIntOrNull() ?: 6379,
+            // The default timeout is 2_000, which, in my experience, was causing issues where connections couldn't be created, or
+            // "Failed to connect to any host resolved for DNS name." .. "Suppressed: java.net.SocketTimeoutException: Connect timed out"
+            // https://gist.github.com/JonCole/925630df72be1351b21440625ff2671f
+            5_000,
             null,
             rootConfig.cinnamon.services.redis.password
         )
