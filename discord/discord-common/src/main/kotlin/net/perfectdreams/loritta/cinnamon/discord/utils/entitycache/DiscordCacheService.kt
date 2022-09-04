@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetIfMapNotEmpty
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetOrDelIfMapIsEmpty
 import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
 import org.jetbrains.exposed.sql.*
 import java.util.*
@@ -254,11 +254,7 @@ class DiscordCacheService(
         } */
 
         // Delete all because we want to upsert everything
-        redisTransaction.del(loritta.redisKeys.discordGuildRoles(guildId))
-        redisTransaction.del(loritta.redisKeys.discordGuildChannels(guildId))
-        redisTransaction.del(loritta.redisKeys.discordGuildEmojis(guildId))
-
-        redisTransaction.hsetIfMapNotEmpty(
+        redisTransaction.hsetOrDelIfMapIsEmpty(
             loritta.redisKeys.discordGuildRoles(guildId),
             guildRoles.associate {
                 it.id.toString() to Json.encodeToString(it)
@@ -266,7 +262,7 @@ class DiscordCacheService(
         )
 
         if (guildChannels != null) {
-            redisTransaction.hsetIfMapNotEmpty(
+            redisTransaction.hsetOrDelIfMapIsEmpty(
                 loritta.redisKeys.discordGuildChannels(guildId),
                 guildChannels.associate {
                     it.id.toString() to Json.encodeToString(it)
@@ -274,7 +270,7 @@ class DiscordCacheService(
             )
         }
 
-        redisTransaction.hsetIfMapNotEmpty(
+        redisTransaction.hsetOrDelIfMapIsEmpty(
             loritta.redisKeys.discordGuildEmojis(guildId),
             guildEmojis.associate {
                 // Guild Emojis always have an ID
@@ -285,7 +281,7 @@ class DiscordCacheService(
 
     suspend fun updateGuildEmojis(guildId: Snowflake, guildEmojis: List<DiscordEmoji>) {
         loritta.redisConnection {
-            it.hset(
+            it.hsetOrDelIfMapIsEmpty(
                 loritta.redisKeys.discordGuildEmojis(guildId),
                 guildEmojis.associate {
                     // Guild Emojis always have an ID

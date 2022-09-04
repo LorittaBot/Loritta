@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildMember
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildVoiceState
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetIfMapNotEmpty
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetOrDelIfMapIsEmpty
 import java.util.concurrent.TimeUnit
 
 class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
@@ -120,7 +120,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                                 it.del(m.redisKeys.discordGuildVoiceStates(guildId))
 
                                 // Reinsert them
-                                it.hsetIfMapNotEmpty(
+                                it.hsetOrDelIfMapIsEmpty(
                                     m.redisKeys.discordGuildVoiceStates(guildId),
                                     guildVoiceStates.associate {
                                         it.userId.toString() to Json.encodeToString(
