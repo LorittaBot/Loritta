@@ -6,6 +6,15 @@ staleTickerData: "Os dados do símbolo estão desatualizados! Para evitar dupes 
 stockMarketClosed: "A bolsa de valores está fechada, volte mais tarde! Como o simulador de ações da Loritta usa dados da Bovespa, ele só está aberto de {openTime} a {closingTime} durante dias úteis!"
 description: "Compre e venda ações do mercado de ações com sonhos! Claro, você não vai ganhar ou perder dinheiro de verdade com isso, mas o sentimento triste depois de perder dinheiro é o mesmo"
 sharesCountWithPrice: "{sharesCount, plural, =0 {# ações} one {# ação} other {# ações}} ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
+categories:
+  industrialGoods: "Bens Industriais"
+  basicMaterials: "Materiais Básicos"
+  oilGasAndBiofuels: "Petróleo, Gás e Biocombustíveis"
+  finance: "Finanças"
+  publicServices: "Serviços públicos"
+  technology: "Tecnologia"
+  communications: "Comunicações"
+  consumerGoods: "Bens de Consumo"
 info:
   label: "info"
   description: "Mostra todas as ações do mercado de ações disponíveis que você pode comprar e vender com sonhos"
