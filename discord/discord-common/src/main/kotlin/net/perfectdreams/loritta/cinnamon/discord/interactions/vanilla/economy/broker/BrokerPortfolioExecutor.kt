@@ -67,7 +67,7 @@ class BrokerPortfolioExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
                     ((totalGainsIfSoldNow - stockSum.toDouble()) / stockSum)
                 }) {
                     val (tickerId, stockCount, stockSum, stockAverage) = stockAsset
-                    val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == tickerId }
+                    val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == tickerId }.name
                     val tickerInformation = stockInformations.first { it.ticker == stockAsset.ticker }
                     val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(tickerInformation.value)
                     val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
