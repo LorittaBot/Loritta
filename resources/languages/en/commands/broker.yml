@@ -6,6 +6,16 @@ stockMarketClosed: "The stock market is closed, come back later! Because Loritta
 description: "Buy and sell stock market shares with sonhos! Of course, you won't gain or lose real money with this, but the sad feeling after losing money is the same"
 sharesCountWithPrice: "{sharesCount, plural, =0 {# shares} one {# share} other {# shares}} ({sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}})"
 
+categories:
+  industrialGoods: "Industrial Goods"
+  basicMaterials: "Basic Materials"
+  oilGasAndBiofuels: "Oil, Gas and Biofuels"
+  finance: "Finance"
+  publicServices: "Public Services"
+  technology: "Technology"
+  communications: "Communications"
+  consumerGoods: "Consumer Goods"
+
 info:
   label: "info"
   description: "Shows all available stock shares that you can buy and sell with sonhos"

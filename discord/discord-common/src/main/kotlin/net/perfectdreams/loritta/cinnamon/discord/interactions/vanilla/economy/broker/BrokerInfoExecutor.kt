@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.broker
 
+import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
@@ -8,6 +9,10 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.broker.BrokerExecutorUtils.brokerBaseEmbed
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BrokerCommand
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.BarebonesSingleUserComponentData
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.selectMenu
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerTickerInformation
 
 class BrokerInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
@@ -30,39 +35,16 @@ class BrokerInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                         brokerPortfolioCommandMention = loritta.commandMentions.brokerPortfolio,
                     )
                 ).joinToString("\n")
+            }
 
-                for (stockInformation in stockInformations.sortedBy(BrokerTickerInformation::ticker)) {
-                    val tickerId = stockInformation.ticker
-                    val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes[tickerId]
-                    val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(stockInformation.value)
-                    val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
-                    val sellingPrice = LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price
-                    val changePercentage = stockInformation.dailyPriceVariation
-
-                    val fieldTitle = "`$tickerId` ($tickerName) | ${"%.2f".format(changePercentage)}%"
-                    val emojiStatus = BrokerExecutorUtils.getEmojiStatusForTicker(stockInformation)
-
-                    if (stockInformation.status != LorittaBovespaBrokerUtils.MARKET) {
-                        field {
-                            name = "$emojiStatus $fieldTitle"
-                            value = context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))
-                            inline = true
-                        }
-                    } else if (LorittaBovespaBrokerUtils.checkIfTickerDataIsStale(stockInformation.lastUpdatedAt)) {
-                        field {
-                            name = "$emojiStatus $fieldTitle"
-                            value = """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
-                                |${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
-                            """.trimMargin()
-                            inline = true
-                        }
-                    } else {
-                        field {
-                            name = "$emojiStatus $fieldTitle"
-                            value = """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.BuyPrice(buyingPrice))}
-                                |${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.SellPrice(sellingPrice))}
-                            """.trimMargin()
-                            inline = true
+            actionRow {
+                selectMenu(
+                    BrokerInfoCategorySelectMenuExecutor,
+                    ComponentDataUtils.encode(BarebonesSingleUserComponentData(context.user.id))
+                ) {
+                    for (category in LorittaBovespaBrokerUtils.CompanyCategory.values()) {
+                        option(context.i18nContext.get(category.i18nName), category.name) {
+                            loriEmoji = category.emoji
                         }
                     }
                 }

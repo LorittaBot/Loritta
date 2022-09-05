@@ -14,10 +14,9 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 class BrokerStockInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Stock.Options.Ticker.Text) {
-            LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }
-                .forEach { (tickerId, tickerTitle) ->
-                    choice("$tickerTitle ($tickerId)", tickerId.lowercase())
-                }
+            LorittaBovespaBrokerUtils.trackedTickerCodes.map { Pair(it.ticker, it.name) }.forEach { (tickerId, tickerTitle) ->
+                choice("$tickerTitle ($tickerId)", tickerId.lowercase())
+            }
         }
     }
 
@@ -46,7 +45,7 @@ class BrokerStockInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
                 // There is two alternatives however: If the user has stock, the output will be the same as the "/broker portfolio" command
                 // If not, it will be just the buy/sell price
                 val tickerInformation = stockInformation
-                val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes[tickerInformation.ticker]
+                val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == tickerInformation.ticker }.name
                 val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(tickerInformation.value)
                 val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
                 val sellingPrice = LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price

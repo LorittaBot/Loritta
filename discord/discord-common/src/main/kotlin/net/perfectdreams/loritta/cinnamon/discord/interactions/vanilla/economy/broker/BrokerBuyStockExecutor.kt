@@ -19,9 +19,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
 class BrokerBuyStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Buy.Options.Ticker.Text) {
-            LorittaBovespaBrokerUtils.trackedTickerCodes.toList().sortedBy { it.first }.forEach { (tickerId, tickerTitle) ->
-                choice("$tickerTitle ($tickerId)", tickerId.lowercase())
-            }
+            autocomplete(BrokerBuyStockAutocompleteExecutor(loritta))
         }
 
         val quantity = optionalString("quantity", BrokerCommand.I18N_PREFIX.Buy.Options.Quantity.Text) {

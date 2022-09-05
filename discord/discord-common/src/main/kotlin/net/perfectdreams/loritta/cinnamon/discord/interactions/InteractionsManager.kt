@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.d
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserInfoUserCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.info.ShowGuildMemberPermissionsExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.StartCoinFlipGlobalBetMatchmakingButtonClickExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.broker.BrokerInfoCategorySelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.CancelSonhosTransferButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.pay.TransferSonhosButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.sonhosrank.ChangeSonhosRankPageButtonExecutor
@@ -102,6 +103,8 @@ class InteractionsManager(
         register(CancelSonhosTransferButtonExecutor(loritta))
 
         register(ChangeSonhosRankPageButtonExecutor(loritta))
+
+        register(BrokerInfoCategorySelectMenuExecutor(loritta))
 
         // ===[ SOCIAL ]===
         register(AchievementsExecutor.ChangeCategoryMenuExecutor(loritta))

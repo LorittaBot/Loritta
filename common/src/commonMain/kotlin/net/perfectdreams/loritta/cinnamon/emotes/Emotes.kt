@@ -122,6 +122,12 @@ object Emotes {
     val Handshake = UnicodeEmote("\uD83E\uDD1D")
     // TODO: Replace with https://emojipedia.org/identification-card/ when Discord updates to Unicode 14.0
     val IdentificationCard = DiscordEmote(1013846914887864350L, "identification_card", false)
+    val HighVoltage = UnicodeEmote("⚡")
+    val Antenna = UnicodeEmote("\uD83D\uDCE1")
+    val ShoppingBags = UnicodeEmote("\uD83D\uDECD️")
+    val Factory = UnicodeEmote("\uD83C\uDFED")
+    val OilDrum = UnicodeEmote("\uD83D\uDEE2️")
+    val Diamond = UnicodeEmote("\uD83D\uDC8E")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)
