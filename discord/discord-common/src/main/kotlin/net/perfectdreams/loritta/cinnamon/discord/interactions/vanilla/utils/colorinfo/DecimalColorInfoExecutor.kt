@@ -8,7 +8,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.ColorInfoCommand
 import java.awt.Color
 
-class DecimalColorInfoExecutor(loritta: LorittaCinnamon, client: GabrielaImageServerClient) : ColorInfoExecutor(loritta, client) {
+class DecimalColorInfoExecutor(loritta: LorittaCinnamon) : ColorInfoExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val decimal = integer(
             "decimal",

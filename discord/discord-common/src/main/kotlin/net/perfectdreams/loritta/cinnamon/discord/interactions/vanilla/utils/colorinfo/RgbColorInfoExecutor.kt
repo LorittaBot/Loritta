@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.ColorInfoCommand
 import java.awt.Color
 
-class RgbColorInfoExecutor(loritta: LorittaCinnamon, client: GabrielaImageServerClient) : ColorInfoExecutor(loritta, client) {
+class RgbColorInfoExecutor(loritta: LorittaCinnamon) : ColorInfoExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val red = integer(
             "red",

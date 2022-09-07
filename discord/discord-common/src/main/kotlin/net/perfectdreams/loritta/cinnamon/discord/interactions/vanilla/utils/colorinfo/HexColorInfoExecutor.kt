@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.ColorInfoCommand
 import java.awt.Color
 
-class HexColorInfoExecutor(loritta: LorittaCinnamon, client: GabrielaImageServerClient) : ColorInfoExecutor(loritta, client) {
+class HexColorInfoExecutor(loritta: LorittaCinnamon) : ColorInfoExecutor(loritta) {
     companion object {
         val HEX_PATTERN = "#?([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})".toPattern()
     }

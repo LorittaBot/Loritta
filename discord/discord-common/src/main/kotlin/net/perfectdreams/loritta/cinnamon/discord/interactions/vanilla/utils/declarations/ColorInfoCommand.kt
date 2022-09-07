@@ -17,15 +17,15 @@ class ColorInfoCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
 
     override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.UTILS, I18N_PREFIX.Description) {
         subcommand(I18N_PREFIX.RgbColorInfo.Label, I18N_PREFIX.RgbColorInfo.Description) {
-            executor = { RgbColorInfoExecutor(it, it.gabrielaImageServerClient) }
+            executor = { RgbColorInfoExecutor(it) }
         }
 
         subcommand(I18N_PREFIX.HexColorInfo.Label, I18N_PREFIX.HexColorInfo.Description) {
-            executor = { HexColorInfoExecutor(it, it.gabrielaImageServerClient) }
+            executor = { HexColorInfoExecutor(it) }
         }
 
         subcommand(I18N_PREFIX.DecimalColorInfo.Label, I18N_PREFIX.DecimalColorInfo.Description) {
-            executor = { DecimalColorInfoExecutor(it, it.gabrielaImageServerClient) }
+            executor = { DecimalColorInfoExecutor(it) }
         }
     }
 }
