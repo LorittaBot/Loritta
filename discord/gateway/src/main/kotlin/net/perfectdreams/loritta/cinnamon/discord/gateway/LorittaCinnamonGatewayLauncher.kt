@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.cinnamon.utils.config.ConfigUtils
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import java.util.*
+import javax.imageio.ImageIO
 
 object LorittaCinnamonGatewayLauncher {
     private val logger = KotlinLogging.logger {}
@@ -22,6 +23,10 @@ object LorittaCinnamonGatewayLauncher {
         // https://github.com/JetBrains/Exposed/issues/1356
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
         installCoroutinesDebugProbes()
+
+        // Speeds up image loading/writing/etc
+        // https://stackoverflow.com/a/44170254/7271796
+        ImageIO.setUseCache(false)
 
         val rootConfig = ConfigUtils.loadAndParseConfigOrCopyFromJarAndExit<RootConfig>(LorittaCinnamonGateway::class, ConfigUtils.defaultConfigFileName)
         logger.info { "Loaded Loritta's configuration file" }
