@@ -30,6 +30,9 @@ abstract class ColorInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashComman
         val saturation = hsbVals[1] * 100
         val brightness = hsbVals[2] * 100
 
+        val shadesColors = getShades(color)
+        val tintsColors = getTints(color)
+
         val complementaryColor = Color(Color.HSBtoRGB(((hue + 180) % 360 / 360), saturation / 100, brightness / 100))
 
         val triadColor1 = Color(Color.HSBtoRGB(((hue + 120) % 360 / 360), saturation / 100, brightness / 100))
@@ -40,6 +43,8 @@ abstract class ColorInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashComman
 
         val image = generate(
             Color(color.red, color.green, color.blue),
+            shadesColors,
+            tintsColors,
             Color(triadColor1.red, triadColor1.green, triadColor1.blue),
             Color(triadColor2.red, triadColor2.green, triadColor2.blue),
             Color(analogousColor1.red, analogousColor1.green, analogousColor1.blue),
@@ -66,6 +71,11 @@ abstract class ColorInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashComman
                 field("Hexadecimal", "`$hex`", true)
                 field("Decimal", "`${color.rgb}`", true)
                 field("HSB", "`${hue.toInt()}°, ${saturation.toInt()}%, ${brightness.toInt()}%`", true)
+                field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Shades), joinColorsToHex(shadesColors), false)
+                field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Tints), joinColorsToHex(tintsColors), false)
+                field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Triadic), joinColorsToHex(listOf(triadColor1, triadColor2)), false)
+                field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Analogous), joinColorsToHex(listOf(analogousColor1, analogousColor2)), false)
+                field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Complementary), joinColorsToHex(listOf(complementaryColor)), false)
 
                 this.image = "attachment://color.png"
             }
@@ -74,6 +84,8 @@ abstract class ColorInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashComman
 
     private fun generate(
         color: Color,
+        shadesColors: List<Color>,
+        tintsColors: List<Color>,
         triadColor1: Color,
         triadColor2: Color,
         analogousColor1: Color,
@@ -95,10 +107,8 @@ abstract class ColorInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashComman
         graphics.font = font
 
         // Color Sections
-        val shadesColors = getShades(color)
         drawColorSection(0, 0, graphics, shades, shadesColors)
 
-        val tintsColors = getTints(color)
         drawColorSection(0, 61, graphics, tints, tintsColors)
 
         drawColorSection(0, 122, graphics, triadic, listOf(color, triadColor1, triadColor2))
@@ -197,4 +207,6 @@ abstract class ColorInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashComman
             currentX += 48
         }
     }
+
+    fun joinColorsToHex(colors: List<Color>) = colors.joinToString(", ") { "`${String.format("#%02x%02x%02x", it.red, it.green, it.blue)}`" }
 }
