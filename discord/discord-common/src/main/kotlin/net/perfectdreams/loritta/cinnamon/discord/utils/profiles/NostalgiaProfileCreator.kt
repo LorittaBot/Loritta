@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.profiles
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Guild
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.DateUtils
@@ -18,7 +16,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNul
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
-import java.awt.Font
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 
@@ -56,11 +53,7 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 		graphics.drawImage(profileWrapper, 0, 0, null)
 		graphics.drawImage(ImageUtils.makeRoundedCorners(avatar.toBufferedImage(), 152), 4, 4, null)
 
-		// TODO: Move this somewhere else
-		val oswaldRegular = withContext(Dispatchers.IO) {
-			Font.createFont(Font.TRUETYPE_FONT, LorittaCinnamon::class.java.getResourceAsStream("/fonts/oswald-regular.ttf"))
-		}
-
+		val oswaldRegular = loritta.graphicsFonts.oswaldRegular
 		val oswaldRegular50 = oswaldRegular.deriveFont(50F)
 		val oswaldRegular42 = oswaldRegular.deriveFont(42F)
 		val oswaldRegular29 = oswaldRegular.deriveFont(29F)
@@ -83,30 +76,24 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 			x += 42
 		}
 
-		val whitneyMedium = withContext(Dispatchers.IO) {
-			Font.createFont(Font.TRUETYPE_FONT, LorittaCinnamon::class.java.getResourceAsStream("/fonts/lato-regular.ttf"))
-		}
-		val whitneySemiBold = withContext(Dispatchers.IO) {
-			Font.createFont(Font.TRUETYPE_FONT, LorittaCinnamon::class.java.getResourceAsStream("/fonts/lato-bold.ttf"))
-		}
-		val whitneyBold = withContext(Dispatchers.IO) {
-			Font.createFont(Font.TRUETYPE_FONT, LorittaCinnamon::class.java.getResourceAsStream("/fonts/lato-black.ttf"))
-		}
+		val latoRegular = loritta.graphicsFonts.latoRegular
+		val latoBold = loritta.graphicsFonts.latoBold
+		val latoBlack = loritta.graphicsFonts.latoBlack
 
-		val whitneySemiBold38 = whitneySemiBold.deriveFont(38f)
-		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
-		val whitneyBold20 = whitneyBold.deriveFont(20f)
-		val whitneySemiBold20 = whitneySemiBold.deriveFont(20f)
+		val latoBold38 = latoBold.deriveFont(38f)
+		val latoBold22 = latoBold.deriveFont(22f)
+		val latoBold20 = latoBold.deriveFont(20f)
+		val latoBlack20 = latoBlack.deriveFont(20f)
 
-		graphics.font = whitneyMedium22
+		graphics.font = latoBold22
 
 		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 6, 522, 800 - 6, 600, allowedDiscordEmojis)
 
 		val shiftY = 42
 
-		graphics.font = whitneyBold20
+		graphics.font = latoBlack20
 		ImageUtils.drawStringAndShortenWithEllipsisIfOverflow(graphics, "Global", 159, 21 + shiftY, 800 - 6)
-		graphics.font = whitneySemiBold20
+		graphics.font = latoBold20
 		// TODO: Think if this will be kept or not
 		// val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
 		/* if (globalPosition != null)
@@ -123,9 +110,9 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 
 			val xpLocal = localProfile?.get(GuildProfiles.xp)
 
-			graphics.font = whitneyBold20
+			graphics.font = latoBlack20
 			ImageUtils.drawStringAndShortenWithEllipsisIfOverflow(graphics, guild.name, 159, 61 + shiftY, 800 - 6)
-			graphics.font = whitneySemiBold20
+			graphics.font = latoBold20
 			if (xpLocal != null) {
 				if (localPosition != null)
 					ImageUtils.drawStringAndShortenWithEllipsisIfOverflow(graphics, "#$localPosition / $xpLocal XP", 159, 78 + shiftY, 800 - 6)
@@ -138,9 +125,9 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 
 		val globalEconomyPosition = getGlobalEconomyPosition(userProfile)
 
-		graphics.font = whitneyBold20
+		graphics.font = latoBlack20
 		ImageUtils.drawStringAndShortenWithEllipsisIfOverflow(graphics, "Sonhos", 159, 98  + shiftY, 800 - 6)
-		graphics.font = whitneySemiBold20
+		graphics.font = latoBold20
 		if (globalEconomyPosition != null)
 			ImageUtils.drawStringAndShortenWithEllipsisIfOverflow(graphics, "#$globalEconomyPosition / ${userProfile.money}", 159, 116  + shiftY, 800 - 6)
 		else
@@ -160,8 +147,8 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 			val marriedWith = loritta.getCachedUserInfo(marriedWithId)
 
 			if (marriedWith != null) {
-				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
-				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
+				val whitneySemiBold16 = latoBold.deriveFont(16f)
+				val whitneyMedium20 = latoBold22.deriveFont(20f)
 				graphics.font = whitneySemiBold16
 				ImageUtils.drawCenteredString(loritta, graphics, locale.get(I18nKeysData.Profiles.MarriedWith), Rectangle(545, 108, 256, 14), whitneySemiBold16)
 				graphics.font = whitneyMedium20

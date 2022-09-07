@@ -42,15 +42,9 @@ object RankingGenerator {
 
         graphics.drawImage(rankHeader, 0, 0, null)
 
-        // TODO: Move this to a constant
-        val oswaldRegular10 = Font.createFont(Font.TRUETYPE_FONT, LorittaCinnamon::class.java.getResourceAsStream("/fonts/oswald-regular.ttf"))
-            .deriveFont(10F)
-
-        val oswaldRegular16 = oswaldRegular10
-            .deriveFont(16F)
-
-        val oswaldRegular20 = oswaldRegular10
-            .deriveFont(20F)
+        val oswaldRegular10 = loritta.graphicsFonts.oswaldRegular.deriveFont(10F)
+        val oswaldRegular16 = loritta.graphicsFonts.oswaldRegular.deriveFont(16F)
+        val oswaldRegular20 = loritta.graphicsFonts.oswaldRegular.deriveFont(20F)
 
         graphics.font = oswaldRegular16
 

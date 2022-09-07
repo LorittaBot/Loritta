@@ -154,6 +154,7 @@ class LorittaCinnamon(
     lateinit var commandMentions: CommandMentions
     val unicodeEmojiManager = UnicodeEmojiManager()
     val emojiImageCache = EmojiImageCache()
+    val graphicsFonts = GraphicsFonts()
 
     val random = SecureRandom()
 

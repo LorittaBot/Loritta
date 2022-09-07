@@ -100,9 +100,7 @@ abstract class ColorInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashComman
         val colorInfo = BufferedImage(333, 250, BufferedImage.TYPE_INT_ARGB)
         val graphics = colorInfo.graphics
 
-        // TODO: Move this somewhere else
-        val pixelFont = Font.createFont(Font.TRUETYPE_FONT, LorittaCinnamon::class.java.getResourceAsStream("/fonts/m5x7.ttf"))
-        val font = pixelFont.deriveFont(16f)
+        val font = loritta.graphicsFonts.m5x7.deriveFont(16f)
 
         graphics.font = font
 
