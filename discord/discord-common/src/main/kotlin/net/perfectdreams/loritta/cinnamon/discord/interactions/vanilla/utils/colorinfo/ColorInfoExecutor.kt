@@ -23,8 +23,7 @@ abstract class ColorInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashComman
     suspend fun executeWithColor(context: ApplicationCommandContext, color: Color) {
         context.deferChannelMessage()
 
-        val hsbVals = FloatArray(3)
-        Color.RGBtoHSB(color.red, color.green, color.blue, hsbVals)
+        val hsbVals = Color.RGBtoHSB(color.red, color.green, color.blue, null)
 
         val hue = hsbVals[0] * 360
         val saturation = hsbVals[1] * 100
