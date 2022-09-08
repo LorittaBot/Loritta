@@ -1,3 +1,15 @@
+label: "obrigadoamigos"
+description: "Obrigado por serem os melhores amigos de todos os tempos! ... espere, VOCÊ NÃO!"
+slot:
+  thanks: "OBRIGADO"
+  for: "POR"
+  being: "SEREM"
+  the: "OS"
+  notYou: "VOCÊ NÃO"
+  best: "MELHORES"
+  friends: "AMIGOS"
+  of: "DE"
+  all: "TODOS OS TEMPOS"
 options:
   user1:
     text: "O primeiro usuário na imagem, \"{text}\""
@@ -11,3 +23,9 @@ options:
     text: "O quinto usuário na imagem, \"{text}\""
   user6:
     text: "O sexto usuário na imagem, \"{text}\""
+  user7:
+    text: "O sétimo usuário na imagem, \"{text}\""
+  user8:
+    text: "O oitavo usuário na imagem, \"{text}\""
+  user9:
+    text: "O nono usuário na imagem, \"{text}\""
