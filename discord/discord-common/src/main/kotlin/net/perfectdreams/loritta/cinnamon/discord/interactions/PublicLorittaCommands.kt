@@ -80,6 +80,8 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(MarkMetaCommand(languageManager))
             register(DrawnMaskCommand(languageManager))
             register(SadRealityCommand(languageManager))
+            register(EveryGroupHasCommand(languageManager))
+            register(ThanksFriendsCommand(languageManager))
 
             // ===[ VIDEOS ]===
             register(CarlyAaahCommand(languageManager))

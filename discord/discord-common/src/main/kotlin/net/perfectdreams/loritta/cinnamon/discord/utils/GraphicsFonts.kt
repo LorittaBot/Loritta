@@ -9,6 +9,7 @@ class GraphicsFonts {
     val latoRegular = loadFont("lato-regular.ttf")
     val latoBold = loadFont("lato-bold.ttf")
     val latoBlack = loadFont("lato-black.ttf")
+    val bebasNeueRegular = loadFont("bebas-neue-regular.ttf")
 
     private fun loadFont(name: String) = Font.createFont(Font.TRUETYPE_FONT, LorittaCinnamon::class.java.getResourceAsStream("/fonts/$name"))
 }

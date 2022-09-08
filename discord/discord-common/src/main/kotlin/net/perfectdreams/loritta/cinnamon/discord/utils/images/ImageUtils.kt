@@ -325,7 +325,7 @@ object ImageUtils {
         graphics: Graphics,
         text: String,
         rect: Rectangle,
-        font: Font,
+        font: Font = graphics.font,
         allowedDrawableTypes: List<DrawableType> = DrawableType.values().toList()
     ) {
         // Get the FontMetrics

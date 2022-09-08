@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
-import dev.kord.rest.request.KtorRequestException
-import dev.kord.rest.service.RestClient
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.SadRealityRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
@@ -20,23 +18,14 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import java.util.*
 
-class SadRealityExecutor(
-    loritta: LorittaCinnamon,
-    val client: GabrielaImageServerClient
-) : CinnamonSlashCommandExecutor(loritta) {
+class SadRealityExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val user1 = optionalUser("user1", SadRealityCommand.I18N_PREFIX.Options.User1.Text(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female))
-
         val user2 = optionalUser("user2", SadRealityCommand.I18N_PREFIX.Options.User2.Text(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale))
-
         val user3 = optionalUser("user3", SadRealityCommand.I18N_PREFIX.Options.User3.Text(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale))
-
         val user4 = optionalUser("user4", SadRealityCommand.I18N_PREFIX.Options.User4.Text(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale))
-
         val user5 = optionalUser("user5", SadRealityCommand.I18N_PREFIX.Options.User5.Text(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale))
-
         val user6 = optionalUser("user6", SadRealityCommand.I18N_PREFIX.Options.User6.Text(SadRealityCommand.I18N_PREFIX.Slot.You.Male))
     }
 
@@ -52,140 +41,20 @@ class SadRealityExecutor(
         val user5FromArguments = args[options.user5]
         val user6FromArguments = args[options.user6]
 
-        val listOfUsers = mutableListOf(
-            user1FromArguments?.let {
-                SadRealityUser(
-                    it.id,
-                    "${it.username}#${it.discriminator}",
-                    it.effectiveAvatar.cdnUrl.toUrl {
-                        this.size = Image.Size.Size128
-                        this.format = Image.Format.PNG
-                    }
-                )
-            },
-            user2FromArguments?.let {
-                SadRealityUser(
-                    it.id,
-                    "${it.username}#${it.discriminator}",
-                    it.effectiveAvatar.cdnUrl.toUrl {
-                        this.size = Image.Size.Size128
-                        this.format = Image.Format.PNG
-                    }
-                )
-            },
-            user3FromArguments?.let {
-                SadRealityUser(
-                    it.id,
-                    "${it.username}#${it.discriminator}",
-                    it.effectiveAvatar.cdnUrl.toUrl {
-                        this.size = Image.Size.Size128
-                        this.format = Image.Format.PNG
-                    }
-                )
-            },
-            user4FromArguments?.let {
-                SadRealityUser(
-                    it.id,
-                    "${it.username}#${it.discriminator}",
-                    it.effectiveAvatar.cdnUrl.toUrl {
-                        this.size = Image.Size.Size128
-                        this.format = Image.Format.PNG
-                    }
-                )
-            },
-            user5FromArguments?.let {
-                SadRealityUser(
-                    it.id,
-                    "${it.username}#${it.discriminator}",
-                    it.effectiveAvatar.cdnUrl.toUrl {
-                        this.size = Image.Size.Size128
-                        this.format = Image.Format.PNG
-                    }
-                )
-            },
-            user6FromArguments?.let {
-                SadRealityUser(
-                    it.id,
-                    "${it.username}#${it.discriminator}",
-                    it.effectiveAvatar.cdnUrl.toUrl {
-                        this.size = Image.Size.Size128
-                        this.format = Image.Format.PNG
-                    }
-                )
-            }
+        val (listOfUsers, successfullyFilled, noPermissionToQuery) = UserUtils.fillUsersFromRecentMessages(
+            context,
+            listOf(
+                user1FromArguments,
+                user2FromArguments,
+                user3FromArguments,
+                user4FromArguments,
+                user5FromArguments,
+                user6FromArguments
+            )
         )
 
-        var noPermissionToQuery = false
-
-        if (listOfUsers.filterNotNull().size != 6 && context is GuildApplicationCommandContext) {
-            // Get random users from chat
-            try {
-                val messages = rest.channel.getMessages(context.interaKTionsContext.channelId, limit = 100)
-
-                // We shuffle the array to avoid users using the same command a lot of times... just to be bored because all the responses are (almost) the same
-                // We also remove any users that are already present in the listOfUsers list
-                val uniqueUsers = messages
-                    .asSequence()
-                    .map { it.author }
-                    .distinctBy { it.id }
-                    .filter { !listOfUsers.filterNotNull().any { sru -> it.id == sru.id } }
-                    .shuffled()
-                    .toList()
-
-                val uniqueNonBotUsers = LinkedList(uniqueUsers.filter { !it.bot.discordBoolean })
-                val uniqueBotUsers = LinkedList(uniqueUsers.filter { it.bot.discordBoolean })
-
-                // First we will get non bot users, because users love complaining that "but I don't want to have bots on my sad reality meme!! bwaaa!!"
-                while (listOfUsers.filterNotNull().size != 6 && uniqueNonBotUsers.isNotEmpty()) {
-                    val indexOfFirstNullEntry = listOfUsers.indexOf(null)
-                    listOfUsers[indexOfFirstNullEntry] = uniqueNonBotUsers.poll()?.let {
-                        SadRealityUser(
-                            it.id,
-                            "${it.username}#${it.discriminator}",
-                            UserUtils.createUserAvatarOrDefaultUserAvatar(
-                                loritta.interaKTions.kord,
-                                it.id,
-                                it.avatar,
-                                it.discriminator
-                            )
-                                .cdnUrl
-                                .toUrl {
-                                    this.size = Image.Size.Size128
-                                    this.format = Image.Format.PNG
-                                }
-                        )
-                    }
-                }
-
-                // If we still haven't found it, we will query bot users so the user can at least have a sad reality instead of a "couldn't find enough users" message
-                while (listOfUsers.filterNotNull().size != 6 && uniqueBotUsers.isNotEmpty()) {
-                    val indexOfFirstNullEntry = listOfUsers.indexOf(null)
-                    listOfUsers[indexOfFirstNullEntry] = uniqueBotUsers.poll()?.let {
-                        SadRealityUser(
-                            it.id,
-                            "${it.username}#${it.discriminator}",
-                            UserUtils.createUserAvatarOrDefaultUserAvatar(
-                                loritta.interaKTions.kord,
-                                it.id,
-                                it.avatar,
-                                it.discriminator
-                            )
-                                .cdnUrl
-                                .toUrl {
-                                    this.size = Image.Size.Size128
-                                    this.format = Image.Format.PNG
-                                }
-                        )
-                    }
-                }
-            } catch (e: KtorRequestException) {
-                // No permission to query!
-                noPermissionToQuery = true
-            }
-        }
-
         // Not enough users!
-        if (listOfUsers.filterNotNull().size != 6) {
+        if (!successfullyFilled) {
             context.fail {
                 styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsers), Emotes.LoriSob)
 
@@ -197,13 +66,23 @@ class SadRealityExecutor(
             }
         }
 
-        // These should never be null at this point
-        val user1 = listOfUsers[0]!!
-        val user2 = listOfUsers[1]!!
-        val user3 = listOfUsers[2]!!
-        val user4 = listOfUsers[3]!!
-        val user5 = listOfUsers[4]!!
-        val user6 = listOfUsers[5]!!
+        val sadRealityUsers = listOfUsers.map {
+            SadRealityUser(
+                it.id,
+                "${it.username}#${it.discriminator}",
+                it.effectiveAvatar.cdnUrl.toUrl {
+                    this.size = Image.Size.Size128
+                    this.format = Image.Format.PNG
+                }
+            )
+        }
+
+        val user1 = sadRealityUsers[0]
+        val user2 = sadRealityUsers[1]
+        val user3 = sadRealityUsers[2]
+        val user4 = sadRealityUsers[3]
+        val user5 = sadRealityUsers[4]
+        val user6 = sadRealityUsers[5]
 
         val user1ProfileSettings = context.loritta.services.users.getUserProfile(UserId(user1.id.value))
             ?.getProfileSettings()

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
+import dev.kord.core.cache.data.UserData
 import dev.kord.core.entity.Icon
 import dev.kord.core.entity.User
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
@@ -15,6 +16,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
@@ -23,6 +25,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import java.util.*
 
 object UserUtils {
     private val logger = KotlinLogging.logger {}
@@ -233,4 +236,64 @@ object UserUtils {
             image = lorittaWebsiteUrl + "v3/assets/img/sonhos/loritta_sonhos_running.png"
         }
     }
+
+    suspend fun fillUsersFromRecentMessages(
+        context: InteractionContext,
+        users: List<User?>
+    ): UserFillResult {
+        val targetSize = users.size
+        var noPermissionToQuery = false
+        val usersToBeFilled = users.toMutableList()
+
+        if (users.filterNotNull().size != targetSize && context is GuildApplicationCommandContext) {
+            // Get random users from chat
+            try {
+                val currentNotNullUserIds = users.filterNotNull().map { it.id }
+
+                val messages = context.loritta.rest.channel.getMessages(context.channelId, limit = 100)
+
+                // We shuffle the array to avoid users using the same command a lot of times... just to be bored because all the responses are (almost) the same
+                // We also remove any users that are already present in the listOfUsers list
+                val uniqueUsers = messages
+                    .asSequence()
+                    .map { it.author }
+                    .distinctBy { it.id }
+                    .filter { it.id !in currentNotNullUserIds }
+                    .shuffled()
+                    .toList()
+
+                val uniqueNonBotUsers = LinkedList(uniqueUsers.filter { !it.bot.discordBoolean })
+                val uniqueBotUsers = LinkedList(uniqueUsers.filter { it.bot.discordBoolean })
+
+                // First we will get non bot users, because users love complaining that "but I don't want to have bots on my sad reality meme!! bwaaa!!"
+                while (usersToBeFilled.filterNotNull().size != targetSize && uniqueNonBotUsers.isNotEmpty()) {
+                    val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
+                    usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(uniqueNonBotUsers.poll()), context.loritta.kord)
+                }
+
+                // If we still haven't found it, we will query bot users so the user can at least have a sad reality instead of a "couldn't find enough users" message
+                while (usersToBeFilled.filterNotNull().size != targetSize && uniqueBotUsers.isNotEmpty()) {
+                    val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
+                    usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(uniqueBotUsers.poll()), context.loritta.kord)
+                }
+            } catch (e: KtorRequestException) {
+                // No permission to query!
+                noPermissionToQuery = true
+            }
+        }
+
+        val nonNullUsers = usersToBeFilled.filterNotNull()
+
+        return UserFillResult(
+            nonNullUsers,
+            nonNullUsers.size == targetSize,
+            noPermissionToQuery
+        )
+    }
+
+    data class UserFillResult(
+        val users: List<User>,
+        val successfullyFilled: Boolean,
+        val noPermissionToQuery: Boolean
+    )
 }
