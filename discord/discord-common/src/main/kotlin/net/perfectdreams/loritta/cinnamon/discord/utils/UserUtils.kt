@@ -295,7 +295,7 @@ object UserUtils {
             if (users.filterNotNull().size != targetSize) {
                 // What we can do is pull from the GuildProfiles!
                 val usersInTheGuild = context.loritta.services.transaction {
-                    GuildProfiles.slice(GuildProfiles.guildId)
+                    GuildProfiles.slice(GuildProfiles.userId)
                         .select { GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.isInGuild eq true) }
                         .map { it[GuildProfiles.userId] }
                         .filter { it !in usersToBeFilled.mapNotNull { it?.id?.toLong() } } // Ignore users that are already in the list
