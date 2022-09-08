@@ -34,3 +34,23 @@ fun Graphics2D.withTextAntialiasing(): Graphics2D {
  * @return The converted BufferedImage
  */
 fun Image.toBufferedImage() = ImageUtils.toBufferedImage(this)
+
+/**
+ * Resizes an image, this is way faster than using [Image.getScaledInstance], see [https://stackoverflow.com/a/32278737/7271796](https://stackoverflow.com/a/32278737/7271796)
+ */
+fun Image.getResizedInstance(width: Int, height: Int, interpolationHint: InterpolationType): BufferedImage {
+    val newImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
+    val graphics = newImage.createGraphics()
+    graphics.setRenderingHint(
+        RenderingHints.KEY_INTERPOLATION,
+        interpolationHint.graphics2DRenderingHint
+    )
+    graphics.drawImage(this, 0, 0, width, height, null)
+    return newImage
+}
+
+enum class InterpolationType(val graphics2DRenderingHint: Any) {
+    NEAREST_NEIGHBOR(RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR),
+    BILINEAR(RenderingHints.VALUE_INTERPOLATION_BILINEAR),
+    BICUBIC(RenderingHints.VALUE_INTERPOLATION_BICUBIC)
+}

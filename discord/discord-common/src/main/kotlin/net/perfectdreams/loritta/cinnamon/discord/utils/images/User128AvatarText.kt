@@ -20,7 +20,7 @@ object User128AvatarText {
     ) {
         val graphics = image.createGraphics().withTextAntialiasing()
 
-        graphics.drawImage(avatar.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH), x, y, null)
+        graphics.drawImage(avatar.getResizedInstance(128, 128, InterpolationType.BILINEAR), x, y, null)
 
         graphics.font = loritta.graphicsFonts.m5x7.deriveFont(16f)
         graphics.color = Color.BLACK

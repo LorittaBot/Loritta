@@ -24,8 +24,11 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import org.jsoup.Jsoup
+import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.net.URL
@@ -137,7 +140,7 @@ class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
                 val realY = y
 
                 val async = GlobalScope.async {
-                    val thumbnail = ImageIO.read(URL(it.thumbnail.url)).getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
+                    val thumbnail = ImageIO.read(URL(it.thumbnail.url)).getResizedInstance(55, 55, InterpolationType.BILINEAR)
                     graphics.drawImage(thumbnail, realX, realY, null)
                 }
 
@@ -162,7 +165,7 @@ class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
                 val realY = y
 
                 val async = GlobalScope.async {
-                    val thumbnail = ImageIO.read(URL(it.imageUrl)).getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
+                    val thumbnail = ImageIO.read(URL(it.imageUrl)).getResizedInstance(55, 55, InterpolationType.BILINEAR)
                     graphics.drawImage(thumbnail, realX, realY, null)
                 }
 
@@ -187,7 +190,7 @@ class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
                 val realY = y
 
                 val async = GlobalScope.async {
-                    val thumbnail = ImageIO.read(URL(it.thumbnail.url)).getScaledInstance(55, 55, BufferedImage.SCALE_SMOOTH)
+                    val thumbnail = ImageIO.read(URL(it.thumbnail.url)).getResizedInstance(55, 55, InterpolationType.BILINEAR)
                     graphics.drawImage(thumbnail, realX, realY, null)
                 }
 

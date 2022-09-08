@@ -5,6 +5,8 @@ import dev.kord.rest.Image
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
@@ -111,11 +113,7 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
                             }
 
                             graphics.drawImage(
-                                emoteImage.getScaledInstance(
-                                    emojiWidth,
-                                    emojiWidth,
-                                    BufferedImage.SCALE_SMOOTH
-                                ),
+                                emoteImage.getResizedInstance(emojiWidth, emojiWidth, InterpolationType.BILINEAR),
                                 currentX,
                                 currentY - emojiWidth + emojiYOffset,
                                 null
@@ -135,11 +133,7 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
                         }
 
                         graphics.drawImage(
-                            emoteImage.getScaledInstance(
-                                emojiWidth,
-                                emojiWidth,
-                                BufferedImage.SCALE_SMOOTH
-                            ),
+                            emoteImage.getResizedInstance(emojiWidth, emojiWidth, InterpolationType.BILINEAR),
                             currentX,
                             currentY - emojiWidth + emojiYOffset,
                             null

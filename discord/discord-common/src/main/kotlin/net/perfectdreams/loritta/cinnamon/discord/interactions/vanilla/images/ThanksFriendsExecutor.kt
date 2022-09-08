@@ -30,6 +30,8 @@ import java.awt.Color
 import java.awt.Graphics
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTime
 
 class ThanksFriendsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -169,6 +171,7 @@ class ThanksFriendsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExec
         )
     }
 
+    @OptIn(ExperimentalTime::class)
     private suspend fun generate(
         user1: UserWithBufferedImage,
         user2: UserWithBufferedImage,
@@ -197,25 +200,28 @@ class ThanksFriendsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExec
         )
 
         var i = 0
-        for ((text, user, avatar) in results) {
-            User128AvatarText.draw(
-                loritta,
-                base,
-                x,
-                y,
-                user,
-                avatar,
-                text,
-                if (i == 4) Color.RED else Color.WHITE
-            )
+        val d = measureTime {
+            for ((text, user, avatar) in results) {
+                User128AvatarText.draw(
+                    loritta,
+                    base,
+                    x,
+                    y,
+                    user,
+                    avatar,
+                    text,
+                    if (i == 4) Color.RED else Color.WHITE
+                )
 
-            x += 128
-            if (x > 256) {
-                x = 0
-                y += 128
+                x += 128
+                if (x > 256) {
+                    x = 0
+                    y += 128
+                }
+                i++
             }
-            i++
         }
+        println("Took $d!")
 
         return base
     }

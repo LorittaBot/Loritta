@@ -46,12 +46,12 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.createGraphics().withTextAntialiasing()
 
-		val avatar = ImageUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
+		val avatar = ImageUtils.downloadImage(user.avatarUrl)!!.getResizedInstance(152, 152, InterpolationType.BILINEAR)
 
-		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
+		graphics.drawImage(background.getResizedInstance(800, 600, InterpolationType.BILINEAR), 0, 0, null)
 
 		graphics.drawImage(profileWrapper, 0, 0, null)
-		graphics.drawImage(ImageUtils.makeRoundedCorners(avatar.toBufferedImage(), 152), 4, 4, null)
+		graphics.drawImage(ImageUtils.makeRoundedCorners(avatar, 152), 4, 4, null)
 
 		val oswaldRegular = loritta.graphicsFonts.oswaldRegular
 		val oswaldRegular50 = oswaldRegular.deriveFont(50F)
@@ -72,7 +72,7 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 
 		var x = 162
 		for (badge in badges) {
-			graphics.drawImage(badge.getScaledInstance(34, 34, BufferedImage.SCALE_SMOOTH), x, 466, null)
+			graphics.drawImage(badge.getResizedInstance(34, 34, InterpolationType.BILINEAR), x, 466, null)
 			x += 42
 		}
 

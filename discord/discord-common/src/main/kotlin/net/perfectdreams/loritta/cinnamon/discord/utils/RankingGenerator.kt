@@ -3,10 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.toBufferedImage
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.withTextAntialiasing
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import java.awt.Color
 import java.awt.Font
@@ -36,7 +33,7 @@ object RankingGenerator {
         val serverIconUrl = guildIconUrl?.replace("jpg", "png")
 
         val serverIcon = (serverIconUrl?.let { ImageUtils.downloadImage(it) } ?: ImageUtils.DEFAULT_DISCORD_AVATAR)
-            .getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+            .getResizedInstance(141, 141, InterpolationType.BILINEAR)
 
         graphics.drawImage(serverIcon, 259, -52, null)
 
@@ -63,8 +60,7 @@ object RankingGenerator {
             if (member != null) {
                 val puddingUserProfile = loritta.services.users.getOrCreateUserProfile(member.id)
                 val rankBackground = loritta.getUserProfileBackground(puddingUserProfile)
-                graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
-                    .toBufferedImage()
+                graphics.drawImage(rankBackground.getResizedInstance(400, 300, InterpolationType.BILINEAR)
                     .getSubimage(0, idx * 52, 400, 53), 0, currentY, null)
 
                 graphics.color = Color(0, 0, 0, 127)
@@ -87,7 +83,7 @@ object RankingGenerator {
                 ImageUtils.drawString(loritta, graphics, (profile.subsubtitle?.let { "$it // " } ?: "") + "ID: ${profile.userId}", 145, currentY + 48, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
 
                 val userAvatar = DiscordUserAvatar(loritta.kord, Snowflake(member.id.value), member.discriminator, member.avatarId)
-                val avatar = (ImageUtils.downloadImage(userAvatar.cdnUrl.toUrl { format = Image.Format.PNG }) ?: ImageUtils.DEFAULT_DISCORD_AVATAR).getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
+                val avatar = (ImageUtils.downloadImage(userAvatar.cdnUrl.toUrl { format = Image.Format.PNG }) ?: ImageUtils.DEFAULT_DISCORD_AVATAR).getResizedInstance(143, 143, InterpolationType.BILINEAR)
 
                 var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)
                 val avatarGraphics = editedAvatar.graphics as Graphics2D

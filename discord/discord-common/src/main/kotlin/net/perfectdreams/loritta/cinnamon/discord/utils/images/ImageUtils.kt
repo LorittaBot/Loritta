@@ -179,11 +179,7 @@ object ImageUtils {
 
                     if (emoteImage != null) {
                         graphics.drawImage(
-                            emoteImage.getScaledInstance(
-                                emojiWidth,
-                                emojiWidth,
-                                BufferedImage.SCALE_SMOOTH
-                            ),
+                            emoteImage.getResizedInstance(emojiWidth, emojiWidth, InterpolationType.BILINEAR),
                             currentX,
                             currentY - emojiWidth + emojiYOffset,
                             null
@@ -197,11 +193,7 @@ object ImageUtils {
 
                     if (emoteImage != null) {
                         graphics.drawImage(
-                            emoteImage.getScaledInstance(
-                                emojiWidth,
-                                emojiWidth,
-                                BufferedImage.SCALE_SMOOTH
-                            ),
+                            emoteImage.getResizedInstance(emojiWidth, emojiWidth, InterpolationType.BILINEAR),
                             currentX,
                             currentY - emojiWidth + emojiYOffset,
                             null
