@@ -14,14 +14,12 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.EveryGroupHasCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.SadRealityCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.ThanksFriendsCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.User128AvatarText
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.withTextAntialiasing
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.utils.Gender
@@ -78,130 +76,21 @@ class EveryGroupHasExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExec
             }
         }
 
-        val everyGroupHasUsers = listOf(
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[0],
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Popular.Male,
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Popular.Female,
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[1],
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Quiet.Male,
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Quiet.Female,
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[2],
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Clown.Male,
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Clown.Female,
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[3],
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Nerd.Male,
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Nerd.Female,
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[4],
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Fanboy.Male,
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Fanboy.Female,
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[5],
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Cranky.Male,
-                EveryGroupHasCommand.I18N_PREFIX.Slot.Cranky.Female,
-            )
+        val profileSettings = loritta.services.users.getProfileSettingsOfUsers(
+            listOfUsers.map { UserId(it.id) }
         )
 
-        val image = generate(
-            everyGroupHasUsers[0],
-            everyGroupHasUsers[1],
-            everyGroupHasUsers[2],
-            everyGroupHasUsers[3],
-            everyGroupHasUsers[4],
-            everyGroupHasUsers[5]
-        )
+        val result = userAvatarCollage(3, 2) {
+            localizedGenderedSlot(context.i18nContext, listOfUsers[0], Color.WHITE, profileSettings, EveryGroupHasCommand.I18N_PREFIX.Slot.Popular.Male, EveryGroupHasCommand.I18N_PREFIX.Slot.Popular.Female)
+            localizedGenderedSlot(context.i18nContext, listOfUsers[1], Color.WHITE, profileSettings, EveryGroupHasCommand.I18N_PREFIX.Slot.Quiet.Male, EveryGroupHasCommand.I18N_PREFIX.Slot.Quiet.Female)
+            localizedGenderedSlot(context.i18nContext, listOfUsers[2], Color.WHITE, profileSettings, EveryGroupHasCommand.I18N_PREFIX.Slot.Clown.Male, EveryGroupHasCommand.I18N_PREFIX.Slot.Clown.Female)
+            localizedGenderedSlot(context.i18nContext, listOfUsers[3], Color.WHITE, profileSettings, EveryGroupHasCommand.I18N_PREFIX.Slot.Nerd.Male, EveryGroupHasCommand.I18N_PREFIX.Slot.Nerd.Female)
+            localizedGenderedSlot(context.i18nContext, listOfUsers[4], Color.WHITE, profileSettings, EveryGroupHasCommand.I18N_PREFIX.Slot.Fanboy.Male, EveryGroupHasCommand.I18N_PREFIX.Slot.Fanboy.Female)
+            localizedGenderedSlot(context.i18nContext, listOfUsers[5], Color.WHITE, profileSettings, EveryGroupHasCommand.I18N_PREFIX.Slot.Cranky.Male, EveryGroupHasCommand.I18N_PREFIX.Slot.Cranky.Female)
+        }.generate(loritta)
 
         context.sendMessage {
-            addFile("every_group_has.png", image.toByteArray(ImageFormatType.PNG).inputStream())
+            addFile("every_group_has.png", result.toByteArray(ImageFormatType.PNG).inputStream())
         }
     }
-
-    private suspend fun createUserWithBufferedImage(
-        i18nContext: I18nContext,
-        user: User,
-        maleKey: StringI18nData,
-        femaleKey: StringI18nData
-    ): UserWithBufferedImage {
-        val profile = loritta.services.users.getUserProfile(UserId(user.id))
-            ?.getProfileSettings()
-            ?.gender ?: Gender.UNKNOWN
-
-        return UserWithBufferedImage(
-            when (profile) {
-                Gender.FEMALE -> i18nContext.get(femaleKey)
-                else -> i18nContext.get(maleKey)
-            },
-            user,
-            ImageUtils.downloadImage(
-                user.effectiveAvatar.cdnUrl.toUrl {
-                    format = Image.Format.PNG
-                },
-                overrideTimeoutsForSafeDomains = true
-            ) ?: ImageUtils.DEFAULT_DISCORD_AVATAR
-        )
-    }
-
-    private suspend fun generate(
-        user1: UserWithBufferedImage,
-        user2: UserWithBufferedImage,
-        user3: UserWithBufferedImage,
-        user4: UserWithBufferedImage,
-        user5: UserWithBufferedImage,
-        user6: UserWithBufferedImage
-    ): BufferedImage {
-        var x = 0
-        var y = 0
-
-        val base = BufferedImage(384, 256, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
-        val results = listOf(
-            user1,
-            user2,
-            user3,
-            user4,
-            user5,
-            user6
-        )
-
-        for ((text, user, avatar) in results) {
-            User128AvatarText.draw(
-                loritta,
-                base,
-                x,
-                y,
-                user,
-                avatar,
-                text,
-                Color.WHITE
-            )
-
-            x += 128
-            if (x > 256) {
-                x = 0
-                y += 128
-            }
-        }
-
-        return base
-    }
-
-    data class UserWithBufferedImage(
-        val text: String,
-        val user: User,
-        val image: BufferedImage,
-    )
 }

@@ -76,6 +76,29 @@ class UsersService(private val pudding: Pudding) : Service(pudding) {
     }
 
     /**
+     * Gets multiple [PuddingUserProfile], if the profile doesn't exist, then null is returned
+     *
+     * @param id the profile's ID
+     * @return a list with all user profiles, or null if it doesn't exist
+     */
+    suspend fun getUserProfiles(id: List<UserId>) = pudding.transaction {
+        Profiles.select { Profiles.id inList id.map { it.value.toLong() } }
+            .associate { it[Profiles.id].value to PuddingUserProfile.fromRow(it) }
+    }
+
+    /**
+     * Gets multiple [PuddingProfileSettings], if the profile doesn't exist, then null is returned
+     *
+     * @param id the profile's ID
+     * @return a map with all user profiles, or null if it doesn't exist
+     */
+    suspend fun getProfileSettingsOfUsers(id: List<UserId>) = pudding.transaction {
+        Profiles.innerJoin(UserSettings)
+            .select { Profiles.id inList id.map { it.value.toLong() } }
+            .associate { it[Profiles.id].value to PuddingProfileSettings.fromRow(it) }
+    }
+
+    /**
      * Gets a [PuddingProfileSettings], if the profile doesn't exist, then null is returned
      *
      * @param id the user's profile settings ID

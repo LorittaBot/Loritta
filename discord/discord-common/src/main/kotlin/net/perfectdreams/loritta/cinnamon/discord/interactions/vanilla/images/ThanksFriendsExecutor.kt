@@ -18,11 +18,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.de
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.User128AvatarText
-import net.perfectdreams.loritta.cinnamon.discord.utils.images.withTextAntialiasing
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.utils.Gender
@@ -90,146 +87,20 @@ class ThanksFriendsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExec
             }
         }
 
-        val everyGroupHasUsers = listOf(
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[0],
-                ThanksFriendsCommand.I18N_PREFIX.Slot.Thanks
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[1],
-                ThanksFriendsCommand.I18N_PREFIX.Slot.For
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[2],
-                ThanksFriendsCommand.I18N_PREFIX.Slot.Being
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[3],
-                ThanksFriendsCommand.I18N_PREFIX.Slot.The
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[4],
-                ThanksFriendsCommand.I18N_PREFIX.Slot.NotYou
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[5],
-                ThanksFriendsCommand.I18N_PREFIX.Slot.Best
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[6],
-                ThanksFriendsCommand.I18N_PREFIX.Slot.Friends
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[7],
-                ThanksFriendsCommand.I18N_PREFIX.Slot.Of
-            ),
-            createUserWithBufferedImage(
-                context.i18nContext,
-                listOfUsers[8],
-                ThanksFriendsCommand.I18N_PREFIX.Slot.All
-            )
-        )
-
-        val image = generate(
-            everyGroupHasUsers[0],
-            everyGroupHasUsers[1],
-            everyGroupHasUsers[2],
-            everyGroupHasUsers[3],
-            everyGroupHasUsers[4],
-            everyGroupHasUsers[5],
-            everyGroupHasUsers[6],
-            everyGroupHasUsers[7],
-            everyGroupHasUsers[8]
-        )
+        val result = userAvatarCollage(3, 3) {
+            localizedSlot(context.i18nContext, listOfUsers[0], Color.WHITE, ThanksFriendsCommand.I18N_PREFIX.Slot.Thanks)
+            localizedSlot(context.i18nContext, listOfUsers[1], Color.WHITE, ThanksFriendsCommand.I18N_PREFIX.Slot.For)
+            localizedSlot(context.i18nContext, listOfUsers[2], Color.WHITE, ThanksFriendsCommand.I18N_PREFIX.Slot.Being)
+            localizedSlot(context.i18nContext, listOfUsers[3], Color.WHITE, ThanksFriendsCommand.I18N_PREFIX.Slot.The)
+            localizedSlot(context.i18nContext, listOfUsers[4], Color.RED,   ThanksFriendsCommand.I18N_PREFIX.Slot.NotYou)
+            localizedSlot(context.i18nContext, listOfUsers[5], Color.WHITE, ThanksFriendsCommand.I18N_PREFIX.Slot.Best)
+            localizedSlot(context.i18nContext, listOfUsers[6], Color.WHITE, ThanksFriendsCommand.I18N_PREFIX.Slot.Friends)
+            localizedSlot(context.i18nContext, listOfUsers[7], Color.WHITE, ThanksFriendsCommand.I18N_PREFIX.Slot.Of)
+            localizedSlot(context.i18nContext, listOfUsers[8], Color.WHITE, ThanksFriendsCommand.I18N_PREFIX.Slot.All)
+        }.generate(loritta)
 
         context.sendMessage {
-            addFile("thanks_friends.png", image.toByteArray(ImageFormatType.PNG).inputStream())
+            addFile("thanks_friends.png", result.toByteArray(ImageFormatType.PNG).inputStream())
         }
     }
-
-    private suspend fun createUserWithBufferedImage(
-        i18nContext: I18nContext,
-        user: User,
-        key: StringI18nData,
-    ): UserWithBufferedImage {
-        return UserWithBufferedImage(
-            i18nContext.get(key),
-            user,
-            ImageUtils.downloadImage(
-                user.effectiveAvatar.cdnUrl.toUrl {
-                    format = Image.Format.PNG
-                },
-                overrideTimeoutsForSafeDomains = true
-            ) ?: ImageUtils.DEFAULT_DISCORD_AVATAR
-        )
-    }
-
-    @OptIn(ExperimentalTime::class)
-    private suspend fun generate(
-        user1: UserWithBufferedImage,
-        user2: UserWithBufferedImage,
-        user3: UserWithBufferedImage,
-        user4: UserWithBufferedImage,
-        user5: UserWithBufferedImage,
-        user6: UserWithBufferedImage,
-        user7: UserWithBufferedImage,
-        user8: UserWithBufferedImage,
-        user9: UserWithBufferedImage
-    ): BufferedImage {
-        var x = 0
-        var y = 0
-
-        val base = BufferedImage(384, 384, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x384 (tamanho do template)
-        val results = listOf(
-            user1,
-            user2,
-            user3,
-            user4,
-            user5,
-            user6,
-            user7,
-            user8,
-            user9
-        )
-
-        var i = 0
-        val d = measureTime {
-            for ((text, user, avatar) in results) {
-                User128AvatarText.draw(
-                    loritta,
-                    base,
-                    x,
-                    y,
-                    user,
-                    avatar,
-                    text,
-                    if (i == 4) Color.RED else Color.WHITE
-                )
-
-                x += 128
-                if (x > 256) {
-                    x = 0
-                    y += 128
-                }
-                i++
-            }
-        }
-        println("Took $d!")
-
-        return base
-    }
-
-    data class UserWithBufferedImage(
-        val text: String,
-        val user: User,
-        val image: BufferedImage,
-    )
 }

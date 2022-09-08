@@ -39,6 +39,9 @@ fun Image.toBufferedImage() = ImageUtils.toBufferedImage(this)
  * Resizes an image, this is way faster than using [Image.getScaledInstance], see [https://stackoverflow.com/a/32278737/7271796](https://stackoverflow.com/a/32278737/7271796)
  */
 fun Image.getResizedInstance(width: Int, height: Int, interpolationHint: InterpolationType): BufferedImage {
+    if (this.getWidth(null) == width && this.getHeight(null) == height)
+        return this.toBufferedImage() // It already is in the right size, yay! We don't need to resize it :3
+
     val newImage = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
     val graphics = newImage.createGraphics()
     graphics.setRenderingHint(
