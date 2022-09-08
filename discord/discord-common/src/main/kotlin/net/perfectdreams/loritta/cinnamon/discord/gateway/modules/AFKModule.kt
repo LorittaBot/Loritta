@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -55,15 +56,7 @@ class AFKModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
 
             if (lorittaProfile != null && lorittaProfile.isAfk) {
                 // omg they are AFK!
-                var reason = lorittaProfile.afkReason
-
-                if (reason != null) {
-                    if (DiscordInviteUtils.hasInvite(reason)) {
-                        reason = "¯\\_(ツ)_/¯"
-                    }
-                }
-
-                afkMembers.add(mention.id to reason)
+                afkMembers.add(mention.id to lorittaProfile.afkReason)
             }
         }
 
@@ -92,7 +85,8 @@ class AFKModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
                             append(i18nContext.get(I18nKeysData.Modules.Afk.UserIsAfk("<@${afkMemberId}>")))
                             if (afkReason != null) {
                                 append(" ")
-                                append(i18nContext.get(I18nKeysData.Modules.Afk.AfkReason(afkReason)))
+                                // To make things simpler, we will use empty set
+                                append(i18nContext.get(I18nKeysData.Modules.Afk.AfkReason(cleanUpForOutput(m, guildId, emptySet(), afkReason))))
                             }
                         },
                         Emotes.LoriSleeping
@@ -109,7 +103,7 @@ class AFKModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
                                         i18nContext.get(
                                             I18nKeysData.Modules.Afk.AfkUserReason(
                                                 "<@${afkMemberId}>",
-                                                afkReason
+                                                cleanUpForOutput(m, guildId, emptySet(), afkReason)
                                             )
                                         )
                                     )

@@ -5,13 +5,14 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import net.perfectdreams.discordinteraktions.common.BarebonesInteractionContext
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
-import net.perfectdreams.loritta.cinnamon.emotes.Emote
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.entities.LorittaReply
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.modals.CinnamonModalExecutorDeclaration
+import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emote
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.entities.LorittaReply
 
 open class BarebonesInteractionContext(
     open val interaKTionsContext: BarebonesInteractionContext
@@ -57,6 +58,9 @@ open class BarebonesInteractionContext(
         apply(block)
     }
 
+    suspend inline fun sendMessage(builder: InteractionOrFollowupMessageCreateBuilder) = interaKTionsContext.sendPublicMessage(builder)
+    suspend inline fun sendEphemeralMessage(builder: InteractionOrFollowupMessageCreateBuilder) = interaKTionsContext.sendEphemeralMessage(builder)
+
     suspend fun sendEmbed(message: String = "", embed: EmbedBuilder.() -> Unit) {
         sendMessage(message, EmbedBuilder().apply(embed))
     }
@@ -71,7 +75,7 @@ open class BarebonesInteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendReply(content: String, prefix: net.perfectdreams.loritta.cinnamon.emotes.Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
+    suspend fun sendReply(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
         styled(content, prefix)
 
         apply(block)
@@ -102,7 +106,7 @@ open class BarebonesInteractionContext(
      *
      * @param reply the already built LorittaReply
      */
-    suspend fun sendReply(reply: net.perfectdreams.loritta.cinnamon.entities.LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
+    suspend fun sendReply(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
         styled(reply)
 
         apply(block)
@@ -118,7 +122,7 @@ open class BarebonesInteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendEphemeralReply(content: String, prefix: net.perfectdreams.loritta.cinnamon.emotes.Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+    suspend fun sendEphemeralReply(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
         styled(content, prefix)
 
         apply(block)
@@ -149,7 +153,7 @@ open class BarebonesInteractionContext(
      *
      * @param reply the already built LorittaReply
      */
-    suspend fun sendEphemeralReply(reply: net.perfectdreams.loritta.cinnamon.entities.LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+    suspend fun sendEphemeralReply(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
         styled(reply)
 
         apply(block)
@@ -164,8 +168,8 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun fail(content: String, prefix: net.perfectdreams.loritta.cinnamon.emotes.Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
-        net.perfectdreams.loritta.cinnamon.entities.LorittaReply(
+    inline fun fail(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
+        LorittaReply(
             content, prefix.asMention
         ),
         block
@@ -180,7 +184,7 @@ open class BarebonesInteractionContext(
      * @see CommandException
      */
     inline fun fail(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
-        net.perfectdreams.loritta.cinnamon.entities.LorittaReply(
+        LorittaReply(
             content, prefix
         ),
         block
@@ -194,7 +198,7 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun fail(reply: net.perfectdreams.loritta.cinnamon.entities.LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail {
+    inline fun fail(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail {
         styled(reply)
         apply(block)
     }
@@ -226,8 +230,8 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun failEphemerally(content: String, prefix: net.perfectdreams.loritta.cinnamon.emotes.Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
-        net.perfectdreams.loritta.cinnamon.entities.LorittaReply(
+    inline fun failEphemerally(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
+        LorittaReply(
             content, prefix.asMention
         ),
         block
@@ -242,7 +246,7 @@ open class BarebonesInteractionContext(
      * @see CommandException
      */
     inline fun failEphemerally(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
-        net.perfectdreams.loritta.cinnamon.entities.LorittaReply(
+        LorittaReply(
             content, prefix
         ),
         block
@@ -256,7 +260,7 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun failEphemerally(reply: net.perfectdreams.loritta.cinnamon.entities.LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally {
+    inline fun failEphemerally(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally {
         styled(reply)
         apply(block)
     }

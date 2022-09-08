@@ -1,15 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils
 
 import com.ionspin.kotlin.bignum.integer.toBigInteger
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.math.MathUtils
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.AnagramCommand
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.utils.math.MathUtils
 
 class AnagramExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -39,7 +40,7 @@ class AnagramExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
             styled(
                 content = context.i18nContext.get(
                     AnagramCommand.I18N_PREFIX.Result(
-                        shuffledWord
+                        cleanUpForOutput(context, shuffledWord)
                     )
                 ) + " ${Emotes.LoriWow}",
                 prefix = "✍"
@@ -48,7 +49,7 @@ class AnagramExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
             styled(
                 content = context.i18nContext.get(
                     AnagramCommand.I18N_PREFIX.Stats(
-                        currentWord,
+                        cleanUpForOutput(context, currentWord),
                         max // TODO: Can't format this as a number
                     )
                 ),

@@ -71,6 +71,9 @@ class ServerConfigsService(private val pudding: Pudding) : Service(pudding) {
      * Gets the [LorittaPermission] that the [roleIds] on [guildId] has.
      */
     suspend fun getLorittaPermissionsOfRoles(guildId: ULong, roleIds: List<ULong>): Map<Long, EnumSet<LorittaPermission>> {
+        if (roleIds.isEmpty())
+            return emptyMap()
+
         return pudding.transaction {
             // Pull the permissions from the database
             val permissions = ServerRolePermissions.select {

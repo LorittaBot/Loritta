@@ -1,13 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform
 
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.TextTransformCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.TextTransformCommand
 
-class TextVemDeZapExecutor(loritta: LorittaCinnamon) : TextExecutor(loritta) {
+class TextVemDeZapExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val mood = string("mood", TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Text) {
             choice(TextTransformCommand.VEMDEZAP_I18N_PREFIX.Options.Mood.Choice.Happy, "happy")
@@ -33,7 +34,7 @@ class TextVemDeZapExecutor(loritta: LorittaCinnamon) : TextExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val mood = ZapZapMood.valueOf(args[options.mood].toUpperCase())
         val level = args[options.level]
-        val split = args[options.text].split(" ")
+        val split = cleanUpForOutput(context, args[options.text]).split(" ")
 
         var output = ""
 
@@ -87,12 +88,7 @@ class TextVemDeZapExecutor(loritta: LorittaCinnamon) : TextExecutor(loritta) {
             }
         }
 
-        // TODO: Fix Escape Mentions
-        sendPublicOrEphemeralReplyIfTheMessageHasInvite(
-            context,
-            output,
-            "✍"
-        )
+        context.sendReply(output, "✍")
     }
 
     enum class ZapZapMood {

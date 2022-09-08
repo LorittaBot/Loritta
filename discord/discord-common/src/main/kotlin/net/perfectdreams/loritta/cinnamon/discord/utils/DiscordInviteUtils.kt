@@ -29,4 +29,13 @@ object DiscordInviteUtils {
      * Checks if the [text] has any Discord invite URLs
      */
     fun hasInvite(text: String) = getInviteCodeFromUrl(text) != null
+
+    /**
+     * Strips invites from the [text]
+     */
+    fun stripInvites(text: String): String {
+        return text
+            .replace(shortInviteRegex, "")
+            .replace(longInviteRegex, "")
+    }
 }

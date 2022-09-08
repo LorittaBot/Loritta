@@ -1,13 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform
 
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.TextTransformCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.TextTransformCommand
 
-class TextUppercaseExecutor(loritta: LorittaCinnamon) : TextExecutor(loritta) {
+class TextUppercaseExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val text = string("text", TextTransformCommand.I18N_PREFIX.Uppercase.Description)
     }
@@ -15,10 +16,9 @@ class TextUppercaseExecutor(loritta: LorittaCinnamon) : TextExecutor(loritta) {
     override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val text = args[options.text]
+        val text = cleanUpForOutput(context, args[options.text])
 
-        sendPublicOrEphemeralReplyIfTheMessageHasInvite(
-            context,
+        context.sendReply(
             content = text.uppercase(),
             prefix = "✍"
         )
