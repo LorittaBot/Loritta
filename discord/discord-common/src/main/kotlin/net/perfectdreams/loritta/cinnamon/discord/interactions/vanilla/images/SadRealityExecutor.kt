@@ -15,10 +15,18 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.de
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.EveryGroupHasCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.userAvatarCollage
+import net.perfectdreams.loritta.cinnamon.discord.utils.toJavaColor
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import java.awt.Color
 
 class SadRealityExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -67,143 +75,125 @@ class SadRealityExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServ
             }
         }
 
-        val sadRealityUsers = listOfUsers.map {
-            SadRealityUser(
-                it.id,
-                "${it.username}#${it.discriminator}",
-                it.effectiveAvatar.cdnUrl.toUrl {
-                    this.size = Image.Size.Size128
-                    this.format = Image.Format.PNG
-                }
-            )
-        }
-
-        val user1 = sadRealityUsers[0]
-        val user2 = sadRealityUsers[1]
-        val user3 = sadRealityUsers[2]
-        val user4 = sadRealityUsers[3]
-        val user5 = sadRealityUsers[4]
-        val user6 = sadRealityUsers[5]
-
-        val user1ProfileSettings = context.loritta.services.users.getUserProfile(UserId(user1.id.value))
-            ?.getProfileSettings()
-        val user2ProfileSettings = context.loritta.services.users.getUserProfile(UserId(user2.id.value))
-            ?.getProfileSettings()
-        val user3ProfileSettings = context.loritta.services.users.getUserProfile(UserId(user3.id.value))
-            ?.getProfileSettings()
-        val user4ProfileSettings = context.loritta.services.users.getUserProfile(UserId(user4.id.value))
-            ?.getProfileSettings()
-        val user5ProfileSettings = context.loritta.services.users.getUserProfile(UserId(user5.id.value))
-            ?.getProfileSettings()
-        val user6ProfileSettings = context.loritta.services.users.getUserProfile(UserId(user6.id.value))
-            ?.getProfileSettings()
-
-        val lovedGender = user1ProfileSettings?.gender ?: Gender.UNKNOWN
-        val theFatherGender = user2ProfileSettings?.gender ?: Gender.UNKNOWN
-        val theBrotherGender = user3ProfileSettings?.gender ?: Gender.UNKNOWN
-        val theFirstLoverGender = user4ProfileSettings?.gender ?: Gender.UNKNOWN
-        val theBestFriendGender = user5ProfileSettings?.gender ?: Gender.UNKNOWN
-        val youGender = user6ProfileSettings?.gender ?: Gender.UNKNOWN
-
-        val result = client.images.sadReality(
-            SadRealityRequest(
-                SadRealityRequest.SadRealityUser(
-                    if (user1.id == applicationId) {
-                        context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Loritta)
-                    } else {
-                        when (lovedGender) {
-                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Male)
-                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female)
-                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female)
-                        }
-                    },
-                    user1.tag,
-                    URLImageData(user1.avatarUrl)
-                ),
-                SadRealityRequest.SadRealityUser(
-                    when (theFatherGender) {
-                        Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
-                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderMale)
-                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale)
-                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale)
-                        }
-                        Gender.FEMALE -> when (lovedGender) {
-                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderMale)
-                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderFemale)
-                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderFemale)
-                        }
-                    },
-                    user2.tag,
-                    URLImageData(user2.avatarUrl),
-                ),
-                SadRealityRequest.SadRealityUser(
-                    when (theBrotherGender) {
-                        Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
-                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderMale)
-                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale)
-                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale)
-                        }
-                        Gender.FEMALE -> when (lovedGender) {
-                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderMale)
-                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderFemale)
-                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderFemale)
-                        }
-                    },
-                    user3.tag,
-                    URLImageData(user3.avatarUrl),
-                ),
-                SadRealityRequest.SadRealityUser(
-                    when (theFirstLoverGender) {
-                        Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
-                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderMale)
-                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale)
-                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale)
-                        }
-                        Gender.FEMALE -> when (lovedGender) {
-                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderMale)
-                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderFemale)
-                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderFemale)
-                        }
-                    },
-                    user4.tag,
-                    URLImageData(user4.avatarUrl),
-                ),
-                SadRealityRequest.SadRealityUser(
-                    when (theBestFriendGender) {
-                        Gender.MALE, Gender.UNKNOWN -> when (lovedGender) {
-                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderMale)
-                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale)
-                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale)
-                        }
-                        Gender.FEMALE -> when (lovedGender) {
-                            Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderMale)
-                            Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderFemale)
-                            Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderFemale)
-                        }
-                    },
-                    user5.tag,
-                    URLImageData(user5.avatarUrl),
-                ),
-                SadRealityRequest.SadRealityUser(
-                    when (youGender) {
-                        Gender.MALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Male)
-                        Gender.FEMALE -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Female)
-                        Gender.UNKNOWN -> context.i18nContext.get(SadRealityCommand.I18N_PREFIX.Slot.You.Male)
-                    },
-                    user6.tag,
-                    URLImageData(user6.avatarUrl),
-                )
-            )
+        val profileSettings = loritta.services.users.getProfileSettingsOfUsers(
+            listOfUsers.map { net.perfectdreams.loritta.cinnamon.discord.utils.UserId(it.id) }
         )
 
+        val lovedGender = profileSettings[listOfUsers[0].id.toLong()]?.gender ?: Gender.FEMALE // The default is FEMALE for the loved gender
+        val theFatherGender = profileSettings[listOfUsers[1].id.toLong()]?.gender ?: Gender.UNKNOWN
+        val theBrotherGender = profileSettings[listOfUsers[2].id.toLong()]?.gender ?: Gender.UNKNOWN
+        val theFirstLoverGender = profileSettings[listOfUsers[3].id.toLong()]?.gender ?: Gender.UNKNOWN
+        val theBestFriendGender = profileSettings[listOfUsers[4].id.toLong()]?.gender ?: Gender.UNKNOWN
+        val youGender = profileSettings[listOfUsers[5].id.toLong()]?.gender ?: Gender.UNKNOWN
+
+        // This is more complicated than the others userAvatarCollage's uses because it depends on the "lovedGender" value
+        val result = userAvatarCollage(3, 2) {
+            if (listOfUsers[0].id == applicationId) {
+                // Easter Egg: Loritta
+                localizedSlot(context.i18nContext, listOfUsers[0], LorittaColors.LorittaAqua.toJavaColor(), SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Loritta)
+            } else {
+                localizedGenderedSlot(
+                    context.i18nContext,
+                    listOfUsers[0],
+                    Color.WHITE,
+                    lovedGender,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Male,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheGuyYouLike.Female
+                )
+            }
+
+            if (lovedGender == Gender.FEMALE) {
+                localizedGenderedSlot(
+                    context.i18nContext,
+                    listOfUsers[1],
+                    Color.WHITE,
+                    theFatherGender,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderFemale,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderFemale
+                )
+            } else {
+                localizedGenderedSlot(
+                    context.i18nContext,
+                    listOfUsers[1],
+                    Color.WHITE,
+                    theFatherGender,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheFather.Male.LovedGenderMale,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheFather.Female.LovedGenderMale
+                )
+            }
+
+            if (lovedGender == Gender.FEMALE) {
+                localizedGenderedSlot(
+                    context.i18nContext,
+                    listOfUsers[2],
+                    Color.WHITE,
+                    theBrotherGender,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderFemale,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderFemale
+                )
+            } else {
+                localizedGenderedSlot(
+                    context.i18nContext,
+                    listOfUsers[2],
+                    Color.WHITE,
+                    theBrotherGender,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Male.LovedGenderMale,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheBrother.Female.LovedGenderMale
+                )
+            }
+
+            if (lovedGender == Gender.FEMALE) {
+                localizedGenderedSlot(
+                    context.i18nContext,
+                    listOfUsers[3],
+                    Color.WHITE,
+                    theFirstLoverGender,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderFemale,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderFemale
+                )
+            } else {
+                localizedGenderedSlot(
+                    context.i18nContext,
+                    listOfUsers[3],
+                    Color.WHITE,
+                    theFirstLoverGender,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Male.LovedGenderMale,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheFirstLover.Female.LovedGenderMale
+                )
+            }
+
+            if (lovedGender == Gender.FEMALE) {
+                localizedGenderedSlot(
+                    context.i18nContext,
+                    listOfUsers[4],
+                    Color.WHITE,
+                    theBestFriendGender,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderFemale,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderFemale
+                )
+            } else {
+                localizedGenderedSlot(
+                    context.i18nContext,
+                    listOfUsers[4],
+                    Color.WHITE,
+                    theBestFriendGender,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Male.LovedGenderMale,
+                    SadRealityCommand.I18N_PREFIX.Slot.TheBestFriend.Female.LovedGenderMale
+                )
+            }
+
+            localizedGenderedSlot(
+                context.i18nContext,
+                listOfUsers[5],
+                Color.WHITE,
+                youGender,
+                SadRealityCommand.I18N_PREFIX.Slot.You.Male,
+                SadRealityCommand.I18N_PREFIX.Slot.You.Female
+            )
+        }.generate(loritta)
+
         context.sendMessage {
-            addFile("sad_reality.png", result.inputStream())
+            addFile("sad_reality.png", result.toByteArray(ImageFormatType.PNG).inputStream())
         }
     }
-
-    data class SadRealityUser(
-        val id: Snowflake,
-        val tag: String,
-        val avatarUrl: String
-    )
 }
