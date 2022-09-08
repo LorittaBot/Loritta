@@ -17,6 +17,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class SadRealityExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
@@ -59,9 +60,9 @@ class SadRealityExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServ
                 styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsers), Emotes.LoriSob)
 
                 if (noPermissionToQuery) {
-                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersPermissionsTip), Emotes.LoriReading)
+                    styled(context.i18nContext.get(I18nKeysData.Commands.UsersFill.NotEnoughUsersPermissionsTip), Emotes.LoriReading)
                 } else if (context !is GuildApplicationCommandContext) {
-                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersGuildTip), Emotes.LoriReading)
+                    styled(context.i18nContext.get(I18nKeysData.Commands.UsersFill.NotEnoughUsersGuildTip), Emotes.LoriReading)
                 }
             }
         }
