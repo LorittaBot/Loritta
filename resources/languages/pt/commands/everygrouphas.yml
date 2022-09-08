@@ -1,0 +1,34 @@
+label: "todogrupotem"
+description: "Todo grupo tem estes tipos de pessoas... incluindo o seu!"
+slot:
+  popular:
+    male: "O POPULAR"
+    female: "A POPULAR"
+  quiet:
+    male: "O QUIETO"
+    female: "A QUIETA"
+  clown:
+    male: "O ENGRAÇADINHO"
+    female: "A ENGRAÇADINHA"
+  nerd:
+    male: "O NERD"
+    female: "A NERD"
+  fanboy:
+    male: "O FANBOY"
+    female: "A FANBOY"
+  cranky:
+    male: "O IRRITADINHO"
+    female: "A IRRITADINHA"
+options:
+  user1:
+    text: "O primeiro usuário na imagem, \"{text}\""
+  user2:
+    text: "O segundo usuário na imagem, \"{text}\""
+  user3:
+    text: "O terceiro usuário na imagem, \"{text}\""
+  user4:
+    text: "O quatro usuário na imagem, \"{text}\""
+  user5:
+    text: "O quinto usuário na imagem, \"{text}\""
+  user6:
+    text: "O sexto usuário na imagem, \"{text}\""
