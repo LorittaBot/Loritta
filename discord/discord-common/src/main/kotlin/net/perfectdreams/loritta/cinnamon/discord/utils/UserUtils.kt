@@ -9,6 +9,7 @@ import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.json.request.DMCreateRequest
 import dev.kord.rest.json.request.MultipartMessageCreateRequest
 import dev.kord.rest.request.KtorRequestException
+import dev.kord.rest.route.Position
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
@@ -25,6 +26,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import java.util.*
 
 object UserUtils {
@@ -245,40 +250,92 @@ object UserUtils {
         var noPermissionToQuery = false
         val usersToBeFilled = users.toMutableList()
 
-        if (users.filterNotNull().size != targetSize && context is GuildApplicationCommandContext) {
-            // Get random users from chat
-            try {
-                val currentNotNullUserIds = users.filterNotNull().map { it.id }
+        // Are in a guild? Because if yes, we can do more :sparkles: crazy :sparkles: stuff to fill the users
+        if (context is GuildApplicationCommandContext) {
+            val guildId = context.guildId
 
-                val messages = context.loritta.rest.channel.getMessages(context.channelId, limit = 100)
+            if (users.filterNotNull().size != targetSize) {
+                // Get random users from chat
+                try {
+                    val currentNotNullUserIds = users.filterNotNull().map { it.id }
 
-                // We shuffle the array to avoid users using the same command a lot of times... just to be bored because all the responses are (almost) the same
-                // We also remove any users that are already present in the listOfUsers list
-                val uniqueUsers = messages
-                    .asSequence()
-                    .map { it.author }
-                    .distinctBy { it.id }
-                    .filter { it.id !in currentNotNullUserIds }
-                    .shuffled()
-                    .toList()
+                    val messages = context.loritta.rest.channel.getMessages(context.channelId, limit = 100)
 
-                val uniqueNonBotUsers = LinkedList(uniqueUsers.filter { !it.bot.discordBoolean })
-                val uniqueBotUsers = LinkedList(uniqueUsers.filter { it.bot.discordBoolean })
+                    // We shuffle the array to avoid users using the same command a lot of times... just to be bored because all the responses are (almost) the same
+                    // We also remove any users that are already present in the listOfUsers list
+                    val uniqueUsers = messages
+                        .asSequence()
+                        .map { it.author }
+                        .distinctBy { it.id }
+                        .filter { it.id !in currentNotNullUserIds }
+                        .shuffled()
+                        .toList()
 
-                // First we will get non bot users, because users love complaining that "but I don't want to have bots on my sad reality meme!! bwaaa!!"
-                while (usersToBeFilled.filterNotNull().size != targetSize && uniqueNonBotUsers.isNotEmpty()) {
-                    val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
-                    usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(uniqueNonBotUsers.poll()), context.loritta.kord)
+                    val uniqueNonBotUsers = LinkedList(uniqueUsers.filter { !it.bot.discordBoolean })
+                    val uniqueBotUsers = LinkedList(uniqueUsers.filter { it.bot.discordBoolean })
+
+                    // First we will get non bot users, because users love complaining that "but I don't want to have bots on my sad reality meme!! bwaaa!!"
+                    while (usersToBeFilled.filterNotNull().size != targetSize && uniqueNonBotUsers.isNotEmpty()) {
+                        val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
+                        usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(uniqueNonBotUsers.poll()), context.loritta.kord)
+                    }
+
+                    // If we still haven't found it, we will query bot users so the user can at least have a sad reality instead of a "couldn't find enough users" message
+                    while (usersToBeFilled.filterNotNull().size != targetSize && uniqueBotUsers.isNotEmpty()) {
+                        val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
+                        usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(uniqueBotUsers.poll()), context.loritta.kord)
+                    }
+                } catch (e: KtorRequestException) {
+                    // No permission to query!
+                    noPermissionToQuery = true
+                }
+            }
+
+            // Okay, so it is still not filled, well...
+            if (users.filterNotNull().size != targetSize) {
+                // What we can do is pull from the GuildProfiles!
+                val usersInTheGuild = context.loritta.services.transaction {
+                    GuildProfiles.slice(GuildProfiles.guildId)
+                        .select { GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.isInGuild eq true) }
+                        .map { it[GuildProfiles.userId] }
+                        .filter { it !in usersToBeFilled.mapNotNull { it?.id?.toLong() } } // Ignore users that are already in the list
+                        .shuffled()
+                        .let { LinkedList(it) }
                 }
 
-                // If we still haven't found it, we will query bot users so the user can at least have a sad reality instead of a "couldn't find enough users" message
-                while (usersToBeFilled.filterNotNull().size != targetSize && uniqueBotUsers.isNotEmpty()) {
+                // From that, we will try filling out the null information
+                while (usersToBeFilled.filterNotNull().size != targetSize && usersInTheGuild.isNotEmpty()) {
                     val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
-                    usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(uniqueBotUsers.poll()), context.loritta.kord)
+                    val userId = usersInTheGuild.poll()
+
+                    try {
+                        val user = context.loritta.rest.user.getUser(Snowflake(userId))
+                        usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(user), context.loritta.kord)
+                    } catch (e: KtorRequestException) {
+                        // The user doesn't exist anymore! (Maybe?)
+                    }
                 }
-            } catch (e: KtorRequestException) {
-                // No permission to query!
-                noPermissionToQuery = true
+            }
+
+            // Hmm, now we are in the "This is the last shot" territory
+            if (users.filterNotNull().size != targetSize) {
+                // If it is a guild context, we can try pulling random users from the server!
+                val members = context.loritta.rest.guild.getGuildMembers(
+                    context.guildId,
+                    Position.After(Snowflake(0)),
+                    // We will try getting 1000 members...
+                    // Because we aren't changing the position, it will always be the same 1000 "oldest" Discord users of the server
+                    1000
+                )
+                    .filter { it.user.value?.id !in usersToBeFilled.mapNotNull { it?.id } } // Ignore users that are already in the list
+                    .shuffled() // Shuffle the list to avoid the same results every single time...
+                    .let { LinkedList(it) }
+
+                while (usersToBeFilled.filterNotNull().size != targetSize && members.isNotEmpty()) {
+                    val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
+                    // The user shouldn't be null here... well, I hope so
+                    usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(members.poll().user.value!!), context.loritta.kord)
+                }
             }
         }
 
