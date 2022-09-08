@@ -1,5 +1,6 @@
 label: "everygrouphas"
 description: "Every group has these kinds of people... including yours!"
+notEnoughUsers: "There aren't enough users for me to pick the kinds of people of your friend group, sorry..."
 slot:
   popular:
     male: "THE POPULAR"

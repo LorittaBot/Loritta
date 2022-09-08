@@ -1,5 +1,6 @@
 label: "thanksfriends"
 description: "Thanks for being the best friends of all time! ...wait, NOT YOU!"
+notEnoughUsers: "There aren't enough users for me to pick your best friends (except one, heh), sorry..."
 slot:
   thanks: "THANKS"
   for: "FOR"

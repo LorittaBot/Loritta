@@ -23,6 +23,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByte
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.User128AvatarText
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.withTextAntialiasing
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.utils.Gender
 import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
 import java.awt.Color
@@ -67,12 +68,12 @@ class EveryGroupHasExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExec
         // Not enough users!
         if (!successfullyFilled) {
             context.fail {
-                styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsers), Emotes.LoriSob)
+                styled(context.i18nContext.get(EveryGroupHasCommand.I18N_PREFIX.NotEnoughUsers), Emotes.LoriSob)
 
                 if (noPermissionToQuery) {
-                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersPermissionsTip), Emotes.LoriReading)
+                    styled(context.i18nContext.get(I18nKeysData.Commands.UsersFill.NotEnoughUsersPermissionsTip), Emotes.LoriReading)
                 } else if (context !is GuildApplicationCommandContext) {
-                    styled(context.i18nContext.get(SadRealityCommand.I18N_PREFIX.NotEnoughUsersGuildTip), Emotes.LoriReading)
+                    styled(context.i18nContext.get(I18nKeysData.Commands.UsersFill.NotEnoughUsersGuildTip), Emotes.LoriReading)
                 }
             }
         }

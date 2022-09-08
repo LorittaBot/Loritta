@@ -57,3 +57,6 @@ commands:
     - "**Expires:** {expiresDate}"
     - ""
     - "*Is it too late now for them to say sorry?* {loriSob}"
+  usersFill:
+    notEnoughUsersPermissionsTip: "I could pull users from the server's recent messages, but for that you need to give me permission to read the channel's message history!"
+    notEnoughUsersGuildTip: "I could pull users from a server's recent messages, but... well, we are in a direct message channel, the only two users here are me and you!"
