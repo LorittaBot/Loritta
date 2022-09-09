@@ -128,6 +128,7 @@ object Emotes {
     val Factory = UnicodeEmote("\uD83C\uDFED")
     val OilDrum = UnicodeEmote("\uD83D\uDEE2️")
     val Diamond = UnicodeEmote("\uD83D\uDC8E")
+    val Map = UnicodeEmote("\uD83D\uDDFA")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)

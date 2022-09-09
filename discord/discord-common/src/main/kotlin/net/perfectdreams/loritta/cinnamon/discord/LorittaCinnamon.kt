@@ -155,6 +155,7 @@ class LorittaCinnamon(
     val unicodeEmojiManager = UnicodeEmojiManager()
     val emojiImageCache = EmojiImageCache()
     val graphicsFonts = GraphicsFonts()
+    val hackyGoogleTranslateClient = HackyGoogleTranslateClient()
 
     val random = SecureRandom()
 

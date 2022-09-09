@@ -98,11 +98,10 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(CalculatorCommand(languageManager))
             register(AnagramCommand(languageManager))
             register(ChooseCommand(languageManager))
-
             register(PackageCommand(languageManager))
-
             register(ColorInfoCommand(languageManager))
             register(NotificationsCommand(languageManager))
+            register(TranslateCommand(languageManager))
 
             // ===[ ECONOMY ]===
             register(SonhosCommand(languageManager))
