@@ -1,5 +1,6 @@
 label: "todogrupotem"
 description: "Todo grupo tem estes tipos de pessoas... incluindo o seu!"
+notEnoughUsers: "Não existem membros suficientes para eu escolher os tipos de pessoas do seu grupo de amigos, desculpe..."
 slot:
   popular:
     male: "O POPULAR"

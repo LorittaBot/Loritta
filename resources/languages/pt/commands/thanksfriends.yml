@@ -1,5 +1,6 @@
 label: "obrigadoamigos"
 description: "Obrigado por serem os melhores amigos de todos os tempos! ... espere, VOCÊ NÃO!"
+notEnoughUsers: "Não existem membros suficientes para eu escolher os seus melhores amigos (exceto um, heh), desculpe..."
 slot:
   thanks: "OBRIGADO"
   for: "POR"
