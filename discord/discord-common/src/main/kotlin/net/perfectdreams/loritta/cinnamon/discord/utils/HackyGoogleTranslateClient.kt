@@ -185,9 +185,3 @@ class HackyGoogleTranslateClient {
         }
     }
 }
-
-suspend fun main() {
-    val c = HackyGoogleTranslateClient()
-    val output = c.translate(HackyGoogleTranslateClient.Language.ENGLISH, HackyGoogleTranslateClient.Language.PORTUGUESE, ",")
-    println(output)
-}
