@@ -69,7 +69,7 @@ class HungerGamesExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
 
                     append("cusTribute$numberWithPadding", user.username)
 
-                    append("cusTribute${numberWithPadding}img", context.user.effectiveAvatar.cdnUrl.toUrl {
+                    append("cusTribute${numberWithPadding}img", user.effectiveAvatar.cdnUrl.toUrl {
                         this.size = Image.Size.Size128
                         this.format = Image.Format.PNG
                     })

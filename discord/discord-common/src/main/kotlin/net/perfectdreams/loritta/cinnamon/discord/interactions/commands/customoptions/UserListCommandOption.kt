@@ -46,17 +46,16 @@ class UserListCommandOption(
 
         val foundSnowflakes = listsValues.map { it.value as Snowflake }
 
-        return interaction
+        val users = interaction
             .data
             .resolved
             .value
             ?.users
-            ?.value
-            ?.filterKeys { it in foundSnowflakes }
-            ?.values
-            ?.map {
-                User(UserData.from(it), kord)
-            } ?: emptyList()
+            ?.value ?: return emptyList()
+
+        return foundSnowflakes.map {
+            User(UserData.from(users[it]!!), kord)
+        }
     }
 }
 
