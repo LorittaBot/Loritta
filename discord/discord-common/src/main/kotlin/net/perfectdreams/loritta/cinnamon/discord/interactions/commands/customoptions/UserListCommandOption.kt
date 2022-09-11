@@ -8,6 +8,7 @@ import dev.kord.core.cache.data.UserData
 import dev.kord.core.entity.User
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
+import dev.kord.rest.builder.interaction.user
 import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionBuilder
 import net.perfectdreams.discordinteraktions.common.commands.options.InteraKTionsCommandOption
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
@@ -29,7 +30,7 @@ class UserListCommandOption(
 
     override fun register(builder: BaseInputChatBuilder) {
         for (it in 1..maximum) {
-            builder.string("${name}$it", description) {
+            builder.user("${name}$it", description) {
                 this.descriptionLocalizations = this@UserListCommandOption.descriptionLocalizations?.toMutableMap()
                 this.required = minimum >= it
             }
