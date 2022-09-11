@@ -14,8 +14,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
@@ -155,7 +153,8 @@ class LorittaCinnamon(
     val unicodeEmojiManager = UnicodeEmojiManager()
     val emojiImageCache = EmojiImageCache()
     val graphicsFonts = GraphicsFonts()
-    val hackyGoogleTranslateClient = HackyGoogleTranslateClient()
+    val googleTranslateClient = HackyGoogleTranslateClient()
+    val googleVisionOCRClient = GoogleVisionOCRClient(config.services.googleVision.key)
 
     val random = SecureRandom()
 

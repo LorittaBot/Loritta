@@ -1,22 +1,21 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.commands
 
 import dev.kord.common.entity.Snowflake
-import dev.kord.core.entity.Member
-import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
-import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
+import net.perfectdreams.discordinteraktions.common.commands.MessageCommandExecutor
+import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 
 /**
- * Discord InteraKTions' [UserCommandExecutor] wrapper, used to provide Cinnamon-specific features.
+ * Discord InteraKTions' [MessageCommandExecutor] wrapper, used to provide Cinnamon-specific features.
  */
-abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserCommandExecutor(), CommandExecutorWrapper {
+abstract class CinnamonMessageCommandExecutor(val loritta: LorittaCinnamon) : MessageCommandExecutor(), CommandExecutorWrapper {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -26,14 +25,13 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserC
     val rest = loritta.rest
     val applicationId = Snowflake(loritta.discordConfig.applicationId)
 
-    abstract suspend fun execute(context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext, targetUser: User, targetMember: Member?)
+    abstract suspend fun execute(context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext, targetMessage: Message)
 
     override suspend fun execute(
         context: ApplicationCommandContext,
-        targetUser: User,
-        targetMember: Member?
+        targetMessage: Message
     ) {
-        val rootDeclarationClazzName = (context.applicationCommandDeclaration as CinnamonUserCommandDeclaration)
+        val rootDeclarationClazzName = (context.applicationCommandDeclaration as CinnamonMessageCommandDeclaration)
             .declarationWrapper::class
             .simpleName ?: "UnknownCommand"
 
@@ -50,8 +48,7 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserC
             executorClazzName,
             context,
             guildId,
-            targetUser,
-            targetMember
+            targetMessage
         )
 
         var stacktrace: String? = null
@@ -67,7 +64,7 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserC
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
             Clock.System.now(),
-            net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType.MESSAGE,
+            net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType.USER,
             rootDeclarationClazzName,
             executorClazzName,
             buildJsonWithArguments(emptyMap()),
@@ -82,8 +79,7 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserC
         executorClazzName: String,
         context: ApplicationCommandContext,
         guildId: Snowflake?,
-        targetUser: User,
-        targetMember: Member?
+        targetMessage: Message
     ): CommandExecutorWrapper.CommandExecutionResult {
         // These variables are used in the catch { ... } block, to make our lives easier
         var i18nContext: I18nContext? = null
@@ -101,11 +97,7 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserC
 
             launchUserInfoCacheUpdater(loritta, context, null)
 
-            execute(
-                cinnamonContext,
-                targetUser,
-                targetMember
-            )
+            execute(cinnamonContext, targetMessage)
 
             launchAdditionalNotificationsCheckerAndSender(loritta, context, i18nContext)
 

@@ -96,7 +96,7 @@ class TranslateExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
 
         val input = args[options.text]
 
-        val translated = loritta.hackyGoogleTranslateClient.translate(from, to, input)
+        val translated = loritta.googleTranslateClient.translate(from, to, input)
             ?: context.failEphemerally {
                 styled(
                     context.i18nContext.get(TranslateCommand.I18N_PREFIX.TranslationFailed),

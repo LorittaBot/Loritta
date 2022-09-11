@@ -121,3 +121,35 @@ class CinnamonUserCommandDeclarationBuilder(
         )
     }
 }
+
+// ===[ MESSAGE COMMANDS ]===
+fun messageCommand(
+    declarationWrapper: CinnamonMessageCommandDeclarationWrapper,
+    languageManager: LanguageManager,
+    name: StringI18nData,
+    executor: (LorittaCinnamon) -> (MessageCommandExecutor),
+    block: CinnamonMessageCommandDeclarationBuilder.() -> (Unit) = {}
+) = CinnamonMessageCommandDeclarationBuilder(declarationWrapper, languageManager, name, executor)
+    .apply(block)
+
+@InteraKTionsDslMarker
+class CinnamonMessageCommandDeclarationBuilder(
+    val declarationWrapper: CinnamonMessageCommandDeclarationWrapper,
+    val languageManager: LanguageManager,
+    val name: StringI18nData,
+    val executor: (LorittaCinnamon) -> (MessageCommandExecutor)
+) {
+    var defaultMemberPermissions: Permissions? = null
+    var dmPermission: Boolean? = null
+
+    fun build(loritta: LorittaCinnamon): CinnamonMessageCommandDeclaration {
+        return CinnamonMessageCommandDeclaration(
+            declarationWrapper,
+            languageManager,
+            name,
+            defaultMemberPermissions,
+            dmPermission,
+            executor.invoke(loritta)
+        )
+    }
+}

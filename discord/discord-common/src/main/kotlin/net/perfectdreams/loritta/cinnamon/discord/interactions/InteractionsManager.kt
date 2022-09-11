@@ -7,6 +7,7 @@ import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonMessageCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonUserCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.inviteblocker.ActivateInviteBlockerBypassButtonClickExecutor
@@ -31,6 +32,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.pr
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.profile.ChangeAboutMeModalExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.ChangeXpRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.OCRMessageExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.OCRMessageCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker.*
 import kotlin.system.exitProcess
 
@@ -93,6 +96,8 @@ class InteractionsManager(
         register(GoBackToPackageListButtonClickExecutor(loritta, loritta.correiosClient))
         register(TrackPackageButtonClickExecutor(loritta, loritta.correiosClient))
 
+        register(OCRMessageCommand(languageManager))
+
         // ===[ ECONOMY ]===
         register(ChangeTransactionPageButtonClickExecutor(loritta))
         register(ChangeTransactionFilterSelectMenuExecutor(loritta))
@@ -152,6 +157,10 @@ class InteractionsManager(
     }
 
     private fun register(declarationWrapper: CinnamonUserCommandDeclarationWrapper) {
+        interaKTions.manager.register(declarationWrapper.declaration().build(loritta))
+    }
+
+    private fun register(declarationWrapper: CinnamonMessageCommandDeclarationWrapper) {
         interaKTions.manager.register(declarationWrapper.declaration().build(loritta))
     }
 

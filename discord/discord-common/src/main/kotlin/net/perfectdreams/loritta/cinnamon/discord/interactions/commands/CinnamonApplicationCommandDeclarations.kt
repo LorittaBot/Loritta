@@ -49,3 +49,15 @@ class CinnamonUserCommandDeclaration(
     override val name = SlashTextUtils.shorten(languageManager.defaultI18nContext.get(nameI18n))
     override val nameLocalizations = SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, nameI18n)
 }
+
+class CinnamonMessageCommandDeclaration(
+    val declarationWrapper: CinnamonMessageCommandDeclarationWrapper,
+    val languageManager: LanguageManager,
+    val nameI18n: StringI18nData,
+    override val defaultMemberPermissions: Permissions?,
+    override val dmPermission: Boolean?,
+    override val executor: MessageCommandExecutor // User/Message commands always requires an executor, that's why it is not nullable!
+) : MessageCommandDeclaration() {
+    override val name = SlashTextUtils.shorten(languageManager.defaultI18nContext.get(nameI18n))
+    override val nameLocalizations = SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, nameI18n)
+}

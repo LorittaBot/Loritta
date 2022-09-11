@@ -1,0 +1,5 @@
+label: "ocr"
+description: "Extract the text from an image"
+extractTextFromImage: "Extract text from image (OCR)"
+noTextWasFound: "No text was found in the image..."
+thereIsntAnyImageAttachmentOnTheMessage: "There isn't any image attachment on the message!"

@@ -102,6 +102,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(ColorInfoCommand(languageManager))
             register(NotificationsCommand(languageManager))
             register(TranslateCommand(languageManager))
+            register(OCRCommand(languageManager))
 
             // ===[ ECONOMY ]===
             register(SonhosCommand(languageManager))
