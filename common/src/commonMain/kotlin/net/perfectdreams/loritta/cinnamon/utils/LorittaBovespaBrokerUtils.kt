@@ -19,7 +19,7 @@ object LorittaBovespaBrokerUtils {
     @OptIn(ExperimentalTime::class)
     val OUTDATED_STOCKS_TIME = Duration.seconds(60) // After how much time the data should be considered stale
     val TIME_OPEN = Pair(10, 0)
-    val TIME_CLOSING = Pair(17, 55)
+    val TIME_CLOSING = Pair(16, 55)
     val BOVESPA_TIMEZONE = TimeZone.of("America/Sao_Paulo")
 
     val trackedTickerCodes = listOf(
