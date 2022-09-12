@@ -155,12 +155,12 @@ object AdminUtils {
                             StaffTokenSource(loritta.kord, punisher.data, null) // TODO: Punisher Member Data
                         ),
                         mapOf(
-                            Placeholders.PUNISHMENT_REASON to i18nContext.get(I18nKeysData.Commands.Category.Moderation.Forever),
+                            Placeholders.PUNISHMENT_DURATION to i18nContext.get(I18nKeysData.Commands.Category.Moderation.Forever),
                             Placeholders.PUNISHMENT_REASON to reason,
                             Placeholders.PUNISHMENT_REASON_SHORT to reason,
 
                             Placeholders.PUNISHMENT_TYPE to punishAction,
-                            Placeholders.PUNISHMENT_TYPE_SHORT to punishAction
+                            Placeholders.PUNISHMENT_TYPE_SHORT to punishAction,
                         )
                     )
 
