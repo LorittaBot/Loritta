@@ -84,6 +84,7 @@ interface OCRExecutor {
         val ocrText = textAnnotations.description
         val language = textAnnotations.locale?.let { Language.fromLanguageCode(it) }
         val kordLocale = LOCALE_TO_LANGUAGE_MAP.entries.firstOrNull { it.value == language }
+            ?.value
         val userLocale = context.interaKTionsContext.discordInteraction.locale.value ?: context.interaKTionsContext.discordInteraction.guildLocale.value
 
         val message: suspend MessageCreateBuilder.() -> (Unit) = {
