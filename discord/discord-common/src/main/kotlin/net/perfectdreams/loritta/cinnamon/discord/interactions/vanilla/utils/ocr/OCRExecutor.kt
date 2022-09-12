@@ -82,9 +82,9 @@ interface OCRExecutor {
         }
 
         val ocrText = textAnnotations.description
-        val language = textAnnotations.locale?.let { Language.fromLanguageCode(it) }
-        val kordLocale = LOCALE_TO_LANGUAGE_MAP.entries.firstOrNull { it.value == language }
-            ?.value
+        val detectedOcrLanguageGoogle = textAnnotations.locale?.let { Language.fromLanguageCode(it) }
+        val detectedOcrLanguageKord = LOCALE_TO_LANGUAGE_MAP.entries.firstOrNull { it.value == detectedOcrLanguageGoogle }
+            ?.key
         val userLocale = context.interaKTionsContext.discordInteraction.locale.value ?: context.interaKTionsContext.discordInteraction.guildLocale.value
 
         val message: suspend MessageCreateBuilder.() -> (Unit) = {
@@ -96,11 +96,11 @@ interface OCRExecutor {
                 // TODO: Maybe another color?
                 color = LorittaColors.LorittaAqua.toKordColor()
 
-                if (language != null)
-                    footer(context.i18nContext.get(OCRCommand.I18N_PREFIX.LanguageDetected(context.i18nContext.get(language.languageNameI18nKey))))
+                if (detectedOcrLanguageGoogle != null)
+                    footer(context.i18nContext.get(OCRCommand.I18N_PREFIX.LanguageDetected(context.i18nContext.get(detectedOcrLanguageGoogle.languageNameI18nKey))))
             }
 
-            if (language != null && userLocale != null && kordLocale != null && language != kordLocale) {
+            if (detectedOcrLanguageGoogle != null && userLocale != null && detectedOcrLanguageKord != null && detectedOcrLanguageKord != userLocale) {
                 val userGoogleLocale = LOCALE_TO_LANGUAGE_MAP[userLocale]!!
 
                 actionRow {
@@ -110,7 +110,7 @@ interface OCRExecutor {
                         OCRTranslateButtonExecutor,
                         OCRTranslateData(
                             context.user.id,
-                            language,
+                            detectedOcrLanguageGoogle,
                             userGoogleLocale,
                             isEphemeral,
                             ocrText
