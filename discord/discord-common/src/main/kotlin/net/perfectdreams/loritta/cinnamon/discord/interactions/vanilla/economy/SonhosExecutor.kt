@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.getUserProfile
 
@@ -45,7 +44,7 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                             if (sonhosRankPosition != null) {
                                 SonhosCommand.SONHOS_I18N_PREFIX.YourCurrentRankPosition(
                                     sonhosRankPosition,
-                                    "+sonhos top" // TODO: Change to slash command
+                                    loritta.commandMentions.sonhosRank
                                 )
                             } else {
                                 ""
@@ -72,7 +71,7 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                                 SonhosCommand.SONHOS_I18N_PREFIX.UserCurrentRankPosition(
                                     mentionUser(user, false), // Again, we don't want to notify the user!
                                     sonhosRankPosition,
-                                    "+sonhos top" // TODO: Change to slash command
+                                    loritta.commandMentions.sonhosRank
                                 )
                             } else {
                                 ""

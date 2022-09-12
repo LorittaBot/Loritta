@@ -12,6 +12,8 @@ class CommandMentions(private val registeredCommands: List<DiscordApplicationCom
 
     val daily = commandMention("daily")
 
+    val sonhosRank = commandMention("sonhos top")
+
     val ban = commandMention("ban")
 
     val packageTrack = commandMention("package track")
