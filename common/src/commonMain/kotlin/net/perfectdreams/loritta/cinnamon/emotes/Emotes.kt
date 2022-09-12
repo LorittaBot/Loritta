@@ -61,6 +61,12 @@ object Emotes {
     val PowerHanglooseRight = DiscordEmote(1008059744717635624L, "power_hangloose_right", false)
     val PantufaGaming =
         DiscordEmote(853048446922784819L, "pantufa_gaming", false)
+    val Sonhos1 = DiscordEmote(1018949422404616325L, "sonhos_f27ffabb", false)
+    val Sonhos2 = DiscordEmote(1018949420886278256L, "sonhos_45b3b35d", false)
+    val Sonhos3 = DiscordEmote(1018949418608762951L, "sonhos_5bcd4860", false)
+    val Sonhos4 = DiscordEmote(1018952314444337263L, "sonhos_15560da1", false)
+    val Sonhos5 = DiscordEmote(1018953265251106816L, "sonhos_65a79e6a", false)
+    val Sonhos6 = DiscordEmote(1018953754374049862L, "sonhos_b58bf6d8", false)
 
     val CheckMark = UnicodeEmote("✅")
     val Error = DiscordEmote(412585701054611458L, "error", false)

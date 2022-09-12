@@ -40,6 +40,7 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                 styled(
                     context.i18nContext.get(
                         SonhosCommand.SONHOS_I18N_PREFIX.YouHaveSonhos(
+                            SonhosUtils.getSonhosEmojiOfQuantity(userSonhos),
                             userSonhos,
                             if (sonhosRankPosition != null) {
                                 SonhosCommand.SONHOS_I18N_PREFIX.YourCurrentRankPosition(
@@ -66,6 +67,7 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                     context.i18nContext.get(
                         SonhosCommand.SONHOS_I18N_PREFIX.UserHasSonhos(
                             mentionUser(user, false), // We don't want to notify the user!
+                            SonhosUtils.getSonhosEmojiOfQuantity(userSonhos),
                             userSonhos,
                             if (sonhosRankPosition != null) {
                                 SonhosCommand.SONHOS_I18N_PREFIX.UserCurrentRankPosition(

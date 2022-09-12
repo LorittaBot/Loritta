@@ -87,4 +87,13 @@ object SonhosUtils {
             )
         }
     }
+
+    fun getSonhosEmojiOfQuantity(quantity: Long) = when {
+        quantity >= 1_000_000_000 -> Emotes.Sonhos6
+        quantity >= 10_000_000 -> Emotes.Sonhos5
+        quantity >= 1_000_000 -> Emotes.Sonhos4
+        quantity >= 100_000 -> Emotes.Sonhos3
+        quantity >= 10_000 -> Emotes.Sonhos2
+        else -> Emotes.Sonhos1
+    }
 }
