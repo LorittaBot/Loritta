@@ -1,10 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.utils
 
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDateTime
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -180,7 +176,9 @@ object LorittaBovespaBrokerUtils {
     fun convertToBuyingPrice(input: Long) = input + 1
     fun convertToSellingPrice(input: Long) = input - 1
 
-    fun checkIfTickerIsActive(currentSession: String) = currentSession == LorittaBovespaBrokerUtils.MARKET
+    fun checkIfTickerIsActive(currentSession: String) = currentSession == LorittaBovespaBrokerUtils.MARKET &&
+            Clock.System.now().toLocalDateTime(BOVESPA_TIMEZONE).hour in TIME_OPEN.first..TIME_CLOSING.first &&
+            Clock.System.now().toLocalDateTime(BOVESPA_TIMEZONE).minute in TIME_OPEN.second..TIME_CLOSING.second
 
     fun checkIfTickerDataIsStale(lastUpdatedAt: Instant) = Clock.System.now() > lastUpdatedAt.plus(LorittaBovespaBrokerUtils.OUTDATED_STOCKS_TIME)
 
