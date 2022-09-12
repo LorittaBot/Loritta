@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.ocr
 
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon

@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.OCRSlashExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.ocr.OCRSlashExecutor
 
 class OCRCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {

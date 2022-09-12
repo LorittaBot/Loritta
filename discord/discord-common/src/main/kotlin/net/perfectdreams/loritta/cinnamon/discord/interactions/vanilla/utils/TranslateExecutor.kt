@@ -12,7 +12,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.TranslateCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.HackyGoogleTranslateClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.HackyGoogleTranslateClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.Language
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
@@ -23,10 +24,10 @@ class TranslateExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
     val cinnamonAutocomplete: (AutocompleteContext, FocusedCommandOption, Boolean) -> (Map<String, String>) = { autocompleteContext, focusedCommandOption, includeAuto ->
         val value = focusedCommandOption.value
 
-        HackyGoogleTranslateClient.Language.values()
+        Language.values()
             .asSequence()
             .filter {
-                if (!includeAuto) it != HackyGoogleTranslateClient.Language.AUTO_DETECT else true
+                if (!includeAuto) it != Language.AUTO_DETECT else true
             }
             .filter {
                 autocompleteContext.i18nContext.get(it.languageNameI18nKey).startsWith(value, true)
@@ -55,7 +56,7 @@ class TranslateExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         val from = try {
-            HackyGoogleTranslateClient.Language.fromLanguageCode(args[options.from])
+            Language.fromLanguageCode(args[options.from])
         } catch (e: NoSuchElementException) {
             context.failEphemerally {
                 styled(
@@ -66,7 +67,7 @@ class TranslateExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
         }
 
         val to = try {
-            HackyGoogleTranslateClient.Language.fromLanguageCode(args[options.to])
+            Language.fromLanguageCode(args[options.to])
         } catch (e: NoSuchElementException) {
             context.failEphemerally {
                 styled(
@@ -76,7 +77,7 @@ class TranslateExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
             }
         }
 
-        if (to == HackyGoogleTranslateClient.Language.AUTO_DETECT) {
+        if (to == Language.AUTO_DETECT) {
             context.failEphemerally {
                 styled(
                     context.i18nContext.get(TranslateCommand.I18N_PREFIX.InvalidLanguage),
@@ -115,9 +116,4 @@ class TranslateExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
             }
         }
     }
-
-    // It would be better if it was a "when" clause, to avoid any languages missing their translation
-    // But alas, that would be too big and too boring to fill up
-    private val HackyGoogleTranslateClient.Language.languageNameI18nKey: StringI18nData
-        get() = StringI18nData(StringI18nKey("commands.command.translate.languages.${TextUtils.snakeToLowerCamelCase(this.name.lowercase())}"), emptyMap())
 }

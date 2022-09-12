@@ -35,6 +35,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.DiscordCacheService
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionOCRClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.HackyGoogleTranslateClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.EmojiImageCache
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics

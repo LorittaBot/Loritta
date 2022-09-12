@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord.utils
+package net.perfectdreams.loritta.cinnamon.discord.utils.google
 
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
@@ -70,9 +70,7 @@ class GoogleVisionOCRClient(private val apiKey: String) {
             setBody(TextContent(payload.toString(), ContentType.Application.Json))
         }
 
-        val x = response.bodyAsText()
-        println(x)
-        return json.decodeFromString(x)
+        return json.decodeFromString(response.bodyAsText())
     }
 
     @Serializable

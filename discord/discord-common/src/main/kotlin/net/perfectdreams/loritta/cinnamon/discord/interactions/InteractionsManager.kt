@@ -32,8 +32,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.pr
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.profile.ChangeAboutMeModalExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.ChangeXpRankPageButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.OCRMessageExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.OCRMessageCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.ocr.OCRTranslateButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker.*
 import kotlin.system.exitProcess
 
@@ -97,6 +97,7 @@ class InteractionsManager(
         register(TrackPackageButtonClickExecutor(loritta, loritta.correiosClient))
 
         register(OCRMessageCommand(languageManager))
+        register(OCRTranslateButtonExecutor(loritta))
 
         // ===[ ECONOMY ]===
         register(ChangeTransactionPageButtonClickExecutor(loritta))
