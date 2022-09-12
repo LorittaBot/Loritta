@@ -176,9 +176,13 @@ object LorittaBovespaBrokerUtils {
     fun convertToBuyingPrice(input: Long) = input + 1
     fun convertToSellingPrice(input: Long) = input - 1
 
-    fun checkIfTickerIsActive(currentSession: String) = currentSession == LorittaBovespaBrokerUtils.MARKET &&
-            Clock.System.now().toLocalDateTime(BOVESPA_TIMEZONE).hour in TIME_OPEN.first..TIME_CLOSING.first &&
-            Clock.System.now().toLocalDateTime(BOVESPA_TIMEZONE).minute in TIME_OPEN.second..TIME_CLOSING.second
+    fun checkIfTickerIsActive(currentSession: String): Boolean {
+        val now = Clock.System.now().toLocalDateTime(BOVESPA_TIMEZONE)
+
+        return currentSession == LorittaBovespaBrokerUtils.MARKET &&
+                now.hour in TIME_OPEN.first..TIME_CLOSING.first &&
+                now.minute in TIME_OPEN.second..TIME_CLOSING.second
+    }
 
     fun checkIfTickerDataIsStale(lastUpdatedAt: Instant) = Clock.System.now() > lastUpdatedAt.plus(LorittaBovespaBrokerUtils.OUTDATED_STOCKS_TIME)
 

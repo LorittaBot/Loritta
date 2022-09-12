@@ -102,7 +102,7 @@ class BrokerPortfolioExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
                         )
                     )
 
-                    if (tickerInformation.status != LorittaBovespaBrokerUtils.MARKET) {
+                    if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(tickerInformation.status)) {
                         field(
                             "$emojiStatus$emojiProfit `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
                             """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))}

@@ -55,7 +55,7 @@ class BrokerInfoCategorySelectMenuExecutor(loritta: LorittaCinnamon) : CinnamonS
                     val fieldTitle = "`$tickerId` ($tickerName) | ${"%.2f".format(changePercentage)}%"
                     val emojiStatus = BrokerExecutorUtils.getEmojiStatusForTicker(stockInformation)
 
-                    if (stockInformation.status != LorittaBovespaBrokerUtils.MARKET) {
+                    if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(stockInformation.status)) {
                         field {
                             name = "$emojiStatus $fieldTitle"
                             value = context.i18nContext.get(

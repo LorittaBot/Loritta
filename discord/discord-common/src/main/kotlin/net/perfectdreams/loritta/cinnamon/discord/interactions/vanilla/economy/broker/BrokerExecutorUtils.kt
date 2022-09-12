@@ -23,7 +23,7 @@ object BrokerExecutorUtils {
         block()
     }
 
-    fun getEmojiStatusForTicker(brokerTickerInformation: BrokerTickerInformation) = if (brokerTickerInformation.status != LorittaBovespaBrokerUtils.MARKET)
+    fun getEmojiStatusForTicker(brokerTickerInformation: BrokerTickerInformation) = if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(brokerTickerInformation.status))
         Emotes.DoNotDisturb
     else if (LorittaBovespaBrokerUtils.checkIfTickerDataIsStale(brokerTickerInformation.lastUpdatedAt))
         Emotes.Idle

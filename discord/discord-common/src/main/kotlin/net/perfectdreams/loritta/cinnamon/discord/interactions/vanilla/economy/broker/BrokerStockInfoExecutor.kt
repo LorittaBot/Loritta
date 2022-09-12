@@ -81,7 +81,7 @@ class BrokerStockInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
                         )
                     )
 
-                    if (tickerInformation.status != LorittaBovespaBrokerUtils.MARKET) {
+                    if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(tickerInformation.status)) {
                         field(
                             "$emojiStatus$emojiProfit `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
                             """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))}
@@ -97,7 +97,7 @@ class BrokerStockInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
                         )
                     }
                 } else {
-                    if (tickerInformation.status != LorittaBovespaBrokerUtils.MARKET) {
+                    if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(tickerInformation.status)) {
                         field(
                             "$emojiStatus `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
                             context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))
