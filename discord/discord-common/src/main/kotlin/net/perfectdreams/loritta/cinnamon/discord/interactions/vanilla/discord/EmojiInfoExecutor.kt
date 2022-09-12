@@ -16,6 +16,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.d
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
 import kotlin.streams.toList
 
 class EmojiInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
@@ -42,7 +44,7 @@ class EmojiInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                     title = "$emojiContent " + context.i18nContext.get(
                         EmojiCommand.I18N_PREFIX.Info.AboutEmoji
                     )
-                    color = Color(114, 137, 218) // TODO: Move this to an object
+                    color = LorittaColors.DiscordBlurple.toKordColor()
 
                     thumbnailUrl = unicodeEmojiUrl
 
@@ -115,7 +117,7 @@ class EmojiInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                     title = "$emojiMention " + context.i18nContext.get(
                         EmojiCommand.I18N_PREFIX.Info.AboutEmoji
                     )
-                    color = Color(114, 137, 218) // TODO: Move this to an object
+                    color = LorittaColors.DiscordBlurple.toKordColor()
 
                     thumbnailUrl = emojiUrl
 

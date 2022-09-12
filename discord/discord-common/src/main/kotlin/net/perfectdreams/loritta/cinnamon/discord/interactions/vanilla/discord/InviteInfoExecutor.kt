@@ -19,6 +19,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
 
 class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -79,7 +81,7 @@ class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
         context.sendMessage {
             embed {
                 title = "${Emotes.Discord} ${invite.guild.value?.name}"
-                color = Color(114, 137, 218) // TODO: Move this to an object
+                color = LorittaColors.DiscordBlurple.toKordColor()
 
                 if (invite.guild.value?.icon != null)
                     thumbnailUrl = iconUrl

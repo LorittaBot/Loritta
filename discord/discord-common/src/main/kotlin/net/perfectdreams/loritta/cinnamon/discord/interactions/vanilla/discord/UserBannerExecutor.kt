@@ -13,6 +13,8 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
 
 class UserBannerExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -51,10 +53,10 @@ class UserBannerExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     footer(context.i18nContext.get(UserCommand.I18N_PREFIX.Banner.YourselfEasterEgg))
 
                 val accentColor = retrievedDiscordUser.accentColor
-                if (accentColor != null) {
-                    color = Color(accentColor)
+                color = if (accentColor != null) {
+                    Color(accentColor)
                 } else
-                    color = Color(114, 137, 218) // TODO: Move this to an object
+                    LorittaColors.DiscordBlurple.toKordColor()
             }
 
             actionRow {

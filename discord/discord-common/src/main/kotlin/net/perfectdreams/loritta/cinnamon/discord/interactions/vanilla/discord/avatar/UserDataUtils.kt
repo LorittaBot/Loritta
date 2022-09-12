@@ -26,6 +26,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.intera
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotableUserIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
 import kotlin.time.Duration.Companion.minutes
 
 object UserDataUtils {
@@ -158,7 +160,7 @@ object UserDataUtils {
                 if (easterEggFooterTextKey != null)
                     footer(i18nContext.get(easterEggFooterTextKey))
 
-                color = Color(114, 137, 218) // TODO: Move this to an object
+                color = LorittaColors.DiscordBlurple.toKordColor()
 
                 // This should NEVER be null at this point!
                 val imageUrl = userAvatar.let {

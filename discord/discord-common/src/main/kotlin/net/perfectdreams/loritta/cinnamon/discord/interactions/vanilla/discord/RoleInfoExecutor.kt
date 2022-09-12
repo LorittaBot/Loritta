@@ -15,6 +15,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApp
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
 
 class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -44,7 +46,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
                 color = if (hasColor)
                     Color(role.data.color)
                 else
-                    Color(114, 137, 218) // TODO: Move this to an object
+                    LorittaColors.DiscordBlurple.toKordColor()
 
                 if (role.icon != null)
                     thumbnailUrl = iconUrl

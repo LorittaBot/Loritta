@@ -9,6 +9,8 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
 
 class ServerIconExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
@@ -33,7 +35,7 @@ class ServerIconExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
             embed {
                 title = "${Emotes.Discord} ${guild.name}"
                 image = urlIcon
-                color = Color(114, 137, 218) // TODO: Move this to an object
+                color = LorittaColors.DiscordBlurple.toKordColor()
 
                 actionRow {
                     linkButton(
