@@ -133,7 +133,7 @@ class XpRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
 
         val guild = loritta.kord.getGuild(context.guildId)!!
 
-        val userPage = args[options.page]?.minus(1) ?: 1L
+        val userPage = args[options.page] ?: 1L
         val page = userPage - 1
 
         val message = createMessage(loritta, context, guild, page)
