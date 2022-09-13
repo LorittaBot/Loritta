@@ -74,6 +74,7 @@ class XpRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                 "rank.png",
                 RankingGenerator.generateRanking(
                     loritta,
+                    page * 5,
                     guild.name,
                     guild.getIconUrl(Image.Format.PNG),
                     profiles.map {

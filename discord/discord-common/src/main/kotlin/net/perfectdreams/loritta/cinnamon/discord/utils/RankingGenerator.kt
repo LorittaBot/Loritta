@@ -20,6 +20,7 @@ object RankingGenerator {
      */
     suspend fun generateRanking(
         loritta: LorittaCinnamon,
+        currentPosition: Long,
         title: String,
         guildIconUrl: String?,
         rankedUsers: List<UserRankInformation>,
@@ -70,7 +71,7 @@ object RankingGenerator {
 
                 graphics.font = oswaldRegular20
 
-                ImageUtils.drawString(loritta, graphics, member.name, 143, currentY + 21, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+                ImageUtils.drawString(loritta, graphics, "#${currentPosition + idx + 1} ${member.name}", 143, currentY + 21, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
 
                 graphics.font = oswaldRegular16
 

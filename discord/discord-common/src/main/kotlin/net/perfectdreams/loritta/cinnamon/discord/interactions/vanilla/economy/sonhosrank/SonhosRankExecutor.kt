@@ -84,6 +84,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                 "rank.png",
                 RankingGenerator.generateRanking(
                     loritta,
+                    page * 5,
                     context.i18nContext.get(SonhosCommand.SONHOS_RANK_I18N_PREFIX.GlobalSonhosRank),
                     null,
                     profiles.map {
@@ -156,6 +157,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                 "rank.png",
                 RankingGenerator.generateRanking(
                     loritta,
+                    page * 5,
                     context.i18nContext.get(SonhosCommand.SONHOS_RANK_I18N_PREFIX.LocalSonhosRank),
                     guild.getIconUrl(Image.Format.PNG),
                     profiles.map {
