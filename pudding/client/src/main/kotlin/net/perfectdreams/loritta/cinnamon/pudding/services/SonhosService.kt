@@ -19,7 +19,7 @@ class SonhosService(private val pudding: Pudding) : Service(pudding) {
      */
     // TODO: This is not a *good* way to get an user's ranking if there are duplicates, maybe use DENSE_RANK? https://www.postgresqltutorial.com/postgresql-dense_rank-function/
     suspend fun getSonhosRankPositionBySonhos(sonhos: Long) = pudding.transaction {
-        Profiles.select { Profiles.money greaterEq sonhos }
+        Profiles.select { Profiles.money greaterEq sonhos and (Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis())) }
             .count()
     }
 

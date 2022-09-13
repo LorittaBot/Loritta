@@ -29,6 +29,20 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 
 class UsersService(private val pudding: Pudding) : Service(pudding) {
+    companion object {
+        fun validBannedUsersList(currentMillis: Long) = BannedUsers.slice(BannedUsers.userId).select {
+            (BannedUsers.valid eq true) and
+                    (
+                            BannedUsers.expiresAt.isNull()
+                                    or
+                                    (
+                                            BannedUsers.expiresAt.isNotNull() and
+                                                    (BannedUsers.expiresAt greaterEq currentMillis))
+                            )
+
+        }
+    }
+
     /**
      * Gets or creates a [PuddingUserProfile]
      *

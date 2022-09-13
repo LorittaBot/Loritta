@@ -22,10 +22,16 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
+import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 import kotlin.math.ceil
 
 class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
@@ -52,7 +58,10 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
             )
 
             val (totalCount, profiles) = loritta.services.transaction {
-                Profiles.selectAll()
+                val profiles = Profiles
+                    .select {
+                        Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis())
+                    }
                     .orderBy(Profiles.money, SortOrder.DESC)
                     .limit(5, page * 5)
                     .toList()
@@ -63,10 +72,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     // Because Loritta has a looooooooot of profiles
                     // (Besides, Loritta will always have more than (pageSize * RankingGenerator.VALID_RANKING_PAGES.last) profiles, heh
                     5 * RankingGenerator.VALID_RANKING_PAGES.last,
-                    Profiles.selectAll()
-                        .orderBy(Profiles.money, SortOrder.DESC)
-                        .limit(5, page * 5)
-                        .toList()
+                    profiles
                 )
             }
 
@@ -133,7 +139,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
                 val profilesInTheQuery = Profiles.innerJoin(GuildProfiles, { Profiles.id }, { GuildProfiles.userId })
                     .select {
-                        GuildProfiles.guildId eq guild.id.toLong() and (GuildProfiles.isInGuild eq true)
+                        GuildProfiles.guildId eq guild.id.toLong() and (GuildProfiles.isInGuild eq true) and (GuildProfiles.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
                     }
                     .orderBy(Profiles.money, SortOrder.DESC)
                     .limit(5, page * 5)
