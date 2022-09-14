@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPredefinedPunishmentMessages
 import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
 import org.jetbrains.exposed.sql.deleteAll
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 
 class PredefinedReasonsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
@@ -36,7 +37,10 @@ class PredefinedReasonsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
         context.deferChannelMessageEphemerally()
 
         loritta.services.transaction {
-            ModerationPredefinedPunishmentMessages.deleteAll()
+            ModerationPredefinedPunishmentMessages.deleteWhere {
+                ModerationPredefinedPunishmentMessages.guild eq context.guildId.toLong()
+            }
+
             ModerationPredefinedPunishmentMessages.insert {
                 it[guild] = context.guildId.toLong()
                 it[short] = "divdm"
