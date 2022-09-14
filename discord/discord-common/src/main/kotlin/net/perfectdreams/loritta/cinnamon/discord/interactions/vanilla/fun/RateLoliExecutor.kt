@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 class RateLoliExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         // Yes, this is meant to be unused
-        val loli = string("loli", RateCommand.I18N_PREFIX.Loli.Options.Loli)
+        val loli = string("younggirlinjapanese", RateCommand.I18N_PREFIX.Loli.Options.Loli)
     }
 
     override val options = Options()
