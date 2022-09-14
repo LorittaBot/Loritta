@@ -117,7 +117,7 @@ class RollExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lori
                         result = finalResult.toInt()
                     )
                 ),
-                prefix = "\uD83C\uDFB2"
+                prefix = Emotes.LoriGameDie
             )
 
             if (response.isNotEmpty())

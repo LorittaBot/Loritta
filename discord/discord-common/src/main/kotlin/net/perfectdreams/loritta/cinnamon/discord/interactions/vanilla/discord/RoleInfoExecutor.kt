@@ -59,7 +59,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
                 }
 
                 field {
-                    name = "${Emotes.Computer} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.RoleId)
+                    name = "${Emotes.LoriId} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.RoleId)
                     value = "`${role.id}`"
 
                     inline = true
@@ -96,7 +96,7 @@ class RoleInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
                 }
 
                 field {
-                    name = "${Emotes.Date} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.CreatedAt)
+                    name = "${Emotes.LoriCalendar} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.CreatedAt)
                     value = "<t:${role.id.timestamp.toEpochMilliseconds() / 1000}:D>"
 
                     inline = true

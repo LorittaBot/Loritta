@@ -129,7 +129,7 @@ class EmojiInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                     }
 
                     field {
-                        name = "${Emotes.Computer} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiId)
+                        name = "${Emotes.LoriId} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiId)
                         value = emojiId.toString()
 
                         inline = true
@@ -143,7 +143,7 @@ class EmojiInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
                     }
 
                     field {
-                        name = "${Emotes.Date} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.CreatedAt)
+                        name = "${Emotes.LoriCalendar} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.CreatedAt)
                         value = "<t:${emojiIdAsSnowflake.timestamp.toEpochMilliseconds() / 1000}:D>"
 
                         inline = true

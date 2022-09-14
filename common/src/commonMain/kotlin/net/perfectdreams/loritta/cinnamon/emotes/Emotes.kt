@@ -68,6 +68,12 @@ object Emotes {
     val Sonhos5 = DiscordEmote(1018953265251106816L, "sonhos_65a79e6a", false)
     val Sonhos6 = DiscordEmote(1018953754374049862L, "sonhos_b58bf6d8", false)
 
+    val LoriCalendar = DiscordEmote(1019638975905935383, "lori_calendar", false)
+    val LoriLabel = DiscordEmote(1019658127550976130, "lori_label", false)
+    val LoriId = DiscordEmote(1019651380341903390, "lori_id", false)
+    val LoriIdentificationCard = DiscordEmote(1019654503219339315, "lori_identification_card", false)
+    val LoriGameDie = DiscordEmote(1019655734864134264, "lori_game_die", false)
+
     val CheckMark = UnicodeEmote("✅")
     val Error = DiscordEmote(412585701054611458L, "error", false)
 
@@ -126,8 +132,6 @@ object Emotes {
     val FileFolder = UnicodeEmote("\uD83D\uDCC1")
     val Dancer = UnicodeEmote("\uD83D\uDC83")
     val Handshake = UnicodeEmote("\uD83E\uDD1D")
-    // TODO: Replace with https://emojipedia.org/identification-card/ when Discord updates to Unicode 14.0
-    val IdentificationCard = DiscordEmote(1013846914887864350L, "identification_card", false)
     val HighVoltage = UnicodeEmote("⚡")
     val Antenna = UnicodeEmote("\uD83D\uDCE1")
     val ShoppingBags = UnicodeEmote("\uD83D\uDECD️")
@@ -136,6 +140,7 @@ object Emotes {
     val Diamond = UnicodeEmote("\uD83D\uDC8E")
     val Map = UnicodeEmote("\uD83D\uDDFA")
     val MagnifyingGlassLeft = UnicodeEmote("\uD83D\uDD0D")
+    val BlueBook = UnicodeEmote("\uD83D\uDCD8")
 
     val Discord = DiscordEmote(314003252830011395, "discord", false)
     val GitHub = DiscordEmote(467329174387032086L, "github", false)

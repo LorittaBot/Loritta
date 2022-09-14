@@ -18,13 +18,11 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.RolesByExperience
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
 import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -52,7 +50,7 @@ class ViewXpExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
             embed {
                 author(userToBeViewed.tag, null, userToBeViewed.effectiveAvatar.url)
 
-                title = "${Emotes.IdentificationCard} ${context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.ServerProfileCard)}"
+                title = "${Emotes.LoriIdentificationCard} ${context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.ServerProfileCard)}"
 
                 val localProfile = loritta.services.transaction {
                     GuildProfiles.selectFirstOrNull { (GuildProfiles.guildId eq guildId.toLong()) and (GuildProfiles.userId eq userToBeViewed.id.toLong()) }

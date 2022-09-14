@@ -86,7 +86,7 @@ class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                 if (invite.guild.value?.icon != null)
                     thumbnailUrl = iconUrl
 
-                field("${Emotes.Computer} ID", true) {
+                field("${Emotes.LoriId} ID", true) {
                     "`${invite.guild.value?.id?.value.toString()}`"
                 }
 

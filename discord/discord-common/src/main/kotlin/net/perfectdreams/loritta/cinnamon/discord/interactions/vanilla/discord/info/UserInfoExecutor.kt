@@ -119,9 +119,9 @@ interface UserInfoExecutor {
                 }
                 url = "https://discord.com/users/${user.id}"
 
-                field("\uD83D\uDCBB ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordId)}", "`${user.id}`", true)
-                field("\uD83C\uDFF7️ ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordTag)}", "`${user.username}#${user.discriminator}`", true)
-                field("\uD83D\uDCC5 ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.AccountCreationDate)}", "<t:${user.id.timestamp.epochSeconds}:f> (<t:${user.id.timestamp.epochSeconds}:R>)", true)
+                field("${Emotes.LoriId} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordId)}", "`${user.id}`", true)
+                field("${Emotes.LoriLabel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordTag)}", "`${user.username}#${user.discriminator}`", true)
+                field("${Emotes.LoriCalendar} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.AccountCreationDate)}", "<t:${user.id.timestamp.epochSeconds}:f> (<t:${user.id.timestamp.epochSeconds}:R>)", true)
 
                 thumbnailUrl = user.avatar?.cdnUrl?.toUrl()
                 color = LorittaColors.DiscordBlurple.toKordColor()
@@ -135,7 +135,7 @@ interface UserInfoExecutor {
                     title = member.nickname ?: user.username
 
                     field(
-                        "\uD83D\uDCC5 ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.AccountJoinDate)}",
+                        "${Emotes.LoriCalendar} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.AccountJoinDate)}",
                         "<t:${member.joinedAt.epochSeconds}:f> (<t:${member.joinedAt.epochSeconds}:R>)",
                         true
                     )
@@ -196,7 +196,7 @@ interface UserInfoExecutor {
 
                         if (applicationInfo.guildId != null) {
                             field(
-                                "\uD83D\uDCBB ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.SupportGuildId)}",
+                                "${Emotes.LoriId} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.SupportGuildId)}",
                                 "`${applicationInfo.guildId}`",
                                 true
                             )
@@ -205,7 +205,7 @@ interface UserInfoExecutor {
                         val tags = applicationInfo.tags
                         if (tags != null) {
                             field(
-                                "\uD83C\uDFF7️ ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.Tags)}",
+                                "${Emotes.LoriLabel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.Tags)}",
                                 tags.joinToString(),
                                 true
                             )

@@ -224,8 +224,8 @@ class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
                     description = userData.description
                 }
 
-                field("\uD83D\uDCBB ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.UserId)}", "`$userId`", true)
-                field("\uD83D\uDCC5 ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.JoinDate)}", "<t:${userData.created.epochSeconds}:F>", true)
+                field("${Emotes.LoriId} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.UserId)}", "`$userId`", true)
+                field("${Emotes.LoriCalendar} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.JoinDate)}", "<t:${userData.created.epochSeconds}:F>", true)
                 field(
                     "\uD83D\uDE4B ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.Social)}",
                     """🐾 **${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.Following)}:** $followingsCount

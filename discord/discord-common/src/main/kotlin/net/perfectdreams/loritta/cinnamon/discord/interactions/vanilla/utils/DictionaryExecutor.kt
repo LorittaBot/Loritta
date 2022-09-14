@@ -112,7 +112,7 @@ class DictionaryExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
             embed {
                 color = Color(25, 89, 132)  // TODO: Move this to a object
 
-                title = "📙 ${context.i18nContext.get(DictionaryCommand.I18N_PREFIX.MeaningOf(word.text()))}"
+                title = "${Emotes.BlueBook} ${context.i18nContext.get(DictionaryCommand.I18N_PREFIX.MeaningOf(word.text()))}"
 
                 this.description = buildString {
                     append("*${type.text()}*")

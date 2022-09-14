@@ -68,7 +68,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
             }
 
             field {
-                name = "${Emotes.Computer} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.ChannelId)
+                name = "${Emotes.LoriId} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.ChannelId)
                 value = "`${channel.id.value}`"
 
                 inline = true
@@ -190,7 +190,7 @@ class ChannelInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
                 }
 
             field {
-                name = "${Emotes.Date} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.CreatedAt)
+                name = "${Emotes.LoriCalendar} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.CreatedAt)
                 value = "<t:${channel.id.timestamp.toEpochMilliseconds() / 1000}:D>"
 
                 inline = true
