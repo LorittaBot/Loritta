@@ -110,7 +110,6 @@ class InteractionsRegistry(
         }
 
         logger.info { "Command Character Usage:" }
-        manager.interaKTions.manager.applicationCommandsDeclarations.forEach {  }
         manager.interaKTions.manager.applicationCommandsDeclarations
             .filterIsInstance<net.perfectdreams.discordinteraktions.common.commands.SlashCommandDeclaration>()
             .forEach {
