@@ -72,7 +72,6 @@ object RawToFormated {
         GuildFeature.Verified to I18nKeys.GuildFeatures.Verified,
         GuildFeature.Partnered to I18nKeys.GuildFeatures.Partnered,
         GuildFeature.Community to I18nKeys.GuildFeatures.Community,
-        GuildFeature.Commerce to I18nKeys.GuildFeatures.Commerce,
         GuildFeature.News to I18nKeys.GuildFeatures.News,
         GuildFeature.Discoverable to I18nKeys.GuildFeatures.Discoverable,
         GuildFeature.Featurable to I18nKeys.GuildFeatures.Featurable,
