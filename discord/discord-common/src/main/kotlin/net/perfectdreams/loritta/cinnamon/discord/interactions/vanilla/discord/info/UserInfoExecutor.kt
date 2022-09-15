@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.d
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
+import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import kotlin.time.Duration.Companion.minutes
 
@@ -123,7 +124,7 @@ interface UserInfoExecutor {
                 field("${Emotes.LoriLabel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordTag)}", "`${user.username}#${user.discriminator}`", true)
                 field("${Emotes.LoriCalendar} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.AccountCreationDate)}", "<t:${user.id.timestamp.epochSeconds}:f> (<t:${user.id.timestamp.epochSeconds}:R>)", true)
 
-                thumbnailUrl = user.avatar?.cdnUrl?.toUrl()
+                thumbnailUrl = user.effectiveAvatar.cdnUrl.toUrl()
                 color = LorittaColors.DiscordBlurple.toKordColor()
             }
 
@@ -182,7 +183,7 @@ interface UserInfoExecutor {
                         false
                     )
 
-                    thumbnailUrl = (member.avatar ?: user.avatar)?.cdnUrl?.toUrl()
+                    thumbnailUrl = (member.avatar ?: user.effectiveAvatar).cdnUrl.toUrl()
                 }
             }
 
