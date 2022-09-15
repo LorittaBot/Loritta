@@ -37,7 +37,7 @@ class ShowGuildMemberPermissionsExecutor(loritta: LorittaCinnamon) : CinnamonBut
             embed {
                 field(
                     "${Emotes.LoriSunglasses} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Roles)}",
-                    interactionDataFromDatabase.roles.joinToString { "<@&${it}>" },
+                    interactionDataFromDatabase.roles.joinToString { "<@&${it}>" }.ifBlank { "\u200b" },
                     false
                 )
 
@@ -49,7 +49,7 @@ class ShowGuildMemberPermissionsExecutor(loritta: LorittaCinnamon) : CinnamonBut
                 if (permissionList != null) {
                     field(
                         "${Emotes.LoriAngel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.Permissions)}",
-                        permissionList,
+                        permissionList.ifEmpty { "\u200B" },
                         false
                     )
                 }
