@@ -124,7 +124,7 @@ interface UserInfoExecutor {
                 field("${Emotes.LoriLabel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordTag)}", "`${user.username}#${user.discriminator}`", true)
                 field("${Emotes.LoriCalendar} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.AccountCreationDate)}", "<t:${user.id.timestamp.epochSeconds}:f> (<t:${user.id.timestamp.epochSeconds}:R>)", true)
 
-                thumbnailUrl = user.effectiveAvatar.cdnUrl.toUrl()
+                thumbnailUrl = user.effectiveAvatar.url
                 color = LorittaColors.DiscordBlurple.toKordColor()
             }
 
@@ -183,7 +183,7 @@ interface UserInfoExecutor {
                         false
                     )
 
-                    thumbnailUrl = (member.avatar ?: user.effectiveAvatar).cdnUrl.toUrl()
+                    thumbnailUrl = (member.avatar ?: user.effectiveAvatar).url
                 }
             }
 
