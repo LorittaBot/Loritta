@@ -103,7 +103,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     loritta,
                     ButtonStyle.Primary,
                     ChangeSonhosRankPageButtonExecutor,
-                    ChangeSonhosRankPageData(context.user.id, page - 1, SonhosRankType.GLOBAL)
+                    ChangeSonhosRankPageData(context.user.id, ChangeSonhosRankPageData.Button.LEFT_ARROW, page - 1, SonhosRankType.GLOBAL)
                 ) {
                     loriEmoji = Emotes.ChevronLeft
                     disabled = page !in RankingGenerator.VALID_RANKING_PAGES
@@ -113,7 +113,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     loritta,
                     ButtonStyle.Primary,
                     ChangeSonhosRankPageButtonExecutor,
-                    ChangeSonhosRankPageData(context.user.id, page + 1, SonhosRankType.GLOBAL)
+                    ChangeSonhosRankPageData(context.user.id, ChangeSonhosRankPageData.Button.RIGHT_ARROW, page + 1, SonhosRankType.GLOBAL)
                 ) {
                     loriEmoji = Emotes.ChevronRight
                     disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
@@ -183,7 +183,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     loritta,
                     ButtonStyle.Primary,
                     ChangeSonhosRankPageButtonExecutor,
-                    ChangeSonhosRankPageData(context.user.id, page - 1, SonhosRankType.LOCAL)
+                    ChangeSonhosRankPageData(context.user.id, ChangeSonhosRankPageData.Button.LEFT_ARROW, page - 1, SonhosRankType.LOCAL)
                 ) {
                     loriEmoji = Emotes.ChevronLeft
                     disabled = page !in RankingGenerator.VALID_RANKING_PAGES
@@ -193,7 +193,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     loritta,
                     ButtonStyle.Primary,
                     ChangeSonhosRankPageButtonExecutor,
-                    ChangeSonhosRankPageData(context.user.id, page + 1, SonhosRankType.LOCAL)
+                    ChangeSonhosRankPageData(context.user.id, ChangeSonhosRankPageData.Button.RIGHT_ARROW, page + 1, SonhosRankType.LOCAL)
                 ) {
                     loriEmoji = Emotes.ChevronRight
                     disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed

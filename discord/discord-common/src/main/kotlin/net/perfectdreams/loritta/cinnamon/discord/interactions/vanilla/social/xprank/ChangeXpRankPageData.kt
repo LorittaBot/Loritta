@@ -7,5 +7,11 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.S
 @Serializable
 data class ChangeXpRankPageData(
     override val userId: Snowflake,
+    val button: Button,
     val page: Long
-) : SingleUserComponentData
+) : SingleUserComponentData {
+    enum class Button {
+        LEFT_ARROW,
+        RIGHT_ARROW
+    }
+}

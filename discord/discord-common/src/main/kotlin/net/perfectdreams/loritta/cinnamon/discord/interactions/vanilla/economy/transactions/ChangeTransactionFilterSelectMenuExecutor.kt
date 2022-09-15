@@ -20,15 +20,15 @@ class ChangeTransactionFilterSelectMenuExecutor(
     ) {
         context.deferUpdateMessage()
 
-        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<TransactionListData>()
+        val decoded = context.decodeDataFromComponentAndRequireUserToMatch<ChangeTransactionFilterData>()
 
         val builtMessage = TransactionsExecutor.createMessage(
             loritta,
             context.i18nContext,
-            decoded.copy(
-                page = 0, // Change the page to zero when changing the current filter
-                transactionTypeFilter = values.map { TransactionType.valueOf(it) }
-            )
+            context.user.id,
+            decoded.viewingTransactionsOfUserId,
+            0, // Change the page to zero when changing the current filter
+            values.map { TransactionType.valueOf(it) }
         )
 
         context.updateMessage {

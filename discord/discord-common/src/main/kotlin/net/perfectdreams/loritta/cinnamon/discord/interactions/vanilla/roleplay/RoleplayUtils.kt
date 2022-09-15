@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.retribute.RetributeSlapButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.source.SourcePictureExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.disabledButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
@@ -288,12 +289,8 @@ object RoleplayUtils {
                     }
                 } else {
                     // Don't let someone retribute their own action
-                    interactionButton(
-                        ButtonStyle.Primary,
-                        "dummy-retribution"
-                    ) {
+                    disabledButton(ButtonStyle.Primary) {
                         label = i18nContext.get(RoleplayCommand.I18N_PREFIX.Retribute)
-                        disabled = true
                         loriEmoji = roleplayActionAttributes.embedEmoji
                     }
                 }
@@ -308,12 +305,8 @@ object RoleplayUtils {
                         loriEmoji = Emotes.LoriReading
                     }
                 } else {
-                    interactionButton(
-                        ButtonStyle.Secondary,
-                        "dummy"
-                    ) {
+                    disabledButton(ButtonStyle.Secondary) {
                         label = i18nContext.get(RoleplayCommand.I18N_PREFIX.PictureSource)
-                        disabled = true
                         loriEmoji = Emotes.LoriReading
                     }
                 }

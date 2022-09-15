@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions
 
 import dev.kord.common.entity.ButtonStyle
+import dev.kord.common.entity.Snowflake
 import dev.kord.rest.builder.message.EmbedBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
@@ -17,11 +18,13 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.transactiontransformers.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.disabledButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.selectMenu
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.*
 import kotlin.math.ceil
@@ -33,35 +36,40 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
         suspend fun createMessage(
             loritta: LorittaCinnamon,
             i18nContext: I18nContext,
-            data: TransactionListData
+            userId: Snowflake,
+            viewingTransactionsOfUserId: Snowflake,
+            page: Long,
+            transactionTypeFilter: List<TransactionType>
         ): suspend MessageBuilder.() -> (Unit) = {
             val transactions = loritta.services.sonhos.getUserTransactions(
-                data.viewingTransactionsOfUserId,
-                data.transactionTypeFilter,
+                UserId(viewingTransactionsOfUserId),
+                transactionTypeFilter,
                 TRANSACTIONS_PER_PAGE,
-                (data.page * TRANSACTIONS_PER_PAGE)
+                (page * TRANSACTIONS_PER_PAGE)
             )
 
             val totalTransactions = loritta.services.sonhos.getUserTotalTransactions(
-                data.viewingTransactionsOfUserId,
-                data.transactionTypeFilter
+                UserId(viewingTransactionsOfUserId),
+                transactionTypeFilter
             )
 
             val totalPages = ceil((totalTransactions / TRANSACTIONS_PER_PAGE.toDouble())).toLong()
 
-            val isSelf = data.viewingTransactionsOfUserId.value == data.userId.value
+            val isSelf = viewingTransactionsOfUserId.value == userId.value
 
-            val cachedUserInfo = loritta.getCachedUserInfo(data.viewingTransactionsOfUserId) ?: error("Missing cached user info!")
+            val cachedUserInfo = loritta.getCachedUserInfo(viewingTransactionsOfUserId) ?: error("Missing cached user info!")
 
             content = i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.NotAllTransactionsAreHere)
 
-            if (data.page >= totalPages && totalPages != 0L) {
+            if (page >= totalPages && totalPages != 0L) {
                 // ===[ EASTER EGG: USER INPUT TOO MANY PAGES ]===
                 apply(
                     createTooManyPagesMessage(
                         i18nContext,
-                        data,
-                        totalPages
+                        userId,
+                        viewingTransactionsOfUserId,
+                        totalPages,
+                        transactionTypeFilter
                     )
                 )
             } else {
@@ -71,10 +79,10 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                         createTransactionViewEmbed(
                             loritta,
                             i18nContext,
-                            data,
                             isSelf,
                             cachedUserInfo,
                             transactions,
+                            page,
                             totalTransactions
                         )
                     } else {
@@ -90,8 +98,8 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                     }
                 }
 
-                val addLeftButton = data.page != 0L && totalTransactions != 0L
-                val addRightButton = totalPages > (data.page + 1) && totalTransactions != 0L
+                val addLeftButton = page != 0L && totalTransactions != 0L
+                val addRightButton = totalPages > (page + 1) && totalTransactions != 0L
 
                 actionRow {
                     if (addLeftButton) {
@@ -99,25 +107,20 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                             ButtonStyle.Primary,
                             ChangeTransactionPageButtonClickExecutor,
                             ComponentDataUtils.encode(
-                                data.copy(
-                                    page = data.page - 1
+                                ChangeTransactionPageData(
+                                    userId,
+                                    viewingTransactionsOfUserId,
+                                    ChangeTransactionPageData.Button.LEFT_ARROW,
+                                    page - 1,
+                                    transactionTypeFilter
                                 )
                             )
                         ) {
                             loriEmoji = Emotes.ChevronLeft
                         }
                     } else {
-                        interactiveButton(
-                            ButtonStyle.Primary,
-                            ChangeTransactionPageButtonClickExecutor,
-                            ComponentDataUtils.encode(
-                                data.copy(
-                                    page = data.page - 1
-                                )
-                            )
-                        ) {
+                        disabledButton(ButtonStyle.Primary) {
                             loriEmoji = Emotes.ChevronLeft
-                            disabled = true
                         }
                     }
 
@@ -126,25 +129,20 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                             ButtonStyle.Primary,
                             ChangeTransactionPageButtonClickExecutor,
                             ComponentDataUtils.encode(
-                                data.copy(
-                                    page = data.page + 1
+                                ChangeTransactionPageData(
+                                    userId,
+                                    viewingTransactionsOfUserId,
+                                    ChangeTransactionPageData.Button.RIGHT_ARROW,
+                                    page + 1,
+                                    transactionTypeFilter
                                 )
                             )
                         ) {
                             loriEmoji = Emotes.ChevronRight
                         }
                     } else {
-                        interactiveButton(
-                            ButtonStyle.Primary,
-                            ChangeTransactionPageButtonClickExecutor,
-                            ComponentDataUtils.encode(
-                                data.copy(
-                                    page = data.page + 1
-                                )
-                            )
-                        ) {
+                        disabledButton(ButtonStyle.Primary) {
                             loriEmoji = Emotes.ChevronRight
-                            disabled = true
                         }
                     }
                 }
@@ -152,7 +150,14 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                 actionRow {
                     selectMenu(
                         ChangeTransactionFilterSelectMenuExecutor,
-                        ComponentDataUtils.encode(data)
+                        ComponentDataUtils.encode(
+                            ChangeTransactionFilterData(
+                                userId,
+                                viewingTransactionsOfUserId,
+                                page,
+                                transactionTypeFilter
+                            )
+                        )
                     ) {
                         val transactionTypes = TransactionType.values()
                         this.allowedValues = 1..(25.coerceAtMost(transactionTypes.size))
@@ -161,7 +166,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                             option(i18nContext.get(transactionType.title), transactionType.name) {
                                 description = i18nContext.get(transactionType.description)
                                 loriEmoji = transactionType.emote
-                                default = transactionType in data.transactionTypeFilter
+                                default = transactionType in transactionTypeFilter
                             }
                         }
                     }
@@ -172,10 +177,10 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
         private suspend fun EmbedBuilder.createTransactionViewEmbed(
             loritta: LorittaCinnamon,
             i18nContext: I18nContext,
-            data: TransactionListData,
             isSelf: Boolean,
             cachedUserInfo: CachedUserInfo,
             transactions: List<SonhosTransaction>,
+            page: Long,
             totalTransactions: Long
         ) {
             // ===[ NORMAL TRANSACTION VIEW ]===
@@ -190,7 +195,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
 
                 append(" — ")
 
-                append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(data.page + 1)))
+                append(i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.Page(page + 1)))
             }
 
             color = LorittaColors.LorittaAqua.toKordColor()
@@ -266,8 +271,10 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
 
         suspend fun createTooManyPagesMessage(
             i18nContext: I18nContext,
-            data: TransactionListData,
-            totalPages: Long
+            userId: Snowflake,
+            viewingTransactionsOfUserId: Snowflake,
+            totalPages: Long,
+            transactionTypeFilter: List<TransactionType>
         ): MessageBuilder.() -> (Unit) = {
             embed {
                 title = i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.UnknownPage.Title)
@@ -286,8 +293,12 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                     ButtonStyle.Primary,
                     ChangeTransactionPageButtonClickExecutor,
                     ComponentDataUtils.encode(
-                        data.copy(
-                            page = totalPages - 1
+                        ChangeTransactionPageData(
+                            userId,
+                            viewingTransactionsOfUserId,
+                            ChangeTransactionPageData.Button.GO_TO_THE_LAST_PAGE,
+                            totalPages - 1,
+                            transactionTypeFilter
                         )
                     )
                 ) {
@@ -309,19 +320,17 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because this sometimes takes too long
 
-        val userId = UserId(args[options.user]?.id?.value ?: context.user.id.value)
+        val userId = args[options.user]?.id ?: context.user.id
         val page = ((args[options.page] ?: 1L) - 1)
             .coerceAtLeast(0)
 
         val message = createMessage(
             context.loritta,
             context.i18nContext,
-            TransactionListData(
-                context.user.id,
-                userId,
-                page,
-                TransactionType.values().toList()
-            )
+            context.user.id,
+            userId,
+            page,
+            TransactionType.values().toList()
         )
 
         context.sendMessage {

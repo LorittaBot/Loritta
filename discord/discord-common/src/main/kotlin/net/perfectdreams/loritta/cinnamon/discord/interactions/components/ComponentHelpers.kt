@@ -153,7 +153,7 @@ fun ActionRowBuilder.selectMenu(
 }
 
 /**
- * Creates a disabled button with a random custom ID
+ * Creates a disabled button with a random ID
  */
 fun ActionRowBuilder.disabledButton(
     style: ButtonStyle,
@@ -162,6 +162,19 @@ fun ActionRowBuilder.disabledButton(
 ) {
     interactionButton(style, "disabled:${UUID.randomUUID()}") {
         this.label = label
+        this.disabled = true
+        builder.invoke(this)
+    }
+}
+
+/**
+ * Creates a disabled button with a random ID
+ */
+fun ActionRowBuilder.disabledButton(
+    style: ButtonStyle,
+    builder: ButtonBuilder.InteractionButtonBuilder.() -> Unit = {}
+) {
+    interactionButton(style, "disabled:${UUID.randomUUID()}") {
         this.disabled = true
         builder.invoke(this)
     }

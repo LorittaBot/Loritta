@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
 import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
@@ -40,7 +41,19 @@ class TransferSonhosButtonExecutor(
     }
 
     override suspend fun onClick(user: User, context: ComponentContext) {
-        context.deferUpdateMessage()
+        context.updateMessage {
+            actionRow {
+                disabledButton(ButtonStyle.Primary) {
+                    label = context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer)
+                    loriEmoji = LoadingEmojis.random()
+                }
+
+                disabledButton(ButtonStyle.Danger) {
+                    label = context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.Cancel)
+                    loriEmoji = Emotes.LoriHmpf
+                }
+            }
+        }
 
         val decodedGenericInteractionData = context.decodeDataFromComponent<StoredGenericInteractionData>()
 

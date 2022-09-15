@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 
 class CancelSonhosTransferButtonExecutor(
@@ -15,7 +16,19 @@ class CancelSonhosTransferButtonExecutor(
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.CANCEL_SONHOS_TRANSFER_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext) {
-        context.deferUpdateMessage()
+        context.updateMessage {
+            actionRow {
+                disabledButton(ButtonStyle.Primary) {
+                    label = context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer)
+                    loriEmoji = Emotes.Handshake
+                }
+
+                disabledButton(ButtonStyle.Danger) {
+                    label = context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.Cancel)
+                    loriEmoji = LoadingEmojis.random()
+                }
+            }
+        }
 
         // Only used to check if it is the owner of the transfer
         val decoded = context.decodeDataFromComponentAndRequireUserToMatch<CancelSonhosTransferData>()
