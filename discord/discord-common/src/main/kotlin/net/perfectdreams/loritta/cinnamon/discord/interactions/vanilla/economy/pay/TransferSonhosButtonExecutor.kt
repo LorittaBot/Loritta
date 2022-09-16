@@ -43,10 +43,6 @@ class TransferSonhosButtonExecutor(
     override suspend fun onClick(user: User, context: ComponentContext) {
         val decodedGenericInteractionData = context.decodeDataFromComponent<StoredGenericInteractionData>()
 
-        context.updateMessage {
-            context.disableComponents(LoadingEmojis.random(), this)
-        }
-
         val result = loritta.services.transaction {
             val dataFromDatabase = loritta.services.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId) ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
 
