@@ -6,27 +6,27 @@ import dev.kord.rest.builder.message.EmbedBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.utils.TransactionType
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.transactiontransformers.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.disabledButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.selectMenu
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.transactiontransformers.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.*
+import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import net.perfectdreams.loritta.cinnamon.utils.TransactionType
+import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
 import kotlin.math.ceil
 
 class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
@@ -39,8 +39,13 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
             userId: Snowflake,
             viewingTransactionsOfUserId: Snowflake,
             page: Long,
-            transactionTypeFilter: List<TransactionType>
+            userFacingTransactionTypeFilter: List<TransactionType>
         ): suspend MessageBuilder.() -> (Unit) = {
+            // If the list is empty, we will use *all* transaction types in the filter
+            // This makes it easier because you don't need to manually deselect every single filter before you can filter by a specific
+            // transaction type.
+            val transactionTypeFilter = userFacingTransactionTypeFilter.ifEmpty { TransactionType.values().toList() }
+
             val transactions = loritta.services.sonhos.getUserTransactions(
                 UserId(viewingTransactionsOfUserId),
                 transactionTypeFilter,
@@ -69,7 +74,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                         userId,
                         viewingTransactionsOfUserId,
                         totalPages,
-                        transactionTypeFilter
+                        userFacingTransactionTypeFilter
                     )
                 )
             } else {
@@ -111,7 +116,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                                     userId,
                                     viewingTransactionsOfUserId,
                                     page - 1,
-                                    transactionTypeFilter
+                                    userFacingTransactionTypeFilter
                                 )
                             )
                         ) {
@@ -132,7 +137,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                                     userId,
                                     viewingTransactionsOfUserId,
                                     page + 1,
-                                    transactionTypeFilter
+                                    userFacingTransactionTypeFilter
                                 )
                             )
                         ) {
@@ -153,7 +158,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                                 userId,
                                 viewingTransactionsOfUserId,
                                 page,
-                                transactionTypeFilter
+                                userFacingTransactionTypeFilter
                             )
                         )
                     ) {
@@ -164,7 +169,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                             option(i18nContext.get(transactionType.title), transactionType.name) {
                                 description = i18nContext.get(transactionType.description)
                                 loriEmoji = transactionType.emote
-                                default = transactionType in transactionTypeFilter
+                                default = transactionType in userFacingTransactionTypeFilter
                             }
                         }
                     }
@@ -327,7 +332,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
             context.user.id,
             userId,
             page,
-            TransactionType.values().toList()
+            listOf() // Empty = All
         )
 
         context.sendMessage {
