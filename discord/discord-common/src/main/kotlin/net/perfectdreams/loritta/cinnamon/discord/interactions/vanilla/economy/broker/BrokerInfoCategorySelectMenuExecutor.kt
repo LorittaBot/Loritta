@@ -20,7 +20,7 @@ class BrokerInfoCategorySelectMenuExecutor(loritta: LorittaCinnamon) : CinnamonS
         // We only want to validate it
         context.decodeDataFromComponentAndRequireUserToMatch<BarebonesSingleUserComponentData>()
 
-        context.deferUpdateMessage()
+        context.updateMessageSetLoadingState(updateMessageContent = false)
 
         val categories = values.map { LorittaBovespaBrokerUtils.CompanyCategory.valueOf(it) }
         val stockInformations = context.loritta.services.bovespaBroker.getAllTickers()

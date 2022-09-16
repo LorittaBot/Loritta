@@ -18,9 +18,10 @@ class ChangeTransactionFilterSelectMenuExecutor(
         context: ComponentContext,
         values: List<String>
     ) {
-        context.deferUpdateMessage()
-
         val decoded = context.decodeDataFromComponentAndRequireUserToMatch<ChangeTransactionFilterData>()
+
+        // Loading Section
+        context.updateMessageSetLoadingState()
 
         val builtMessage = TransactionsExecutor.createMessage(
             loritta,

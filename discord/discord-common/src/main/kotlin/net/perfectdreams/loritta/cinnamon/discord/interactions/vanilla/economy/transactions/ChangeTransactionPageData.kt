@@ -11,13 +11,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 data class ChangeTransactionPageData(
     override val userId: Snowflake,
     val viewingTransactionsOfUserId: Snowflake,
-    val button: Button,
     val page: Long,
     val transactionTypeFilter: List<TransactionType>
-) : SingleUserComponentData {
-    enum class Button {
-        LEFT_ARROW,
-        RIGHT_ARROW,
-        GO_TO_THE_LAST_PAGE
-    }
-}
+) : SingleUserComponentData

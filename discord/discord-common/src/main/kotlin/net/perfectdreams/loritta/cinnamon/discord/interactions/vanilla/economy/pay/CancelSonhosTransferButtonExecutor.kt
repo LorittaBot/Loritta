@@ -16,22 +16,12 @@ class CancelSonhosTransferButtonExecutor(
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.CANCEL_SONHOS_TRANSFER_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext) {
-        context.updateMessage {
-            actionRow {
-                disabledButton(ButtonStyle.Primary) {
-                    label = context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer)
-                    loriEmoji = Emotes.Handshake
-                }
-
-                disabledButton(ButtonStyle.Danger) {
-                    label = context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.Cancel)
-                    loriEmoji = LoadingEmojis.random()
-                }
-            }
-        }
-
         // Only used to check if it is the owner of the transfer
         val decoded = context.decodeDataFromComponentAndRequireUserToMatch<CancelSonhosTransferData>()
+
+        context.updateMessage {
+            context.disableComponents(LoadingEmojis.random(), this)
+        }
 
         loritta.services.interactionsData.deleteInteractionData(decoded.interactionDataId)
 

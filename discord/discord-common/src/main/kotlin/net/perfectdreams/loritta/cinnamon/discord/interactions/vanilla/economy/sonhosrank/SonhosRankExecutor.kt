@@ -17,21 +17,16 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButtonWithHybridData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.*
+import net.perfectdreams.loritta.cinnamon.discord.utils.RankingGenerator
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
-import net.perfectdreams.loritta.cinnamon.pudding.tables.BannedUsers
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
 import org.jetbrains.exposed.sql.*
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.greaterEq
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNotNull
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.isNull
 import kotlin.math.ceil
 
 class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
@@ -103,7 +98,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     loritta,
                     ButtonStyle.Primary,
                     ChangeSonhosRankPageButtonExecutor,
-                    ChangeSonhosRankPageData(context.user.id, ChangeSonhosRankPageData.Button.LEFT_ARROW, page - 1, SonhosRankType.GLOBAL)
+                    ChangeSonhosRankPageData(context.user.id, page - 1, SonhosRankType.GLOBAL)
                 ) {
                     loriEmoji = Emotes.ChevronLeft
                     disabled = page !in RankingGenerator.VALID_RANKING_PAGES
@@ -113,7 +108,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     loritta,
                     ButtonStyle.Primary,
                     ChangeSonhosRankPageButtonExecutor,
-                    ChangeSonhosRankPageData(context.user.id, ChangeSonhosRankPageData.Button.RIGHT_ARROW, page + 1, SonhosRankType.GLOBAL)
+                    ChangeSonhosRankPageData(context.user.id, page + 1, SonhosRankType.GLOBAL)
                 ) {
                     loriEmoji = Emotes.ChevronRight
                     disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed
@@ -183,7 +178,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     loritta,
                     ButtonStyle.Primary,
                     ChangeSonhosRankPageButtonExecutor,
-                    ChangeSonhosRankPageData(context.user.id, ChangeSonhosRankPageData.Button.LEFT_ARROW, page - 1, SonhosRankType.LOCAL)
+                    ChangeSonhosRankPageData(context.user.id, page - 1, SonhosRankType.LOCAL)
                 ) {
                     loriEmoji = Emotes.ChevronLeft
                     disabled = page !in RankingGenerator.VALID_RANKING_PAGES
@@ -193,7 +188,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                     loritta,
                     ButtonStyle.Primary,
                     ChangeSonhosRankPageButtonExecutor,
-                    ChangeSonhosRankPageData(context.user.id, ChangeSonhosRankPageData.Button.RIGHT_ARROW, page + 1, SonhosRankType.LOCAL)
+                    ChangeSonhosRankPageData(context.user.id, page + 1, SonhosRankType.LOCAL)
                 ) {
                     loriEmoji = Emotes.ChevronRight
                     disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed

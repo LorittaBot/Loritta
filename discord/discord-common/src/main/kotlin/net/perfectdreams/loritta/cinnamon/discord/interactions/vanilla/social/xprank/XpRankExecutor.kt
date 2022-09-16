@@ -104,7 +104,7 @@ class XpRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                     loritta,
                     ButtonStyle.Primary,
                     ChangeXpRankPageButtonExecutor,
-                    ChangeXpRankPageData(context.user.id, ChangeXpRankPageData.Button.LEFT_ARROW, page - 1)
+                    ChangeXpRankPageData(context.user.id, page - 1)
                 ) {
                     loriEmoji = Emotes.ChevronLeft
                     disabled = page !in RankingGenerator.VALID_RANKING_PAGES
@@ -114,7 +114,7 @@ class XpRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                     loritta,
                     ButtonStyle.Primary,
                     ChangeXpRankPageButtonExecutor,
-                    ChangeXpRankPageData(context.user.id, ChangeXpRankPageData.Button.RIGHT_ARROW, page + 1)
+                    ChangeXpRankPageData(context.user.id, page + 1)
                 ) {
                     loriEmoji = Emotes.ChevronRight
                     disabled = page + 2 !in RankingGenerator.VALID_RANKING_PAGES || page >= maxPageZeroIndexed

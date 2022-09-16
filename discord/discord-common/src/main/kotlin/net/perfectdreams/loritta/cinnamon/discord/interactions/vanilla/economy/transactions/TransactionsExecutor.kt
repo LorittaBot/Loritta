@@ -110,7 +110,6 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                                 ChangeTransactionPageData(
                                     userId,
                                     viewingTransactionsOfUserId,
-                                    ChangeTransactionPageData.Button.LEFT_ARROW,
                                     page - 1,
                                     transactionTypeFilter
                                 )
@@ -132,7 +131,6 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                                 ChangeTransactionPageData(
                                     userId,
                                     viewingTransactionsOfUserId,
-                                    ChangeTransactionPageData.Button.RIGHT_ARROW,
                                     page + 1,
                                     transactionTypeFilter
                                 )
@@ -296,7 +294,6 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                         ChangeTransactionPageData(
                             userId,
                             viewingTransactionsOfUserId,
-                            ChangeTransactionPageData.Button.GO_TO_THE_LAST_PAGE,
                             totalPages - 1,
                             transactionTypeFilter
                         )

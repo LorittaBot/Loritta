@@ -41,21 +41,11 @@ class TransferSonhosButtonExecutor(
     }
 
     override suspend fun onClick(user: User, context: ComponentContext) {
-        context.updateMessage {
-            actionRow {
-                disabledButton(ButtonStyle.Primary) {
-                    label = context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer)
-                    loriEmoji = LoadingEmojis.random()
-                }
-
-                disabledButton(ButtonStyle.Danger) {
-                    label = context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.Cancel)
-                    loriEmoji = Emotes.LoriHmpf
-                }
-            }
-        }
-
         val decodedGenericInteractionData = context.decodeDataFromComponent<StoredGenericInteractionData>()
+
+        context.updateMessage {
+            context.disableComponents(LoadingEmojis.random(), this)
+        }
 
         val result = loritta.services.transaction {
             val dataFromDatabase = loritta.services.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId) ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
