@@ -68,7 +68,7 @@ class ViewXpExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
 
                 val ranking = loritta.services.transaction {
                     GuildProfiles.select {
-                        GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.xp greaterEq xp)
+                        GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.xp greaterEq xp) and (GuildProfiles.isInGuild eq true)
                     }.count()
                 }
 
