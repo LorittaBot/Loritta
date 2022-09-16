@@ -202,6 +202,8 @@ open class ComponentContext(
      *
      * **This should not be used if you are planning to send a follow-up message, only for when you are going to update the message where the component is attached to!**
      *
+     * **This should not be used for components that can be used by multiple users!** (If it doesn't use [SingleUserComponentData], then you shouldn't use this!)
+     *
      * **This should only be used after you validated that the user can use the component!** (Example: After checking with [decodeDataFromComponentAndRequireUserToMatch])
      */
     suspend fun updateMessageSetLoadingState(
