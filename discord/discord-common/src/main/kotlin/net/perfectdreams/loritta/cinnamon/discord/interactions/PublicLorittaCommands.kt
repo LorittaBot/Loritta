@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.minecraft.declarations.MinecraftCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.BanCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.ClearCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.DashboardCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.PredefinedReasonsCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
@@ -40,6 +41,7 @@ class PublicLorittaCommands(val languageManager: LanguageManager) {
             register(DashboardCommand(languageManager))
             register(BanCommand(languageManager))
             register(PredefinedReasonsCommand(languageManager))
+            register(ClearCommand(languageManager))
 
             // ===[ FUN ]===
             register(CoinFlipCommand(languageManager))
