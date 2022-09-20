@@ -18,7 +18,7 @@ class ChangeAboutMeButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExec
         // Because we are storing the interaction token, we will store it on the database
         val encodedData = loritta.encodeDataForComponentOnDatabase(
             ChangeAboutMeModalData(context.interaKTionsContext.discordInteraction.token)
-        ).data
+        ).serializedData
 
         context.sendModal(
             ChangeAboutMeModalExecutor,

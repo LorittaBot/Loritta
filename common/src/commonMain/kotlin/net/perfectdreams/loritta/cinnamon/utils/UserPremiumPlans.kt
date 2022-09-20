@@ -7,6 +7,7 @@ interface UserPremiumPlans {
     val displayAds: Boolean
     val customBackground: Boolean
     val customEmojisInAboutMe: Boolean
+    val totalCoinFlipReward: Double
 
     val isCoinFlipBetRewardTaxed: Boolean
         get() = coinFlipRewardTax != 0.0
@@ -38,6 +39,7 @@ interface UserPremiumPlans {
         override val displayAds = true
         override val customBackground = false
         override val customEmojisInAboutMe = false
+        override val totalCoinFlipReward = 0.95
     }
 
     object Essential : UserPremiumPlans {
@@ -47,6 +49,7 @@ interface UserPremiumPlans {
         override val displayAds = false
         override val customBackground = false
         override val customEmojisInAboutMe = false
+        override val totalCoinFlipReward = 0.95
     }
 
     object Recommended : UserPremiumPlans {
@@ -56,6 +59,7 @@ interface UserPremiumPlans {
         override val displayAds = false
         override val customBackground = true
         override val customEmojisInAboutMe = true
+        override val totalCoinFlipReward = 1.0
     }
 
     object Complete : UserPremiumPlans {
@@ -65,5 +69,6 @@ interface UserPremiumPlans {
         override val displayAds = false
         override val customBackground = true
         override val customEmojisInAboutMe = true
+        override val totalCoinFlipReward = 1.0
     }
 }

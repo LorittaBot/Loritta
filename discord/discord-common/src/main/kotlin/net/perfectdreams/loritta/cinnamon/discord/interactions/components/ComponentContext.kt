@@ -306,6 +306,62 @@ open class ComponentContext(
     }
 
     /**
+     * Disables all components in the message that the component is attached to on the [builder].
+     */
+    fun disableComponents(builder: InteractionOrFollowupMessageModifyBuilder) {
+        // The message property isn't null in a component interaction
+        interaKTionsContext.discordInteraction.message.value!!.components.value!!.forEach {
+            it as DiscordChatComponent // Here only a DiscordChatComponent can exist
+
+            if (it.type == ComponentType.ActionRow) {
+                builder.actionRow {
+                    it.components.value!!.forEach {
+                        it as DiscordChatComponent // Again, only a DiscordChatComponent can exist here
+
+                        when (it.type) {
+                            ComponentType.ActionRow -> error("This shouldn't exist here!")
+                            ComponentType.Button -> {
+                                interactionButton(
+                                    it.style.value!!, // The style shouldn't be null if it is a button
+                                    generateDisabledComponentId()
+                                ) {
+                                    disabled = true
+                                    label = it.label.value
+                                    emoji = it.emoji.value
+                                }
+                            }
+                            ComponentType.SelectMenu -> {
+                                selectMenu(generateDisabledComponentId()) {
+                                    val minValues = it.minValues.value ?: 1
+                                    val maxValues = it.maxValues.value ?: 1
+
+                                    this.disabled = true
+                                    runIfNotMissing(it.placeholder) { this.placeholder = it }
+                                    runIfNotMissing(it.options) { optionList ->
+                                        optionList?.forEach {
+                                            option(it.label, it.value) {
+                                                runIfNotMissing(it.description) { this.description = it }
+                                                runIfNotMissing(it.emoji) { this.emoji = it }
+                                                // We need to get the current values list from the interaction itself, to avoid the user changing the select menu value, then when Loritta updates the message
+                                                // the selection is *gone*
+                                                this.default = it.value in (interaKTionsContext.discordInteraction.data.values.value ?: emptyList())
+                                            }
+                                        }
+                                    }
+
+                                    this.allowedValues = minValues..maxValues
+                                }
+                            }
+                            ComponentType.TextInput -> error("This shouldn't exist here!")
+                            is ComponentType.Unknown -> error("This shouldn't exist here!")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Decodes the [data] or pulls it from the database if needed and checks if the [user] has the same user ID present in the [data].
      *
      * If the data is not present on the database, the context will [fail] or [failEphemerally] with the [block] message, depending on the current request state, halting execution.

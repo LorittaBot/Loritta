@@ -101,7 +101,7 @@ suspend inline fun <reified T : ComponentData> ActionRowBuilder.interactiveButto
 ) {
     require(style != ButtonStyle.Link) { "You cannot use a ButtonStyle.Link style in a interactive button! Please use \"linkButton(...)\" if you want to create a button with a link" }
 
-    val encodedData = loritta.encodeDataForComponentOnDatabase(data, ttl).data
+    val encodedData = loritta.encodeDataForComponentOnDatabase(data, ttl).serializedData
 
     interactionButton(
         style,

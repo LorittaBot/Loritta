@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipglobal
 
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Snowflake

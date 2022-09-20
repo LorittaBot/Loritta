@@ -17,6 +17,13 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 
 object SonhosUtils {
+    val HANGLOOSE_EMOTES = listOf(
+        Emotes.LoriHanglooseRight,
+        Emotes.GabrielaHanglooseRight,
+        Emotes.PantufaHanglooseRight,
+        Emotes.PowerHanglooseRight
+    )
+
     fun insufficientSonhos(profile: PuddingUserProfile?, howMuch: Long) = insufficientSonhos(profile?.money ?: 0L, howMuch)
     fun insufficientSonhos(sonhos: Long, howMuch: Long) = I18nKeysData.Commands.InsufficientFunds(howMuch, howMuch - sonhos)
 

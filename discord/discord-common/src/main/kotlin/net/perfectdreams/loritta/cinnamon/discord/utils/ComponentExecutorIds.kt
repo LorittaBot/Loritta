@@ -47,6 +47,8 @@ object ComponentExecutorIds {
     val CHANGE_SONHOS_RANK_PAGE_BUTTON_EXECUTOR = register("0036")
     val CHANGE_TICKER_CATEGORY_MENU_EXECUTOR = register("0037")
     val OCR_TRANSLATE_BUTTON_EXECUTOR = register("0038")
+    val ACCEPT_COIN_FLIP_BET_FRIEND_EXECUTOR = register("0039")
+    val REMATCH_COIN_FLIP_BET_FRIEND_EXECUTOR = register("0040")
 
     /**
      * Verifies if the [id] matches our constraints

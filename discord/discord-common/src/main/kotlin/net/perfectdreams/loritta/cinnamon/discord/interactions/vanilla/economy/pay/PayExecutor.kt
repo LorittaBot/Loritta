@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 
 import dev.kord.common.DiscordTimestampStyle
 import dev.kord.common.entity.ButtonStyle
+import dev.kord.common.entity.Snowflake
 import dev.kord.common.toMessageFormat
 import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
@@ -10,10 +11,12 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.interactions.SlashContextHighLevelEditableMessage
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.ShortenedToLongSonhosAutocompleteExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipfriend.AcceptCoinFlipBetFriendButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
@@ -49,10 +52,11 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         val receiver = args[options.user]
         val howMuch = args[options.quantity].toLongOrNull()
         val ttlDuration = args[options.ttlDuration]?.let { Duration.parse(it) } ?: 15.minutes
+        val isLoritta = receiver.id == Snowflake(loritta.config.discord.applicationId)
 
         checkIfSelfAccountIsOldEnough(context)
         checkIfOtherAccountIsOldEnough(context, receiver)
-        checkIfSelfAccountGotDailyRecently(context)
+        // checkIfSelfAccountGotDailyRecently(context)
 
         // Too small
         if (howMuch == null || howMuch == 0L)
@@ -111,7 +115,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         // 2. We want to block duplicate transactions by buttom spamming (with this, we can block this on transaction level)
         val nowPlusTimeToLive = Clock.System.now() + ttlDuration
 
-        val (interactionDataId, data) = context.loritta.encodeDataForComponentOnDatabase(
+        val (interactionDataId, data, encodedData) = context.loritta.encodeDataForComponentOnDatabase(
             TransferSonhosData(
                 receiver.id,
                 context.user.id,
@@ -120,7 +124,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             ttl = ttlDuration
         )
 
-        context.sendMessage {
+        val message = context.sendMessage {
             styled(
                 buildString {
                     append(context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.YouAreGoingToTransfer(howMuch, mentionUser(receiver))))
@@ -131,6 +135,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                 },
                 Emotes.LoriRich
             )
+
             styled(
                 context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.ConfirmTheTransaction(mentionUser(receiver), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.LongDateTime), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.RelativeTime))),
                 Emotes.LoriZap
@@ -141,7 +146,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                     ButtonStyle.Primary,
                     context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.AcceptTransfer),
                     TransferSonhosButtonExecutor,
-                    data
+                    encodedData
                 ) {
                     loriEmoji = Emotes.Handshake
                 }
@@ -160,6 +165,17 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
                     loriEmoji = Emotes.LoriHmpf
                 }
             }
+        }
+
+        if (isLoritta) {
+            // If it is Loritta, we will mimick that she is *actually* accepting the bet!
+            TransferSonhosButtonExecutor.acceptSonhos(
+                loritta,
+                context,
+                Snowflake(loritta.config.discord.applicationId),
+                SlashContextHighLevelEditableMessage(message),
+                data
+            )
         }
     }
 

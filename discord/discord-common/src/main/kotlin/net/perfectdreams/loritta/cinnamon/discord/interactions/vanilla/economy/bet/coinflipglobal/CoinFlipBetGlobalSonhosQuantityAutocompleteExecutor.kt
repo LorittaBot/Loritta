@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet
+package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipglobal
 
 import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption

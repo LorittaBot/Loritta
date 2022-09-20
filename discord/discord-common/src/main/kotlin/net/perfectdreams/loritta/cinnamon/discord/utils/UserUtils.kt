@@ -18,6 +18,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
@@ -35,9 +36,12 @@ import java.util.*
 object UserUtils {
     private val logger = KotlinLogging.logger {}
 
-    suspend fun handleIfUserIsBanned(loritta: LorittaCinnamon, context: InteractionContext, user: User): Boolean {
+    suspend fun handleIfUserIsBanned(loritta: LorittaCinnamon, context: InteractionContext, user: User)
+            = handleIfUserIsBanned(loritta, context, user.id)
+
+    suspend fun handleIfUserIsBanned(loritta: LorittaCinnamon, context: InteractionContext, userId: Snowflake): Boolean {
         // Check if the user is banned from using Loritta
-        val userBannedState = loritta.services.users.getUserBannedState(UserId(user.id))
+        val userBannedState = loritta.services.users.getUserBannedState(UserId(userId))
 
         if (userBannedState != null) {
             val banDateInEpochSeconds = userBannedState.bannedAt.epochSeconds
@@ -47,7 +51,7 @@ object UserUtils {
                 content = context.i18nContext.get(
                     if (expiresDateInEpochSeconds != null) {
                         I18nKeysData.Commands.UserIsLorittaBannedTemporary(
-                            mention = user.mention,
+                            mention = mentionUser(userId, notifyUser = false),
                             loriHmpf = Emotes.LoriHmpf,
                             reason = userBannedState.reason,
                             banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",
@@ -56,7 +60,7 @@ object UserUtils {
                         )
                     } else {
                         I18nKeysData.Commands.UserIsLorittaBannedPermanent(
-                            mention = user.mention,
+                            mention = mentionUser(userId, notifyUser = false),
                             loriHmpf = Emotes.LoriHmpf,
                             reason = userBannedState.reason,
                             banDate = "<t:$banDateInEpochSeconds:R> (<t:$banDateInEpochSeconds:f>)",

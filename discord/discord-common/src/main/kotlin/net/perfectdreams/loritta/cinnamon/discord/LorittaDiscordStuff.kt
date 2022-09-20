@@ -17,7 +17,6 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.BetterSTRecoveringKtorRe
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig
-import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.DiscordCacheService
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -96,9 +95,12 @@ abstract class LorittaDiscordStuff(
             now + ttl
         )
 
+        val storedGenericInteractionData = StoredGenericInteractionData(ComponentDataUtils.KTX_SERIALIZATION_SIMILAR_PROTOBUF_STRUCTURE_ISSUES_WORKAROUND_DUMMY, interactionDataId)
+
         return ComponentOnDatabaseStoreResult(
             interactionDataId,
-            ComponentDataUtils.encode(StoredGenericInteractionData(ComponentDataUtils.KTX_SERIALIZATION_SIMILAR_PROTOBUF_STRUCTURE_ISSUES_WORKAROUND_DUMMY, interactionDataId))
+            storedGenericInteractionData,
+            ComponentDataUtils.encode(storedGenericInteractionData)
         )
     }
 
@@ -126,7 +128,7 @@ abstract class LorittaDiscordStuff(
             return encoded
         } else {
             // Can't fit on a button... Let's store it on the database!
-            return encodeDataForComponentOnDatabase(data, ttl).data
+            return encodeDataForComponentOnDatabase(data, ttl).serializedData
         }
     }
 
@@ -149,7 +151,8 @@ abstract class LorittaDiscordStuff(
 
     data class ComponentOnDatabaseStoreResult<T>(
         val interactionDataId: Long,
-        val data: String
+        val data: StoredGenericInteractionData,
+        val serializedData: String
     )
 
     data class ComponentOnDatabaseQueryResult<T>(
