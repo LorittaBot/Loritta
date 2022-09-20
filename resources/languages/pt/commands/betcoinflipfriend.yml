@@ -1,0 +1,4 @@
+description: "O clássico \"Gire uma moeda e veja se irá cair cara ou coroa!\", mas agora com sonhos! Eu não me responsabilizo se você perder tudo em apostas"
+failReasons:
+  expired: "Expirada"
+  insufficientSonhos: "Sonhos Insuficientes"
