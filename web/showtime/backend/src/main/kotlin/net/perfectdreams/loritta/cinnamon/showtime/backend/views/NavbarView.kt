@@ -127,6 +127,15 @@ abstract class NavbarView(
                             }
                         }
 
+                        // Merch
+                        div(classes = "entry") {
+                            a(classes = "merch", href = "https://perfectdreams.store/") {
+                                iconManager.shirt.apply(this)
+
+                                +" Merch"
+                            }
+                        }
+
                         // Blog
                         div(classes = "entry") {
                             a(classes = "blog", href = "$base/blog") {
@@ -154,19 +163,6 @@ abstract class NavbarView(
                                 +" ${locale["website.navbar.sponsors"]}"
                             }
                         }
-
-                        /*  a(classes = "lori-stickers", href = "https://produto.mercadolivre.com.br/MLB-1366127151-caneca-pster-da-loritta-morenitta-novembro-2019-_JM?quantity=1") {
-                        i(classes = "fas fa-heart") {}
-                        attributes["target"] = "_blank"
-
-                        +" Merch"
-                    }
-                    a(classes = "lori-stickers", href = "$base/extras") {
-                        i(classes = "far fa-grin-squint-tears") {}
-                        attributes["target"] = "_blank"
-
-                        +" Stickers"
-                    } */
                     }
 
                     div(classes = "right-side-entries") {
