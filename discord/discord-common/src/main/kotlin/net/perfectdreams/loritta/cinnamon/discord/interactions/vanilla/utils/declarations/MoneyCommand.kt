@@ -38,7 +38,9 @@ class MoneyCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecla
             "CNY",
             "HKD",
             "IDR",
-            "ILS",
+            // "shekel" triggers Discord's bad words check, for some reason
+            // https://canary.discord.com/channels/613425648685547541/916395737141620797/1022169074089861130
+            // "ILS",
             "INR",
             "KRW",
             "MXN",
