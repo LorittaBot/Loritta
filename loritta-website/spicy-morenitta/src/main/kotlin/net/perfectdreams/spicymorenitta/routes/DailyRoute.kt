@@ -203,6 +203,10 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                 + locale["website.daily.congratulations"]
                             }
 
+                            img(src = "https://assets.perfectdreams.media/loritta/sonhos/bundle-45b3b35d@320w.png") {
+                                width = "200"
+                            }
+
                             h1 {
                                 + "0"
                                 id = "dailyPayout"
@@ -222,6 +226,34 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                 }, { str ->
                                     + str
                                 })
+                            }
+
+                            div {
+                                style = "display: flex; justify-content: center; flex-wrap: wrap; gap: 0.5em;"
+
+                                a(href = "https://twitter.com/LorittaBot", classes = "button primary", target = "_blank") {
+                                    i(classes = "fab fa-twitter")
+
+                                    +" Siga no Twitter"
+                                }
+
+                                a(href = "https://www.youtube.com/c/Loritta", classes = "button red", target = "_blank") {
+                                    i(classes = "fab fa-youtube")
+
+                                    +" Inscreva-se no YouTube"
+                                }
+
+                                a(href = "https://www.instagram.com/lorittabot/", classes = "button pink", target = "_blank") {
+                                    i(classes = "fab fa-instagram")
+
+                                    +" Siga no Instagram"
+                                }
+
+                                a(href = "https://tiktok.com/@lorittamorenittabot", classes = "button purple", target = "_blank") {
+                                    i(classes = "fab fa-tiktok")
+
+                                    +" Siga no TikTok"
+                                }
                             }
 
                             if (payload.sponsoredBy != null) {
