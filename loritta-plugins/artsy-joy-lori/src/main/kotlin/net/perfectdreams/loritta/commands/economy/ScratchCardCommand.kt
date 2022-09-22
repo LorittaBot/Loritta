@@ -116,7 +116,7 @@ class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 								mentionUser = false
 						),
 						LorittaReply(
-								"**Combinação de <:gessy:664847035245002764>:** $GESSY_COMBO sonhos",
+								"**Combinação de <:gessy:664849803334909952>:** $GESSY_COMBO sonhos",
 								mentionUser = false
 						),
 						LorittaReply(
@@ -201,7 +201,7 @@ class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 					'P' -> "<:pantufa:664849802793713686>"
 					'B' -> "<:gabriela:664849802927800351>"
 					'D' -> "<:dokyo:664849803397562369>"
-					'G' -> "<:gessy:664847035245002764>"
+					'G' -> "<:gessy:664849803334909952>"
 					'T' -> "<:tobias_nosa:450476856303419432>"
 					else -> throw RuntimeException("I don't know what emote is for $char")
 				}
