@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.gateway.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import com.github.luben.zstd.Zstd
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
@@ -9,17 +8,14 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildMember
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildVoiceState
+import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.ZstdDictionaries
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArrayOrDelIfMapIsEmpty
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetOrDelIfMapIsEmpty
 import java.util.concurrent.TimeUnit
 
 class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
@@ -115,7 +111,8 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                                             PuddingGuildMember(
                                                 member.user.value!!.id,
                                                 member.roles
-                                            )
+                                            ),
+                                            ZstdDictionaries.Dictionary.NO_DICTIONARY
                                         )
                                     )
                                 }
@@ -128,7 +125,8 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                                             PuddingGuildVoiceState(
                                                 it.channelId!!, // Shouldn't be null because they are in a channel
                                                 it.userId
-                                            )
+                                            ),
+                                            ZstdDictionaries.Dictionary.NO_DICTIONARY
                                         )
                                     }
                                 )
@@ -290,7 +288,8 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                                     PuddingGuildVoiceState(
                                         channelId,
                                         userId
-                                    )
+                                    ),
+                                    ZstdDictionaries.Dictionary.NO_DICTIONARY
                                 )
                             )
                         }
@@ -339,7 +338,8 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                     PuddingGuildMember(
                         userId,
                         roles
-                    )
+                    ),
+                    ZstdDictionaries.Dictionary.NO_DICTIONARY
                 )
             )
         }
@@ -359,7 +359,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
             it.hsetByteArray(
                 m.redisKeys.discordGuildChannels(guildId),
                 channel.id.toString(),
-                m.cache.encodeToBinary(channel)
+                m.cache.encodeToBinary(channel, ZstdDictionaries.Dictionary.CHANNELS_V1)
             )
         }
     }
@@ -378,7 +378,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
             it.hsetByteArray(
                 m.redisKeys.discordGuildRoles(guildId),
                 role.id.toString(),
-                m.cache.encodeToBinary(role)
+                m.cache.encodeToBinary(role, ZstdDictionaries.Dictionary.ROLES_V1)
             )
         }
     }

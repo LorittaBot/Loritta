@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.entitycache
 
 import com.github.luben.zstd.Zstd
 import com.github.luben.zstd.ZstdDictCompress
+import com.github.luben.zstd.ZstdDictDecompress
 import dev.kord.common.entity.DiscordChannel
 import dev.kord.common.entity.DiscordEmoji
 import dev.kord.common.entity.DiscordGuildMember
@@ -18,7 +19,6 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetAllByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArrayOrDelIfMapIsEmpty
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetOrDelIfMapIsEmpty
 import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
 import org.jetbrains.exposed.sql.*
 import java.nio.ByteBuffer
@@ -37,6 +37,7 @@ class DiscordCacheService(
     private val rest = loritta.rest
     private val lorittaDiscordConfig = loritta.discordConfig
     private val pudding = loritta.services
+    val zstdDictionaries = ZstdDictionaries()
 
     suspend fun getDiscordEntitiesOfGuild(guildId: Snowflake): GuildEntities {
         return loritta.redisConnection {
@@ -262,7 +263,7 @@ class DiscordCacheService(
         redisTransaction.hsetByteArrayOrDelIfMapIsEmpty(
             loritta.redisKeys.discordGuildRoles(guildId),
             guildRoles.associate {
-                it.id.toString() to encodeToBinary(it)
+                it.id.toString() to encodeToBinary(it, ZstdDictionaries.Dictionary.ROLES_V1)
             }
         )
 
@@ -270,7 +271,7 @@ class DiscordCacheService(
             redisTransaction.hsetByteArrayOrDelIfMapIsEmpty(
                 loritta.redisKeys.discordGuildChannels(guildId),
                 guildChannels.associate {
-                    it.id.toString() to encodeToBinary(it)
+                    it.id.toString() to encodeToBinary(it, ZstdDictionaries.Dictionary.CHANNELS_V1)
                 }
             )
         }
@@ -279,7 +280,7 @@ class DiscordCacheService(
             loritta.redisKeys.discordGuildEmojis(guildId),
             guildEmojis.associate {
                 // Guild Emojis always have an ID
-                it.id!!.toString() to encodeToBinary(it)
+                it.id!!.toString() to encodeToBinary(it, ZstdDictionaries.Dictionary.EMOJIS_V1)
             }
         )
     }
@@ -290,7 +291,7 @@ class DiscordCacheService(
                 loritta.redisKeys.discordGuildEmojis(guildId),
                 guildEmojis.associate {
                     // Guild Emojis always have an ID
-                    it.id!!.toString() to encodeToBinary(it)
+                    it.id!!.toString() to encodeToBinary(it, ZstdDictionaries.Dictionary.EMOJIS_V1)
                 }
             )
         }
@@ -324,15 +325,30 @@ class DiscordCacheService(
     }
 
     fun compressWithZstd(payload: String) = Zstd.compress(payload.toByteArray(Charsets.UTF_8), 2)
+    fun compressWithZstd(payload: String, dictCompress: ZstdDictCompress) = Zstd.compress(payload.toByteArray(Charsets.UTF_8), dictCompress)
     fun decompressWithZstd(payload: ByteArray): ByteArray = Zstd.decompress(payload, Zstd.decompressedSize(payload).toInt())
+    fun decompressWithZstd(payload: ByteArray, dictDecompress: ZstdDictDecompress): ByteArray = Zstd.decompress(payload, dictDecompress, Zstd.decompressedSize(payload).toInt())
 
     /**
      * Encodes and compresses the [payload] to binary, useful to be stored in an in-memory database (such as Redis)
      */
-    inline fun <reified T> encodeToBinary(payload: T): ByteArray {
-        val compressedWithZstd = compressWithZstd(Json.encodeToString<T>(payload))
+    inline fun <reified T> encodeToBinary(
+        payload: T,
+        dictionary: ZstdDictionaries.Dictionary
+    ): ByteArray {
+        val zstdCompress = when (dictionary) {
+            ZstdDictionaries.Dictionary.NO_DICTIONARY -> null
+            ZstdDictionaries.Dictionary.ROLES_V1 -> zstdDictionaries.rolesV1.compress
+            ZstdDictionaries.Dictionary.CHANNELS_V1 -> zstdDictionaries.channelsV1.compress
+            ZstdDictionaries.Dictionary.EMOJIS_V1 -> zstdDictionaries.emojisV1.compress
+        }
 
-        val header = LorittaCompressionHeader(0, 0)
+        val compressedWithZstd = if (zstdCompress == null)
+            compressWithZstd(Json.encodeToString<T>(payload))
+        else
+            compressWithZstd(Json.encodeToString<T>(payload), zstdCompress)
+
+        val header = LorittaCompressionHeader(0, dictionary)
         val headerAsByteArray = ProtoBuf.encodeToByteArray(header)
 
         val newArray = ByteArray(4 + headerAsByteArray.size + 4 + compressedWithZstd.size)
@@ -361,14 +377,23 @@ class DiscordCacheService(
         if (compressionHeader.version != 0)
             error("Unknown compression version ${compressionHeader.version}!")
 
-        if (compressionHeader.dictionaryId != 0)
-            error("Unknown dict ID ${compressionHeader.dictionaryId}!")
+        val zstdDecompress = when (compressionHeader.dictionaryId) {
+            ZstdDictionaries.Dictionary.NO_DICTIONARY -> null
+            ZstdDictionaries.Dictionary.ROLES_V1 -> zstdDictionaries.rolesV1.decompress
+            ZstdDictionaries.Dictionary.CHANNELS_V1 -> zstdDictionaries.channelsV1.decompress
+            ZstdDictionaries.Dictionary.EMOJIS_V1 -> zstdDictionaries.emojisV1.decompress
+        }
 
         val zstdPayloadLength = byteBuf.int
         val zstdPayload = ByteArray(zstdPayloadLength)
         byteBuf.get(zstdPayload)
 
-        val byteArrayAsString = decompressWithZstd(zstdPayload).toString(Charsets.UTF_8)
+        val decompressed = if (zstdDecompress == null)
+            decompressWithZstd(zstdPayload)
+        else
+            decompressWithZstd(zstdPayload, zstdDecompress)
+
+        val byteArrayAsString = decompressed.toString(Charsets.UTF_8)
         return Json.decodeFromString<T>(byteArrayAsString)
     }
 
@@ -388,6 +413,6 @@ class DiscordCacheService(
     @Serializable
     data class LorittaCompressionHeader(
         val version: Int,
-        val dictionaryId: Int
+        val dictionaryId: ZstdDictionaries.Dictionary
     )
 }
