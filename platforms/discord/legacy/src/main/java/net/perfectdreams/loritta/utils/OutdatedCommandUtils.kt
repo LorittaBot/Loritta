@@ -51,23 +51,16 @@ object OutdatedCommandUtils {
     }
 
     private fun buildEmbed(locale: BaseLocale, slashCommandName: String) = EmbedBuilder()
-        .setTitle("${locale["commands.outdatedCommand.title"]} ${Emotes.LORI_TEMMIE}")
+        .setTitle("${locale["commands.outdatedCommand.title"]} <:lori_zap:956404868417990776>")
         .setDescription(
             locale.getList(
                 "commands.outdatedCommand.description",
                 slashCommandName,
                 "https://discord.gg/lori",
-                "https://discord.gg/loritta",
-                locale["commands.outdatedCommand.discordUrl"],
                 "<:lori_yay:1014022521739280454>",
-                "<:lori_bonk:956402010712834078>",
-                "<:lori_hangloose:982764105918205952>",
                 "<:lori_lurk:1012854272817381487>",
-                "<:lori_smart:964697508204908554>",
-                "<:lori_zap:956404868417990776>"
             ).joinToString("\n")
         )
-        .setImage(locale["commands.outdatedCommand.slashCommandsTutorial"])
         .setColor(Constants.ROBLOX_RED) // heh
         .build()
 }
