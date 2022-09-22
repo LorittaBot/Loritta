@@ -66,6 +66,7 @@ import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.Transaction
 import java.awt.image.BufferedImage
+import java.io.File
 import java.security.SecureRandom
 import java.time.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -564,6 +565,7 @@ class LorittaCinnamon(
             action.invoke(t)
             t.exec()
         } catch (e: Throwable) {
+            e.printStackTrace()
             t.discard()
             throw e
         }

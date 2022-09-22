@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.entitycache
 
+import com.github.luben.zstd.Zstd
+import com.github.luben.zstd.ZstdDictCompress
 import dev.kord.common.entity.DiscordChannel
 import dev.kord.common.entity.DiscordEmoji
 import dev.kord.common.entity.DiscordGuildMember
@@ -8,15 +10,18 @@ import dev.kord.common.entity.OverwriteType
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.encodeToString
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.serializer
+import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetAllByteArray
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetByteArray
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArrayOrDelIfMapIsEmpty
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetOrDelIfMapIsEmpty
 import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
 import org.jetbrains.exposed.sql.*
+import java.nio.ByteBuffer
 import java.util.*
 
 /**
@@ -35,22 +40,22 @@ class DiscordCacheService(
 
     suspend fun getDiscordEntitiesOfGuild(guildId: Snowflake): GuildEntities {
         return loritta.redisConnection {
-            val roles = it.hgetAll(loritta.redisKeys.discordGuildRoles(guildId))
+            val roles = it.hgetAllByteArray(loritta.redisKeys.discordGuildRoles(guildId))
                 .values
                 .map {
-                    Json.decodeFromString<DiscordRole>(it)
+                    decodeFromBinary<DiscordRole>(it)
                 }
 
-            val channels = it.hgetAll(loritta.redisKeys.discordGuildChannels(guildId))
+            val channels = it.hgetAllByteArray(loritta.redisKeys.discordGuildChannels(guildId))
                 .values
                 .map {
-                    Json.decodeFromString<DiscordChannel>(it)
+                    decodeFromBinary<DiscordChannel>(it)
                 }
 
-            val emojis = it.hgetAll(loritta.redisKeys.discordGuildEmojis(guildId))
+            val emojis = it.hgetAllByteArray(loritta.redisKeys.discordGuildEmojis(guildId))
                 .values
                 .map {
-                    Json.decodeFromString<DiscordEmoji>(it)
+                    decodeFromBinary<DiscordEmoji>(it)
                 }
 
             return@redisConnection GuildEntities(
@@ -71,10 +76,10 @@ class DiscordCacheService(
      */
     suspend fun getRoles(guildId: Snowflake, roleIds: Collection<Snowflake>): List<DiscordRole> {
         return loritta.redisConnection {
-            it.hgetAll(loritta.redisKeys.discordGuildRoles(guildId))
+            it.hgetAllByteArray(loritta.redisKeys.discordGuildRoles(guildId))
                 .filterKeys { Snowflake(it.toLong()) in roleIds }
                 .map {
-                    Json.decodeFromString(it.value)
+                    decodeFromBinary(it.value)
                 }
         }
     }
@@ -133,7 +138,7 @@ class DiscordCacheService(
 
         return loritta.redisConnection {
             val discordGuildMember = it
-                .hget(loritta.redisKeys.discordGuildMembers(guildId), userId.toString())
+                .hgetByteArray(loritta.redisKeys.discordGuildMembers(guildId), userId.toString())
                 ?: return@redisConnection PermissionsResult( // They aren't in the server, no need to continue then
                     permissions,
                     userNotInGuild = true,
@@ -141,17 +146,17 @@ class DiscordCacheService(
                     missingChannels = false // This is also "Unknown"
                 )
 
-            val userRoleIds = Json.decodeFromString<PuddingGuildMember>(discordGuildMember).roles
+            val userRoleIds = decodeFromBinary<PuddingGuildMember>(discordGuildMember).roles
 
             val userRoles = userRoleIds.mapNotNull { snowflake ->
-                it.hget(loritta.redisKeys.discordGuildRoles(guildId), snowflake.toString())
-            }.map { Json.decodeFromString<DiscordRole>(it) }
+                it.hgetByteArray(loritta.redisKeys.discordGuildRoles(guildId), snowflake.toString())
+            }.map { decodeFromBinary<DiscordRole>(it) }
 
             var missingRoles = false
             var missingChannels = false
 
-            val guildChannel = it.hget(loritta.redisKeys.discordGuildChannels(guildId), channelId.toString())
-                ?.let { Json.decodeFromString<DiscordChannel>(it) }
+            val guildChannel = it.hgetByteArray(loritta.redisKeys.discordGuildChannels(guildId), channelId.toString())
+                ?.let { decodeFromBinary<DiscordChannel>(it) }
 
             // We are going to validate if there are any missing roles
             for (userRoleId in userRoleIds) {
@@ -254,38 +259,38 @@ class DiscordCacheService(
         } */
 
         // Delete all because we want to upsert everything
-        redisTransaction.hsetOrDelIfMapIsEmpty(
+        redisTransaction.hsetByteArrayOrDelIfMapIsEmpty(
             loritta.redisKeys.discordGuildRoles(guildId),
             guildRoles.associate {
-                it.id.toString() to Json.encodeToString(it)
+                it.id.toString() to encodeToBinary(it)
             }
         )
 
         if (guildChannels != null) {
-            redisTransaction.hsetOrDelIfMapIsEmpty(
+            redisTransaction.hsetByteArrayOrDelIfMapIsEmpty(
                 loritta.redisKeys.discordGuildChannels(guildId),
                 guildChannels.associate {
-                    it.id.toString() to Json.encodeToString(it)
+                    it.id.toString() to encodeToBinary(it)
                 }
             )
         }
 
-        redisTransaction.hsetOrDelIfMapIsEmpty(
+        redisTransaction.hsetByteArrayOrDelIfMapIsEmpty(
             loritta.redisKeys.discordGuildEmojis(guildId),
             guildEmojis.associate {
                 // Guild Emojis always have an ID
-                it.id!!.toString() to Json.encodeToString(it)
+                it.id!!.toString() to encodeToBinary(it)
             }
         )
     }
 
     suspend fun updateGuildEmojis(guildId: Snowflake, guildEmojis: List<DiscordEmoji>) {
         loritta.redisConnection {
-            it.hsetOrDelIfMapIsEmpty(
+            it.hsetByteArrayOrDelIfMapIsEmpty(
                 loritta.redisKeys.discordGuildEmojis(guildId),
                 guildEmojis.associate {
                     // Guild Emojis always have an ID
-                    it.id!!.toString() to Json.encodeToString(it)
+                    it.id!!.toString() to encodeToBinary(it)
                 }
             )
         }
@@ -318,6 +323,55 @@ class DiscordCacheService(
         return true
     }
 
+    fun compressWithZstd(payload: String) = Zstd.compress(payload.toByteArray(Charsets.UTF_8), 2)
+    fun decompressWithZstd(payload: ByteArray): ByteArray = Zstd.decompress(payload, Zstd.decompressedSize(payload).toInt())
+
+    /**
+     * Encodes and compresses the [payload] to binary, useful to be stored in an in-memory database (such as Redis)
+     */
+    inline fun <reified T> encodeToBinary(payload: T): ByteArray {
+        val compressedWithZstd = compressWithZstd(Json.encodeToString<T>(payload))
+
+        val header = LorittaCompressionHeader(0, 0)
+        val headerAsByteArray = ProtoBuf.encodeToByteArray(header)
+
+        val newArray = ByteArray(4 + headerAsByteArray.size + 4 + compressedWithZstd.size)
+        val byteBuf = ByteBuffer.wrap(newArray)
+        byteBuf.putInt(headerAsByteArray.size)
+        byteBuf.put(headerAsByteArray)
+        byteBuf.putInt(compressedWithZstd.size)
+        byteBuf.put(compressedWithZstd)
+
+        return newArray
+    }
+
+    /**
+     * Decodes and decompresses the [payload] from binary, encoded with [encodeToBinary]
+     */
+    inline fun <reified T> decodeFromBinary(payload: ByteArray): T {
+        val byteBuf = ByteBuffer.wrap(payload)
+
+        // Loritta's Compression Header
+        val headerLengthInBytes = byteBuf.int
+        val headerBytes = ByteArray(headerLengthInBytes)
+        byteBuf.get(headerBytes)
+
+        val compressionHeader = ProtoBuf.decodeFromByteArray<LorittaCompressionHeader>(headerBytes)
+
+        if (compressionHeader.version != 0)
+            error("Unknown compression version ${compressionHeader.version}!")
+
+        if (compressionHeader.dictionaryId != 0)
+            error("Unknown dict ID ${compressionHeader.dictionaryId}!")
+
+        val zstdPayloadLength = byteBuf.int
+        val zstdPayload = ByteArray(zstdPayloadLength)
+        byteBuf.get(zstdPayload)
+
+        val byteArrayAsString = decompressWithZstd(zstdPayload).toString(Charsets.UTF_8)
+        return Json.decodeFromString<T>(byteArrayAsString)
+    }
+
     data class PermissionsResult(
         val permissions: Permissions,
         val userNotInGuild: Boolean,
@@ -329,5 +383,11 @@ class DiscordCacheService(
         val roles: List<DiscordRole>,
         val channels: List<DiscordChannel>,
         val emojis: List<DiscordEmoji>
+    )
+
+    @Serializable
+    data class LorittaCompressionHeader(
+        val version: Int,
+        val dictionaryId: Int
     )
 }

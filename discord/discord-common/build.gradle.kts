@@ -44,6 +44,9 @@ dependencies {
     // DreamStorageService
     api("net.perfectdreams.dreamstorageservice:client:2.0.2")
 
+    // zstd
+    api("com.github.luben:zstd-jni:1.5.2-4")
+
     testImplementation(libs.logback.classic)
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.2")
     testImplementation("org.testcontainers:testcontainers:1.16.3")

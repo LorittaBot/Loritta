@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.gateway.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
+import com.github.luben.zstd.Zstd
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
@@ -8,6 +9,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
@@ -15,6 +17,8 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildMember
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildVoiceState
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArray
+import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArrayOrDelIfMapIsEmpty
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetOrDelIfMapIsEmpty
 import java.util.concurrent.TimeUnit
 
@@ -104,10 +108,10 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                                 )
 
                                 for (member in guildMembers) {
-                                    it.hset(
+                                    it.hsetByteArray(
                                         m.redisKeys.discordGuildMembers(guildId),
                                         member.user.value!!.id.toString(),
-                                        Json.encodeToString(
+                                        m.cache.encodeToBinary(
                                             PuddingGuildMember(
                                                 member.user.value!!.id,
                                                 member.roles
@@ -116,14 +120,11 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                                     )
                                 }
 
-                                // Delete all voice states
-                                it.del(m.redisKeys.discordGuildVoiceStates(guildId))
-
                                 // Reinsert them
-                                it.hsetOrDelIfMapIsEmpty(
+                                it.hsetByteArrayOrDelIfMapIsEmpty(
                                     m.redisKeys.discordGuildVoiceStates(guildId),
                                     guildVoiceStates.associate {
-                                        it.userId.toString() to Json.encodeToString(
+                                        it.userId.toString() to m.cache.encodeToBinary(
                                             PuddingGuildVoiceState(
                                                 it.channelId!!, // Shouldn't be null because they are in a channel
                                                 it.userId
@@ -282,10 +283,10 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                             it.hdel(m.redisKeys.discordGuildVoiceStates(guildId), voiceState.userId.toString())
                         } else {
                             // Channel is not null, let's upsert
-                            it.hset(
+                            it.hsetByteArray(
                                 m.redisKeys.discordGuildVoiceStates(guildId),
                                 userId.toString(),
-                                Json.encodeToString(
+                                m.cache.encodeToBinary(
                                     PuddingGuildVoiceState(
                                         channelId,
                                         userId
@@ -331,10 +332,10 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         roles: List<Snowflake>
     ) {
         m.redisConnection {
-            it.hset(
+            it.hsetByteArray(
                 m.redisKeys.discordGuildMembers(guildId),
                 userId.toString(),
-                Json.encodeToString(
+                m.cache.encodeToBinary(
                     PuddingGuildMember(
                         userId,
                         roles
@@ -355,10 +356,10 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
 
     private suspend fun createOrUpdateGuildChannel(guildId: Snowflake, channel: DiscordChannel) {
         m.redisConnection {
-            it.hset(
+            it.hsetByteArray(
                 m.redisKeys.discordGuildChannels(guildId),
                 channel.id.toString(),
-                Json.encodeToString(channel)
+                m.cache.encodeToBinary(channel)
             )
         }
     }
@@ -374,10 +375,10 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
 
     private suspend fun createOrUpdateRole(guildId: Snowflake, role: DiscordRole) {
         m.redisConnection {
-            it.hset(
+            it.hsetByteArray(
                 m.redisKeys.discordGuildRoles(guildId),
                 role.id.toString(),
-                Json.encodeToString(role)
+                m.cache.encodeToBinary(role)
             )
         }
     }
