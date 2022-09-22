@@ -21,7 +21,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 	override fun getExamplesKey() = LocaleKeyData("commands.command.sonhos.examples")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
-		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "sonhos")
+		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "sonhos atm")
 
 		val retrieveDreamsFromUser = context.getUserAt(0) ?: context.userHandle
 
