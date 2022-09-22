@@ -171,9 +171,9 @@ class BomDiaECia {
 
 		val randomImages by lazy {
 			listOf(
-				"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia.jpg",
-				"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia-2.jpg",
-				"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia-3.jpg",
+				"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-1.png",
+				"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-2.png",
+				"https://assets.perfectdreams.media/loritta/bom-dia-e-cia/bom-dia-e-cia-3.png",
 				"${loritta.instanceConfig.loritta.website.url}assets/img/bom-dia-cia-4.jpg"
 			)
 		}
