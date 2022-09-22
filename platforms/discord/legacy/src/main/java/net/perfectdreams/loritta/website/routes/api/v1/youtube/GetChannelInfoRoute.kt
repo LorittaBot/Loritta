@@ -68,13 +68,17 @@ class GetChannelInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/yout
 				// Channels starting with "/c/" is harder because the API doesn't show them (for some reason...)
 				// To retrieve those, we need to query the channel URL and get the ID from there
 				val youTubePage = Jsoup.connect(channelLink)
-						.userAgent(Constants.USER_AGENT)
-						.get()
+					// Follow any redirects
+					.followRedirects(true)
+					// If we use Firefox's user agent, YouTube throws us a page with a 304 redirect, to avoid this, we will use curl's user agent
+					// Which, for some reason... doesn't have that?
+					.userAgent("curl/7.64.1")
+					.get()
 
 				youTubePage.select("[property='og:url']")
-						.first()
-						.attr("content")
-						.substringAfter("/channel/")
+					.first()
+					.attr("content")
+					.substringAfter("/channel/")
 			} else {
 				// Se for um username, temos que converter de username -> ID
 				val username = urlPath.split("/").last()
@@ -121,7 +125,7 @@ class GetChannelInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/yout
 			logger.info { "Checking $channelId's channel information..." }
 
 			val response = HttpRequest.get("https://www.googleapis.com/youtube/v3/channels?part=snippet&id=$channelId&key=$key")
-					.body()
+				.body()
 
 			val youTubeJsonResponse = JsonParser.parseString(response).obj
 			val responseError = MiscUtils.getResponseError(youTubeJsonResponse)
@@ -153,11 +157,11 @@ class GetChannelInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/yout
 			json["exception"] = e::class.qualifiedName
 			logger.warn(e) { "Exception while retrieving channel information" }
 			throw WebsiteAPIException(
-					HttpStatusCode.NotFound,
-					WebsiteUtils.createErrorPayload(
-							LoriWebCode.ITEM_NOT_FOUND,
-							"Exception while retrieving channel information"
-					)
+				HttpStatusCode.NotFound,
+				WebsiteUtils.createErrorPayload(
+					LoriWebCode.ITEM_NOT_FOUND,
+					"Exception while retrieving channel information"
+				)
 			)
 		}
 	}
