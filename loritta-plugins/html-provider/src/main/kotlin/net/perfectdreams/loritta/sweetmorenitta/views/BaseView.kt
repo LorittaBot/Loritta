@@ -78,7 +78,7 @@ window.addEventListener('load', function () {
 
                 styleLink("${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${assetHash("assets/css/style.css")}")
 
-                styleLink("https://use.fontawesome.com/releases/v5.8.1/css/all.css")
+                styleLink("https://use.fontawesome.com/releases/v6.2.0/css/all.css")
 
                 // Google Analytics
                 script(src = "https://www.googletagmanager.com/gtag/js?id=UA-53518408-9") {}

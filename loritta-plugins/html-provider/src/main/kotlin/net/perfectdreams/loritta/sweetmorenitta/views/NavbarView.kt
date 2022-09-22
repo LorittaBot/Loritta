@@ -24,8 +24,8 @@ abstract class NavbarView(
     locale: BaseLocale,
     path: String
 ) : BaseView(
-        locale,
-        path
+    locale,
+    path
 ) {
     var hasNavbar: Boolean = true
     var hasFooter: Boolean = true
@@ -79,19 +79,25 @@ abstract class NavbarView(
                             }
                         }
 
+                        // Daily
                         div(classes = "entry") {
-                            a(classes = "fan-arts", href = "https://fanarts.perfectdreams.net/") {
-                                i(classes = "fas fa-paint-brush") {}
+                            a(classes = "daily", href = "$base/daily") {
+                                i(classes = "fas fa-gift") {}
 
-                                +" Fan Arts"
+                                +" Daily"
                             }
                         }
 
                         div(classes = "entry") {
                             a(classes = "donate", href = "$base/donate") {
-                                i(classes = "fas fa-gift") {}
-
-                                // attributes["data-enable-link-preload"] = "true"
+                                unsafe {
+                                    // Font Awesome's "Sparkles" icon is Pro only smh
+                                    raw("""
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36" style="display: inline-block;width: 1em;height: 1em;stroke-width: 0;stroke: currentColor;fill: currentColor;font-size: inherit;color: inherit;vertical-align: -0.125em;filter: drop-shadow(0 1px rgba(0, 0, 0, 0.2));">
+                                        <path d="M34.347 16.893l-8.899-3.294-3.323-10.891c-.128-.42-.517-.708-.956-.708-.439 0-.828.288-.956.708l-3.322 10.891-8.9 3.294c-.393.146-.653.519-.653.938 0 .418.26.793.653.938l8.895 3.293 3.324 11.223c.126.424.516.715.959.715.442 0 .833-.291.959-.716l3.324-11.223 8.896-3.293c.391-.144.652-.518.652-.937 0-.418-.261-.792-.653-.938z"></path><path d="M14.347 27.894l-2.314-.856-.9-3.3c-.118-.436-.513-.738-.964-.738-.451 0-.846.302-.965.737l-.9 3.3-2.313.856c-.393.145-.653.52-.653.938 0 .418.26.793.653.938l2.301.853.907 3.622c.112.444.511.756.97.756.459 0 .858-.312.97-.757l.907-3.622 2.301-.853c.393-.144.653-.519.653-.937 0-.418-.26-.793-.653-.937zM10.009 6.231l-2.364-.875-.876-2.365c-.145-.393-.519-.653-.938-.653-.418 0-.792.26-.938.653l-.875 2.365-2.365.875c-.393.146-.653.52-.653.938 0 .418.26.793.653.938l2.365.875.875 2.365c.146.393.52.653.938.653.418 0 .792-.26.938-.653l.875-2.365 2.365-.875c.393-.146.653-.52.653-.938 0-.418-.26-.792-.653-.938z"></path>
+                                        </svg>
+                                    """.trimIndent())
+                                }
 
                                 +" Premium"
                             }
@@ -99,47 +105,33 @@ abstract class NavbarView(
 
                         div(classes = "entry") {
                             a(classes = "extras", href = "$base/extras") {
-                                i(classes = "fas fa-star") {}
+                                i(classes = "fas fa-book") {}
+                                +" Wiki"
+                            }
+                        }
 
-                                if (false)
-                                    attributes["data-enable-link-preload"] = "true"
-
-                                +" Extras"
+                        div(classes = "entry") {
+                            a(classes = "merch", href = "https://perfectdreams.store/") {
+                                i(classes = "fas fa-tshirt") {}
+                                +" Merch"
                             }
                         }
 
                         div(classes = "entry") {
                             a(classes = "blog", href = "$base/blog") {
-                                attributes["data-enable-link-preload"] = "true"
-
-                                i(classes = "fas fa-newspaper") {}
+                                i(classes = "fas fa-bullhorn") {}
 
                                 +" Blog"
                             }
                         }
 
                         div(classes = "entry") {
-                            a(classes = "sponsors", href = "$base/sponsors") {
-                                attributes["data-enable-link-preload"] = "true"
+                            a(classes = "fan-arts", href = "https://fanarts.perfectdreams.net/") {
+                                i(classes = "fas fa-paint-brush") {}
 
-                                i(classes = "far fa-kiss-wink-heart") {}
-
-                                +" ${locale["website.navbar.sponsors"]}"
+                                +" Fan Arts"
                             }
                         }
-
-                        /*  a(classes = "lori-stickers", href = "https://produto.mercadolivre.com.br/MLB-1366127151-caneca-pster-da-loritta-morenitta-novembro-2019-_JM?quantity=1") {
-                        i(classes = "fas fa-heart") {}
-                        attributes["target"] = "_blank"
-
-                        +" Merch"
-                    }
-                    a(classes = "lori-stickers", href = "$base/extras") {
-                        i(classes = "far fa-grin-squint-tears") {}
-                        attributes["target"] = "_blank"
-
-                        +" Stickers"
-                    } */
                     }
 
                     div(classes = "right-side-entries") {
