@@ -256,7 +256,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
 
                             p {
                                 +"Agora você possui ${payload.currentBalance} sonhos, que tal gastar os seus sonhos "
-                                val random = Random(Date().getTime().toInt()).nextInt(0, 4)
+                                val random = Random(Date().getTime().toInt()).nextInt(0, 9)
                                 when (random) {
                                     0 -> {
                                         +"na rifa (+rifa)"
@@ -272,7 +272,24 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                         }
                                     }
                                     3 -> {
-                                        +"doando eles para a sua pessoa favorita (+pagar)"
+                                        a(href = "${loriUrl}user/@me/dashboard/daily-shop") {
+                                            +"comprando novas bugigangas na loja"
+                                        }
+                                    }
+                                    4 -> {
+                                        +"doando eles para a sua pessoa favorita (/sonhos pay)"
+                                    }
+                                    5 -> {
+                                        +"apostando com seus amigos (+coinflip bet)"
+                                    }
+                                    6 -> {
+                                        +"apostando com outros usuários (/bet coinflip global)"
+                                    }
+                                    7 -> {
+                                        +"apostando em rinhas de emojis (+emojifight bet)"
+                                    }
+                                    8 -> {
+                                        +"jogando no SparklyPower, o servidor de Minecraft da Loritta (mc.sparklypower.net)"
                                     }
                                 }
 
@@ -289,7 +306,7 @@ class DailyRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/daily") {
                                                 +"após ficar por mais de 15 dias em "
                                             }
                                             DailyGuildMissingRequirement.REQUIRES_MORE_XP -> {
-                                                +"sendo mais ativo em "
+                                                +"se você conseguir ser mais ativo ao ponto de ter 500 XP em "
                                             }
                                         }
 
