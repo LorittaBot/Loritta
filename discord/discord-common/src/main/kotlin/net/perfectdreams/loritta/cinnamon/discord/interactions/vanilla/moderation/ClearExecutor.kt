@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderati
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Message
 import dev.kord.core.entity.channel.GuildMessageChannel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.toList
+import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.declarations.ClearCommand
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import kotlin.time.Duration.Companion.days
 
 class ClearExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -37,6 +38,7 @@ class ClearExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context as GuildApplicationCommandContext
+
         context.deferChannelMessageEphemerally()
 
         val channel = loritta.kord.getChannelOf<GuildMessageChannel>(context.channelId)
@@ -63,8 +65,6 @@ class ClearExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
         for (messages in messagesChunk) {
             bulkDeleteMessages(channel, context, messages)
             deletedMessagesSize += messages.size
-
-            delay(900L + deletedMessagesSize)
         }
 
         context.sendEphemeralMessage {
@@ -96,7 +96,7 @@ class ClearExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
             AdminUtils.checkAndRetrieveAllValidUsersFromString(
                 context,
                 it
-            ).ifEmpty { null }
+            )
         }
 
         return messages.filter { message ->
@@ -133,5 +133,5 @@ class ClearExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
         ).toList()
 
     private fun Message.canBeDeleted(): Boolean =
-        ((System.currentTimeMillis() / 1000) - timestamp.epochSeconds < 1209600) && !isPinned
+        timestamp > (Clock.System.now() - 14.days) && !isPinned
 }
