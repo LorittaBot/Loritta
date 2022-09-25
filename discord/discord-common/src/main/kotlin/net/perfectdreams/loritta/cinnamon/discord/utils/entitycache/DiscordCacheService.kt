@@ -235,7 +235,7 @@ class DiscordCacheService(
     suspend fun getUserConnectedVoiceChannel(guildId: Snowflake, userId: Snowflake): Snowflake? {
         return loritta.redisConnection {
             it.hget(loritta.redisKeys.discordGuildVoiceStates(guildId), userId.toString())
-                ?.let { Json.decodeFromString<PuddingGuildVoiceState>(it) }
+                ?.let { decodeFromBinary<PuddingGuildVoiceState>(it) }
                 ?.channelId
         }
     }
