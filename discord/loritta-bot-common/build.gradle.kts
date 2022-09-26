@@ -131,7 +131,7 @@ tasks {
         DEFAULT_SHADED_WITHIN_JAR_LIBRARIES,
         configurations.runtimeClasspath.get(),
         jar.get(),
-        "net.perfectdreams.loritta.legacy.LorittaLauncher",
+        "net.perfectdreams.loritta.morenitta.LorittaLauncher",
         mapOf(
             "JDA-Version" to Versions.JDA
         )
