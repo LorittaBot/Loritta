@@ -106,10 +106,10 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/a
 
 			val lastVideo = entries.firstOrNull() ?: return
 
-			val videoId = lastVideo.getElementsByTag("yt:videoId").first().html()
-			val lastVideoTitle = lastVideo.getElementsByTag("title").first().html()
-			val published = lastVideo.getElementsByTag("published").first().html()
-			val channelId = lastVideo.getElementsByTag("yt:channelId").first().html()
+			val videoId = lastVideo.getElementsByTag("yt:videoId").first()!!.html()
+			val lastVideoTitle = lastVideo.getElementsByTag("title").first()!!.html()
+			val published = lastVideo.getElementsByTag("published").first()!!.html()
+			val channelId = lastVideo.getElementsByTag("yt:channelId").first()!!.html()
 
 			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
 

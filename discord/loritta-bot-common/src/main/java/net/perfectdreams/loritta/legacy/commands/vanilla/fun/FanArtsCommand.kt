@@ -18,7 +18,6 @@ import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.Discord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.legacy.utils.config.FanArt
 import net.perfectdreams.loritta.legacy.utils.config.FanArtArtist
-import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 
 class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("fanarts", "fanart"), CommandCategory.MISC) {
     override fun command() = create {
@@ -57,8 +56,9 @@ class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
 
             val fanArtArtist = loritta.getFanArtArtistByFanArt(fanArt)
             val discordId = fanArtArtist?.socialNetworks
-                    ?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
-                    ?.id
+                ?.filterIsInstance<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
+                ?.firstOrNull()
+                ?.id
 
             val user = lorittaShards.retrieveUserInfoById(discordId?.toLong())
 

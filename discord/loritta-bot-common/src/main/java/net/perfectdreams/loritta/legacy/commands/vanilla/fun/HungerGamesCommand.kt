@@ -127,9 +127,9 @@ class HungerGamesCommand(m: LorittaDiscord) : DiscordAbstractCommandBase(m, list
             // Get the season URL, it is inside of the #content element in a <a> tag
             val jsoup = Jsoup.parse(result3.bodyAsText())
 
-            val saveLink = jsoup.getElementById("content")
+            val saveLink = jsoup.getElementById("content")!!
                     .getElementsByTag("a")
-                    .first()
+                    .first()!!
                     .attr("href")
 
             // Reply with the simulation URL, have fun!~

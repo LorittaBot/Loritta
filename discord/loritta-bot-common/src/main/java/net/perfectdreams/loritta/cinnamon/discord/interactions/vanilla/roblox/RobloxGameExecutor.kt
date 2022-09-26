@@ -60,7 +60,7 @@ class RobloxGameExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
         val gamePageRequest = http.get("https://www.roblox.com/games/$gameId")
         val gameDocument = Jsoup.parse(gamePageRequest.bodyAsText())
 
-        val placeId = gameDocument.getElementById("game-detail-page").attr("data-place-id")
+        val placeId = gameDocument.getElementById("game-detail-page")?.attr("data-place-id")!!
         val gameName = gameDocument.getElementsByClass("game-name").text()
         val gameAuthor = gameDocument.getElementsByClass("game-creator")[0].getElementsByClass("text-name").text()
         val gameDescription = gameDocument.getElementsByClass("game-description")[0].text()

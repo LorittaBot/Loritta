@@ -33,7 +33,6 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import java.util.concurrent.TimeUnit
 
 class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/daily-shop/buy/{type}/{internalName}") {
@@ -112,7 +111,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 					for (creatorId in createdBy) {
 						val author = loritta.fanArtArtists.firstOrNull { it.id == creatorId } ?: continue
 
-						val discordId = author.socialNetworks?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.id
+						val discordId = author.socialNetworks?.filterIsInstance<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.firstOrNull()?.id
 								?: continue
 
 						val creator = net.perfectdreams.loritta.legacy.utils.loritta.getOrCreateLorittaProfile(discordId)
@@ -178,7 +177,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLog
 					for (creatorId in createdBy) {
 						val author = loritta.fanArtArtists.firstOrNull { it.id == creatorId } ?: continue
 
-						val discordId = author.socialNetworks?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.id
+						val discordId = author.socialNetworks?.filterIsInstance<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.firstOrNull()?.id
 								?: continue
 
 						val creator = net.perfectdreams.loritta.legacy.utils.loritta.getOrCreateLorittaProfile(discordId)

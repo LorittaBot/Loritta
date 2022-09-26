@@ -22,7 +22,6 @@ import net.perfectdreams.loritta.legacy.tables.servers.Giveaways
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.legacy.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.kotlin.utils.getOrPutNullable
 
 /**
  * Prepares and setups guilds in batches
@@ -211,6 +210,17 @@ class GuildSetupQueue(val loritta: LorittaDiscord) {
                     logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${guild.idLong}" }
                 }
             }
+        }
+    }
+
+    private inline fun <K, V> MutableMap<K, V>.getOrPutNullable(key: K, defaultValue: () -> V): V {
+        return if (!containsKey(key)) {
+            val answer = defaultValue()
+            put(key, answer)
+            answer
+        } else {
+            @Suppress("UNCHECKED_CAST")
+            get(key) as V
         }
     }
 }

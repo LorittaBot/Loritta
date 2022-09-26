@@ -23,7 +23,7 @@ import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.jsoup.safety.Whitelist
+import org.jsoup.safety.Safelist
 import java.awt.Canvas
 import java.awt.Color
 import java.awt.Font
@@ -52,17 +52,17 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			// Nós iremos verificar as lyrics em mútiplos websites, o primeiro que der certo, nós iremos usar
 			// É necessário posicionar na ordem de mais confiável -> menos confiável
 			val songInfo = retrieveSongInfoFromLyricWikia(artist, musicName)
-					?: retrieveSongInfoFromGenius(artist, musicName)
-					?: retrieveSongInfoFromSongLyrics(artist, musicName)
-					?: retrieveSongInfoFromLetrasMus(artist, musicName)
-					?: retrieveSongInfoFromVagalume(artist, musicName) // Pesquisa no Vagalume, isto deve ser a última opção!
+				?: retrieveSongInfoFromGenius(artist, musicName)
+				?: retrieveSongInfoFromSongLyrics(artist, musicName)
+				?: retrieveSongInfoFromLetrasMus(artist, musicName)
+				?: retrieveSongInfoFromVagalume(artist, musicName) // Pesquisa no Vagalume, isto deve ser a última opção!
 
 			if (songInfo == null) {
 				context.reply(
-                        LorittaReply(
-                                "${locale["commands.command.lyrics.couldntFind"]} ${locale["commands.command.lyrics.sorryForTheInconvenience"]} \uD83D\uDE2D",
-                                Constants.ERROR
-                        )
+					LorittaReply(
+						"${locale["commands.command.lyrics.couldntFind"]} ${locale["commands.command.lyrics.sorryForTheInconvenience"]} \uD83D\uDE2D",
+						Constants.ERROR
+					)
 				)
 				return
 			}
@@ -110,8 +110,8 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			val cover = getCoverArt(songInfo.albumUrl)
 
 			val averageColor = cover.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING)
-					.toBufferedImage()
-					.getRGB(0, 0)
+				.toBufferedImage()
+				.getRGB(0, 0)
 
 			drawCoverArt(graphics, cover, imageWidth, imageHeight, Math.max(imageWidth, imageHeight))
 
@@ -165,10 +165,10 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 			}
 
 			context.sendFile(
-					image,
-					"lyrics.png",
-					context.getAsMention(true),
-					embed.build()
+				image,
+				"lyrics.png",
+				context.getAsMention(true),
+				embed.build()
 			)
 		} else {
 			context.explain()
@@ -253,8 +253,8 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		// lyrics.wikia.com
 		// Nota: Não, não podemos usar a API da wikia, ela é bloqueada nesta wikia por ter conteúdo com direitos autorais
 		val response = Jsoup.connect("http://lyrics.wikia.com/wiki/${artist.replace(" ", "_").encodeToUrl()}:${musicName.replace(" ", "_").encodeToUrl()}")
-				.ignoreHttpErrors(true)
-				.execute()
+			.ignoreHttpErrors(true)
+			.execute()
 
 		if (response.statusCode() == 404)
 			return null
@@ -265,7 +265,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		if (lyricsBody.isEmpty())
 			return null
 
-		val lyrics = lyricsBody.first().html()
+		val lyrics = lyricsBody.first()!!.html()
 
 		var albumArtUrl: String? = null
 
@@ -278,8 +278,8 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 
 				if (!albumUrl.contains("redlink=1")) {
 					val albumResponse = Jsoup.connect("http://lyrics.wikia.com${albumUrl}")
-							.ignoreHttpErrors(true)
-							.execute()
+						.ignoreHttpErrors(true)
+						.execute()
 
 					if (albumResponse.statusCode() == 200) {
 						val albumDocument = albumResponse.parse()
@@ -298,17 +298,17 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		val songTitle = document.getElementById("song-header-title")?.text()
 
 		return SongInfo(
-				artist,
-				songTitle ?: musicName,
-				albumArtUrl,
-				Jsoup.clean(lyrics, "localhost", Whitelist.none(), Document.OutputSettings().prettyPrint(false))
+			artist,
+			songTitle ?: musicName,
+			albumArtUrl,
+			Jsoup.clean(lyrics, "localhost", Safelist.none(), Document.OutputSettings().prettyPrint(false))
 		)
 	}
 
 	fun retrieveSongInfoFromGenius(artist: String, musicName: String): SongInfo? {
 		val response = Jsoup.connect("https://genius.com/${artist.replace(" ", "-").encodeToUrl()}-${musicName.replace(" ", "-").encodeToUrl()}-lyrics/")
-				.ignoreHttpErrors(true)
-				.execute()
+			.ignoreHttpErrors(true)
+			.execute()
 
 		if (response.statusCode() == 404)
 			return null
@@ -320,19 +320,19 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		val coverArtUrl = document.getElementsByClass("cover_art-image").firstOrNull()?.attr("src")
 		val lyrics = songLyricsDiv.children().html()
 
-		val prettyPrintedBodyFragment = Jsoup.clean(lyrics, "", Whitelist.none().addTags("br", "p"), Document.OutputSettings().prettyPrint(true))
+		val prettyPrintedBodyFragment = Jsoup.clean(lyrics, "", Safelist.none().addTags("br", "p"), Document.OutputSettings().prettyPrint(true))
 		return SongInfo(
-				artistName ?: artist,
-				songName ?: musicName,
-				coverArtUrl,
-				Jsoup.clean(prettyPrintedBodyFragment, "", Whitelist.none(), Document.OutputSettings().prettyPrint(false))
+			artistName ?: artist,
+			songName ?: musicName,
+			coverArtUrl,
+			Jsoup.clean(prettyPrintedBodyFragment, "", Safelist.none(), Document.OutputSettings().prettyPrint(false))
 		)
 	}
 
 	fun retrieveSongInfoFromSongLyrics(artist: String, musicName: String): SongInfo? {
 		val response = Jsoup.connect("http://www.songlyrics.com/${artist.replace(" ", "-").encodeToUrl()}/${musicName.replace(" ", "-").encodeToUrl()}-lyrics/")
-				.ignoreHttpErrors(true)
-				.execute()
+			.ignoreHttpErrors(true)
+			.execute()
 
 		if (response.statusCode() == 404)
 			return null
@@ -343,18 +343,18 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		val lyrics = songLyricsDiv.html()
 
 		return SongInfo(
-				artist,
-				musicName,
-				null,
-				lyrics.replace("<br>", "\n")
+			artist,
+			musicName,
+			null,
+			lyrics.replace("<br>", "\n")
 		)
 	}
 
 	fun retrieveSongInfoFromLetrasMus(artist: String, musicName: String): SongInfo? {
 		val response = try {
 			Jsoup.connect("https://www.letras.mus.br/${artist.replace(" ", "-").encodeToUrl()}/${musicName.replace(" ", "-").encodeToUrl()}/")
-					.ignoreHttpErrors(true)
-					.execute()
+				.ignoreHttpErrors(true)
+				.execute()
 		} catch (e: IOException) { // O letras.mus tem um bug de redirecionamento infinito, vamos ignorar caso isto aconteça
 			return null
 		}
@@ -377,22 +377,22 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		val avatarUrl = headTitle.getElementsByTag("img").firstOrNull()?.attr("src")
 
 		return SongInfo(
-				h2.text() ?: artist,
-				songTitle ?: musicName,
-				avatarUrl,
-				Jsoup.clean(lyrics
-						.replace("<br>", "\n")
-						.replace("<p>", "\n"),
-						"localhost",
-						Whitelist.none(),
-						Document.OutputSettings().prettyPrint(false)
-				)
+			h2.text() ?: artist,
+			songTitle ?: musicName,
+			avatarUrl,
+			Jsoup.clean(lyrics
+				.replace("<br>", "\n")
+				.replace("<p>", "\n"),
+				"localhost",
+				Safelist.none(),
+				Document.OutputSettings().prettyPrint(false)
+			)
 		)
 	}
 
 	fun retrieveSongInfoFromVagalume(artist: String, musicName: String): SongInfo? {
 		val request = HttpRequest.get("https://api.vagalume.com.br/search.artmus?apikey=lolidkthekey&q=${artist.encodeToUrl()} ${musicName.encodeToUrl()}&limit=1")
-				.body()
+			.body()
 
 		val payload = JsonParser.parseString(request)
 		val response = payload["response"].obj
@@ -410,14 +410,14 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		val id = firstResult["id"]
 
 		val musicRequest = HttpRequest.get("https://api.vagalume.com.br/search.php?musid=$id&apikey=lolidkthekey")
-				.body()
+			.body()
 
 		val musicPayload = JsonParser.parseString(musicRequest)
 		val music = musicPayload["mus"].array[0]
 		val artistId = musicPayload["art"]["id"].string
 
 		val artistRequest = HttpRequest.get("https://api.vagalume.com.br/image.php?bandID=$artistId&limit=1")
-				.body()
+			.body()
 
 		val artistPayload = JsonParser.parseString(artistRequest).obj
 
@@ -426,10 +426,10 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		val artistUrl: String? = images?.firstOrNull()?.get("url").nullString
 
 		return SongInfo(
-				artist,
-				musicName,
-				artistUrl,
-				music["text"].string
+			artist,
+			musicName,
+			artistUrl,
+			music["text"].string
 		)
 	}
 

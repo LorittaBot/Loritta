@@ -64,7 +64,7 @@ class DictionaryExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
                     Emotes.Error
                 )
 
-            val linkElement = resultadosLi.getElementsByClass("_sugg").first()
+            val linkElement = resultadosLi.getElementsByClass("_sugg").first()!!
             val link = linkElement.attr("href")
 
             val httpRequest2 = http.get("https://www.dicio.com.br$link")

@@ -54,7 +54,7 @@ class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario"
 					return
 				}
 
-				val linkElement = resultadosLi.getElementsByClass("_sugg").first()
+				val linkElement = resultadosLi.getElementsByClass("_sugg").first()!!
 				val link = linkElement.attr("href")
 
 				val httpRequest2 = HttpRequest.get("https://www.dicio.com.br$link")

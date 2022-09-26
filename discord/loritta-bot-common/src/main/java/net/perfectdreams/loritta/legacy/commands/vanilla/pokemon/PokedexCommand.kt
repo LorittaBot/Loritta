@@ -32,12 +32,12 @@ class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCat
 			var response = http.body()
 	        var jsoup = Jsoup.parse(response)
 
-	        var name = jsoup.getElementById("dex-page-name").html()
+	        var name = jsoup.getElementById("dex-page-name")!!.html()
 	        var description = jsoup.getElementById("dex-pokemon-genus")?.html() ?: ""
-			var spriteDiv = jsoup.getElementById("dex-pokemon-portrait-sprite")
+			var spriteDiv = jsoup.getElementById("dex-pokemon-portrait-sprite")!!
 	        var sprite = "https://veekun.com" + spriteDiv.getElementsByTag("img")[0].attr("src")
 	        var abilities = jsoup.getElementsByClass("pokemon-abilities")
-	        var dexTypes = jsoup.getElementById("dex-page-types").getElementsByTag("img")
+	        var dexTypes = jsoup.getElementById("dex-page-types")!!.getElementsByTag("img")
 	        var dexColumn = jsoup.getElementsByClass("dex-column")
 	        var chain = jsoup.getElementsByClass("dex-evolution-chain")[0]
 	        var evolutions = chain.getElementsByTag("td")

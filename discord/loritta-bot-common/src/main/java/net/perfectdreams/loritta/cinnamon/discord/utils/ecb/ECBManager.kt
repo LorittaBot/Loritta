@@ -20,7 +20,9 @@ class ECBManager {
                 val jsoup = Jsoup.connect("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml?${System.currentTimeMillis()}")
                     .get()
 
-                val exchangeRates = jsoup.select("Cube").filter { it.hasAttr("currency") }
+                val exchangeRates = jsoup.select("Cube")
+                    .toList()
+                    .filter { it.hasAttr("currency") }
                     .map { it.attr("currency") to it.attr("rate").toDouble() }
                     .toMap()
                     .toMutableMap()

@@ -29,12 +29,14 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 			if (diff >= Constants.ONE_HOUR_IN_MILLISECONDS) {
 				job = GlobalScope.async(loritta.coroutineDispatcher) {
 					val jsoup = Jsoup.connect("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml?${System.currentTimeMillis()}")
-							.get()
+						.get()
 
-					val exchangeRates = jsoup.select("Cube").filter { it.hasAttr("currency") }
-							.map { it.attr("currency") to it.attr("rate").toDouble() }
-							.toMap()
-							.toMutableMap()
+					val exchangeRates = jsoup.select("Cube")
+						.toList()
+						.filter { it.hasAttr("currency") }
+						.map { it.attr("currency") to it.attr("rate").toDouble() }
+						.toMap()
+						.toMutableMap()
 
 					exchangeRates["EUR"] = 1.0
 
@@ -81,10 +83,10 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 				// Por exemplo, se a gente colocar BRL, o "valueInEuros" será 5.5956
 				val euroValueInCurrency = exchangeRates[from] ?: run {
 					context.reply(
-                            LorittaReply(
-                                    message = locale["commands.command.money.invalidCurrency"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
-                                    prefix = Constants.ERROR
-                            )
+						LorittaReply(
+							message = locale["commands.command.money.invalidCurrency"].msgFormat(from, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+							prefix = Constants.ERROR
+						)
 					)
 					return
 				}
@@ -93,10 +95,10 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 
 				val endValueInEuros = exchangeRates[to] ?: run {
 					context.reply(
-                            LorittaReply(
-                                    message = locale["commands.command.money.invalidCurrency"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
-                                    prefix = Constants.ERROR
-                            )
+						LorittaReply(
+							message = locale["commands.command.money.invalidCurrency"].msgFormat(to, exchangeRates.keys.joinToString(transform = { "`$it`" })),
+							prefix = Constants.ERROR
+						)
 					)
 					return
 				}
@@ -108,10 +110,10 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), Comma
 			df.maximumFractionDigits = 340 // 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
 
 			context.reply(
-                    LorittaReply(
-                            message = locale["commands.command.money.converted", multiply, from, to, df.format(value * multiply)],
-                            prefix = "\uD83D\uDCB5"
-                    )
+				LorittaReply(
+					message = locale["commands.command.money.converted", multiply, from, to, df.format(value * multiply)],
+					prefix = "\uD83D\uDCB5"
+				)
 			)
 		} else {
 			this.explain(context)

@@ -106,9 +106,9 @@ class HungerGamesExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
         val jsoup = Jsoup.parse(result3.bodyAsText())
 
         val saveLink = jsoup.getElementById("content")
-            .getElementsByTag("a")
-            .first()
-            .attr("href")
+            ?.getElementsByTag("a")
+            ?.first()
+            ?.attr("href")!!
 
         context.sendMessage {
             styled(

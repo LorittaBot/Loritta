@@ -11,7 +11,6 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 
 object PaymentUtils {
     private val logger = KotlinLogging.logger {}
@@ -41,7 +40,7 @@ object PaymentUtils {
     val mutex = Mutex()
 
     private val List<SonhosRemovalData>?.totalQuantity
-        get() = this?.sumByLong { it.quantity } ?: 0L
+        get() = this?.sumOf { it.quantity } ?: 0L
 
     /**
      * Removes sonhos from [userId] due to a chargeback of sonhos value [quantity]

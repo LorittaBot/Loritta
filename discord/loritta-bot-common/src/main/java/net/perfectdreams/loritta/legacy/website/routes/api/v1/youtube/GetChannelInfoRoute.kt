@@ -76,7 +76,7 @@ class GetChannelInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/yout
 					.get()
 
 				youTubePage.select("[property='og:url']")
-					.first()
+					.first()!!
 					.attr("content")
 					.substringAfter("/channel/")
 			} else {

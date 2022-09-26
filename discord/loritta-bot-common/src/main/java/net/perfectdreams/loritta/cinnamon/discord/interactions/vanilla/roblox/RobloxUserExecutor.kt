@@ -67,7 +67,7 @@ class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
         val isRobloxPremium = userProfileDocument.select(".header-title .icon-premium-medium").isNotEmpty()
         // The favoriteGamesContainer *can* be null if the user doesn't has favorite games
         val favoriteGamesContainer = userProfileDocument.select(".favorite-games-container").firstOrNull() // If null, then the user doesn't have Premium (oof)
-        val profileHeader = userProfileDocument.select("[profile-header-data]").first()
+        val profileHeader = userProfileDocument.select("[profile-header-data]").first()!!
 
         val friendsCount = profileHeader.attr("data-friendscount")
         val followersCount = profileHeader.attr("data-followerscount")
@@ -81,7 +81,7 @@ class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
                     parameter("width", 300)
                     parameter("height", 300)
                 }.bodyAsText()
-            ).getElementsByTag("img").first().attr("src")
+            ).getElementsByTag("img").first()!!.attr("src")
         }
 
         val userDataJob = GlobalScope.async {
@@ -241,7 +241,7 @@ class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : Cinna
                         favoriteGamesContainer.getElementsByClass("game-card-link").forEach {
                             val gameLink = it.attr("href")
                             val title = it.getElementsByClass("game-name-title")
-                                .first()
+                                .first()!!
                                 .attr("title")
 
                             // This is a "hack" because Roblox loves adding dumb stuff that doesn't really matter

@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.magic
 import net.perfectdreams.loritta.legacy.api.commands.CommandContext
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.utils.PaymentUtils
-import org.jetbrains.kotlin.utils.addToStdlib.sumByLong
 
 object ChargebackRunExecutor : LoriToolsCommand.LoriToolsExecutor {
 	override val args = "chargeback_run <id> <quantity> <remove_sonhos> <notify_self> <notify_user>"
@@ -29,7 +28,7 @@ object ChargebackRunExecutor : LoriToolsCommand.LoriToolsExecutor {
 
 		var str = ""
 		for (entry in triggeredSonhos) {
-			val totalQuantity = entry.value.sumByLong { it.quantity }
+			val totalQuantity = entry.value.sumOf { it.quantity }
 
 			str += "${entry.key} ($totalQuantity):\n"
 			for (removeSonhos in entry.value) {
