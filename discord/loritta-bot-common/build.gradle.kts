@@ -43,9 +43,17 @@ dependencies {
     api("net.dv8tion:JDA:${Versions.JDA}")
     api("club.minnced:discord-webhooks:0.5.7")
 
-    // We want to use Kord REST on our project too!
+    // Discord InteraKTions my beloved
+    // We only depend in the common module here, the interactions/gateway will have the proper Discord InteraKTions modules related to them.
+    api("net.perfectdreams.discordinteraktions:common:${Versions.DISCORD_INTERAKTIONS}")
+
+    // Used to serialize state on components
+    implementation("io.github.netvl.ecoji:ecoji:1.0.0")
+
+    // We want to use Kord on our project too!
     api("dev.kord:kord-rest:${Versions.KORD}")
     api("dev.kord:kord-gateway:${Versions.KORD}")
+    api("dev.kord:kord-core:${Versions.KORD}")
     api("dev.kord:kord-voice:0.8.x-20220720.101712-210")
 
     // Exposed & Databases
@@ -107,6 +115,13 @@ dependencies {
     // Sequins
     api("net.perfectdreams.sequins.text:text-utils:1.0.1")
     api("net.perfectdreams.sequins.ktor:base-route:1.0.4")
+
+    api("net.perfectdreams.randomroleplaypictures:client:1.0.1")
+    implementation("org.gagravarr:vorbis-java-core:0.8")
+    api("redis.clients:jedis:4.3.0-m1")
+
+    // zstd
+    api("com.github.luben:zstd-jni:1.5.2-4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")
