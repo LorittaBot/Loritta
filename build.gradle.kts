@@ -37,3 +37,10 @@ subprojects {
         kotlinOptions.javaParameters = true
     }
 }
+
+// Gradle Build Scan
+// https://stackoverflow.com/a/56634703/7271796
+extensions.findByName("buildScan")?.withGroovyBuilder {
+    setProperty("termsOfServiceUrl", "https://gradle.com/terms-of-service")
+    setProperty("termsOfServiceAgree", "yes")
+}
