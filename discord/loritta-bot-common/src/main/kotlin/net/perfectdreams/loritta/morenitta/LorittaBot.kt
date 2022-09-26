@@ -236,7 +236,6 @@ class LorittaBot(
 	}
 
 	val random = SecureRandom()
-	private val logger = KotlinLogging.logger {}
 
 	var fanArtArtists = listOf<FanArtArtist>()
 	val fanArts: List<FanArt>
