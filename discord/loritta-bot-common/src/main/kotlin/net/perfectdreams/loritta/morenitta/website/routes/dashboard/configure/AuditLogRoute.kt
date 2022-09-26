@@ -14,7 +14,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class AuditLogRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/audit-log") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "audit_log"
 

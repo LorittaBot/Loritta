@@ -5,8 +5,9 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class MorseCommand : AbstractCommand("morse", category = net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class MorseCommand(loritta: LorittaBot) : AbstractCommand(loritta, "morse", category = net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.morse.description")

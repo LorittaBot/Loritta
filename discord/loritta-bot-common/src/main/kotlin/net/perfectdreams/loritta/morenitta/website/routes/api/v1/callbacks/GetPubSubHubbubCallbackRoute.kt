@@ -25,6 +25,7 @@ class GetPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1
 			throw WebsiteAPIException(
 					HttpStatusCode.NotFound,
 					WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.FORBIDDEN,
 							"Missing hub.challenge"
 					)

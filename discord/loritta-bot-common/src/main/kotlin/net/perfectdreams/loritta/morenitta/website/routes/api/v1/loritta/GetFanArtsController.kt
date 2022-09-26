@@ -19,7 +19,7 @@ class GetFanArtsController(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta
 		val query = call.parameters["query"]
 		val filter = call.parameters["filter"]?.split(",")
 
-		val fanArtArtists = net.perfectdreams.loritta.morenitta.utils.loritta.fanArtArtists
+		val fanArtArtists = loritta.fanArtArtists
 				.let {
 					if (filter != null)
 						it.filter { it.id in filter }

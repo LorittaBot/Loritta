@@ -16,7 +16,6 @@ import io.ktor.http.*
 import kotlinx.coroutines.*
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.listeners.*
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.*
 import net.perfectdreams.loritta.morenitta.tables.Dailies
 import net.perfectdreams.loritta.morenitta.tables.Marriages
@@ -39,6 +38,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
@@ -68,6 +68,7 @@ import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.dao.*
+import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.GuildSetupQueue
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
@@ -76,6 +77,7 @@ import net.perfectdreams.loritta.morenitta.utils.ProcessDiscordGatewayCommands
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
 import net.perfectdreams.loritta.morenitta.utils.config.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
+import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
@@ -113,6 +115,7 @@ class LorittaBot(
 	val discordInstanceConfig: GeneralDiscordInstanceConfig,
 	val config: GeneralConfig,
 	val instanceConfig: GeneralInstanceConfig,
+	val pudding: Pudding,
 	val jedisPool: JedisPool
 ) {
 	// ===[ STATIC ]===
@@ -142,7 +145,7 @@ class LorittaBot(
 	}
 
 	// ===[ LORITTA ]===
-	var lorittaShards = LorittaShards() // Shards da Loritta
+	var lorittaShards = LorittaShards(this) // Shards da Loritta
 	val webhookExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), ThreadFactoryBuilder().setNameFormat("Webhook Sender %d").build())
 	val webhookOkHttpClient = OkHttpClient()
 
@@ -158,7 +161,7 @@ class LorittaBot(
 	var voiceChannelListener = VoiceChannelListener(this)
 	var discordMetricsListener = DiscordMetricsListener(this)
 	val gatewayRelayerListener = GatewayEventRelayerListener(this)
-	val addReactionFurryAminoPtListener = AddReactionFurryAminoPtListener(config.quirky)
+	val addReactionFurryAminoPtListener = AddReactionFurryAminoPtListener(this)
 	var builder: DefaultShardManagerBuilder
 
 	lateinit var raffleThread: RaffleThread
@@ -168,7 +171,7 @@ class LorittaBot(
 	var newWebsiteThread: Thread? = null
 
 	var twitch = TwitchAPI(config.twitch.clientId, config.twitch.clientSecret)
-	val connectionManager = ConnectionManager()
+	val connectionManager = ConnectionManager(this)
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
@@ -223,17 +226,6 @@ class LorittaBot(
 		config.dreamStorageService.token,
 		httpWithoutTimeout
 	)
-	// By lazy because this is a hacky workaround due to Databases.dataSourceLoritta requiring the "loritta" variable to be initialized
-	val pudding by lazy {
-		val threadPool = Executors.newCachedThreadPool()
-		Pudding(
-			Databases.dataSourceLoritta,
-			Pudding.connectToDatabase(Databases.dataSourceLoritta),
-			threadPool,
-			threadPool.asCoroutineDispatcher(),
-			128
-		)
-	}
 
 	val random = SecureRandom()
 
@@ -244,7 +236,7 @@ class LorittaBot(
 
 	val isMaster: Boolean
 		get() {
-			return loritta.instanceConfig.loritta.currentClusterId == 1L
+			return instanceConfig.loritta.currentClusterId == 1L
 		}
 
 	val cachedServerConfigs = Caffeine.newBuilder()
@@ -263,11 +255,13 @@ class LorittaBot(
 	val pendingMessages = ConcurrentLinkedQueue<Job>()
 	val guildSetupQueue = GuildSetupQueue(this)
 	val commandCooldownManager = CommandCooldownManager(this)
+	val giveawayManager = GiveawayManager(this)
+	val welcomeModule = WelcomeModule(this)
+	val ecbManager = ECBManager()
 
 	fun redisKey(key: String) = "${config.redis.keyPrefix}:$key"
 
 	init {
-		LorittaLauncher.loritta = this
 		FOLDER = instanceConfig.loritta.folders.root
 		ASSETS = instanceConfig.loritta.folders.assets
 		TEMP = instanceConfig.loritta.folders.temp
@@ -298,9 +292,9 @@ class LorittaBot(
 			.setChunkingFilter(ChunkingFilter.NONE) // No chunking policy because trying to load all members is hard
 			.setMemberCachePolicy(MemberCachePolicy.ALL) // Cache all members!!
 			.apply {
-				if (loritta.discordConfig.shardController.enabled) {
+				if (discordConfig.shardController.enabled) {
 					logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
-					bucketedController = BucketedController(discordConfig.shardController.buckets)
+					bucketedController = BucketedController(this@LorittaBot, discordConfig.shardController.buckets)
 					this.setSessionController(bucketedController)
 				}
 			}
@@ -317,7 +311,7 @@ class LorittaBot(
 				// long for her to reply to new messages.
 
 				// Used to display the current Loritta cluster in the status
-				val currentCluster = loritta.lorittaCluster
+				val currentCluster = this.lorittaCluster
 
 				Activity.of(
 					Activity.ActivityType.valueOf(discordConfig.discord.activity.type),
@@ -356,8 +350,8 @@ class LorittaBot(
 		File(TEMP).mkdirs()
 		File(LOCALES).mkdirs()
 		File(FRONTEND).mkdirs()
-		File(loritta.instanceConfig.loritta.folders.plugins).mkdirs()
-		File(loritta.instanceConfig.loritta.folders.fanArts).mkdirs()
+		File(this.instanceConfig.loritta.folders.plugins).mkdirs()
+		File(this.instanceConfig.loritta.folders.fanArts).mkdirs()
 
 		logger.info { "Success! Loading locales..." }
 
@@ -365,12 +359,12 @@ class LorittaBot(
 		loadLegacyLocales()
 
 		logger.info { "Success! Loading fan arts..." }
-		if (loritta.isMaster) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
+		if (this.isMaster) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
 			loadFanArts()
 
 		logger.info { "Success! Loading emotes..." }
 
-		Emotes.emoteManager = DiscordEmoteManager().also { it.loadEmotes() }
+		Emotes.emoteManager = DiscordEmoteManager(this).also { it.loadEmotes() }
 
 		logger.info { "Success! Connecting to the database..." }
 
@@ -389,23 +383,24 @@ class LorittaBot(
 		val shardManager = builder.build()
 		lorittaShards.shardManager = shardManager
 
-		logger.info { "Sucesso! Iniciando plugins da Loritta..." }
+		logger.info { "Sucesso! Iniciando plugins da this..." }
 
-		logger.info { "Sucesso! Iniciando threads da Loritta..." }
+		logger.info { "Sucesso! Iniciando threads da this..." }
 
 		logger.info { "Iniciando Update Status Thread..." }
-		UpdateStatusThread().start() // Iniciar thread para atualizar o status da Loritta
+		UpdateStatusThread(this).start() // Iniciar thread para atualizar o status da Loritta
 
 		logger.info { "Iniciando Tasks..." }
-		LorittaTasks.startTasks()
+		val tasks = LorittaTasks(this)
+		tasks.startTasks()
 
 		logger.info { "Iniciando threads de reminders..." }
-		RemindersThread().start()
+		RemindersThread(this).start()
 
 		logger.info { "Iniciando bom dia & cia..." }
-		bomDiaECia = BomDiaECia()
+		bomDiaECia = BomDiaECia(this)
 
-		if (loritta.isMaster) {
+		if (this.isMaster) {
 			logger.info { "Loading raffle..." }
 			val raffleFile = File(FOLDER, "raffle.json")
 
@@ -437,11 +432,11 @@ class LorittaBot(
 			}
 
 			RaffleThread.isReady = true
-			raffleThread = RaffleThread()
+			raffleThread = RaffleThread(this)
 			raffleThread.start()
 		}
 
-		DebugLog.startCommandListenerThread()
+		DebugLog.startCommandListenerThread(this)
 
 		// Ou seja, agora a Loritta está funcionando, Yay!
 
@@ -458,75 +453,77 @@ class LorittaBot(
 		// "ALTER TABLE serverconfigs ALTER COLUMN prefix TYPE TEXT, ALTER COLUMN prefix SET DEFAULT '+'"
 		// And that LOCKS the ServerConfig table, and sometimes that takes a LOOOONG time to complete, which locks up everything
 		if (System.getenv("LORITTA_CREATE_TABLES") != null) {
-			transaction(Databases.loritta) {
-				SchemaUtils.createMissingTablesAndColumns(
-					StoredMessages,
-					Profiles,
-					UserSettings,
-					Reminders,
-					Reputations,
-					Dailies,
-					Marriages,
-					Mutes,
-					Warns,
-					GuildProfiles,
-					Giveaways,
-					ReactionOptions,
-					ServerConfigs,
-					DonationKeys,
-					Payments,
-					ShipEffects,
-					BotVotes,
-					StoredMessages,
-					StarboardMessages,
-					Sponsors,
-					EconomyConfigs,
-					ExecutedCommandsLog,
-					BlacklistedGuilds,
-					RolesByExperience,
-					LevelAnnouncementConfigs,
-					LevelConfigs,
-					AuditLog,
-					ExperienceRoleRates,
-					BomDiaECiaWinners,
-					TrackedTwitterAccounts,
-					SonhosTransaction,
-					TrackedYouTubeAccounts,
-					TrackedTwitchAccounts,
-					CachedYouTubeChannelIds,
-					SonhosBundles,
-					Backgrounds,
-					BackgroundVariations,
-					Sets,
-					DailyShops,
-					DailyShopItems,
-					BackgroundPayments,
-					CachedDiscordUsers,
-					SentYouTubeVideoIds,
-					SpicyStacktraces,
-					BannedIps,
-					DonationConfigs,
-					StarboardConfigs,
-					MiscellaneousConfigs,
-					EventLogConfigs,
-					AutoroleConfigs,
-					InviteBlockerConfigs,
-					ServerRolePermissions,
-					WelcomerConfigs,
-					CustomGuildCommands,
-					MemberCounterChannelConfigs,
-					ModerationConfigs,
-					WarnActions,
-					ModerationPunishmentMessagesConfig,
-					BannedUsers,
-					ProfileDesigns,
-					ProfileDesignsPayments,
-					ProfileDesignGroups,
-					ProfileDesignGroupEntries,
-					DailyProfileShopItems,
-					CachedDiscordWebhooks,
-					CustomBackgroundSettings
-				)
+			runBlocking {
+				pudding.transaction {
+					SchemaUtils.createMissingTablesAndColumns(
+						StoredMessages,
+						Profiles,
+						UserSettings,
+						Reminders,
+						Reputations,
+						Dailies,
+						Marriages,
+						Mutes,
+						Warns,
+						GuildProfiles,
+						Giveaways,
+						ReactionOptions,
+						ServerConfigs,
+						DonationKeys,
+						Payments,
+						ShipEffects,
+						BotVotes,
+						StoredMessages,
+						StarboardMessages,
+						Sponsors,
+						EconomyConfigs,
+						ExecutedCommandsLog,
+						BlacklistedGuilds,
+						RolesByExperience,
+						LevelAnnouncementConfigs,
+						LevelConfigs,
+						AuditLog,
+						ExperienceRoleRates,
+						BomDiaECiaWinners,
+						TrackedTwitterAccounts,
+						SonhosTransaction,
+						TrackedYouTubeAccounts,
+						TrackedTwitchAccounts,
+						CachedYouTubeChannelIds,
+						SonhosBundles,
+						Backgrounds,
+						BackgroundVariations,
+						Sets,
+						DailyShops,
+						DailyShopItems,
+						BackgroundPayments,
+						CachedDiscordUsers,
+						SentYouTubeVideoIds,
+						SpicyStacktraces,
+						BannedIps,
+						DonationConfigs,
+						StarboardConfigs,
+						MiscellaneousConfigs,
+						EventLogConfigs,
+						AutoroleConfigs,
+						InviteBlockerConfigs,
+						ServerRolePermissions,
+						WelcomerConfigs,
+						CustomGuildCommands,
+						MemberCounterChannelConfigs,
+						ModerationConfigs,
+						WarnActions,
+						ModerationPunishmentMessagesConfig,
+						BannedUsers,
+						ProfileDesigns,
+						ProfileDesignsPayments,
+						ProfileDesignGroups,
+						ProfileDesignGroupEntries,
+						DailyProfileShopItems,
+						CachedDiscordWebhooks,
+						CustomBackgroundSettings
+					)
+				}
 			}
 		}
 
@@ -535,16 +532,16 @@ class LorittaBot(
 
 	fun startWebServer() {
 		// Carregar os blog posts
-		loritta.newWebsiteThread = thread(true, name = "Website Thread") {
-			val nWebsite = net.perfectdreams.loritta.morenitta.website.LorittaWebsite(loritta, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder)
-			loritta.newWebsite = nWebsite
+		newWebsiteThread = thread(true, name = "Website Thread") {
+			val nWebsite = net.perfectdreams.loritta.morenitta.website.LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder)
+			newWebsite = nWebsite
 			nWebsite.start()
 		}
 	}
 
 	fun stopWebServer() {
-		loritta.newWebsite?.stop()
-		loritta.newWebsiteThread?.interrupt()
+		newWebsite?.stop()
+		newWebsiteThread?.interrupt()
 	}
 
 	/**
@@ -558,8 +555,8 @@ class LorittaBot(
 	 */
 	suspend fun getUserProfileBackground(profile: Profile): BufferedImage {
 		val backgroundUrl = getUserProfileBackgroundUrl(profile)
-		val response = loritta.http.get(backgroundUrl) {
-			userAgent(loritta.lorittaCluster.getUserAgent())
+		val response = this.http.get(backgroundUrl) {
+			userAgent(lorittaCluster.getUserAgent(this@LorittaBot))
 		}
 
 		val bytes = response.readBytes()
@@ -576,9 +573,9 @@ class LorittaBot(
 	 * @return the background image
 	 */
 	suspend fun getUserProfileBackgroundUrl(profile: Profile): String {
-		val settingsId = loritta.newSuspendedTransaction { profile.settings.id.value }
-		val activeProfileDesignInternalName = loritta.newSuspendedTransaction { profile.settings.activeProfileDesignInternalName }?.value
-		val activeBackgroundInternalName = loritta.newSuspendedTransaction { profile.settings.activeBackgroundInternalName }?.value
+		val settingsId = this.newSuspendedTransaction { profile.settings.id.value }
+		val activeProfileDesignInternalName = this.newSuspendedTransaction { profile.settings.activeProfileDesignInternalName }?.value
+		val activeBackgroundInternalName = this.newSuspendedTransaction { profile.settings.activeBackgroundInternalName }?.value
 		return getUserProfileBackgroundUrl(profile.userId, settingsId, activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
 	}
 
@@ -596,7 +593,7 @@ class LorittaBot(
 		activeProfileDesignInternalName: String,
 		activeBackgroundInternalName: String
 	): String {
-		val defaultBlueBackground = loritta.pudding.backgrounds.getBackground(Background.DEFAULT_BACKGROUND_ID)!!
+		val defaultBlueBackground = this.pudding.backgrounds.getBackground(Background.DEFAULT_BACKGROUND_ID)!!
 		var background = pudding.backgrounds.getBackground(activeBackgroundInternalName) ?: defaultBlueBackground
 
 		if (background.id == Background.RANDOM_BACKGROUND_ID) {
@@ -604,7 +601,7 @@ class LorittaBot(
 			val allBackgrounds = mutableListOf(defaultBlueBackground)
 
 			allBackgrounds.addAll(
-				loritta.newSuspendedTransaction {
+				this.newSuspendedTransaction {
 					(BackgroundPayments innerJoin Backgrounds).select {
 						BackgroundPayments.userId eq userId
 					}.map {
@@ -622,12 +619,12 @@ class LorittaBot(
 
 		if (background.id == Background.CUSTOM_BACKGROUND_ID) {
 			// Custom background
-			val donationValue = loritta.getActiveMoneyFromDonationsAsync(userId)
+			val donationValue = this.getActiveMoneyFromDonationsAsync(userId)
 			val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
 			if (plan.customBackground) {
-				val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
-				val resultRow = loritta.newSuspendedTransaction {
+				val dssNamespace = this.dreamStorageService.getCachedNamespaceOrRetrieve()
+				val resultRow = this.newSuspendedTransaction {
 					CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq settingsId }
 						.firstOrNull()
 				}
@@ -636,7 +633,7 @@ class LorittaBot(
 				if (resultRow != null) {
 					val file = resultRow[net.perfectdreams.loritta.morenitta.tables.CustomBackgroundSettings.file]
 					val extension = MediaTypeUtils.convertContentTypeToExtension(resultRow[net.perfectdreams.loritta.morenitta.tables.CustomBackgroundSettings.preferredMediaType])
-					return "${loritta.config.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBackground(userId, file).join()}.$extension"
+					return "${this.config.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBackground(userId, file).join()}.$extension"
 				}
 			}
 
@@ -648,7 +645,7 @@ class LorittaBot(
 
 		val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
 		val variation = background.getVariationForProfileDesign(activeProfileDesignInternalName)
-		return getBackgroundUrlWithCropParameters(loritta.config.dreamStorageService.url, dssNamespace, variation)
+		return getBackgroundUrlWithCropParameters(this.config.dreamStorageService.url, dssNamespace, variation)
 	}
 
 	private fun getBackgroundUrl(
@@ -802,21 +799,14 @@ class LorittaBot(
 		return legacyLocales.getOrDefault(localeId, legacyLocales["default"]!!)
 	}
 
-	fun <T> transaction(statement: Transaction.() -> T) = transaction(Databases.loritta) {
-		statement.invoke(this)
-	}
-
-	suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ, statement: Transaction.() -> T): T = withContext(
-		Dispatchers.IO) {
-		val transactionIsolation = if (!loritta.config.database.type.startsWith("SQLite"))
-			transactionIsolation
-		else // SQLite does not support a lot of transaction isolations (only TRANSACTION_READ_UNCOMMITTED and TRANSACTION_SERIALIZABLE)
-			Connection.TRANSACTION_SERIALIZABLE
-
-		transaction(transactionIsolation, repetitions, Databases.loritta) {
+	fun <T> transaction(statement: Transaction.() -> T) = runBlocking {
+		pudding.transaction {
 			statement.invoke(this)
 		}
 	}
+
+	suspend fun <T> newSuspendedTransaction(repetitions: Int = 5, transactionIsolation: Int = Connection.TRANSACTION_REPEATABLE_READ, statement: Transaction.() -> T): T
+			= pudding.transaction(repetitions, transactionIsolation, statement)
 
 	suspend fun <T> suspendedTransactionAsync(statement: Transaction.() -> T) = GlobalScope.async(coroutineDispatcher) {
 		newSuspendedTransaction(statement = statement)
@@ -841,8 +831,10 @@ class LorittaBot(
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
 
-		return transaction(Databases.loritta) {
-			_getOrCreateServerConfig(guildId)
+		return runBlocking {
+			pudding.transaction {
+				_getOrCreateServerConfig(guildId)
+			}
 		}
 	}
 
@@ -856,7 +848,7 @@ class LorittaBot(
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return it }
 
-		return org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction(Dispatchers.IO, Databases.loritta) { _getOrCreateServerConfig(guildId) }
+		return pudding.transaction { _getOrCreateServerConfig(guildId) }
 	}
 
 	/**
@@ -869,15 +861,13 @@ class LorittaBot(
 		if (loadFromCache)
 			cachedServerConfigs.getIfPresent(guildId)?.let { return GlobalScope.async(coroutineDispatcher) { it } }
 
-		val job = org.jetbrains.exposed.sql.transactions.experimental.suspendedTransactionAsync(Dispatchers.IO, Databases.loritta) { _getOrCreateServerConfig(guildId) }
-
-		return job
+		return GlobalScope.async { pudding.transaction { _getOrCreateServerConfig(guildId) } }
 	}
 
 	private fun _getOrCreateServerConfig(guildId: Long): ServerConfig {
 		val result = ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
 
-		if (loritta.config.caches.serverConfigs.maximumSize != 0L)
+		if (this.config.caches.serverConfigs.maximumSize != 0L)
 			cachedServerConfigs.put(guildId, result)
 
 		return result
@@ -893,7 +883,7 @@ class LorittaBot(
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	fun getLorittaProfile(userId: Long) = transaction(Databases.loritta) { _getLorittaProfile(userId) }
+	fun getLorittaProfile(userId: Long) = runBlocking { pudding.transaction { _getLorittaProfile(userId) } }
 
 	/**
 	 * Loads the profile of an user in a coroutine
@@ -901,7 +891,7 @@ class LorittaBot(
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	suspend fun getLorittaProfileAsync(userId: Long) = newSuspendedTransaction { _getLorittaProfile(userId) }
+	suspend fun getLorittaProfileAsync(userId: Long) = pudding.transaction { _getLorittaProfile(userId) }
 
 	/**
 	 * Loads the profile of an user deferred
@@ -909,7 +899,7 @@ class LorittaBot(
 	 * @param userId the user's ID
 	 * @return       the user profile
 	 */
-	suspend fun getLorittaProfileDeferred(userId: Long) = suspendedTransactionAsync { _getLorittaProfile(userId) }
+	suspend fun getLorittaProfileDeferred(userId: Long) = GlobalScope.async { pudding.transaction { _getLorittaProfile(userId) } }
 
 	fun _getLorittaProfile(userId: Long) = Profile.findById(userId)
 
@@ -918,17 +908,17 @@ class LorittaBot(
 	}
 
 	fun getOrCreateLorittaProfile(userId: Long): Profile {
-		val sqlProfile = transaction(Databases.loritta) { Profile.findById(userId) }
+		val sqlProfile = transaction { Profile.findById(userId) }
 		if (sqlProfile != null)
 			return sqlProfile
 
-		val profileSettings = transaction(Databases.loritta) {
+		val profileSettings = transaction {
 			ProfileSettings.new {
 				gender = Gender.UNKNOWN
 			}
 		}
 
-		return transaction(Databases.loritta) {
+		return transaction {
 			Profile.new(userId) {
 				xp = 0
 				lastMessageSentAt = 0L
@@ -941,11 +931,11 @@ class LorittaBot(
 	}
 
 	fun getActiveMoneyFromDonations(userId: Long): Double {
-		return transaction(Databases.loritta) { _getActiveMoneyFromDonations(userId) }
+		return transaction { _getActiveMoneyFromDonations(userId) }
 	}
 
 	suspend fun getActiveMoneyFromDonationsAsync(userId: Long): Double {
-		return loritta.newSuspendedTransaction { _getActiveMoneyFromDonations(userId) }
+		return newSuspendedTransaction { _getActiveMoneyFromDonations(userId) }
 	}
 
 	fun _getActiveMoneyFromDonations(userId: Long): Double {

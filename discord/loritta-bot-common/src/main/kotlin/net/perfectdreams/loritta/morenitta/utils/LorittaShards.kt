@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.ShardManager
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
@@ -41,7 +42,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Guarda todos as shards da Loritta
  */
-class LorittaShards {
+class LorittaShards(val loritta: LorittaBot) {
 	companion object {
 		internal val logger = KotlinLogging.logger {}
 	}
@@ -101,7 +102,7 @@ class LorittaShards {
 			return null
 
 		// Ao dar retrieve na info do user, primeiro iremos tentar verificar se a gente tem ele no user cache do JDA
-		val userInJdaCache = lorittaShards.getUserById(id)
+		val userInJdaCache = loritta.lorittaShards.getUserById(id)
 		if (userInJdaCache != null)
 			return transformUserToCachedUserInfo(userInJdaCache)
 
@@ -134,7 +135,7 @@ class LorittaShards {
 
 	suspend fun retrieveUserInfoByTag(username: String, discriminator: String): CachedUserInfo? {
 		// When retrieving the user's info via tag, we will search in JDA's user cache
-		val userInJdaCache = lorittaShards.shardManager.getUserByTag(username, discriminator)
+		val userInJdaCache = loritta.lorittaShards.shardManager.getUserByTag(username, discriminator)
 		if (userInJdaCache != null)
 			return transformUserToCachedUserInfo(userInJdaCache)
 
@@ -258,9 +259,9 @@ class LorittaShards {
 		return GlobalScope.async(loritta.coroutineDispatcher) {
 			try {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-					val response = loritta.http.get("https://${shard.getUrl()}$path") {
+					val response = loritta.http.get("https://${shard.getUrl(loritta)}$path") {
 						header("Authorization", loritta.lorittaInternalApiKey.name)
-						userAgent(loritta.lorittaCluster.getUserAgent())
+						userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 					}
 
 					response.bodyAsText()
@@ -280,9 +281,9 @@ class LorittaShards {
 		return GlobalScope.async(loritta.coroutineDispatcher) {
 			try {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-					val response = loritta.http.get("https://${cluster.getUrl()}$path") {
+					val response = loritta.http.get("https://${cluster.getUrl(loritta)}$path") {
 						header("Authorization", loritta.lorittaInternalApiKey.name)
-						userAgent(loritta.lorittaCluster.getUserAgent())
+						userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 					}
 
 					response.bodyAsText()
@@ -305,13 +306,13 @@ class LorittaShards {
 			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						logger.info { "Executing ${path} to ${it.getUserAgent()}" }
+						logger.info { "Executing ${path} to ${it.getUserAgent(loritta)}" }
 
-						val response = loritta.http.get("https://${it.getUrl()}$path") {
-							userAgent(loritta.lorittaCluster.getUserAgent())
+						val response = loritta.http.get("https://${it.getUrl(loritta)}$path") {
+							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 							header("Authorization", loritta.lorittaInternalApiKey.name)
 						}
-						logger.info { "Successfully got a response from ${it.getUserAgent()} for $path" }
+						logger.info { "Successfully got a response from ${it.getUserAgent(loritta)} for $path" }
 
 						val body = response.bodyAsText()
 						JsonParser.parseString(
@@ -351,9 +352,9 @@ class LorittaShards {
 			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post("https://${it.getUrl()}/api/v1/users/search") {
+						val response = loritta.http.post("https://${it.getUrl(loritta)}/api/v1/users/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
-							userAgent(loritta.lorittaCluster.getUserAgent())
+							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 
 							setBody(
 								gson.toJson(
@@ -401,9 +402,9 @@ class LorittaShards {
 			GlobalScope.async(loritta.coroutineDispatcher) {
 				try {
 					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post("https://${it.getUrl()}/api/v1/guilds/search") {
+						val response = loritta.http.post("https://${it.getUrl(loritta)}/api/v1/guilds/search") {
 							header("Authorization", loritta.lorittaInternalApiKey.name)
-							userAgent(loritta.lorittaCluster.getUserAgent())
+							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 
 							setBody(
 								gson.toJson(
@@ -442,7 +443,7 @@ class LorittaShards {
 	suspend fun queryGuildCount(): Int {
 		var guildCount = 0
 
-		val results = lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
+		val results = loritta.lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
 		results.forEach {
 			try {
 				val json = it.await()
@@ -463,7 +464,7 @@ class LorittaShards {
 	suspend fun queryGuildCountOrThrowExceptionIfAnyClusterIsNotReady(): Int {
 		var guildCount = 0
 
-		val results = lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
+		val results = loritta.lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
 		results.forEach {
 			try {
 				val json = it.await()
@@ -485,14 +486,14 @@ class LorittaShards {
 	suspend fun queryGuildById(id: String) = queryGuildById(id.toLong())
 
 	suspend fun queryGuildById(id: Long): JsonObject? {
-		val shardId = DiscordUtils.getShardIdFromGuildId(id)
-		val clusterId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
-		val url = DiscordUtils.getUrlForLorittaClusterId(clusterId)
+		val shardId = DiscordUtils.getShardIdFromGuildId(loritta, id)
+		val clusterId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
+		val url = DiscordUtils.getUrlForLorittaClusterId(loritta, clusterId)
 
 		val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 			val response = loritta.http.get("https://$url/api/v1/guilds/$id") {
 				header("Authorization", loritta.lorittaInternalApiKey.name)
-				userAgent(loritta.lorittaCluster.getUserAgent())
+				userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 			}
 
 			response.bodyAsText()

@@ -28,7 +28,7 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
     suspend fun getGlobalEconomyPosition(userProfile: PuddingUserProfile) =
         // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any sonhos, we just return null! :3
         if (userProfile.money >= 100_000L)
-            loritta.services.sonhos.getSonhosRankPositionBySonhos(userProfile.money)
+            loritta.pudding.sonhos.getSonhosRankPositionBySonhos(userProfile.money)
         else null
 
     /**
@@ -39,7 +39,7 @@ abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: St
      */
     suspend fun getLocalExperiencePosition(localProfile: ResultRow?) = if (localProfile != null && localProfile[GuildProfiles.xp] != 0L) {
         // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any local XP, we just return null! :3
-        loritta.services.transaction {
+        loritta.pudding.transaction {
             GuildProfiles.select { (GuildProfiles.guildId eq localProfile[GuildProfiles.guildId]) and (GuildProfiles.xp greaterEq localProfile[GuildProfiles.xp]) }.count()
         }
     } else {

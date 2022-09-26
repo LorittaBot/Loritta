@@ -18,7 +18,7 @@ class DiscordBotListCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lor
             val context = this
             val embed = EmbedBuilder().apply {
                 setColor(Constants.LORITTA_AQUA)
-                setThumbnail("${net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.url}assets/img/loritta_star.png")
+                setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_star.png")
                 setTitle("✨ Discord Bot List")
                 setDescription(
                     locale[

@@ -26,7 +26,7 @@ class InteractionsRegistry(
     suspend fun updateAllCommands() {
         var registeredCommands: List<DiscordApplicationCommand>? = null
 
-        loritta.services.hikariDataSource.connection.use { connection ->
+        loritta.pudding.hikariDataSource.connection.use { connection ->
             // First, we will hold a lock to avoid other instances trying to update the app commands at the same time
             val xactLockStatement = connection.prepareStatement("SELECT pg_advisory_xact_lock(?);")
             xactLockStatement.setInt(1, "loritta-cinnamon-application-command-updater".hashCode())

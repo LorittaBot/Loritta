@@ -5,6 +5,8 @@ import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordConfig
 import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordInstanceConfig
 import net.perfectdreams.loritta.morenitta.utils.config.GeneralInstanceConfig
 import kotlinx.coroutines.debug.DebugProbes
+import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
@@ -21,8 +23,7 @@ import java.util.jar.JarFile
  * @author MrPowerGamerBR
  */
 object LorittaLauncher {
-	// STATIC MAGIC(tm)
-	lateinit var loritta: LorittaBot
+	private val logger = KotlinLogging.logger {}
 
 	@JvmStatic
 	fun main(args: Array<String>) {
@@ -66,6 +67,16 @@ object LorittaLauncher {
 		val instanceConfig = readConfigurationFromFile<GeneralInstanceConfig>(configurationInstanceFile)
 		val discordInstanceConfig = readConfigurationFromFile<GeneralDiscordInstanceConfig>(discordInstanceConfigurationFile)
 
+		val services = Pudding.createPostgreSQLPudding(
+			config.database.address,
+			config.database.databaseName,
+			config.database.username,
+			config.database.password
+		)
+		services.setupShutdownHook()
+
+		logger.info { "Started Pudding client!" }
+
 		val jedisPoolConfig = JedisPoolConfig()
 		jedisPoolConfig.maxTotal = 10
 
@@ -81,7 +92,7 @@ object LorittaLauncher {
 		System.setProperty("cluster.name", config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }.getUserAgent(config.loritta.environment))
 
 		// Iniciar instância da Loritta
-		loritta = LorittaBot(discordConfig, discordInstanceConfig, config, instanceConfig, jedisPool)
+		val loritta = LorittaBot(discordConfig, discordInstanceConfig, config, instanceConfig, services, jedisPool)
 		loritta.start()
 	}
 

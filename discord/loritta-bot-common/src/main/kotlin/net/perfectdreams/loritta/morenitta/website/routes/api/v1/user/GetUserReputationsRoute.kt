@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.morenitta.dao.Reputation
 import net.perfectdreams.loritta.morenitta.tables.Reputations
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
@@ -34,7 +33,7 @@ class GetUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 
 		for ((userId, count) in map) {
 			if (idx == 5) break
-			val userInfo = lorittaShards.retrieveUserInfoById(userId) ?: continue
+			val userInfo = loritta.lorittaShards.retrieveUserInfoById(userId) ?: continue
 			rankedUsers.add(
 					jsonObject(
 							"count" to count,

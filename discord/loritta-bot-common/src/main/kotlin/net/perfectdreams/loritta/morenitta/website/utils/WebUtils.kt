@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.sweetmorenitta.utils
 
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.html.DIV
 import kotlinx.html.IMG
 import kotlinx.html.ScriptType
@@ -17,6 +16,7 @@ import kotlinx.html.script
 import kotlinx.html.span
 import kotlinx.html.style
 import kotlinx.html.unsafe
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
 import net.perfectdreams.loritta.morenitta.website.utils.*
 
@@ -73,6 +73,7 @@ fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.(
 }
 
 fun DIV.generateNitroPayAdOrSponsor(
+    loritta: LorittaBot,
     sponsorId: Int,
     adSlot: String,
     displayTypes: List<NitroPayAdDisplay>
@@ -156,7 +157,7 @@ fun DIV.generateNitroPayAd(adSlot: String, displayTypes: List<NitroPayAdDisplay>
     }
 }
 
-fun DIV.generateNitroPayVideoAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
+fun DIV.generateNitroPayVideoAdOrSponsor(loritta: LorittaBot, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
         = generateNitroPayVideoAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
 
 fun DIV.generateNitroPayVideoAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
@@ -169,7 +170,7 @@ fun DIV.generateNitroPayVideoAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int
     }
 }
 
-fun DIV.generateAdOrSponsor(sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
+fun DIV.generateAdOrSponsor(loritta: LorittaBot, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
         = generateAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
 
 fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {

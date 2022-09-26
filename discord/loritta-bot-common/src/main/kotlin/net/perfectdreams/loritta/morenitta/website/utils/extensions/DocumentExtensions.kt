@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode
 import com.google.gson.JsonElement
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.gson
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import org.w3c.dom.Document
@@ -61,12 +61,12 @@ val ApplicationRequest.trueIp: String get() {
 	return forwardedForHeader?.split(",")?.map { it.trim() }?.first() ?: this.local.remoteHost
 }
 
-fun ApplicationCall.legacyVariables(locale: BaseLocale): MutableMap<String, Any?> {
+fun ApplicationCall.legacyVariables(loritta: LorittaBot, locale: BaseLocale): MutableMap<String, Any?> {
 	if (attributes.contains(WebsiteUtils.variablesKey))
 		return attributes[WebsiteUtils.variablesKey]
 
-	WebsiteUtils.initializeVariables(this, locale, loritta.getLegacyLocaleById(locale.id), locale.path)
-	return legacyVariables(locale)
+	WebsiteUtils.initializeVariables(loritta, this, locale, loritta.getLegacyLocaleById(locale.id), locale.path)
+	return legacyVariables(loritta, locale)
 }
 
 var ApplicationCall.lorittaSession: LorittaJsonWebSession

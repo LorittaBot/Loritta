@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class CowboyProfileCreator : ProfileCreator("cowboy") {
+class CowboyProfileCreator(val loritta: LorittaBot) : ProfileCreator("cowboy") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/cowboy/profile_wrapper.png"))
 
@@ -27,13 +27,13 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(147, 147, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(147, 147, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
 		drawAvatar(avatar, graphics)
 
-		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
+		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/cowboy/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
@@ -57,7 +57,7 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 				.deriveFont(42F)
 
 		graphics.font = oswaldRegular50
-		graphics.drawText(user.name, 162, 506) // Nome do usuário
+		graphics.drawText(loritta, user.name, 162, 506) // Nome do usuário
 		graphics.font = oswaldRegular42
 
 		drawReputations(user, graphics)
@@ -69,7 +69,7 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(aboutMe, 162, 529, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 162, 529, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
 
 		return base.makeRoundedCorners(15)
 	}
@@ -94,7 +94,7 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 
 	suspend fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
 		val font = graphics.font
-		val reputations = ProfileUtils.getReputationCount(user)
+		val reputations = ProfileUtils.getReputationCount(loritta, user)
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(582, 0, 218, 66), font)
 	}
 
@@ -102,16 +102,16 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		if (globalPosition != null)
 			userInfo.add("#$globalPosition / ${userProfile.xp} XP")
 		else
 			userInfo.add("${userProfile.xp} XP")
 
 		if (guild != null) {
-			val localProfile = ProfileUtils.getLocalProfile(guild, user)
+			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)
 
-			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
+			val localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
 			val xpLocal = localProfile?.xp
 
@@ -128,7 +128,7 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 			}
 		}
 
-		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
 		userInfo.add("Sonhos")
 		if (globalEconomyPosition != null)
@@ -140,7 +140,7 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 
 		var y = 480
 		for (line in userInfo) {
-			graphics.drawText(line, 773 - biggestStrWidth - 2, y)
+			graphics.drawText(loritta, line, 773 - biggestStrWidth - 2, y)
 			y += 18
 		}
 

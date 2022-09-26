@@ -41,14 +41,14 @@ class PostUpdateReadyRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 			"setRestartTimer" -> {
 				val willRestartAt = json["willRestartAt"].long
 
-				net.perfectdreams.loritta.morenitta.utils.loritta.patchData.willRestartAt = willRestartAt
+				loritta.patchData.willRestartAt = willRestartAt
 				call.respondJson(jsonObject())
 			}
 			"setPatchNotesPost" -> {
 				val patchNotesPostId = json["patchNotesPostId"].string
 				val expiresAt = json["expiresAt"].long
 
-				net.perfectdreams.loritta.morenitta.utils.loritta.patchData.patchNotes = PatchData.PatchNotes(
+				loritta.patchData.patchNotes = PatchData.PatchNotes(
 						System.currentTimeMillis(),
 						expiresAt,
 						patchNotesPostId

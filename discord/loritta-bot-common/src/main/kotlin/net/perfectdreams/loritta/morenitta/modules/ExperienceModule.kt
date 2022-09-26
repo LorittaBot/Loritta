@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.filterOnlyGiveableRoles
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -25,7 +24,6 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.LevelAnn
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.RolesByExperience
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.ExperienceUtils
-import net.perfectdreams.loritta.morenitta.utils.FeatureFlags
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.morenitta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.morenitta.utils.levels.RoleGiveType
@@ -34,7 +32,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.util.concurrent.TimeUnit
 
-class ExperienceModule : MessageReceivedModule {
+class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -52,9 +50,6 @@ class ExperienceModule : MessageReceivedModule {
 	}
 
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		if (!FeatureFlags.isEnabled("experience-gain"))
-			return false
-
 		// (copyright Loritta™)
 		var newProfileXp = lorittaProfile?.xp ?: 0L
 		val currentXp = newProfileXp
@@ -94,11 +89,9 @@ class ExperienceModule : MessageReceivedModule {
 					newProfileXp = currentXp + globalGainedXp
 					lastMessageSentHash = event.message.contentStripped.hashCode()
 
-					val profile = serverConfig.getUserData(event.author.idLong)
+					val profile = serverConfig.getUserData(loritta, event.author.idLong)
 
-					if (FeatureFlags.isEnabled("experience-gain-locally")) {
-						handleLocalExperience(event, retrievedProfile, serverConfig, profile, gainedXp, locale)
-					}
+					handleLocalExperience(event, retrievedProfile, serverConfig, profile, gainedXp, locale)
 				}
 			}
 		}
@@ -106,13 +99,11 @@ class ExperienceModule : MessageReceivedModule {
 		if (lastMessageSentHash != null && currentXp != newProfileXp) {
 			val mutex = mutexes.getOrPut(event.author.idLong) { Mutex() }
 
-			if (FeatureFlags.isEnabled("experience-gain-globally")) {
-				mutex.withLock {
-					loritta.newSuspendedTransaction {
-						retrievedProfile.lastMessageSentHash = lastMessageSentHash
-						retrievedProfile.xp = newProfileXp
-						retrievedProfile.lastMessageSentAt = System.currentTimeMillis()
-					}
+			mutex.withLock {
+				loritta.newSuspendedTransaction {
+					retrievedProfile.lastMessageSentHash = lastMessageSentHash
+					retrievedProfile.xp = newProfileXp
+					retrievedProfile.lastMessageSentAt = System.currentTimeMillis()
 				}
 			}
 		}
@@ -125,7 +116,7 @@ class ExperienceModule : MessageReceivedModule {
 		val guild = event.guild!!
 		val member = event.member!!
 
-		val levelConfig = serverConfig.getCachedOrRetreiveFromDatabase<LevelConfig?>(ServerConfig::levelConfig)
+		val levelConfig = serverConfig.getCachedOrRetreiveFromDatabase<LevelConfig?>(loritta, ServerConfig::levelConfig)
 
 		// We need to include the publicRole because member.roles does NOT contain the "@everyone" role
 		val memberRolesIds = member.roles.map { it.idLong } + event.guild.publicRole.idLong
@@ -259,6 +250,7 @@ class ExperienceModule : MessageReceivedModule {
 					).apply {
 						putAll(
 							ExperienceUtils.getExperienceCustomTokens(
+								loritta,
 								serverConfig,
 								event.member
 							)

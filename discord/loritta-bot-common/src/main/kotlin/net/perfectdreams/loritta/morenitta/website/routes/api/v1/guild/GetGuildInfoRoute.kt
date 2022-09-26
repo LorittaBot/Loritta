@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild
 
 import com.github.salomonbrys.kotson.jsonObject
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.OnlineStatus
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -12,7 +11,7 @@ class GetGuildInfoRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(lo
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val guildId = call.parameters["guildId"] ?: return
 
-		val guild = lorittaShards.getGuildById(guildId)
+		val guild = loritta.lorittaShards.getGuildById(guildId)
 
 		if (guild == null) {
 			call.respondJson(

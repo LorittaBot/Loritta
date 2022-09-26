@@ -20,7 +20,7 @@ class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocali
 			serverConfig.inviteBlockerConfig
 		}
 
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "invite_blocker"
 		variables["whitelistedChannels"] = (inviteBlockerConfig?.whitelistedChannels?.filter { guild.getTextChannelById(it) != null } ?: listOf()).joinToString(separator = ";")

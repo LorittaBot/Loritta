@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.onReactionByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
@@ -159,7 +158,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 						transaction[SonhosTransaction.receivedBy]
 					}
 
-					val receivedByUser = lorittaShards.retrieveUserInfoById(receivedByUserId)
+					val receivedByUser = loritta.lorittaShards.retrieveUserInfoById(receivedByUserId)
 
 					val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
 
@@ -177,7 +176,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 						transaction[SonhosTransaction.receivedBy]
 					}
 
-					val receivedByUser = lorittaShards.retrieveUserInfoById(receivedByUserId)
+					val receivedByUser = loritta.lorittaShards.retrieveUserInfoById(receivedByUserId)
 
 					val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
 

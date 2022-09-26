@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.analytics.InternalAnalyticSender
 import net.perfectdreams.loritta.morenitta.utils.eventlog.DeleteOldStoredMessagesTask
 import net.perfectdreams.loritta.morenitta.utils.networkbans.ApplyBansTask
@@ -14,21 +15,21 @@ import java.time.ZoneOffset
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-object LorittaTasks {
+class LorittaTasks(val loritta: LorittaBot) {
 	lateinit var DAILY_TAX_TASK: DailyTaxTask
 
 	fun startTasks() {
-		DAILY_TAX_TASK = DailyTaxTask()
+		DAILY_TAX_TASK = DailyTaxTask(loritta)
 
-		scheduleWithFixedDelay(SponsorsSyncTask(), 0L, 1L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(SponsorsSyncTask(loritta), 0L, 1L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
-		scheduleWithFixedDelay(MutedUsersTask(), 0L, 3L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(InternalAnalyticSender(), 0L, 15L, TimeUnit.SECONDS)
+		scheduleWithFixedDelay(MutedUsersTask(loritta), 0L, 3L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(InternalAnalyticSender(loritta), 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(SpawnGiveawayTask(), 0L, 1L, TimeUnit.HOURS)
-		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(), 0L, 1L, TimeUnit.HOURS)
-		scheduleWithFixedDelay(UpdateFanArtsTask(), 0L, 5L, TimeUnit.MINUTES)
+		scheduleWithFixedDelay(SpawnGiveawayTask(loritta), 0L, 1L, TimeUnit.HOURS)
+		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(loritta), 0L, 1L, TimeUnit.HOURS)
+		scheduleWithFixedDelay(UpdateFanArtsTask(loritta), 0L, 5L, TimeUnit.MINUTES)
 
 		if (loritta.isMaster) {
 			val midnight = LocalTime.MIDNIGHT
@@ -37,9 +38,9 @@ object LorittaTasks {
 			val tomorrowMidnight = todayMidnight.plusDays(1)
 			val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
 
-			scheduleAtFixedRate(LorittaDailyShopUpdateTask(), diff, TimeUnit.DAYS.toMillis(1L), TimeUnit.MILLISECONDS)
+			scheduleAtFixedRate(LorittaDailyShopUpdateTask(loritta), diff, TimeUnit.DAYS.toMillis(1L), TimeUnit.MILLISECONDS)
 
-			scheduleWithFixedDelay(CreateYouTubeWebhooksTask(), 0L, 1L, TimeUnit.MINUTES)
+			scheduleWithFixedDelay(CreateYouTubeWebhooksTask(loritta), 0L, 1L, TimeUnit.MINUTES)
 		}
 	}
 

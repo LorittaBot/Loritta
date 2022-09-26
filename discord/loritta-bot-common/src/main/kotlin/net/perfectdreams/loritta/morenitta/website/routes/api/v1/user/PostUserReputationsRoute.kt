@@ -18,8 +18,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.morenitta.utils.locale.PersonalPronoun
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
@@ -54,28 +52,28 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 		private val logger = KotlinLogging.logger {}
 		private val mutex = Mutex()
 
-		fun sendReputationToCluster(guildId: String, channelId: String, giverId: String, receiverId: String, reputationCount: Long) {
+		fun sendReputationToCluster(loritta: LorittaBot, guildId: String, channelId: String, giverId: String, receiverId: String, reputationCount: Long) {
 			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
-				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
+				val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildId.toLong())
 
 				try {
-					HttpRequest.post("https://${cluster.getUrl()}/api/v1/loritta/send-reputation-message")
-							.userAgent(loritta.lorittaCluster.getUserAgent())
-							.header("Authorization", loritta.lorittaInternalApiKey.name)
-							.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-							.readTimeout(loritta.config.loritta.clusterReadTimeout)
-							.send(
-									gson.toJson(
-											jsonObject(
-													"guildId" to guildId,
-													"channelId" to channelId,
-													"giverId" to giverId,
-													"receiverId" to receiverId,
-													"reputationCount" to reputationCount
-											)
-									)
+					HttpRequest.post("https://${cluster.getUrl(loritta)}/api/v1/loritta/send-reputation-message")
+						.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
+						.header("Authorization", loritta.lorittaInternalApiKey.name)
+						.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+						.readTimeout(loritta.config.loritta.clusterReadTimeout)
+						.send(
+							gson.toJson(
+								jsonObject(
+									"guildId" to guildId,
+									"channelId" to channelId,
+									"giverId" to giverId,
+									"receiverId" to receiverId,
+									"reputationCount" to reputationCount
+								)
 							)
-							.ok()
+						)
+						.ok()
 				} catch (e: Exception) {
 					logger.warn(e) { "Shard ${cluster.name} ${cluster.id} offline!" }
 					throw ClusterOfflineException(cluster.id, cluster.name)
@@ -83,12 +81,12 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 			}
 		}
 
-		suspend fun sendReputationReceivedMessage(guildId: String, channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
+		suspend fun sendReputationReceivedMessage(loritta: LorittaBot, guildId: String, channelId: String, giverId: String, giverProfile: Profile, receiverId: String, reputationCount: Int) {
 			logger.info { "Received sendReputation request in $guildId $channelId by $giverId for $receiverId" }
 
 			if (guildId.isValidSnowflake() && channelId.isValidSnowflake()) {
 				// Iremos verificar se o usuário *pode* usar comandos no canal especificado
-				val channel = lorittaShards.getTextChannelById(channelId)
+				val channel = loritta.lorittaShards.getTextChannelById(channelId)
 
 				if (channel != null) {
 					if (!channel.canTalk()) // Eu não posso falar!
@@ -106,7 +104,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 						receiverProfile.settings
 					}
 
-					val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(serverConfig, member), giverProfile)
+					val lorittaUser = GuildLorittaUser(loritta, member, LorittaUser.loadMemberLorittaPermissions(loritta, serverConfig, member), giverProfile)
 
 					if (serverConfig.blacklistedChannels.contains(channel.idLong) && !lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) // O usuário não pode enviar comandos no canal
 						return
@@ -115,17 +113,17 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 
 					// Tudo certo? Então vamos enviar!
 					val reply = LorittaReply(
-                            locale[
-                                    "commands.command.reputation.success",
-                                    "<@${giverId}>",
-                                    "<@$receiverId>",
-                                    reputationCount,
-                                    Emotes.LORI_OWO,
-                                    "<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
-                                    receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
-                            ],
-                            Emotes.LORI_HEART
-                    )
+						locale[
+								"commands.command.reputation.success",
+								"<@${giverId}>",
+								"<@$receiverId>",
+								reputationCount,
+								Emotes.LORI_OWO,
+								"<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
+								receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
+						],
+						Emotes.LORI_HEART
+					)
 
 					channel.sendMessage(reply.build()).queue()
 				}
@@ -138,11 +136,12 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 
 		if (userIdentification.id == receiver) {
 			throw WebsiteAPIException(
-					HttpStatusCode.Forbidden,
-					WebsiteUtils.createErrorPayload(
-							LoriWebCode.FORBIDDEN,
-							"You can't give a reputation to yourself, silly!"
-					)
+				HttpStatusCode.Forbidden,
+				WebsiteUtils.createErrorPayload(
+					loritta,
+					LoriWebCode.FORBIDDEN,
+					"You can't give a reputation to yourself, silly!"
+				)
 			)
 		}
 
@@ -152,12 +151,13 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 		val guildId = json["guildId"].nullString
 		val channelId = json["channelId"].nullString
 
-		if (!MiscUtils.checkRecaptcha(net.perfectdreams.loritta.morenitta.utils.loritta.config.googleRecaptcha.reputationToken, token))
+		if (!MiscUtils.checkRecaptcha(loritta.config.googleRecaptcha.reputationToken, token))
 			throw WebsiteAPIException(
-					HttpStatusCode.Forbidden,
-					WebsiteUtils.createErrorPayload(
-							LoriWebCode.INVALID_RECAPTCHA
-					)
+				HttpStatusCode.Forbidden,
+				WebsiteUtils.createErrorPayload(
+					loritta,
+					LoriWebCode.INVALID_RECAPTCHA
+				)
 			)
 
 		val ip = call.request.trueIp
@@ -175,35 +175,36 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 
 			if (3_600_000 > diff)
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
-						WebsiteUtils.createErrorPayload(
-								LoriWebCode.COOLDOWN
-						)
+					WebsiteUtils.createErrorPayload(
+						loritta,
+						LoriWebCode.COOLDOWN
+					)
 				)
 
 			val userIdentification = discordAuth.getUserIdentification()
-			val status = MiscUtils.verifyAccount(userIdentification, ip)
+			val status = MiscUtils.verifyAccount(loritta, userIdentification, ip)
 			val email = userIdentification.email
 			logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
 			logger.info { "Is verified? ${userIdentification.verified}" }
 			logger.info { "Email ${email}" }
 			logger.info { "IP: $ip" }
-			MiscUtils.handleVerification(status)
+			MiscUtils.handleVerification(loritta, status)
 
 			giveReputation(userIdentification.id.toLong(), ip, userIdentification.email!!, receiver.toLong(), content)
 
-			val donatorPaid = net.perfectdreams.loritta.morenitta.utils.loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
+			val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(userIdentification.id.toLong())
 			var randomChance = UserPremiumPlans.getPlanFromValue(donatorPaid).loriReputationRetribution
 
 			if (chance(randomChance)) { // Lori é fofis e retribuiu reputações :eu_te_moido:
-				GlobalScope.launch(net.perfectdreams.loritta.morenitta.utils.loritta.coroutineDispatcher) {
+				GlobalScope.launch(loritta.coroutineDispatcher) {
 					delay(LorittaBot.RANDOM.nextLong(8000, 15001)) // Delay aleatório para ficar mais "real"
 
 					giveReputation(
-							loritta.discordConfig.discord.clientId.toLong(),
-							"127.0.0.1",
-							"me@loritta.website",
-							userIdentification.id.toLong(),
-							"Stay awesome :3"
+						loritta.discordConfig.discord.clientId.toLong(),
+						"127.0.0.1",
+						"me@loritta.website",
+						userIdentification.id.toLong(),
+						"Stay awesome :3"
 					)
 
 					val reputationCount = loritta.newSuspendedTransaction {
@@ -211,7 +212,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 					}
 
 					if (guildId != null && channelId != null) {
-						sendReputationToCluster(guildId, channelId, loritta.discordConfig.discord.clientId, userIdentification.id, reputationCount)
+						sendReputationToCluster(loritta, guildId, channelId, loritta.discordConfig.discord.clientId, userIdentification.id, reputationCount)
 					}
 				}
 			}
@@ -221,7 +222,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 			}
 
 			if (guildId != null && channelId != null)
-				sendReputationToCluster(guildId, channelId, userIdentification.id, receiver, reputations.size.toLong())
+				sendReputationToCluster(loritta, guildId, channelId, userIdentification.id, receiver, reputations.size.toLong())
 
 			call.respondJson(jsonObject())
 		}

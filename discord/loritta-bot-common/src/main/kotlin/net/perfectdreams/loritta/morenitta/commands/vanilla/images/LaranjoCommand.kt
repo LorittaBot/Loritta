@@ -12,7 +12,7 @@ import java.awt.Color
 import java.awt.Font
 import java.io.File
 
-class LaranjoCommand : AbstractCommand("laranjo", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class LaranjoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "laranjo", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.laranjo.description")
 
 	override fun getExamples(): List<String> {
@@ -35,7 +35,7 @@ class LaranjoCommand : AbstractCommand("laranjo", category = net.perfectdreams.l
 
 			var font = Font.createFont(0, File(LorittaBot.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F)
 			graphics.font = font
-			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 334, 9999, graphics.fontMetrics, graphics)
+			ImageUtils.drawTextWrapSpaces(loritta, texto, 2, 40, 334, 9999, graphics.fontMetrics, graphics)
 
 			context.sendFile(template, "laranjo.png", context.getAsMention(true))
 		} else {

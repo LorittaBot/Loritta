@@ -41,7 +41,7 @@ object UserUtils {
 
     suspend fun handleIfUserIsBanned(loritta: LorittaCinnamon, context: InteractionContext, userId: Snowflake): Boolean {
         // Check if the user is banned from using Loritta
-        val userBannedState = loritta.services.users.getUserBannedState(UserId(userId))
+        val userBannedState = loritta.pudding.users.getUserBannedState(UserId(userId))
 
         if (userBannedState != null) {
             val banDateInEpochSeconds = userBannedState.bannedAt.epochSeconds
@@ -298,7 +298,7 @@ object UserUtils {
             // Okay, so it is still not filled, well...
             if (users.filterNotNull().size != targetSize) {
                 // What we can do is pull from the GuildProfiles!
-                val usersInTheGuild = context.loritta.services.transaction {
+                val usersInTheGuild = context.loritta.pudding.transaction {
                     GuildProfiles.slice(GuildProfiles.userId)
                         .select { GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.isInGuild eq true) }
                         .map { it[GuildProfiles.userId] }

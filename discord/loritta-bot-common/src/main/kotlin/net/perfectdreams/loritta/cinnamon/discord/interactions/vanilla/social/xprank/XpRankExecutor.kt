@@ -49,7 +49,7 @@ class XpRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                 Emotes.LoriReading
             )
 
-            val (totalCount, profiles) = loritta.services.transaction {
+            val (totalCount, profiles) = loritta.pudding.transaction {
                 val totalCount = GuildProfiles.select {
                     (GuildProfiles.guildId eq guild.id.toLong()) and
                             (GuildProfiles.isInGuild eq true)
@@ -88,7 +88,7 @@ class XpRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                         )
                     }
                 ) {
-                    loritta.services.transaction {
+                    loritta.pudding.transaction {
                         GuildProfiles.update({ GuildProfiles.id eq it.toLong() and (GuildProfiles.guildId eq guild.id.toLong()) }) {
                             it[isInGuild] = false
                         }

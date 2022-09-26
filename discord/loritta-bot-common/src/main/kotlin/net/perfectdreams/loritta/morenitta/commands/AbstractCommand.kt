@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.extensions.localized
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
@@ -15,10 +14,11 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
 import java.time.Instant
 
-abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: net.perfectdreams.loritta.common.commands.CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
+abstract class AbstractCommand(val loritta: LorittaBot, open val label: String, var aliases: List<String> = listOf(), var category: net.perfectdreams.loritta.common.commands.CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
 	@Transient
 	internal val logger = KotlinLogging.logger {}
 

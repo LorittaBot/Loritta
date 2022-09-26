@@ -9,9 +9,10 @@ import kotlinx.html.h1
 import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.style
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.ResultRow
 
-class UserBannedView(locale: BaseLocale, path: String, val profile: Profile, val bannedState: ResultRow) : NavbarView(locale, path) {
+class UserBannedView(loritta: LorittaBot, locale: BaseLocale, path: String, val profile: Profile, val bannedState: ResultRow) : NavbarView(loritta, locale, path) {
     override fun getTitle() = "¯\\_(ツ)_/¯"
 
     override fun DIV.generateContent() {

@@ -4,8 +4,8 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ModerationConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WarnAction
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
-object ModerationConfigTransformer : ConfigTransformer {
+class ModerationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "moderation"
     override val configKey: String = "moderationConfig"
 

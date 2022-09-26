@@ -34,7 +34,7 @@ suspend fun cleanUpForOutput(
     stripInvites: Boolean = true
 ): String {
     val canBypassInviteBlocker = if (guildId != null && memberRoleIds != null)
-        loritta.services.serverConfigs.hasLorittaPermission(guildId.value, memberRoleIds.map { it.value }, LorittaPermission.ALLOW_INVITES)
+        loritta.pudding.serverConfigs.hasLorittaPermission(guildId.value, memberRoleIds.map { it.value }, LorittaPermission.ALLOW_INVITES)
     else
         true // This is in a DM then, so let's allow the user to bypass the check
 

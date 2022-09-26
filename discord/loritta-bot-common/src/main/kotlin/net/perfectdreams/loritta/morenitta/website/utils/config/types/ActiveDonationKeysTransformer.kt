@@ -10,18 +10,17 @@ import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.http.HttpStatusCode
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 
-object ActiveDonationKeysTransformer : ConfigTransformer {
+class ActiveDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "activekeys"
     override val configKey: String = "activeDonationKeys"
 
@@ -29,7 +28,7 @@ object ActiveDonationKeysTransformer : ConfigTransformer {
         val keyIds = payload["keyIds"].array.map { it.long }
         val currentlyActiveKeys = loritta.newSuspendedTransaction {
             DonationKeys.select { DonationKeys.activeIn eq serverConfig.id }
-                    .map { it[DonationKeys.id].value }
+                .map { it[DonationKeys.id].value }
         }
 
         val validKeys = mutableListOf<Long>()
@@ -38,18 +37,20 @@ object ActiveDonationKeysTransformer : ConfigTransformer {
             val donationKey = loritta.newSuspendedTransaction {
                 DonationKey.findById(keyId)
             } ?: throw WebsiteAPIException(HttpStatusCode.Forbidden,
-                    WebsiteUtils.createErrorPayload(
-                            LoriWebCode.FORBIDDEN,
-                            "loritta.errors.keyDoesntExist"
-                    )
+                WebsiteUtils.createErrorPayload(
+                    loritta,
+                    LoriWebCode.FORBIDDEN,
+                    "loritta.errors.keyDoesntExist"
+                )
             )
 
             if (donationKey.userId != userIdentification.id.toLong() && keyId !in currentlyActiveKeys)
                 throw WebsiteAPIException(HttpStatusCode.Forbidden,
-                        WebsiteUtils.createErrorPayload(
-                                LoriWebCode.FORBIDDEN,
-                                "loritta.errors.tryingToApplyKeyOfAnotherUser"
-                        )
+                    WebsiteUtils.createErrorPayload(
+                        loritta,
+                        LoriWebCode.FORBIDDEN,
+                        "loritta.errors.tryingToApplyKeyOfAnotherUser"
+                    )
                 )
 
             validKeys.add(keyId)
@@ -70,15 +71,15 @@ object ActiveDonationKeysTransformer : ConfigTransformer {
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         val activeDonationKeys = loritta.newSuspendedTransaction {
             DonationKey.find { DonationKeys.activeIn eq serverConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
-                    .toList()
+                .toList()
         }
 
         val array = activeDonationKeys.map {
             jsonObject(
-                    "id" to it.id.value,
-                    "value" to it.value,
-                    "expiresAt" to it.expiresAt,
-                    "user" to WebsiteUtils.transformToJson(lorittaShards.retrieveUserById(it.userId)!!)
+                "id" to it.id.value,
+                "value" to it.value,
+                "expiresAt" to it.expiresAt,
+                "user" to WebsiteUtils.transformToJson(loritta.lorittaShards.retrieveUserById(it.userId)!!)
             )
         }
         return array.toJsonArray()

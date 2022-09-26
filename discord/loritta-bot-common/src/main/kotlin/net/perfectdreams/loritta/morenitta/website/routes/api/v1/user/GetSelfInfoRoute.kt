@@ -44,14 +44,15 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 		if (sections == null) {
 			val session = call.sessions.get<LorittaJsonWebSession>()
 
-			val userIdentification = session?.getDiscordAuthFromJson()?.getUserIdentification()
+			val userIdentification = session?.getDiscordAuthFromJson(loritta)?.getUserIdentification()
 				?: throw WebsiteAPIException(HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(
+						loritta,
 						LoriWebCode.UNAUTHORIZED
 					)
 				)
 
-			val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getLorittaProfile(userIdentification.id)
+			val profile = loritta.getLorittaProfile(userIdentification.id)
 
 			if (profile != null) {
 				val now = System.currentTimeMillis()
@@ -93,14 +94,15 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 		} else {
 			val session = call.sessions.get<LorittaJsonWebSession>()
 
-			val userIdentification = session?.getUserIdentification(call)
+			val userIdentification = session?.getUserIdentification(loritta, call)
 				?: throw WebsiteAPIException(HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(
+						loritta,
 						LoriWebCode.UNAUTHORIZED
 					)
 				)
 
-			val profile by lazy { net.perfectdreams.loritta.morenitta.LorittaLauncher.loritta.getOrCreateLorittaProfile(userIdentification.id) }
+			val profile by lazy { loritta.getOrCreateLorittaProfile(userIdentification.id) }
 			var profileDataWrapper: ProfileSectionsResponse.ProfileDataWrapper? = null
 			var donationsWrapper: ProfileSectionsResponse.DonationsWrapper? = null
 			var settingsWrapper: ProfileSectionsResponse.SettingsWrapper? = null
@@ -155,7 +157,7 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 			}
 
 			if ("profileDesigns" in sections) {
-				profileDesigns = loritta.newSuspendedTransaction {
+				profileDesigns = loritta.pudding.transaction {
 					val backgrounds = ProfileDesigns.select {
 						ProfileDesigns.internalName inList ProfileDesignsPayments.select {
 							ProfileDesignsPayments.userId eq userIdentification.id.toLong()
@@ -164,9 +166,11 @@ class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{
 
 					backgrounds.map {
 						WebsiteUtils.toSerializable(
+							loritta,
 							ProfileDesign.wrapRow(it)
 						)
 					} + WebsiteUtils.toSerializable(
+						loritta,
 						ProfileDesign.findById(
 							ProfileDesign.DEFAULT_PROFILE_DESIGN_ID
 						)!!

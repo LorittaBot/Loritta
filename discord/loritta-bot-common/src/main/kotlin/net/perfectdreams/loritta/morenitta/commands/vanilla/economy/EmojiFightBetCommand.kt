@@ -73,7 +73,7 @@ class EmojiFightBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			}
 
 			// Only allow users to participate in a emoji fight bet if the user got their daily reward today
-			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
+			AccountUtils.getUserTodayDailyReward(loritta, lorittaUser.profile)
 					?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
 
 			// Self user check

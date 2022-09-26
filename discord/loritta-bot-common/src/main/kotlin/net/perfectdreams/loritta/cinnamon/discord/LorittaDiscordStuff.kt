@@ -25,7 +25,7 @@ import kotlin.time.Duration.Companion.minutes
 
 abstract class LorittaDiscordStuff(
     val discordConfig: LorittaDiscordConfig,
-    val services: Pudding
+    val pudding: Pudding
 ) {
     @OptIn(KordUnsafe::class)
     val rest = RestClient(
@@ -43,7 +43,7 @@ abstract class LorittaDiscordStuff(
 
     suspend fun getCachedUserInfo(userId: UserId): CachedUserInfo? {
         // First, try getting the cached user info from the database
-        val cachedUserInfoFromDatabase = services.users.getCachedUserInfoById(userId)
+        val cachedUserInfoFromDatabase = pudding.users.getCachedUserInfoById(userId)
         if (cachedUserInfoFromDatabase != null)
             return cachedUserInfoFromDatabase
 
@@ -56,7 +56,7 @@ abstract class LorittaDiscordStuff(
 
         if (restUser != null) {
             // If the REST user really exists, then let's update it in our database and then return the cached user info
-            services.users.insertOrUpdateCachedUserInfo(
+            pudding.users.insertOrUpdateCachedUserInfo(
                 UserId(restUser.id.value),
                 restUser.username,
                 restUser.discriminator,
@@ -75,7 +75,7 @@ abstract class LorittaDiscordStuff(
     }
 
     suspend fun insertOrUpdateCachedUserInfo(user: User) {
-        services.users.insertOrUpdateCachedUserInfo(
+        pudding.users.insertOrUpdateCachedUserInfo(
             UserId(user.id.value),
             user.username,
             user.discriminator,
@@ -87,7 +87,7 @@ abstract class LorittaDiscordStuff(
         // Can't fit on a button... Let's store it on the database!
         val now = Clock.System.now()
 
-        val interactionDataId = services.interactionsData.insertInteractionData(
+        val interactionDataId = pudding.interactionsData.insertInteractionData(
             Json.encodeToJsonElement<T>(
                 data
             ).jsonObject,
@@ -107,7 +107,7 @@ abstract class LorittaDiscordStuff(
     suspend inline fun <reified T> decodeDataFromComponentOnDatabase(data: String): ComponentOnDatabaseQueryResult<T> {
         val genericInteractionData = ComponentDataUtils.decode<StoredGenericInteractionData>(data)
 
-        val dataFromDatabase = services.interactionsData.getInteractionData(genericInteractionData.interactionDataId)
+        val dataFromDatabase = pudding.interactionsData.getInteractionData(genericInteractionData.interactionDataId)
             ?.jsonObject ?: return ComponentOnDatabaseQueryResult(genericInteractionData, null)
 
         return ComponentOnDatabaseQueryResult(genericInteractionData, Json.decodeFromJsonElement<T>(dataFromDatabase))

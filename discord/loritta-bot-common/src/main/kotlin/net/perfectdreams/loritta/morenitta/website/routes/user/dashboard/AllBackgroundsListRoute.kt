@@ -12,7 +12,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class AllBackgroundsListRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/all-backgrounds") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "background_list_debug"
 

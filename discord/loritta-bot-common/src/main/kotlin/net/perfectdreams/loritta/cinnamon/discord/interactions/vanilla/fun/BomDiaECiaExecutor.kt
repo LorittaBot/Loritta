@@ -22,7 +22,7 @@ class BomDiaECiaExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
         val text = args[options.text]
 
-        val currentActiveBomDiaECia = context.loritta.services.transaction {
+        val currentActiveBomDiaECia = context.loritta.pudding.transaction {
             BomDiaECiaMatches.selectAll()
                 .orderBy(BomDiaECiaMatches.id, SortOrder.DESC)
                 .limit(1)

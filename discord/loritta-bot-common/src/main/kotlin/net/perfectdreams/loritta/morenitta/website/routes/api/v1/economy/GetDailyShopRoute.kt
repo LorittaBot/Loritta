@@ -48,13 +48,13 @@ class GetDailyShopRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/economy/da
 			)
 		}
 
-		val profileDesignsInShop = loritta.newSuspendedTransaction {
+		val profileDesignsInShop = loritta.pudding.transaction {
 			(DailyProfileShopItems innerJoin ProfileDesigns)
 				.select {
 					DailyProfileShopItems.shop eq shop[DailyShops.id]
 				}
 				.map {
-					WebsiteUtils.fromProfileDesignToSerializable(it).also { profile ->
+					WebsiteUtils.fromProfileDesignToSerializable(loritta, it).also { profile ->
 						profile.tag = it[DailyProfileShopItems.tag]
 					}
 				}

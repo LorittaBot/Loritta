@@ -5,8 +5,6 @@ import com.github.salomonbrys.kotson.obj
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
@@ -16,8 +14,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.util.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class AvatarCommand : AbstractCommand("avatar", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class AvatarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "avatar", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	companion object {
 		const val LOCALE_PREFIX = "commands.command.avatar"
 	}
@@ -66,13 +65,13 @@ class AvatarCommand : AbstractCommand("avatar", category = net.perfectdreams.lor
 
 			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.lorittaCute"]}* ${Emotes.LORI_SMILE}")
 			if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && currentDay == loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek) {
-				val currentFanArtInMasterCluster = lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await().obj
+				val currentFanArtInMasterCluster = loritta.lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await().obj
 
 				val artistId = currentFanArtInMasterCluster["artistId"].nullString
 				val fancyName = currentFanArtInMasterCluster["fancyName"].nullString
 
 				if (artistId != null) {
-					val user = lorittaShards.retrieveUserInfoById(artistId.toLong())
+					val user = loritta.lorittaShards.retrieveUserInfoById(artistId.toLong())
 
 					val displayName = fancyName ?: user?.name
 

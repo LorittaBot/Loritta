@@ -4,6 +4,7 @@ import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.utils.config.GeneralConfig
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 object DiscordUtils {
 	/**
@@ -11,9 +12,9 @@ object DiscordUtils {
 	 *
 	 * @return the shard ID
 	 */
-	fun getLorittaClusterForGuildId(id: Long): GeneralConfig.LorittaClusterConfig {
-		val shardId = getShardIdFromGuildId(id)
-		return getLorittaClusterForShardId(shardId)
+	fun getLorittaClusterForGuildId(loritta: LorittaBot, id: Long): GeneralConfig.LorittaClusterConfig {
+		val shardId = getShardIdFromGuildId(loritta, id)
+		return getLorittaClusterForShardId(loritta, shardId)
 	}
 
 	/**
@@ -21,17 +22,21 @@ object DiscordUtils {
 	 *
 	 * @return the shard ID
 	 */
-	fun getShardIdFromGuildId(id: Long): Long {
-		val maxShard = loritta.discordConfig.discord.maxShards
-		return (id shr 22).rem(maxShard)
-	}
+	fun getShardIdFromGuildId(loritta: LorittaBot, id: Long) = getShardIdFromGuildId(id, loritta.discordConfig.discord.maxShards)
+
+	/**
+	 * Gets a Discord Shard ID from the provided Guild ID
+	 *
+	 * @return the shard ID
+	 */
+	fun getShardIdFromGuildId(id: Long, maxShards: Int) = (id shr 22).rem(maxShards)
 
 	/**
 	 * Gets the cluster where the guild that has the specified ID is in
 	 *
 	 * @return the cluster
 	 */
-	fun getLorittaClusterForShardId(id: Long): GeneralConfig.LorittaClusterConfig {
+	fun getLorittaClusterForShardId(loritta: LorittaBot, id: Long): GeneralConfig.LorittaClusterConfig {
 		val lorittaShard = loritta.config.clusters.firstOrNull { id in it.minShard..it.maxShard }
 		return lorittaShard ?: throw RuntimeException("Frick! I don't know what is the Loritta Shard for Discord Shard ID $id")
 	}
@@ -41,14 +46,14 @@ object DiscordUtils {
 	 *
 	 * @return the cluster ID
 	 */
-	fun getLorittaClusterIdForShardId(id: Long) = getLorittaClusterForShardId(id).id
+	fun getLorittaClusterIdForShardId(loritta: LorittaBot, id: Long) = getLorittaClusterForShardId(loritta, id).id
 
 	/**
 	 * Gets the URL for the specified Loritta Cluster
 	 *
 	 * @return the url in a "test.example.com" format
 	 */
-	fun getUrlForLorittaClusterId(id: Long): String {
+	fun getUrlForLorittaClusterId(loritta: LorittaBot, id: Long): String {
 		if (id == 1L)
 			return loritta.instanceConfig.loritta.website.url.substring(loritta.instanceConfig.loritta.website.url.indexOf("//") + 2).removeSuffix("/")
 
@@ -56,14 +61,15 @@ object DiscordUtils {
 	}
 
 	suspend fun extractUserFromString(
-			input: String,
-			usersInContext: List<User>? = null,
-			guild: Guild? = null,
-			extractUserViaMention: Boolean = true,
-			extractUserViaNameAndDiscriminator: Boolean = true,
-			extractUserViaEffectiveName: Boolean = true,
-			extractUserViaUsername: Boolean = true,
-			extractUserViaUserIdRetrieval: Boolean = true
+		loritta: LorittaBot,
+		input: String,
+		usersInContext: List<User>? = null,
+		guild: Guild? = null,
+		extractUserViaMention: Boolean = true,
+		extractUserViaNameAndDiscriminator: Boolean = true,
+		extractUserViaEffectiveName: Boolean = true,
+		extractUserViaUsername: Boolean = true,
+		extractUserViaUserIdRetrieval: Boolean = true
 	): User? {
 		if (input.isEmpty()) // If empty, just ignore it
 			return null
@@ -85,7 +91,7 @@ object DiscordUtils {
 		// Check if it is a Discord ID
 		try {
 			if (extractUserViaUserIdRetrieval) {
-				val user = LorittaLauncher.loritta.lorittaShards.retrieveUserById(input)
+				val user = loritta.lorittaShards.retrieveUserById(input)
 
 				if (user != null) // Pelo visto é!
 					return user

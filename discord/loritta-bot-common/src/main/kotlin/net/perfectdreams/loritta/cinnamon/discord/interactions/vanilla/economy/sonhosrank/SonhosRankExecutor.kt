@@ -52,7 +52,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                 Emotes.LoriReading
             )
 
-            val (totalCount, profiles) = loritta.services.transaction {
+            val (totalCount, profiles) = loritta.pudding.transaction {
                 val profiles = Profiles
                     .select {
                         Profiles.id notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis())
@@ -127,7 +127,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                 Emotes.LoriReading
             )
 
-            val (totalCount, profiles) = loritta.services.transaction {
+            val (totalCount, profiles) = loritta.pudding.transaction {
                 val totalCount = Profiles.innerJoin(GuildProfiles, { Profiles.id }, { GuildProfiles.userId })
                     .select {
                         GuildProfiles.guildId eq guild.id.toLong() and (GuildProfiles.isInGuild eq true)
@@ -162,7 +162,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
                         )
                     }
                 ) {
-                    loritta.services.transaction {
+                    loritta.pudding.transaction {
                         GuildProfiles.update({ GuildProfiles.id eq it.toLong() and (GuildProfiles.guildId eq guild.id.toLong()) }) {
                             it[isInGuild] = false
                         }

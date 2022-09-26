@@ -19,7 +19,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 
-class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE) {
+class UndertaleBoxCommand(loritta: LorittaBot) : AbstractCommand(loritta, "utbox", listOf("undertalebox"), net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.utbox.description")
 
 	override fun getExamples(): List<String> {
@@ -57,9 +57,9 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), net
 				graph.color = Color.WHITE
 
 				// graph.getFontMetrics(determinationMono) tem problemas, a width do char é sempre 1 (bug?)
-				ImageUtils.drawTextWrap(str, 180, 56 + determinationMono.size, 578, 0, graph.fontMetrics, graph)
+				ImageUtils.drawTextWrap(loritta, str, 180, 56 + determinationMono.size, 578, 0, graph.fontMetrics, graph)
 
-				val avatarImg = LorittaUtils.downloadImage(user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
+				val avatarImg = LorittaUtils.downloadImage(loritta, user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 
 				val blackWhite = BufferedImage(avatarImg.getWidth(null), avatarImg.getHeight(null), BufferedImage.TYPE_BYTE_GRAY)
 				val g2d = blackWhite.createGraphics()

@@ -22,7 +22,7 @@ class GoBackToPackageListButtonClickExecutor(
         context.deferUpdateMessage()
         context.decodeDataFromComponentAndRequireUserToMatch<BarebonesSingleUserComponentData>()
 
-        val packageIds = context.loritta.services.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
+        val packageIds = context.loritta.pudding.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
 
         if (packageIds.isEmpty())
             context.failEphemerally(

@@ -36,7 +36,7 @@ class DiscordCacheService(
 
     private val rest = loritta.rest
     private val lorittaDiscordConfig = loritta.discordConfig
-    private val pudding = loritta.services
+    private val pudding = loritta.pudding
     val zstdDictionaries = ZstdDictionaries()
 
     suspend fun getDiscordEntitiesOfGuild(guildId: Snowflake): GuildEntities {

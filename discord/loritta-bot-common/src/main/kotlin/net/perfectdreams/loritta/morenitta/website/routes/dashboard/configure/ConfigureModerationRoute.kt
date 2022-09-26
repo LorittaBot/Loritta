@@ -21,7 +21,7 @@ class ConfigureModerationRoute(loritta: LorittaBot) : RequiresGuildAuthLocalized
 			serverConfig.moderationConfig
 		}
 
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "moderation"
 		variables["serverConfig"] = FakeServerConfig(

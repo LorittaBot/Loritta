@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class NextGenProfileCreator : ProfileCreator("nextGenDark") {
+class NextGenProfileCreator(val loritta: LorittaBot) : ProfileCreator("nextGenDark") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/next_gen/profile_wrapper.png"))
 
@@ -27,7 +27,7 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(167, 167, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(167, 167, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
@@ -44,7 +44,7 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 
 			val marrySection = ImageIO.read(File(Loritta.ASSETS, "profile/cowboy/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = runBlocking { lorittaShards.retrieveUserById(marriedWithId) }
+			val marriedWith = runBlocking { loritta.lorittaShards.retrieveUserById(marriedWithId) }
 
 			if (marriedWith != null) {
 				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
@@ -70,7 +70,7 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 				.deriveFont(42F)
 
 		graphics.font = oswaldRegular36
-		graphics.drawText(user.name, 232, 143) // Nome do usuário
+		graphics.drawText(loritta, user.name, 232, 143) // Nome do usuário
 
 		graphics.color = Color.BLACK
 		graphics.font = oswaldRegular42
@@ -92,7 +92,7 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(aboutMe, 8, 508, 796, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 8, 508, 796, 600, graphics.fontMetrics, graphics)
 
 		return base.makeRoundedCorners(15)
 	}
@@ -118,58 +118,58 @@ class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 
 	suspend fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
 		val font = graphics.font
-		val reputations = ProfileUtils.getReputationCount(user)
+		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(620, 168, 180, 55), font)
 	}
 
 	suspend fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
-		graphics.drawText("Global", 232, 157)
+		graphics.drawText(loritta, "Global", 232, 157)
 		userInfo.add("Global")
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		if (globalPosition != null)
-			graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 232, 173)
+			graphics.drawText(loritta, "#$globalPosition / ${userProfile.xp} XP", 232, 173)
 		else
-			graphics.drawText("${userProfile.xp} XP", 232, 173)
+			graphics.drawText(loritta, "${userProfile.xp} XP", 232, 173)
 
 		if (guild != null) {
-			val localProfile = ProfileUtils.getLocalProfile(guild, user)
+			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)
 
-			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
+			val localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
 			val xpLocal = localProfile?.xp
 
 			// Iremos remover os emojis do nome da guild, já que ele não calcula direito no stringWidth
-			graphics.drawText(guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""), 16, 51)
+			graphics.drawText(loritta, guild.name.replace(Constants.EMOJI_PATTERN.toRegex(), ""), 16, 51)
 			if (xpLocal != null) {
 				if (localPosition != null) {
-					graphics.drawText("#$localPosition / $xpLocal XP", 16, 70)
+					graphics.drawText(loritta, "#$localPosition / $xpLocal XP", 16, 70)
 				} else {
-					graphics.drawText("$xpLocal XP", 16, 70)
+					graphics.drawText(loritta, "$xpLocal XP", 16, 70)
 				}
 			} else {
-				graphics.drawText("???", 16, 70)
+				graphics.drawText(loritta, "???", 16, 70)
 			}
 		}
 
 		graphics.color = Color.BLACK
-		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
-		graphics.drawText("Sonhos", 631, 34)
+		graphics.drawText(loritta, "Sonhos", 631, 34)
 		if (globalEconomyPosition != null)
-			graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 631, 54)
+			graphics.drawText(loritta, "#$globalEconomyPosition / ${userProfile.money}", 631, 54)
 		else
-			graphics.drawText("${userProfile.money}", 631, 54)
+			graphics.drawText(loritta, "${userProfile.money}", 631, 54)
 
 		graphics.color = Color.WHITE
 		return 0
 	}
 
 	suspend fun drawMarriageStatus(userProfile: Profile, locale: BaseLocale, graphics: Graphics) {
-		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
-			graphics.drawText(locale["profile.marriedWith"], 271, 34)
-			graphics.drawText("${marriedWith.name}#${marriedWith.discriminator}", 271, 54)
+		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
+			graphics.drawText(loritta, locale["profile.marriedWith"], 271, 34)
+			graphics.drawText(loritta, "${marriedWith.name}#${marriedWith.discriminator}", 271, 54)
 		}
 	}
 }

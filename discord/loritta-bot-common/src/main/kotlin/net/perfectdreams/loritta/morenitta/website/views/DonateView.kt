@@ -3,17 +3,20 @@ package net.perfectdreams.loritta.morenitta.website.views
 import com.google.gson.JsonArray
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 
 class DonateView(
+    loritta: LorittaBot,
     locale: BaseLocale,
     path: String,
     val userIdentification: LorittaJsonWebSession.UserIdentification?,
     val keys: JsonArray
 ) : NavbarView(
-        locale,
-        path
+    loritta,
+    locale,
+    path
 ) {
     override fun getTitle() = locale["website.donate.title"]
 
@@ -35,12 +38,12 @@ class DonateView(
             div(classes = "media") {
                 div(classes = "media-figure") {
                     imgSrcSet(
-                            "${websiteUrl}${versionPrefix}/assets/img/donate/",
-                            "lori_donate.png",
-                            "(max-width: 800px) 50vw, 15vw",
-                            1272,
-                            272,
-                            100
+                        "${websiteUrl}${versionPrefix}/assets/img/donate/",
+                        "lori_donate.png",
+                        "(max-width: 800px) 50vw, 15vw",
+                        1272,
+                        272,
+                        100
                     )
                     // img(src = "${websiteUrl}/assets/img/loritta_pobre.png", alt = "Loritta Pobre") {}
                 }

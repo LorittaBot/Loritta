@@ -15,7 +15,7 @@ class GetCommandsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/com
 
 		val locale = loritta.localeManager.getLocaleById(localeId)
 
-		val commands = net.perfectdreams.loritta.morenitta.utils.loritta.legacyCommandManager.commandMap.map {
+		val commands = loritta.legacyCommandManager.commandMap.map {
 			CommandInfo(
 					it::class.java.simpleName,
 					it.label,
@@ -31,7 +31,7 @@ class GetCommandsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/com
 					it.getBotPermissions().map { it.name },
 					listOf() // Old API doesn't has SimilarCommands
 			)
-		} + net.perfectdreams.loritta.morenitta.utils.loritta.commandMap.commands.filter { !it.hideInHelp }.map {
+		} + loritta.commandMap.commands.filter { !it.hideInHelp }.map {
 			var botRequiredPermissions = listOf<String>()
 			var userRequiredPermissions = listOf<String>()
 			var userRequiredLorittaPermissions = listOf<String>()

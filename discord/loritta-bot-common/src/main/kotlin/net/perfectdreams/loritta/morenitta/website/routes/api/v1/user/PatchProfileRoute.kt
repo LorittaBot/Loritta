@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.dao.ShipEffect
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
@@ -53,7 +52,7 @@ import javax.imageio.ImageIO
 class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/self-profile") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		loritta as LorittaBot
-		val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
 		val config = payload["config"].obj
@@ -64,7 +63,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 			val user2Name = config["user2NamePlusDiscriminator"].string
 
 			val user2Id = if (user2Name.isValidSnowflake()) {
-				lorittaShards.retrieveUserInfoById(user2Name.toLong())?.id
+				loritta.lorittaShards.retrieveUserInfoById(user2Name.toLong())?.id
 			} else {
 				val split = user2Name.trim().split("#")
 
@@ -72,17 +71,19 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 				if (2 > username.length)
 					throw WebsiteAPIException(HttpStatusCode.NotFound,
 						WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.UNKNOWN_USER
 						)
 					)
 
 				val discriminator = split[1].trim()
 
-				val userInfo = lorittaShards.retrieveUserInfoByTag(username, discriminator)
+				val userInfo = loritta.lorittaShards.retrieveUserInfoByTag(username, discriminator)
 
 				userInfo?.id
 			} ?: throw WebsiteAPIException(HttpStatusCode.NotFound,
 				WebsiteUtils.createErrorPayload(
+					loritta,
 					LoriWebCode.UNKNOWN_USER
 				)
 			)
@@ -90,6 +91,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 			if (3000 > profile.money) {
 				throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
 					WebsiteUtils.createErrorPayload(
+						loritta,
 						LoriWebCode.INSUFFICIENT_FUNDS
 					)
 				)
@@ -124,6 +126,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 			if (internalName != Background.DEFAULT_BACKGROUND_ID && internalName != Background.RANDOM_BACKGROUND_ID && internalName != Background.CUSTOM_BACKGROUND_ID && loritta.newSuspendedTransaction { BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 					WebsiteUtils.createErrorPayload(
+						loritta,
 						LoriWebCode.FORBIDDEN
 					)
 				)
@@ -136,6 +139,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 				if (!plan.customBackground)
 					throw WebsiteAPIException(HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.FORBIDDEN
 						)
 					)
@@ -235,6 +239,7 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 			if (internalName != ProfileDesign.DEFAULT_PROFILE_DESIGN_ID && internalName != ProfileDesign.RANDOM_PROFILE_DESIGN_ID && loritta.newSuspendedTransaction { ProfileDesignsPayments.select { ProfileDesignsPayments.profile eq internalName and (ProfileDesignsPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
 				throw WebsiteAPIException(HttpStatusCode.Forbidden,
 					WebsiteUtils.createErrorPayload(
+						loritta,
 						LoriWebCode.FORBIDDEN
 					)
 				)

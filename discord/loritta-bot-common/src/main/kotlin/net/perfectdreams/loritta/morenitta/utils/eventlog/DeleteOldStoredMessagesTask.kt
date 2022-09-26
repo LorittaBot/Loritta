@@ -1,12 +1,13 @@
 package net.perfectdreams.loritta.morenitta.utils.eventlog
 
-import net.perfectdreams.loritta.morenitta.network.Databases
+import kotlinx.coroutines.runBlocking
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.StoredMessages
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.sql.Connection
 
-class DeleteOldStoredMessagesTask : Runnable {
+class DeleteOldStoredMessagesTask(val loritta: LorittaBot) : Runnable {
     companion object {
         private const val TWO_WEEKS = 1_209_600_000
     }
@@ -14,9 +15,11 @@ class DeleteOldStoredMessagesTask : Runnable {
     override fun run() {
         // Because this is only a clean up task, we don't care about reading uncommited changes.
         // We also try executing it 999 times, not really a big issue because we *want* the data to be deleted.
-        transaction(Connection.TRANSACTION_READ_UNCOMMITTED, 999, Databases.loritta) {
-            StoredMessages.deleteWhere {
-                StoredMessages.createdAt lessEq System.currentTimeMillis() - TWO_WEEKS
+        runBlocking {
+            loritta.pudding.transaction(Connection.TRANSACTION_READ_UNCOMMITTED, 999) {
+                StoredMessages.deleteWhere {
+                    StoredMessages.createdAt lessEq System.currentTimeMillis() - TWO_WEEKS
+                }
             }
         }
     }

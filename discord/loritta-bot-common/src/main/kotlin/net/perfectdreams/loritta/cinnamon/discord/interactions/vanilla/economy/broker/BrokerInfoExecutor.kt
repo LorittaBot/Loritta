@@ -19,7 +19,7 @@ class BrokerInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage() // Defer because this sometimes takes too long
 
-        val stockInformations = context.loritta.services.bovespaBroker.getAllTickers()
+        val stockInformations = context.loritta.pudding.bovespaBroker.getAllTickers()
 
         context.sendMessage {
             brokerBaseEmbed(context) {

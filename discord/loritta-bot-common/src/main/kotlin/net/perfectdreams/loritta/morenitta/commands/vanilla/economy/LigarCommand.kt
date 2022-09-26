@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
@@ -18,8 +17,9 @@ import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LigarCommand : AbstractCommand("ligar", category = net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class LigarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ligar", category = net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 	}

@@ -12,8 +12,9 @@ import org.jsoup.Jsoup
 import java.awt.Color
 import java.net.URLEncoder
 
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario", "definir"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class DicioCommand(loritta: LorittaBot) : AbstractCommand(loritta, "dicio", listOf("dicionário", "dicionario", "definir"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.dicio.description")

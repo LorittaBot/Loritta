@@ -45,7 +45,7 @@ import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.jar.JarFile
 
-class CommandManager(loritta: LorittaBot) {
+class CommandManager(val loritta: LorittaBot) {
 	companion object {
 		val logger = KotlinLogging.logger {}
 	}
@@ -53,93 +53,93 @@ class CommandManager(loritta: LorittaBot) {
 	var commandMap: MutableList<AbstractCommand> = ArrayList()
 
 	init {
-		commandMap.add(RollCommand())
-		commandMap.add(FaustaoCommand())
-		commandMap.add(CaraCoroaCommand())
-		commandMap.add(PedraPapelTesouraCommand())
-		commandMap.add(VaporondaCommand())
-		commandMap.add(QualidadeCommand())
-		commandMap.add(VaporQualidadeCommand())
-		commandMap.add(TretaNewsCommand())
-		commandMap.add(MagicBallCommand())
-		commandMap.add(NyanCatCommand())
-		commandMap.add(PrimeirasPalavrasCommand())
-		commandMap.add(InverterCommand())
-		// commandMap.add(SpinnerCommand())
-		commandMap.add(LavaCommand())
-		commandMap.add(LavaReversoCommand())
-		commandMap.add(ShipCommand())
-		commandMap.add(AvaliarWaifuCommand())
-		commandMap.add(RazoesCommand())
-		commandMap.add(DeusCommand())
-		commandMap.add(PerfeitoCommand())
-		commandMap.add(TrumpCommand())
-		commandMap.add(CepoCommand())
-		commandMap.add(DeusesCommand())
-		commandMap.add(GangueCommand())
-		commandMap.add(AmigosCommand())
-		commandMap.add(DiscordiaCommand())
-		commandMap.add(AmizadeCommand())
-		commandMap.add(PerdaoCommand())
-		commandMap.add(RipVidaCommand())
-		commandMap.add(JoojCommand())
-		commandMap.add(OjjoCommand())
-		commandMap.add(TwitchCommand())
+		commandMap.add(RollCommand(loritta))
+		commandMap.add(FaustaoCommand(loritta))
+		commandMap.add(CaraCoroaCommand(loritta))
+		commandMap.add(PedraPapelTesouraCommand(loritta))
+		commandMap.add(VaporondaCommand(loritta))
+		commandMap.add(QualidadeCommand(loritta))
+		commandMap.add(VaporQualidadeCommand(loritta))
+		commandMap.add(TretaNewsCommand(loritta))
+		commandMap.add(MagicBallCommand(loritta))
+		commandMap.add(NyanCatCommand(loritta))
+		commandMap.add(PrimeirasPalavrasCommand(loritta))
+		commandMap.add(InverterCommand(loritta))
+		// commandMap.add(SpinnerCommand(loritta))
+		commandMap.add(LavaCommand(loritta))
+		commandMap.add(LavaReversoCommand(loritta))
+		commandMap.add(ShipCommand(loritta))
+		commandMap.add(AvaliarWaifuCommand(loritta))
+		commandMap.add(RazoesCommand(loritta))
+		commandMap.add(DeusCommand(loritta))
+		commandMap.add(PerfeitoCommand(loritta))
+		commandMap.add(TrumpCommand(loritta))
+		commandMap.add(CepoCommand(loritta))
+		commandMap.add(DeusesCommand(loritta))
+		commandMap.add(GangueCommand(loritta))
+		commandMap.add(AmigosCommand(loritta))
+		commandMap.add(DiscordiaCommand(loritta))
+		commandMap.add(AmizadeCommand(loritta))
+		commandMap.add(PerdaoCommand(loritta))
+		commandMap.add(RipVidaCommand(loritta))
+		commandMap.add(JoojCommand(loritta))
+		commandMap.add(OjjoCommand(loritta))
+		commandMap.add(TwitchCommand(loritta))
 
 		// =======[ IMAGENS ]======
-		commandMap.add(GetOverHereCommand())
-		commandMap.add(ManiaTitleCardCommand())
-		commandMap.add(LaranjoCommand())
-		commandMap.add(TriggeredCommand())
-		commandMap.add(GumballCommand())
-		commandMap.add(ContentAwareScaleCommand())
-		commandMap.add(SwingCommand())
-		commandMap.add(DemonCommand())
-		commandMap.add(KnuxThrowCommand())
-		commandMap.add(TextCraftCommand())
-		commandMap.add(DrawnMaskCommand())
+		commandMap.add(GetOverHereCommand(loritta))
+		commandMap.add(ManiaTitleCardCommand(loritta))
+		commandMap.add(LaranjoCommand(loritta))
+		commandMap.add(TriggeredCommand(loritta))
+		commandMap.add(GumballCommand(loritta))
+		commandMap.add(ContentAwareScaleCommand(loritta))
+		commandMap.add(SwingCommand(loritta))
+		commandMap.add(DemonCommand(loritta))
+		commandMap.add(KnuxThrowCommand(loritta))
+		commandMap.add(TextCraftCommand(loritta))
+		commandMap.add(DrawnMaskCommand(loritta))
 
 		// =======[ DIVERSÃO ]======
-		commandMap.add(BemBoladaCommand())
-		commandMap.add(TodoGrupoTemCommand())
-		commandMap.add(TioDoPaveCommand())
-		commandMap.add(VemDeZapCommand())
+		commandMap.add(BemBoladaCommand(loritta))
+		commandMap.add(TodoGrupoTemCommand(loritta))
+		commandMap.add(TioDoPaveCommand(loritta))
+		commandMap.add(VemDeZapCommand(loritta))
 
 		// =======[ MISC ]======
-		commandMap.add(AjudaCommand())
-		commandMap.add(PingCommand())
-		commandMap.add(SayCommand())
-		commandMap.add(EscolherCommand())
-		commandMap.add(LanguageCommand())
-		commandMap.add(PatreonCommand())
+		commandMap.add(AjudaCommand(loritta))
+		commandMap.add(PingCommand(loritta))
+		commandMap.add(SayCommand(loritta))
+		commandMap.add(EscolherCommand(loritta))
+		commandMap.add(LanguageCommand(loritta))
+		commandMap.add(PatreonCommand(loritta))
 
 		// =======[ SOCIAL ]======
-		commandMap.add(PerfilCommand())
-		commandMap.add(BackgroundCommand())
-		commandMap.add(SobreMimCommand())
-		commandMap.add(RepCommand())
-		commandMap.add(RankCommand())
-		commandMap.add(EditarXPCommand())
-		commandMap.add(AfkCommand())
-		commandMap.add(MarryCommand())
-		commandMap.add(DivorceCommand())
-		commandMap.add(GenderCommand())
+		commandMap.add(PerfilCommand(loritta))
+		commandMap.add(BackgroundCommand(loritta))
+		commandMap.add(SobreMimCommand(loritta))
+		commandMap.add(RepCommand(loritta))
+		commandMap.add(RankCommand(loritta))
+		commandMap.add(EditarXPCommand(loritta))
+		commandMap.add(AfkCommand(loritta))
+		commandMap.add(MarryCommand(loritta))
+		commandMap.add(DivorceCommand(loritta))
+		commandMap.add(GenderCommand(loritta))
 
 		// =======[ UTILS ]=======
-		commandMap.add(TranslateCommand())
-		commandMap.add(WikipediaCommand())
-		commandMap.add(MoneyCommand())
-		commandMap.add(ColorInfoCommand())
-		commandMap.add(LembrarCommand())
-		commandMap.add(DicioCommand())
-		commandMap.add(TempoCommand())
-		commandMap.add(PackageInfoCommand())
-		commandMap.add(AnagramaCommand())
-		commandMap.add(CalculadoraCommand())
-		commandMap.add(MorseCommand())
-		commandMap.add(OCRCommand())
-		commandMap.add(EncodeCommand())
-		commandMap.add(LyricsCommand())
+		commandMap.add(TranslateCommand(loritta))
+		commandMap.add(WikipediaCommand(loritta))
+		commandMap.add(MoneyCommand(loritta))
+		commandMap.add(ColorInfoCommand(loritta))
+		commandMap.add(LembrarCommand(loritta))
+		commandMap.add(DicioCommand(loritta))
+		commandMap.add(TempoCommand(loritta))
+		commandMap.add(PackageInfoCommand(loritta))
+		commandMap.add(AnagramaCommand(loritta))
+		commandMap.add(CalculadoraCommand(loritta))
+		commandMap.add(MorseCommand(loritta))
+		commandMap.add(OCRCommand(loritta))
+		commandMap.add(EncodeCommand(loritta))
+		commandMap.add(LyricsCommand(loritta))
 
 		// =======[ DISCORD ]=======
 		try {
@@ -148,69 +148,69 @@ class CommandManager(loritta: LorittaBot) {
 			// TODO: Fix this
 			logger.warn(e) { "Exception while registering botinfo, are you running Loritta within a IDE?" }
 		}
-		commandMap.add(AvatarCommand())
-		commandMap.add(ServerIconCommand())
-		commandMap.add(EmojiCommand())
-		commandMap.add(ServerInfoCommand())
-		commandMap.add(InviteCommand())
-		commandMap.add(UserInfoCommand())
-		commandMap.add(InviteInfoCommand())
-		commandMap.add(AddEmojiCommand())
-		commandMap.add(RemoveEmojiCommand())
-		commandMap.add(EmojiInfoCommand())
+		commandMap.add(AvatarCommand(loritta))
+		commandMap.add(ServerIconCommand(loritta))
+		commandMap.add(EmojiCommand(loritta))
+		commandMap.add(ServerInfoCommand(loritta))
+		commandMap.add(InviteCommand(loritta))
+		commandMap.add(UserInfoCommand(loritta))
+		commandMap.add(InviteInfoCommand(loritta))
+		commandMap.add(AddEmojiCommand(loritta))
+		commandMap.add(RemoveEmojiCommand(loritta))
+		commandMap.add(EmojiInfoCommand(loritta))
 
 		// =======[ MINECRAFT ]========
-		commandMap.add(OfflineUUIDCommand())
-		commandMap.add(McAvatarCommand())
-		commandMap.add(McUUIDCommand())
-		commandMap.add(McHeadCommand())
-		commandMap.add(McBodyCommand())
-		commandMap.add(SpigotMcCommand())
-		commandMap.add(McConquistaCommand())
-		commandMap.add(McSkinCommand())
-		commandMap.add(McMoletomCommand())
+		commandMap.add(OfflineUUIDCommand(loritta))
+		commandMap.add(McAvatarCommand(loritta))
+		commandMap.add(McUUIDCommand(loritta))
+		commandMap.add(McHeadCommand(loritta))
+		commandMap.add(McBodyCommand(loritta))
+		commandMap.add(SpigotMcCommand(loritta))
+		commandMap.add(McConquistaCommand(loritta))
+		commandMap.add(McSkinCommand(loritta))
+		commandMap.add(McMoletomCommand(loritta))
 
 		// =======[ UNDERTALE ]========
-		commandMap.add(UndertaleBoxCommand())
-		commandMap.add(UndertaleBattleCommand())
+		commandMap.add(UndertaleBoxCommand(loritta))
+		commandMap.add(UndertaleBattleCommand(loritta))
 
 		// =======[ POKÉMON ]========
-		commandMap.add(PokedexCommand())
+		commandMap.add(PokedexCommand(loritta))
 
 		// =======[ ANIME ]========
-		// commandMap.add(MALAnimeCommand())
-		// commandMap.add(MALMangaCommand())
+		// commandMap.add(MALAnimeCommand(loritta))
+		// commandMap.add(MALMangaCommand(loritta))
 
 		// =======[ ADMIN ]========
-		commandMap.add(RoleIdCommand())
-		commandMap.add(MuteCommand())
-		commandMap.add(UnmuteCommand())
-		commandMap.add(SlowModeCommand())
-		commandMap.add(KickCommand())
-		commandMap.add(BanCommand())
-		commandMap.add(UnbanCommand())
-		commandMap.add(WarnCommand())
-		commandMap.add(WarnListCommand())
-		commandMap.add(QuickPunishmentCommand())
-		commandMap.add(LockCommand())
-		commandMap.add(UnlockCommand())
+		commandMap.add(RoleIdCommand(loritta))
+		commandMap.add(MuteCommand(loritta))
+		commandMap.add(UnmuteCommand(loritta))
+		commandMap.add(SlowModeCommand(loritta))
+		commandMap.add(KickCommand(loritta))
+		commandMap.add(BanCommand(loritta))
+		commandMap.add(UnbanCommand(loritta))
+		commandMap.add(WarnCommand(loritta))
+		commandMap.add(WarnListCommand(loritta))
+		commandMap.add(QuickPunishmentCommand(loritta))
+		commandMap.add(LockCommand(loritta))
+		commandMap.add(UnlockCommand(loritta))
 
 		// =======[ MAGIC ]========
-		commandMap.add(ReloadCommand())
-		commandMap.add(ServerInvitesCommand())
-		commandMap.add(LorittaBanCommand())
-		commandMap.add(LorittaUnbanCommand())
-		commandMap.add(LoriServerListConfigCommand())
-		commandMap.add(EvalKotlinCommand())
+		commandMap.add(ReloadCommand(loritta))
+		commandMap.add(ServerInvitesCommand(loritta))
+		commandMap.add(LorittaBanCommand(loritta))
+		commandMap.add(LorittaUnbanCommand(loritta))
+		commandMap.add(LoriServerListConfigCommand(loritta))
+		commandMap.add(EvalKotlinCommand(loritta))
 		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
-			commandMap.add(AntiRaidCommand())
+			commandMap.add(AntiRaidCommand(loritta))
 
 		// =======[ ECONOMIA ]========
-		commandMap.add(LoraffleCommand())
-		commandMap.add(DailyCommand())
-		commandMap.add(PagarCommand())
-		commandMap.add(SonhosCommand())
-		commandMap.add(LigarCommand())
+		commandMap.add(LoraffleCommand(loritta))
+		commandMap.add(DailyCommand(loritta))
+		commandMap.add(PagarCommand(loritta))
+		commandMap.add(SonhosCommand(loritta))
+		commandMap.add(LigarCommand(loritta))
 	}
 
 	private fun createBotinfoCommand(): BotInfoCommand {
@@ -218,7 +218,7 @@ class CommandManager(loritta: LorittaBot) {
 		val jar = JarFile(path)
 		val manifest = jar.manifest
 		val mainAttributes = manifest.mainAttributes
-		return BotInfoCommand(BuildInfo(mainAttributes))
+		return BotInfoCommand(loritta, BuildInfo(mainAttributes))
 	}
 
 	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
@@ -236,9 +236,10 @@ class CommandManager(loritta: LorittaBot) {
 			}.toList()
 		}.map {
 			NashornCommand(
-					it[CustomGuildCommands.label],
-					it[CustomGuildCommands.code],
-					it[CustomGuildCommands.codeType]
+				loritta,
+				it[CustomGuildCommands.label],
+				it[CustomGuildCommands.code],
+				it[CustomGuildCommands.codeType]
 			)
 		}
 
@@ -273,8 +274,8 @@ class CommandManager(loritta: LorittaBot) {
 			val start = System.currentTimeMillis()
 
 			val rawArgs = rawArguments.joinToString(" ").stripCodeMarks().split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
-					.drop(1)
-					.toTypedArray()
+				.drop(1)
+				.toTypedArray()
 			val args = rawArgs
 			val strippedArgs: Array<String>
 
@@ -284,7 +285,7 @@ class CommandManager(loritta: LorittaBot) {
 				strippedArgs = rawArgs
 			}
 
-			val context = CommandContext(serverConfig, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
+			val context = CommandContext(loritta, serverConfig, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
 
 			try {
 				CommandUtils.logMessageEvent(ev, logger)
@@ -297,7 +298,7 @@ class CommandManager(loritta: LorittaBot) {
 				var commandCooldown = command.cooldown
 				val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
 				val guildId = ev.guild?.idLong
-				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
+				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
 
 				val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
 
@@ -306,8 +307,8 @@ class CommandManager(loritta: LorittaBot) {
 				}
 
 				val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
-						ev,
-						commandCooldown
+					ev,
+					commandCooldown
 				)
 
 				if (cooldownStatus.sendMessage) {
@@ -367,7 +368,7 @@ class CommandManager(loritta: LorittaBot) {
 
 				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
 					// Verificar se o comando está ativado na guild atual
-					if (CommandUtils.checkIfCommandIsDisabledInGuild(serverConfig, locale, ev.channel, ev.member, command::class.simpleName!!))
+					if (CommandUtils.checkIfCommandIsDisabledInGuild(loritta, serverConfig, locale, ev.channel, ev.member, command::class.simpleName!!))
 						return true
 				}
 
@@ -385,10 +386,10 @@ class CommandManager(loritta: LorittaBot) {
 						// oh no
 						val required = missingPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 						context.reply(
-								LorittaReply(
-										locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
-										Constants.ERROR
-								)
+							LorittaReply(
+								locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
+								Constants.ERROR
+							)
 						)
 						return true
 					}
@@ -421,10 +422,10 @@ class CommandManager(loritta: LorittaBot) {
 
 				if (context.cmd.onlyOwner && !loritta.config.isOwner(ev.author.id)) {
 					context.reply(
-							LorittaReply(
-									locale["commands.commandOnlyForOwner"],
-									Constants.ERROR
-							)
+						LorittaReply(
+							locale["commands.commandOnlyForOwner"],
+							Constants.ERROR
+						)
 					)
 					return true
 				}
@@ -433,10 +434,10 @@ class CommandManager(loritta: LorittaBot) {
 					val requiredPermissions = command.getDiscordPermissions().filter { !ev.message.member!!.hasPermission(ev.message.textChannel, it) }
 					val required = requiredPermissions.joinToString(", ", transform = { "`" + it.localized(locale) + "`" })
 					context.reply(
-							LorittaReply(
-									locale["commands.userDoesntHavePermissionDiscord", required],
-									Constants.ERROR
-							)
+						LorittaReply(
+							locale["commands.userDoesntHavePermissionDiscord", required],
+							Constants.ERROR
+						)
 					)
 					return true
 				}
@@ -454,10 +455,11 @@ class CommandManager(loritta: LorittaBot) {
 
 				// Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
 				DonateUtils.getRandomDonationMessage(
-						locale,
-						lorittaUser.profile,
-						donatorPaid,
-						guildPaid
+					loritta,
+					locale,
+					lorittaUser.profile,
+					donatorPaid,
+					guildPaid
 				)?.let { context.reply(it) }
 
 				if (!context.isPrivateChannel) {
@@ -469,10 +471,10 @@ class CommandManager(loritta: LorittaBot) {
 
 						if (hasBadNickname) {
 							context.reply(
-									LorittaReply(
-										locale["commands.lorittaBadNickname"],
-										"<:lori_triste:370344565967814659>"
-									)
+								LorittaReply(
+									locale["commands.lorittaBadNickname"],
+									"<:lori_triste:370344565967814659>"
+								)
 							)
 							if (context.guild.selfMember.hasPermission(Permission.NICKNAME_CHANGE)) {
 								context.guild.modifyNickname(context.guild.selfMember, null).queue()
@@ -483,7 +485,7 @@ class CommandManager(loritta: LorittaBot) {
 					}
 				}
 
-				if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(lorittaUser._profile, ev.guild) || LorittaUtils.isGuildBanned(ev.guild)))
+				if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(loritta, lorittaUser._profile, ev.guild) || LorittaUtils.isGuildBanned(loritta, ev.guild)))
 					return true
 
 				// We don't care about locking the row just to update the sent at field
@@ -491,7 +493,7 @@ class CommandManager(loritta: LorittaBot) {
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 				}
 
-				CommandUtils.trackCommandToDatabase(ev, command::class.simpleName ?: "UnknownCommand")
+				CommandUtils.trackCommandToDatabase(loritta, ev, command::class.simpleName ?: "UnknownCommand")
 
 				loritta.newSuspendedTransaction {
 					val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
@@ -500,7 +502,7 @@ class CommandManager(loritta: LorittaBot) {
 						profile.isInGuild = true
 				}
 
-				lorittaShards.updateCachedUserData(context.userHandle)
+				loritta.lorittaShards.updateCachedUserData(context.userHandle)
 
 				command.run(context, context.locale)
 
@@ -528,10 +530,10 @@ class CommandManager(loritta: LorittaBot) {
 					if (e.errorCode == 40005) { // Request entity too large
 						if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 							context.reply(
-									LorittaReply(
-											locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
-											"\uD83E\uDD37"
-									)
+								LorittaReply(
+									locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
+									"\uD83E\uDD37"
+								)
 							)
 						return true
 					}
@@ -548,8 +550,8 @@ class CommandManager(loritta: LorittaBot) {
 
 				if (ev.isFromType(ChannelType.PRIVATE) || (ev.isFromType(ChannelType.TEXT) && ev.textChannel != null && ev.textChannel.canTalk()))
 					ev.channel.sendMessage(reply)
-							.referenceIfPossible(ev.message, serverConfig, true)
-							.await()
+						.referenceIfPossible(ev.message, serverConfig, true)
+						.await()
 				return true
 			}
 		}

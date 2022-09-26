@@ -39,7 +39,7 @@ class DailyTaxWarner(val m: LorittaCinnamon) : RunnableCoroutine {
 
             // We need to use Read Commited to avoid "Could not serialize access due to concurrent update"
             // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
-            m.services.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
+            m.pudding.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
                 DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 0) { threshold, inactiveDailyUser ->
                     logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax warn" }
 

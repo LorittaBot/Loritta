@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
@@ -32,7 +31,7 @@ class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
         executesDiscord {
             val index = args.getOrNull(0)
 
-            val fanArtsByDate = LorittaLauncher.loritta.fanArts.sortedBy {
+            val fanArtsByDate = loritta.fanArts.sortedBy {
                 it.createdAt
             }
 
@@ -58,7 +57,7 @@ class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
                 ?.firstOrNull()
                 ?.id
 
-            val user = lorittaShards.retrieveUserInfoById(discordId?.toLong())
+            val user = loritta.lorittaShards.retrieveUserInfoById(discordId?.toLong())
 
             val displayName = fanArtArtist?.info?.override?.name ?: user?.name ?: fanArtArtist?.info?.name
 
@@ -77,7 +76,7 @@ class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
 
             appendDescription("\n\n${locale["commands.command.fanarts.thankYouAll", displayName]}")
 
-            var footer = "Fan Art ${locale["loritta.xOfX", index, LorittaLauncher.loritta.fanArts.size]}"
+            var footer = "Fan Art ${locale["loritta.xOfX", index, loritta.fanArts.size]}"
 
             if (user != null) {
                 footer = "${user.name + "#" + user.discriminator} • $footer"

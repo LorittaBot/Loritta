@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.gson
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -19,8 +18,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import java.io.ByteArrayOutputStream
 import java.util.*
 import javax.imageio.ImageIO
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class OCRCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ocr", listOf("ler", "read"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ocr.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

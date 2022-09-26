@@ -13,15 +13,18 @@ import kotlinx.html.p
 import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.unsafe
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.NitroPayAdGenerator
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.adWrapper
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateNitroPayAdOrSponsor
 import net.perfectdreams.loritta.morenitta.sweetmorenitta.utils.generateNitroPayVideoAd
 
 class DailyView(
+    loritta: LorittaBot,
     locale: BaseLocale,
     path: String
 ) : NavbarView(
+    loritta,
     locale,
     path
 ) {
@@ -109,11 +112,13 @@ class DailyView(
 
             adWrapper {
                 generateNitroPayAdOrSponsor(
+                    loritta,
                     0,
                     "daily-top1",
                     NitroPayAdGenerator.ALL_SIZES
                 )
                 generateNitroPayAdOrSponsor(
+                    loritta,
                     1,
                     "daily-top2",
                     NitroPayAdGenerator.ALL_SIZES_EXCEPT_PHONES
@@ -228,11 +233,13 @@ class DailyView(
 
             adWrapper {
                 generateNitroPayAdOrSponsor(
+                    loritta,
                     2,
                     "daily-bottom1",
                     NitroPayAdGenerator.ALL_SIZES
                 )
                 generateNitroPayAdOrSponsor(
+                    loritta,
                     3,
                     "daily-bottom2",
                     NitroPayAdGenerator.ALL_SIZES_EXCEPT_PHONES

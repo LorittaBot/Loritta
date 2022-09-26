@@ -37,16 +37,16 @@ class PostDiscordBotsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1
 
 			throw WebsiteAPIException(
 					HttpStatusCode.Unauthorized,
-					WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing Authorization Header from Request")
+					WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Missing Authorization Header from Request")
 			)
 		}
 
-		if (authorizationHeader != net.perfectdreams.loritta.morenitta.utils.loritta.config.generalWebhook.webhookSecret) {
+		if (authorizationHeader != loritta.config.generalWebhook.webhookSecret) {
 			logger.error { "Header de Autorização do request não é igual ao nosso!" }
 
 			throw WebsiteAPIException(
 					HttpStatusCode.Unauthorized,
-					WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing Authorization Content from Request")
+					WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Missing Authorization Content from Request")
 			)
 		}
 
@@ -55,10 +55,11 @@ class PostDiscordBotsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1
 		val userId = payload["user"].string.toLong()
 		val type = payload["type"].string
 
-		if (type == "upvote" || (type == "test" && net.perfectdreams.loritta.morenitta.utils.loritta.config.isOwner(userId))) {
+		if (type == "upvote" || (type == "test" && loritta.config.isOwner(userId))) {
 			// We need to run this in a separate thread to avoid top.gg timing out and repeating the request multiple times
 			GlobalScope.launch(loritta.coroutineDispatcher) {
 				WebsiteVoteUtils.addVote(
+					loritta,
 					userId,
 					WebsiteVoteSource.DISCORD_BOTS
 				)

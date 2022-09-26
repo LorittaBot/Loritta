@@ -277,7 +277,7 @@ fun Message.onReactionAdd(context: CommandContext, function: suspend (MessageRea
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
 	functions.onReactionAdd = function
 	return this
 }
@@ -293,7 +293,7 @@ fun Message.onReactionAdd(context: DiscordCommandContext, function: suspend (Mes
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
+	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
 	functions.onReactionAdd = function
 	return this
 }
@@ -309,7 +309,7 @@ fun Message.onReactionRemove(context: CommandContext, function: suspend (Message
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
 	functions.onReactionRemove = function
 	return this
 }
@@ -325,7 +325,7 @@ fun Message.onReactionAddByAuthor(context: CommandContext, function: suspend (Me
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
 	functions.onReactionAddByAuthor = function
 	return this
 }
@@ -337,7 +337,7 @@ fun Message.onReactionAddByAuthor(context: CommandContext, function: suspend (Me
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onReactionAddByAuthor(userId: Long, function: suspend (MessageReactionAddEvent) -> Unit): Message {
+fun Message.onReactionAddByAuthor(loritta: LorittaBot, userId: Long, function: suspend (MessageReactionAddEvent) -> Unit): Message {
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
@@ -357,7 +357,7 @@ fun Message.onReactionRemoveByAuthor(context: CommandContext, function: suspend 
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
 	functions.onReactionRemoveByAuthor = function
 	return this
 }
@@ -373,7 +373,7 @@ fun Message.onResponse(context: CommandContext, function: suspend (LorittaMessag
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
 	functions.onResponse = function
 	return this
 }
@@ -389,7 +389,7 @@ fun Message.onResponseByAuthor(context: CommandContext, function: suspend (Lorit
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
 	functions.onResponseByAuthor = function
 	return this
 }
@@ -405,7 +405,7 @@ fun Message.onMessageReceived(context: CommandContext, function: suspend (Loritt
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
+	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.userHandle.idLong) }
 	functions.onMessageReceived = function
 	return this
 }
@@ -420,7 +420,7 @@ fun Message.onMessageReceived(context: CommandContext, function: suspend (Loritt
 fun Message.onReactionAddByAuthor(context: DiscordCommandContext, function: suspend (MessageReactionAddEvent) -> Unit): Message {
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
-	return onReactionAddByAuthor(context.user.idLong, guildId, channelId, function)
+	return onReactionAddByAuthor(context.loritta, context.user.idLong, guildId, channelId, function)
 }
 
 /**
@@ -431,7 +431,7 @@ fun Message.onReactionAddByAuthor(context: DiscordCommandContext, function: susp
  * @param channelId the channel's ID, may be null
  * @return          the message object for chaining
  */
-fun Message.onReactionAddByAuthor(userId: Long, guildId: Long?, channelId: Long?, function: suspend (MessageReactionAddEvent) -> Unit): Message {
+fun Message.onReactionAddByAuthor(loritta: LorittaBot, userId: Long, guildId: Long?, channelId: Long?, function: suspend (MessageReactionAddEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
 	functions.onReactionAddByAuthor = function
 	return this
@@ -448,7 +448,7 @@ fun Message.onReactionByAuthor(context: DiscordCommandContext, function: suspend
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	onReactionByAuthor(context.user.idLong, guildId, channelId, function)
+	onReactionByAuthor(context.loritta, context.user.idLong, guildId, channelId, function)
 	return this
 }
 
@@ -461,7 +461,7 @@ fun Message.onReactionByAuthor(context: DiscordCommandContext, function: suspend
  * @param function  the callback that should be invoked
  * @return          the message object for chaining
  */
-fun Message.onReactionByAuthor(userId: Long, guildId: Long?, channelId: Long?, function: suspend (GenericMessageReactionEvent) -> Unit): Message {
+fun Message.onReactionByAuthor(loritta: LorittaBot, userId: Long, guildId: Long?, channelId: Long?, function: suspend (GenericMessageReactionEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
 	functions.onReactionByAuthor = function
 	return this
@@ -476,7 +476,7 @@ fun Message.onReactionByAuthor(userId: Long, guildId: Long?, channelId: Long?, f
  * @param function the callback that should be invoked
  * @return         the message object for chaining
  */
-fun Message.onResponseByAuthor(userId: Long, guildId: Long?, channelId: Long?, function: suspend (LorittaMessageEvent) -> Unit): Message {
+fun Message.onResponseByAuthor(loritta: LorittaBot, userId: Long, guildId: Long?, channelId: Long?, function: suspend (LorittaMessageEvent) -> Unit): Message {
 	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, userId) }
 	functions.onResponseByAuthor = function
 	return this
@@ -493,7 +493,7 @@ fun Message.onResponseByAuthor(context: DiscordCommandContext, function: suspend
 	val guildId = if (this.isFromType(ChannelType.PRIVATE)) null else this.guild.idLong
 	val channelId = if (this.isFromType(ChannelType.PRIVATE)) null else this.channel.idLong
 
-	val functions = loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
+	val functions = context.loritta.messageInteractionCache.getOrPut(this.idLong) { MessageInteractionFunctions(guildId, channelId, context.user.idLong) }
 	functions.onResponseByAuthor = function
 	return this
 }
@@ -501,7 +501,7 @@ fun Message.onResponseByAuthor(context: DiscordCommandContext, function: suspend
 /**
  * Removes all interaction functions associated with [this]
  */
-fun Message.removeAllFunctions(): Message {
+fun Message.removeAllFunctions(loritta: LorittaBot): Message {
 	loritta.messageInteractionCache.remove(this.idLong)
 	return this
 }

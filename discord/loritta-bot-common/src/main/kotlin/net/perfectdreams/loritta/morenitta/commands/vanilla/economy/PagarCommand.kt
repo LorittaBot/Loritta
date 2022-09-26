@@ -8,11 +8,9 @@ import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.gson
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
 import net.perfectdreams.loritta.morenitta.utils.removeAllFunctions
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
@@ -24,10 +22,10 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.*
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class PagarCommand : AbstractCommand("pay", listOf("pagar"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf("pagar"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private val mutex = Mutex()
 	}
@@ -44,9 +42,9 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), net.perfectdreams.l
 			var economySource = "global"
 			var currentIdx = 0
 
-			val payerProfile = context.config.getUserData(context.userHandle.idLong)
+			val payerProfile = context.config.getUserData(loritta, context.userHandle.idLong)
 
-			val economyConfig = transaction(Databases.loritta) {
+			val economyConfig = loritta.pudding.transaction {
 				loritta.getOrCreateServerConfig(context.guild.idLong).economyConfig
 			}
 
@@ -225,13 +223,13 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), net.perfectdreams.l
 								val usersThatReactedToTheMessage = it.reaction.retrieveUsers().await()
 
 								if (context.userHandle in usersThatReactedToTheMessage && user in usersThatReactedToTheMessage) {
-									message.removeAllFunctions()
+									message.removeAllFunctions(loritta)
 
 									logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
 									val shard = loritta.config.clusters.first { it.id == 1L }
 
-									val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/transfer-balance")
-											.userAgent(loritta.lorittaCluster.getUserAgent())
+									val body = HttpRequest.post("https://${shard.getUrl(loritta)}/api/v1/loritta/transfer-balance")
+											.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 											.header("Authorization", loritta.lorittaInternalApiKey.name)
 											.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
 											.readTimeout(loritta.config.loritta.clusterReadTimeout)
@@ -273,12 +271,12 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), net.perfectdreams.l
 
 				message.addReaction("✅").queue()
 			} else {
-				val receiverProfile = context.config.getUserData(user.idLong)
+				val receiverProfile = context.config.getUserData(loritta, user.idLong)
 
 				val beforeGiver = payerProfile.money
 				val beforeReceiver = receiverProfile.money
 
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					payerProfile.money -= howMuch.toBigDecimal()
 					receiverProfile.money += howMuch.toBigDecimal()
 				}
@@ -303,7 +301,7 @@ class PagarCommand : AbstractCommand("pay", listOf("pagar"), net.perfectdreams.l
 
 	private suspend fun checkIfSelfAccountGotDailyRecently(context: CommandContext): Boolean {
 		// Check if the user got daily in the last 14 days before allowing a transaction
-		val dailyRewardInTheLastXDays = AccountUtils.getUserDailyRewardInTheLastXDays(context.lorittaUser.profile, 14)
+		val dailyRewardInTheLastXDays = AccountUtils.getUserDailyRewardInTheLastXDays(loritta, context.lorittaUser.profile, 14)
 
 		if (dailyRewardInTheLastXDays == null) {
 			context.reply(

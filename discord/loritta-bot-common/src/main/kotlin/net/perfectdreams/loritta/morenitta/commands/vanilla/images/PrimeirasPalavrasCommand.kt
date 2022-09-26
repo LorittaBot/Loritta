@@ -12,7 +12,7 @@ import java.awt.Color
 import java.awt.Font
 import java.io.File
 
-class PrimeirasPalavrasCommand : AbstractCommand("firstwords", listOf("primeiraspalavras"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class PrimeirasPalavrasCommand(loritta: LorittaBot) : AbstractCommand(loritta, "firstwords", listOf("primeiraspalavras"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.firstwords.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.firstwords.examples")
 
@@ -36,9 +36,9 @@ class PrimeirasPalavrasCommand : AbstractCommand("firstwords", listOf("primeiras
 
 			val quaseFalando = str[0] + "... " + str[0] + "..."
 
-			ImageUtils.drawTextWrap(quaseFalando, 4, 5 + font.size, 236, 0, baseGraph.fontMetrics, baseGraph)
+			ImageUtils.drawTextWrap(loritta, quaseFalando, 4, 5 + font.size, 236, 0, baseGraph.fontMetrics, baseGraph)
 
-			ImageUtils.drawTextWrapSpaces(str, 4, 277 + font.size, 342, 0, baseGraph.fontMetrics, baseGraph)
+			ImageUtils.drawTextWrapSpaces(loritta, str, 4, 277 + font.size, 342, 0, baseGraph.fontMetrics, baseGraph)
 
 			context.sendFile(bi, "tirinha_baby.png", context.getAsMention(true))
 		} else {

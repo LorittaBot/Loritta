@@ -45,7 +45,7 @@ class AddFirstToNewChannelsModule(private val m: LorittaCinnamon) : ProcessDisco
         guildId: Snowflake,
         channelId: Snowflake
     ) {
-        val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value) ?: return
+        val serverConfig = m.pudding.serverConfigs.getServerConfigRoot(guildId.value) ?: return
         val miscellaneousConfig = serverConfig.getMiscellaneousConfig() ?: return
 
         if (!miscellaneousConfig.enableQuirky)

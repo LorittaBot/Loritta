@@ -9,9 +9,7 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.StoredMessage
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
@@ -30,8 +28,8 @@ import net.perfectdreams.loritta.common.exposed.dao.CachedDiscordWebhook
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.webhooks.WebhookState
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.json.JSONException
 import pw.forst.exposed.insertOrUpdate
 import java.awt.Color
@@ -66,7 +64,7 @@ object EventLog {
 	 * @return if the message was successfully sent
 	 */
 	@OptIn(ExperimentalTime::class)
-	suspend fun sendMessageInEventLogViaWebhook(message: WebhookMessage, guild: Guild, eventLogConfig: EventLogConfig): Boolean {
+	suspend fun sendMessageInEventLogViaWebhook(loritta: LorittaBot, message: WebhookMessage, guild: Guild, eventLogConfig: EventLogConfig): Boolean {
 		// From SocialRelayer, changed a bit to use JDA
 		val channel = guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return false
 		val channelId = channel.idLong
@@ -74,7 +72,7 @@ object EventLog {
 		val mutex = webhookRetrievalMutex.getOrPut(channelId) { Mutex() }
 		logger.info { "Retrieving webhook to be used in $channelId, is mutex locked? ${mutex.isLocked}" }
 		return mutex.withLock {
-			_sendMessageInEventLogViaWebhook(message, guild, channel)
+			_sendMessageInEventLogViaWebhook(loritta, message, guild, channel)
 		}
 	}
 
@@ -90,14 +88,14 @@ object EventLog {
 	// This is doesn't wrap in a mutex, that's why it is private
 	// The reason it starts with a underscore is because it is a private method and I can't find another good name for it
 	// The reason this is a separate method is to avoid deadlocking due to accessing an already locked mutex when trying to retrieve the webhook
-	private suspend fun _sendMessageInEventLogViaWebhook(message: WebhookMessage, guild: Guild, channel: TextChannel): Boolean {
+	private suspend fun _sendMessageInEventLogViaWebhook(loritta: LorittaBot, message: WebhookMessage, guild: Guild, channel: TextChannel): Boolean {
 		// From SocialRelayer, changed a bit to use JDA
 		val channelId = channel.idLong
 
 		logger.info { "Trying to retrieve a webhook to be used in $channelId" }
 
 		val alreadyCachedWebhookFromDatabase = withContext(Dispatchers.IO) {
-			transaction(Databases.loritta) {
+			loritta.pudding.transaction {
 				CachedDiscordWebhook.findById(channelId)
 			}
 		}
@@ -125,7 +123,7 @@ object EventLog {
 					logger.warn { "Failed to get webhook in channel $channelId due to lack of manage webhooks permission" }
 
 					withContext(Dispatchers.IO) {
-						transaction(Databases.loritta) {
+						loritta.pudding.transaction {
 							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
 								it[id] = channelId
 								// We don't replace the webhook token here... there is no pointing in replacing it.
@@ -161,7 +159,7 @@ object EventLog {
 
 				// Store the newly found webhook in our database!
 				guildWebhookFromDatabase = withContext(Dispatchers.IO) {
-					transaction(Databases.loritta) {
+					loritta.pudding.transaction {
 						CachedDiscordWebhook.wrapRow(
 							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
 								it[id] = channelId
@@ -177,7 +175,7 @@ object EventLog {
 				logger.warn(e) { "Failed to get webhook in channel $channelId" }
 
 				withContext(Dispatchers.IO) {
-					transaction(Databases.loritta) {
+					loritta.pudding.transaction {
 						CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
 							it[id] = channelId
 							// We don't replace the webhook token here... there is no pointing in replacing it.
@@ -219,14 +217,14 @@ object EventLog {
 				// Phase 2 means that SOMEONE is deleting the bot so it should just be ignored for a few minutes
 				logger.warn(e) { "Webhook $webhook in $channelId does not exist! Current state is ${webhook.state}..." }
 				withContext(Dispatchers.IO) {
-					transaction(Databases.loritta) {
+					loritta.pudding.transaction {
 						webhook.state = if (webhook.state == WebhookState.UNKNOWN_WEBHOOK_PHASE_1) WebhookState.UNKNOWN_WEBHOOK_PHASE_2 else WebhookState.UNKNOWN_WEBHOOK_PHASE_1
 						webhook.updatedAt = System.currentTimeMillis()
 					}
 				}
 				logger.warn(e) { "Webhook $webhook in $channelId does not exist and its state was updated to ${webhook.state}!" }
 
-				_sendMessageInEventLogViaWebhook(message, guild, channel)
+				_sendMessageInEventLogViaWebhook(loritta, message, guild, channel)
 			} else {
 				logger.warn(e) { "Something went wrong while sending the webhook message $message in $channelId using webhook $webhook!" }
 				false
@@ -236,7 +234,7 @@ object EventLog {
 		logger.info { "Everything went well when sending $message in $channelId using webhook $webhook, updating last used time..." }
 
 		withContext(Dispatchers.IO) {
-			transaction(Databases.loritta) {
+			loritta.pudding.transaction {
 				webhook.lastSuccessfullyExecutedAt = System.currentTimeMillis()
 			}
 		}
@@ -244,7 +242,7 @@ object EventLog {
 		return true // yay! :smol_gessy:
 	}
 
-	suspend fun onMessageReceived(serverConfig: ServerConfig, message: Message) {
+	suspend fun onMessageReceived(loritta: LorittaBot, serverConfig: ServerConfig, message: Message) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -260,9 +258,9 @@ object EventLog {
 					StoredMessage.new(message.idLong) {
 						authorId = message.author.idLong
 						channelId = message.channel.idLong
-						content = message.contentRaw
 						createdAt = System.currentTimeMillis()
 						storedAttachments = attachments.toTypedArray()
+						this.encryptAndSetContent(loritta, message.contentRaw)
 					}
 				}
 			}
@@ -271,7 +269,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onMessageUpdate(serverConfig: ServerConfig, locale: BaseLocale, message: Message) {
+	suspend fun onMessageUpdate(loritta: LorittaBot, serverConfig: ServerConfig, locale: BaseLocale, message: Message) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -290,15 +288,16 @@ object EventLog {
 						StoredMessage.findById(message.idLong)
 					}
 
-					if (storedMessage != null && storedMessage.content != message.contentRaw && eventLogConfig.messageEdited) {
+					if (storedMessage != null && storedMessage.decryptContent(loritta) != message.contentRaw && eventLogConfig.messageEdited) {
 						val embed = WebhookEmbedBuilder()
 							.setColor(Color(238, 241, 0).rgb)
-							.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.content, message.contentRaw, message.textChannel.asMention).joinToString("\n")}")
+							.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.decryptContent(loritta), message.contentRaw, message.textChannel.asMention).joinToString("\n")}")
 							.setAuthor(WebhookEmbed.EmbedAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl))
 							.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", message.member?.user?.id], null))
 							.setTimestamp(Instant.now())
 
 						sendMessageInEventLogViaWebhook(
+							loritta,
 							WebhookMessageBuilder()
 								.setUsername(message.guild.selfMember.user.name)
 								.setAvatarUrl(message.guild.selfMember.user.effectiveAvatarUrl)
@@ -312,7 +311,7 @@ object EventLog {
 
 					if (storedMessage != null) {
 						loritta.newSuspendedTransaction {
-							storedMessage.content = message.contentRaw
+							storedMessage.encryptAndSetContent(loritta, message.contentRaw)
 						}
 					}
 				}
@@ -322,7 +321,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onVoiceJoin(serverConfig: ServerConfig, member: Member, channelJoined: VoiceChannel) {
+	suspend fun onVoiceJoin(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelJoined: VoiceChannel) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -347,6 +346,7 @@ object EventLog {
 					.setTimestamp(Instant.now())
 
 				sendMessageInEventLogViaWebhook(
+					loritta,
 					WebhookMessageBuilder()
 						.setUsername(member.guild.selfMember.user.name)
 						.setAvatarUrl(member.guild.selfMember.user.effectiveAvatarUrl)
@@ -363,7 +363,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onVoiceLeave(serverConfig: ServerConfig, member: Member, channelLeft: VoiceChannel) {
+	suspend fun onVoiceLeave(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelLeft: VoiceChannel) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -387,6 +387,7 @@ object EventLog {
 					.setTimestamp(Instant.now())
 
 				sendMessageInEventLogViaWebhook(
+					loritta,
 					WebhookMessageBuilder()
 						.setUsername(member.guild.selfMember.user.name)
 						.setAvatarUrl(member.guild.selfMember.user.effectiveAvatarUrl)
@@ -402,12 +403,12 @@ object EventLog {
 		}
 	}
 
-	fun generateRandomInitVector() = ByteArray(16).apply {
+	private fun generateRandomInitVector(loritta: LorittaBot) = ByteArray(16).apply {
 		loritta.random.nextBytes(this)
 	}
 
-	fun encryptMessage(content: String): EncryptedMessage {
-		val initVector = generateRandomInitVector()
+	fun encryptMessage(loritta: LorittaBot, content: String): EncryptedMessage {
+		val initVector = generateRandomInitVector(loritta)
 
 		val iv = IvParameterSpec(initVector)
 		val skeySpec = SecretKeySpec(loritta.discordConfig.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
@@ -418,7 +419,7 @@ object EventLog {
 		return EncryptedMessage(Base64.getEncoder().encodeToString(initVector), Base64.getEncoder().encodeToString(encrypted))
 	}
 
-	fun decryptMessage(initVector: String, encryptedContent: String): String {
+	fun decryptMessage(loritta: LorittaBot, initVector: String, encryptedContent: String): String {
 		val iv = IvParameterSpec(Base64.getDecoder().decode(initVector))
 		val skeySpec = SecretKeySpec(loritta.discordConfig.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
 

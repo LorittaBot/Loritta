@@ -121,7 +121,7 @@ class TrackPackageExecutor(loritta: LorittaCinnamon, val client: CorreiosClient)
                 context.user.id,
                 packageId,
                 obj,
-                packageId in context.loritta.services.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
+                packageId in context.loritta.pudding.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
             )
 
             context.sendEphemeralMessage {

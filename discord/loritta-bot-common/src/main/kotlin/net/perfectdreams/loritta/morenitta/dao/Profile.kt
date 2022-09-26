@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.morenitta.dao
 import net.perfectdreams.loritta.morenitta.tables.Dailies
 import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import mu.KotlinLogging
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
@@ -45,9 +45,9 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	 *
 	 * @return the result and when the user can get the daily again
 	 */
-	suspend fun canGetDaily(): Pair<Boolean, Long> {
+	suspend fun canGetDaily(loritta: LorittaBot): Pair<Boolean, Long> {
 		val receivedDailyAt = loritta.newSuspendedTransaction {
-			net.perfectdreams.loritta.morenitta.tables.Dailies.select { Dailies.receivedById eq userId }
+			Dailies.select { Dailies.receivedById eq userId }
 					.orderBy(Dailies.receivedAt, SortOrder.DESC)
 					.limit(1)
 					.firstOrNull()
@@ -68,7 +68,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 	/**
 	 * Get the user's current banned state, if it exists and if it is valid
 	 */
-	suspend fun getBannedState(): ResultRow? {
+	suspend fun getBannedState(loritta: LorittaBot): ResultRow? {
 		val bannedState = loritta.newSuspendedTransaction {
 			BannedUsers.select {
 				BannedUsers.userId eq this@Profile.id.value and
@@ -218,7 +218,7 @@ class Profile(id: EntityID<Long>) : Entity<Long>(id) {
 		)
 	}
 
-	suspend fun getProfileBackground() = loritta.getUserProfileBackground(userId)
+	suspend fun getProfileBackground(loritta: LorittaBot) = loritta.getUserProfileBackground(userId)
 
 	class XpWrapper constructor(val currentLevel: Int, val expLeft: Long)
 }

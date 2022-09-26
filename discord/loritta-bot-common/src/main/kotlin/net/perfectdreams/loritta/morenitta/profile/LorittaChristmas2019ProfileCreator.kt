@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019") {
+class LorittaChristmas2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("lorittaChristmas2019") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
 	}
@@ -35,7 +35,7 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019"
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
 				.deriveFont(42F)
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
 		val marrySection = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/marry.png"))
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
@@ -46,23 +46,23 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019"
 			marriage?.user1
 		}
 
-		val marriedWith = if (marriedWithId != null) { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } else { null }
+		val marriedWith = if (marriedWithId != null) { loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } else { null }
 
-		val reputations = ProfileUtils.getReputationCount(user)
+		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 
 		var xpLocal: Long? = null
 		var localPosition: Long? = null
 
 		if (guild != null) {
-			val localProfile = ProfileUtils.getLocalProfile(guild, user)
+			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)
 
-			localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
+			localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 			xpLocal = localProfile?.xp
 		}
 
-		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
 		val resizedBadges = badges.map { it.getScaledInstance(30, 30, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 
@@ -79,7 +79,7 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019"
 			drawAvatar(avatar, graphics)
 
 			graphics.font = oswaldRegular50
-			graphics.drawText(user.name, 162, 480) // Nome do usuário
+			graphics.drawText(loritta, user.name, 162, 480) // Nome do usuário
 			graphics.font = oswaldRegular42
 
 			drawReputations(user, graphics, reputations)
@@ -91,7 +91,7 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019"
 
 			graphics.font = whitneyMedium22
 
-			ImageUtils.drawTextWrapSpaces(aboutMe, 162, 504, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+			ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 162, 504, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
 
 			if (marriage != null) {
 				graphics.drawImage(marrySection, 0, 0, null)
@@ -185,7 +185,7 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019"
 
 		var y = 515
 		for (line in userInfo) {
-			graphics.drawText(line, 773 - biggestStrWidth - 2, y)
+			graphics.drawText(loritta, line, 773 - biggestStrWidth - 2, y)
 			y += 16
 		}
 

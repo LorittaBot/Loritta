@@ -8,13 +8,15 @@ import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.chance
 import net.perfectdreams.loritta.morenitta.utils.config.QuirkyConfig
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageType
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 
-class QuirkyModule(val config: QuirkyConfig) : MessageReceivedModule {
+class QuirkyModule(val loritta: LorittaBot) : MessageReceivedModule {
+    val config = loritta.config.quirky
+
     override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
         val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
 

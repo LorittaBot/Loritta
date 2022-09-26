@@ -12,8 +12,9 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class WikipediaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "wikipedia", listOf("wiki"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	companion object {
 		// https://en.wikipedia.org/wiki/List_of_Wikipedias
 		private val VALID_WIKIPEDIAS = listOf(

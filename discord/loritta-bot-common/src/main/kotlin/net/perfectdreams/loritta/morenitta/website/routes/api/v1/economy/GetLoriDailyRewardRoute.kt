@@ -14,8 +14,6 @@ import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
@@ -51,7 +49,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 			.build<Long, Mutex>()
 			.asMap()
 
-		suspend fun checkIfUserCanPayout(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): Int {
+		suspend fun checkIfUserCanPayout(loritta: LorittaBot, userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): Int {
 			val todayAtMidnight = ZonedDateTime.now(Constants.LORITTA_TIMEZONE)
 				.withHour(0)
 				.withMinute(0)
@@ -105,10 +103,11 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 			}
 
 			if (lastReceivedDailyAt.isNotEmpty() || sameIpDailyOneHourAgoAt.isNotEmpty()) {
-				if (!net.perfectdreams.loritta.morenitta.utils.loritta.config.isOwner(userIdentification.id.toLong())) {
+				if (!loritta.config.isOwner(userIdentification.id.toLong())) {
 					throw WebsiteAPIException(
 						HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_ACCOUNT_TODAY,
 							data = {
 								it["canPayoutAgain"] = tomorrowAtMidnight
@@ -125,6 +124,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 					throw WebsiteAPIException(
 						HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.MFA_DISABLED
 						)
 					)
@@ -135,6 +135,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 					throw WebsiteAPIException(
 						HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.ALREADY_GOT_THE_DAILY_REWARD_SAME_IP_TODAY,
 							data = {
 								it["canPayoutAgain"] = tomorrowAtMidnight
@@ -148,8 +149,8 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 			return sameIpDailyAt.size
 		}
 
-		suspend fun verifyIfAccountAndIpAreSafe(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String) {
-			val status = MiscUtils.verifyAccount(userIdentification, ip)
+		suspend fun verifyIfAccountAndIpAreSafe(loritta: LorittaBot, userIdentification: TemmieDiscordAuth.UserIdentification, ip: String) {
+			val status = MiscUtils.verifyAccount(loritta, userIdentification, ip)
 			val email = userIdentification.email
 			logger.info { "AccountCheckResult for (${userIdentification.username}#${userIdentification.discriminator}) ${userIdentification.id} - ${status.name}" }
 			logger.info { "Is verified? ${userIdentification.verified}" }
@@ -168,6 +169,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 						throw WebsiteAPIException(
 							HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
+								loritta,
 								LoriWebCode.BLACKLISTED_IP,
 								data = {
 									"reason" to when (status) {
@@ -184,6 +186,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 						throw WebsiteAPIException(
 							HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
+								loritta,
 								LoriWebCode.BLACKLISTED_EMAIL
 							)
 						)
@@ -192,6 +195,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 						throw WebsiteAPIException(
 							HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
+								loritta,
 								LoriWebCode.UNVERIFIED_ACCOUNT
 							)
 						)
@@ -221,6 +225,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 			throw WebsiteAPIException(
 				HttpStatusCode.Forbidden,
 				WebsiteUtils.createErrorPayload(
+					loritta,
 					LoriWebCode.INVALID_RECAPTCHA,
 					data = {
 						"errorCodes" to jsonParser["error-codes"].array
@@ -234,15 +239,15 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 
 		val userIdentification = discordAuth.getUserIdentification()
-		verifyIfAccountAndIpAreSafe(userIdentification, ip)
+		verifyIfAccountAndIpAreSafe(loritta, userIdentification, ip)
 
 		val mutex = mutexes.getOrPut(lorittaProfile.userId) { Mutex() }
 		mutex.withLock {
 			// Para evitar pessoas criando várias contas e votando, nós iremos também verificar o IP dos usuários que votarem
 			// Isto evita pessoas farmando upvotes votando (claro que não é um método infalível, mas é melhor que nada, né?)
-			checkIfUserCanPayout(userIdentification, ip)
+			checkIfUserCanPayout(loritta, userIdentification, ip)
 
-			val status = MiscUtils.verifyAccount(userIdentification, ip)
+			val status = MiscUtils.verifyAccount(loritta, userIdentification, ip)
 			val email = userIdentification.email
 
 			val random = RANDOM.nextInt(1, 101)
@@ -365,7 +370,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 				)
 
 				if (sponsoredByUserId != null) {
-					val sponsoredByUser = lorittaShards.retrieveUserInfoById(sponsoredByUserId)
+					val sponsoredByUser = loritta.lorittaShards.retrieveUserInfoById(sponsoredByUserId)
 
 					if (sponsoredByUser != null)
 						sponsor["user"] = WebsiteUtils.transformToJson(sponsoredByUser)

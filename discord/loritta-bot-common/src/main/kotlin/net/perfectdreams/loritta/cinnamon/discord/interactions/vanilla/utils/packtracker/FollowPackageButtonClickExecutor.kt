@@ -43,7 +43,7 @@ class FollowPackageButtonClickExecutor(
                     )
 
                 try {
-                    loritta.services.packagesTracking.trackCorreiosPackage(UserId(user.id.value), decoded.trackingId)
+                    loritta.pudding.packagesTracking.trackCorreiosPackage(UserId(user.id.value), decoded.trackingId)
 
                     context.updateMessage {
                         actionRow {

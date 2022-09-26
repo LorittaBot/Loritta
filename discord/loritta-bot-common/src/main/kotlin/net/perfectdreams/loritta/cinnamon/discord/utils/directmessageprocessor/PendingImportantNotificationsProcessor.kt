@@ -23,7 +23,7 @@ class PendingImportantNotificationsProcessor(val loritta: LorittaCinnamon) : Run
         try {
             logger.info { "Processing pending important notifications in the queue..." }
 
-            val connection = loritta.services.hikariDataSource.connection
+            val connection = loritta.pudding.hikariDataSource.connection
             connection.use {
                 val selectStatement = it.prepareStatement("""SELECT id, "user", state, notification FROM ${PendingImportantNotifications.tableName} WHERE state = '${PendingImportantNotificationState.PENDING.name}' ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 10;""")
                 val rs = selectStatement.executeQuery()
@@ -37,7 +37,7 @@ class PendingImportantNotificationsProcessor(val loritta: LorittaCinnamon) : Run
 
                     // TODO: This could be improved to reuse the same connection, however I don't know how this could be done without replacing everything with Exposed
                     val messageWasSuccessfullySent = runBlocking {
-                        val notification = loritta.services.notifications.getUserNotification(
+                        val notification = loritta.pudding.notifications.getUserNotification(
                             UserId(userId),
                             notificationId
                         )
@@ -54,7 +54,7 @@ class PendingImportantNotificationsProcessor(val loritta: LorittaCinnamon) : Run
                             )
 
                             return@runBlocking UserUtils.sendMessageToUserViaDirectMessage(
-                                loritta.services,
+                                loritta.pudding,
                                 loritta.rest,
                                 UserId(userId),
                                 message.toKordUserMessageCreateBuilder()

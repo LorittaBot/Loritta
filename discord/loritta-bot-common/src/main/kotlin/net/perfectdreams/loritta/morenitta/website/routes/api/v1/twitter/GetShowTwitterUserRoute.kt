@@ -63,6 +63,7 @@ class GetShowTwitterUserRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/twit
 			throw WebsiteAPIException(
 					HttpStatusCode.NotFound,
 					WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.ITEM_NOT_FOUND,
 							"Unknown Twitter Type"
 					)
@@ -73,6 +74,7 @@ class GetShowTwitterUserRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/twit
 			throw WebsiteAPIException(
 					HttpStatusCode.NotFound,
 					WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.ITEM_NOT_FOUND,
 							"Unknown Twitter User"
 					)

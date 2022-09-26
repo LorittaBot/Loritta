@@ -11,7 +11,6 @@ import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.removeAllFunctions
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
@@ -23,11 +22,12 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 
-class InviteLinkModule : MessageReceivedModule {
+class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 	companion object {
 		val cachedInviteLinks = Caffeine.newBuilder().expireAfterAccess(30L, TimeUnit.MINUTES).build<Long, List<String>>().asMap()
 	}
@@ -36,7 +36,7 @@ class InviteLinkModule : MessageReceivedModule {
 		if (loritta.config.gatewayProxy.disableInviteBlocker)
 			return false
 
-		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(ServerConfig::inviteBlockerConfig)
+		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(loritta, ServerConfig::inviteBlockerConfig)
 				?: return false
 
 		if (!inviteBlockerConfig.enabled)
@@ -54,7 +54,7 @@ class InviteLinkModule : MessageReceivedModule {
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		val message = event.message
 		val guild = message.guild
-		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(ServerConfig::inviteBlockerConfig)
+		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(loritta, ServerConfig::inviteBlockerConfig)
 				?: return false
 
 		val content = message.contentRaw
@@ -173,9 +173,9 @@ class InviteLinkModule : MessageReceivedModule {
 									).joinToString("\n") { it.build(JDAUser(event.member.user)) }
 							)
 
-							enableBypassMessage.onReactionAddByAuthor(event.author.idLong) {
+							enableBypassMessage.onReactionAddByAuthor(loritta, event.author.idLong) {
 								if (it.reactionEmote.id == (Emotes.LORI_PAT as DiscordEmote).id) {
-									enableBypassMessage.removeAllFunctions()
+									enableBypassMessage.removeAllFunctions(loritta)
 
 									loritta.newSuspendedTransaction {
 										ServerRolePermissions.insert {

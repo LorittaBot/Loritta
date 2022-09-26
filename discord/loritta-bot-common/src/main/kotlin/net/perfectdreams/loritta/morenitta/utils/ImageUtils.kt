@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import com.google.common.cache.CacheBuilder
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
@@ -9,7 +10,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.streams.toList
 
-fun Graphics.drawText(text: String, x: Int, y: Int, maxX: Int? = null) {
+fun Graphics.drawText(loritta: LorittaBot, text: String, x: Int, y: Int, maxX: Int? = null) {
 	var currentX = x // X atual
 	var currentY = y // Y atual
 	var textToBeDrawn = text
@@ -39,7 +40,7 @@ fun Graphics.drawText(text: String, x: Int, y: Int, maxX: Int? = null) {
 		val width = fontMetrics.charWidth(c) // Width do char (normalmente é 16)
 		if (!this.font.canDisplay(c)) {
 			// Talvez seja um emoji!
-			val emoteImage = ImageUtils.getTwitterEmoji(textToBeDrawn, idx)
+			val emoteImage = ImageUtils.getTwitterEmoji(loritta, textToBeDrawn, idx)
 			if (emoteImage != null) {
 				this.drawImage(emoteImage.getScaledInstance(this.font.size, this.font.size, BufferedImage.SCALE_SMOOTH), currentX, currentY - this.font.size + 1, null)
 				currentX += fontMetrics.maxAdvance
@@ -65,14 +66,14 @@ object ImageUtils {
 
 	fun getTwitterEmojiUrlId(emoji: String) = emoji.codePoints().toList().joinToString(separator = "-") { LorittaUtils.toUnicode(it).substring(2) }
 
-	fun getTwitterEmoji(text: String, index: Int): BufferedImage? {
+	fun getTwitterEmoji(loritta: LorittaBot, text: String, index: Int): BufferedImage? {
 		try {
 			val imageUrl = "https://twemoji.maxcdn.com/2/72x72/" + LorittaUtils.toUnicode(text.codePointAt(index - 1)).substring(2) + ".png"
 			try {
 				if (emotes.containsKey(imageUrl))
 					return emotes[imageUrl]?.getOrNull()
 
-				val emoteImage = LorittaUtils.downloadImage(imageUrl)
+				val emoteImage = LorittaUtils.downloadImage(loritta, imageUrl)
 				emotes[imageUrl] = Optional.ofNullable(emoteImage)
 				return emoteImage
 			} catch (e: Exception) {
@@ -96,7 +97,7 @@ object ImageUtils {
 	 * @param graphics Graphics usado para escrever a imagem
 	 * @return Y final
 	 */
-	fun drawTextWrap(text: String, startX: Int, startY: Int, endX: Int, endY: Int, fontMetrics: FontMetrics, graphics: Graphics): Int {
+	fun drawTextWrap(loritta: LorittaBot, text: String, startX: Int, startY: Int, endX: Int, endY: Int, fontMetrics: FontMetrics, graphics: Graphics): Int {
 		val lineHeight = fontMetrics.height // Aqui é a altura da nossa fonte
 
 		var currentX = startX // X atual
@@ -111,7 +112,7 @@ object ImageUtils {
 				currentY += lineHeight
 			}
 			if (!graphics.font.canDisplay(c)) {
-				val emoteImage = getTwitterEmoji(text, idx)
+				val emoteImage = getTwitterEmoji(loritta, text, idx)
 				if (emoteImage != null) {
 					graphics.drawImage(emoteImage.getScaledInstance(graphics.font.size, graphics.font.size, BufferedImage.SCALE_SMOOTH), currentX, currentY - graphics.font.size + 1, null)
 					currentX += fontMetrics.maxAdvance
@@ -199,7 +200,7 @@ object ImageUtils {
 	 * @param text The String to draw.
 	 * @param rect The Rectangle to center the text in.
 	 */
-	fun drawCenteredStringEmoji(graphics: Graphics, text: String, rect: Rectangle, font: Font) {
+	fun drawCenteredStringEmoji(loritta: LorittaBot, graphics: Graphics, text: String, rect: Rectangle, font: Font) {
 		// Get the FontMetrics
 		val metrics = graphics.getFontMetrics(font)
 		// Determine the X coordinate for the text
@@ -213,7 +214,7 @@ object ImageUtils {
 			val width = graphics.fontMetrics.charWidth(c) // Width do char (normalmente é 16)
 			if (!graphics.font.canDisplay(c)) {
 				// Talvez seja um emoji!
-				val emoteImage = getTwitterEmoji(text, idx)
+				val emoteImage = getTwitterEmoji(loritta, text, idx)
 				if (emoteImage != null) {
 					graphics.drawImage(emoteImage.getScaledInstance(graphics.font.size, graphics.font.size, BufferedImage.SCALE_SMOOTH), x, y - graphics.font.size + 1, null)
 					x += graphics.fontMetrics.maxAdvance
@@ -275,7 +276,7 @@ object ImageUtils {
 	 * @param graphics Graphics usado para escrever a imagem
 	 * @return Y final
 	 */
-	fun drawTextWrapSpaces(text: String, startX: Int, startY: Int, endX: Int, endY: Int, fontMetrics: FontMetrics, graphics: Graphics): Int {
+	fun drawTextWrapSpaces(loritta: LorittaBot, text: String, startX: Int, startY: Int, endX: Int, endY: Int, fontMetrics: FontMetrics, graphics: Graphics): Int {
 		val lineHeight = fontMetrics.height // Aqui é a altura da nossa fonte
 
 		var currentX = startX // X atual
@@ -299,7 +300,7 @@ object ImageUtils {
 				width = fontMetrics.charWidth(c)
 				if (!graphics.font.canDisplay(c)) {
 					// Talvez seja um emoji!
-					val emoteImage = getTwitterEmoji(str, idx)
+					val emoteImage = getTwitterEmoji(loritta, str, idx)
 					if (emoteImage != null) {
 						graphics.drawImage(emoteImage.getScaledInstance(width, width, BufferedImage.SCALE_SMOOTH), currentX, currentY - width, null)
 						currentX += width
@@ -317,7 +318,7 @@ object ImageUtils {
 	/**
 	 * Creates an image containing the [text] centralized on it
 	 */
-	fun createTextAsImage(width: Int, height: Int, text: String): BufferedImage {
+	fun createTextAsImage(loritta: LorittaBot, width: Int, height: Int, text: String): BufferedImage {
 		val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
 		val graphics = image.graphics
 		graphics.color = Color.WHITE
@@ -371,7 +372,7 @@ object ImageUtils {
 		val skipHeight = fontMetrics.ascent
 		var y = (height / 2) - ((skipHeight - 10) * (lines.size - 1))
 		for (line in lines) {
-			ImageUtils.drawCenteredStringEmoji(graphics, line, Rectangle(0, y, width, 24), font)
+			ImageUtils.drawCenteredStringEmoji(loritta, graphics, line, Rectangle(0, y, width, 24), font)
 			y += skipHeight
 		}
 

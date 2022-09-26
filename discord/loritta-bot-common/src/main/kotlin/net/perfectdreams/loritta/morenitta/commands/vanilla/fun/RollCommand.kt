@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.GenericReplies
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
-class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class RollCommand(loritta: LorittaBot) : AbstractCommand(loritta, "roll", listOf("rolar", "dice", "dado"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command.roll"
 	}

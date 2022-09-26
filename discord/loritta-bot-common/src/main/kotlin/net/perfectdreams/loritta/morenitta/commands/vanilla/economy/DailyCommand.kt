@@ -4,14 +4,14 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", "bolsafamília"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class DailyCommand(loritta: LorittaBot) : AbstractCommand(loritta, "daily", listOf("diário", "bolsafamilia", "bolsafamília"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.daily.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
@@ -20,7 +20,7 @@ class DailyCommand : AbstractCommand("daily", listOf("diário", "bolsafamilia", 
 		// 1. Pegue quando o daily foi pego da última vez
 		// 2. Pegue o tempo de quando seria amanhã
 		// 3. Compare se o tempo atual é maior que o tempo de amanhã
-		val (canGetDaily, tomorrow) = context.lorittaUser.profile.canGetDaily()
+		val (canGetDaily, tomorrow) = context.lorittaUser.profile.canGetDaily(loritta)
 
 		if (!canGetDaily) {
 			context.reply(

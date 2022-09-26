@@ -4,7 +4,6 @@ import com.google.common.collect.Sets
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Mute
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
@@ -14,8 +13,6 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
@@ -44,8 +41,9 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf("mutar", "silenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mute.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
@@ -93,7 +91,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 				)
 			)
 
-			val settings = AdminUtils.retrieveModerationInfo(context.config)
+			val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
 
 			suspend fun punishUser(time: Long?) {
 				val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
@@ -213,6 +211,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 				}
 
 				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+					context.loritta,
 					settings,
 					context.guild,
 					PunishmentAction.MUTE
@@ -351,7 +350,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 
 				addRole.await()
 
-				transaction(Databases.loritta) {
+				context.loritta.pudding.transaction {
 					Mutes.deleteWhere {
 						(Mutes.guildId eq context.guild.idLong) and (Mutes.userId eq member.user.idLong)
 					}
@@ -379,7 +378,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 							break
 						delay(250)
 					}
-					spawnRoleRemovalThread(context.guild, context.locale, user, time!!)
+					spawnRoleRemovalThread(context.loritta, context.guild, context.locale, user, time!!)
 				}
 			} catch (e: HierarchyException) {
 				val reply = buildString {
@@ -403,11 +402,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 			return true
 		}
 
-		fun getMutedRole(guild: Guild, locale: BaseLocale) = guild.getRolesByName(locale["$LOCALE_PREFIX.mute.roleName"], false).getOrNull(0)
+		fun getMutedRole(loritta: LorittaBot, guild: Guild, locale: BaseLocale) = guild.getRolesByName(locale["$LOCALE_PREFIX.mute.roleName"], false).getOrNull(0)
 
-		fun spawnRoleRemovalThread(guild: Guild, locale: BaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(guild.idLong, locale, user.idLong, expiresAt)
+		fun spawnRoleRemovalThread(loritta: LorittaBot, guild: Guild, locale: BaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(loritta, guild.idLong, locale, user.idLong, expiresAt)
 
-		fun spawnRoleRemovalThread(guildId: Long, locale: BaseLocale, userId: Long, expiresAt: Long) {
+		fun spawnRoleRemovalThread(loritta: LorittaBot, guildId: Long, locale: BaseLocale, userId: Long, expiresAt: Long) {
 			val jobId = "$guildId#$userId"
 			logger.info("Criando role removal thread para usuário $userId na guild $guildId!")
 
@@ -418,7 +417,7 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 				previousJob.cancel() // lol nope
 			}
 
-			val currentGuild = lorittaShards.getGuildById(guildId)
+			val currentGuild = loritta.lorittaShards.getGuildById(guildId)
 
 			if (currentGuild == null) {
 				logger.warn("Bem... na verdade a guild $guildId não existe, então não iremos remover o estado de silenciado de $userId por enquanto...")
@@ -426,12 +425,12 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 			}
 
 			// Vamos pegar se a nossa role existe
-			val mutedRole = getMutedRole(currentGuild, locale)
+			val mutedRole = getMutedRole(loritta, currentGuild, locale)
 
 			if (System.currentTimeMillis() > expiresAt) {
 				logger.info("Removendo cargo silenciado de $userId na guild ${guildId} - Motivo: Já expirou!")
 
-				val guild = lorittaShards.getGuildById(guildId.toString())
+				val guild = loritta.lorittaShards.getGuildById(guildId.toString())
 
 				if (guild == null) {
 					logger.warn("Bem... na verdade a guild $guildId não existe mais, então não iremos remover o estado de silenciado de $userId por enquanto...")
@@ -441,9 +440,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 				// Maybe the user is not in the guild, but we want to remove the mute anyway, just get the member (or null)
 				val member = runBlocking { guild.retrieveMemberOrNullById(userId) }
 
-				transaction(Databases.loritta) {
-					Mutes.deleteWhere {
-						(Mutes.guildId eq guildId) and (Mutes.userId eq userId)
+				runBlocking {
+					loritta.pudding.transaction {
+						Mutes.deleteWhere {
+							(Mutes.guildId eq guildId) and (Mutes.userId eq userId)
+						}
 					}
 				}
 
@@ -470,9 +471,11 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 				}
 
 				// Se não existe, então quer dizer que o cargo foi deletado e isto deve ser ignorado!
-				transaction(Databases.loritta) {
-					Mutes.deleteWhere {
-						(Mutes.guildId eq guildId) and (Mutes.userId eq userId)
+				runBlocking {
+					loritta.pudding.transaction {
+						Mutes.deleteWhere {
+							(Mutes.guildId eq guildId) and (Mutes.userId eq userId)
+						}
 					}
 				}
 			} else {
@@ -486,15 +489,16 @@ class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.pe
 						return@launch
 					}
 
-					val guild = lorittaShards.getGuildById(guildId)
+					val guild = loritta.lorittaShards.getGuildById(guildId)
 					if (guild == null) {
 						logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas a guild não existe mais!")
 						return@launch
 					}
 
-					val settings = AdminUtils.retrieveModerationInfo(loritta.getOrCreateServerConfig(guildId))
+					val settings = AdminUtils.retrieveModerationInfo(loritta, loritta.getOrCreateServerConfig(guildId))
 
 					UnmuteCommand.unmute(
+						loritta,
 						settings,
 						guild,
 						guild.selfMember.user,

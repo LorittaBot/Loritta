@@ -36,10 +36,10 @@ class SelectPackageSelectMenuExecutor(
 
         val viewingTrackingId = values.first()
 
-        val packageEvents = context.loritta.services.packagesTracking.getCorreiosPackageEvents(viewingTrackingId)
+        val packageEvents = context.loritta.pudding.packagesTracking.getCorreiosPackageEvents(viewingTrackingId)
             .map { Json.decodeFromString<CorreiosEvento>(it) }
 
-        val trackingIdsTrackedByUser = context.loritta.services.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
+        val trackingIdsTrackedByUser = context.loritta.pudding.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
 
         val lastEvent = packageEvents.maxByOrNull { it.criacao }
 

@@ -3,23 +3,17 @@ package net.perfectdreams.loritta.morenitta.platform.discord.utils
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
 import net.perfectdreams.loritta.morenitta.dao.Mute
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.modules.ReactionModule
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
-import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
 
@@ -130,72 +124,7 @@ class GuildSetupQueue(val loritta: LorittaBot) {
                 val member = guild.retrieveMemberOrNullById(mute.userId) ?: continue
 
                 logger.info("Adicionado removal thread pelo MutedUsersThread já que a guild iniciou! ~ Guild: ${mute.guildId} - User: ${mute.userId}")
-                MuteCommand.spawnRoleRemovalThread(guild, loritta.localeManager.getLocaleById(serverConfig.localeId), member.user, mute.expiresAt!!)
-            }
-
-            // Ao voltar, vamos reprocessar todas as reações necessárias do reaction role (desta guild)
-            val reactionRoles = loritta.newSuspendedTransaction {
-                ReactionOption.find { ReactionOptions.guildId eq guild.idLong }.toMutableList()
-            }
-
-            // Vamos fazer cache das mensagens para evitar pegando a mesma mensagem várias vezes
-            val messages = mutableMapOf<Long, Message?>()
-
-            for (option in reactionRoles) {
-                val textChannel = guild.getTextChannelById(option.textChannelId) ?: continue
-                val message = messages.getOrPutNullable(option.messageId) {
-                    try {
-                        textChannel.retrieveMessageById(option.messageId).await()
-                    } catch (e: ErrorResponseException) {
-                        null
-                    }
-                }
-
-                messages[option.messageId] = message
-
-                if (message == null)
-                    continue
-
-                // Verificar locks
-                // Existem vários tipos de locks: Locks de opções (via ID), locks de mensagens (via... mensagens), etc.
-                // Para ficar mais fácil, vamos verificar TODOS os locks da mensagem
-                val locks = mutableListOf<ReactionOption>()
-
-                for (lock in option.locks) {
-                    if (lock.contains("-")) {
-                        val split = lock.split("-")
-                        val channelOptionLock = loritta.newSuspendedTransaction {
-                            ReactionOption.find {
-                                (ReactionOptions.guildId eq guild.idLong) and
-                                        (ReactionOptions.textChannelId eq split[0].toLong()) and
-                                        (ReactionOptions.messageId eq split[1].toLong())
-                            }.toMutableList()
-                        }
-                        locks.addAll(channelOptionLock)
-                    } else { // Lock por option ID, esse daqui é mais complicado!
-                        val idOptionLock = loritta.newSuspendedTransaction {
-                            ReactionOption.find {
-                                (ReactionOptions.id eq lock.toLong())
-                            }.toMutableList()
-                        }
-                        locks.addAll(idOptionLock)
-                    }
-                }
-
-                // Agora nós já temos a opção desejada, só dar os cargos para o usuário!
-                val roles = option.roleIds.mapNotNull { guild.getRoleById(it) }
-
-                if (roles.isNotEmpty()) {
-                    val reaction = message.reactions.firstOrNull {
-                        it.reactionEmote.name == option.reaction || it.reactionEmote.emote.id == option.reaction
-                    }
-
-                    if (reaction != null) { // Reaction existe!
-                        reaction.retrieveUsers().await().asSequence().filter { !it.isBot }.mapNotNull { guild.getMember(it) }.forEach {
-                            ReactionModule.giveRolesToMember(it, reaction, option, locks, roles)
-                        }
-                    }
-                }
+                MuteCommand.spawnRoleRemovalThread(loritta, guild, loritta.localeManager.getLocaleById(serverConfig.localeId), member.user, mute.expiresAt!!)
             }
 
             val allActiveGiveaways = loritta.newSuspendedTransaction {
@@ -204,8 +133,8 @@ class GuildSetupQueue(val loritta: LorittaBot) {
 
             allActiveGiveaways.forEach {
                 try {
-                    if (GiveawayManager.giveawayTasks[it.id.value] == null)
-                        GiveawayManager.createGiveawayJob(it)
+                    if (loritta.giveawayManager.giveawayTasks[it.id.value] == null)
+                        loritta.giveawayManager.createGiveawayJob(it)
                 } catch (e: Exception) {
                     logger.error(e) { "Error while creating giveaway ${it.id.value} job on guild ready ${guild.idLong}" }
                 }

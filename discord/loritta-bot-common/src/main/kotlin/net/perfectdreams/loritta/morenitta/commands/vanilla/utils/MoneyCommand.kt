@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.utils
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.msgFormat
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
@@ -16,39 +15,9 @@ import org.jsoup.Jsoup
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
-	companion object {
-		var updatedAt = 0L
-		var job: Deferred<Map<String, Double>>? = null
-
-		fun getOrUpdateExchangeRates(): Deferred<Map<String, Double>> {
-			val diff = System.currentTimeMillis() - updatedAt
-
-			if (diff >= Constants.ONE_HOUR_IN_MILLISECONDS) {
-				job = GlobalScope.async(loritta.coroutineDispatcher) {
-					val jsoup = Jsoup.connect("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml?${System.currentTimeMillis()}")
-						.get()
-
-					val exchangeRates = jsoup.select("Cube")
-						.toList()
-						.filter { it.hasAttr("currency") }
-						.map { it.attr("currency") to it.attr("rate").toDouble() }
-						.toMap()
-						.toMutableMap()
-
-					exchangeRates["EUR"] = 1.0
-
-					updatedAt = System.currentTimeMillis()
-
-					exchangeRates
-				}
-			}
-
-			return job!!
-		}
-	}
-
+class MoneyCommand(loritta: LorittaBot) : AbstractCommand(loritta, "money", listOf("dinheiro", "grana"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.money.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.money.examples")
 
@@ -69,7 +38,7 @@ class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), net.p
 			val from = context.strippedArgs[0].toUpperCase()
 			val to = context.strippedArgs[1].toUpperCase()
 
-			val exchangeRates = getOrUpdateExchangeRates().await()
+			val exchangeRates = loritta.ecbManager.getOrUpdateExchangeRates().await()
 
 			var value: Double? = null
 

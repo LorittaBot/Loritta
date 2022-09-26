@@ -17,12 +17,12 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class DefaultProfileCreator : ProfileCreator("modernBlurple") {
+class DefaultProfileCreator(val loritta: LorittaBot) : ProfileCreator("modernBlurple") {
 	fun drawSection(graphics: Graphics, whitneyBold20: Font, whitneySemiBold20: Font, title: String, subtext: String, x: Int, y: Int): Pair<Int, Int> {
 		graphics.font = whitneyBold20
-		graphics.drawText(title, x, y, 800 - 6)
+		graphics.drawText(loritta, title, x, y, 800 - 6)
 		graphics.font = whitneySemiBold20
-		graphics.drawText(subtext, x, y + 19, 800 - 6)
+		graphics.drawText(loritta, subtext, x, y + 19, 800 - 6)
 		return Pair(x, y + 19)
 	}
 
@@ -32,7 +32,7 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(115, 115, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(115, 115, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
@@ -57,9 +57,9 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 		graphics.font = whitneySemiBold38
 
 		if (badges.isEmpty()) {
-			graphics.drawText(user.name, 139, 71, 517 - 6)
+			graphics.drawText(loritta, user.name, 139, 71, 517 - 6)
 		} else { // Caso exista badges, nós iremos alterar um pouquinho aonde o nome é desenhado
-			graphics.drawText(user.name, 139, 61 - 4, 517 - 6)
+			graphics.drawText(loritta, user.name, 139, 61 - 4, 517 - 6)
 			var x = 139
 			var y = 70
 
@@ -76,49 +76,49 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 			}
 		}
 
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		if (globalPosition != null)
 			drawSection(graphics, whitneyBold20, whitneySemiBold20, "Global", "#$globalPosition / ${userProfile.xp} XP", 562, 21)
 		else
 			drawSection(graphics, whitneyBold20, whitneySemiBold20, "Global", "${userProfile.xp} XP", 562, 21)
 
 		if (guild != null) {
-			val guildIcon = LorittaUtils.downloadImage(guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
+			val guildIcon = LorittaUtils.downloadImage(loritta, guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
 
-			val localProfile = ProfileUtils.getLocalProfile(guild, user)
+			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)
 
-			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
+			val localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
 			val xpLocal = localProfile?.xp
 
 			graphics.font = whitneyBold20
-			graphics.drawText(guild.name, 562, 61, 800 - 6)
+			graphics.drawText(loritta, guild.name, 562, 61, 800 - 6)
 			graphics.font = whitneySemiBold20
 			if (xpLocal != null) {
 				if (localPosition != null) {
-					graphics.drawText("#$localPosition / $xpLocal XP", 562, 78, 800 - 6)
+					graphics.drawText(loritta, "#$localPosition / $xpLocal XP", 562, 78, 800 - 6)
 				} else {
-					graphics.drawText("$xpLocal XP", 562, 78, 800 - 6)
+					graphics.drawText(loritta, "$xpLocal XP", 562, 78, 800 - 6)
 				}
 			} else {
-				graphics.drawText("???", 562, 78, 800 - 6)
+				graphics.drawText(loritta, "???", 562, 78, 800 - 6)
 			}
 
 			graphics.drawImage(guildIcon.toBufferedImage().makeRoundedCorners(38), 520, 44, null)
 		}
 
-		val reputations = ProfileUtils.getReputationCount(user)
+		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
 		drawSection(graphics, whitneyBold20, whitneySemiBold20, "Reputação", "$reputations reps", 562, 102)
 
-		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
 		if (globalEconomyPosition != null)
 			drawSection(graphics, whitneyBold20, whitneySemiBold20, locale["economy.currency.name.plural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
 		else
 			drawSection(graphics, whitneyBold20, whitneySemiBold20, locale["economy.currency.name.plural"], "${userProfile.money}", 562, 492)
 
-		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
+		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/modern/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
@@ -127,7 +127,7 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(aboutMe, 6, 493, 517 - 6, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 6, 493, 517 - 6, 600, graphics.fontMetrics, graphics)
 
 		graphics.drawImage(profileWrapperOverlay, 0, 0, null)
 

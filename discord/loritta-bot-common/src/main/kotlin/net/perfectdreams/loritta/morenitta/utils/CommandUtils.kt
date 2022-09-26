@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.entities.MessageChannel
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
 import org.jetbrains.exposed.sql.insert
@@ -53,7 +54,7 @@ object CommandUtils {
 	 * @param event     the message event
 	 * @param clazzName the class name of the command
 	 */
-	suspend fun trackCommandToDatabase(event: LorittaMessageEvent, clazzName: String) {
+	suspend fun trackCommandToDatabase(loritta: LorittaBot, event: LorittaMessageEvent, clazzName: String) {
 		loritta.newSuspendedTransaction {
 			ExecutedCommandsLog.insert {
 				it[userId] = event.author.idLong
@@ -66,7 +67,7 @@ object CommandUtils {
 		}
 	}
 
-	suspend fun checkIfCommandIsDisabledInGuild(serverConfig: ServerConfig, locale: BaseLocale, channel: MessageChannel, member: Member, clazzName: String): Boolean {
+	suspend fun checkIfCommandIsDisabledInGuild(loritta: LorittaBot, serverConfig: ServerConfig, locale: BaseLocale, channel: MessageChannel, member: Member, clazzName: String): Boolean {
 		if (serverConfig.disabledCommands.contains(clazzName)) {
 			val replies = mutableListOf(
 				LorittaReply(

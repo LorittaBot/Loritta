@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.common.commands.ArgumentType
@@ -16,8 +15,9 @@ import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos", "modlog", "modlogs", "infractions", "warnlist", "warns"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class WarnListCommand(loritta: LorittaBot) : AbstractCommand(loritta, "punishmentlist", listOf("listadeavisos", "modlog", "modlogs", "infractions", "warnlist", "warns"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 	}
@@ -57,7 +57,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 				return
 			}
 
-			val warnPunishments = AdminUtils.retrieveWarnPunishmentActions(context.config)
+			val warnPunishments = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
 
 			val embed = EmbedBuilder().apply {
 				setColor(Constants.DISCORD_BLURPLE)
@@ -98,7 +98,7 @@ class WarnListCommand : AbstractCommand("punishmentlist", listOf("listadeavisos"
 				val warn = warns.getOrNull(idx)
 
 				if (warn != null) {
-					val punisher = lorittaShards.getUserById(warn.punishedById)
+					val punisher = loritta.lorittaShards.getUserById(warn.punishedById)
 					val embed = EmbedBuilder().apply {
 						setColor(Constants.DISCORD_BLURPLE)
 						setAuthor(user.name, null, user.effectiveAvatarUrl)

@@ -14,8 +14,9 @@ import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca"), category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class DrawnMaskCommand(loritta: LorittaBot) : AbstractCommand(loritta, "drawnmasksign", listOf("drawnmaskplaca"), category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "drawn_mask_placa.png")) }
 	}

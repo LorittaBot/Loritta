@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
+import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
@@ -16,8 +17,9 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf("expulsar", "kickar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.kick.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
@@ -58,7 +60,7 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), net.pe
 				members.add(member)
 			}
 
-			val settings = AdminUtils.retrieveModerationInfo(context.config)
+			val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
 			val kickCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
@@ -111,11 +113,14 @@ class KickCommand : AbstractCommand("kick", listOf("expulsar", "kickar"), net.pe
 					}
 				}
 
-				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+				val punishLogMessage = runBlocking {
+					AdminUtils.getPunishmentForMessage(
+						context.loritta,
 						settings,
 						context.guild,
 						PunishmentAction.KICK
-				)
+					)
+				}
 
 				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 					val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)

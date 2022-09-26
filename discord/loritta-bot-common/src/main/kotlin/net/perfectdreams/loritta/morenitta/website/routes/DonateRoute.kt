@@ -16,7 +16,7 @@ class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 	override val isMainClusterOnlyRoute = true
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
-		val userIdentification = call.lorittaSession.getUserIdentification(call)
+		val userIdentification = call.lorittaSession.getUserIdentification(loritta, call)
 
 		val keys = jsonArray()
 
@@ -41,6 +41,7 @@ class DonateRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/donate") {
 
 		call.respondHtml(
 			DonateView(
+				loritta,
 				locale,
 				getPathWithoutLocale(call),
 				userIdentification,

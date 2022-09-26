@@ -44,7 +44,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRo
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
 		val type = call.parameters["type"]!!
@@ -69,6 +69,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRo
 							?: throw WebsiteAPIException(
 									HttpStatusCode.BadRequest,
 									WebsiteUtils.createErrorPayload(
+											loritta,
 											LoriWebCode.ITEM_NOT_FOUND,
 											"Item is not on the current daily shop"
 									)
@@ -78,6 +79,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRo
 					if (cost > profile.money)
 						throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
 								WebsiteUtils.createErrorPayload(
+										loritta,
 										LoriWebCode.INSUFFICIENT_FUNDS
 								)
 						)
@@ -90,6 +92,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRo
 						throw WebsiteAPIException(
 								HttpStatusCode.Conflict,
 								WebsiteUtils.createErrorPayload(
+										loritta,
 										LoriWebCode.ALREADY_BOUGHT_THE_ITEM
 								)
 						)
@@ -114,7 +117,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRo
 						val discordId = author.socialNetworks?.filterIsInstance<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.firstOrNull()?.id
 								?: continue
 
-						val creator = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(discordId)
+						val creator = loritta.getOrCreateLorittaProfile(discordId)
 
 						creator.addSonhosAndAddToTransactionLogNested(
 							creatorReceived,
@@ -135,6 +138,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRo
 							?: throw WebsiteAPIException(
 									HttpStatusCode.BadRequest,
 									WebsiteUtils.createErrorPayload(
+											loritta,
 											LoriWebCode.ITEM_NOT_FOUND,
 											"Item is not on the current daily shop"
 									)
@@ -144,6 +148,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRo
 					if (cost > profile.money)
 						throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
 								WebsiteUtils.createErrorPayload(
+										loritta,
 										LoriWebCode.INSUFFICIENT_FUNDS
 								)
 						)
@@ -156,6 +161,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRo
 						throw WebsiteAPIException(
 								HttpStatusCode.Conflict,
 								WebsiteUtils.createErrorPayload(
+										loritta,
 										LoriWebCode.ALREADY_BOUGHT_THE_ITEM
 								)
 						)
@@ -180,7 +186,7 @@ class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRo
 						val discordId = author.socialNetworks?.filterIsInstance<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()?.firstOrNull()?.id
 								?: continue
 
-						val creator = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(discordId)
+						val creator = loritta.getOrCreateLorittaProfile(discordId)
 
 						creator.addSonhosAndAddToTransactionLogNested(
 							creatorReceived,

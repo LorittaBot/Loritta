@@ -25,7 +25,7 @@ class AboutMeExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
 
         val newAboutMe = args[options.aboutMe]
 
-        val userSettings = context.loritta.services.users.getOrCreateUserProfile(context.user)
+        val userSettings = context.loritta.pudding.users.getOrCreateUserProfile(context.user)
             .getProfileSettings()
 
         userSettings.setAboutMe(newAboutMe)

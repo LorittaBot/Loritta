@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.user
 import net.perfectdreams.loritta.morenitta.dao.Reputation
 import net.perfectdreams.loritta.morenitta.tables.Reputations
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -35,7 +34,7 @@ class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRo
 		loritta as LorittaBot
 		val userId = call.parameters["userId"] ?: return
 
-		val user = lorittaShards.retrieveUserById(userId)!!
+		val user = loritta.lorittaShards.retrieveUserById(userId)!!
 
 		// Vamos agora pegar todas as reputações
 		val reputations = loritta.newSuspendedTransaction {
@@ -61,6 +60,7 @@ class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRo
 
 		call.respondHtml(
 			UserReputationView(
+				loritta,
 				locale,
 				getPathWithoutLocale(call),
 				userIdentification,

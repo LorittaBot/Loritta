@@ -53,6 +53,7 @@ class DiscordBotListTopCommand(loritta: LorittaBot): DiscordAbstractCommandBase(
             sendImage(
                 JVMImage(
                     RankingGenerator.generateRanking(
+                        loritta,
                         "Ranking Global",
                         null,
                         userData.map {

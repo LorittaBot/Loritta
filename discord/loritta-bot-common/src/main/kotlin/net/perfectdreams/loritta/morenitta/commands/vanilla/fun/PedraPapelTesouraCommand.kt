@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
-class PedraPapelTesouraCommand : AbstractCommand("jankenpon", listOf("pedrapapeltesoura", "ppt"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class PedraPapelTesouraCommand(loritta: LorittaBot) : AbstractCommand(loritta, "jankenpon", listOf("pedrapapeltesoura", "ppt"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.rockpaperscissors.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.rockpaperscissors.examples")
 

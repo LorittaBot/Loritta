@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.*
@@ -24,9 +23,9 @@ import kotlin.collections.set
 
 class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
-		val lorittaProfile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
+		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
 		val settings = loritta.newSuspendedTransaction { lorittaProfile.settings }
 		variables["lorittaProfile"] = lorittaProfile
 		variables["settings"] = settings
@@ -51,12 +50,12 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 		}
 
 		val guilds = userGuilds.filter {
-			val guild = lorittaShards.getGuildById(it.id)
+			val guild = loritta.lorittaShards.getGuildById(it.id)
 			if (guild != null) {
 				val member = guild.retrieveMemberById(lorittaProfile.userId).await()
 				val config = serverConfigs.firstOrNull { config -> config.guildId.toString() == it.id }
 				if (member != null && config != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
-					val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(config, member), lorittaProfile)
+					val lorittaUser = GuildLorittaUser(loritta, member, LorittaUser.loadMemberLorittaPermissions(loritta, config, member), lorittaProfile)
 					LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 				} else {
 					LorittaWebsite.canManageGuild(it)
@@ -71,7 +70,7 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 		val joinedServers = mutableMapOf<TemmieDiscordAuth.Guild, Boolean>()
 		for (guild in guilds) {
 			userPermissionLevels[guild] = LorittaWebsite.getUserPermissionLevel(guild)
-			joinedServers[guild] = lorittaShards.getGuildById(guild.id) != null
+			joinedServers[guild] = loritta.lorittaShards.getGuildById(guild.id) != null
 		}
 		variables["userPermissionLevels"] = userPermissionLevels
 		variables["joinedServers"] = joinedServers

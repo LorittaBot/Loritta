@@ -14,10 +14,11 @@ object RankingGenerator {
 	 * Generates a ranking image
 	 */
 	suspend fun generateRanking(
-			title: String,
-			guildIconUrl: String?,
-			rankedUsers: List<UserRankInformation>,
-			onNullUser: (suspend (Long) -> (CachedUserInfo?))? = null
+		loritta: LorittaBot,
+		title: String,
+		guildIconUrl: String?,
+		rankedUsers: List<UserRankInformation>,
+		onNullUser: (suspend (Long) -> (CachedUserInfo?))? = null
 	): BufferedImage {
 		val rankHeader = readImage(File(LorittaBot.ASSETS, "rank_header.png"))
 		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
@@ -29,21 +30,21 @@ object RankingGenerator {
 			"${loritta.instanceConfig.loritta.website.url}assets/img/unknown.png"
 		}
 
-		val serverIcon = (LorittaUtils.downloadImage(serverIconUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
-				.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val serverIcon = (LorittaUtils.downloadImage(loritta, serverIconUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)
+			.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(serverIcon, 259, -52, null)
 
 		graphics.drawImage(rankHeader, 0, 0, null)
 
 		val oswaldRegular10 = Constants.OSWALD_REGULAR
-				.deriveFont(10F)
+			.deriveFont(10F)
 
 		val oswaldRegular16 = oswaldRegular10
-				.deriveFont(16F)
+			.deriveFont(16F)
 
 		val oswaldRegular20 = oswaldRegular10
-				.deriveFont(20F)
+			.deriveFont(20F)
 
 		graphics.font = oswaldRegular16
 
@@ -57,13 +58,13 @@ object RankingGenerator {
 				break
 			}
 
-			val member = lorittaShards.retrieveUserInfoById(profile.userId) ?: onNullUser?.invoke(profile.userId)
+			val member = loritta.lorittaShards.retrieveUserInfoById(profile.userId) ?: onNullUser?.invoke(profile.userId)
 
 			if (member != null) {
 				val rankBackground = loritta.getUserProfileBackground(member.id)
 				graphics.drawImage(rankBackground.getScaledInstance(400, 300, BufferedImage.SCALE_SMOOTH)
-						.toBufferedImage()
-						.getSubimage(0, idx * 52, 400, 53), 0, currentY, null)
+					.toBufferedImage()
+					.getSubimage(0, idx * 52, 400, 53), 0, currentY, null)
 
 				graphics.color = Color(0, 0, 0, 127)
 				graphics.fillRect(0, currentY, 400, 53)
@@ -72,21 +73,22 @@ object RankingGenerator {
 
 				graphics.font = oswaldRegular20
 
-				ImageUtils.drawTextWrap(member.name, 143, currentY + 21, 9999, 9999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrap(loritta, member.name, 143, currentY + 21, 9999, 9999, graphics.fontMetrics, graphics)
 
 				graphics.font = oswaldRegular16
 
 				if (profile.subtitle != null)
-					ImageUtils.drawTextWrap(profile.subtitle, 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
+					ImageUtils.drawTextWrap(loritta, profile.subtitle, 144, currentY + 38, 9999, 9999, graphics.fontMetrics, graphics)
 
 				graphics.font = oswaldRegular10
 
 				// Show the user's ID in the subsubtitle
-				ImageUtils.drawTextWrap((profile.subsubtitle?.let { "$it // " } ?: "") + "ID: ${profile.userId}", 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
+				ImageUtils.drawTextWrap(loritta, (profile.subsubtitle?.let { "$it // " } ?: "") + "ID: ${profile.userId}", 145, currentY + 48, 9999, 9999, graphics.fontMetrics, graphics)
 
 				val avatar = (
 						LorittaUtils.downloadImage(
-								member.getEffectiveAvatarUrl(ImageFormat.PNG)
+							loritta,
+							member.getEffectiveAvatarUrl(ImageFormat.PNG)
 						) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
 						).getScaledInstance(143, 143, BufferedImage.SCALE_SMOOTH)
 
@@ -125,8 +127,8 @@ object RankingGenerator {
 	suspend fun isValidRankingPage(input: Long) = input in 1..100
 
 	data class UserRankInformation(
-			val userId: Long,
-			val subtitle: String? = null,
-			val subsubtitle: String? = null
+		val userId: Long,
+		val subtitle: String? = null,
+		val subsubtitle: String? = null
 	)
 }

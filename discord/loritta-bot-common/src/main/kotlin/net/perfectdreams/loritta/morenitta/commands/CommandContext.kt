@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.build
@@ -31,7 +32,17 @@ import javax.imageio.ImageIO
 /**
  * Contexto do comando executado
  */
-class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val locale: BaseLocale, var event: LorittaMessageEvent, var cmd: AbstractCommand, var args: Array<String>, var rawArgs: Array<String>, var strippedArgs: Array<String>) {
+class CommandContext(
+	val loritta: LorittaBot,
+	val config: ServerConfig,
+	var lorittaUser: LorittaUser,
+	val locale: BaseLocale,
+	var event: LorittaMessageEvent,
+	var cmd: AbstractCommand,
+	var args: Array<String>,
+	var rawArgs: Array<String>,
+	var strippedArgs: Array<String>
+) {
 	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean
@@ -109,47 +120,47 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 
 	suspend fun sendMessage(message: String, addInlineReply: Boolean = true): Message {
 		return sendMessage(MessageBuilder()
-				.denyMentions(
-						Message.MentionType.EVERYONE,
-						Message.MentionType.HERE
-				)
-				.append(if (message.isEmpty()) " " else message)
-				.build(),
-				addInlineReply = addInlineReply
+			.denyMentions(
+				Message.MentionType.EVERYONE,
+				Message.MentionType.HERE
+			)
+			.append(if (message.isEmpty()) " " else message)
+			.build(),
+			addInlineReply = addInlineReply
 		)
 	}
 
 	suspend fun sendMessage(message: String, embed: MessageEmbed, addInlineReply: Boolean = true): Message {
 		return sendMessage(MessageBuilder()
-				.denyMentions(
-						Message.MentionType.EVERYONE,
-						Message.MentionType.HERE
-				)
-				.setEmbed(embed)
-				.append(if (message.isEmpty()) " " else message)
-				.build(),
-				addInlineReply = addInlineReply
+			.denyMentions(
+				Message.MentionType.EVERYONE,
+				Message.MentionType.HERE
+			)
+			.setEmbed(embed)
+			.append(if (message.isEmpty()) " " else message)
+			.build(),
+			addInlineReply = addInlineReply
 		)
 	}
 
 	suspend fun sendMessage(embed: MessageEmbed, addInlineReply: Boolean = true): Message {
 		return sendMessage(
-				MessageBuilder()
-						.denyMentions(
-								Message.MentionType.EVERYONE,
-								Message.MentionType.HERE
-						)
-						.append(getAsMention(true))
-						.setEmbed(embed)
-						.build(),
-				addInlineReply = addInlineReply)
+			MessageBuilder()
+				.denyMentions(
+					Message.MentionType.EVERYONE,
+					Message.MentionType.HERE
+				)
+				.append(getAsMention(true))
+				.setEmbed(embed)
+				.build(),
+			addInlineReply = addInlineReply)
 	}
 
 	suspend fun sendMessage(message: Message, addInlineReply: Boolean = true): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			return event.channel.sendMessage(message)
-					.referenceIfPossible(event.message, config, addInlineReply)
-					.await()
+				.referenceIfPossible(event.message, config, addInlineReply)
+				.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
@@ -171,10 +182,10 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	suspend fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null): Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
-				.denyMentions(
-						Message.MentionType.EVERYONE,
-						Message.MentionType.HERE
-				)
+			.denyMentions(
+				Message.MentionType.EVERYONE,
+				Message.MentionType.HERE
+			)
 		builder.append(if (message.isEmpty()) " " else message)
 		if (embed != null)
 			builder.setEmbed(embed)
@@ -223,10 +234,10 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	suspend fun sendFile(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null): Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
-				.denyMentions(
-						Message.MentionType.EVERYONE,
-						Message.MentionType.HERE
-				)
+			.denyMentions(
+				Message.MentionType.EVERYONE,
+				Message.MentionType.HERE
+			)
 		builder.append(if (message.isEmpty()) " " else message)
 		if (embed != null)
 			builder.setEmbed(embed)
@@ -236,9 +247,9 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			val sentMessage = event.channel.sendMessage(message)
-					.addFile(inputStream, name)
-					.referenceIfPossible(event.message, config, true)
-					.await()
+				.addFile(inputStream, name)
+				.referenceIfPossible(event.message, config, true)
+				.await()
 			return sentMessage
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -253,13 +264,14 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	 * @see            User
 	 */
 	suspend fun getUserAt(argument: Int) = this.rawArgs.getOrNull(argument)
-			?.let {
-				DiscordUtils.extractUserFromString(
-						it,
-						message.mentionedUsers,
-						if (isPrivateChannel) null else guild
-				)
-			}
+		?.let {
+			DiscordUtils.extractUserFromString(
+				loritta,
+				it,
+				message.mentionedUsers,
+				if (isPrivateChannel) null else guild
+			)
+		}
 
 	/**
 	 * Gets an image URL from the argument index via valid URLs at the specified index
@@ -366,10 +378,10 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 		if (toBeDownloaded == null) {
 			if (rawArgs.isNotEmpty() && createTextAsImageIfNotFound) {
 				val textForTheImage = rawArgs.drop(argument)
-						.joinToString(" ")
+					.joinToString(" ")
 
 				if (textForTheImage.isNotBlank())
-					return ImageUtils.createTextAsImage(256, 256, rawArgs.drop(argument).joinToString(" "))
+					return ImageUtils.createTextAsImage(loritta, 256, 256, rawArgs.drop(argument).joinToString(" "))
 			}
 
 			if (search != 0) {
@@ -390,7 +402,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 					toBeDownloaded = elements.attr("content")
 				}
 			}
-			return LorittaUtils.downloadImage(toBeDownloaded ?: return null)
+			return LorittaUtils.downloadImage(loritta, toBeDownloaded ?: return null)
 		} catch (e: Exception) {
 			return null
 		}

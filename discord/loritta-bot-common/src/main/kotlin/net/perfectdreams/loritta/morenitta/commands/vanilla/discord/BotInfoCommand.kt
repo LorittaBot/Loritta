@@ -5,8 +5,6 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -15,6 +13,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
@@ -23,7 +22,7 @@ import java.util.concurrent.TimeUnit
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
-class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class BotInfoCommand(loritta: LorittaBot, private val buildInfo: BuildInfo) : AbstractCommand(loritta, "botinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.botinfo.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
@@ -35,7 +34,7 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "loritta info")
 
-		val guildCount = lorittaShards.queryGuildCount()
+		val guildCount = loritta.lorittaShards.queryGuildCount()
 
 		val embed = EmbedBuilder()
 
@@ -65,7 +64,7 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 						"commands.command.botinfo.embedDescription",
 						guildCount,
 						uptime,
-						LorittaLauncher.loritta.legacyCommandManager.commandMap.size + loritta.commandMap.commands.size,
+						loritta.legacyCommandManager.commandMap.size + loritta.commandMap.commands.size,
 						commandsExecutedInTheLast24Hours,
 						Emotes.KOTLIN,
 						Emotes.JDA,
@@ -106,7 +105,7 @@ class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinf
 				false
 		)
 
-		embed.setFooter("${locale["commands.command.botinfo.lorittaCreatedBy"]} - https://mrpowergamerbr.com/", lorittaShards.retrieveUserById(123170274651668480L)!!.effectiveAvatarUrl)
+		embed.setFooter("${locale["commands.command.botinfo.lorittaCreatedBy"]} - https://mrpowergamerbr.com/", loritta.lorittaShards.retrieveUserById(123170274651668480L)!!.effectiveAvatarUrl)
 
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 

@@ -159,7 +159,7 @@ class InviteBlockerModule(val m: LorittaCinnamon) : ProcessDiscordEventsModule()
             return ModuleResult.Continue
 
         // We will only get the configuration and stuff after checking if we should act on the message
-        val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value)
+        val serverConfig = m.pudding.serverConfigs.getServerConfigRoot(guildId.value)
         val inviteBlockerConfig = serverConfig
             ?.getInviteBlockerConfig()
             ?: return ModuleResult.Continue
@@ -169,7 +169,7 @@ class InviteBlockerModule(val m: LorittaCinnamon) : ProcessDiscordEventsModule()
         val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
         // Can the user bypass the invite blocker check?
-        val canBypass = m.services.serverConfigs.hasLorittaPermission(guildId, member, LorittaPermission.ALLOW_INVITES)
+        val canBypass = m.pudding.serverConfigs.hasLorittaPermission(guildId, member, LorittaPermission.ALLOW_INVITES)
         if (canBypass)
             return ModuleResult.Continue
 

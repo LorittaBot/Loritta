@@ -15,8 +15,9 @@ import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji", "createemoji", "criaremoji"), CommandCategory.MODERATION) {
+class AddEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "addemoji", listOf("adicionaremoji", "createemoji", "criaremoji"), CommandCategory.MODERATION) {
 	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {
@@ -58,7 +59,7 @@ class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji", "cr
 		val imageUrl = context.getImageUrlAt(imageArgument, 1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		try {
-			val os = LorittaUtils.downloadFile(imageUrl, 5000)
+			val os = LorittaUtils.downloadFile(loritta, imageUrl, 5000)
 
 			if (os != null) {
 				os.use { inputStream ->

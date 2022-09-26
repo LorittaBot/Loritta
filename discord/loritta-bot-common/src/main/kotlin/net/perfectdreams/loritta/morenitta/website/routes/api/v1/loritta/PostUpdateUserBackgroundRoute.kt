@@ -30,7 +30,7 @@ class PostUpdateUserBackgroundRoute(loritta: LorittaBot) : RequiresAPIAuthentica
 			logger.info { "Updating $userId background with custom data..." }
 			val data = json["data"].string
 
-			File(net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.folder, "static/assets/img/backgrounds/${userId}.png")
+			File(loritta.instanceConfig.loritta.website.folder, "static/assets/img/backgrounds/${userId}.png")
 					.writeBytes(Base64.getDecoder().decode(data))
 		}
 

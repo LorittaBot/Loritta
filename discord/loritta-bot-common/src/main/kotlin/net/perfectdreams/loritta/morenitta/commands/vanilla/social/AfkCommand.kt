@@ -4,14 +4,14 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.stripNewLines
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class AfkCommand(loritta: LorittaBot) : AbstractCommand(loritta, "afk", listOf("awayfromthekeyboard"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.afk.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.afk.examples")
 

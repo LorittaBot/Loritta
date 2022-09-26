@@ -3,9 +3,7 @@ package net.perfectdreams.loritta.morenitta.youtube
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.gson
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -13,11 +11,10 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
-class CreateYouTubeWebhooksTask : Runnable {
+class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -28,11 +25,13 @@ class CreateYouTubeWebhooksTask : Runnable {
 	override fun run() {
 		try {
 			// Servidores que usam o módulo do YouTube
-			val allChannelIds = transaction(Databases.loritta) {
-				TrackedYouTubeAccounts.slice(TrackedYouTubeAccounts.youTubeChannelId)
+			val allChannelIds = runBlocking {
+				loritta.pudding.transaction {
+					TrackedYouTubeAccounts.slice(TrackedYouTubeAccounts.youTubeChannelId)
 						.selectAll()
 						.groupBy(TrackedYouTubeAccounts.youTubeChannelId)
 						.toMutableList()
+				}
 			}
 
 			// IDs dos canais a serem verificados

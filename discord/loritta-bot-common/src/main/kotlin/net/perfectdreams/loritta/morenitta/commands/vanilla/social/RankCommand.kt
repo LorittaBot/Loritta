@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
@@ -15,8 +14,9 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class RankCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rank", listOf("top", "leaderboard", "ranking"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.rank.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -34,10 +34,10 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 
 		if (page != null && !RankingGenerator.isValidRankingPage(page)) {
 			context.reply(
-					LorittaReply(
-							context.locale["commands.invalidRankingPage"],
-							Constants.ERROR
-					)
+				LorittaReply(
+					context.locale["commands.invalidRankingPage"],
+					Constants.ERROR
+				)
 			)
 			return
 		}
@@ -53,36 +53,37 @@ class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "rankin
 				(GuildProfiles.guildId eq context.guild.idLong) and
 						(GuildProfiles.isInGuild eq true)
 			}
-					.orderBy(GuildProfiles.xp to SortOrder.DESC)
-					.limit(5, page * 5)
-					.let { GuildProfile.wrapRows(it) }
-					.toList()
+				.orderBy(GuildProfiles.xp to SortOrder.DESC)
+				.limit(5, page * 5)
+				.let { GuildProfile.wrapRows(it) }
+				.toList()
 		}
 
 		logger.trace { "Retrived local profiles" }
 		logger.trace { "profiles.size = ${profiles.size}" }
 
 		context.sendFile(
-				RankingGenerator.generateRanking(
-						context.guild.name,
-						context.guild.iconUrl,
-						profiles.map {
-							RankingGenerator.UserRankInformation(
-									it.userId,
-									"XP total // " + it.xp,
-									"Nível " + it.getCurrentLevel().currentLevel
-							)
-						}
-				) {
-					loritta.newSuspendedTransaction {
-						GuildProfiles.update({ GuildProfiles.id eq it and (GuildProfiles.guildId eq context.guild.idLong) }) {
-							it[isInGuild] = false
-						}
+			RankingGenerator.generateRanking(
+				loritta,
+				context.guild.name,
+				context.guild.iconUrl,
+				profiles.map {
+					RankingGenerator.UserRankInformation(
+						it.userId,
+						"XP total // " + it.xp,
+						"Nível " + it.getCurrentLevel().currentLevel
+					)
+				}
+			) {
+				loritta.newSuspendedTransaction {
+					GuildProfiles.update({ GuildProfiles.id eq it and (GuildProfiles.guildId eq context.guild.idLong) }) {
+						it[isInGuild] = false
 					}
-					null
-				},
-				"rank.png",
-				context.getAsMention(true)
+				}
+				null
+			},
+			"rank.png",
+			context.getAsMention(true)
 		)
 	}
 }

@@ -95,7 +95,7 @@ import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.Profile
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ShipEffectsRoute
 
 object DefaultRoutes {
-	fun defaultRoutes(loritta: LorittaBot) = listOf(
+	fun defaultRoutes(loritta: LorittaBot, website: LorittaWebsite) = listOf(
 		// ===[ USER ROUTES ]===
 		CommunityGuidelinesRoute(loritta),
 		FanArtsArtistRoute(loritta),
@@ -165,12 +165,12 @@ object DefaultRoutes {
 		GetGuildWebAuditLogRoute(loritta),
 		GetMembersWithPermissionsInGuildRoute(loritta),
 		GetMembersWithRolesInGuildRoute(loritta),
-		GetServerConfigRoute(loritta),
-		PatchServerConfigRoute(loritta),
+		GetServerConfigRoute(loritta, website),
+		PatchServerConfigRoute(loritta, website),
 		PostObsoleteServerConfigRoute(loritta),
 		PostSearchGuildsRoute(loritta),
 		PostSendMessageGuildRoute(loritta),
-		GetServerConfigSectionRoute(loritta),
+		GetServerConfigSectionRoute(loritta, website),
 
 		// Loritta
 		GetCommandsRoute(loritta),

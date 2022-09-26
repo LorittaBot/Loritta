@@ -25,6 +25,7 @@ import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.SortOrder
@@ -41,7 +42,7 @@ object NitroBoostUtils {
 	private val logger = KotlinLogging.logger {}
 	private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 19.00.toBigDecimal()
 
-	internal fun createBoostTask(config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {
+	internal fun createBoostTask(loritta: LorittaBot, config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {
 		while (true) {
 			delay(60_000)
 			logger.info { "Giving Sonhos to Donators..." }
@@ -64,7 +65,7 @@ object NitroBoostUtils {
 					if (guildWithBoostFeature[ServerConfigs.id].value in boostAsDonationGuilds) // Esses sonhos serão dados mais para frente, já que eles são considerados doadores
 						continue
 
-					val guild = lorittaShards.getGuildById(guildWithBoostFeature[ServerConfigs.id].value) ?: continue
+					val guild = loritta.lorittaShards.getGuildById(guildWithBoostFeature[ServerConfigs.id].value) ?: continue
 					val boosters = guild.boosters
 
 					logger.info { "Guild $guild has donation features enabled! Checking how many $boosters users can receive the reward..." }
@@ -94,7 +95,7 @@ object NitroBoostUtils {
 					}
 				}
 
-				if (LorittaLauncher.loritta.isMaster) {
+				if (loritta.isMaster) {
 					val moneySumId = Payments.money.sum()
 					val mostPayingUsers = loritta.newSuspendedTransaction {
 						Payments.slice(Payments.userId, moneySumId)
@@ -129,7 +130,7 @@ object NitroBoostUtils {
 				}
 
 				for (boostAsDonationGuildId in boostAsDonationGuilds) {
-					val guild = lorittaShards.getGuildById(boostAsDonationGuildId) ?: continue
+					val guild = loritta.lorittaShards.getGuildById(boostAsDonationGuildId) ?: continue
 
 					// Remover key de boosts inválidos
 					val nitroBoostPayments = loritta.newSuspendedTransaction {
@@ -185,13 +186,13 @@ object NitroBoostUtils {
 		}
 	}
 
-	internal fun updateValidBoostServers(config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = update@{
+	internal fun updateValidBoostServers(loritta: LorittaBot, config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = update@{
 		while (true) {
 			delay(60_000)
 			logger.info { "Updating Valid Guild Boost Messages..." }
 
 			try {
-				val channel = lorittaShards.getTextChannelById(config.channelId.toString())
+				val channel = loritta.lorittaShards.getTextChannelById(config.channelId.toString())
 
 				if (channel == null) {
 					logger.warn { "Nitro Guilds Channel not found!" }
@@ -207,7 +208,7 @@ object NitroBoostUtils {
 
 				val guilds = config.boostEnabledGuilds.map {
 					async(loritta.coroutineDispatcher) {
-						lorittaShards.queryGuildById(it.id)
+						loritta.lorittaShards.queryGuildById(it.id)
 					}
 				}
 
@@ -244,7 +245,7 @@ object NitroBoostUtils {
 		}
 	}
 
-	suspend fun onBoostActivate(member: Member) {
+	suspend fun onBoostActivate(loritta: LorittaBot, member: Member) {
 		val guild = member.guild
 
 		logger.info { "Enabling donation features via boost for $member in $guild!" }
@@ -292,7 +293,7 @@ object NitroBoostUtils {
 		} catch (e: Exception) {}
 	}
 
-	suspend fun onBoostDeactivate(member: Member) {
+	suspend fun onBoostDeactivate(loritta: LorittaBot, member: Member) {
 		val guild = member.guild
 
 		logger.info { "Disabling donation features via boost for $member in $guild!"}

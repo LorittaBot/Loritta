@@ -14,8 +14,6 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.localized
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
@@ -265,7 +263,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				var commandCooldown = command.cooldown
 				val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
 				val guildId = ev.guild?.idLong
-				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
+				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
 
 				val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
 
@@ -330,7 +328,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 
 				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
 					// Verificar se o comando está ativado na guild atual
-					if (CommandUtils.checkIfCommandIsDisabledInGuild(serverConfig, locale, ev.channel, ev.member, command.commandName))
+					if (CommandUtils.checkIfCommandIsDisabledInGuild(loritta, serverConfig, locale, ev.channel, ev.member, command.commandName))
 						return true
 				}
 
@@ -453,7 +451,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 					}
 				} */
 
-				if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(lorittaUser._profile, ev.guild) || LorittaUtils.isGuildBanned(ev.guild)))
+				if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(loritta, lorittaUser._profile, ev.guild) || LorittaUtils.isGuildBanned(loritta, ev.guild)))
 					return true
 
 				// We don't care about locking the row just to update the sent at field
@@ -461,7 +459,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
 				}
 
-				CommandUtils.trackCommandToDatabase(ev, command.commandName)
+				CommandUtils.trackCommandToDatabase(loritta, ev, command.commandName)
 
 				loritta.newSuspendedTransaction {
 					val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
@@ -470,7 +468,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 						profile.isInGuild = true
 				}
 
-				lorittaShards.updateCachedUserData(user)
+				loritta.lorittaShards.updateCachedUserData(user)
 
 				logger.info { "Executor Callback: ${command.executor}" }
 				command.executor.invoke(context)

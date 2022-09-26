@@ -25,7 +25,7 @@ class SonhosExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
 
         val user = args[options.user] ?: context.user
 
-        val profile = context.loritta.services.users.getUserProfile(user)
+        val profile = context.loritta.pudding.users.getUserProfile(user)
         val userSonhos = profile?.money ?: 0L
         val isSelf = context.user.id == user.id
 

@@ -46,14 +46,14 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
             // transaction type.
             val transactionTypeFilter = userFacingTransactionTypeFilter.ifEmpty { TransactionType.values().toList() }
 
-            val transactions = loritta.services.sonhos.getUserTransactions(
+            val transactions = loritta.pudding.sonhos.getUserTransactions(
                 UserId(viewingTransactionsOfUserId),
                 transactionTypeFilter,
                 TRANSACTIONS_PER_PAGE,
                 (page * TRANSACTIONS_PER_PAGE)
             )
 
-            val totalTransactions = loritta.services.sonhos.getUserTotalTransactions(
+            val totalTransactions = loritta.pudding.sonhos.getUserTotalTransactions(
                 UserId(viewingTransactionsOfUserId),
                 transactionTypeFilter
             )

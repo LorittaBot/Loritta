@@ -13,7 +13,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class NyanCatCommand : AbstractCommand("nyan", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class NyanCatCommand(loritta: LorittaBot) : AbstractCommand(loritta, "nyan", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val CAT_LEFT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_left_v2.png")) }
 		val CAT_RIGHT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_right_v2.png")) }

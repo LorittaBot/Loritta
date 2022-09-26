@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class ManiaTitleCardCommand(loritta: LorittaBot) : AbstractCommand(loritta, "maniatitlecard", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.maniatitlecard.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.maniatitlecard.examples")
 	override fun getUsage() = arguments {

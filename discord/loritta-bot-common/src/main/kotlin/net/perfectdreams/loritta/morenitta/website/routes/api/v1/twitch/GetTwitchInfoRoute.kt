@@ -22,10 +22,11 @@ class GetTwitchInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/twitch/ch
 		val login = call.parameters["login"]
 		
 		if (id != null) {
-			val payload = net.perfectdreams.loritta.morenitta.utils.loritta.twitch.getUserLoginById(id)
+			val payload = loritta.twitch.getUserLoginById(id)
 					?: throw WebsiteAPIException(
 							HttpStatusCode.NotFound,
 							WebsiteUtils.createErrorPayload(
+									loritta,
 									LoriWebCode.ITEM_NOT_FOUND,
 									"Streamer not found"
 							)
@@ -33,10 +34,11 @@ class GetTwitchInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/twitch/ch
 
 			call.respondJson(gson.toJsonTree(payload))
 		} else if (login != null) {
-			val payload = net.perfectdreams.loritta.morenitta.utils.loritta.twitch.getUserLogin(login)
+			val payload = loritta.twitch.getUserLogin(login)
 					?: throw WebsiteAPIException(
 					HttpStatusCode.NotFound,
 					WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.ITEM_NOT_FOUND,
 							"Streamer not found"
 					)

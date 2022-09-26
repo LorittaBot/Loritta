@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.morenitta.utils.config
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.serialization.Serializable
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 
 @Serializable
@@ -40,8 +40,8 @@ class GeneralConfig(
 			val minShard: Long,
 			val maxShard: Long
 	) {
-		fun getUrl() = DiscordUtils.getUrlForLorittaClusterId(id)
-		fun getUserAgent() = getUserAgent(loritta.config.loritta.environment)
+		fun getUrl(loritta: LorittaBot) = DiscordUtils.getUrlForLorittaClusterId(loritta, id)
+		fun getUserAgent(loritta: LorittaBot) = getUserAgent(loritta.config.loritta.environment)
 		fun getUserAgent(environmentType: EnvironmentType) = (
 				if (environmentType == EnvironmentType.CANARY)
 					Constants.CANARY_CLUSTER_USER_AGENT

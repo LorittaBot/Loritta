@@ -5,8 +5,6 @@ import com.github.salomonbrys.kotson.obj
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.config.GeneralConfig
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -18,7 +16,7 @@ import java.util.*
 /**
  * Thread que atualiza o status da Loritta a cada 1s segundos
  */
-class UpdateStatusThread : Thread("Update Status Thread") {
+class UpdateStatusThread(val loritta: LorittaBot) : Thread("Update Status Thread") {
 	companion object {
 		var skipToIndex = -1 // owo
 		var currentFanArt: GeneralConfig.LorittaAvatarFanArt? = null
@@ -107,7 +105,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 			}
 
 			if (diff >= 25_000 && firstInstance != null) {
-				val currentFanArtInMasterCluster = runBlocking { lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await() }.obj
+				val currentFanArtInMasterCluster = runBlocking { loritta.lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await() }.obj
 
 				val artistId = currentFanArtInMasterCluster["artistId"].nullString
 
@@ -117,7 +115,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				if (artistId != null && currentAvatarPayloadHash != currentFanArtInMasterCluster.hashCode()) {
 					val fancyName = currentFanArtInMasterCluster["fancyName"].nullString
 
-					val artist = runBlocking { lorittaShards.retrieveUserInfoById(artistId.toLong()) }
+					val artist = runBlocking { loritta.lorittaShards.retrieveUserInfoById(artistId.toLong()) }
 
 					val displayName = fancyName ?: (artist?.name ?: "¯\\_(ツ)_/¯")
 

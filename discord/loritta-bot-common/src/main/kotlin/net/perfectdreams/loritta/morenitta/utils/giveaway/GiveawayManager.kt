@@ -1,14 +1,11 @@
 package net.perfectdreams.loritta.morenitta.utils.giveaway
 
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
@@ -21,13 +18,12 @@ import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.FeatureFlags
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.sequins.text.StringUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
-object GiveawayManager {
+class GiveawayManager(val loritta: LorittaBot) {
     var giveawayTasks = ConcurrentHashMap<Long, Job>()
     private val logger = KotlinLogging.logger {}
 
@@ -40,7 +36,7 @@ object GiveawayManager {
         // Old giveaways still has the emote ID stored in the database, so we need to handle that.
         // This can be removed in the future, or maybe handled in a different way?
         if (emoteId != null) {
-            val mention = lorittaShards.getEmoteById(emoteId.toString())?.asMention
+            val mention = loritta.lorittaShards.getEmoteById(emoteId.toString())?.asMention
             if (mention != null)
                 return mention
         }
@@ -182,7 +178,7 @@ object GiveawayManager {
     }
 
     private fun getGiveawayGuild(giveaway: Giveaway, shouldCancel: Boolean): Guild? {
-        val guild = lorittaShards.getGuildById(giveaway.guildId) ?: run {
+        val guild = loritta.lorittaShards.getGuildById(giveaway.guildId) ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
 
             if (shouldCancel)
@@ -251,23 +247,23 @@ object GiveawayManager {
 
                     // Quanto mais perto do resultado, mais "rápido" iremos atualizar a embed
                     when {
-                        5_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
+                        5_000 >= diff -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 1000ms (will be finished in less than 5s!) - Giveaway will be finished in ${diff}ms" }
                             delay(1_000) // a cada 1 segundo
                         }
-                        15_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
+                        15_000 >= diff -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 2500ms (will be finished in less than 15s!) - Giveaway will be finished in ${diff}ms" }
                             delay(2_500) // a cada 2.5 segundos
                         }
-                        30_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
+                        30_000 >= diff -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 10000ms (will be finished in less than 30s!) - Giveaway will be finished in ${diff}ms" }
                             delay(10_000) // a cada 10 segundos
                         }
-                        60_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
+                        60_000 >= diff -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 15000ms (will be finished in less than 60s!) - Giveaway will be finished in ${diff}ms" }
                             delay(15_000) // a cada 15 segundos
                         }
-                        3_600_000 >= diff && FeatureFlags.isEnabled("detailed-giveaway-time") -> {
+                        3_600_000 >= diff -> {
                             // Vamos "alinhar" o update para que seja atualizado exatamente quando passar o minuto (para ficar mais fofis! ...e bom)
                             // Ou seja, se for 15:30:30, o delay será apenas de 30 segundos!
                             // Colocar apenas "60_000" de delay possui vários problemas, por exemplo: Quando a Lori reiniciar, não estará mais "alinhado"
@@ -320,8 +316,10 @@ object GiveawayManager {
         if (deleteFromDatabase || forceDelete) {
             if (forceDelete || System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS >= giveaway.finishAt) { // Já se passaram uma semana?
                 logger.info { "Deleting giveaway ${giveaway.id.value} from database, one week of failures so the server maybe doesn't exist anymore"}
-                transaction(Databases.loritta) {
-                    giveaway.delete()
+                runBlocking {
+                    loritta.pudding.transaction {
+                        giveaway.delete()
+                    }
                 }
             }
         }

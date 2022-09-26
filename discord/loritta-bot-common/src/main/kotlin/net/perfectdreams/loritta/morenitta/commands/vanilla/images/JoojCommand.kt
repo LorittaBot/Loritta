@@ -9,8 +9,9 @@ import net.perfectdreams.loritta.morenitta.api.commands.Command
 import java.awt.geom.AffineTransform
 import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class JoojCommand : AbstractCommand("jooj", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class JoojCommand(loritta: LorittaBot) : AbstractCommand(loritta, "jooj", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.jooj.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 

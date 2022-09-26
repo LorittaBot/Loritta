@@ -23,7 +23,7 @@ class GenderExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
     override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val userSettings = context.loritta.services.users.getOrCreateUserProfile(context.user)
+        val userSettings = context.loritta.pudding.users.getOrCreateUserProfile(context.user)
             .getProfileSettings()
 
         val gender = Gender.valueOf(args[options.gender].uppercase())

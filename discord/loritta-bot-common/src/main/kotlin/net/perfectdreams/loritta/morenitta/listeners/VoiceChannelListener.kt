@@ -64,7 +64,7 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 			mutex.withLock {
 				// Carregar a configuração do servidor
 				val serverConfig = loritta.getOrCreateServerConfig(channelJoined.guild.idLong)
-				EventLog.onVoiceJoin(serverConfig, member, channelJoined)
+				EventLog.onVoiceJoin(loritta, serverConfig, member, channelJoined)
 			}
 		}
 	}
@@ -75,7 +75,7 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 			mutex.withLock {
 				val serverConfig = loritta.getOrCreateServerConfig(channelLeft.guild.idLong)
-				EventLog.onVoiceLeave(serverConfig, member, channelLeft)
+				EventLog.onVoiceLeave(loritta, serverConfig, member, channelLeft)
 			}
 		}
 	}

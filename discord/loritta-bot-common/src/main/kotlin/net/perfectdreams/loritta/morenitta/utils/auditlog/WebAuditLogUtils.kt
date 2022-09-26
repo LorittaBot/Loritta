@@ -2,33 +2,34 @@ package net.perfectdreams.loritta.morenitta.utils.auditlog
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.morenitta.network.Databases
+import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.AuditLog
 import net.perfectdreams.loritta.morenitta.utils.ActionType
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object WebAuditLogUtils {
-	fun addEntry(guild: Guild, user: User, type: ActionType, params: JsonObject = jsonObject())
-			= addEntry(guild, user.idLong, type, params)
+	fun addEntry(loritta: LorittaBot, guild: Guild, user: User, type: ActionType, params: JsonObject = jsonObject())
+			= addEntry(loritta, guild, user.idLong, type, params)
 
-	fun addEntry(guildId: Long, user: User, type: ActionType, params: JsonObject = jsonObject())
-			= addEntry(guildId, user.idLong, type, params)
+	fun addEntry(loritta: LorittaBot, guildId: Long, user: User, type: ActionType, params: JsonObject = jsonObject())
+			= addEntry(loritta, guildId, user.idLong, type, params)
 
-	fun addEntry(guild: Guild, userId: Long, type: ActionType, params: JsonObject = jsonObject())
-			= addEntry(guild.idLong, userId, type, params)
+	fun addEntry(loritta: LorittaBot, guild: Guild, userId: Long, type: ActionType, params: JsonObject = jsonObject())
+			= addEntry(loritta, guild.idLong, userId, type, params)
 
-
-	fun addEntry(guildId: Long, userId: Long, type: ActionType, params: JsonObject = jsonObject()) {
-		transaction(Databases.loritta) {
-			AuditLog.insert {
-				it[AuditLog.guildId] = guildId
-				it[AuditLog.userId] = userId
-				it[AuditLog.executedAt] = System.currentTimeMillis()
-				it[AuditLog.actionType] = type
-				it[AuditLog.params] = params
+	fun addEntry(loritta: LorittaBot, guildId: Long, userId: Long, type: ActionType, params: JsonObject = jsonObject()) {
+		runBlocking {
+			loritta.pudding.transaction {
+				AuditLog.insert {
+					it[AuditLog.guildId] = guildId
+					it[AuditLog.userId] = userId
+					it[AuditLog.executedAt] = System.currentTimeMillis()
+					it[AuditLog.actionType] = type
+					it[AuditLog.params] = params
+				}
 			}
 		}
 	}

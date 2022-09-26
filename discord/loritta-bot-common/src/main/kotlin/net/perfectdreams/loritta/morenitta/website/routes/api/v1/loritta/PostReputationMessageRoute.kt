@@ -24,9 +24,9 @@ class PostReputationMessageRoute(loritta: LorittaBot) : RequiresAPIAuthenticatio
 		val receiverId = json["receiverId"].string
 		val reputationCount = json["reputationCount"].int
 
-		val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(giverId)
+		val profile = loritta.getOrCreateLorittaProfile(giverId)
 
-		PostUserReputationsRoute.sendReputationReceivedMessage(guildId, channelId, giverId, profile, receiverId, reputationCount)
+		PostUserReputationsRoute.sendReputationReceivedMessage(loritta, guildId, channelId, giverId, profile, receiverId, reputationCount)
 
 		call.respondJson(jsonObject())
 	}

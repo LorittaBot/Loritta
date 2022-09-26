@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -45,7 +44,7 @@ class GetGuildWebAuditLogRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(
 		val usersInAuditLog = auditEntries.map { it[AuditLog.userId] }.distinct()
 
 		for (userId in usersInAuditLog) {
-			val user = lorittaShards.retrieveUserInfoById(userId) ?: continue
+			val user = loritta.lorittaShards.retrieveUserInfoById(userId) ?: continue
 
 			users.add(
 					net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils.transformToJson(user)

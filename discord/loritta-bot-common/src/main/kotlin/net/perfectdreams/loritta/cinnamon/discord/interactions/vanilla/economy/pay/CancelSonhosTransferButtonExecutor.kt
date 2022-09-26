@@ -23,7 +23,7 @@ class CancelSonhosTransferButtonExecutor(
             context.disableComponents(LoadingEmojis.random(), this)
         }
 
-        loritta.services.interactionsData.deleteInteractionData(decoded.interactionDataId)
+        loritta.pudding.interactionsData.deleteInteractionData(decoded.interactionDataId)
 
         context.updateMessage {
             actionRow {

@@ -10,8 +10,9 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class McUUIDCommand : AbstractCommand("mcuuid", category = net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
+class McUUIDCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mcuuid", category = net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.mcuuid.description")
     override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.playerNameExamples")
 

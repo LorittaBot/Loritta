@@ -20,7 +20,7 @@ class NotificationsViewExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally()
 
-        val notification = context.loritta.services.notifications.getUserNotification(UserId(context.user.id), args[options.id].toLong())
+        val notification = context.loritta.pudding.notifications.getUserNotification(UserId(context.user.id), args[options.id].toLong())
             ?: context.failEphemerally(
                 prefix = Emotes.Error,
                 content = context.i18nContext.get(NotificationsCommand.I18N_PREFIX.View.CouldntFindTheNotification)

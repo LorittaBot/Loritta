@@ -58,7 +58,7 @@ class TextBoxExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerC
         ): MessageBuilder.() -> (Unit) {
             val now = Clock.System.now()
 
-            val interactionDataId = loritta.services.interactionsData.insertInteractionData(
+            val interactionDataId = loritta.pudding.interactionsData.insertInteractionData(
                 Json.encodeToJsonElement<TextBoxOptionsData>(data).jsonObject,
                 now,
                 now + Duration.Companion.minutes(15) // Expires after 15m

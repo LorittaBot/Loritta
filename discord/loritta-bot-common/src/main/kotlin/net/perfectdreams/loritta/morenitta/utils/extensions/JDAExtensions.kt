@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils.extensions
 
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
-import net.perfectdreams.loritta.morenitta.LorittaLauncher.loritta
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import kotlinx.coroutines.future.await
 import net.dv8tion.jda.api.MessageBuilder
@@ -13,6 +12,7 @@ import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageAction
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 suspend fun <T> RestAction<T>.await() : T = this.submit().await()
 
@@ -230,6 +230,7 @@ fun RestAction<Message>.queueAfterWithMessagePerSecondTarget(
  * @param targetMessagesPerSecond what is the message per second target
  */
 fun RestAction<Message>.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(
+    loritta: LorittaBot,
     sentMessages: Int,
     targetMessagesPerSecond: Int = 5
 ) {

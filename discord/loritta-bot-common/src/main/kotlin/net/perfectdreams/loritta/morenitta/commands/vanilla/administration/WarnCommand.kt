@@ -12,15 +12,15 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class WarnCommand : AbstractCommand("warn", listOf("aviso"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf("aviso"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 	}
@@ -54,8 +54,8 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), net.perfectdreams.l
 				}
 			}
 
-			val settings = AdminUtils.retrieveModerationInfo(context.config)
-			val punishmentActions = AdminUtils.retrieveWarnPunishmentActions(context.config)
+			val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
+			val punishmentActions = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
 			val warnCallback: (suspend (Message?, Boolean) -> Unit) = { message, isSilent ->
@@ -75,9 +75,10 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), net.perfectdreams.l
 						}
 
 						val punishLogMessage = AdminUtils.getPunishmentForMessage(
-								settings,
-								context.guild,
-								PunishmentAction.WARN
+							context.loritta,
+							settings,
+							context.guild,
+							PunishmentAction.WARN
 						)
 
 						if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
@@ -85,13 +86,13 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), net.perfectdreams.l
 
 							if (textChannel != null && textChannel.canTalk()) {
 								val message = MessageUtils.generateMessage(
-										punishLogMessage,
-										listOf(user, context.guild),
-										context.guild,
-										mutableMapOf(
-												"duration" to locale["$LOCALE_PREFIX.mute.forever"]
-										) + AdminUtils.getStaffCustomTokens(context.userHandle)
-												+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.warn")
+									punishLogMessage,
+									listOf(user, context.guild),
+									context.guild,
+									mutableMapOf(
+										"duration" to locale["$LOCALE_PREFIX.mute.forever"]
+									) + AdminUtils.getStaffCustomTokens(context.userHandle)
+											+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.warn")
 								)
 
 								message?.let {
@@ -111,7 +112,7 @@ class WarnCommand : AbstractCommand("warn", listOf("aviso"), net.perfectdreams.l
 
 					loop@ for (punishment in punishments) {
 						when {
-							punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, 0)
+							punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(loritta, settings, context.guild, context.userHandle, locale, user, reason, isSilent, 0)
 							member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(context, settings, locale, member, user, reason, isSilent)
 							member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
 								val metadata = punishment.metadata ?: continue@loop

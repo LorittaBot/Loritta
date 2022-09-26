@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.network.Databases
+import kotlinx.coroutines.runBlocking
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.morenitta.tables.Sponsors
 import org.jetbrains.exposed.sql.ResultRow
@@ -10,9 +11,11 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SponsorManager {
-	fun retrieveActiveSponsorsFromDatabase(): List<Sponsor> {
-		val activeSponsors = transaction(Databases.loritta) {
-			getActiveSponsors()
+	fun retrieveActiveSponsorsFromDatabase(loritta: LorittaBot): List<Sponsor> {
+		val activeSponsors = runBlocking {
+			loritta.pudding.transaction {
+				getActiveSponsors()
+			}
 		}
 
 		return activeSponsors.map {

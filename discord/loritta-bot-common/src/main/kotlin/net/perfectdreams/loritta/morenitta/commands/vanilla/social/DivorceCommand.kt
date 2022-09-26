@@ -6,8 +6,6 @@ import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -16,8 +14,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import org.jetbrains.exposed.sql.update
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class DivorceCommand(loritta: LorittaBot) : AbstractCommand(loritta, "divorce", listOf("divorciar"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	companion object {
 		const val LOCALE_PREFIX = "commands.command.divorce"
 		const val DIVORCE_REACTION_EMOJI = "\uD83D\uDC94"
@@ -38,7 +37,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), net.perfe
 			return
 		}
 
-		val marriage = ProfileUtils.getMarriageInfo(userProfile) ?: run {
+		val marriage = ProfileUtils.getMarriageInfo(loritta, userProfile) ?: run {
 			// Now that's for when the marriage doesn't exist
 			context.reply(
 					LorittaReply(
@@ -83,7 +82,7 @@ class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), net.perfe
 
 				try {
 					// We don't care if we can't find the user, just exit
-					val partner = lorittaShards.retrieveUserById(marriagePartner.id) ?: return@onReactionAddByAuthor
+					val partner = loritta.lorittaShards.retrieveUserById(marriagePartner.id) ?: return@onReactionAddByAuthor
 
 					val userPrivateChannel = partner.openPrivateChannel().await()
 

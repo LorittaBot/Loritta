@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
@@ -28,42 +27,44 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val guildId = call.parameters["guildId"] ?: return
 
-		val shardId = DiscordUtils.getShardIdFromGuildId(guildId.toLong())
+		val shardId = DiscordUtils.getShardIdFromGuildId(loritta, guildId.toLong())
 
 		val host = call.request.hostFromHeader()
 
-		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
-		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loriShardId)
+		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
+		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loritta, loriShardId)
 
 		if (host != theNewUrl)
 			redirect("https://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
-		val jdaGuild = lorittaShards.getGuildById(guildId)
+		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
 				?: throw WebsiteAPIException(
 						HttpStatusCode.BadRequest,
 						WebsiteUtils.createErrorPayload(
+								loritta,
 								LoriWebCode.UNKNOWN_GUILD,
 								"Guild $guildId doesn't exist or it isn't loaded yet"
 						)
 				)
 
-		val serverConfig = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
+		val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
 		val id = userIdentification.id
 		val member = jdaGuild.retrieveMemberById(id).await()
 		var canAccessDashboardViaPermission = false
 
 		if (member != null) {
-			val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(serverConfig, member), net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(id.toLong()))
+			val lorittaUser = GuildLorittaUser(loritta, member, LorittaUser.loadMemberLorittaPermissions(loritta, serverConfig, member), loritta.getOrCreateLorittaProfile(id.toLong()))
 
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 		}
 
-		val canBypass = net.perfectdreams.loritta.morenitta.utils.loritta.config.isOwner(userIdentification.id) || canAccessDashboardViaPermission
+		val canBypass = loritta.config.isOwner(userIdentification.id) || canAccessDashboardViaPermission
 		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id)) {
 			throw WebsiteAPIException(
 					HttpStatusCode.Forbidden,
 					WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.FORBIDDEN,
 							"User ${member?.user?.id} doesn't have permission to edit ${guildId}'s config"
 					)

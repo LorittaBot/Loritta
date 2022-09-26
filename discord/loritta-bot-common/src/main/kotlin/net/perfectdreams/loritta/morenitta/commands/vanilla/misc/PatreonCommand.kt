@@ -4,12 +4,12 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.utils.Emotes
 import java.awt.Color
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class PatreonCommand : AbstractCommand("donator", listOf("donators", "patreons", "patreon", "doadores", "doador", "apoiador", "apoiadores", "contribuidores", "contribuidor", "doar", "donate"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class PatreonCommand(loritta: LorittaBot) : AbstractCommand(loritta, "donator", listOf("donators", "patreons", "patreon", "doadores", "doador", "apoiador", "apoiadores", "contribuidores", "contribuidor", "doar", "donate"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.donate.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

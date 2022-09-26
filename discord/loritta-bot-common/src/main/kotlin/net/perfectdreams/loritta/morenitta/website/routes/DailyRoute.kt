@@ -12,6 +12,7 @@ class DailyRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/daily") {
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		call.respondHtml(
 			DailyView(
+				loritta,
 				locale,
 				getPathWithoutLocale(call)
 			).generateHtml()

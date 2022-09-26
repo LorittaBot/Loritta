@@ -8,16 +8,15 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.awt.Color
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak", "lang"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language", listOf("linguagem", "speak", "lang"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     private val resetPersonalLanguageEmote = "\uD83D\uDE45"
 
     override fun getDescriptionKey() = LocaleKeyData(
@@ -215,7 +214,7 @@ class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak",
             embed.setFooter(locale["commands.command.language.personalLanguageRemovalTip", resetPersonalLanguageEmote])
 
         for (wrapper in languages) {
-            val translators = wrapper.locale.getList("loritta.translationAuthors").mapNotNull { lorittaShards.retrieveUserInfoById(it.toLong()) }
+            val translators = wrapper.locale.getList("loritta.translationAuthors").mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it.toLong()) }
 
             embed.addField(
                     wrapper.emoteName + " " + wrapper.name,

@@ -25,7 +25,7 @@ class ShowGuildMemberPermissionsExecutor(loritta: LorittaCinnamon) : CinnamonBut
     override suspend fun onClick(user: User, context: ComponentContext) {
         val decodedInteractionData = ComponentDataUtils.decode<StoredGenericInteractionData>(context.data)
         val interactionDataFromDatabase = Json.decodeFromJsonElement<GuildMemberPermissionsData>(
-            context.loritta.services.interactionsData.getInteractionData(decodedInteractionData.interactionDataId) ?: context.failEphemerally {
+            context.loritta.pudding.interactionsData.getInteractionData(decodedInteractionData.interactionDataId) ?: context.failEphemerally {
                 styled(
                     context.i18nContext.get(I18nKeysData.Commands.InteractionDataIsMissingFromDatabaseGeneric),
                     Emotes.LoriSleeping

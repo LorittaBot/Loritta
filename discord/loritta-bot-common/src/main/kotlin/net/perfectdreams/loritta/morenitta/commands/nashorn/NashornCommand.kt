@@ -4,13 +4,14 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.morenitta.utils.ExperienceUtils
 
 /**
  * Comandos usando a Nashorn Engine
  */
-class NashornCommand(label: String, val javaScriptCode: String, val codeType: CustomCommandCodeType) : AbstractCommand(label, category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class NashornCommand(loritta: LorittaBot, label: String, val javaScriptCode: String, val codeType: CustomCommandCodeType) : AbstractCommand(loritta, label, category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		when (codeType) {
 			CustomCommandCodeType.SIMPLE_TEXT -> {
@@ -18,22 +19,23 @@ class NashornCommand(label: String, val javaScriptCode: String, val codeType: Cu
 
 				if (javaScriptCode.contains("{experience") || javaScriptCode.contains("{level") || javaScriptCode.contains("{xp")) {
 					customTokens.putAll(
-							ExperienceUtils.getExperienceCustomTokens(
-									context.config,
-									context.handle
-							)
+						ExperienceUtils.getExperienceCustomTokens(
+							loritta,
+							context.config,
+							context.handle
+						)
 					)
 				}
 
 				val message = MessageUtils.generateMessage(
-						javaScriptCode,
-						listOf(
-								context.handle,
-								context.guild,
-								context.message.channel
-						),
+					javaScriptCode,
+					listOf(
+						context.handle,
 						context.guild,
-						customTokens = customTokens
+						context.message.channel
+					),
+					context.guild,
+					customTokens = customTokens
 				) ?: return
 
 				context.sendMessage(message)

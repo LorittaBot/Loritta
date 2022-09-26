@@ -29,7 +29,7 @@ interface UserAvatarExecutor {
             member?.memberData?.avatar?.value
         )
 
-        val id = context.loritta.services.interactionsData.insertInteractionData(
+        val id = context.loritta.pudding.interactionsData.insertInteractionData(
             Json.encodeToJsonElement(
                 data
             ).jsonObject,

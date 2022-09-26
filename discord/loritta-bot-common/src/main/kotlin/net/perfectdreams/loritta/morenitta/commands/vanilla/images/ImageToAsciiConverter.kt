@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.utils.loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
 import java.awt.Font
 import java.awt.RenderingHints
@@ -8,7 +8,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import kotlin.math.roundToInt
 
-class ImageToAsciiConverter(private vararg val options: AsciiOptions) {
+class ImageToAsciiConverter(private val loritta: LorittaBot, private vararg val options: AsciiOptions) {
     enum class AsciiOptions {
         COLORIZE, DITHER
     }

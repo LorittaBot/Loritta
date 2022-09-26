@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.utils
 
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -8,6 +7,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import javax.annotation.CheckReturnValue
 import javax.annotation.Nonnegative
 
@@ -16,7 +16,7 @@ import javax.annotation.Nonnegative
  *
  * Thanks Mantaro! https://github.com/Mantaro/MantaroBot/blob/0abd5d98af728e24a5b0fb4a0ad63fc451ef8d0f/src/main/java/net/kodehawa/mantarobot/core/shard/jda/BucketedController.java
  */
-class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: Int = 16) : SessionControllerAdapter() {
+class BucketedController @JvmOverloads constructor(val loritta: LorittaBot, @Nonnegative bucketFactor: Int = 16) : SessionControllerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -30,7 +30,7 @@ class BucketedController @JvmOverloads constructor(@Nonnegative bucketFactor: In
 		require(bucketFactor >= 1) { "Bucket factor must be at least 1" }
 		shardControllers = arrayOfNulls(bucketFactor)
 		for (i in 0 until bucketFactor) {
-			shardControllers[i] = LoriMasterShardControllerSessionControllerAdapter()
+			shardControllers[i] = LoriMasterShardControllerSessionControllerAdapter(loritta)
 		}
 	}
 

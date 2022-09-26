@@ -4,13 +4,14 @@ import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.morenitta.dao.Reputation
 import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 
 class UserReputationView(
+    val loritta: LorittaBot,
     locale: BaseLocale,
     path: String,
     val userIdentification: LorittaJsonWebSession.UserIdentification?,

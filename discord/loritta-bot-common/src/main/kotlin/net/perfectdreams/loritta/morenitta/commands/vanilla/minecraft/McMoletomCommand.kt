@@ -15,7 +15,7 @@ import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
 
-class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
+class McMoletomCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mcmoletom", listOf("mcsweater"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mcsweater.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.skinPlayerNameExamples")
 
@@ -56,13 +56,13 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), net.p
 					return
 				}
 
-				skin = LorittaUtils.downloadImage(profile.textures["SKIN"]!!.url)
+				skin = LorittaUtils.downloadImage(loritta, profile.textures["SKIN"]!!.url)
 			} else {
 				this.explain(context)
 				return
 			}
 		} else {
-			skin = LorittaUtils.downloadImage(attached.url)
+			skin = LorittaUtils.downloadImage(loritta, attached.url)
 		}
 
 		if (skin != null) {

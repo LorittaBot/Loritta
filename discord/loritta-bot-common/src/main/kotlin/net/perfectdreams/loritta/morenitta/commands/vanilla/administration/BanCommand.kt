@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
+import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
@@ -14,8 +15,9 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("banir", "hackban", "forceban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ban.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
@@ -49,11 +51,11 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
-			val settings = AdminUtils.retrieveModerationInfo(context.config)
+			val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				for (user in users)
-					ban(settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
+					ban(loritta, settings, context.guild, context.userHandle, locale, user, reason, isSilent, delDays)
 
 				message?.delete()?.queue()
 
@@ -87,7 +89,7 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 
-		fun ban(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
+		fun ban(loritta: LorittaBot, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean, delDays: Int) {
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && guild.isMember(user)) {
 					try {
@@ -101,11 +103,14 @@ class BanCommand : AbstractCommand("ban", listOf("banir", "hackban", "forceban")
 					}
 				}
 
-				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+				val punishLogMessage = runBlocking {
+					AdminUtils.getPunishmentForMessage(
+						loritta,
 						settings,
 						guild,
 						PunishmentAction.BAN
-				)
+					)
+				}
 
 				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 					val textChannel = guild.getTextChannelById(settings.punishLogChannelId)

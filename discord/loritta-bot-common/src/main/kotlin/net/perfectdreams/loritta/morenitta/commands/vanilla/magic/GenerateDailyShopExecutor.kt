@@ -13,7 +13,7 @@ object GenerateDailyShopExecutor : LoriToolsCommand.LoriToolsExecutor {
 		if (args.getOrNull(1) != "daily_shop")
 			return@task false
 
-		LorittaDailyShopUpdateTask.generate()
+		LorittaDailyShopUpdateTask.generate(loritta)
 
 		reply(
 				LorittaReply(

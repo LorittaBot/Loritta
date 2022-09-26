@@ -10,7 +10,7 @@ class AttackCommand(loritta: LorittaBot): ActionCommand(loritta, listOf("attack"
         color = Color(244, 67, 54)
 
         response { locale, sender, target ->
-            if (target.id != LorittaLauncher.loritta.discordConfig.discord.clientId) {
+            if (target.id != loritta.discordConfig.discord.clientId) {
                 locale["commands.command.attack.response", sender.asMention, target.asMention]
             } else {
                 locale["commands.command.attack.responseAntiIdiot", sender.asMention, target.asMention]

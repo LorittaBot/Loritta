@@ -17,8 +17,9 @@ import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class SayCommand : AbstractCommand("say", listOf("falar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("falar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.say.description")
 	override fun getExamplesKey()  = LocaleKeyData("commands.command.say.examples")
 	override fun getUsage() = arguments {

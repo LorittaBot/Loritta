@@ -4,6 +4,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.dv8tion.jda.api.entities.Member
 import net.perfectdreams.loritta.common.utils.Placeholders
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 
@@ -16,11 +17,11 @@ object ExperienceUtils {
         return getLevelExperience(lvl) - currentExperience
     }
 
-    suspend fun getExperienceCustomTokens(config: ServerConfig, member: Member): Map<String, String> {
+    suspend fun getExperienceCustomTokens(loritta: LorittaBot, config: ServerConfig, member: Member): Map<String, String> {
         val customTokens = mutableMapOf<String, String>()
 
         // Load tokens for experience/level/xp
-        val profile = config.getUserData(member.idLong)
+        val profile = config.getUserData(loritta, member.idLong)
         val level = profile.getCurrentLevel().currentLevel
         val xp = profile.xp
 

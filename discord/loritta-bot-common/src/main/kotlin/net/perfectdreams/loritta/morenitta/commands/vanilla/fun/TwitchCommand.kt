@@ -5,12 +5,12 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.awt.Color
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class TwitchCommand : AbstractCommand("twitch", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class TwitchCommand(loritta: LorittaBot) : AbstractCommand(loritta, "twitch", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.twitch.description")
 	override fun getExamplesKey()  = LocaleKeyData("commands.command.twitch.examples")
 

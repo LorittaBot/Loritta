@@ -7,11 +7,9 @@ import com.google.gson.JsonParser
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.utils.LorittaShards
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -25,8 +23,9 @@ import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.NetAddressUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.build
 import java.util.concurrent.TimeUnit
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class PingCommand : AbstractCommand("ping", category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ping.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
@@ -38,8 +37,8 @@ class PingCommand : AbstractCommand("ping", category = net.perfectdreams.loritta
 					try {
 						withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
 							val start = System.currentTimeMillis()
-							val response = loritta.http.get("https://${it.getUrl()}/api/v1/loritta/status") {
-								userAgent(loritta.lorittaCluster.getUserAgent())
+							val response = loritta.http.get("https://${it.getUrl(loritta)}/api/v1/loritta/status") {
+								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 								header("Authorization", loritta.lorittaInternalApiKey.name)
 							}
 
@@ -50,7 +49,7 @@ class PingCommand : AbstractCommand("ping", category = net.perfectdreams.loritta
 							)
 						}
 					} catch (e: Exception) {
-						LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+						logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
 						throw ClusterOfflineException(it.id, it.name)
 					}
 				}
@@ -58,8 +57,8 @@ class PingCommand : AbstractCommand("ping", category = net.perfectdreams.loritta
 			val shardControllerStatus = if (loritta.discordConfig.shardController.enabled) {
 				GlobalScope.async(loritta.coroutineDispatcher) {
 					try {
-						val body = HttpRequest.get("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/login-pools")
-								.userAgent(loritta.lorittaCluster.getUserAgent())
+						val body = HttpRequest.get("http://${NetAddressUtils.fixIp(loritta, loritta.discordConfig.shardController.url)}/api/v1/login-pools")
+								.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 								.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
 								.readTimeout(loritta.config.loritta.clusterReadTimeout)
 								.body()

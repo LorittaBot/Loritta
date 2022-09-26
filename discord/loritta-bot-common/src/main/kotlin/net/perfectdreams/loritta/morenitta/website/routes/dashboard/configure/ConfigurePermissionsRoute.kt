@@ -21,11 +21,11 @@ class ConfigurePermissionsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalize
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as LorittaBot
 
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "permissions"
 		val roleConfig = mutableMapOf<Role, MutableMap<String, Boolean>>()
-		val rolePermissions = LorittaUser.loadGuildRolesLorittaPermissions(serverConfig, guild)
+		val rolePermissions = LorittaUser.loadGuildRolesLorittaPermissions(loritta, serverConfig, guild)
 
 		for (role in guild.roles) {
 			val permissions = rolePermissions[role.idLong] ?: EnumSet.noneOf(LorittaPermission::class.java)

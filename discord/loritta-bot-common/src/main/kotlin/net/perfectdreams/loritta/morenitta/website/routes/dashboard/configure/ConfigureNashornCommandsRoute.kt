@@ -27,7 +27,7 @@ class ConfigureNashornCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
             }.toList()
         }
 
-        val variables = call.legacyVariables(locale)
+        val variables = call.legacyVariables(loritta, locale)
 
         variables["saveType"] = "nashorn_commands"
 

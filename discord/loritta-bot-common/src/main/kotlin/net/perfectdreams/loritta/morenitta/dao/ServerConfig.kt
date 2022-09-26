@@ -2,14 +2,12 @@ package net.perfectdreams.loritta.morenitta.dao
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
@@ -89,24 +87,24 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	 *
 	 * @see LorittaUser.loadGuildRolesLorittaPermissions
 	 */
-	suspend fun getOrLoadGuildRolesLorittaPermissions(guild: Guild): Map<Long, EnumSet<LorittaPermission>> {
+	suspend fun getOrLoadGuildRolesLorittaPermissions(loritta: LorittaBot, guild: Guild): Map<Long, EnumSet<LorittaPermission>> {
 		// Needs to be inside of a mutex to avoid synchronization issues (concurrent changes, etc)
 		return guildRolesLorittaPermissionsMutex.withLock {
 			guildRolesLorittaPermissions ?: run {
 				// If we don't have the permissions cached, load it from the database and store in the guildRolesLorittaPermissions map
-				val guildPermissions = LorittaUser.loadGuildRolesLorittaPermissions(this, guild)
+				val guildPermissions = LorittaUser.loadGuildRolesLorittaPermissions(loritta, this, guild)
 				guildRolesLorittaPermissions = guildPermissions
 				guildPermissions
 			}
 		}
 	}
 
-	suspend fun getActiveDonationKeys() = loritta.newSuspendedTransaction {
+	suspend fun getActiveDonationKeys(loritta: LorittaBot) = loritta.newSuspendedTransaction {
 		DonationKey.find { DonationKeys.activeIn eq this@ServerConfig.id and (DonationKeys.expiresAt greaterEq System.currentTimeMillis()) }
 				.toList()
 	}
 
-	suspend fun getActiveDonationKeysValue() = getActiveDonationKeys().sumByDouble {
+	suspend fun getActiveDonationKeysValue(loritta: LorittaBot) = getActiveDonationKeys(loritta).sumOf {
 		// This is a weird workaround that fixes users complaining that 19.99 + 19.99 != 40 (it equals to 39.38()
 		ceil(it.value)
 	}
@@ -116,11 +114,11 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 
 	fun getActiveDonationKeysValueNested() = getActiveDonationKeysNested().sumByDouble { it.value }
 
-	suspend fun getUserData(id: Long, isInGuild: Boolean = true): GuildProfile {
+	suspend fun getUserData(loritta: LorittaBot, id: Long, isInGuild: Boolean = true): GuildProfile {
 		val t = this
 		val mutex = creatingGuildUserProfileMutexes.getOrPut(id) { Mutex() }
 
-		return getUserDataIfExistsAsync(id) ?: mutex.withLock {
+		return getUserDataIfExistsAsync(loritta, id) ?: mutex.withLock {
 			loritta.newSuspendedTransaction {
 				GuildProfile.new {
 					this.guildId = t.guildId
@@ -134,7 +132,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 		}
 	}
 
-	suspend fun getUserDataIfExistsAsync(id: Long): GuildProfile? {
+	suspend fun getUserDataIfExistsAsync(loritta: LorittaBot, id: Long): GuildProfile? {
 		return loritta.newSuspendedTransaction {
 			GuildProfile.find { (GuildProfiles.guildId eq guildId) and (GuildProfiles.userId eq id) }.firstOrNull()
 		}
@@ -147,9 +145,9 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	/**
 	 * Gets or retrieves from the database the object you've requested
 	 */
-	fun <T> getCachedOrRetreiveFromDatabase(property: KMutableProperty1<ServerConfig, *>): T {
+	suspend fun <T> getCachedOrRetreiveFromDatabase(loritta: LorittaBot, property: KMutableProperty1<ServerConfig, *>): T {
 		if (!cachedData.containsKey(property)) {
-			val databaseObject = transaction(Databases.loritta) {
+			val databaseObject = loritta.pudding.transaction {
 				property.call(this@ServerConfig)
 			}
 			cachedData[property] = Optional.ofNullable(databaseObject)

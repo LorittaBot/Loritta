@@ -93,7 +93,7 @@ class AtendenteCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
                 val skipHeight = fontMetrics.ascent
                 var y = (height / 2) - ((skipHeight - 10) * (lines.size - 1))
                 for (line in lines) {
-                    ImageUtils.drawCenteredStringEmoji(graphics, line, Rectangle(0, y, width, 24), font)
+                    ImageUtils.drawCenteredStringEmoji(loritta, graphics, line, Rectangle(0, y, width, 24), font)
                     y += skipHeight
                 }
 

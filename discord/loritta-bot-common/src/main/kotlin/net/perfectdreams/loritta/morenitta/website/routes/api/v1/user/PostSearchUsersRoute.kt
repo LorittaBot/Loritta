@@ -8,7 +8,6 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +38,7 @@ class PostSearchUsersRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 			}
 		}
 
-		val array = lorittaShards.getUsers()
+		val array = loritta.lorittaShards.getUsers()
 				.asSequence() // With asSequence, the sequence will respect the "take" and won't process more than the defined limit
 				.filter { filter.invoke(it) }
 				.map {

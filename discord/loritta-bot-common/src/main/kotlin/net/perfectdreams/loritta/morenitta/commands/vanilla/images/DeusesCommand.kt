@@ -16,7 +16,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class DeusesCommand : AbstractCommand("deuses", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class DeusesCommand(loritta: LorittaBot) : AbstractCommand(loritta, "deuses", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "deuses.png")) }
 	}
@@ -45,7 +45,7 @@ class DeusesCommand : AbstractCommand("deuses", category = net.perfectdreams.lor
 
 			val font = Font.createFont(0, File(LorittaBot.ASSETS + "mavenpro-bold.ttf")).deriveFont(42F)
 			graphics.font = font
-			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 630, 9999, graphics.fontMetrics, graphics)
+			ImageUtils.drawTextWrapSpaces(loritta, texto, 2, 40, 630, 9999, graphics.fontMetrics, graphics)
 
 			context.sendFile(image, "deuses.png", context.getAsMention(true))
 		} else {

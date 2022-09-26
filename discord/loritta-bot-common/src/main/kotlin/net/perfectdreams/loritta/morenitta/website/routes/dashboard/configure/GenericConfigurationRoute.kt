@@ -15,7 +15,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 open class GenericConfigurationRoute(loritta: LorittaBot, path: String, val type: String, val file: String) : RequiresGuildAuthLocalizedRoute(loritta, path) {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as LorittaBot
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 		variables["saveType"] = type
 
 		if (type == "miscellaneous") {

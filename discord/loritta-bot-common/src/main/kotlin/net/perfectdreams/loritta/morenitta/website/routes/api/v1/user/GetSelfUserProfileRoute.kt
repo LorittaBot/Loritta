@@ -14,7 +14,7 @@ import javax.imageio.ImageIO
 
 class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/profile") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
 		val settings = loritta.newSuspendedTransaction {
 			profile.settings
 		}

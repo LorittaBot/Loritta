@@ -42,7 +42,7 @@ class GiveawayCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta,
 						""
 					}
 
-					"**${context.serverConfig.commandPrefix}${cmd.labels.firstOrNull()}** $usageWithinCodeBlocks» ${cmd.command().description(net.perfectdreams.loritta.morenitta.utils.loritta.localeManager.getLocaleById(context.serverConfig.localeId))}\n"
+					"**${context.serverConfig.commandPrefix}${cmd.labels.firstOrNull()}** $usageWithinCodeBlocks» ${cmd.command().description(loritta.localeManager.getLocaleById(context.serverConfig.localeId))}\n"
 				}
 
 				embed.appendDescription(toBeAdded)

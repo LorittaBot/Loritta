@@ -8,8 +8,6 @@ import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.drawText
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Guild
@@ -24,7 +22,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
+class Christmas2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("christmas2019") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -42,7 +40,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
 				.deriveFont(42F)
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
 		val marrySection = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/marry.png"))
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
@@ -53,23 +51,23 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 			marriage?.user1
 		}
 
-		val marriedWith = if (marriedWithId != null) { lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } else { null }
+		val marriedWith = if (marriedWithId != null) { loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong()) } else { null }
 
-		val reputations = ProfileUtils.getReputationCount(user)
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
+		val reputations = ProfileUtils.getReputationCount(loritta, user)
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 
 		var xpLocal: Long? = null
 		var localPosition: Long? = null
 
 		if (guild != null) {
-			val localProfile = ProfileUtils.getLocalProfile(guild, user)
+			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)
 
-			localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
+			localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
 			xpLocal = localProfile?.xp
 		}
 
-		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
 		val resizedBadges = badges.map { it.getScaledInstance(30, 30, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 
@@ -85,7 +83,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 		drawAvatar(avatar, graphics)
 
 		graphics.font = oswaldRegular50
-		graphics.drawText(user.name, 162, 480) // Nome do usuário
+		graphics.drawText(loritta, user.name, 162, 480) // Nome do usuário
 		graphics.font = oswaldRegular42
 
 		drawReputations(user, graphics, reputations)
@@ -97,7 +95,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(aboutMe, 162, 504, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 162, 504, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
 
 		if (marriage != null) {
 			graphics.drawImage(marrySection, 0, 0, null)
@@ -188,7 +186,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 
 		var y = 515
 		for (line in userInfo) {
-			graphics.drawText(line, 773 - biggestStrWidth - 2, y)
+			graphics.drawText(loritta, line, 773 - biggestStrWidth - 2, y)
 			y += 16
 		}
 

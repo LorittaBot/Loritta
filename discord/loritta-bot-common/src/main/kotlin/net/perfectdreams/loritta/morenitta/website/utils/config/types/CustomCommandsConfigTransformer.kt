@@ -5,17 +5,17 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.CustomCommand
 import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
-object CustomCommandsConfigTransformer : ConfigTransformer {
+class CustomCommandsConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "custom_commands"
     override val configKey: String = "customCommands"
 

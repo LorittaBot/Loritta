@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.edit
 import net.perfectdreams.loritta.morenitta.utils.extensions.localized
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
@@ -23,8 +22,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.UserFlagBadgeEmotes.getBadges
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class UserInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "userinfo", listOf("memberinfo"), net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.userinfo.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -122,7 +122,7 @@ class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), net.pe
 				var sharedServersFieldTitle = context.locale["commands.command.userinfo.sharedServers"]
 				var servers: String?
 
-				val sharedServersResults = lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
+				val sharedServersResults = loritta.lorittaShards.queryMutualGuildsInAllLorittaClusters(user.id)
 				val sharedServers = sharedServersResults.sortedByDescending {
 					it["memberCount"].int
 				}

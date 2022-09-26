@@ -9,8 +9,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.math.MathUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator", "calcular", "calculate"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class CalculadoraCommand(loritta: LorittaBot) : AbstractCommand(loritta, "calc", listOf("calculadora", "calculator", "calcular", "calculate"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	companion object {
 		const val LOCALE_PREFIX = "commands.command.calc"
 	}

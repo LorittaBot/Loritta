@@ -17,7 +17,7 @@ import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 
-class LavaCommand : AbstractCommand("lava", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class LavaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lava", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.lava.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.lava.examples")
 	override fun getUsage() = arguments {

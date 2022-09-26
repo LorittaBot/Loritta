@@ -7,8 +7,9 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.translate.GoogleTranslateUtils
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class TranslateCommand(loritta: LorittaBot) : AbstractCommand(loritta, "traduzir", listOf("translate"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.translate.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.translate.examples")
 

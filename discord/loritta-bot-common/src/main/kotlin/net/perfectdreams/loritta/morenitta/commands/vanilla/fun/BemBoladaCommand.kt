@@ -5,12 +5,12 @@ import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.WebhookUtils
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class BemBoladaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "bembolada", listOf("kenji"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.bembolada.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
@@ -197,7 +197,7 @@ class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), net.perfe
 				"Por que o médico que trabalha de noite usa verde?\n\nÉ porque ele está de plantão.",
 				"O que o tomate foi fazer no banco?\n\nFoi tirar o extrato.")
 
-		val temmie = WebhookUtils.getOrCreateWebhook(context.event.textChannel!!, "Kenji do Loop Infinito")
+		val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.textChannel!!, "Kenji do Loop Infinito")
 
 		context.sendMessage(temmie, WebhookMessageBuilder()
 				.setUsername("Kenji do Loop Infinito")

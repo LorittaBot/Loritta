@@ -22,10 +22,10 @@ class SonhosTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
 
 			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
 				reply(
-						LorittaReply(
-								locale["commands.invalidRankingPage"],
-								Constants.ERROR
-						)
+					LorittaReply(
+						locale["commands.invalidRankingPage"],
+						Constants.ERROR
+					)
 				)
 				return@executesDiscord
 			}
@@ -38,23 +38,24 @@ class SonhosTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
 
 			val userData = loritta.newSuspendedTransaction {
 				Profiles.selectAll().orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
-						.toList()
+					.toList()
 			}
 
 			sendImage(
-					JVMImage(
-							RankingGenerator.generateRanking(
-									"Ranking Global",
-									null,
-									userData.map {
-										RankingGenerator.UserRankInformation(
-												it[Profiles.id].value,
-												"${it[Profiles.money]} sonhos"
-										)
-									}
+				JVMImage(
+					RankingGenerator.generateRanking(
+						loritta,
+						"Ranking Global",
+						null,
+						userData.map {
+							RankingGenerator.UserRankInformation(
+								it[Profiles.id].value,
+								"${it[Profiles.money]} sonhos"
 							)
-					),
-					"rank.png"
+						}
+					)
+				),
+				"rank.png"
 			)
 		}
 	}

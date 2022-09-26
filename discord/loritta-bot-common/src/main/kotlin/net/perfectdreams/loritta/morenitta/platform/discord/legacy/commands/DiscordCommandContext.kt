@@ -33,14 +33,14 @@ import java.io.InputStream
 import java.time.Instant
 
 class DiscordCommandContext(
-    loritta: LorittaBot,
-    command: Command<CommandContext>,
-    args: List<String>,
-    val discordMessage: Message,
-    locale: BaseLocale,
-    val serverConfig: ServerConfig,
-    val lorittaUser: LorittaUser,
-    val executedCommandLabel: String
+	loritta: LorittaBot,
+	command: Command<CommandContext>,
+	args: List<String>,
+	val discordMessage: Message,
+	locale: BaseLocale,
+	val serverConfig: ServerConfig,
+	val lorittaUser: LorittaUser,
+	val executedCommandLabel: String
 ) : CommandContext(loritta, command, args, DiscordMessage(discordMessage), locale) {
 	val isPrivateChannel = discordMessage.channelType == ChannelType.PRIVATE
 	val guild: Guild
@@ -50,33 +50,33 @@ class DiscordCommandContext(
 
 	suspend fun sendMessage(message: String, embed: MessageEmbed): Message {
 		return sendMessage(MessageBuilder()
-				.denyMentions(
-						Message.MentionType.EVERYONE,
-						Message.MentionType.HERE
-				)
-				.setEmbed(embed)
-				.append(if (message.isEmpty()) " " else message)
-				.build()
+			.denyMentions(
+				Message.MentionType.EVERYONE,
+				Message.MentionType.HERE
+			)
+			.setEmbed(embed)
+			.append(if (message.isEmpty()) " " else message)
+			.build()
 		)
 	}
 
 	suspend fun sendMessage(embed: MessageEmbed): Message {
 		return sendMessage(MessageBuilder()
-				.denyMentions(
-						Message.MentionType.EVERYONE,
-						Message.MentionType.HERE
-				)
-				.append(getUserMention(true))
-				.setEmbed(embed)
-				.build()
+			.denyMentions(
+				Message.MentionType.EVERYONE,
+				Message.MentionType.HERE
+			)
+			.append(getUserMention(true))
+			.setEmbed(embed)
+			.build()
 		)
 	}
 
 	suspend fun sendMessage(message: Message): Message {
 		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
 			return discordMessage.channel.sendMessage(message)
-					.referenceIfPossible(discordMessage, serverConfig, true)
-					.await()
+				.referenceIfPossible(discordMessage, serverConfig, true)
+				.await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
@@ -84,71 +84,72 @@ class DiscordCommandContext(
 
 	override suspend fun sendImage(image: Image, fileName: String, content: String): net.perfectdreams.loritta.morenitta.api.entities.Message {
 		return DiscordMessage(
-				discordMessage.channel.sendMessage(LorittaMessage(content).content)
-						.addFile(image.toByteArray(), fileName)
-						.referenceIfPossible(discordMessage, serverConfig, true)
-						.await()
-		)
-	}
-
-	override suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String): net.perfectdreams.loritta.morenitta.api.entities.Message {
-		return DiscordMessage(
-				discordMessage.channel.sendMessage(LorittaMessage(content).content)
-						.addFile(byteArray, fileName)
-						.referenceIfPossible(discordMessage, serverConfig, true)
-						.await()
-		)
-	}
-
-	suspend fun sendFile(file: File, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
-		return DiscordMessage(
-				discordMessage.channel.sendMessage(
-						MessageBuilder()
-								.denyMentions(
-										Message.MentionType.EVERYONE,
-										Message.MentionType.HERE
-								)
-								.append(content)
-								.setEmbed(embed)
-								.build()
-				)
-						.addFile(file, fileName)
-						.referenceIfPossible(discordMessage, serverConfig, true)
-						.await()
-		)
-	}
-
-	suspend fun sendFile(inputStream: InputStream, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
-		return DiscordMessage(discordMessage.channel.sendMessage(
-				MessageBuilder()
-						.denyMentions(
-								Message.MentionType.EVERYONE,
-								Message.MentionType.HERE
-						)
-						.append(content)
-						.setEmbed(embed)
-						.build()
-		)
-				.addFile(inputStream, fileName)
+			discordMessage.channel.sendMessage(LorittaMessage(content).content)
+				.addFile(image.toByteArray(), fileName)
 				.referenceIfPossible(discordMessage, serverConfig, true)
 				.await()
 		)
 	}
 
+	override suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String): net.perfectdreams.loritta.morenitta.api.entities.Message {
+		return DiscordMessage(
+			discordMessage.channel.sendMessage(LorittaMessage(content).content)
+				.addFile(byteArray, fileName)
+				.referenceIfPossible(discordMessage, serverConfig, true)
+				.await()
+		)
+	}
+
+	suspend fun sendFile(file: File, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
+		return DiscordMessage(
+			discordMessage.channel.sendMessage(
+				MessageBuilder()
+					.denyMentions(
+						Message.MentionType.EVERYONE,
+						Message.MentionType.HERE
+					)
+					.append(content)
+					.setEmbed(embed)
+					.build()
+			)
+				.addFile(file, fileName)
+				.referenceIfPossible(discordMessage, serverConfig, true)
+				.await()
+		)
+	}
+
+	suspend fun sendFile(inputStream: InputStream, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
+		return DiscordMessage(discordMessage.channel.sendMessage(
+			MessageBuilder()
+				.denyMentions(
+					Message.MentionType.EVERYONE,
+					Message.MentionType.HERE
+				)
+				.append(content)
+				.setEmbed(embed)
+				.build()
+		)
+			.addFile(inputStream, fileName)
+			.referenceIfPossible(discordMessage, serverConfig, true)
+			.await()
+		)
+	}
+
 	override suspend fun user(argument: Int) = this.args.getOrNull(argument)
-			?.let {
-				DiscordUtils.extractUserFromString(
-						it,
-						discordMessage.mentionedUsers,
-						if (isPrivateChannel) null else discordMessage.guild
-				)?.let { JDAUser(it) }
-			}
+		?.let {
+			DiscordUtils.extractUserFromString(
+				loritta,
+				it,
+				discordMessage.mentionedUsers,
+				if (isPrivateChannel) null else discordMessage.guild
+			)?.let { JDAUser(it) }
+		}
 
 	override suspend fun imageUrl(argument: Int, searchPreviousMessages: Int): String? {
 		if (this.args.size > argument) { // Primeiro iremos verificar se existe uma imagem no argumento especificado
 			val link = this.args[argument] // Ok, será que isto é uma URL?
 
-			if (LorittaUtils.isValidUrl(link) && net.perfectdreams.loritta.morenitta.utils.loritta.connectionManager.isTrusted(link)) {
+			if (LorittaUtils.isValidUrl(link) && loritta.connectionManager.isTrusted(link)) {
 				// Workaround for direct prnt.sc image links (Lightshot is trash but a lot of people use it)
 				if (link.contains("prnt.sc")) {
 					val document = withContext(Dispatchers.IO) { Jsoup.connect(link).get() }
@@ -175,11 +176,11 @@ class DiscordCommandContext(
 			}
 
 			for (embed in discordMessage.embeds) {
-				if (embed.image != null && net.perfectdreams.loritta.morenitta.utils.loritta.connectionManager.isTrusted(embed.image!!.url!!))
+				if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!))
 					return embed.image!!.url
 			}
 			for (attachment in discordMessage.attachments) {
-				if (attachment.isImage && net.perfectdreams.loritta.morenitta.utils.loritta.connectionManager.isTrusted(attachment.url))
+				if (attachment.isImage && loritta.connectionManager.isTrusted(attachment.url))
 					return attachment.url
 			}
 
@@ -201,11 +202,11 @@ class DiscordCommandContext(
 			val referencedMessage = discordMessage.referencedMessage
 			if (referencedMessage != null) {
 				for (embed in referencedMessage.embeds) {
-					if (embed.image != null && net.perfectdreams.loritta.morenitta.utils.loritta.connectionManager.isTrusted(embed.image!!.url!!))
+					if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!))
 						return embed.image!!.url
 				}
 				for (attachment in referencedMessage.attachments) {
-					if (attachment.isImage && net.perfectdreams.loritta.morenitta.utils.loritta.connectionManager.isTrusted(attachment.url))
+					if (attachment.isImage && loritta.connectionManager.isTrusted(attachment.url))
 						return attachment.url
 				}
 			}
@@ -219,11 +220,11 @@ class DiscordCommandContext(
 
 				attach@ for (msg in message) {
 					for (embed in msg.embeds) {
-						if (embed.image != null && net.perfectdreams.loritta.morenitta.utils.loritta.connectionManager.isTrusted(embed.image!!.url!!))
+						if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!))
 							return embed.image!!.url
 					}
 					for (attachment in msg.attachments) {
-						if (attachment.isImage && net.perfectdreams.loritta.morenitta.utils.loritta.connectionManager.isTrusted(attachment.url))
+						if (attachment.isImage && loritta.connectionManager.isTrusted(attachment.url))
 							return attachment.url
 					}
 				}
@@ -241,7 +242,7 @@ class DiscordCommandContext(
 			if (args.isNotEmpty() && createTextAsImageIfNotFound) {
 				val theTextThatWillBeWritten = args.drop(argument).joinToString(" ")
 				if (theTextThatWillBeWritten.isNotEmpty())
-					return JVMImage(ImageUtils.createTextAsImage(256, 256, theTextThatWillBeWritten))
+					return JVMImage(ImageUtils.createTextAsImage(loritta, 256, 256, theTextThatWillBeWritten))
 			}
 
 			if (searchPreviousMessages != 0) {
@@ -254,7 +255,7 @@ class DiscordCommandContext(
 
 		// let's download the image!
 		try {
-			val image = LorittaUtils.downloadImage(toBeDownloaded) ?: return null
+			val image = LorittaUtils.downloadImage(loritta, toBeDownloaded) ?: return null
 			return JVMImage(image)
 		} catch (e: Exception) {
 			return null
@@ -263,8 +264,8 @@ class DiscordCommandContext(
 
 	fun textChannel(argument: Int): TextChannel? {
 		val channelId = args.getOrNull(argument)
-				?.replace("<#", "")
-				?.replace(">", "")
+			?.replace("<#", "")
+			?.replace(">", "")
 
 		return if (channelId?.isValidSnowflake()!!) {
 			guild.getTextChannelById(channelId)
@@ -283,8 +284,8 @@ class DiscordCommandContext(
 
 	fun voiceChannel(argument: Int): VoiceChannel? {
 		val channelId = args.getOrNull(argument)
-				?.replace("<#", "")
-				?.replace(">", "")
+			?.replace("<#", "")
+			?.replace(">", "")
 
 		return if (channelId?.isValidSnowflake()!!) {
 			guild.getVoiceChannelById(channelId)
@@ -303,8 +304,8 @@ class DiscordCommandContext(
 
 	fun role(argument: Int): Role? {
 		val roleId = args.getOrNull(argument)
-				?.replace("<@&", "")
-				?.replace(">", "")
+			?.replace("<@&", "")
+			?.replace(">", "")
 
 		return if (roleId?.isValidSnowflake()!!) {
 			guild.getRoleById(roleId)
@@ -351,11 +352,11 @@ class DiscordCommandContext(
 		val commandLabelWithPrefix = "${serverConfig.commandPrefix}$commandLabel"
 
 		val embed = EmbedBuilder()
-				.setColor(Constants.LORITTA_AQUA)
-				.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.instanceConfig.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
-				.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
-				.setFooter("${user.name + "#" + user.discriminator} • ${command.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
-				.setTimestamp(Instant.now())
+			.setColor(Constants.LORITTA_AQUA)
+			.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.instanceConfig.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
+			.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
+			.setFooter("${user.name + "#" + user.discriminator} • ${command.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
+			.setTimestamp(Instant.now())
 
 		val description = buildString {
 			// Builds the "How to Use" string
@@ -422,7 +423,7 @@ class DiscordCommandContext(
 
 			for (example in examplesAsString) {
 				val split = example.split("|-|")
-						.map { it.trim() }
+					.map { it.trim() }
 
 				if (split.size == 2) {
 					// If the command has a extended description
@@ -443,9 +444,9 @@ class DiscordCommandContext(
 
 		if (examples.isNotEmpty()) {
 			embed.addField(
-					"\uD83D\uDCD6 ${locale["commands.explain.examples"]}",
-					examples.joinToString("\n", transform = { it }),
-					false
+				"\uD83D\uDCD6 ${locale["commands.explain.examples"]}",
+				examples.joinToString("\n", transform = { it }),
+				false
 			)
 		}
 
@@ -460,9 +461,9 @@ class DiscordCommandContext(
 					field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.botRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
 				}
 				embed.addField(
-						"\uD83D\uDCDB ${locale["commands.explain.permissions"]}",
-						field,
-						false
+					"\uD83D\uDCDB ${locale["commands.explain.permissions"]}",
+					field,
+					false
 				)
 			}
 		}
@@ -471,9 +472,9 @@ class DiscordCommandContext(
 
 		if (otherAlternatives.isNotEmpty()) {
 			embed.addField(
-					"\uD83D\uDD00 ${locale["commands.explain.aliases"]}",
-					otherAlternatives.joinToString(transform = { "`${serverConfig.commandPrefix}$it`" }),
-					false
+				"\uD83D\uDD00 ${locale["commands.explain.aliases"]}",
+				otherAlternatives.joinToString(transform = { "`${serverConfig.commandPrefix}$it`" }),
+				false
 			)
 		}
 
@@ -483,22 +484,22 @@ class DiscordCommandContext(
 
 		if (similarCommands.isNotEmpty()) {
 			embed.addField(
-					"${Emotes.LORI_WOW} ${locale["commands.explain.relatedCommands"]}",
-					similarCommands.joinToString(transform = { "`${serverConfig.commandPrefix}${it.labels.first()}`" }),
-					false
+				"${Emotes.LORI_WOW} ${locale["commands.explain.relatedCommands"]}",
+				similarCommands.joinToString(transform = { "`${serverConfig.commandPrefix}${it.labels.first()}`" }),
+				false
 			)
 		}
 
 		val messageBuilder = MessageBuilder()
-				.denyMentions(
-						Message.MentionType.EVERYONE,
-						Message.MentionType.HERE
-				)
-				.append(getUserMention(true))
-				.setEmbed(embed.build())
+			.denyMentions(
+				Message.MentionType.EVERYONE,
+				Message.MentionType.HERE
+			)
+			.append(getUserMention(true))
+			.setEmbed(embed.build())
 
 		discordMessage.channel.sendMessage(messageBuilder.build())
-				.referenceIfPossible(discordMessage, serverConfig, true)
-				.await()
+			.referenceIfPossible(discordMessage, serverConfig, true)
+			.await()
 	}
 }

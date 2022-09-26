@@ -6,22 +6,21 @@ import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.morenitta.LorittaLauncher.loritta
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.morenitta.utils.locale.Gender
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Region
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class ServerInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "serverinfo", listOf("guildinfo"), category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.serverinfo.description")
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -36,10 +35,10 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		if (context.rawArgs.isNotEmpty()) {
 			val id = context.rawArgs.first()
 			if (id.isValidSnowflake()) {
-				guild = lorittaShards.queryGuildById(context.args[0])
+				guild = loritta.lorittaShards.queryGuildById(context.args[0])
 			}
 		} else {
-			guild = lorittaShards.queryGuildById(context.guild.idLong)
+			guild = loritta.lorittaShards.queryGuildById(context.guild.idLong)
 		}
 
 		if (guild == null) {
@@ -57,10 +56,10 @@ class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), cat
 		val name = guild["name"].string
 		val id = guild["id"].string
 		val shardId = guild["shardId"].int
-		val cluster = DiscordUtils.getLorittaClusterForGuildId(id.toLong())
+		val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, id.toLong())
 		val ownerId = guild["ownerId"].string
 		val region = Region.valueOf(guild["region"].string)
-		val owner = lorittaShards.retrieveUserInfoById(ownerId.toLong())
+		val owner = loritta.lorittaShards.retrieveUserInfoById(ownerId.toLong())
 		val ownerProfile = loritta.getLorittaProfileAsync(ownerId.toLong())
 		val ownerGender = loritta.newSuspendedTransaction { ownerProfile?.settings?.gender ?: Gender.UNKNOWN }
 		val textChannelCount = guild["count"]["textChannels"].int

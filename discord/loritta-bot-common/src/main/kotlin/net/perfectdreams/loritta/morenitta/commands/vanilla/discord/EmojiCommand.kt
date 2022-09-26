@@ -9,13 +9,13 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Emote
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class EmojiCommand : AbstractCommand("emoji", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.emoji.description")
 
 	// TODO: Fix Usage
@@ -39,7 +39,7 @@ class EmojiCommand : AbstractCommand("emoji", category = net.perfectdreams.lorit
 			}
 
 			if (arg0.isValidSnowflake()) {
-				val emote = lorittaShards.getEmoteById(arg0)
+				val emote = loritta.lorittaShards.getEmoteById(arg0)
 				if (emote != null) {
 					// Emoji do Discord (via ID)
 					downloadAndSendDiscordEmote(context, emote)
@@ -77,7 +77,7 @@ class EmojiCommand : AbstractCommand("emoji", category = net.perfectdreams.lorit
 						)
 						return
 					}
-					val emojiImage = LorittaUtils.downloadImage("https://twemoji.maxcdn.com/2/72x72/$value.png")
+					val emojiImage = LorittaUtils.downloadImage(loritta, "https://twemoji.maxcdn.com/2/72x72/$value.png")
 					context.sendFile(emojiImage!!, "emoji.png", MessageBuilder().append(" ").build())
 				} catch (e: Exception) {
 					e.printStackTrace()
@@ -94,7 +94,7 @@ class EmojiCommand : AbstractCommand("emoji", category = net.perfectdreams.lorit
 		val emojiUrl = emote.imageUrl
 
 		try {
-			val emojiImage = LorittaUtils.downloadFile("$emojiUrl?size=2048", 5000)
+			val emojiImage = LorittaUtils.downloadFile(loritta, "$emojiUrl?size=2048", 5000)
 			var fileName = emote.name
 			if (emote.isAnimated) {
 				fileName += ".gif"

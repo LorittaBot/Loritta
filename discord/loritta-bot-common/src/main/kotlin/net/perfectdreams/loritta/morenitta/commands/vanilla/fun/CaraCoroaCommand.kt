@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
-class CaraCoroaCommand : AbstractCommand("coinflip", listOf("girarmoeda", "flipcoin", "caracoroa"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class CaraCoroaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "coinflip", listOf("girarmoeda", "flipcoin", "caracoroa"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		const val LOCALE_PREFIX = "commands.command.flipcoin"
 	}

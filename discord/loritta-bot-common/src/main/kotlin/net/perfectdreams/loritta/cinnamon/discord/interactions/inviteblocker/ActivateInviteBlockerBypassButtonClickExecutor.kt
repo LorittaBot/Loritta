@@ -35,7 +35,7 @@ class ActivateInviteBlockerBypassButtonClickExecutor(loritta: LorittaCinnamon) :
                 )
             }
 
-        val success = loritta.services.transaction {
+        val success = loritta.pudding.transaction {
             // Check if it already exists
             if (ServerRolePermissions.select {
                     ServerRolePermissions.guild eq context.guildId.toLong() and

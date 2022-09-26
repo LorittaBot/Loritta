@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -35,13 +34,13 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		var start = System.currentTimeMillis()
 		val guildId = call.parameters["guildId"] ?: return
 
-		val shardId = DiscordUtils.getShardIdFromGuildId(guildId.toLong())
+		val shardId = DiscordUtils.getShardIdFromGuildId(loritta, guildId.toLong())
 
 		val host = call.request.hostFromHeader()
 		val scheme = LorittaWebsite.WEBSITE_URL.split(":").first()
 
-		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(shardId)
-		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loriShardId)
+		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
+		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loritta, loriShardId)
 
 		logger.info { "Getting some stuff lol: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
@@ -49,13 +48,13 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		if (host != theNewUrl)
 			redirect("$scheme://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
-		val jdaGuild = lorittaShards.getGuildById(guildId)
-				?: redirect(net.perfectdreams.loritta.morenitta.utils.loritta.discordInstanceConfig.discord.addBotUrl + "&guild_id=$guildId", false)
+		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
+				?: redirect(loritta.discordInstanceConfig.discord.addBotUrl + "&guild_id=$guildId", false)
 
 		logger.info { "JDA Guild get and check: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 
-		val serverConfig = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
+		val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
 		logger.info { "Getting legacy config: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
@@ -68,13 +67,13 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 
 		if (member != null) {
 			start = System.currentTimeMillis()
-			val lorittaUser = GuildLorittaUser(member, LorittaUser.loadMemberLorittaPermissions(serverConfig, member), net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(id.toLong()))
+			val lorittaUser = GuildLorittaUser(loritta, member, LorittaUser.loadMemberLorittaPermissions(loritta, serverConfig, member), loritta.getOrCreateLorittaProfile(id.toLong()))
 
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 			logger.info { "Lori User Perm Check: ${System.currentTimeMillis() - start}" }
 		}
 
-		val canBypass = net.perfectdreams.loritta.morenitta.utils.loritta.config.isOwner(userIdentification.id) || canAccessDashboardViaPermission
+		val canBypass = loritta.config.isOwner(userIdentification.id) || canAccessDashboardViaPermission
 		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id)) {
 			call.respondText("Você não tem permissão!")
 			return
@@ -83,7 +82,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		// variables["serverConfig"] = legacyServerConfig
 		// TODO: Remover isto quando for removido o "server-config-json" do website
 		start = System.currentTimeMillis()
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 		logger.info { "Legacy Vars Creation: ${System.currentTimeMillis() - start}" }
 		variables["guild"] = jdaGuild
 

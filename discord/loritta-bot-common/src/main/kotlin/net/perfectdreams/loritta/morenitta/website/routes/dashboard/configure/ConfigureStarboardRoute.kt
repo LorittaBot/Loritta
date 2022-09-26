@@ -21,7 +21,7 @@ class ConfigureStarboardRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedR
 			serverConfig.starboardConfig
 		}
 
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "starboard"
 		variables["serverConfig"] = FakeServerConfig(

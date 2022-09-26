@@ -40,7 +40,7 @@ class AsciiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, li
                 } catch (e: IllegalArgumentException) {
                 }
             }
-            val converter = ImageToAsciiConverter(*options.toTypedArray())
+            val converter = ImageToAsciiConverter(loritta, *options.toTypedArray())
             val newImage = converter.imgToAsciiImg(img.handle.toBufferedImage())
 
             context.sendImage(JVMImage(newImage), "asciiart.png", context.getUserMention(true))

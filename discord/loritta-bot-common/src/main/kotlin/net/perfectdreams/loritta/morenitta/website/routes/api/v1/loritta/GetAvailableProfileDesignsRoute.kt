@@ -16,7 +16,7 @@ class GetAvailableProfileDesignsRoute(val loritta: LorittaBot) : BaseRoute("/api
 			ProfileDesign.find {
 				ProfileDesigns.enabled eq true
 			}.toList()
-		}.map { WebsiteUtils.toSerializable(it) }
+		}.map { WebsiteUtils.toSerializable(loritta, it) }
 				.let {
 					Json.encodeToJsonElement(ListSerializer(net.perfectdreams.loritta.serializable.ProfileDesign.serializer()), it)
 				}

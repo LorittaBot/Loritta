@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.dao
 
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.StoredMessages
 import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import org.jetbrains.exposed.dao.LongEntity
@@ -17,15 +18,11 @@ class StoredMessage(id: EntityID<Long>) : LongEntity(id) {
 	var storedAttachments by StoredMessages.storedAttachments
 	var initializationVector by StoredMessages.initializationVector
 
-	var content: String
-		get() {
-			// decrypt
-			return EventLog.decryptMessage(initializationVector, encryptedContent)
-		}
-		set(value) {
-			// encrypt
-			val encrypted = EventLog.encryptMessage(value)
-			this.initializationVector = encrypted.initializationVector
-			this.encryptedContent = encrypted.encryptedMessage
-		}
+	fun encryptAndSetContent(loritta: LorittaBot, value: String) {
+		val encrypted = EventLog.encryptMessage(loritta, value)
+		this.initializationVector = encrypted.initializationVector
+		this.encryptedContent = encrypted.encryptedMessage
+	}
+
+	fun decryptContent(loritta: LorittaBot) = EventLog.decryptMessage(loritta, initializationVector, encryptedContent)
 }

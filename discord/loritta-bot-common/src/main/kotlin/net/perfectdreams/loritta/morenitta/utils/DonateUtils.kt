@@ -4,6 +4,7 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.time.Instant
 
@@ -15,11 +16,11 @@ object DonateUtils {
 	 * @param donatorPaid how much the user donated
 	 * @return A reply, may be null
 	 */
-	fun getRandomDonationMessage(locale: BaseLocale, profile: Profile, donatorPaid: Double, guildPaid: Double): LorittaReply? {
+	fun getRandomDonationMessage(loritta: LorittaBot, locale: BaseLocale, profile: Profile, donatorPaid: Double, guildPaid: Double): LorittaReply? {
 		val willRestartAt = loritta.patchData.willRestartAt
 		if (willRestartAt != null) {
 			val instant = Instant.ofEpochMilli(willRestartAt).atZone(Constants.LORITTA_TIMEZONE)
-			val estimatedTime = lorittaShards.shardManager.shards.size * 8_000L
+			val estimatedTime = loritta.lorittaShards.shardManager.shards.size * 8_000L
 			val fancyFormatted = net.perfectdreams.loritta.morenitta.utils.DateUtils.formatMillis(estimatedTime, loritta.localeManager.getLocaleById(locale.id))
 
 			return LorittaReply(

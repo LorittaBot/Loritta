@@ -7,8 +7,9 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class QualidadeCommand : AbstractCommand("qualidade", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class QualidadeCommand(loritta: LorittaBot) : AbstractCommand(loritta, "qualidade", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.quality.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.quality.examples")
 	// TODO: Fix Usage

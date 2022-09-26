@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
+import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
@@ -28,7 +29,7 @@ class PostDonationPaymentRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 		// This is a security measure, to avoid "high risk" purchases.
 		// We will require that users need to verify their account + have MFA enabled.
 		val refreshedUserIdentification = discordAuth.getUserIdentification()
-		if (!net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils.checkIfAccountHasMFAEnabled(refreshedUserIdentification))
+		if (!WebsiteUtils.checkIfAccountHasMFAEnabled(loritta, refreshedUserIdentification))
 			return
 
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }

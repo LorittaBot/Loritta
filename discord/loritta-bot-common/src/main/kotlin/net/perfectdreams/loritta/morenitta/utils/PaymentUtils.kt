@@ -109,7 +109,7 @@ object PaymentUtils {
                 if (0L >= totalQuantity)
                     continue
 
-                val user = lorittaShards.retrieveUserById(entry.key)
+                val user = loritta.lorittaShards.retrieveUserById(entry.key)
 
                 if (user != null && !user.isBot) {
                     val builder = StringBuilder()

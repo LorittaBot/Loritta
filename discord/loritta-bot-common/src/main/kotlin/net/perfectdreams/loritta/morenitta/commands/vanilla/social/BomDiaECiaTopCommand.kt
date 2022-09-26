@@ -28,10 +28,10 @@ class BomDiaECiaTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
 
 			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
 				reply(
-						LorittaReply(
-								locale["commands.invalidRankingPage"],
-								Constants.ERROR
-						)
+					LorittaReply(
+						locale["commands.invalidRankingPage"],
+						Constants.ERROR
+					)
 				)
 				return@executesDiscord
 			}
@@ -47,28 +47,29 @@ class BomDiaECiaTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
 
 			val userData = loritta.newSuspendedTransaction {
 				BomDiaECiaWinners.slice(userId, userIdCount)
-						.selectAll()
-						.groupBy(userId)
-						.orderBy(userIdCount, SortOrder.DESC)
-						.limit(5, page * 5)
-						.toMutableList()
+					.selectAll()
+					.groupBy(userId)
+					.orderBy(userIdCount, SortOrder.DESC)
+					.limit(5, page * 5)
+					.toMutableList()
 			}
 
 			sendImage(
-					JVMImage(
-							RankingGenerator.generateRanking(
-									"Ranking Global",
-									null,
-									userData.map {
-										RankingGenerator.UserRankInformation(
-												it[userId],
-												locale["commands.command.bomdiaeciatop.wonMatches", it[userIdCount]]
-										)
-									}
+				JVMImage(
+					RankingGenerator.generateRanking(
+						loritta,
+						"Ranking Global",
+						null,
+						userData.map {
+							RankingGenerator.UserRankInformation(
+								it[userId],
+								locale["commands.command.bomdiaeciatop.wonMatches", it[userIdCount]]
 							)
-					),
-					"rank.png",
-					getUserMention(true)
+						}
+					)
+				),
+				"rank.png",
+				getUserMention(true)
 			)
 		}
 	}

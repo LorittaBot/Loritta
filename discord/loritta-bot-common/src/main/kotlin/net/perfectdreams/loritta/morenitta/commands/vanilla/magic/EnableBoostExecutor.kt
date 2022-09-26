@@ -30,7 +30,7 @@ object EnableBoostExecutor : LoriToolsCommand.LoriToolsExecutor {
 			return@task true
 		}
 
-		NitroBoostUtils.onBoostActivate(member)
+		NitroBoostUtils.onBoostActivate(loritta, member)
 
 		context.reply(
 				LorittaReply(

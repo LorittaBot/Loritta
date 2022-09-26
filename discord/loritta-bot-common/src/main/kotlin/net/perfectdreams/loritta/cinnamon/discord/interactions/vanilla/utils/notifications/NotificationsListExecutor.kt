@@ -21,7 +21,7 @@ class NotificationsListExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally()
 
-        val notifications = context.loritta.services.notifications.getUserNotifications(UserId(context.user.id), 10, 0)
+        val notifications = context.loritta.pudding.notifications.getUserNotifications(UserId(context.user.id), 10, 0)
 
         context.sendEphemeralMessage {
             embed {

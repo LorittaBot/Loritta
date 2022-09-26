@@ -4,11 +4,11 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class BackgroundCommand(loritta: LorittaBot) : AbstractCommand(loritta, "background", listOf("papeldeparede"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.background.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

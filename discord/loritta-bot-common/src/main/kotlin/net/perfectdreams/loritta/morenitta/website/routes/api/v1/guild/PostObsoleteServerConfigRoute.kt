@@ -111,8 +111,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthR
 			val tellUser = receivedPayload["tellUser"].bool
 			val warnMessage = receivedPayload["warnMessage"].string
 			val whitelistedChannels = receivedPayload["whitelistedChannels"].array
-					.map { it.long }
-					.toTypedArray()
+				.map { it.long }
+				.toTypedArray()
 
 			loritta.newSuspendedTransaction {
 				val inviteBlockerConfig = serverConfig.inviteBlockerConfig
@@ -151,10 +151,11 @@ class PostObsoleteServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthR
 		}
 
 		WebAuditLogUtils.addEntry(
-				guild,
-				userIdentification.id.toLong(),
-				actionType,
-				params
+			loritta,
+			guild,
+			userIdentification.id.toLong(),
+			actionType,
+			params
 		)
 
 		loritta.cachedServerConfigs.invalidate(serverConfig.guildId)
@@ -165,8 +166,8 @@ class PostObsoleteServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthR
 	suspend fun handleVanillaCommands(serverConfig: ServerConfig, receivedPayload: JsonObject): String {
 		loritta.newSuspendedTransaction {
 			serverConfig.disabledCommands = receivedPayload["disabledCommands"].array
-					.map { it.string }
-					.toTypedArray()
+				.map { it.string }
+				.toTypedArray()
 		}
 
 		return "${serverConfig.disabledCommands.size} comandos bloqueados!"

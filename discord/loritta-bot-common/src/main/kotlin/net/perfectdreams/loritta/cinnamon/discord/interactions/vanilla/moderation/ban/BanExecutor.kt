@@ -37,7 +37,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             cinnamonAutocomplete { autocompleteContext, focusedCommandOption ->
                 val interaKTionsContext = autocompleteContext.interaKTionsContext as? GuildAutocompleteContext ?: return@cinnamonAutocomplete emptyMap()
 
-                loritta.services.serverConfigs.getPredefinedPunishmentMessagesByGuildId(
+                loritta.pudding.serverConfigs.getPredefinedPunishmentMessagesByGuildId(
                     interaKTionsContext.guildId.value
                 ).filter {
                     it.short.startsWith(focusedCommandOption.value, true)
@@ -124,7 +124,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             }
         }
 
-        val moderationConfig = loritta.services.serverConfigs.getModerationConfigByGuildId(guild.id.value)
+        val moderationConfig = loritta.pudding.serverConfigs.getModerationConfigByGuildId(guild.id.value)
 
         val sendPunishmentViaDirectMessage = args[options.sendViaDirectMessage] ?: moderationConfig?.sentPunishmentViaDm ?: false
         val sendPunishmentToPunishLog = args[options.sendToPunishmentLog] ?: moderationConfig?.sendPunishmentToPunishLog ?: false
@@ -135,7 +135,7 @@ class BanExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         // If nothing is set, then the reason will be null
         val predefinedReason = args[options.predefinedReason]
         val reason = if (predefinedReason != null) {
-            loritta.services.serverConfigs.getPredefinedPunishmentMessagesByGuildId(context.guildId.value)
+            loritta.pudding.serverConfigs.getPredefinedPunishmentMessagesByGuildId(context.guildId.value)
                 .firstOrNull { it.short.equals(predefinedReason, true) }
                 ?.message
         } else {

@@ -13,8 +13,9 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class VemDeZapCommand : AbstractCommand("vemdezap", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class VemDeZapCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vemdezap", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		private val fullMatch = mapOf("100" to listOf("💯"),
 			"alface" to listOf("🥗"),

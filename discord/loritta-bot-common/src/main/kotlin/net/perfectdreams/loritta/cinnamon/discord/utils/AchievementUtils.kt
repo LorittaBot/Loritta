@@ -28,7 +28,7 @@ object AchievementUtils {
         type: AchievementType,
         achievedAt: Instant = Clock.System.now()
     ): Boolean {
-        val profile = loritta.services.users.getOrCreateUserProfile(userId)
+        val profile = loritta.pudding.users.getOrCreateUserProfile(userId)
         return profile.giveAchievement(
             type,
             achievedAt
@@ -51,7 +51,7 @@ object AchievementUtils {
         type: AchievementType,
         achievedAt: Instant = Clock.System.now()
     ) {
-        val profile = loritta.services.users.getOrCreateUserProfile(userId)
+        val profile = loritta.pudding.users.getOrCreateUserProfile(userId)
         val wasAchievementGiven = profile.giveAchievement(
             type,
             achievedAt

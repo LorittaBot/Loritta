@@ -6,15 +6,14 @@ import com.google.gson.JsonObject
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.listeners.DiscordListener
 import net.perfectdreams.loritta.morenitta.utils.counter.CounterThemes
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MemberCounterChannelConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.MemberCounterChannelConfigs
-import net.perfectdreams.loritta.morenitta.utils.FeatureFlags
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 
-object MemberCountersTransformer : ConfigTransformer {
+class MemberCountersTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "member_counter"
     override val configKey: String = "memberCounters"
 
@@ -29,12 +28,12 @@ object MemberCountersTransformer : ConfigTransformer {
 
         for (counter in memberCounters) {
             array.add(
-                    jsonObject(
-                            "channelId" to counter.channelId,
-                            "padding" to counter.padding,
-                            "theme" to counter.theme.name,
-                            "topic" to counter.topic
-                    )
+                jsonObject(
+                    "channelId" to counter.channelId,
+                    "padding" to counter.padding,
+                    "theme" to counter.theme.name,
+                    "topic" to counter.topic
+                )
             )
         }
 
@@ -74,7 +73,6 @@ object MemberCountersTransformer : ConfigTransformer {
 
         // Queue update is the list is not empty
         if (entries.size() != 0)
-            if (FeatureFlags.isEnabled("member-counter-update"))
-                DiscordListener.queueTextChannelTopicUpdates(guild, serverConfig)
+            DiscordListener.queueTextChannelTopicUpdates(loritta, guild, serverConfig)
     }
 }

@@ -31,10 +31,10 @@ class BrokerStockInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
             context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
 
-        val stockInformation = context.loritta.services.bovespaBroker.getTicker(tickerId)
+        val stockInformation = context.loritta.pudding.bovespaBroker.getTicker(tickerId)
             ?: context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
 
-        val stockAsset = context.loritta.services.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
+        val stockAsset = context.loritta.pudding.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
             .firstOrNull { it.ticker == tickerId }
 
         context.sendEphemeralMessage {

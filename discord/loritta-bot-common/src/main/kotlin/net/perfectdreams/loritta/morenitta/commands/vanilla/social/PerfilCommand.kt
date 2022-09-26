@@ -17,8 +17,6 @@ import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
@@ -45,7 +43,7 @@ import java.io.File
 import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
-class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", listOf("perfil"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	companion object {
 		/**
 		 * Gets the user's badges, the user's mutual guilds will be retrieved
@@ -57,6 +55,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdr
 		 * @return a list containing all the images of the user's badges
 		 */
 		suspend fun getUserBadges(
+			loritta: LorittaBot,
 			user: User,
 			profile: Profile,
 			mutualGuilds: Set<Long>,
@@ -69,11 +68,11 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdr
 			 * @param roleId  the role ID
 			 * @return if the user has the role
 			 */
-			suspend fun hasRole(guildId: String, roleId: String): Boolean {
-				val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
+			suspend fun hasRole(loritta: LorittaBot, guildId: String, roleId: String): Boolean {
+				val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildId.toLong())
 
 				val usersWithRolesPayload = try {
-					lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")
+					loritta.lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")
 						.await()
 						.obj
 				} catch (e: ClusterOfflineException) {
@@ -95,14 +94,14 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdr
 				}.count() != 0L
 			}
 
-			val hasNotifyMeRoleJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "334734175531696128") }
-			val isLorittaPartnerJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "434512654292221952") }
-			val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "385579854336360449") }
-			val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333") }
-			val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920") }
+			val hasNotifyMeRoleJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(loritta, Constants.PORTUGUESE_SUPPORT_GUILD_ID, "334734175531696128") }
+			val isLorittaPartnerJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(loritta, Constants.PORTUGUESE_SUPPORT_GUILD_ID, "434512654292221952") }
+			val isTranslatorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(loritta, Constants.PORTUGUESE_SUPPORT_GUILD_ID, "385579854336360449") }
+			val isGitHubContributorJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(loritta, Constants.PORTUGUESE_SUPPORT_GUILD_ID, "505144985591480333") }
+			val isPocketDreamsStaffJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(loritta, Constants.SPARKLYPOWER_GUILD_ID, "332650495522897920") }
 			val hasLoriStickerArt = loritta.fanArtArtists.any { it.id == user.id }
-			val isLoriBodyguardJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "351473717194522647") }
-			val isLoriSupportJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(Constants.PORTUGUESE_SUPPORT_GUILD_ID, "399301696892829706") }
+			val isLoriBodyguardJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(loritta, Constants.PORTUGUESE_SUPPORT_GUILD_ID, "351473717194522647") }
+			val isLoriSupportJob = GlobalScope.async(loritta.coroutineDispatcher) { hasRole(loritta, Constants.PORTUGUESE_SUPPORT_GUILD_ID, "399301696892829706") }
 
 			val hasNotifyMeRole = hasNotifyMeRoleJob.await()
 			val isLorittaPartner = isLorittaPartnerJob.await()
@@ -160,7 +159,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdr
 					val badgeMediaType = config.donationConfig?.customBadgePreferredMediaType
 					if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge && badgeFile != null && badgeMediaType != null) {
 						val extension = MediaTypeUtils.convertContentTypeToExtension(badgeMediaType)
-						val badge = LorittaUtils.downloadImage("${loritta.config.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBadge(config.guildId, badgeFile).join()}.$extension", bypassSafety = true)
+						val badge = LorittaUtils.downloadImage(loritta, "${loritta.config.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBadge(config.guildId, badgeFile).join()}.$extension", bypassSafety = true)
 
 						if (badge != null) {
 							badges += badge
@@ -237,7 +236,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdr
 					.toSet()
 			}
 
-		val badges = getUserBadges(user, userProfile, mutualGuildsInAllClusters)
+		val badges = getUserBadges(loritta, user, userProfile, mutualGuildsInAllClusters)
 
 		var aboutMe: String? = null
 

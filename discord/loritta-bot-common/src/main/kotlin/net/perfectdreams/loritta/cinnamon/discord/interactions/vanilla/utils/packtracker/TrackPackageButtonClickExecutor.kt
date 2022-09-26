@@ -47,7 +47,7 @@ class TrackPackageButtonClickExecutor(
                 context.user.id,
                 trackingId,
                 pack,
-                trackingId in context.loritta.services.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
+                trackingId in context.loritta.pudding.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
             )
 
             context.updateMessage {

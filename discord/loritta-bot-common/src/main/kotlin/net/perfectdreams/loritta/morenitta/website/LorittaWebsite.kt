@@ -7,7 +7,6 @@ import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -31,6 +30,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.website.routes.LocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
+import net.perfectdreams.loritta.morenitta.website.utils.config.types.*
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.HttpRedirectException
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.alreadyHandledStatus
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
@@ -112,7 +112,7 @@ class LorittaWebsite(
 	}
 
 	val pathCache = ConcurrentHashMap<File, Any>()
-	var config = WebsiteConfig()
+	var config = WebsiteConfig(loritta)
 	lateinit var server: NettyApplicationEngine
 	private val typesToCache = listOf(
 		ContentType.Text.CSS,
@@ -121,10 +121,29 @@ class LorittaWebsite(
 		ContentType.Image.Any
 	)
 
+	val configTransformers = listOf(
+		YouTubeConfigTransformer(loritta),
+		TwitchConfigTransformer(loritta),
+		TwitterConfigTransformer(loritta),
+		TextChannelsTransformer,
+		UserDonationKeysTransformer(loritta),
+		ActiveDonationKeysTransformer(loritta),
+		GuildInfoTransformer,
+		GeneralConfigTransformer(loritta),
+		LevelUpConfigTransformer(loritta),
+		RolesTransformer,
+		DonationConfigTransformer(loritta),
+		AutoroleConfigTransformer(loritta),
+		WelcomerConfigTransformer(loritta),
+		MemberCountersTransformer(loritta),
+		ModerationConfigTransformer(loritta),
+		CustomCommandsConfigTransformer(loritta)
+	)
+
 	fun start() {
 		INSTANCE = this
 
-		val routes = DefaultRoutes.defaultRoutes(loritta)
+		val routes = DefaultRoutes.defaultRoutes(loritta, this)
 
 		val server = embeddedServer(Netty, loritta.instanceConfig.loritta.website.port) {
 			install(CachingHeaders) {
@@ -149,6 +168,7 @@ class LorittaWebsite(
 
 					call.respondHtml(
 						Error404View(
+							loritta,
 							loritta.localeManager.locales["default"]!!, // TODO: Localization
 							call.request.path().split("/").drop(2).joinToString("/"),
 						).generateHtml()
@@ -162,6 +182,7 @@ class LorittaWebsite(
 
 						call.respondJson(
 							WebsiteUtils.createErrorPayload(
+								loritta,
 								LoriWebCode.UNAUTHORIZED,
 								"Invalid Discord Authorization"
 							),
@@ -182,6 +203,7 @@ class LorittaWebsite(
 
 						call.respondJson(
 							WebsiteUtils.createErrorPayload(
+								loritta,
 								LoriWebCode.UNAUTHORIZED,
 								"Invalid Discord Authorization"
 							),
@@ -353,7 +375,7 @@ class LorittaWebsite(
 		start()
 	}
 
-	class WebsiteConfig {
+	class WebsiteConfig(val loritta: LorittaBot) {
 		val websiteUrl: String
 			get() = loritta.instanceConfig.loritta.website.url.removeSuffix("/")
 		val websiteFolder = File(loritta.instanceConfig.loritta.website.folder)

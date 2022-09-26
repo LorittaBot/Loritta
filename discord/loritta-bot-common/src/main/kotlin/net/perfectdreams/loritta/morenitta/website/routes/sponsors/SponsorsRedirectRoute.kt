@@ -11,7 +11,7 @@ class SponsorsRedirectRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/spo
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		val sponsorSlug = call.parameters["sponsorSlug"]
 
-		val sponsor = net.perfectdreams.loritta.morenitta.utils.loritta.sponsors.firstOrNull { it.slug == sponsorSlug } ?: return
+		val sponsor = loritta.sponsors.firstOrNull { it.slug == sponsorSlug } ?: return
 
 		call.respondHtml(
 			SponsorRedirectView(

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.utils
 
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import com.neovisionaries.ws.client.OpeningHandshakeException
 import io.ktor.client.request.delete
 import io.ktor.client.request.put
@@ -9,6 +8,7 @@ import io.ktor.http.userAgent
 import kotlinx.coroutines.runBlocking
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.NetAddressUtils
 import java.util.concurrent.TimeUnit
 
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit
  *
  * Thanks Nik#1234 and Xavinlol#0001 for the help!
  */
-class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapter() {
+class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot) : SessionControllerAdapter() {
 	override fun runWorker() {
 		synchronized(lock) {
 			if (workerHandle == null) {
@@ -75,8 +75,8 @@ class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapt
 				fun setLoginPoolLockToShardController(): ControllerResponseType {
 					return runBlocking {
 						try {
-							val status = loritta.http.put("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
-								userAgent(loritta.lorittaCluster.getUserAgent())
+							val status = loritta.http.put("http://${NetAddressUtils.fixIp(loritta, loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
+								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 							}.status
 
 							if (status == HttpStatusCode.OK)
@@ -97,8 +97,8 @@ class LoriMasterShardControllerSessionControllerAdapter : SessionControllerAdapt
 				fun removeLoginPoolLockFromShardController() {
 					runBlocking {
 						try {
-							loritta.http.delete("http://${NetAddressUtils.fixIp(loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
-								userAgent(loritta.lorittaCluster.getUserAgent())
+							loritta.http.delete("http://${NetAddressUtils.fixIp(loritta, loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
+								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 							}
 						} catch (e: Exception) {
 							log.error("Exception while telling master shard controller that shard ${node.shardInfo.shardId} already logged in! Other clusters may have temporary issues while logging in...", e)

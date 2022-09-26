@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.website.views
 
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.html.DIV
 import kotlinx.html.HTML
 import kotlinx.html.a
@@ -19,8 +18,10 @@ import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.unsafe
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 abstract class NavbarView(
+    val loritta: LorittaBot,
     locale: BaseLocale,
     path: String
 ) : BaseView(

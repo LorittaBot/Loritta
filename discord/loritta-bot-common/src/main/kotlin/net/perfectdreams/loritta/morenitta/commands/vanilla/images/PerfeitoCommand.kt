@@ -11,7 +11,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class PerfeitoCommand : AbstractCommand("perfect", listOf("perfeito"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class PerfeitoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "perfect", listOf("perfeito"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.perfect.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 

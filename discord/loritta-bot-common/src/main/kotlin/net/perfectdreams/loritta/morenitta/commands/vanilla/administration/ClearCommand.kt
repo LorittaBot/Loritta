@@ -146,7 +146,7 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
     private suspend fun getUserIdsFromArguments(guild: Guild?, arguments: List<String>): Set<Long?> {
         val targets: MutableSet<Long?> = mutableSetOf()
         for (target in arguments) {
-            targets.add(DiscordUtils.extractUserFromString(target.trim(), guild = guild)?.idLong)
+            targets.add(DiscordUtils.extractUserFromString(loritta, target.trim(), guild = guild)?.idLong)
         }
         return targets
     }

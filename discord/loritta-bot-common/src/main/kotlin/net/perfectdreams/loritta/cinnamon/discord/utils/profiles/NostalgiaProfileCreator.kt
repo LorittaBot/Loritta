@@ -58,7 +58,7 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 		val oswaldRegular42 = oswaldRegular.deriveFont(42F)
 		val oswaldRegular29 = oswaldRegular.deriveFont(29F)
 
-		val reputations = loritta.services.transaction {
+		val reputations = loritta.pudding.transaction {
 			Reputations.select { Reputations.receivedById eq user.id.toLong() }.count()
 		}
 
@@ -102,7 +102,7 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 			graphics.drawText("${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6) */
 
 		if (guild != null) {
-			val localProfile = loritta.services.transaction {
+			val localProfile = loritta.pudding.transaction {
 				GuildProfiles.selectFirstOrNull { (GuildProfiles.guildId eq guild.id.toLong()) and (GuildProfiles.userId eq user.id.toLong()) }
 			}
 
@@ -133,7 +133,7 @@ open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: Strin
 		else
 			ImageUtils.drawStringAndShortenWithEllipsisIfOverflow(graphics, "${userProfile.money}", 159, 116  + shiftY, 800 - 6)
 
-		val marriage = loritta.services.marriages.getMarriageByUser(UserId(user.id))
+		val marriage = loritta.pudding.marriages.getMarriageByUser(UserId(user.id))
 
 		if (marriage != null) {
 			val marriedWithId = if (marriage.user1 == UserId(user.id)) {

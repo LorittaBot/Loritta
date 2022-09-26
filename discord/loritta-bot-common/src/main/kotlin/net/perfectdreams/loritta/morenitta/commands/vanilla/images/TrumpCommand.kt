@@ -9,8 +9,9 @@ import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class TrumpCommand : AbstractCommand("trump", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class TrumpCommand(loritta: LorittaBot) : AbstractCommand(loritta, "trump", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.trump.description")
 	override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
 

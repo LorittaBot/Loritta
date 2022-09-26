@@ -1,17 +1,15 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
+class LorittaUnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lorittaunban", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Desbanir usuários de usar a Loritta"
 	}
@@ -19,7 +17,7 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = net.perfe
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size >= 1) {
 			val monster = context.args[0].toLowerCase() // ID
-			val profile = LorittaLauncher.loritta.getLorittaProfile(monster)
+			val profile = loritta.getLorittaProfile(monster)
 
 			if (profile == null) {
 				context.reply(
@@ -31,7 +29,7 @@ class LorittaUnbanCommand : AbstractCommand("lorittaunban", category = net.perfe
 				return
 			}
 
-			transaction(Databases.loritta) {
+			loritta.pudding.transaction {
 				BannedUsers.deleteWhere {
 					BannedUsers.userId eq profile.userId
 				}

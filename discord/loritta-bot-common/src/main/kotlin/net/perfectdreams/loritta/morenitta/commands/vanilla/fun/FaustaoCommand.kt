@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
-class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class FaustaoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "faustão", listOf("faustao"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	private val frases = listOf(
 			"Que isso bicho, ó u cara lá ó",
 			"Vamos ver as vídeo cassetadas!",
@@ -51,7 +51,7 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), net.perfec
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "summon faustao")
 
-		val temmie = WebhookUtils.getOrCreateWebhook(context.event.channel, "Faustão")
+		val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.channel, "Faustão")
 
 		val mensagem = frases[LorittaBot.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention)
 

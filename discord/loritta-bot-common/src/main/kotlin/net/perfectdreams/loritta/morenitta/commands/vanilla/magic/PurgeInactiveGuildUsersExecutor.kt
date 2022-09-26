@@ -1,13 +1,11 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object PurgeInactiveGuildUsersExecutor : LoriToolsCommand.LoriToolsExecutor {
 	override val args = "purge inactive guild_users <now>"
@@ -20,7 +18,7 @@ object PurgeInactiveGuildUsersExecutor : LoriToolsCommand.LoriToolsExecutor {
 		if (args.getOrNull(2) != "guild_users")
 			return@task false
 
-		val inactiveUsersQuery = transaction(Databases.loritta) {
+		val inactiveUsersQuery = loritta.pudding.transaction {
 			GuildProfiles.select {
 				GuildProfiles.money eq 0.toBigDecimal() and (GuildProfiles.xp.less(50L)) and (GuildProfiles.quickPunishment eq false)
 			}
@@ -33,7 +31,7 @@ object PurgeInactiveGuildUsersExecutor : LoriToolsCommand.LoriToolsExecutor {
 					)
 			)
 
-			val count = transaction(Databases.loritta) {
+			val count = loritta.pudding.transaction {
 				GuildProfiles.deleteWhere { GuildProfiles.money eq 0.toBigDecimal() and (GuildProfiles.xp.less(50L)) and (GuildProfiles.quickPunishment eq false) }
 			}
 
@@ -43,7 +41,7 @@ object PurgeInactiveGuildUsersExecutor : LoriToolsCommand.LoriToolsExecutor {
 					)
 			)
 		} else {
-			val count = transaction(Databases.loritta) {
+			val count = loritta.pudding.transaction {
 				inactiveUsersQuery.count()
 			}
 			reply(

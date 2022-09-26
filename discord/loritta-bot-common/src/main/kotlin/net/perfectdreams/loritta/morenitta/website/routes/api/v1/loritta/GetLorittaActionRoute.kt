@@ -20,8 +20,8 @@ class GetLorittaActionRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 				Emotes.emoteManager?.loadEmotes()
 			}
 			"locales" -> {
-				net.perfectdreams.loritta.morenitta.utils.loritta.localeManager.loadLocales()
-				net.perfectdreams.loritta.morenitta.utils.loritta.loadLegacyLocales()
+				loritta.localeManager.loadLocales()
+				loritta.loadLegacyLocales()
 			}
 			"website" -> {
 				LorittaWebsite.ENGINE.templateCache.invalidateAll()

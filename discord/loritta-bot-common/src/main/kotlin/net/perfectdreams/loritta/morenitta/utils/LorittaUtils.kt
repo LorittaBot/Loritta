@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.BlacklistedGuilds
 import org.jetbrains.exposed.sql.select
@@ -43,13 +44,13 @@ object LorittaUtils {
 	 * @return the image as a BufferedImage or null, if the image is considered unsafe
 	 */
 	@JvmOverloads
-	fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 8_388_608 /* 8mib */, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500, bypassSafety: Boolean = false): BufferedImage? {
+	fun downloadImage(loritta: LorittaBot, url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 8_388_608 /* 8mib */, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500, bypassSafety: Boolean = false): BufferedImage? {
 		try {
 			val imageUrl = URL(url)
 			val connection = if (bypassSafety) {
 				imageUrl.openConnection()
 			} else {
-				imageUrl.openSafeConnection()
+				imageUrl.openSafeConnection(loritta)
 			} as HttpURLConnection
 
 			connection.setRequestProperty(
@@ -99,10 +100,10 @@ object LorittaUtils {
 		return null
 	}
 
-	fun downloadFile(url: String, timeout: Int): InputStream? {
+	fun downloadFile(loritta: LorittaBot, url: String, timeout: Int): InputStream? {
 		try {
 			val imageUrl = URL(url)
-			val connection = imageUrl.openSafeConnection() as HttpURLConnection
+			val connection = imageUrl.openSafeConnection(loritta) as HttpURLConnection
 			connection.setRequestProperty("User-Agent",
 					Constants.USER_AGENT)
 
@@ -151,9 +152,9 @@ object LorittaUtils {
 	 * @param guild           the guild
 	 * @return if the owner of the guild is banned
 	 */
-	suspend fun isGuildOwnerBanned(executorProfile: Profile?, guild: Guild): Boolean {
+	suspend fun isGuildOwnerBanned(loritta: LorittaBot, executorProfile: Profile?, guild: Guild): Boolean {
 		val ownerProfile = if (guild.ownerIdLong == executorProfile?.id?.value) executorProfile else loritta.getLorittaProfileAsync(guild.ownerIdLong)
-		return ownerProfile != null && isGuildOwnerBanned(guild, ownerProfile)
+		return ownerProfile != null && isGuildOwnerBanned(loritta, guild, ownerProfile)
 	}
 
 	/**
@@ -163,8 +164,8 @@ object LorittaUtils {
 	 * @param guild        the guild
 	 * @return if the owner of the guild is banned
 	 */
-	suspend fun isGuildOwnerBanned(guild: Guild, ownerProfile: Profile): Boolean {
-		val bannedState = ownerProfile.getBannedState()
+	suspend fun isGuildOwnerBanned(loritta: LorittaBot, guild: Guild, ownerProfile: Profile): Boolean {
+		val bannedState = ownerProfile.getBannedState(loritta)
 
 		if (bannedState != null && bannedState[BannedUsers.expiresAt] == null) { // Se o dono está banido e não é um ban temporário...
 			if (!loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
@@ -182,7 +183,7 @@ object LorittaUtils {
 	 * @param guild        the guild
 	 * @return if the owner of the guild is banned
 	 */
-	suspend fun isGuildBanned(guild: Guild): Boolean {
+	suspend fun isGuildBanned(loritta: LorittaBot, guild: Guild): Boolean {
 		val blacklisted = loritta.newSuspendedTransaction {
 			BlacklistedGuilds.select {
 				BlacklistedGuilds.id eq guild.idLong

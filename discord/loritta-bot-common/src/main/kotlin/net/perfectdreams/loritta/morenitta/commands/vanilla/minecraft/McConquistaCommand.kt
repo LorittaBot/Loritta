@@ -12,7 +12,7 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 
-class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", "mcadvancement", "mcachievement"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
+class McConquistaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mcconquista", listOf("mcprogresso", "mcadvancement", "mcachievement"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mcadvancement.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.mcadvancement.examples")
 

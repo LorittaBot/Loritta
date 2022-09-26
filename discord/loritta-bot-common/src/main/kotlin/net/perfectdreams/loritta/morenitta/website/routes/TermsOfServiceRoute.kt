@@ -11,7 +11,7 @@ class TermsOfServiceRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/priva
 	override val isMainClusterOnlyRoute = true
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 		call.respondHtml(evaluate("terms_of_service.html", variables))
 	}
 }

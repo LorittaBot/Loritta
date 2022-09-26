@@ -18,7 +18,7 @@ class ApplyBansTask : Runnable {
 
 				val profile = loritta.getLorittaProfile(it.key)
 				if (profile != null) {
-					transaction(Databases.loritta) {
+					loritta.pudding.transaction {
 						profile.isBanned = true
 						profile.bannedReason = it.value
 					}

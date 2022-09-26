@@ -16,8 +16,8 @@ class GetLoriDailyRewardStatusRoute(loritta: LorittaBot) : RequiresAPIDiscordLog
 
 		val userIdentification = discordAuth.getUserIdentification()
 
-		GetLoriDailyRewardRoute.verifyIfAccountAndIpAreSafe(userIdentification, ip)
-		val receivedDailyWithSameIp = GetLoriDailyRewardRoute.checkIfUserCanPayout(userIdentification, ip)
+		GetLoriDailyRewardRoute.verifyIfAccountAndIpAreSafe(loritta, userIdentification, ip)
+		val receivedDailyWithSameIp = GetLoriDailyRewardRoute.checkIfUserCanPayout(loritta, userIdentification, ip)
 
 		val payload = jsonObject(
 				"receivedDailyWithSameIp" to receivedDailyWithSameIp

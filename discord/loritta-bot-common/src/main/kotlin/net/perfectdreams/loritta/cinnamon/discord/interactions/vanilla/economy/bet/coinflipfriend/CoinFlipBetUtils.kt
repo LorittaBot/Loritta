@@ -61,7 +61,7 @@ class CoinFlipBetUtils(val loritta: LorittaCinnamon) {
         if (!context.interaKTionsContext.isDeferred)
             context.deferChannelMessage()
 
-        val userProfile = loritta.services.users.getUserProfile(UserId(context.user.id))
+        val userProfile = loritta.pudding.users.getUserProfile(UserId(context.user.id))
         if (userProfile == null || howMuch > userProfile.money) {
             context.fail {
                 styled(
@@ -79,7 +79,7 @@ class CoinFlipBetUtils(val loritta: LorittaCinnamon) {
             }
         }
 
-        val receiverProfile = loritta.services.users.getUserProfile(UserId(receiverId))
+        val receiverProfile = loritta.pudding.users.getUserProfile(UserId(receiverId))
         if (receiverProfile == null || howMuch > receiverProfile.money) {
             // Receiver does not have enough sonhos
             context.fail {
@@ -90,8 +90,8 @@ class CoinFlipBetUtils(val loritta: LorittaCinnamon) {
             }
         }
 
-        val selfActiveDonations = loritta.services.payments.getActiveMoneyFromDonations(UserId(context.user.id))
-        val otherActiveDonations = loritta.services.payments.getActiveMoneyFromDonations(UserId(receiverId))
+        val selfActiveDonations = loritta.pudding.payments.getActiveMoneyFromDonations(UserId(context.user.id))
+        val otherActiveDonations = loritta.pudding.payments.getActiveMoneyFromDonations(UserId(receiverId))
 
         val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
         val otherPlan = UserPremiumPlans.getPlanFromValue(otherActiveDonations)
@@ -230,8 +230,8 @@ class CoinFlipBetUtils(val loritta: LorittaCinnamon) {
         betRequestMessage: HighLevelEditableMessage,
         decodedGenericInteractionData: StoredGenericInteractionData
     ) {
-        val result = loritta.services.transaction {
-            val dataFromDatabase = loritta.services.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId) ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
+        val result = loritta.pudding.transaction {
+            val dataFromDatabase = loritta.pudding.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId) ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
 
             val decoded = Json.decodeFromJsonElement<AcceptCoinFlipBetFriendData>(dataFromDatabase)
             if (decoded.userId != acceptedUserId)
@@ -240,8 +240,8 @@ class CoinFlipBetUtils(val loritta: LorittaCinnamon) {
             val now = Clock.System.now()
             val jtNow = now.toJavaInstant()
 
-            val receiverProfile = loritta.services.users.getOrCreateUserProfile(UserId(decoded.userId))
-            val giverProfile = loritta.services.users.getOrCreateUserProfile(UserId(decoded.sourceId))
+            val receiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.userId))
+            val giverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.sourceId))
 
             if (decoded.quantity > giverProfile.money)
                 return@transaction Result.GiverDoesNotHaveSufficientFunds // get tf outta here
@@ -307,14 +307,14 @@ class CoinFlipBetUtils(val loritta: LorittaCinnamon) {
             }
 
             // Delete interaction ID
-            loritta.services.interactionsData.deleteInteractionData(decodedGenericInteractionData.interactionDataId)
+            loritta.pudding.interactionsData.deleteInteractionData(decodedGenericInteractionData.interactionDataId)
 
             // Get the profiles again
-            val updatedReceiverProfile = loritta.services.users.getOrCreateUserProfile(UserId(decoded.userId))
-            val updatedGiverProfile = loritta.services.users.getOrCreateUserProfile(UserId(decoded.sourceId))
+            val updatedReceiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.userId))
+            val updatedGiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.sourceId))
 
-            val receiverRanking = if (updatedReceiverProfile.money != 0L) loritta.services.sonhos.getSonhosRankPositionBySonhos(updatedReceiverProfile.money) else null
-            val giverRanking = if (updatedGiverProfile.money != 0L) loritta.services.sonhos.getSonhosRankPositionBySonhos(updatedGiverProfile.money) else null
+            val receiverRanking = if (updatedReceiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(updatedReceiverProfile.money) else null
+            val giverRanking = if (updatedGiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(updatedGiverProfile.money) else null
 
             return@transaction Result.Success(
                 winnerId,
@@ -466,7 +466,7 @@ class CoinFlipBetUtils(val loritta: LorittaCinnamon) {
         val now = Clock.System.now()
 
         // Check if the user got daily in the last 14 days before allowing a transaction
-        val gotDailyRewardInTheLastXDays = context.loritta.services.sonhos.getUserLastDailyRewardReceived(
+        val gotDailyRewardInTheLastXDays = context.loritta.pudding.sonhos.getUserLastDailyRewardReceived(
             UserId(context.user.id),
             now - 14.days
         ) != null

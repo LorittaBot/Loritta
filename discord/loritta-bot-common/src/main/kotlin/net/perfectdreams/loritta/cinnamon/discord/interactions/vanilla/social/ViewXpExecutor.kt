@@ -52,7 +52,7 @@ class ViewXpExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
 
                 title = "${Emotes.LoriIdentificationCard} ${context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.ServerProfileCard)}"
 
-                val localProfile = loritta.services.transaction {
+                val localProfile = loritta.pudding.transaction {
                     GuildProfiles.selectFirstOrNull { (GuildProfiles.guildId eq guildId.toLong()) and (GuildProfiles.userId eq userToBeViewed.id.toLong()) }
                 }
 
@@ -66,20 +66,20 @@ class ViewXpExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lo
                 val nextLevelTotalXp = ExperienceUtils.getLevelExperience(nextLevel)
                 val nextLevelRequiredXp = ExperienceUtils.getHowMuchExperienceIsLeftToLevelUp(xp, nextLevel)
 
-                val ranking = loritta.services.transaction {
+                val ranking = loritta.pudding.transaction {
                     GuildProfiles.select {
                         GuildProfiles.guildId eq guildId.toLong() and (GuildProfiles.xp greaterEq xp) and (GuildProfiles.isInGuild eq true)
                     }.count()
                 }
 
-                val nextRoleReward = loritta.services.transaction {
+                val nextRoleReward = loritta.pudding.transaction {
                     RolesByExperience.select {
                         RolesByExperience.guildId eq guildId.toLong() and (RolesByExperience.requiredExperience greater xp)
                     }.orderBy(RolesByExperience.requiredExperience).firstOrNull()
                 }
 
                 val activeRoleRate = memberToBeViewed?.let {
-                    loritta.services.transaction {
+                    loritta.pudding.transaction {
                         ExperienceRoleRates.select {
                             ExperienceRoleRates.guildId eq guildId.toLong() and (ExperienceRoleRates.role inList it.roleIds.map { it.toLong() })
                         }.orderBy(ExperienceRoleRates.rate, SortOrder.DESC).firstOrNull()

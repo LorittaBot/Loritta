@@ -59,7 +59,7 @@ object RankingGenerator {
             val member = loritta.getCachedUserInfo(profile.userId) ?: onNullUser?.invoke(profile.userId)
 
             if (member != null) {
-                val puddingUserProfile = loritta.services.users.getOrCreateUserProfile(member.id)
+                val puddingUserProfile = loritta.pudding.users.getOrCreateUserProfile(member.id)
                 val rankBackground = loritta.getUserProfileBackground(puddingUserProfile)
                 graphics.drawImage(rankBackground.getResizedInstance(400, 300, InterpolationType.BILINEAR)
                     .getSubimage(0, idx * 52, 400, 53), 0, currentY, null)

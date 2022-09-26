@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class GangueCommand : AbstractCommand("gang", listOf("gangue"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class GangueCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gang", listOf("gangue"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cocielo/overlay.png")) }
 	}

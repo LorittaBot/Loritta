@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.morenitta.dao.StarboardMessage
 import net.perfectdreams.loritta.morenitta.tables.StarboardMessages
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
@@ -14,12 +13,13 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
 import org.jetbrains.exposed.sql.and
 import java.awt.Color
 import java.util.concurrent.TimeUnit
 
-object StarboardModule {
+class StarboardModule(val loritta: LorittaBot) {
 	private val logger = KotlinLogging.logger {}
 	private val mutexes = Caffeine.newBuilder()
 			.expireAfterAccess(60, TimeUnit.SECONDS)

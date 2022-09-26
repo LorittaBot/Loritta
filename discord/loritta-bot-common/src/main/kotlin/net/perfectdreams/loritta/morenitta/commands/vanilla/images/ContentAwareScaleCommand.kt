@@ -10,8 +10,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class ContentAwareScaleCommand : AbstractCommand("contentawarescale", listOf("cas", "contentaware", "seamcarver"), category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class ContentAwareScaleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "contentawarescale", listOf("cas", "contentaware", "seamcarver"), category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.contentawarescale.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 	override fun getUsage() = arguments {

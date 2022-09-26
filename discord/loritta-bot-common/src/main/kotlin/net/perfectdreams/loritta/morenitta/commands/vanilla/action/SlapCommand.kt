@@ -10,7 +10,7 @@ class SlapCommand(loritta: LorittaBot): ActionCommand(loritta, listOf("slap", "t
         color = Color(244, 67, 54)
 
         response { locale, sender, target ->
-            if (target.id != LorittaLauncher.loritta.discordConfig.discord.clientId) {
+            if (target.id != loritta.discordConfig.discord.clientId) {
                 locale["commands.command.slap.response", sender.asMention, target.asMention]
             } else {
                 locale["commands.command.slap.responseAntiIdiot", sender.asMention, target.asMention]

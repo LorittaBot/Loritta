@@ -11,13 +11,16 @@ import kotlinx.html.p
 import kotlinx.html.strong
 import kotlinx.html.style
 import kotlinx.html.ul
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class CommunityGuidelinesView(
+    loritta: LorittaBot,
     locale: BaseLocale,
     path: String
 ) : NavbarView(
-        locale,
-        path
+    loritta,
+    locale,
+    path
 ) {
     override fun getTitle() = locale["website.guidelines.communityGuidelines"]
 

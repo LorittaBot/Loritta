@@ -93,7 +93,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
         userToBeViewed: User,
         guild: Guild?
     ): ProfileCreationResult {
-        val userProfile = loritta.services.users.getOrCreateUserProfile(UserId(userToBeViewed.id))
+        val userProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(userToBeViewed.id))
         val profileSettings = userProfile.getProfileSettings()
         val profileCreator = loritta.profileDesignManager.designs.firstOrNull { it.internalName == profileSettings.activeProfileDesign }
             ?: loritta.profileDesignManager.defaultProfileDesign
@@ -106,7 +106,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
         val mutualGuildsInAllClusters = if (userToBeViewed.isBot)
             setOf()
         else
-            loritta.services.transaction {
+            loritta.pudding.transaction {
                 GuildProfiles.slice(GuildProfiles.guildId)
                     .select { GuildProfiles.userId eq userToBeViewed.id.toLong() and (GuildProfiles.isInGuild eq true) }
                     .map { it[GuildProfiles.guildId] }
@@ -120,7 +120,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
             mutualGuildsInAllClusters
         )
 
-        val premiumPlan = UserPremiumPlans.getPlanFromValue(loritta.services.payments.getActiveMoneyFromDonations(userProfile.id))
+        val premiumPlan = UserPremiumPlans.getPlanFromValue(loritta.pudding.payments.getActiveMoneyFromDonations(userProfile.id))
 
         val allowedDiscordEmojis = if (premiumPlan.customEmojisInAboutMe)
             null // Null = All emojis are allowed
@@ -198,7 +198,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
         mutualGuilds: Set<Long>,
         failIfClusterIsOffline: Boolean = false
     ): List<BufferedImage> {
-        val hasUpvoted = loritta.services.transaction {
+        val hasUpvoted = loritta.pudding.transaction {
             BotVotes.select {
                 BotVotes.userId eq user.id.toLong() and (BotVotes.votedAt greaterEq System.currentTimeMillis() - (12.hours.inWholeMilliseconds))
             }.count() != 0L
@@ -239,7 +239,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
         // if (isLoriSupport) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
         // if (hasLoriStickerArt) badges += ImageIO.read(File(Loritta.ASSETS + "sticker_badge.png"))
 
-        val money = loritta.services.payments.getActiveMoneyFromDonations(UserId(user.id))
+        val money = loritta.pudding.payments.getActiveMoneyFromDonations(UserId(user.id))
 
         if (money != 0.0) {
             if (money >= 99.99) {
@@ -260,7 +260,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
 
         val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
 
-        loritta.services.transaction {
+        loritta.pudding.transaction {
             val results = (ServerConfigs innerJoin DonationConfigs)
                 .select {
                     DonationConfigs.customBadge eq true and (ServerConfigs.id inList mutualGuilds)
@@ -313,7 +313,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
         val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
 
         val usersWithRolesPayload = try {
-            lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")
+            loritta.lorittaShards.queryCluster(cluster, "/api/v1/guilds/$guildId/users-with-any-role/$roleId")
                 .await()
                 .obj
         } catch (e: ClusterOfflineException) {

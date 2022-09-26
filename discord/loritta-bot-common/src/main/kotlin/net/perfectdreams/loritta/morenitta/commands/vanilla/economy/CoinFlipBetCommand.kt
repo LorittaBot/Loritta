@@ -139,7 +139,7 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			}
 
 			val invitedUserProfile = loritta.getOrCreateLorittaProfile(invitedUser.id)
-			val bannedState = invitedUserProfile.getBannedState()
+			val bannedState = invitedUserProfile.getBannedState(loritta)
 
 			if (number > invitedUserProfile.money || bannedState != null)
 				fail(locale["commands.command.flipcoinbet.notEnoughMoneyInvited", invitedUser.asMention], Constants.ERROR)
@@ -173,7 +173,7 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			}
 
 			// Only allow users to participate in a coin flip bet if the user got their daily reward today
-			AccountUtils.getUserTodayDailyReward(lorittaUser.profile)
+			AccountUtils.getUserTodayDailyReward(loritta, lorittaUser.profile)
 				?: fail(locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", serverConfig.commandPrefix], Constants.ERROR)
 
 			val message = reply(
@@ -216,16 +216,16 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			message.onReactionAdd(this) {
 				if (it.reactionEmote.name == "✅") {
 					mutex.withLock {
-						if (LorittaLauncher.loritta.messageInteractionCache.containsKey(it.messageIdLong)) {
+						if (loritta.messageInteractionCache.containsKey(it.messageIdLong)) {
 							val usersThatReactedToTheMessage = it.reaction.retrieveUsers().await()
 
 							if (invitedUser in usersThatReactedToTheMessage && user in usersThatReactedToTheMessage) {
-								message.removeAllFunctions()
+								message.removeAllFunctions(loritta)
 								GlobalScope.launch(loritta.coroutineDispatcher) {
 									mutex.withLock {
 										listOf(
-											selfUserProfile.refreshInDeferredTransaction(),
-											invitedUserProfile.refreshInDeferredTransaction()
+											selfUserProfile.refreshInDeferredTransaction(loritta),
+											invitedUserProfile.refreshInDeferredTransaction(loritta)
 										).awaitAll()
 
 										if (number > selfUserProfile.money)

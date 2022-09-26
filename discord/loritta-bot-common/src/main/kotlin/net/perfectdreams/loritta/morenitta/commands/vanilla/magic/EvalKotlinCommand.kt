@@ -6,8 +6,9 @@ import net.perfectdreams.loritta.morenitta.parallax.ParallaxUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin", "evaluate", "evalulatekt", "evaluatekotlin"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
+class EvalKotlinCommand(loritta: LorittaBot) : AbstractCommand(loritta, "eval", listOf("evalkt", "evalkotlin", "evaluate", "evalulatekt", "evaluatekotlin"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Executa códigos em Kotlin"
 	}

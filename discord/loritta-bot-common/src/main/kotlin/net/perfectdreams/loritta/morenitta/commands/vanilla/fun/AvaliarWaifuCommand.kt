@@ -10,8 +10,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.util.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", "ratemywaifu", "ratewaifu", "avaliarminhawaifu", "notawaifu"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class AvaliarWaifuCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ratewaifu", listOf("avaliarwaifu", "ratemywaifu", "ratewaifu", "avaliarminhawaifu", "notawaifu"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command.ratewaifu"
 	}

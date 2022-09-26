@@ -36,7 +36,7 @@ class PredefinedReasonsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
 
         context.deferChannelMessageEphemerally()
 
-        loritta.services.transaction {
+        loritta.pudding.transaction {
             ModerationPredefinedPunishmentMessages.deleteWhere {
                 ModerationPredefinedPunishmentMessages.guild eq context.guildId.toLong()
             }

@@ -26,7 +26,7 @@ import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.*
 
-class SpigotMcCommand : AbstractCommand("spigotmc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
+class SpigotMcCommand(loritta: LorittaBot) : AbstractCommand(loritta, "spigotmc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.spigotmc.description")

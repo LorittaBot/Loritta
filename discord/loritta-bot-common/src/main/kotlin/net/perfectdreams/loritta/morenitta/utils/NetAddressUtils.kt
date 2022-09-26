@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import net.perfectdreams.loritta.morenitta.LorittaBot
+
 object NetAddressUtils {
 	fun getWithPortIfMissing(address: String, defaultPort: Int): String {
 		if (address.contains(":"))
@@ -16,7 +18,7 @@ object NetAddressUtils {
 	 * @param  address the above IP's syntax
 	 * @return the fixed ip
 	 */
-	fun fixIp(address: String): String {
+	fun fixIp(loritta: LorittaBot, address: String): String {
 		if (!address.startsWith("{"))
 			return address
 

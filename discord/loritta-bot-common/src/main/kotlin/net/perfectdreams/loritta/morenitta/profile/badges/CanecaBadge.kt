@@ -6,7 +6,7 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.morenitta.profile.Badge
 
 class CanecaBadge(val config: QuirkyConfig) : Badge("badges/lori_caneca.png", 100) {
-	override fun checkIfUserDeservesBadge(user: User, profile: Profile, mutualGuilds: Set<Long>): Boolean {
+	override suspend fun checkIfUserDeservesBadge(user: User, profile: Profile, mutualGuilds: Set<Long>): Boolean {
 		return (user.idLong in config.canecaUsers)
 	}
 }

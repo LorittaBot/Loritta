@@ -46,7 +46,7 @@ class BrokerBuyStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExe
         )
 
         val (_, boughtQuantity, value) = try {
-            context.loritta.services.bovespaBroker.buyStockShares(
+            context.loritta.pudding.bovespaBroker.buyStockShares(
                 context.user.id.value.toLong(),
                 tickerId,
                 quantity

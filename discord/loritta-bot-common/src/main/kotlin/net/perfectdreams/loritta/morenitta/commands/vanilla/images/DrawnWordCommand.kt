@@ -65,7 +65,7 @@ class DrawnWordCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
                         }
                         width = fontMetrics.charWidth(c)
                         if (!graphics.font.canDisplay(c)) {
-                            val emoteImage = ImageUtils.getTwitterEmoji(str, idx)
+                            val emoteImage = ImageUtils.getTwitterEmoji(loritta, str, idx)
                             if (emoteImage != null) {
                                 currentX += width
                             }
@@ -97,13 +97,13 @@ class DrawnWordCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
             val startY = 90
 
             val currentY = getTextWrapSpacesRequiredHeight(
-                    text,
-                    54,
-                    90,
-                    drawnMaskWordImage.width,
-                    99999,
-                    fontMetrics,
-                    graphics
+                text,
+                54,
+                90,
+                drawnMaskWordImage.width,
+                99999,
+                fontMetrics,
+                graphics
             )
 
             val currentJumps = (currentY - startY) / lineHeight
@@ -144,13 +144,14 @@ class DrawnWordCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
             }
 
             ImageUtils.drawTextWrapSpaces(
-                    text,
-                    54,
-                    90,
-                    wordScreen.width,
-                    99999,
-                    fontMetrics2,
-                    wordScreenGraphics
+                loritta,
+                text,
+                54,
+                90,
+                wordScreen.width,
+                99999,
+                fontMetrics2,
+                wordScreenGraphics
             )
 
             val image = BufferedImage(width, wordScreen.height + 202, BufferedImage.TYPE_INT_ARGB)

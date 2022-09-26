@@ -15,11 +15,11 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 class ConfigureCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/commands") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		loritta as LorittaBot
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 		variables["saveType"] = "vanilla_commands"
 
-		variables["enabledLegacyCommands"] = net.perfectdreams.loritta.morenitta.utils.loritta.legacyCommandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
-		variables["enabledNewCommands"] = net.perfectdreams.loritta.morenitta.utils.loritta.commandMap.commands.filter { !serverConfig.disabledCommands.contains(it.commandName) }
+		variables["enabledLegacyCommands"] = loritta.legacyCommandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
+		variables["enabledNewCommands"] = loritta.commandMap.commands.filter { !serverConfig.disabledCommands.contains(it.commandName) }
 				.map {
 					NewCommandWrapper(
 							it.commandName,
@@ -27,8 +27,8 @@ class ConfigureCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRo
 					)
 				}
 
-		variables["disabledLegacyCommands"] = net.perfectdreams.loritta.morenitta.utils.loritta.legacyCommandManager.commandMap.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
-		variables["disabledNewCommands"] = net.perfectdreams.loritta.morenitta.utils.loritta.commandMap.commands.filter { serverConfig.disabledCommands.contains(it.commandName) }
+		variables["disabledLegacyCommands"] = loritta.legacyCommandManager.commandMap.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
+		variables["disabledNewCommands"] = loritta.commandMap.commands.filter { serverConfig.disabledCommands.contains(it.commandName) }
 				.map {
 					NewCommandWrapper(
 							it.commandName,

@@ -14,7 +14,7 @@ abstract class RequiresAPIAuthenticationRoute(val loritta: LorittaBot, path: Str
 	companion object {
 		private val logger = KotlinLogging.logger {}
 
-		fun validate(call: ApplicationCall): Boolean {
+		fun validate(loritta: LorittaBot, call: ApplicationCall): Boolean {
 			val path = call.request.path()
 			val auth = call.request.header("Authorization")
 			val clazzName = this::class.simpleName
@@ -24,13 +24,14 @@ abstract class RequiresAPIAuthenticationRoute(val loritta: LorittaBot, path: Str
 				throw WebsiteAPIException(
 					HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(
+						loritta,
 						LoriWebCode.UNAUTHORIZED,
 						"Missing \"Authorization\" header"
 					)
 				)
 			}
 
-			val validKey = net.perfectdreams.loritta.morenitta.utils.loritta.config.loritta.website.apiKeys.firstOrNull {
+			val validKey = loritta.config.loritta.website.apiKeys.firstOrNull {
 				it.name == auth
 			}
 
@@ -43,6 +44,7 @@ abstract class RequiresAPIAuthenticationRoute(val loritta: LorittaBot, path: Str
 					throw WebsiteAPIException(
 						HttpStatusCode.Unauthorized,
 						WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.UNAUTHORIZED,
 							"Your Authorization level doesn't allow access to this resource"
 						)
@@ -53,6 +55,7 @@ abstract class RequiresAPIAuthenticationRoute(val loritta: LorittaBot, path: Str
 				throw WebsiteAPIException(
 					HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(
+						loritta,
 						LoriWebCode.UNAUTHORIZED,
 						"Invalid \"Authorization\" Header"
 					)
@@ -67,7 +70,7 @@ abstract class RequiresAPIAuthenticationRoute(val loritta: LorittaBot, path: Str
 	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall)
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		if (validate(call))
+		if (validate(loritta, call))
 			onAuthenticatedRequest(call)
 	}
 }

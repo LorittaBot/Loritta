@@ -10,8 +10,9 @@ import net.dv8tion.jda.api.EmbedBuilder
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.util.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), net.perfectdreams.loritta.common.commands.CommandCategory.POKEMON) {
+class PokedexCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pokedex", listOf("pokédex"), net.perfectdreams.loritta.common.commands.CommandCategory.POKEMON) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.pokedex.description")
 
     override fun getExamples(): List<String> {

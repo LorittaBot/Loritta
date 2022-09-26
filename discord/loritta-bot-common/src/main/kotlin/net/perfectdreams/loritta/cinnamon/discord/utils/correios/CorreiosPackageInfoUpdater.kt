@@ -32,7 +32,7 @@ class CorreiosPackageInfoUpdater(val m: LorittaCinnamon) : RunnableCoroutine {
         logger.info { "Updating packages information..." }
 
         try {
-            m.services.transaction {
+            m.pudding.transaction {
                 val trackedPackages = TrackedCorreiosPackages.select { TrackedCorreiosPackages.delivered eq false and (TrackedCorreiosPackages.unknownPackage eq false ) }
                     .map { it[TrackedCorreiosPackages.trackingId] }
 

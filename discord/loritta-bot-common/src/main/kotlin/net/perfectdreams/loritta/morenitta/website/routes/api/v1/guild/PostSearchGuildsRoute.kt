@@ -5,7 +5,6 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.string
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +21,7 @@ class PostSearchGuildsRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 
 		val regex = Regex(pattern)
 
-		val array = lorittaShards.getGuilds()
+		val array = loritta.lorittaShards.getGuilds()
 				.filter { it.name.contains(regex) }
 				.map {
 					jsonObject(

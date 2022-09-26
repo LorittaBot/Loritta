@@ -2,13 +2,12 @@ package net.perfectdreams.loritta.morenitta.threads
 
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import mu.KotlinLogging
 
 /**
  * Thread para o Bom Dia & Cia
  */
-class BomDiaECiaThread : Thread("Bom Dia & Cia") {
+class BomDiaECiaThread(val loritta: LorittaBot) : Thread("Bom Dia & Cia") {
 	private val logger = KotlinLogging.logger {}
 
 	override fun run() {

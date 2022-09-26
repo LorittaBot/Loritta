@@ -31,7 +31,7 @@ class CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta: LorittaCinnam
 
         val discordChoices = mutableMapOf<String, String>()
 
-        val matchmakingStats = loritta.services.bets.getUserCoinFlipBetGlobalMatchmakingStats(
+        val matchmakingStats = loritta.pudding.bets.getUserCoinFlipBetGlobalMatchmakingStats(
             UserId(context.sender.id.value),
             matchedChoices.toList(),
             Clock.System.now().minus(5.minutes)

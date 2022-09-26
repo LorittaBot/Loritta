@@ -104,7 +104,7 @@ object AdminUtils {
         val users = confirmBanData.users
         val punisher = User(confirmBanData.punisher, loritta.kord)
 
-        val punishmentMessageForType = loritta.services.serverConfigs.getMessageForPunishmentTypeOnGuildId(
+        val punishmentMessageForType = loritta.pudding.serverConfigs.getMessageForPunishmentTypeOnGuildId(
             guild.id.value,
             PunishmentAction.BAN
         )?.ifBlank { null } // Because some stupid users love putting an empty message in the dashboard

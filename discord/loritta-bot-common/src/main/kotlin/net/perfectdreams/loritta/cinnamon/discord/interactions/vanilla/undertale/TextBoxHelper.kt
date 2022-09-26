@@ -15,7 +15,7 @@ object TextBoxHelper {
 
     suspend fun getInteractionDataAndFailIfItDoesNotExist(context: ComponentContext, interactionDataId: Long): TextBoxOptionsData {
         return Json.decodeFromJsonElement<TextBoxOptionsData>(
-            context.loritta.services.interactionsData.getInteractionData(interactionDataId)
+            context.loritta.pudding.interactionsData.getInteractionData(interactionDataId)
                 ?: context.fail {
                     styled(
                         context.i18nContext.get(UndertaleCommand.I18N_TEXTBOX_PREFIX.DataIsMissing),

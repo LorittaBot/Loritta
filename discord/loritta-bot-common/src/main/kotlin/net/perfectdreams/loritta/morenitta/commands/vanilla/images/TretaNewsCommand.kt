@@ -7,8 +7,9 @@ import net.perfectdreams.loritta.morenitta.utils.TretaNewsGenerator
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class TretaNewsCommand : AbstractCommand("tretanews", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class TretaNewsCommand(loritta: LorittaBot) : AbstractCommand(loritta, "tretanews", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.tretanews.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.tretanews.examples")
 
@@ -23,7 +24,7 @@ class TretaNewsCommand : AbstractCommand("tretanews", category = net.perfectdrea
 		val user1 = context.getUserAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val user2 = context.getUserAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val base = TretaNewsGenerator.generate(context.guild, user1, user2)
+		val base = TretaNewsGenerator.generate(loritta, context.guild, user1, user2)
 
 		context.reply(base.image, "tretanews.png",
                 LorittaReply(

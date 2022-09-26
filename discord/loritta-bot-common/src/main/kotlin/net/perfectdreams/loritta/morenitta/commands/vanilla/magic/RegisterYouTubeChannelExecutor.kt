@@ -15,13 +15,13 @@ object RegisterYouTubeChannelExecutor : LoriToolsCommand.LoriToolsExecutor {
 
 		val code = HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
 				.form(mapOf(
-						"hub.callback" to "${net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
+						"hub.callback" to "${loritta.instanceConfig.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
 						"hub.lease_seconds" to "",
 						"hub.mode" to "subscribe",
-						"hub.secret" to net.perfectdreams.loritta.morenitta.utils.loritta.config.generalWebhook.webhookSecret,
+						"hub.secret" to loritta.config.generalWebhook.webhookSecret,
 						"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=${args.getOrNull(2)}",
 						"hub.verify" to "async",
-						"hub.verify_token" to net.perfectdreams.loritta.morenitta.utils.loritta.config.generalWebhook.webhookSecret
+						"hub.verify_token" to loritta.config.generalWebhook.webhookSecret
 				))
 				.code()
 

@@ -19,7 +19,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class AmizadeCommand(loritta: LorittaBot) : AbstractCommand(loritta, "friendship", listOf("amizade"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "amizade_overlay.png")) }
 	}
@@ -40,9 +40,9 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), net.perf
 			val user = context.message.mentionedUsers[0]
 			val user2 = context.message.mentionedUsers[1]
 
-			val avatar = LorittaUtils.downloadImage(context.userHandle.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
-			val avatar2 = LorittaUtils.downloadImage(user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
-			val avatar3 = LorittaUtils.downloadImage(user2.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
+			val avatar = LorittaUtils.downloadImage(loritta, context.userHandle.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
+			val avatar2 = LorittaUtils.downloadImage(loritta, user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
+			val avatar3 = LorittaUtils.downloadImage(loritta, user2.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
 
 			val template = readImage(File(LorittaBot.ASSETS + "amizade.png")) // Template
 

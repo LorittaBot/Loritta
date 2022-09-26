@@ -155,7 +155,7 @@ class StarboardModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModu
                 logger.info { "Starboard message for $messageId is present in the database, but it is below the required stars threshold! Deleting message..." }
 
                 // Star Reaction is less than the required star count, delete the starboard message and from the database
-                m.services.transaction {
+                m.pudding.transaction {
                     StarboardMessages.deleteWhere {
                         StarboardMessages.id eq starboardMessageFromDatabase[StarboardMessages.id]
                     }
@@ -222,7 +222,7 @@ class StarboardModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModu
                         return
                     }
 
-                    m.services.transaction {
+                    m.pudding.transaction {
                         StarboardMessages.insert {
                             it[StarboardMessages.guildId] = guildId.value.toLong()
                             it[StarboardMessages.messageId] = reactedMessage.id.value.toLong()
@@ -239,8 +239,8 @@ class StarboardModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModu
         channelId: Snowflake,
         messageId: Snowflake
     ): StarboardMessageDatabaseResult {
-        return m.services.transaction {
-            val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value)
+        return m.pudding.transaction {
+            val serverConfig = m.pudding.serverConfigs.getServerConfigRoot(guildId.value)
                 ?: return@transaction StarboardMessageDatabaseResult.ServerConfigDoesNotExist
             val starboardConfig = serverConfig.getStarboardConfig() ?: return@transaction StarboardMessageDatabaseResult.StarboardConfigDoesNotExist
 

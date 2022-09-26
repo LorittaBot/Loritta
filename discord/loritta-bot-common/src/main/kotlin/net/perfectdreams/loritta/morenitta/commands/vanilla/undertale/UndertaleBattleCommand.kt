@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
 
-class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE) {
+class UndertaleBattleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "utbattle", listOf("undertalebattle"), net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.utbattle.description")
 
     override fun getExamples(): List<String> {
@@ -73,7 +73,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
                 // TODO: Fonte do Undertale
 
                 graphics.font = Constants.DOTUMCHE.deriveFont(12F)
-                ImageUtils.drawTextWrap(text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics)
+                ImageUtils.drawTextWrap(loritta, text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics)
 
                 context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)) // E agora envie o arquivo
             } else {

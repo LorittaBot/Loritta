@@ -75,7 +75,7 @@ class SadRealityExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServ
             }
         }
 
-        val profileSettings = loritta.services.users.getProfileSettingsOfUsers(
+        val profileSettings = loritta.pudding.users.getProfileSettingsOfUsers(
             listOfUsers.map { net.perfectdreams.loritta.cinnamon.discord.utils.UserId(it.id) }
         )
 

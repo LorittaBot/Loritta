@@ -1,11 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object SetSelfProfileDesignExecutor : LoriToolsCommand.LoriToolsExecutor {
 	override val args = "set self_profile_design <internalType>"
@@ -17,7 +15,7 @@ object SetSelfProfileDesignExecutor : LoriToolsCommand.LoriToolsExecutor {
 			return@task false
 
 		val context = checkType<DiscordCommandContext>(this)
-		transaction(Databases.loritta) {
+		loritta.pudding.transaction {
 			context.lorittaUser.profile.settings.activeProfileDesign = ProfileDesign.findById(args[2])
 		}
 

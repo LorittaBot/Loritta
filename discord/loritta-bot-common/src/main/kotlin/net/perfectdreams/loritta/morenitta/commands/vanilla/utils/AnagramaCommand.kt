@@ -11,8 +11,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class AnagramaCommand : AbstractCommand("anagram", listOf("anagrama"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class AnagramaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "anagram", listOf("anagrama"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command.anagram"
 	}

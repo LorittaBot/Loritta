@@ -7,8 +7,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import org.apache.commons.codec.Charsets
 import java.util.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
+class OfflineUUIDCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mcofflineuuid", listOf("offlineuuid"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.mcofflineuuid.description")
     override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.playerNameExamples")
 

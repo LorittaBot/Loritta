@@ -9,8 +9,9 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LockCommand : AbstractCommand("lock", listOf("trancar", "fechar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class LockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lock", listOf("trancar", "fechar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.lock.description")
 	
 	override fun getDiscordPermissions(): List<Permission> {

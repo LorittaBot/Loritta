@@ -91,11 +91,11 @@ class LorittaCinnamon(
     val config: CinnamonConfig,
 
     val languageManager: LanguageManager,
-    services: Pudding,
+    pudding: Pudding,
     val jedisPool: JedisPool,
     val redisKeys: RedisKeys,
     val http: HttpClient
-) : LorittaDiscordStuff(config.discord, services) {
+) : LorittaDiscordStuff(config.discord, pudding) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -193,7 +193,7 @@ class LorittaCinnamon(
         debugGatewayModule
     )
 
-    val notificationListener = LorittaNotificationListener(services.hikariDataSource)
+    val notificationListener = LorittaNotificationListener(pudding.hikariDataSource)
         .apply {
             this.start()
         }
@@ -208,7 +208,7 @@ class LorittaCinnamon(
             debugWebServer.start()
 
             val tableNames = config.services.pudding.tablesAllowedToBeUpdated
-            services.createMissingTablesAndColumns {
+            pudding.createMissingTablesAndColumns {
                 if (tableNames == null)
                     true
                 else it in tableNames
@@ -217,7 +217,7 @@ class LorittaCinnamon(
             // TrinketsStuff.updateTrinkets(services)
 
             logger.info { "Starting Pudding tasks..." }
-            services.startPuddingTasks()
+            pudding.startPuddingTasks()
 
             logger.info { "Registering interactions features..." }
             interactionsManager.register()
@@ -330,7 +330,7 @@ class LorittaCinnamon(
      * The ID of the direct message channel is cached.
      */
     suspend fun sendMessageToUserViaDirectMessage(userId: UserId, builder: UserMessageCreateBuilder.() -> (Unit)) = UserUtils.sendMessageToUserViaDirectMessage(
-        services,
+        pudding,
         rest,
         userId,
         builder
@@ -439,7 +439,7 @@ class LorittaCinnamon(
         val backgroundUrl = getUserProfileBackgroundUrl(profile)
         val response = http.get(backgroundUrl) {
             // TODO: Hostname somewhere?
-            // userAgent(loritta.lorittaCluster.getUserAgent())
+            // userAgent(loritta.lorittaCluster.getUserAgent(loritta))
         }
 
         val bytes = response.readBytes()
@@ -477,21 +477,21 @@ class LorittaCinnamon(
         activeProfileDesignInternalName: String,
         activeBackgroundInternalName: String
     ): String {
-        val defaultBlueBackground = services.backgrounds.getBackground(Background.DEFAULT_BACKGROUND_ID)!!
-        var background = services.backgrounds.getBackground(activeBackgroundInternalName) ?: defaultBlueBackground
+        val defaultBlueBackground = pudding.backgrounds.getBackground(Background.DEFAULT_BACKGROUND_ID)!!
+        var background = pudding.backgrounds.getBackground(activeBackgroundInternalName) ?: defaultBlueBackground
 
         if (background.id == Background.RANDOM_BACKGROUND_ID) {
             // If the user selected a random background, we are going to get all the user's backgrounds and choose a random background from the list
             val allBackgrounds = mutableListOf(defaultBlueBackground)
 
             allBackgrounds.addAll(
-                services.transaction {
+                pudding.transaction {
                     (BackgroundPayments innerJoin Backgrounds).select {
                         BackgroundPayments.userId eq userId
                     }.map {
                         val data = Background.fromRow(it)
                         PuddingBackground(
-                            services,
+                            pudding,
                             data
                         )
                     }
@@ -503,12 +503,12 @@ class LorittaCinnamon(
 
         if (background.id == Background.CUSTOM_BACKGROUND_ID) {
             // Custom background
-            val donationValue = services.payments.getActiveMoneyFromDonations(UserId(userId))
+            val donationValue = pudding.payments.getActiveMoneyFromDonations(UserId(userId))
             val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
             if (plan.customBackground) {
                 val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
-                val resultRow = services.transaction {
+                val resultRow = pudding.transaction {
                     CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq settingsId }
                         .firstOrNull()
                 }

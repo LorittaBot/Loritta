@@ -115,7 +115,7 @@ suspend fun CommandContext.imageData(argument: Int): JsonObject? {
     if (args.isNotEmpty()) {
         val theTextThatWillBeWritten = args.drop(argument).joinToString(" ")
         if (theTextThatWillBeWritten.isNotEmpty()) {
-            val textAsImage = JVMImage(ImageUtils.createTextAsImage(256, 256, theTextThatWillBeWritten))
+            val textAsImage = JVMImage(ImageUtils.createTextAsImage(loritta, 256, 256, theTextThatWillBeWritten))
 
             return buildJsonObject {
                 put("type", "base64")

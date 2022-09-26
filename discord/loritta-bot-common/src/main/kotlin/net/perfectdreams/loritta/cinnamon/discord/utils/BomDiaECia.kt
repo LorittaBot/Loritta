@@ -218,7 +218,7 @@ class BomDiaECia(private val m: LorittaCinnamon) {
 
         lastBomDiaECia = System.currentTimeMillis()
 
-        m.services.transaction {
+        m.pudding.transaction {
             BomDiaECiaMatches.insert {
                 it[BomDiaECiaMatches.startedAt] = Instant.now()
                 it[BomDiaECiaMatches.text] = currentText
@@ -303,7 +303,7 @@ class BomDiaECia(private val m: LorittaCinnamon) {
                             if (it.reactionEmote.isEmote("⁉")) {
                                 loritta.messageInteractionCache.remove(it.messageIdLong)
 
-                                val triedToCall = triedToCall.mapNotNull { lorittaShards.retrieveUserInfoById(it) }
+                                val triedToCall = triedToCall.mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it) }
                                 channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!").queue()
                             }
                         }
@@ -328,7 +328,7 @@ class BomDiaECia(private val m: LorittaCinnamon) {
 
             if (permissions.hasPermission(Permission.SendMessages, Permission.EmbedLinks)) {
                 if (info.users.size >= 5 && info.lastMessageSent > (System.currentTimeMillis() - 180_000)) {
-                    val serverConfig = m.services.serverConfigs.getServerConfigRoot(info.guildId.value)
+                    val serverConfig = m.pudding.serverConfigs.getServerConfigRoot(info.guildId.value)
                     val miscellaneousConfig = serverConfig?.getMiscellaneousConfig()
                     val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
 

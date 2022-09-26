@@ -5,14 +5,14 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedTwitchAccounts
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
-object TwitchConfigTransformer : ConfigTransformer {
+class TwitchConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "twitch"
     override val configKey: String = "trackedTwitchChannels"
 

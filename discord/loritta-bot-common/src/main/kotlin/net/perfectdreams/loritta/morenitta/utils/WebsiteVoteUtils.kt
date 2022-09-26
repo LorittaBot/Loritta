@@ -10,6 +10,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BotVoteSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.BotVote
 import net.perfectdreams.loritta.morenitta.tables.BotVotes
 import org.jetbrains.exposed.sql.*
@@ -40,7 +41,7 @@ object WebsiteVoteUtils {
 	 * @param userId        the user that created the vote
 	 * @param websiteSource where the vote originated from
 	 */
-	suspend fun addVote(userId: Long, websiteSource: WebsiteVoteSource) {
+	suspend fun addVote(loritta: LorittaBot, userId: Long, websiteSource: WebsiteVoteSource) {
 		voteMutex.withLock {
 			// Check if the user voted in the last 60s
 			// This is to avoid top.gg issues while retrying votes
@@ -83,7 +84,7 @@ object WebsiteVoteUtils {
 				BotVotes.select { BotVotes.userId eq userId }.count()
 			}
 
-			val user = lorittaShards.retrieveUserById(userId)
+			val user = loritta.lorittaShards.retrieveUserById(userId)
 
 			if (voteCount % 60 == 0L) {
 				// Can give reward!

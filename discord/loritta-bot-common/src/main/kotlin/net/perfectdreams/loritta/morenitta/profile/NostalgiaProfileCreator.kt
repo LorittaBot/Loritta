@@ -18,16 +18,16 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-open class NostalgiaProfileCreator(internalName: String, val folderName: String) : ProfileCreator(internalName) {
-	class NostalgiaDarkProfileCreator : NostalgiaProfileCreator("defaultDark", "dark")
-	class NostalgiaBlurpleProfileCreator : NostalgiaProfileCreator("defaultBlurple", "blurple")
-	class NostalgiaRedProfileCreator : NostalgiaProfileCreator("defaultRed", "red")
-	class NostalgiaBlueProfileCreator : NostalgiaProfileCreator("defaultBlue", "blue")
-	class NostalgiaGreenProfileCreator : NostalgiaProfileCreator("defaultGreen", "green")
-	class NostalgiaPurpleProfileCreator : NostalgiaProfileCreator("defaultPurple", "purple")
-	class NostalgiaPinkProfileCreator : NostalgiaProfileCreator("defaultPink", "pink")
-	class NostalgiaYellowProfileCreator : NostalgiaProfileCreator("defaultYellow", "yellow")
-	class NostalgiaOrangeProfileCreator : NostalgiaProfileCreator("defaultOrange", "orange")
+open class NostalgiaProfileCreator(val loritta: LorittaBot, internalName: String, val folderName: String) : ProfileCreator(internalName) {
+	class NostalgiaDarkProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultDark", "dark")
+	class NostalgiaBlurpleProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultBlurple", "blurple")
+	class NostalgiaRedProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultRed", "red")
+	class NostalgiaBlueProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultBlue", "blue")
+	class NostalgiaGreenProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultGreen", "green")
+	class NostalgiaPurpleProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultPurple", "purple")
+	class NostalgiaPinkProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultPink", "pink")
+	class NostalgiaYellowProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultYellow", "yellow")
+	class NostalgiaOrangeProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultOrange", "orange")
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/nostalgia/profile_wrapper_$folderName.png"))
@@ -35,7 +35,7 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
@@ -55,7 +55,7 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 
 		graphics.color = Color.WHITE
 		graphics.font = oswaldRegular50
-		graphics.drawText(user.name, 159, 46) // Nome do usuário
+		graphics.drawText(loritta, user.name, 159, 46) // Nome do usuário
 		graphics.font = oswaldRegular42
 		ImageUtils.drawCenteredString(graphics, "${reputations} reps", Rectangle(598, 54, 202, 54), oswaldRegular42)
 		graphics.font = oswaldRegular29
@@ -84,50 +84,50 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(aboutMe, 6, 522, 800 - 6, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 6, 522, 800 - 6, 600, graphics.fontMetrics, graphics)
 
 		val shiftY = 42
 
 		graphics.font = whitneyBold20
-		graphics.drawText("Global", 159, 21 + shiftY, 800 - 6)
+		graphics.drawText(loritta, "Global", 159, 21 + shiftY, 800 - 6)
 		graphics.font = whitneySemiBold20
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		if (globalPosition != null)
-			graphics.drawText("#$globalPosition / ${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
+			graphics.drawText(loritta, "#$globalPosition / ${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
 		else
-			graphics.drawText("${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
+			graphics.drawText(loritta, "${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
 
 		if (guild != null) {
 			val localProfile = loritta.newSuspendedTransaction {
 				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
 			}
 
-			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
+			val localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
 			val xpLocal = localProfile?.xp
 
 			graphics.font = whitneyBold20
-			graphics.drawText(guild.name, 159, 61 + shiftY, 800 - 6)
+			graphics.drawText(loritta, guild.name, 159, 61 + shiftY, 800 - 6)
 			graphics.font = whitneySemiBold20
 			if (xpLocal != null) {
 				if (localPosition != null)
-					graphics.drawText("#$localPosition / $xpLocal XP", 159, 78 + shiftY, 800 - 6)
+					graphics.drawText(loritta, "#$localPosition / $xpLocal XP", 159, 78 + shiftY, 800 - 6)
 				else
-					graphics.drawText("$xpLocal XP", 159, 78 + shiftY, 800 - 6)
+					graphics.drawText(loritta, "$xpLocal XP", 159, 78 + shiftY, 800 - 6)
 			} else {
-				graphics.drawText("???", 159, 78 + shiftY, 800 - 6)
+				graphics.drawText(loritta, "???", 159, 78 + shiftY, 800 - 6)
 			}
 		}
 
-		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
 		graphics.font = whitneyBold20
-		graphics.drawText("Sonhos", 159, 98  + shiftY, 800 - 6)
+		graphics.drawText(loritta, "Sonhos", 159, 98  + shiftY, 800 - 6)
 		graphics.font = whitneySemiBold20
 		if (globalEconomyPosition != null)
-			graphics.drawText("#$globalEconomyPosition / ${userProfile.money}", 159, 116  + shiftY, 800 - 6)
+			graphics.drawText(loritta, "#$globalEconomyPosition / ${userProfile.money}", 159, 116  + shiftY, 800 - 6)
 		else
-			graphics.drawText("${userProfile.money}", 159, 116  + shiftY, 800 - 6)
+			graphics.drawText(loritta, "${userProfile.money}", 159, 116  + shiftY, 800 - 6)
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
@@ -140,7 +140,7 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 
 			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/nostalgia/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
-			val marriedWith = lorittaShards.retrieveUserInfoById(marriedWithId.toLong())
+			val marriedWith = loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong())
 
 			if (marriedWith != null) {
 				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)

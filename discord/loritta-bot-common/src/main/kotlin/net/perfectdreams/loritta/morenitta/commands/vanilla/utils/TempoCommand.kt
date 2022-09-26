@@ -8,12 +8,12 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import java.awt.Color
 import java.net.URLEncoder
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "previsao"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class TempoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "weather", listOf("tempo", "previsão", "previsao"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.weather.description")

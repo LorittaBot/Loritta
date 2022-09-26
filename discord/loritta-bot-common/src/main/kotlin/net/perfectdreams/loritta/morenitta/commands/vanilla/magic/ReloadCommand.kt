@@ -2,23 +2,17 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.threads.UpdateStatusThread
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.LorittaTasks
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteAssetsHashes
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class ReloadCommand : AbstractCommand("reload", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
+class ReloadCommand(loritta: LorittaBot) : AbstractCommand(loritta, "reload", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Recarrega a Loritta"
 	}
@@ -29,7 +23,7 @@ class ReloadCommand : AbstractCommand("reload", category = net.perfectdreams.lor
 		val arg2 = context.rawArgs.getOrNull(2)
 
 		if (arg0 == "action") {
-			lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/$arg1")
+			loritta.lorittaShards.queryAllLorittaClusters("/api/v1/loritta/action/$arg1")
 			context.reply(
                     LorittaReply(
                             "Enviado ação para todos os clusters!"
@@ -47,19 +41,10 @@ class ReloadCommand : AbstractCommand("reload", category = net.perfectdreams.lor
 			Emotes.emoteManager?.loadEmotes()
 			return
 		}
-		if (arg0 == "dailytax") {
-			context.reply(
-                    LorittaReply(
-                            "Retirando granas de pessoas!"
-                    )
-			)
-			LorittaTasks.DAILY_TAX_TASK.runDailyTax(true)
-			return
-		}
 		if (arg0 == "shard") {
 			val shardId = context.rawArgs.getOrNull(1)!!.split(",").map { it.toInt() }
 			shardId.forEach {
-				lorittaShards.shardManager.restart(it)
+				loritta.lorittaShards.shardManager.restart(it)
 			}
 			context.reply(
                     LorittaReply(
@@ -98,7 +83,7 @@ class ReloadCommand : AbstractCommand("reload", category = net.perfectdreams.lor
 		}
 
 		if (arg0 == "inject_unsafe2") {
-			val reactionRole = transaction(Databases.loritta) {
+			val reactionRole = loritta.pudding.transaction {
 				ReactionOption.new {
 					this.guildId = 297732013006389252L
 					this.textChannelId = 532653936188850177L
@@ -185,7 +170,7 @@ class ReloadCommand : AbstractCommand("reload", category = net.perfectdreams.lor
 			val file = File("./date_export.txt")
 			file.delete()
 
-			lorittaShards.getGuilds().forEach {
+			loritta.lorittaShards.getGuilds().forEach {
 				val self = it.selfMember
 				val year = self.timeJoined.year
 				val month = self.timeJoined.monthValue

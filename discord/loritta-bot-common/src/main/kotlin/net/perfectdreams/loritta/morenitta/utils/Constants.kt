@@ -16,6 +16,7 @@ import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import kotlinx.serialization.hocon.Hocon
+import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.jackson.FixedMapDeserializer
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -46,13 +47,7 @@ object Constants {
 	const val DELAY_CUT_OFF = SIX_MONTHS_IN_MILLISECONDS // six months
 	const val CLUSTER_USER_AGENT = "Loritta Cluster %s (%s)"
 	const val CANARY_CLUSTER_USER_AGENT = "Canary Cluster %s (%s)"
-	val DEFAULT_DISCORD_BLUE_AVATAR by lazy {
-		LorittaUtils.downloadImage(
-				"https://cdn.discordapp.com/embed/avatars/0.png?size=256",
-				-1,
-				-1
-		)!!
-	}
+	val DEFAULT_DISCORD_BLUE_AVATAR by lazy { ImageIO.read(LorittaBot::class.java.getResourceAsStream("/avatars/0.png")) }
 
 	/**
 	 * Discord's URL Crawler User Agent
@@ -150,9 +145,8 @@ object Constants {
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
 	val ASSETS_FOLDER by lazy { File(LorittaBot.ASSETS) }
 
-	val INVALID_IMAGE_URL: String by lazy {
-		loritta.instanceConfig.loritta.website.url + "assets/img/oopsie_woopsie_invalid_image.png"
-	}
+	// TODO: Don't hardcode this
+	val INVALID_IMAGE_URL = "https://loritta.website/assets/img/oopsie_woopsie_invalid_image.png"
 
 	// Palavras inapropariadas
 	val BAD_NICKNAME_WORDS = listOf(

@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.stream.FileImageOutputStream
 
-class TriggeredCommand : AbstractCommand("triggered", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class TriggeredCommand(loritta: LorittaBot) : AbstractCommand(loritta, "triggered", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.triggered.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 

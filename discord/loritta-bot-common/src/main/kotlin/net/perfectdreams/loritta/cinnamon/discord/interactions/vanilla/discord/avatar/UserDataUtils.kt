@@ -36,7 +36,7 @@ object UserDataUtils {
         decodedInteractionData: SwitchAvatarInteractionIdData,
         isLookingGuildProfileAvatar: Boolean
     ): ViewingUserAvatarData {
-        val storedInteractionData = loritta.services.interactionsData.getInteractionData(decodedInteractionData.interactionDataId)
+        val storedInteractionData = loritta.pudding.interactionsData.getInteractionData(decodedInteractionData.interactionDataId)
 
         if (storedInteractionData == null) {
             // ID is not present, try pulling the user data via REST
@@ -184,7 +184,7 @@ object UserDataUtils {
                     val memberAvatarId = data.memberAvatarId
                     if (data is ViewingGuildProfileUserAvatarData) {
                         // If the user is currently viewing the user's guild profile avatar, add a button to switch to the original avatar
-                        val id = loritta.services.interactionsData.insertInteractionData(
+                        val id = loritta.pudding.interactionsData.insertInteractionData(
                             Json.encodeToJsonElement<ViewingUserAvatarData>(
                                 ViewingGlobalUserAvatarData(
                                     data.userName,
@@ -209,7 +209,7 @@ object UserDataUtils {
                         }
                     } else if (memberAvatarId != null) {
                         // If the user is currently viewing the user's avatar, and the user has a guild profile avatar, add a button to switch to the guild profile avatar
-                        val id = loritta.services.interactionsData.insertInteractionData(
+                        val id = loritta.pudding.interactionsData.insertInteractionData(
                             Json.encodeToJsonElement<ViewingUserAvatarData>(
                                 ViewingGuildProfileUserAvatarData(
                                     data.userName,

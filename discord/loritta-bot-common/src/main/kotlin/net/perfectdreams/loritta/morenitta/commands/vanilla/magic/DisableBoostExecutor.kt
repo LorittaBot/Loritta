@@ -30,7 +30,7 @@ object DisableBoostExecutor : LoriToolsCommand.LoriToolsExecutor {
 			return@task true
 		}
 
-		NitroBoostUtils.onBoostDeactivate(member)
+		NitroBoostUtils.onBoostDeactivate(loritta, member)
 
 		context.reply(
 				LorittaReply(

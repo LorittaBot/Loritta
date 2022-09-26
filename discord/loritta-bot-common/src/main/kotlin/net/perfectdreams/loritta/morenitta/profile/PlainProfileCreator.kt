@@ -11,13 +11,13 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-open class PlainProfileCreator(internalName: String, val folderName: String) : ProfileCreator(internalName) {
-	class PlainWhiteProfileCreator : PlainProfileCreator("plainWhite", "white")
-	class PlainOrangeProfileCreator : PlainProfileCreator("plainOrange", "orange")
-	class PlainPurpleProfileCreator : PlainProfileCreator("plainPurple", "purple")
-	class PlainAquaProfileCreator : PlainProfileCreator("plainAqua", "aqua")
-	class PlainGreenProfileCreator : PlainProfileCreator("plainGreen", "green")
-	class PlainGreenHeartsProfileCreator : PlainProfileCreator("plainGreenHearts", "green_hearts")
+open class PlainProfileCreator(val loritta: LorittaBot, internalName: String, val folderName: String) : ProfileCreator(internalName) {
+	class PlainWhiteProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainWhite", "white")
+	class PlainOrangeProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainOrange", "orange")
+	class PlainPurpleProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainPurple", "purple")
+	class PlainAquaProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainAqua", "aqua")
+	class PlainGreenProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainGreen", "green")
+	class PlainGreenHeartsProfileCreator(loritta: LorittaBot) : PlainProfileCreator(loritta, "plainGreenHearts", "green_hearts")
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
@@ -36,11 +36,11 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
-		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
+		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/plain/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
@@ -63,7 +63,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 				.deriveFont(42F)
 
 		graphics.font = oswaldRegular50
-		graphics.drawText(user.name, 162, 461) // Nome do usuário
+		graphics.drawText(loritta, user.name, 162, 461) // Nome do usuário
 		graphics.font = oswaldRegular42
 
 		drawReputations(user, graphics)
@@ -75,7 +75,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
 
 		return base.makeRoundedCorners(15)
 	}
@@ -100,7 +100,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 
 	suspend fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
 		val font = graphics.font
-		val reputations = ProfileUtils.getReputationCount(user)
+		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 404, 166, 52), font)
 	}
@@ -108,16 +108,16 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 	suspend fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		if (globalPosition != null)
 			userInfo.add("#$globalPosition / ${userProfile.xp} XP")
 		else
 			userInfo.add("${userProfile.xp} XP")
 
 		if (guild != null) {
-			val localProfile = ProfileUtils.getLocalProfile(guild, user)
+			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)
 
-			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
+			val localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
 			val xpLocal = localProfile?.xp
 
@@ -134,7 +134,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 			}
 		}
 
-		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
 		userInfo.add("Sonhos")
 		if (globalEconomyPosition != null)
@@ -146,7 +146,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 
 		var y = 475
 		for (line in userInfo) {
-			graphics.drawText(line, 773 - biggestStrWidth - 2, y)
+			graphics.drawText(loritta, line, 773 - biggestStrWidth - 2, y)
 			y += 16
 		}
 

@@ -1,17 +1,15 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LorittaBanCommand : AbstractCommand("lorittaban", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
+class LorittaBanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lorittaban", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Banir usuários de usar a Loritta"
 	}
@@ -28,7 +26,7 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = net.perfectdr
 				return
 			}
 
-			val profile = LorittaLauncher.loritta.getLorittaProfile(monster.idLong)
+			val profile = loritta.getLorittaProfile(monster.idLong)
 
 			if (profile == null) {
 				context.reply(
@@ -42,7 +40,7 @@ class LorittaBanCommand : AbstractCommand("lorittaban", category = net.perfectdr
 
 			val reason = context.rawArgs.toMutableList().apply { this.removeAt(0) }.joinToString(" ")
 
-			transaction(Databases.loritta) {
+			loritta.pudding.transaction {
 				BannedUsers.insert {
 					it[userId] = monster.idLong
 					it[bannedAt] = System.currentTimeMillis()

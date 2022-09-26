@@ -5,12 +5,12 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class AjudaCommand : AbstractCommand("ajuda", listOf("help", "comandos", "commands"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class AjudaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ajuda", listOf("help", "comandos", "commands"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.help.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {

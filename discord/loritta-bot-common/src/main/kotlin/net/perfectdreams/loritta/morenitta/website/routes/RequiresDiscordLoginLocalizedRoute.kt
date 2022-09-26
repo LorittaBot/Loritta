@@ -7,7 +7,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -54,22 +53,22 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 			println("Dashboard Auth Route")
 			val session: LorittaJsonWebSession = call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
-			val discordAuth = session.getDiscordAuthFromJson()
+			val discordAuth = session.getDiscordAuthFromJson(loritta)
 
 			// Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
 			// Se o parâmetro exista, vamos redirecionar!
 			if (code == null) {
 				if (discordAuth == null) {
 					if (call.request.header("User-Agent") == Constants.DISCORD_CRAWLER_USER_AGENT) {
-						call.respondHtml(WebsiteUtils.getDiscordCrawlerAuthenticationPage())
+						call.respondHtml(WebsiteUtils.getDiscordCrawlerAuthenticationPage(loritta))
 					} else {
 						val state = JsonObject()
 						state["redirectUrl"] = "$scheme://$hostHeader" + call.request.path()
-						redirect(net.perfectdreams.loritta.morenitta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+						redirect(loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 					}
 				}
 			} else {
-				val storedUserIdentification = session.getUserIdentification(call)
+				val storedUserIdentification = session.getUserIdentification(loritta, call)
 
 				val userIdentification = if (code == "from_master") {
 					// Veio do master cluster, vamos apenas tentar autenticar com os dados existentes!
@@ -78,12 +77,12 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 						// Iremos apenas pedir para o usuário reautenticar, porque alguma coisa deu super errado!
 						val state = JsonObject()
 						state["redirectUrl"] = "$scheme://$hostHeader" + call.request.path()
-						redirect(net.perfectdreams.loritta.morenitta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+						redirect(loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 					}
 				} else {
 					val auth = TemmieDiscordAuth(
-						net.perfectdreams.loritta.morenitta.utils.loritta.discordConfig.discord.clientId,
-						net.perfectdreams.loritta.morenitta.utils.loritta.discordConfig.discord.clientSecret,
+						loritta.discordConfig.discord.clientId,
+						loritta.discordConfig.discord.clientSecret,
 						code,
 						"$scheme://$hostHeader/dashboard",
 						listOf("identify", "guilds", "email")
@@ -140,28 +139,28 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 				if (guildId != null) {
 					if (code != "from_master") {
-						val cluster = DiscordUtils.getLorittaClusterForGuildId(guildId.toLong())
+						val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildId.toLong())
 
-						if (cluster.getUrl() != hostHeader) {
+						if (cluster.getUrl(loritta) != hostHeader) {
 							logger.info { "Received guild $guildId via OAuth2 scope, but the guild isn't in this cluster! Redirecting to where the user should be... $cluster" }
 
 							// Vamos redirecionar!
-							redirect("$scheme://${cluster.getUrl()}/dashboard?guild_id=${guildId}&code=from_master", true)
+							redirect("$scheme://${cluster.getUrl(loritta)}/dashboard?guild_id=${guildId}&code=from_master", true)
 						}
 					}
 
 					logger.info { "Received guild $guildId via OAuth2 scope, sending DM to the guild owner..." }
 					var guildFound = false
 					var tries = 0
-					val maxGuildTries = net.perfectdreams.loritta.morenitta.utils.loritta.config.loritta.website.maxGuildTries
+					val maxGuildTries = loritta.config.loritta.website.maxGuildTries
 
 					while (!guildFound && maxGuildTries > tries) {
-						val guild = lorittaShards.getGuildById(guildId)
+						val guild = loritta.lorittaShards.getGuildById(guildId)
 
 						if (guild != null) {
 							logger.info { "Guild ${guild} was successfully found after $tries tries! Yay!!" }
 
-							val serverConfig = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateServerConfig(guild.idLong)
+							val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
 
 							// Now we are going to save the server's new locale ID, based on the user's locale
 							// This fixes issues because Discord doesn't provide the voice channel server anymore
@@ -172,7 +171,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 							val userId = userIdentification.id
 
-							val user = lorittaShards.retrieveUserById(userId)
+							val user = loritta.lorittaShards.retrieveUserById(userId)
 
 							if (user != null) {
 								val member = guild.getMember(user)
@@ -208,7 +207,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 										// Sometimes the guild owner can be null, that's why we need to check if it is null or not!
 										if (guildOwner != null) {
 											val profile = loritta.getLorittaProfile(guildOwner.user.id)
-											val bannedState = profile?.getBannedState()
+											val bannedState = profile?.getBannedState(loritta)
 											if (bannedState != null) { // Dono blacklisted
 												// Envie via DM uma mensagem falando sobre a Loritta!
 												val message = locale.getList("website.router.ownerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
@@ -229,11 +228,11 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 												"website.router.addedOnServer",
 												user.asMention,
 												guild.name,
-												net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.url + "commands",
-												net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.url + "guild/${guild.id}/configure/",
-												net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.url + "guidelines",
-												net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.url + "donate",
-												net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.url + "support",
+												loritta.instanceConfig.loritta.website.url + "commands",
+												loritta.instanceConfig.loritta.website.url + "guild/${guild.id}/configure/",
+												loritta.instanceConfig.loritta.website.url + "guidelines",
+												loritta.instanceConfig.loritta.website.url + "donate",
+												loritta.instanceConfig.loritta.website.url + "support",
 												Emotes.LORI_PAT,
 												Emotes.LORI_NICE,
 												Emotes.LORI_HEART,
@@ -296,10 +295,10 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 		logger.info { "Time to get session: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
 
-		val discordAuth = session.getDiscordAuthFromJson()
+		val discordAuth = session.getDiscordAuthFromJson(loritta)
 		logger.info { "Time to get Discord Auth: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
-		val userIdentification = session.getUserIdentification(call)
+		val userIdentification = session.getUserIdentification(loritta, call)
 		logger.info { "Time to get User Identification: ${System.currentTimeMillis() - start}" }
 
 		if (discordAuth == null || userIdentification == null) {
@@ -307,11 +306,12 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 			return
 		}
 
-		val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
-		val bannedState = profile.getBannedState()
+		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val bannedState = profile.getBannedState(loritta)
 		if (bannedState != null) {
 			call.respondHtml(
 				UserBannedView(
+					loritta,
 					locale,
 					getPathWithoutLocale(call),
 					profile,
@@ -328,6 +328,6 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 		// redirect to authentication owo
 		val state = JsonObject()
 		state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + call.request.path()
-		redirect(net.perfectdreams.loritta.morenitta.utils.loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+		redirect(loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 	}
 }

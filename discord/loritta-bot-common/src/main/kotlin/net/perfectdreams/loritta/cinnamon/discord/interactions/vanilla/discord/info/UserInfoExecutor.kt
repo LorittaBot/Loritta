@@ -265,7 +265,7 @@ interface UserInfoExecutor {
             // ===[ VIEW AVATAR BUTTONS ]===
             actionRow {
                 // ===[ GLOBAL AVATAR ]===
-                val globalInteractionId = loritta.services.interactionsData.insertInteractionData(
+                val globalInteractionId = loritta.pudding.interactionsData.insertInteractionData(
                     Json.encodeToJsonElement<UserDataUtils.ViewingUserAvatarData>(
                         UserDataUtils.ViewingGlobalUserAvatarData(
                             user.username,
@@ -297,7 +297,7 @@ interface UserInfoExecutor {
                 // ===[ GUILD AVATAR ]===
                 val guildAvatarHash = member?.memberData?.avatar?.value
                 if (guildAvatarHash != null) {
-                    val localInteractionId = loritta.services.interactionsData.insertInteractionData(
+                    val localInteractionId = loritta.pudding.interactionsData.insertInteractionData(
                         Json.encodeToJsonElement<UserDataUtils.ViewingUserAvatarData>(
                             UserDataUtils.ViewingGuildProfileUserAvatarData(
                                 user.username,
@@ -330,7 +330,7 @@ interface UserInfoExecutor {
 
             if (member != null) {
                 actionRow {
-                    val memberPermissionsInteractionId = loritta.services.interactionsData.insertInteractionData(
+                    val memberPermissionsInteractionId = loritta.pudding.interactionsData.insertInteractionData(
                         Json.encodeToJsonElement(
                             GuildMemberPermissionsData(
                                 member.roleIds,

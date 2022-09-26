@@ -46,14 +46,14 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		private val unavailableMessages = Collections.newSetFromMap(Caffeine.newBuilder().expireAfterWrite(15L, TimeUnit.MINUTES).build<Long, Boolean>().asMap())
 	}
 
-	val inviteLinkModule = InviteLinkModule()
-	val automodModule = AutomodModule()
-	val experienceModule = ExperienceModule()
-	val afkModule = AFKModule()
-	val bomDiaECiaModule = BomDiaECiaModule()
-	val checkBoostStatusModule = CheckBoostStatusModule(loritta.discordConfig.donatorsOstentation)
-	val addReactionForHeathecliffModule = AddReactionForHeathecliffModule()
-	val quirkyModule = QuirkyModule(loritta.config.quirky)
+	private val inviteLinkModule = InviteLinkModule(loritta)
+	private val automodModule = AutomodModule(loritta)
+	private val experienceModule = ExperienceModule(loritta)
+	private val afkModule = AFKModule(loritta)
+	private val bomDiaECiaModule = BomDiaECiaModule(loritta)
+	private val checkBoostStatusModule = CheckBoostStatusModule(loritta)
+	private val addReactionForHeathecliffModule = AddReactionForHeathecliffModule(loritta)
+	private val quirkyModule = QuirkyModule(loritta)
 
 	private val messageReceivedModules = mutableListOf(
 		automodModule,
@@ -97,14 +97,14 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 				var start = System.nanoTime()
 
 				val serverConfigJob = loritta.getOrCreateServerConfigDeferred(event.guild.idLong, true)
-						.logOnCompletion(enableProfiling) { "Loading Server Config took {time}ns for ${event.author.idLong}" }
+					.logOnCompletion(enableProfiling) { "Loading Server Config took {time}ns for ${event.author.idLong}" }
 				val lorittaProfileJob = loritta.getLorittaProfileDeferred(event.author.idLong)
-						.logOnCompletion(enableProfiling) { "Loading user's profile took {time}ns for ${event.author.idLong}" }
+					.logOnCompletion(enableProfiling) { "Loading user's profile took {time}ns for ${event.author.idLong}" }
 
 				val serverConfig = serverConfigJob.await()
 
 				val autoroleConfigJob = serverConfig.getCachedOrRetreiveFromDatabaseDeferred<AutoroleConfig?>(loritta, ServerConfig::autoroleConfig)
-						.logOnCompletion(enableProfiling) { "Loading Server Config's autorole took {time}ns for ${event.author.idLong}" }
+					.logOnCompletion(enableProfiling) { "Loading Server Config's autorole took {time}ns for ${event.author.idLong}" }
 
 				val lorittaProfile = lorittaProfileJob.await()
 				val autoroleConfig = autoroleConfigJob.await()
@@ -122,7 +122,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				// We use "loadMemberRolesLorittaPermissions(...)" to avoid unnecessary retrievals later on, because we recheck the role permission later
-				val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(event.guild)
+				val rolesLorittaPermissions = serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, event.guild)
 				logIfEnabled(enableProfiling) { "Loading Loritta's role permissions in ${event.guild.idLong} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -130,7 +130,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Converting Loritta's role permissions to member permissions in ${event.guild.idLong} took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				val lorittaUser = GuildLorittaUser(member, memberLorittaPermissions, lorittaProfile)
+				val lorittaUser = GuildLorittaUser(loritta, member, memberLorittaPermissions, lorittaProfile)
 				logIfEnabled(enableProfiling) { "Wrapping $member and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -143,7 +143,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 				logIfEnabled(enableProfiling) { "Changing AFK status took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
-				EventLog.onMessageReceived(serverConfig, event.message)
+				EventLog.onMessageReceived(loritta, serverConfig, event.message)
 				logIfEnabled(enableProfiling) { "Logging to EventLog took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -210,16 +210,16 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 				start = System.nanoTime()
 				val lorittaMessageEvent = LorittaMessageEvent(
-						event.author,
-						member,
-						event.message,
-						event.messageId,
-						event.guild,
-						event.channel,
-						event.channel,
-						serverConfig,
-						locale,
-						lorittaUser
+					event.author,
+					member,
+					event.message,
+					event.messageId,
+					event.guild,
+					event.channel,
+					event.channel,
+					serverConfig,
+					locale,
+					lorittaUser
 				)
 				logIfEnabled(enableProfiling) { "Creating a LorittaMessageEvent took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
@@ -271,13 +271,13 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 					if (event.message.contentRaw.matches(startsWithCommandPattern)) {
 						val command = event.message.contentDisplay.split(" ")[0].stripCodeMarks()
-								.substring(serverConfig.commandPrefix.length)
+							.substring(serverConfig.commandPrefix.length)
 
 						val list = mutableListOf(
-								LorittaReply(
-										"${locale["commands.unknownCommand", command, "${serverConfig.commandPrefix}${locale["commands.helpCommandName"]}"]} ${Emotes.LORI_OWO}",
-										"\uD83E\uDD37"
-								)
+							LorittaReply(
+								"${locale["commands.unknownCommand", command, "${serverConfig.commandPrefix}${locale["commands.helpCommandName"]}"]} ${Emotes.LORI_OWO}",
+								"\uD83E\uDD37"
+							)
 						)
 
 						val allCommandLabels = mutableListOf<String>()
@@ -308,11 +308,11 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 						if (nearestCommand != null && 6 > diff) {
 							list.add(
-									LorittaReply(
-											prefix = Emotes.LORI_HM,
-											message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
-											mentionUser = false
-									)
+								LorittaReply(
+									prefix = Emotes.LORI_HM,
+									message = locale["commands.didYouMeanCommand", serverConfig.commandPrefix + nearestCommand],
+									mentionUser = false
+								)
 							)
 						}
 
@@ -345,7 +345,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		loritta.launchMessageJob(event) {
 			val serverConfig = loritta.getOrCreateServerConfigAsync(-1, true)
 			val profile = loritta.getOrCreateLorittaProfile(event.author.idLong) // Carregar perfil do usuário
-			val lorittaUser = LorittaUser(event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)
+			val lorittaUser = LorittaUser(loritta, event.author, EnumSet.noneOf(LorittaPermission::class.java), profile)
 			val currentLocale = loritta.newSuspendedTransaction {
 				profile.settings.language ?: "default"
 			}
@@ -357,16 +357,16 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 			}
 
 			val lorittaMessageEvent = LorittaMessageEvent(
-					event.author,
-					null,
-					event.message,
-					event.messageId,
-					null,
-					event.channel,
-					null,
-					serverConfig,
-					locale,
-					lorittaUser
+				event.author,
+				null,
+				event.message,
+				event.messageId,
+				null,
+				event.channel,
+				null,
+				serverConfig,
+				locale,
+				lorittaUser
 			)
 
 			// Executar comandos
@@ -406,26 +406,27 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(
+					loritta,
+					member,
+					LorittaUser.convertRolePermissionsMapToMemberPermissionList(
 						member,
-						LorittaUser.convertRolePermissionsMapToMemberPermissionList(
-								member,
-								serverConfig.getOrLoadGuildRolesLorittaPermissions(event.guild)
-						),
-						lorittaProfile)
+						serverConfig.getOrLoadGuildRolesLorittaPermissions(loritta, event.guild)
+					),
+					lorittaProfile)
 
-				EventLog.onMessageUpdate(serverConfig, locale, event.message)
+				EventLog.onMessageUpdate(loritta, serverConfig, locale, event.message)
 
 				val lorittaMessageEvent = LorittaMessageEvent(
-						event.author,
-						event.member,
-						event.message,
-						event.messageId,
-						event.guild,
-						event.channel,
-						event.channel,
-						serverConfig,
-						locale,
-						lorittaUser
+					event.author,
+					event.member,
+					event.message,
+					event.messageId,
+					event.guild,
+					event.channel,
+					event.channel,
+					serverConfig,
+					locale,
+					lorittaUser
 				)
 
 				for (module in messageEditedModules) {
@@ -467,12 +468,12 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		val rawMessage = lorittaMessageEvent.message.contentRaw
 
 		val rawArguments = rawMessage
-				.split(" ")
-				.toMutableList()
+			.split(" ")
+			.toMutableList()
 
 		val firstLabel = rawArguments.first()
 		val startsWithCommandPrefix = firstLabel.startsWith(serverConfig.commandPrefix)
-		val startsWithLorittaMention = firstLabel == "<@${net.perfectdreams.loritta.morenitta.utils.loritta.discordConfig.discord.clientId}>" || firstLabel == "<@!${net.perfectdreams.loritta.morenitta.utils.loritta.discordConfig.discord.clientId}>"
+		val startsWithLorittaMention = firstLabel == "<@${loritta.discordConfig.discord.clientId}>" || firstLabel == "<@!${loritta.discordConfig.discord.clientId}>"
 
 		if (startsWithCommandPrefix || startsWithLorittaMention) {
 			if (startsWithCommandPrefix) // If it is a command prefix, remove the prefix
@@ -487,7 +488,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 			if (rawArguments[0].contains("\n")) {
 				val splitNewLines = rawArguments[0].split(Regex("(?=\n+)", RegexOption.MULTILINE))
 				rawArguments[0] = splitNewLines[0]
-						.replace("\n", "")
+					.replace("\n", "")
 
 				rawArguments.addAll(1, splitNewLines.drop(1))
 			}

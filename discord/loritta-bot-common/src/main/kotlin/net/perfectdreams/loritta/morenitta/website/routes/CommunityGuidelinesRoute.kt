@@ -12,6 +12,7 @@ class CommunityGuidelinesRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		call.respondHtml(
 			CommunityGuidelinesView(
+				loritta,
 				locale,
 				getPathWithoutLocale(call),
 			).generateHtml()

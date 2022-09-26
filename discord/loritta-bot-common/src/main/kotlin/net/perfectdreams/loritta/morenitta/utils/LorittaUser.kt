@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -15,7 +16,7 @@ import java.util.*
 /**
  * Um usuário que está comunicando com a Loritta
  */
-open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermission>, val _profile: Profile?) {
+open class LorittaUser(val loritta: LorittaBot, val user: User, val permissions: EnumSet<LorittaPermission>, val _profile: Profile?) {
 	companion object {
 		/**
 		 * Loads the guild's roles Loritta Permissions
@@ -25,7 +26,7 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 		 * @see convertRolePermissionsMapToMemberPermissionList
 		 * @see loadMemberLorittaPermissions
 		 */
-		suspend fun loadGuildRolesLorittaPermissions(serverConfig: ServerConfig, guild: Guild) = loritta.newSuspendedTransaction {
+		suspend fun loadGuildRolesLorittaPermissions(loritta: LorittaBot, serverConfig: ServerConfig, guild: Guild) = loritta.newSuspendedTransaction {
 			val permissions = ServerRolePermissions.select {
 				ServerRolePermissions.guild eq serverConfig.id
 			}
@@ -47,7 +48,7 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 		 * @see convertRolePermissionsMapToMemberPermissionList
 		 * @see loadMemberLorittaPermissions
 		 */
-		suspend fun loadMemberRolesLorittaPermissions(serverConfig: ServerConfig, member: Member) = loritta.newSuspendedTransaction {
+		suspend fun loadMemberRolesLorittaPermissions(loritta: LorittaBot, serverConfig: ServerConfig, member: Member) = loritta.newSuspendedTransaction {
 			_loadMemberRolesLorittaPermissions(serverConfig, member)
 		}
 
@@ -120,9 +121,9 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 		 * @see convertRolePermissionsMapToMemberPermissionList
 		 * @see loadMemberRolesLorittaPermissions
 		 */
-		suspend fun loadMemberLorittaPermissions(serverConfig: ServerConfig, member: Member) = convertRolePermissionsMapToMemberPermissionList(
+		suspend fun loadMemberLorittaPermissions(loritta: LorittaBot, serverConfig: ServerConfig, member: Member) = convertRolePermissionsMapToMemberPermissionList(
 				member,
-				loadMemberRolesLorittaPermissions(serverConfig, member)
+				loadMemberRolesLorittaPermissions(loritta, serverConfig, member)
 		)
 	}
 
@@ -154,7 +155,7 @@ open class LorittaUser(val user: User, val permissions: EnumSet<LorittaPermissio
 /**
  * Um usuário que está comunicando com a Loritta em canais de texto
  */
-class GuildLorittaUser(val member: Member, permissions: EnumSet<LorittaPermission>, _profile: Profile?) : LorittaUser(member.user, permissions, _profile) {
+class GuildLorittaUser(loritta: LorittaBot, val member: Member, permissions: EnumSet<LorittaPermission>, _profile: Profile?) : LorittaUser(loritta, member.user, permissions, _profile) {
 	/**
 	 * Verifica se o usuário tem permissão para utilizar um comando
 	 */

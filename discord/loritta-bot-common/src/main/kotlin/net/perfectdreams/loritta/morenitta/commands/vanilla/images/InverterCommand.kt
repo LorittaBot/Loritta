@@ -8,8 +8,9 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.awt.Color
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class InverterCommand : AbstractCommand("invert", listOf("inverter"), category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class InverterCommand(loritta: LorittaBot) : AbstractCommand(loritta, "invert", listOf("inverter"), category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.invert.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 

@@ -44,7 +44,7 @@ abstract class CinnamonButtonExecutor(val loritta: LorittaCinnamon) : ButtonExec
         try {
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
-                loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: CommandExecutorWrapper.NonGuildServerConfigRoot
+                loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: CommandExecutorWrapper.NonGuildServerConfigRoot
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
                 CommandExecutorWrapper.NonGuildServerConfigRoot
@@ -134,7 +134,7 @@ abstract class CinnamonButtonExecutor(val loritta: LorittaCinnamon) : ButtonExec
         val commandLatency = timer.observeDuration()
         logger.info { "(${context.sender.id.value}) $this - OK! Took ${commandLatency * 1000}ms" }
 
-        loritta.services.executedInteractionsLog.insertComponentLog(
+        loritta.pudding.executedInteractionsLog.insertComponentLog(
             context.sender.id.value.toLong(),
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),

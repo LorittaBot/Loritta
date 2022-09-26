@@ -79,7 +79,7 @@ class EmojiFight(
             delay(60_000) // Automatically finishes the event after 60s
             finishingEventMutex.withLock {
                 if (!eventFinished) {
-                    message.removeAllFunctions()
+                    message.removeAllFunctions(loritta)
                     finishEvent()
                     updateEventMessage(message, true)
                 }
@@ -97,7 +97,7 @@ class EmojiFight(
 
                     finishingEventMutex.withLock {
                         if (!eventFinished && participatingUsers.size >= maxPlayers) {
-                            message.removeAllFunctions()
+                            message.removeAllFunctions(loritta)
 
                             finishEvent()
                             updateEventMessage(message, true)
@@ -111,7 +111,7 @@ class EmojiFight(
             if (it.reactionEmote.name == "✅") {
                 finishingEventMutex.withLock {
                     if (!eventFinished) {
-                        message.removeAllFunctions()
+                        message.removeAllFunctions(loritta)
 
                         finishEvent()
                         updateEventMessage(message, true)
@@ -202,11 +202,11 @@ class EmojiFight(
             if (entryPrice != null) {
                 val profile = loritta.getLorittaProfile(user.idLong) ?: return false
 
-                if (entryPrice > profile.money || profile.getBannedState() != null)
+                if (entryPrice > profile.money || profile.getBannedState(loritta) != null)
                     return false
 
                 // If the user didn't get daily today, they can't participate in the event
-                if (AccountUtils.getUserTodayDailyReward(profile) == null)
+                if (AccountUtils.getUserTodayDailyReward(loritta, profile) == null)
                     return false
 
                 val epochMillis = user.timeCreated.toEpochSecond() * 1000

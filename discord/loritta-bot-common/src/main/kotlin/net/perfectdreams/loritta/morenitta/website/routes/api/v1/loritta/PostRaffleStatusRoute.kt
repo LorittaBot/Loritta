@@ -65,7 +65,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 			val requiredCount = quantity.toLong() * 250
 			logger.info("$userId irá comprar $quantity tickets por ${requiredCount}!")
 
-			val lorittaProfile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userId)
+			val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
 
 			if (lorittaProfile.money >= requiredCount) {
 				loritta.newSuspendedTransaction {
@@ -81,7 +81,7 @@ class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRout
 
 				RaffleThread.logger.info("${userId} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.money + requiredCount}) sonhos!")
 
-				net.perfectdreams.loritta.morenitta.utils.loritta.raffleThread.save()
+				loritta.raffleThread.save()
 
 				call.respondJson(
 					jsonObject(

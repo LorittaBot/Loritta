@@ -20,7 +20,7 @@ class ConfigureAutoroleRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRo
 			serverConfig.autoroleConfig
 		}
 
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "autorole"
 		variables["serverConfig"] = FakeServerConfig(

@@ -1,15 +1,16 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.network.Databases
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.*
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class LorittaDailyShopUpdateTask : Runnable {
+class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		// How many new items should be shown in the shop on every shop rotation?
@@ -18,16 +19,18 @@ class LorittaDailyShopUpdateTask : Runnable {
 		private const val DAILY_PROFILE_DESIGNS_TARGET = 4
 		private const val DAILY_BACKGROUNDS_TARGET = 10
 
-		fun generate() {
+		fun generate(loritta: LorittaBot) {
 			logger.info { "Generating a new daily shop..." }
 
-			transaction(Databases.loritta) {
-				val newShop = DailyShops.insertAndGetId {
-					it[generatedAt] = System.currentTimeMillis()
-				}
+			runBlocking {
+				loritta.pudding.transaction {
+					val newShop = DailyShops.insertAndGetId {
+						it[generatedAt] = System.currentTimeMillis()
+					}
 
-				getAndAddRandomBackgroundsToShop(newShop)
-				getAndAddRandomProfileDesignsToShop(newShop)
+					getAndAddRandomBackgroundsToShop(newShop)
+					getAndAddRandomProfileDesignsToShop(newShop)
+				}
 			}
 		}
 		
@@ -113,7 +116,7 @@ class LorittaDailyShopUpdateTask : Runnable {
 	override fun run() {
 		logger.info { "Automatically updating the daily shop!" }
 		try {
-			generate()
+			generate(loritta)
 			logger.info { "Successfully updated the daily shop!" }
 		} catch (e: Exception) {
 			logger.warn(e) { "Something went wrong while updating the daily shop..." }

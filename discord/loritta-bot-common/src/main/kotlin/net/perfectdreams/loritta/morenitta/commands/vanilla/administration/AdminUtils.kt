@@ -2,11 +2,9 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import net.dv8tion.jda.api.EmbedBuilder
@@ -27,6 +25,7 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.WarnActi
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.Placeholders
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -55,16 +54,16 @@ object AdminUtils {
 	 *
 	 * @return the settings of the server or, if the server didn't configure the moderation module, default values
 	 */
-	suspend fun retrieveModerationInfo(serverConfig: ServerConfig): ModerationConfigSettings {
+	suspend fun retrieveModerationInfo(loritta: LorittaBot, serverConfig: ServerConfig): ModerationConfigSettings {
 		val moderationConfig = loritta.newSuspendedTransaction {
 			serverConfig.moderationConfig
 		}
 
 		return ModerationConfigSettings(
-				moderationConfig?.sendPunishmentViaDm ?: false,
-				moderationConfig?.sendPunishmentToPunishLog ?: false,
-				moderationConfig?.punishLogChannelId,
-				moderationConfig?.punishLogMessage
+			moderationConfig?.sendPunishmentViaDm ?: false,
+			moderationConfig?.sendPunishmentToPunishLog ?: false,
+			moderationConfig?.punishLogChannelId,
+			moderationConfig?.punishLogMessage
 		)
 	}
 
@@ -73,7 +72,7 @@ object AdminUtils {
 	 *
 	 * @return the list of warn punishments, can be empty
 	 */
-	suspend fun retrieveWarnPunishmentActions(serverConfig: ServerConfig): List<WarnAction> {
+	suspend fun retrieveWarnPunishmentActions(loritta: LorittaBot, serverConfig: ServerConfig): List<WarnAction> {
 		val moderationConfig = loritta.newSuspendedTransaction {
 			serverConfig.moderationConfig
 		} ?: return listOf()
@@ -82,7 +81,7 @@ object AdminUtils {
 			WarnAction.find {
 				WarnActions.config eq moderationConfig.id
 			}.toList()
-					.sortedBy { it.warnCount }
+				.sortedBy { it.warnCount }
 		}
 
 		return warnActions
@@ -98,11 +97,12 @@ object AdminUtils {
 			val shouldUseExtensiveMatching = validUsers.isEmpty()
 
 			val matchedUser = DiscordUtils.extractUserFromString(
-					input,
-					context.message.mentionedUsers,
-					context.guild,
-					extractUserViaEffectiveName = shouldUseExtensiveMatching,
-					extractUserViaUsername = shouldUseExtensiveMatching
+				context.loritta,
+				input,
+				context.message.mentionedUsers,
+				context.guild,
+				extractUserViaEffectiveName = shouldUseExtensiveMatching,
+				extractUserViaUsername = shouldUseExtensiveMatching
 			)
 
 			if (matchedUser != null) {
@@ -114,10 +114,10 @@ object AdminUtils {
 
 		if (validUsers.isEmpty()) {
 			context.reply(
-                    LorittaReply(
-                            context.locale["commands.userDoesNotExist", context.rawArgs[0].stripCodeMarks()],
-                            Emotes.LORI_HM
-                    )
+				LorittaReply(
+					context.locale["commands.userDoesNotExist", context.rawArgs[0].stripCodeMarks()],
+					Emotes.LORI_HM
+				)
 			)
 			return null
 		}
@@ -126,8 +126,8 @@ object AdminUtils {
 	}
 
 	data class UserMatchesResult(
-			val users: List<User>,
-			val reason: String
+		val users: List<User>,
+		val reason: String
 	)
 
 	suspend fun checkUser(context: DiscordCommandContext): JDAUser? {
@@ -150,10 +150,10 @@ object AdminUtils {
 
 		if (user == null) {
 			context.reply(
-                    LorittaReply(
-                            context.locale["commands.userDoesNotExist", context.rawArgs[0].stripCodeMarks()],
-                            Emotes.LORI_HM
-                    )
+				LorittaReply(
+					context.locale["commands.userDoesNotExist", context.rawArgs[0].stripCodeMarks()],
+					Emotes.LORI_HM
+				)
 			)
 		}
 
@@ -213,10 +213,10 @@ object AdminUtils {
 			}
 
 			context.reply(
-                    LorittaReply(
-                            reply,
-                            Constants.ERROR
-                    )
+				LorittaReply(
+					reply,
+					Constants.ERROR
+				)
 			)
 			return false
 		}
@@ -232,10 +232,10 @@ object AdminUtils {
 			}
 
 			context.reply(
-                    LorittaReply(
-                            reply,
-                            Constants.ERROR
-                    )
+				LorittaReply(
+					reply,
+					Constants.ERROR
+				)
 			)
 			return false
 		}
@@ -246,25 +246,25 @@ object AdminUtils {
 		val str = context.locale["${LOCALE_PREFIX}.readyToPunish", context.locale["commands.command.$type.punishName"], users.joinToString { it.asMention }, users.joinToString { it.asTag }, users.joinToString { it.id }]
 
 		val replies = mutableListOf(
-                LorittaReply(
-                        str,
-                        "⚠"
-                )
+			LorittaReply(
+				str,
+				"⚠"
+			)
 		)
 
 		if (hasSilent) {
 			replies += LorittaReply(
-                    context.locale["${LOCALE_PREFIX}.silentTip"],
-                    "\uD83D\uDC40",
-                    mentionUser = false
-            )
+				context.locale["${LOCALE_PREFIX}.silentTip"],
+				"\uD83D\uDC40",
+				mentionUser = false
+			)
 		}
 
-		if (!context.config.getUserData(context.userHandle.idLong).quickPunishment) {
+		if (!context.config.getUserData(context.loritta, context.userHandle.idLong).quickPunishment) {
 			replies += LorittaReply(
-                    context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
-                    mentionUser = false
-            )
+				context.locale["${LOCALE_PREFIX}.skipConfirmationTip", "`${context.config.commandPrefix}quickpunishment`"],
+				mentionUser = false
+			)
 		}
 
 		return context.reply(*replies.toTypedArray())
@@ -272,10 +272,10 @@ object AdminUtils {
 
 	suspend fun sendSuccessfullyPunishedMessage(context: CommandContext, reason: String, sendDiscordReportAdvise: Boolean) {
 		val replies = mutableListOf(
-                LorittaReply(
-                        context.locale["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
-                        "\uD83C\uDF89"
-                )
+			LorittaReply(
+				context.locale["${LOCALE_PREFIX}.successfullyPunished"] + " ${Emotes.LORI_RAGE}",
+				"\uD83C\uDF89"
+			)
 		)
 
 		val reportExplanation = when {
@@ -286,16 +286,16 @@ object AdminUtils {
 
 		if (reportExplanation != null) {
 			replies.add(
-                    LorittaReply(
-                            context.locale["${LOCALE_PREFIX}.reports.pleaseReportToDiscord", reportExplanation, Emotes.LORI_PAT, "<${context.locale["${LOCALE_PREFIX}.reports.pleaseReportUrl"]}>"],
-                            Emotes.LORI_HM,
-                            mentionUser = false
-                    )
+				LorittaReply(
+					context.locale["${LOCALE_PREFIX}.reports.pleaseReportToDiscord", reportExplanation, Emotes.LORI_PAT, "<${context.locale["${LOCALE_PREFIX}.reports.pleaseReportUrl"]}>"],
+					Emotes.LORI_HM,
+					mentionUser = false
+				)
 			)
 		}
 
 		context.reply(
-				*replies.toTypedArray()
+			*replies.toTypedArray()
 		)
 	}
 
@@ -320,8 +320,8 @@ object AdminUtils {
 		return createPunishmentEmbedBuilderSentViaDirectMessage(guild, locale, punisher, punishmentAction, reason).build()
 	}
 
-	fun getPunishmentForMessage(settings: ModerationConfigSettings, guild: Guild, punishmentAction: PunishmentAction): String? {
-		val messageConfig = transaction(Databases.loritta) {
+	suspend fun getPunishmentForMessage(loritta: LorittaBot, settings: ModerationConfigSettings, guild: Guild, punishmentAction: PunishmentAction): String? {
+		val messageConfig = loritta.pudding.transaction {
 			ModerationPunishmentMessagesConfig.select {
 				ModerationPunishmentMessagesConfig.guild eq guild.idLong and
 						(ModerationPunishmentMessagesConfig.punishmentAction eq punishmentAction)
@@ -337,7 +337,7 @@ object AdminUtils {
 		val pipedReason = reason.split("|")
 
 		var usingPipedArgs = false
-		var skipConfirmation = context.config.getUserData(context.userHandle.idLong).quickPunishment
+		var skipConfirmation = context.config.getUserData(context.loritta, context.userHandle.idLong).quickPunishment
 		var delDays = 0
 
 		var silent = false
@@ -387,32 +387,32 @@ object AdminUtils {
 	}
 
 	fun getStaffCustomTokens(punisher: User) = mapOf(
-			Placeholders.STAFF_NAME_SHORT.name to punisher.name,
-			Placeholders.STAFF_NAME.name to punisher.name,
-			Placeholders.STAFF_MENTION.name to punisher.asMention,
-			Placeholders.STAFF_DISCRIMINATOR.name to punisher.discriminator,
-			Placeholders.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
-			Placeholders.STAFF_ID.name to punisher.id,
-			Placeholders.STAFF_TAG.name to punisher.asTag,
+		Placeholders.STAFF_NAME_SHORT.name to punisher.name,
+		Placeholders.STAFF_NAME.name to punisher.name,
+		Placeholders.STAFF_MENTION.name to punisher.asMention,
+		Placeholders.STAFF_DISCRIMINATOR.name to punisher.discriminator,
+		Placeholders.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
+		Placeholders.STAFF_ID.name to punisher.id,
+		Placeholders.STAFF_TAG.name to punisher.asTag,
 
-			Placeholders.Deprecated.STAFF_DISCRIMINATOR.name to punisher.discriminator,
-			Placeholders.Deprecated.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
-			Placeholders.Deprecated.STAFF_ID.name to punisher.id
+		Placeholders.Deprecated.STAFF_DISCRIMINATOR.name to punisher.discriminator,
+		Placeholders.Deprecated.STAFF_AVATAR_URL.name to punisher.effectiveAvatarUrl,
+		Placeholders.Deprecated.STAFF_ID.name to punisher.id
 	)
 
 	fun getPunishmentCustomTokens(locale: BaseLocale, reason: String, typePrefix: String) = mapOf(
-			Placeholders.PUNISHMENT_REASON.name to reason,
-			Placeholders.PUNISHMENT_REASON_SHORT.name to reason,
+		Placeholders.PUNISHMENT_REASON.name to reason,
+		Placeholders.PUNISHMENT_REASON_SHORT.name to reason,
 
-			Placeholders.PUNISHMENT_TYPE.name to locale["$typePrefix.punishAction"],
-			Placeholders.PUNISHMENT_TYPE_SHORT.name to locale["$typePrefix.punishAction"]
+		Placeholders.PUNISHMENT_TYPE.name to locale["$typePrefix.punishAction"],
+		Placeholders.PUNISHMENT_TYPE_SHORT.name to locale["$typePrefix.punishAction"]
 	)
 
 	data class AdministrationOptions(val reason: String, val skipConfirmation: Boolean, val silent: Boolean, val delDays: Int)
 	data class ModerationConfigSettings(
-			val sendPunishmentViaDm: Boolean,
-			val sendPunishmentToPunishLog: Boolean,
-			val punishLogChannelId: Long? = null,
-			val punishLogMessage: String? = null
+		val sendPunishmentViaDm: Boolean,
+		val sendPunishmentToPunishLog: Boolean,
+		val punishLogChannelId: Long? = null,
+		val punishLogMessage: String? = null
 	)
 }

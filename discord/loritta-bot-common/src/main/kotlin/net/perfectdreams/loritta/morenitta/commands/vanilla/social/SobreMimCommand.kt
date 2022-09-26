@@ -4,12 +4,12 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class SobreMimCommand(loritta: LorittaBot) : AbstractCommand(loritta, "aboutme", listOf("sobremim"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.aboutme.description")
     override fun getExamplesKey() = LocaleKeyData("commands.command.aboutme.examples")
 

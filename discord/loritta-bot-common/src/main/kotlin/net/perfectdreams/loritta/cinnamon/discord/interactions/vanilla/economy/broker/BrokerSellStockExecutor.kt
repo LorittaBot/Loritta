@@ -38,7 +38,7 @@ class BrokerSellStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
             context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
 
         val quantity = if (quantityAsString == "all") {
-            context.loritta.services.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
+            context.loritta.pudding.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
                 .firstOrNull { it.ticker == tickerId }
                 ?.count ?: context.failEphemerally(
                 context.i18nContext.get(
@@ -56,7 +56,7 @@ class BrokerSellStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
         }
 
         val (_, soldQuantity, earnings, profit) = try {
-            context.loritta.services.bovespaBroker.sellStockShares(
+            context.loritta.pudding.bovespaBroker.sellStockShares(
                 context.user.id.value.toLong(),
                 tickerId,
                 quantity

@@ -45,8 +45,8 @@ class PostTransferBalanceRoute(loritta: LorittaBot) : RequiresAPIAuthenticationR
 
 		logger.info { "Initializing transaction between $giverId and $receiverId, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
 		mutex.withLock {
-			val receiverProfile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(receiverId)
-			val giverProfile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(giverId)
+			val receiverProfile = loritta.getOrCreateLorittaProfile(receiverId)
+			val giverProfile = loritta.getOrCreateLorittaProfile(giverId)
 
 			if (howMuch > giverProfile.money) {
 				call.respondJson(

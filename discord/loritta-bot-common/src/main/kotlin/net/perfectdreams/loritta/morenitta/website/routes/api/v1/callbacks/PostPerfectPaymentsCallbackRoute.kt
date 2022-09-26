@@ -10,7 +10,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.request.*
@@ -51,8 +50,8 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 	companion object {
 		private val logger = KotlinLogging.logger {}
 
-		suspend fun sendPaymentApprovedDirectMessage(userId: Long, locale: BaseLocale, supportUrl: String) {
-			val user = lorittaShards.retrieveUserById(userId)
+		suspend fun sendPaymentApprovedDirectMessage(loritta: LorittaBot, userId: Long, locale: BaseLocale, supportUrl: String) {
+			val user = loritta.lorittaShards.retrieveUserById(userId)
 			user?.openPrivateChannel()?.queue {
 				val embed = EmbedBuilder()
 						.setTitle("${Emotes.LORI_RICH} ${locale["economy.paymentApprovedNotification.title"]}")
@@ -260,7 +259,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 						}
 					}
 
-					sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.url}support")
+					sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.instanceConfig.loritta.website.url}support")
 
 					call.respondJson(jsonObject())
 					return
@@ -303,7 +302,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 				}
 			}
 
-			sendPaymentApprovedDirectMessage(internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${net.perfectdreams.loritta.morenitta.utils.loritta.instanceConfig.loritta.website.url}support")
+			sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.instanceConfig.loritta.website.url}support")
 		}
 
 		call.respondJson(jsonObject())

@@ -20,7 +20,7 @@ import java.awt.image.FilteredImageSource
 import java.awt.image.RGBImageFilter
 import java.io.File
 
-class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class RazoesCommand(loritta: LorittaBot) : AbstractCommand(loritta, "reasons", listOf("razões", "razoes"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.reasons.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
@@ -39,7 +39,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), ne
 		skewed.resize(202, 202)
 
 		// Vamos baixar o avatar do usuário
-		val avatar = LorittaUtils.downloadImage(context.userHandle.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
+		val avatar = LorittaUtils.downloadImage(loritta, context.userHandle.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
 
 		// Agora nós iremos pegar a cor mais prevalente na imagem do avatar do usuário
 		val dominantImage = ImageUtils.toBufferedImage(avatar!!.getScaledInstance(1, 1, BufferedImage.SCALE_AREA_AVERAGING))

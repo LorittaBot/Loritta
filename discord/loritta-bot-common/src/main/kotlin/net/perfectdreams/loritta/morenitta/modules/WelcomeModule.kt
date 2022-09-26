@@ -1,13 +1,11 @@
 package net.perfectdreams.loritta.morenitta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.LorittaLauncher.loritta
+import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
@@ -16,13 +14,13 @@ import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.apache.commons.io.IOUtils
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.charset.Charset
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
-object WelcomeModule {
+class WelcomeModule(val loritta: LorittaBot) {
 	private val logger = KotlinLogging.logger {}
 
 	val joinMembersCache = Caffeine.newBuilder()
@@ -35,14 +33,16 @@ object WelcomeModule {
 						logger.info("Mais de 20 membros entraram em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
 						val serverConfig = loritta.getOrCreateServerConfig(k1)
-						val welcomerConfig = transaction(Databases.loritta) {
-							serverConfig.welcomerConfig
+						val welcomerConfig = runBlocking {
+							loritta.pudding.transaction {
+								serverConfig.welcomerConfig
+							}
 						}
 
 						if (welcomerConfig != null) {
 							val channelJoinId = welcomerConfig.channelJoinId
 							if (welcomerConfig.tellOnJoin && !welcomerConfig.joinMessage.isNullOrEmpty() && channelJoinId != null) {
-								val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
+								val guild = loritta.lorittaShards.getGuildById(k1) ?: return@removalListener
 
 								val textChannel = guild.getTextChannelById(channelJoinId)
 
@@ -78,14 +78,16 @@ object WelcomeModule {
 						logger.info("Mais de 20 membros sairam em menos de 15 segundos em $k1! Que triste, né? Vamos enviar um arquivo com todos que sairam!")
 
 						val serverConfig = loritta.getOrCreateServerConfig(k1)
-						val welcomerConfig = transaction(Databases.loritta) {
-							serverConfig.welcomerConfig
+						val welcomerConfig = runBlocking {
+							loritta.pudding.transaction {
+								serverConfig.welcomerConfig
+							}
 						}
 
 						if (welcomerConfig != null) {
 							val channelRemoveId = welcomerConfig.channelRemoveId
 							if (welcomerConfig.tellOnRemove && !welcomerConfig.removeMessage.isNullOrEmpty() && channelRemoveId != null) {
-								val guild = lorittaShards.getGuildById(k1) ?: return@removalListener
+								val guild = loritta.lorittaShards.getGuildById(k1) ?: return@removalListener
 
 								val textChannel = guild.getTextChannelById(channelRemoveId)
 

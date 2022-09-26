@@ -16,8 +16,9 @@ import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class ColorInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	companion object {
 		val COLOR_UTILS = ColorUtils()
 		const val FACTOR = 0.7
@@ -46,12 +47,12 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 
 			fun Graphics.drawWithOutline(text: String, x: Int, y: Int) {
 				this.color = Color.BLACK
-				this.drawText(text, x - 1, y)
-				this.drawText(text, x + 1, y)
-				this.drawText(text, x, y - 1)
-				this.drawText(text, x, y + 1)
+				this.drawText(loritta, text, x - 1, y)
+				this.drawText(loritta, text, x + 1, y)
+				this.drawText(loritta, text, x, y - 1)
+				this.drawText(loritta, text, x, y + 1)
 				this.color = Color.WHITE
-				this.drawText(text, x, y)
+				this.drawText(loritta, text, x, y)
 			}
 
 			fun Graphics.drawColor(color: Color, x: Int, y: Int) {

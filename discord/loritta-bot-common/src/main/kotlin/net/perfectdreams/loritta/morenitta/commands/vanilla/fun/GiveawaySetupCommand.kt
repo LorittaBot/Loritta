@@ -54,7 +54,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                             )
                     )
 
-                    val giveawayMessage = GiveawayManager.createGiveawayMessage(
+                    val giveawayMessage = loritta.giveawayManager.createGiveawayMessage(
                             context.locale,
                             "Exemplo de Giveaway",
                             "Apenas um exemplo!",
@@ -386,7 +386,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
 
         message.delete().await()
 
-        GiveawayManager.spawnGiveaway(
+        loritta.giveawayManager.spawnGiveaway(
                 loritta.localeManager.getLocaleById(context.serverConfig.localeId),
                 channel,
                 reason,

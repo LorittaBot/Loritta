@@ -12,7 +12,7 @@ class BrokerSellStockAutocompleteExecutor(loritta: LorittaCinnamon) : CinnamonAu
         context: AutocompleteContext,
         focusedOption: FocusedCommandOption
     ): Map<String, String> {
-        val userBoughtStocks = loritta.services.bovespaBroker.getUserBoughtStocks(context.sender.id.toLong())
+        val userBoughtStocks = loritta.pudding.bovespaBroker.getUserBoughtStocks(context.sender.id.toLong())
             .map { it.ticker }
             .toSet()
 

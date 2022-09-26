@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
 
-class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupotem"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class TodoGrupoTemCommand(loritta: LorittaBot) : AbstractCommand(loritta, "everygrouphas", listOf("todogrupotem"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.everygrouphas.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.everygrouphas.examples")
 
@@ -61,7 +61,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 		for (aux in 5 downTo 0) {
 			val member = users[0]
 
-			val avatarImg = LorittaUtils.downloadImage(member.getEffectiveAvatarUrl(ImageFormat.PNG, 128))!!.getScaledInstance(122, 122, Image.SCALE_SMOOTH)
+			val avatarImg = LorittaUtils.downloadImage(loritta, member.getEffectiveAvatarUrl(ImageFormat.PNG, 128))!!.getScaledInstance(122, 122, Image.SCALE_SMOOTH)
 			baseGraph.drawImage(avatarImg, x, y, null)
 
 			x += 122

@@ -9,15 +9,8 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.Profiles
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.LorittaShards
-import net.perfectdreams.loritta.morenitta.utils.gson
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
-import net.perfectdreams.loritta.morenitta.utils.lorittaSupervisor
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -29,7 +22,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.morenitta.tables.BlacklistedGuilds
-import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import org.jetbrains.exposed.dao.id.EntityID
@@ -38,11 +31,11 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
+class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lslc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Configura servidores na Lori's Server List"
 	}
@@ -54,11 +47,11 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 		val arg3 = context.rawArgs.getOrNull(3)
 
 		// Sub-comandos que só o Dono pode usar
-		if (loritta.config.isOwner(context.userHandle.id)) {
+		if (context.loritta.config.isOwner(context.userHandle.id)) {
 			if (arg0 == "inject_economy") {
-				val config = loritta.getOrCreateServerConfig(context.guild.idLong)
+				val config = context.loritta.getOrCreateServerConfig(context.guild.idLong)
 
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					config.economyConfig = EconomyConfig.new {
 						this.enabled = true
 						this.economyName = "LoriCoin"
@@ -76,7 +69,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 				return
 			}
 			if (arg0 == "set_local_money") {
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					val profile = GuildProfile.find { (GuildProfiles.guildId eq context.guild.idLong) and (GuildProfiles.userId eq arg1!!.toLong()) }.firstOrNull()
 					profile?.money = arg2?.toDouble()?.toBigDecimal() ?: 0.0.toBigDecimal()
 				}
@@ -87,16 +80,16 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 				return
 			}
 			if (arg0 == "set_update_post") {
-				val shards = loritta.config.clusters
+				val shards = context.loritta.config.clusters
 
 				val jobs = shards.map {
-					GlobalScope.async(loritta.coroutineDispatcher) {
+					GlobalScope.async(context.loritta.coroutineDispatcher) {
 						try {
-							val body = HttpRequest.get("https://${it.getUrl()}/api/v1/loritta/update")
-									.userAgent(loritta.lorittaCluster.getUserAgent())
-									.header("Authorization", loritta.lorittaInternalApiKey.name)
-									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-									.readTimeout(loritta.config.loritta.clusterReadTimeout)
+							val body = HttpRequest.get("https://${it.getUrl(loritta)}/api/v1/loritta/update")
+									.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
+									.header("Authorization", context.loritta.lorittaInternalApiKey.name)
+									.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
+									.readTimeout(context.loritta.config.loritta.clusterReadTimeout)
 									.send(
 											gson.toJson(
 													jsonObject(
@@ -128,7 +121,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 
 			if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
 				val user = context.getUserAt(2)!!
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					Profiles.update({ Profiles.id eq user.idLong }) {
 						it[money] = arg1.toLong()
 					}
@@ -144,7 +137,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 
 			if (arg0 == "add_dreams" && arg1 != null && arg2 != null) {
 				val user = context.getUserAt(2)!!
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					Profiles.update({ Profiles.id eq user.idLong }) {
 						with(SqlExpressionBuilder) {
 							it.update(money, money + arg1.toLong())
@@ -174,7 +167,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 
 			if (arg0 == "remove_dreams" && arg1 != null && arg2 != null) {
 				val user = context.getUserAt(2)!!
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					Profiles.update({ Profiles.id eq user.idLong }) {
 						with(SqlExpressionBuilder) {
 							it.update(money, money - arg1.toLong())
@@ -203,7 +196,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 			}
 
 			if (arg0 == "generate_payment" && arg1 != null && arg2 != null) {
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					Payment.new {
 						this.createdAt = System.currentTimeMillis()
 						this.discount = 0.0
@@ -225,7 +218,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 			}
 
 			if (arg0 == "generate_key" && arg1 != null && arg2 != null) {
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					DonationKey.new {
 						this.userId = arg1.toLong()
 						this.expiresAt = System.currentTimeMillis() + 2_764_800_000
@@ -243,7 +236,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 		}
 
 		// Sub-comandos que o dono e os Supervisores de Lori podem usar
-		if (loritta.config.isOwner(context.userHandle.id) || context.userHandle.lorittaSupervisor) {
+		if (context.loritta.config.isOwner(context.userHandle.id) || context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
 			if (arg0 == "guild_ban" && arg1 != null) {
 				val guildId = arg1.toLong()
 
@@ -251,7 +244,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 				rawArgs.removeAt(0)
 				rawArgs.removeAt(0)
 
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					BlacklistedGuilds.insert {
 						it[BlacklistedGuilds.id] = EntityID(guildId, BlacklistedGuilds)
 						it[BlacklistedGuilds.bannedAt] = System.currentTimeMillis()
@@ -273,7 +266,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 				rawArgs.removeAt(0)
 				rawArgs.removeAt(0)
 
-				transaction(Databases.loritta) {
+				loritta.pudding.transaction {
 					BlacklistedGuilds.deleteWhere {
 						BlacklistedGuilds.id eq guildId
 					}
@@ -291,7 +284,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 				val name = split[0]
 				val discriminator = split.getOrNull(1)
 
-				val allUsers = lorittaShards.searchUserInAllLorittaClusters(name, discriminator, isRegExPattern = true)
+				val allUsers = context.loritta.lorittaShards.searchUserInAllLorittaClusters(name, discriminator, isRegExPattern = true)
 
 				val strBuilder = StringBuilder()
 
@@ -325,7 +318,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 			if (arg0 == "search_guild") {
 				val pattern = context.rawArgs.toMutableList().drop(1).joinToString(" ")
 
-				val allGuilds = lorittaShards.searchGuildInAllLorittaClusters(pattern)
+				val allGuilds = context.loritta.lorittaShards.searchGuildInAllLorittaClusters(pattern)
 
 				val strBuilder = StringBuilder()
 
@@ -358,16 +351,16 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 			if (arg0 == "economy") {
 				val value = arg1!!.toBoolean()
 
-				val shards = loritta.config.clusters
+				val shards = context.loritta.config.clusters
 
 				shards.map {
-					GlobalScope.async(loritta.coroutineDispatcher) {
+					GlobalScope.async(context.loritta.coroutineDispatcher) {
 						try {
-							val body = HttpRequest.post("https://${it.getUrl()}/api/v1/loritta/action/economy")
-									.userAgent(loritta.lorittaCluster.getUserAgent())
-									.header("Authorization", loritta.lorittaInternalApiKey.name)
-									.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-									.readTimeout(loritta.config.loritta.clusterReadTimeout)
+							val body = HttpRequest.post("https://${it.getUrl(loritta)}/api/v1/loritta/action/economy")
+									.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
+									.header("Authorization", context.loritta.lorittaInternalApiKey.name)
+									.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
+									.readTimeout(context.loritta.config.loritta.clusterReadTimeout)
 									.send(
 											gson.toJson(
 													jsonObject(
@@ -381,7 +374,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 									body
 							)
 						} catch (e: Exception) {
-							LorittaShards.logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
 							throw ClusterOfflineException(it.id, it.name)
 						}
 					}
@@ -398,7 +391,7 @@ class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfe
 			if (arg0 == "inspect_donations" && arg1 != null) {
 				val id = arg1.toLong()
 
-				val moneyFromDonations = loritta.getActiveMoneyFromDonationsAsync(id)
+				val moneyFromDonations = context.loritta.getActiveMoneyFromDonationsAsync(id)
 
 				context.reply(
 					LorittaReply(

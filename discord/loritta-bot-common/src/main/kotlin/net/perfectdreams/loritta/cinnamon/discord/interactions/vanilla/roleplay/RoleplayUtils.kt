@@ -135,8 +135,8 @@ object RoleplayUtils {
                 if (receiver == giver) {
                     embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseSelf(giverMention) }
                 } else {
-                    val giverMarriage = loritta.services.marriages.getMarriageByUser(UserId(giver))
-                    val receiverMarriage = loritta.services.marriages.getMarriageByUser(UserId(receiver))
+                    val giverMarriage = loritta.pudding.marriages.getMarriageByUser(UserId(giver))
+                    val receiverMarriage = loritta.pudding.marriages.getMarriageByUser(UserId(receiver))
 
                     // "Talarico é o cara que cobiça a mulher do próximo e as vezes até dos amigos."
                     // "Grass cutter"/"Grass cutter" in english
@@ -228,8 +228,8 @@ object RoleplayUtils {
             }
         }
 
-        val gender1 = loritta.services.users.getOrCreateUserProfile(UserId(giver)).getProfileSettings().gender
-        val gender2 = loritta.services.users.getOrCreateUserProfile(UserId(receiver)).getProfileSettings().gender
+        val gender1 = loritta.pudding.users.getOrCreateUserProfile(UserId(giver)).getProfileSettings().gender
+        val gender2 = loritta.pudding.users.getOrCreateUserProfile(UserId(receiver)).getProfileSettings().gender
 
         val result = roleplayActionAttributes.actionBlock.invoke(
             client,

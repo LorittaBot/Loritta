@@ -9,8 +9,9 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
+class McSkinCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mcskin", listOf("skinsteal", "skinstealer"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mcskin.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.skinPlayerNameExamples")
 
@@ -48,7 +49,7 @@ class McSkinCommand : AbstractCommand("mcskin", listOf("skinsteal", "skinstealer
 				return
 			}
 
-			val bufferedImage = LorittaUtils.downloadImage(profile.textures["SKIN"]!!.url)
+			val bufferedImage = LorittaUtils.downloadImage(loritta, profile.textures["SKIN"]!!.url)
 
 			context.sendFile(bufferedImage!!, "${nickname}.png", context.getAsMention(true))
 		} else {

@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
 
-class RipVidaCommand : AbstractCommand("riplife", listOf("ripvida"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class RipVidaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "riplife", listOf("ripvida"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ripvida.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 

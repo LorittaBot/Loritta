@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.awt.Color
 import java.util.*
 
-class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ctt"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class PackageInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "packageinfo", listOf("correios", "ctt"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.packageinfo.description")
 
 	override fun getExamples(): List<String> {

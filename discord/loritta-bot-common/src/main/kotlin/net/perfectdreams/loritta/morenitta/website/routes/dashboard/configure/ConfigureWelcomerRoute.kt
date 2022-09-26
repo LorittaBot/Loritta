@@ -21,7 +21,7 @@ class ConfigureWelcomerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRo
 			serverConfig.welcomerConfig
 		}
 
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "welcomer"
 		variables["serverConfig"] = FakeServerConfig(

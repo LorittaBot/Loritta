@@ -11,7 +11,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
@@ -32,7 +31,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
 
-class ShipCommand : AbstractCommand("ship", listOf("shippar"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class ShipCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ship", listOf("shippar"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ship.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.ship.examples")
 
@@ -180,8 +179,8 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), net.perfectdreams
 			message = message.replace("%ship%", "`$shipName`")
 			texto += message
 
-			val avatar1Old = user1AvatarUrl?.let { LorittaUtils.downloadImage(it) } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
-			val avatar2Old = user2AvatarUrl?.let { LorittaUtils.downloadImage(it) } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+			val avatar1Old = user1AvatarUrl?.let { LorittaUtils.downloadImage(loritta, it) } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
+			val avatar2Old = user2AvatarUrl?.let { LorittaUtils.downloadImage(loritta, it) } ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR
 
 			var avatar1 = avatar1Old
 			var avatar2 = avatar2Old

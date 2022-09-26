@@ -39,7 +39,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
             .withNano(0)
 
         val userId = UserId(context.user.id.value)
-        val todayDailyReward = context.loritta.services.sonhos.getUserLastDailyRewardReceived(
+        val todayDailyReward = context.loritta.pudding.sonhos.getUserLastDailyRewardReceived(
             userId,
             todayAtMidnight.toLocalDateTime().toKotlinLocalDateTime().toInstant(TimeZone.of("America/Sao_Paulo"))
         )
@@ -69,13 +69,13 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
             return
         }
 
-        val profile = context.loritta.services.users.getUserProfile(context.user)
+        val profile = context.loritta.pudding.users.getUserProfile(context.user)
         var currentUserThreshold: DailyTaxThresholds.DailyTaxThreshold? = null
         var userLastDailyReward: Daily? = null
         if (profile != null) {
             currentUserThreshold = DailyTaxThresholds.THRESHOLDS.firstOrNull { profile.money >= it.minimumSonhosForTrigger }
             if (currentUserThreshold != null) {
-                userLastDailyReward = context.loritta.services.sonhos.getUserLastDailyRewardReceived(
+                userLastDailyReward = context.loritta.pudding.sonhos.getUserLastDailyRewardReceived(
                     userId,
                     Instant.DISTANT_PAST
                 )
@@ -111,7 +111,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
 
             // Check if the user is in a daily tax bracket and, if yes, tell to the user about it
             if (currentUserThreshold != null) {
-                val activeUserPayments = context.loritta.services.payments.getActiveMoneyFromDonations(UserId(context.user.id.value))
+                val activeUserPayments = context.loritta.pudding.payments.getActiveMoneyFromDonations(UserId(context.user.id.value))
                 val activeUserPremiumPlan = UserPremiumPlans.getPlanFromValue(activeUserPayments)
 
                 if (activeUserPremiumPlan.hasDailyInactivityTax) {

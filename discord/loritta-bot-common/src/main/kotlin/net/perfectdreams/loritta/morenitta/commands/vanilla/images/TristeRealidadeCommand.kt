@@ -1,23 +1,15 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
-import net.perfectdreams.loritta.morenitta.network.Databases
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.ImageUtils
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
-import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.morenitta.utils.locale.Gender
-import net.perfectdreams.loritta.morenitta.utils.locale.PersonalPronoun
-import net.perfectdreams.loritta.morenitta.api.commands.CommandException
-import net.perfectdreams.loritta.morenitta.api.entities.User
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.api.commands.CommandException
+import net.perfectdreams.loritta.morenitta.api.entities.User
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordUser
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
-import net.perfectdreams.loritta.morenitta.utils.ImageFormat
-import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
-import org.jetbrains.exposed.sql.transactions.transaction
+import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.locale.Gender
+import net.perfectdreams.loritta.morenitta.utils.locale.PersonalPronoun
 import java.awt.*
 import java.awt.image.BufferedImage
 
@@ -75,8 +67,8 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
 
             val firstUser = users[0]
             if (firstUser is DiscordUser) {
-                lovedGender = transaction(Databases.loritta) {
-                    val profile = LorittaLauncher.loritta.getLorittaProfile(firstUser.id)
+                lovedGender = loritta.pudding.transaction {
+                    val profile = loritta.getLorittaProfile(firstUser.id)
                     profile?.settings?.gender ?: Gender.UNKNOWN
                 }
             }
@@ -91,9 +83,10 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
                 if (member is JDAUser) {
                     val avatarImg = (
                             LorittaUtils.downloadImage(
-                                    member.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
-                            ) ?: LorittaUtils.downloadImage(member.handle.defaultAvatarUrl))!!
-                            .getScaledInstance(128, 128, Image.SCALE_SMOOTH)
+                                loritta,
+                                member.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
+                            ) ?: LorittaUtils.downloadImage(loritta, member.handle.defaultAvatarUrl))!!
+                        .getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 
                     baseGraph.drawImage(avatarImg, x, y, null)
 
@@ -109,8 +102,8 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
                     baseGraph.font = ArtsyJoyLoriConstants.BEBAS_NEUE.deriveFont(22f)
                     var gender = Gender.UNKNOWN
 
-                    gender = transaction(Databases.loritta) {
-                        val profile = LorittaLauncher.loritta.getLorittaProfile(firstUser.id)
+                    gender = loritta.pudding.transaction {
+                        val profile = loritta.getLorittaProfile(firstUser.id)
                         profile?.settings?.gender ?: Gender.UNKNOWN
                     }
 
@@ -131,12 +124,12 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
                     }
 
                     drawCentralizedTextOutlined(
-                            baseGraph,
-                            locale["$LOCALE_PREFIX.tristerealidade.slot.$slot.${gender.name}", lovedGender.getPossessivePronoun(locale, PersonalPronoun.THIRD_PERSON, member.name)],
-                            Rectangle(x, y + 80, 128, 42),
-                            Color.WHITE,
-                            Color.BLACK,
-                            2
+                        baseGraph,
+                        locale["$LOCALE_PREFIX.tristerealidade.slot.$slot.${gender.name}", lovedGender.getPossessivePronoun(locale, PersonalPronoun.THIRD_PERSON, member.name)],
+                        Rectangle(x, y + 80, 128, 42),
+                        Color.WHITE,
+                        Color.BLACK,
+                        2
                     )
 
                     x += 128
@@ -197,11 +190,11 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
             graphics.color = strokeColor
             for (strokeX in rectangle.x - strokeSize .. rectangle.x + strokeSize) {
                 for (strokeY in rectangle.y + y - strokeSize .. rectangle.y + y + strokeSize) {
-                    ImageUtils.drawCenteredStringEmoji(graphics, line, Rectangle(strokeX, strokeY, rectangle.width, 24), font)
+                    ImageUtils.drawCenteredStringEmoji(loritta, graphics, line, Rectangle(strokeX, strokeY, rectangle.width, 24), font)
                 }
             }
             graphics.color = fontColor
-            ImageUtils.drawCenteredStringEmoji(graphics, line, Rectangle(rectangle.x, rectangle.y + y, rectangle.width, 24), font)
+            ImageUtils.drawCenteredStringEmoji(loritta, graphics, line, Rectangle(rectangle.x, rectangle.y + y, rectangle.width, 24), font)
             y += skipHeight
         }
     }

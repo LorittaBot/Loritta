@@ -33,7 +33,7 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class LyricsCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lyrics", listOf("letra", "letras"), category = net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.lyrics.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.lyrics.examples")
 
@@ -214,7 +214,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 
 	fun getCoverArt(coverArtUrl: String?): BufferedImage {
 		var cover = if (coverArtUrl != null) {
-			LorittaUtils.downloadImage(coverArtUrl)
+			LorittaUtils.downloadImage(loritta, coverArtUrl)
 		} else null
 
 		if (cover == null) {

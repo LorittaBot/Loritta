@@ -70,7 +70,7 @@ class ProcessDiscordGatewayCommands(
                             for ((shardId, events) in receivedShardCommands) {
                                 for (event in events) {
                                     // "babe wake up new gateway command on shard 5 just dropped"
-                                    val jdaShard = lorittaShards.shardManager.getShardById(shardId) as JDAImpl?
+                                    val jdaShard = loritta.lorittaShards.shardManager.getShardById(shardId) as JDAImpl?
 
                                     if (jdaShard != null) {
                                         logger.info { "Sending gateway command $event to $shardId" }

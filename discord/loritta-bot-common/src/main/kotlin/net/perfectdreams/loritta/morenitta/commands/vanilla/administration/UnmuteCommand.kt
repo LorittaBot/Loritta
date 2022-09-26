@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
@@ -19,9 +18,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar", "desilenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", listOf("desmutar", "desilenciar", "desilenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.unmute.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.unmute.examples")
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
@@ -52,19 +51,19 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			}
 
 			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
-			val settings = AdminUtils.retrieveModerationInfo(context.config)
+			val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
 
 			val banCallback: suspend (Message?, Boolean) -> (Unit) = { message, isSilent ->
 				for (user in users)
-					unmute(settings, context.guild, context.userHandle, locale, user, reason, isSilent)
+					unmute(loritta, settings, context.guild, context.userHandle, locale, user, reason, isSilent)
 
 				message?.delete()?.queue()
 
 				context.reply(
-                        LorittaReply(
-                                locale["commands.command.unmute.successfullyUnmuted"],
-                                "\uD83C\uDF89"
-                        )
+					LorittaReply(
+						locale["commands.command.unmute.successfullyUnmuted"],
+						"\uD83C\uDF89"
+					)
 				)
 			}
 
@@ -93,26 +92,29 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 	}
 
 	companion object {
-		fun unmute(settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
+		fun unmute(loritta: LorittaBot, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
-				val punishLogMessage = AdminUtils.getPunishmentForMessage(
+				val punishLogMessage = runBlocking {
+					AdminUtils.getPunishmentForMessage(
+						loritta,
 						settings,
 						guild,
 						PunishmentAction.UNMUTE
-				)
+					)
+				}
 
 				if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
 					val textChannel = guild.getTextChannelById(settings.punishLogChannelId)
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								punishLogMessage,
-								listOf(user, guild),
-								guild,
-								mutableMapOf(
-										"duration" to locale["commands.command.mute.forever"]
-								) + AdminUtils.getStaffCustomTokens(punisher)
-										+ AdminUtils.getPunishmentCustomTokens(locale, reason, "commands.command.unmute")
+							punishLogMessage,
+							listOf(user, guild),
+							guild,
+							mutableMapOf(
+								"duration" to locale["commands.command.mute.forever"]
+							) + AdminUtils.getStaffCustomTokens(punisher)
+									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "commands.command.unmute")
 						)
 
 						message?.let {
@@ -129,9 +131,11 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			MuteCommand.roleRemovalJobs.remove(roleRemovalKey)
 
 			// Delete the mute from the database, this avoids the MutedUserTask rechecking the mute again even after it was deleted
-			transaction(Databases.loritta) {
-				Mutes.deleteWhere {
-					(Mutes.guildId eq guild.idLong) and (Mutes.userId eq user.idLong)
+			runBlocking {
+				loritta.pudding.transaction {
+					Mutes.deleteWhere {
+						(Mutes.guildId eq guild.idLong) and (Mutes.userId eq user.idLong)
+					}
 				}
 			}
 
@@ -139,7 +143,7 @@ class UnmuteCommand : AbstractCommand("unmute", listOf("desmutar", "desilenciar"
 			val member = runBlocking { guild.retrieveMemberOrNull(user) }
 
 			if (member != null) {
-				val mutedRoles = MuteCommand.getMutedRole(guild, locale)
+				val mutedRoles = MuteCommand.getMutedRole(loritta, guild, locale)
 				if (mutedRoles != null)
 					guild.removeRoleFromMember(member, mutedRoles).queue()
 			}

@@ -37,12 +37,12 @@ class RepTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, l
 
 			if (typeName == null) {
 				reply(
-						LorittaReply(
-								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.command.topreputation.received"]}"
-						),
-						LorittaReply(
-								"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.command.topreputation.given"]}"
-						)
+					LorittaReply(
+						"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.command.topreputation.received"]}"
+					),
+					LorittaReply(
+						"${serverConfig.commandPrefix}${executedCommandLabel} ${locale["commands.command.topreputation.given"]}"
+					)
 				)
 				return@executesDiscord
 			}
@@ -56,10 +56,10 @@ class RepTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, l
 
 			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
 				reply(
-						LorittaReply(
-								locale["commands.invalidRankingPage"],
-								Constants.ERROR
-						)
+					LorittaReply(
+						locale["commands.invalidRankingPage"],
+						Constants.ERROR
+					)
 				)
 				return@executesDiscord
 			}
@@ -78,43 +78,44 @@ class RepTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, l
 			val userData = loritta.newSuspendedTransaction {
 				if (type == TopOrder.MOST_GIVEN) {
 					Reputations.slice(givenBy, givenByCount)
-							.selectAll()
-							.groupBy(givenBy)
-							.orderBy(givenByCount, SortOrder.DESC)
-							.limit(5, page * 5)
-							.toMutableList()
+						.selectAll()
+						.groupBy(givenBy)
+						.orderBy(givenByCount, SortOrder.DESC)
+						.limit(5, page * 5)
+						.toMutableList()
 				} else {
 					Reputations.slice(receivedBy, receivedByCount)
-							.selectAll()
-							.groupBy(receivedBy)
-							.orderBy(receivedByCount, SortOrder.DESC)
-							.limit(5, page * 5)
-							.toMutableList()
+						.selectAll()
+						.groupBy(receivedBy)
+						.orderBy(receivedByCount, SortOrder.DESC)
+						.limit(5, page * 5)
+						.toMutableList()
 				}
 			}
 
 			sendImage(
-					JVMImage(
-							RankingGenerator.generateRanking(
-									"Ranking Global",
-									null,
-									userData.map {
-										if (type == TopOrder.MOST_RECEIVED) {
-											RankingGenerator.UserRankInformation(
-													it[receivedBy],
-													locale["commands.command.topreputation.receivedReputations", it[receivedByCount]]
-											)
-										} else {
-											RankingGenerator.UserRankInformation(
-													it[givenBy],
-													locale["commands.command.topreputation.givenReputations", it[givenByCount]]
-											)
-										}
-									}
-							)
-					),
-					"rank.png",
-					getUserMention(true)
+				JVMImage(
+					RankingGenerator.generateRanking(
+						loritta,
+						"Ranking Global",
+						null,
+						userData.map {
+							if (type == TopOrder.MOST_RECEIVED) {
+								RankingGenerator.UserRankInformation(
+									it[receivedBy],
+									locale["commands.command.topreputation.receivedReputations", it[receivedByCount]]
+								)
+							} else {
+								RankingGenerator.UserRankInformation(
+									it[givenBy],
+									locale["commands.command.topreputation.givenReputations", it[givenByCount]]
+								)
+							}
+						}
+					)
+				),
+				"rank.png",
+				getUserMention(true)
 			)
 		}
 	}

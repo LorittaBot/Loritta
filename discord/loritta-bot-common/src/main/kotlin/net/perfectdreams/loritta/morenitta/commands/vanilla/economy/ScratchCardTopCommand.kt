@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -14,7 +13,6 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
-import org.jetbrains.exposed.sql.transactions.transaction
 
 class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("scratchcard top", "raspadinha top"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
@@ -39,10 +37,10 @@ class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 
 			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
 				context.reply(
-						LorittaReply(
-								locale["commands.invalidRankingPage"],
-								Constants.ERROR
-						)
+					LorittaReply(
+						locale["commands.invalidRankingPage"],
+						Constants.ERROR
+					)
 				)
 				return@executesDiscord
 			}
@@ -57,32 +55,33 @@ class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 			val ticketCount = Raspadinhas.receivedById.count()
 			val moneySum = Raspadinhas.value.sum()
 
-			val userData = transaction(Databases.loritta) {
+			val userData = loritta.pudding.transaction {
 				Raspadinhas.slice(userId, ticketCount, moneySum)
-						.selectAll()
-						.groupBy(userId)
-						.having {
-							moneySum.isNotNull()
-						}
-						.orderBy(moneySum, SortOrder.DESC)
-						.limit(5, page * 5)
-						.toMutableList()
+					.selectAll()
+					.groupBy(userId)
+					.having {
+						moneySum.isNotNull()
+					}
+					.orderBy(moneySum, SortOrder.DESC)
+					.limit(5, page * 5)
+					.toMutableList()
 			}
 
 			context.sendImage(
-					JVMImage(
-						RankingGenerator.generateRanking(
-								"Ranking Global",
-								null,
-								userData.map {
-									RankingGenerator.UserRankInformation(
-											it[userId],
-											locale["$LOCALE_PREFIX.scratchcardtop.wonTickets", it[moneySum].toString(), it[ticketCount].toString()]
-									)
-								}
-						)),
-					"rank.png",
-					context.getUserMention(true)
+				JVMImage(
+					RankingGenerator.generateRanking(
+						loritta,
+						"Ranking Global",
+						null,
+						userData.map {
+							RankingGenerator.UserRankInformation(
+								it[userId],
+								locale["$LOCALE_PREFIX.scratchcardtop.wonTickets", it[moneySum].toString(), it[ticketCount].toString()]
+							)
+						}
+					)),
+				"rank.png",
+				context.getUserMention(true)
 			)
 		}
 	}

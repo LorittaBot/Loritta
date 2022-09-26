@@ -39,7 +39,7 @@ class AFKModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
             return
 
         // Disable User's AFK state if they sent a message
-        val selfUserProfile = m.services.users.getUserProfile(UserId(messageCreate.message.author.id.value))
+        val selfUserProfile = m.pudding.users.getUserProfile(UserId(messageCreate.message.author.id.value))
         selfUserProfile?.disableAfk()
 
         // User ID -> Reason
@@ -52,7 +52,7 @@ class AFKModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
                 continue
 
             // Are they AFK?
-            val lorittaProfile = m.services.users.getUserProfile(UserId(mention.id.value))
+            val lorittaProfile = m.pudding.users.getUserProfile(UserId(mention.id.value))
 
             if (lorittaProfile != null && lorittaProfile.isAfk) {
                 // omg they are AFK!
@@ -68,7 +68,7 @@ class AFKModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
                 return
 
             // Okay, so there are AFK members in the message!
-            val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value)
+            val serverConfig = m.pudding.serverConfigs.getServerConfigRoot(guildId.value)
             val i18nContext = m.languageManager.getI18nContextByLegacyLocaleId(serverConfig?.localeId ?: "default")
 
             val message = m.rest.channel.createMessage(

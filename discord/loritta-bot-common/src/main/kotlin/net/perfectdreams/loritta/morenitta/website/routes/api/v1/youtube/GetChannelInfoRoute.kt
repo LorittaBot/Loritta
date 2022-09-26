@@ -46,7 +46,7 @@ class GetChannelInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/youtube/
 			return
 		}
 
-		if (!net.perfectdreams.loritta.morenitta.utils.loritta.connectionManager.isTrusted(channelLink)) {
+		if (!loritta.connectionManager.isTrusted(channelLink)) {
 			json["error"] = "Untrusted URL"
 			call.respondJson(json)
 			return
@@ -54,7 +54,7 @@ class GetChannelInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/youtube/
 
 		val urlPath = URL(channelLink).path
 
-		val key = net.perfectdreams.loritta.morenitta.utils.loritta.config.youtube.apiKey
+		val key = loritta.config.youtube.apiKey
 
 		try {
 			// Paths que começam com "/channel/" significa que já é um channel ID,
@@ -159,6 +159,7 @@ class GetChannelInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/youtube/
 			throw WebsiteAPIException(
 				HttpStatusCode.NotFound,
 				WebsiteUtils.createErrorPayload(
+					loritta,
 					LoriWebCode.ITEM_NOT_FOUND,
 					"Exception while retrieving channel information"
 				)

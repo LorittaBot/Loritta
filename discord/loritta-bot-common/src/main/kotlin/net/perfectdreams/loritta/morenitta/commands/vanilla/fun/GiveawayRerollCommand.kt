@@ -116,7 +116,7 @@ class GiveawayRerollCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 				return@executesDiscord
 			}
 
-			GiveawayManager.rollWinners(message, giveaway)
+			loritta.giveawayManager.rollWinners(message, giveaway)
 
 			context.reply(
 					LorittaReply(

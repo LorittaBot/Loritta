@@ -1,11 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.tables.BannedIps
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
 
 object LoriUnbanIpExecutor : LoriToolsCommand.LoriToolsExecutor {
 	override val args = "unban ip <ip> <reason>"
@@ -17,7 +15,7 @@ object LoriUnbanIpExecutor : LoriToolsCommand.LoriToolsExecutor {
 			return@task false
 		val ip = args[2]
 
-		transaction(Databases.loritta) {
+		loritta.pudding.transaction {
 			BannedIps.deleteWhere { BannedIps.ip eq ip }
 		}
 

@@ -7,13 +7,16 @@ import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.style
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class Error404View(
+    loritta: LorittaBot,
     locale: BaseLocale,
     path: String
 ) : NavbarView(
-        locale,
-        path
+    loritta,
+    locale,
+    path
 ) {
     override fun getTitle() = "404"
 

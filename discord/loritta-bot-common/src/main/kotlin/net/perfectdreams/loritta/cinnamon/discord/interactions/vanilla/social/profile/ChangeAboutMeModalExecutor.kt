@@ -32,7 +32,7 @@ class ChangeAboutMeModalExecutor(loritta: LorittaCinnamon) : CinnamonModalExecut
 
         val data = loritta.decodeDataFromComponentOnDatabase<ChangeAboutMeModalData>(context.data)
 
-        val userSettings = context.loritta.services.users.getOrCreateUserProfile(context.user)
+        val userSettings = context.loritta.pudding.users.getOrCreateUserProfile(context.user)
             .getProfileSettings()
 
         userSettings.setAboutMe(newAboutMe)

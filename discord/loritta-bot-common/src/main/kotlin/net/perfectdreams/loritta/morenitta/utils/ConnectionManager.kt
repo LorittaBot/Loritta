@@ -1,11 +1,12 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import mu.KotlinLogging
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.lang.RuntimeException
 import java.net.URL
 import java.net.URLConnection
 
-class ConnectionManager {
+class ConnectionManager(val loritta: LorittaBot) {
     companion object {
         val logger = KotlinLogging.logger {}
 
@@ -1457,7 +1458,7 @@ class ConnectionManager {
     }
 }
 
-fun URL.openSafeConnection(): URLConnection {
+fun URL.openSafeConnection(loritta: LorittaBot): URLConnection {
     if (loritta.connectionManager.isBlocked(this.toString())) {
         // Isto não irá ajudar muito, mas ajudará a "adiar" script kiddies
         ConnectionManager.logger.warn { "IP Logger detected ${this}, redirecing to somewhere else!" }

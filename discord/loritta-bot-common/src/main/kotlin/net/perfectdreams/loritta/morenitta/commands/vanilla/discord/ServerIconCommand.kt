@@ -8,13 +8,13 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "iconeserver", "iconeguild", "iconedoserver", "iconedaguild", "íconedoserver", "iconedoservidor", "íconeguild", "íconedoserver", "íconedaguild", "íconedoservidor"), category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class ServerIconCommand(loritta: LorittaBot) : AbstractCommand(loritta, "servericon", listOf("guildicon", "iconeserver", "iconeguild", "iconedoserver", "iconedaguild", "íconedoserver", "iconedoservidor", "íconeguild", "íconedoserver", "íconedaguild", "íconedoservidor"), category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command.servericon"
 	}
@@ -37,10 +37,10 @@ class ServerIconCommand : AbstractCommand("servericon", listOf("guildicon", "ico
 			val id = context.rawArgs.first()
 			if (id.isValidSnowflake()) {
 				guildId = id.toLong()
-				guild = lorittaShards.queryGuildById(context.args[0])
+				guild = loritta.lorittaShards.queryGuildById(context.args[0])
 			}
 		} else {
-			guild = lorittaShards.queryGuildById(context.guild.idLong)
+			guild = loritta.lorittaShards.queryGuildById(context.guild.idLong)
 		}
 
 		if (guild == null) {

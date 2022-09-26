@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.user
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.ApplicationCall
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -16,10 +15,10 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 class UserDashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val userId = userIdentification.id
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
-		val user =  lorittaShards.retrieveUserById(userId)!!
-		val lorittaProfile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userId)
+		val user = loritta.lorittaShards.retrieveUserById(userId)!!
+		val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
 
 		variables["profileUser"] = user
 		variables["lorittaProfile"] = lorittaProfile

@@ -2,8 +2,6 @@ package net.perfectdreams.loritta.morenitta.utils.debug
 
 import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
 import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -22,12 +20,12 @@ object DebugLog {
 			return field
 		}
 
-	fun startCommandListenerThread() {
+	fun startCommandListenerThread(loritta: LorittaBot) {
 		thread {
 			commandLoop@ while (true) {
 				try {
 					val line = readLine() ?: continue
-					handleLine(line)
+					handleLine(loritta, line)
 				} catch (e: Exception) {
 					e.printStackTrace()
 				}
@@ -35,7 +33,7 @@ object DebugLog {
 		}
 	}
 
-	fun showExtendedInfo() {
+	fun showExtendedInfo(loritta: LorittaBot) {
 		val mb = 1024 * 1024
 		val runtime = Runtime.getRuntime()
 
@@ -64,7 +62,7 @@ object DebugLog {
 		logger.info("> Misc Stuff")
 		logger.info("fanArts.size: ${loritta.fanArts.size}")
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
-		logger.info("Cached Retrieved Users: ${lorittaShards.cachedRetrievedUsers.size()}")
+		logger.info("Cached Retrieved Users: ${loritta.lorittaShards.cachedRetrievedUsers.size()}")
 		logger.info("> Executors")
 
 		val pendingMessagesSize = loritta.pendingMessages.size
@@ -86,7 +84,7 @@ object DebugLog {
 		println("Coroutines dumped!")
 	}
 
-	fun handleLine(line: String) {
+	fun handleLine(loritta: LorittaBot, line: String) {
 		val args = line.split(" ").toMutableList()
 		val command = args[0]
 		args.removeAt(0)
@@ -102,8 +100,8 @@ object DebugLog {
 				val mb = 1024 * 1024
 				val runtime = Runtime.getRuntime()
 				println("===[ INFO ]===")
-				println("Shards: ${lorittaShards.getShards().size}")
-				println("Total Servers: ${lorittaShards.getGuildCount()}")
+				println("Shards: ${loritta.lorittaShards.getShards().size}")
+				println("Total Servers: ${loritta.lorittaShards.getGuildCount()}")
 				println("Used Memory:"
 						+ (runtime.totalMemory() - runtime.freeMemory()) / mb)
 				println("Free Memory:"
@@ -112,14 +110,14 @@ object DebugLog {
 				println("Max Memory:" + runtime.maxMemory() / mb)
 			}
 			"shards" -> {
-				val shards = lorittaShards.getShards()
+				val shards = loritta.lorittaShards.getShards()
 
 				for (shard in shards.sortedByDescending { it.shardInfo.shardId }) {
 					println("SHARD ${shard.shardInfo.shardId} (${shard.status.name} - ${shard.gatewayPing}ms): ${shard.guilds.size} guilds - ${shard.users.size} members")
 				}
 			}
 			"extendedinfo" -> {
-				showExtendedInfo()
+				showExtendedInfo(loritta)
 			}
 			"threads" -> {
 				println("===[ ACTIVE THREADS ]===")

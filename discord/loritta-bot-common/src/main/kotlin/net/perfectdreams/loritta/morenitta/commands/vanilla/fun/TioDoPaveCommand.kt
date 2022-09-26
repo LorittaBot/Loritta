@@ -7,8 +7,9 @@ import net.perfectdreams.loritta.morenitta.utils.WebhookUtils.getOrCreateWebhook
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class TioDoPaveCommand(loritta: LorittaBot) : AbstractCommand(loritta, "tiodopave", listOf("piada"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.tiodopave.description")
 
 	companion object {
@@ -313,7 +314,7 @@ class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), net.perfe
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "summon tiodopave")
 
-		val temmie = getOrCreateWebhook(context.event.textChannel!!, "Tio do Pavê")
+		val temmie = getOrCreateWebhook(loritta, context.event.textChannel!!, "Tio do Pavê")
 
 		context.sendMessage(temmie, WebhookMessageBuilder()
 				.setUsername("Tio do Pavê")

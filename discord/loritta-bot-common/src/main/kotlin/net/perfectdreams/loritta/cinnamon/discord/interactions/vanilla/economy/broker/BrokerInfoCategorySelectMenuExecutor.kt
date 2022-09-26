@@ -23,7 +23,7 @@ class BrokerInfoCategorySelectMenuExecutor(loritta: LorittaCinnamon) : CinnamonS
         context.updateMessageSetLoadingState(updateMessageContent = false)
 
         val categories = values.map { LorittaBovespaBrokerUtils.CompanyCategory.valueOf(it) }
-        val stockInformations = context.loritta.services.bovespaBroker.getAllTickers()
+        val stockInformations = context.loritta.pudding.bovespaBroker.getAllTickers()
 
         context.updateMessage {
             brokerBaseEmbed(context) {

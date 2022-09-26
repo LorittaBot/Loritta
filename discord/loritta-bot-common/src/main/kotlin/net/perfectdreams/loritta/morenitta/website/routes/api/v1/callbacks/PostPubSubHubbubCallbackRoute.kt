@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.bytesToHex
 import net.perfectdreams.loritta.morenitta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
@@ -58,11 +57,11 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 		val originalSignature = call.request.header("X-Hub-Signature")
 				?: throw WebsiteAPIException(
 						HttpStatusCode.Unauthorized,
-						WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Missing X-Hub-Signature Header from Request")
+						WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Missing X-Hub-Signature Header from Request")
 				)
 
 		val output = if (originalSignature.startsWith("sha1=")) {
-			val signingKey = SecretKeySpec(net.perfectdreams.loritta.morenitta.utils.loritta.config.generalWebhook.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
+			val signingKey = SecretKeySpec(loritta.config.generalWebhook.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
 			val mac = Mac.getInstance("HmacSHA1")
 			mac.init(signingKey)
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
@@ -74,7 +73,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 
 			output
 		} else if (originalSignature.startsWith("sha256=")) {
-			val signingKey = SecretKeySpec(net.perfectdreams.loritta.morenitta.utils.loritta.config.generalWebhook.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
+			val signingKey = SecretKeySpec(loritta.config.generalWebhook.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
 			val mac = Mac.getInstance("HmacSHA256")
 			mac.init(signingKey)
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
@@ -92,7 +91,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 		if (originalSignature != output)
 			throw WebsiteAPIException(
 					HttpStatusCode.Unauthorized,
-					WebsiteUtils.createErrorPayload(LoriWebCode.UNAUTHORIZED, "Invalid X-Hub-Signature Header from Request")
+					WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Invalid X-Hub-Signature Header from Request")
 			)
 
 		val type = call.parameters["type"]
@@ -111,7 +110,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 
 			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
 
-			if (net.perfectdreams.loritta.morenitta.utils.loritta.isMaster) {
+			if (loritta.isMaster) {
 				val wasAlreadySent = loritta.newSuspendedTransaction {
 					SentYouTubeVideoIds.select {
 						SentYouTubeVideoIds.channelId eq channelId and (SentYouTubeVideoIds.videoId eq videoId)
@@ -147,7 +146,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			for (trackedAccount in trackedAccounts) {
 				guildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 
-				val guild = lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
+				val guild = loritta.lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
 
 				val textChannel = guild.getTextChannelById(trackedAccount[TrackedYouTubeAccounts.channelId]) ?: continue
 
@@ -174,13 +173,13 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 				) ?: continue
 
 				textChannel.sendMessage(discordMessage)
-						.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(canTalkGuildIds.size)
+						.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(loritta, canTalkGuildIds.size)
 
 				canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 			}
 
 			// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
-			val textChannel = lorittaShards.getTextChannelById(Constants.RELAY_YOUTUBE_VIDEOS_CHANNEL)
+			val textChannel = loritta.lorittaShards.getTextChannelById(Constants.RELAY_YOUTUBE_VIDEOS_CHANNEL)
 
 			textChannel?.sendMessage("""${lastVideoTitle.escapeMentions()} — https://youtu.be/$videoId
 						|**Enviado em...**
@@ -193,15 +192,15 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 	fun relayPubSubHubbubNotificationToOtherClusters(call: ApplicationCall, originalSignature: String, response: String) {
 		logger.info { "Relaying PubSubHubbub request to other instances, because I'm the master server! :3" }
 
-		val shards = net.perfectdreams.loritta.morenitta.utils.loritta.config.clusters.filter { it.id != 1L }
+		val shards = loritta.config.clusters.filter { it.id != 1L }
 
 		shards.map {
 			GlobalScope.launch {
 				try {
 					withTimeout(25_000) {
-						logger.info { "Sending request to ${"https://${it.getUrl()}${call.request.path()}${call.request.urlQueryString}"}..." }
-						loritta.http.post("https://${it.getUrl()}${call.request.path()}${call.request.urlQueryString}") {
-							userAgent(net.perfectdreams.loritta.morenitta.utils.loritta.lorittaCluster.getUserAgent())
+						logger.info { "Sending request to ${"https://${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}"}..." }
+						loritta.http.post("https://${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}") {
+							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 							header("X-Hub-Signature", originalSignature)
 
 							setBody(response)

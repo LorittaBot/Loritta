@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class LoriAtaProfileCreator : ProfileCreator("loriAta") {
+class LoriAtaProfileCreator(val loritta: LorittaBot) : ProfileCreator("loriAta") {
 	val KOMIKA by lazy {
 		FileInputStream(File(LorittaBot.ASSETS + "komika.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -29,16 +29,16 @@ class LoriAtaProfileCreator : ProfileCreator("loriAta") {
 
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		if (globalPosition != null)
 			userInfo.add("#$globalPosition / ${userProfile.xp} XP")
 		else
 			userInfo.add("${userProfile.xp} XP")
 
 		if (guild != null) {
-			val localProfile = ProfileUtils.getLocalProfile(guild, user)
+			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)
 
-			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
+			val localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
 			val xpLocal = localProfile?.xp
 
@@ -55,7 +55,7 @@ class LoriAtaProfileCreator : ProfileCreator("loriAta") {
 			}
 		}
 
-		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
 		userInfo.add("Sonhos")
 		if (globalEconomyPosition != null)
@@ -66,7 +66,7 @@ class LoriAtaProfileCreator : ProfileCreator("loriAta") {
 		graphics.font = KOMIKA.deriveFont(13f)
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxByOrNull { graphics.fontMetrics.stringWidth(it) }!!)
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(148, 148, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(148, 148, BufferedImage.SCALE_SMOOTH)
 
 		val image = LorittaImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH).toBufferedImage())
 
@@ -83,11 +83,11 @@ class LoriAtaProfileCreator : ProfileCreator("loriAta") {
 
 		graphics.font = KOMIKA.deriveFont(27f)
 		graphics.color = Color.BLACK
-		graphics.drawText(user.name, 161, 509, 527)
+		graphics.drawText(loritta, user.name, 161, 509, 527)
 		graphics.font = KOMIKA.deriveFont(16f)
-		graphics.drawStringWrap(aboutMe, 161, 532, 773 - biggestStrWidth - 4)
+		graphics.drawStringWrap(loritta, aboutMe, 161, 532, 773 - biggestStrWidth - 4)
 
-		val reputations = ProfileUtils.getReputationCount(user)
+		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
 		graphics.font = KOMIKA.deriveFont(32f)
 
@@ -104,7 +104,7 @@ class LoriAtaProfileCreator : ProfileCreator("loriAta") {
 			}
 		}
 
-		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
+		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/monica_ata/marry.png"))
 			graphics.drawImage(marrySection, 200, 0, null)
 
@@ -119,7 +119,7 @@ class LoriAtaProfileCreator : ProfileCreator("loriAta") {
 		graphics.font = KOMIKA.deriveFont(13f)
 		var y = 513
 		for (line in userInfo) {
-			graphics.drawText(line, 773 - biggestStrWidth - 2, y)
+			graphics.drawText(loritta, line, 773 - biggestStrWidth - 2, y)
 			y += 14
 		}
 

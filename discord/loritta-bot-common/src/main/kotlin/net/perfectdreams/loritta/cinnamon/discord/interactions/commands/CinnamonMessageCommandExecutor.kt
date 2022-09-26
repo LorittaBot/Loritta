@@ -60,7 +60,7 @@ abstract class CinnamonMessageCommandExecutor(val loritta: LorittaCinnamon) : Me
 
         logger.info { "(${context.sender.id.value}) $this - OK! Result: ${result}; Took ${commandLatency * 1000}ms" }
 
-        loritta.services.executedInteractionsLog.insertApplicationCommandLog(
+        loritta.pudding.executedInteractionsLog.insertApplicationCommandLog(
             context.sender.id.value.toLong(),
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),

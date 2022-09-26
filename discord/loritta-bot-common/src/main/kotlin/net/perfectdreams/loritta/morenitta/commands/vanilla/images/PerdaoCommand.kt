@@ -9,8 +9,9 @@ import net.perfectdreams.loritta.morenitta.api.commands.Command
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class PerdaoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "perdao", listOf("perdão"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "perdao.png")) }
 	}

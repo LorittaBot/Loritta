@@ -420,7 +420,7 @@ object TretaNewsGenerator {
 				"https://yt3.ggpht.com/-bIkhJe7-vdk/AAAAAAAAAAI/AAAAAAAAAAA/m5AyW98M-CY/s176-c-k-no-mo-rj-c0xffffff/photo.jpg")
 	}
 
-	fun generate(guild: Guild, usr1: User, usr2: User): GeneratedTretaNews {
+	fun generate(loritta: LorittaBot, guild: Guild, usr1: User, usr2: User): GeneratedTretaNews {
 		val randomYt = ArrayList(TretaNewsGenerator.randomYt)
 
 		val str1 = usr1.name.stripCodeMarks()
@@ -437,8 +437,8 @@ object TretaNewsGenerator {
 		val url1 = usr1.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
 		val url2 = usr2.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
 
-		var avatar = LorittaUtils.downloadImage(url1)
-		var avatar2 = LorittaUtils.downloadImage(url2)
+		var avatar = LorittaUtils.downloadImage(loritta, url1)
+		var avatar2 = LorittaUtils.downloadImage(loritta, url2)
 
 		var tretaCheck = ImageIO.read(File(LorittaBot.ASSETS + "tretacheck.png"))
 
@@ -538,7 +538,7 @@ object TretaNewsGenerator {
 		}
 
 		// int checkY = drawString(g2d, title, 244, -4);
-		var checkY = ImageUtils.drawTextWrap(title, 244, 18, 655, 0, g2d.fontMetrics, g2d)
+		var checkY = ImageUtils.drawTextWrap(loritta, title, 244, 18, 655, 0, g2d.fontMetrics, g2d)
 		checkY += 6
 
 		g2d.drawImage(tretaCheck, 240, checkY, null)
@@ -557,7 +557,7 @@ object TretaNewsGenerator {
 		val views = LorittaBot.RANDOM.nextInt(0, 1000000).toLong()
 		val texto = LorittaBot.RANDOM.nextInt(1, 24).toString() + " horas atrás • " + df.format(views) + " visualizações"
 
-		checkY = ImageUtils.drawTextWrap(texto, 244, checkY, 655, 0, g2d.fontMetrics, g2d)
+		checkY = ImageUtils.drawTextWrap(loritta, texto, 244, checkY, 655, 0, g2d.fontMetrics, g2d)
 
 		checkY += 18
 
@@ -567,7 +567,7 @@ object TretaNewsGenerator {
 			descricao = descricao.substring(0, 127) + "..."
 		}
 
-		checkY = ImageUtils.drawTextWrap(descricao, 244, checkY, 655, 0, g2d.fontMetrics, g2d)
+		checkY = ImageUtils.drawTextWrap(loritta, descricao, 244, checkY, 655, 0, g2d.fontMetrics, g2d)
 
 		checkY += 8
 

@@ -53,6 +53,7 @@ class PostErrorRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/error
 			else -> throw WebsiteAPIException(
 					HttpStatusCode.NotImplemented,
 					WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.MISSING_PAYLOAD_HANDLER,
 							"Type $type is not implemented yet!"
 					)

@@ -2,14 +2,13 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
 import net.perfectdreams.loritta.morenitta.dao.Mute
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import org.jetbrains.exposed.sql.transactions.transaction
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class MutedUsersTask : Runnable {
+class MutedUsersTask(val loritta: LorittaBot) : Runnable {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -18,10 +17,12 @@ class MutedUsersTask : Runnable {
 		try {
 			logger.info("Verificando usuários temporariamente silenciados... Removal threads ativas: ${MuteCommand.roleRemovalJobs.size}")
 
-			val mutes = transaction(Databases.loritta) {
-				Mute.find {
-					Mutes.isTemporary eq true
-				}.toMutableList()
+			val mutes = runBlocking {
+				loritta.pudding.transaction {
+					Mute.find {
+						Mutes.isTemporary eq true
+					}.toMutableList()
+				}
 			}
 
 			val guildLocales = mutableMapOf<Long, String>()
@@ -34,7 +35,7 @@ class MutedUsersTask : Runnable {
 					continue
 				}
 
-				val guild = lorittaShards.getGuildById(mute.guildId)
+				val guild = loritta.lorittaShards.getGuildById(mute.guildId)
 
 				if (guild == null) {
 					logger.debug { "Guild \"${mute.guildId}\" não existe ou está indisponível!" }
@@ -64,7 +65,7 @@ class MutedUsersTask : Runnable {
 				logger.info { "Adicionado removal thread pelo MutedUsersThread ~ Guild: ${mute.guildId} - User: ${mute.userId}" }
 
 				val localeId = guildLocales.getOrPut(mute.guildId, { loritta.getOrCreateServerConfig(mute.guildId).localeId })
-				MuteCommand.spawnRoleRemovalThread(guild, loritta.localeManager.getLocaleById(localeId), member.user, mute.expiresAt!!)
+				MuteCommand.spawnRoleRemovalThread(loritta, guild, loritta.localeManager.getLocaleById(localeId), member.user, mute.expiresAt!!)
 			}
 		} catch (e: Exception) {
 			logger.error(e) { "Erro ao verificar removal threads" }
@@ -81,8 +82,10 @@ class MutedUsersTask : Runnable {
 
 		if (expiresAt != null && System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS >= expiresAt) { // Já se passaram uma semana?
 			logger.debug { "Deleting $mute from database... The mute was made more than one week ago and it wasn't deleted..." }
-			transaction(Databases.loritta) {
-				mute.delete()
+			runBlocking {
+				loritta.pudding.transaction {
+					mute.delete()
+				}
 			}
 			return true
 		}
@@ -99,8 +102,10 @@ class MutedUsersTask : Runnable {
 
 		if (System.currentTimeMillis() - Constants.SIX_MONTHS_IN_MILLISECONDS >= receivedAt) { // Já se passaram uma semana?
 			logger.debug { "Deleting $mute from database... Member is not on the server anymore and the mute was done a long time ago..." }
-			transaction(Databases.loritta) {
-				mute.delete()
+			runBlocking {
+				loritta.pudding.transaction {
+					mute.delete()
+				}
 			}
 			return true
 		}

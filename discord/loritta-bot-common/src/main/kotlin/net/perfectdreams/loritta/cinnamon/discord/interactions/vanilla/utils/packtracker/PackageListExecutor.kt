@@ -42,7 +42,7 @@ class PackageListExecutor(loritta: LorittaCinnamon, val client: CorreiosClient) 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally()
 
-        val trackingIdsTrackedByUser = context.loritta.services.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
+        val trackingIdsTrackedByUser = context.loritta.pudding.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
 
         if (trackingIdsTrackedByUser.isEmpty())
             context.failEphemerally(

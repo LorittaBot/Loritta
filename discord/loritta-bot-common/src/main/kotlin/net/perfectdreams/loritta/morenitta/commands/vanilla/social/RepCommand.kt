@@ -8,15 +8,15 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class RepCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rep", listOf("reputation", "reputação", "reputacao"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.reputation.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.reputation.examples")
 
@@ -59,7 +59,7 @@ class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "r
 				return
 			}
 
-			val dailyReward = AccountUtils.getUserTodayDailyReward(context.lorittaUser.profile)
+			val dailyReward = AccountUtils.getUserTodayDailyReward(loritta, context.lorittaUser.profile)
 
 			if (dailyReward == null) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
 				context.reply(

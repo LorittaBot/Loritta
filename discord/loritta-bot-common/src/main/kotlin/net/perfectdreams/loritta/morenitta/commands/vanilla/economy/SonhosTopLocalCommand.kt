@@ -22,10 +22,10 @@ class SonhosTopLocalCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 
 			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
 				reply(
-						LorittaReply(
-								locale["commands.invalidRankingPage"],
-								Constants.ERROR
-						)
+					LorittaReply(
+						locale["commands.invalidRankingPage"],
+						Constants.ERROR
+					)
 				)
 				return@executesDiscord
 			}
@@ -38,33 +38,34 @@ class SonhosTopLocalCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 
 			val userData = loritta.newSuspendedTransaction {
 				Profiles.innerJoin(GuildProfiles, { Profiles.id }, { GuildProfiles.userId })
-						.select {
-							GuildProfiles.guildId eq guild.idLong and (GuildProfiles.isInGuild eq true)
-						}.orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
-						.toList()
+					.select {
+						GuildProfiles.guildId eq guild.idLong and (GuildProfiles.isInGuild eq true)
+					}.orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
+					.toList()
 			}
 
 			sendImage(
-					JVMImage(
-							RankingGenerator.generateRanking(
-									guild.name,
-									guild.iconUrl,
-									userData.map {
-										RankingGenerator.UserRankInformation(
-												it[Profiles.id].value,
-												"${it[Profiles.money]} sonhos"
-										)
-									}
-							) {
-								loritta.newSuspendedTransaction {
-									GuildProfiles.update({ GuildProfiles.id eq it and (GuildProfiles.guildId eq guild.idLong) }) {
-										it[isInGuild] = false
-									}
-								}
-								null
+				JVMImage(
+					RankingGenerator.generateRanking(
+						loritta,
+						guild.name,
+						guild.iconUrl,
+						userData.map {
+							RankingGenerator.UserRankInformation(
+								it[Profiles.id].value,
+								"${it[Profiles.money]} sonhos"
+							)
+						}
+					) {
+						loritta.newSuspendedTransaction {
+							GuildProfiles.update({ GuildProfiles.id eq it and (GuildProfiles.guildId eq guild.idLong) }) {
+								it[isInGuild] = false
 							}
-					),
-					"rank.png"
+						}
+						null
+					}
+				),
+				"rank.png"
 			)
 		}
 	}

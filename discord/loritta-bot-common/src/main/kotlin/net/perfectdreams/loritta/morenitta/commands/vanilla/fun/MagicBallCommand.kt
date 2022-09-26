@@ -10,8 +10,9 @@ import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball", "eightball"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class MagicBallCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vieirinha", listOf("8ball", "magicball", "eightball"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.vieirinha.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.vieirinha.examples")
 
@@ -31,7 +32,7 @@ class MagicBallCommand : AbstractCommand("vieirinha", listOf("8ball", "magicball
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "vieirinha")
 
 		if (context.args.isNotEmpty()) {
-			val temmie = WebhookUtils.getOrCreateWebhook(context.event.textChannel!!, "Vieirinha")
+			val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.textChannel!!, "Vieirinha")
 
 			context.sendMessage(temmie, WebhookMessageBuilder()
 					.setUsername("Vieirinha")

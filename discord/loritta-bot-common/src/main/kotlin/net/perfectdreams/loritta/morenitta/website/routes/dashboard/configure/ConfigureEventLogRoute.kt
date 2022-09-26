@@ -20,7 +20,7 @@ class ConfigureEventLogRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRo
 			serverConfig.eventLogConfig
 		}
 
-		val variables = call.legacyVariables(locale)
+		val variables = call.legacyVariables(loritta, locale)
 
 		variables["saveType"] = "event_log"
 		variables["serverConfig"] = FakeServerConfig(

@@ -10,11 +10,14 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class AddReactionFurryAminoPtListener(val config: QuirkyConfig) : ListenerAdapter() {
+class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
+
+    val config = loritta.config.quirky
 
     override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
         if (!event.reactionEmote.isEmote

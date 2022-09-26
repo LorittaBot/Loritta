@@ -2,9 +2,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.Profiles
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
@@ -12,10 +10,10 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EconomyConf
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"), category = net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class SonhosCommand(loritta: LorittaBot) : AbstractCommand(loritta, "sonhos", listOf("atm", "bal", "balance"), category = net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.sonhos.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.sonhos.examples")
 
@@ -35,7 +33,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
 
 		if (!context.isPrivateChannel) { // Se não estamos em um canal privado
 			// Vamos ver se a guild atual utiliza o sistema de economia local!
-			economyConfig = transaction(Databases.loritta) {
+			economyConfig = loritta.pudding.transaction {
 				loritta.getOrCreateServerConfig(context.guild.idLong).economyConfig
 			}
 
@@ -73,7 +71,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
             )
 
 			if (localEconomyEnabled && economyConfig != null) { // Sistema de ecnomia local está ativado!
-				val localProfile = context.config.getUserData(retrieveDreamsFromUser.idLong)
+				val localProfile = context.config.getUserData(loritta, retrieveDreamsFromUser.idLong)
 				context.reply(
 						false,
 						youHaveReply,
@@ -125,7 +123,7 @@ class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"),
             )
 
 			if (localEconomyEnabled && economyConfig != null) {
-				val localProfile = context.config.getUserData(retrieveDreamsFromUser.idLong)
+				val localProfile = context.config.getUserData(loritta, retrieveDreamsFromUser.idLong)
 				context.reply(
 						false,
 						someoneHasReply,

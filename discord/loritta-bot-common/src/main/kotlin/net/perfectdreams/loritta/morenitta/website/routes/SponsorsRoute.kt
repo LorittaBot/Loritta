@@ -12,6 +12,7 @@ class SponsorsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/sponsors") 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
 		call.respondHtml(
 			SponsorsView(
+				loritta,
 				locale,
 				getPathWithoutLocale(call),
 			).generateHtml()

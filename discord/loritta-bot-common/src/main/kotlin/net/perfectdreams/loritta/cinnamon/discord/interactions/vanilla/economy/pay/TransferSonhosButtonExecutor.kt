@@ -40,8 +40,8 @@ class TransferSonhosButtonExecutor(
             transactionRequestMessage: HighLevelEditableMessage,
             decodedGenericInteractionData: StoredGenericInteractionData
         ) {
-            val result = loritta.services.transaction {
-                val dataFromDatabase = loritta.services.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId) ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
+            val result = loritta.pudding.transaction {
+                val dataFromDatabase = loritta.pudding.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId) ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
 
                 val decoded = Json.decodeFromJsonElement<TransferSonhosData>(dataFromDatabase)
                 if (decoded.userId != acceptedUserId)
@@ -50,8 +50,8 @@ class TransferSonhosButtonExecutor(
                 val howMuch = decoded.quantity
                 val now = Clock.System.now()
 
-                val receiverProfile = loritta.services.users.getOrCreateUserProfile(UserId(decoded.userId))
-                val giverProfile = loritta.services.users.getOrCreateUserProfile(UserId(decoded.sourceId))
+                val receiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.userId))
+                val giverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.sourceId))
 
                 if (decoded.quantity > giverProfile.money)
                     return@transaction Result.GiverDoesNotHaveSufficientFunds // get tf outta here
@@ -98,14 +98,14 @@ class TransferSonhosButtonExecutor(
                 }
 
                 // Delete interaction ID
-                loritta.services.interactionsData.deleteInteractionData(decodedGenericInteractionData.interactionDataId)
+                loritta.pudding.interactionsData.deleteInteractionData(decodedGenericInteractionData.interactionDataId)
 
                 // Get the profiles again
-                val updatedReceiverProfile = loritta.services.users.getOrCreateUserProfile(UserId(decoded.userId))
-                val updatedGiverProfile = loritta.services.users.getOrCreateUserProfile(UserId(decoded.sourceId))
+                val updatedReceiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.userId))
+                val updatedGiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.sourceId))
 
-                val receiverRanking = if (updatedReceiverProfile.money != 0L) loritta.services.sonhos.getSonhosRankPositionBySonhos(updatedReceiverProfile.money) else null
-                val giverRanking = if (updatedGiverProfile.money != 0L) loritta.services.sonhos.getSonhosRankPositionBySonhos(updatedGiverProfile.money) else null
+                val receiverRanking = if (updatedReceiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(updatedReceiverProfile.money) else null
+                val giverRanking = if (updatedGiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(updatedGiverProfile.money) else null
 
                 return@transaction Result.Success(
                     decoded.userId,

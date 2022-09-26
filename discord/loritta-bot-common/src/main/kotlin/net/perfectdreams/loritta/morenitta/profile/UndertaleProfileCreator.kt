@@ -10,7 +10,7 @@ import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 
-class UndertaleProfileCreator : ProfileCreator("undertaleBattle") {
+class UndertaleProfileCreator(val loritta: LorittaBot) : ProfileCreator("undertaleBattle") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/undertale/profile_wrapper.png"))
 
@@ -24,13 +24,13 @@ class UndertaleProfileCreator : ProfileCreator("undertaleBattle") {
 		graphics.font = determinationMono.deriveFont(Font.PLAIN, 22f)
 		graphics.color = Color.WHITE
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(159, 159, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(159, 159, BufferedImage.SCALE_SMOOTH)
 
 		graphics.drawImage(profileWrapper, 0, 0, null)
 
 		drawAvatar(avatar, graphics)
 
-		graphics.drawText("* ${user.name} appears!", 56, 347) // Nome do usuário
+		graphics.drawText(loritta, "* ${user.name} appears!", 56, 347) // Nome do usuário
 
 		drawReputations(user, graphics)
 
@@ -40,7 +40,7 @@ class UndertaleProfileCreator : ProfileCreator("undertaleBattle") {
 
 		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics)
 
-		ImageUtils.drawTextWrapSpaces(aboutMe, 56, 375, 751 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 56, 375, 751 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
 
 		return base.makeRoundedCorners(15)
 	}
@@ -64,13 +64,13 @@ class UndertaleProfileCreator : ProfileCreator("undertaleBattle") {
 
 	suspend fun drawReputations(user: ProfileUserInfoData, graphics: Graphics) {
 		val font = graphics.font
-		val reputations = ProfileUtils.getReputationCount(user)
+		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(654, 546, 104, 37), font)
 	}
 
 	suspend fun drawMarriageStatus(userProfile: Profile, locale: BaseLocale, graphics: Graphics) {
-		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
+		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
 			val font = graphics.font
 			val marriedWithText = "${locale["profile.marriedWith"]} ${marriedWith.name}#${marriedWith.discriminator}"
 
@@ -81,16 +81,16 @@ class UndertaleProfileCreator : ProfileCreator("undertaleBattle") {
 	suspend fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
-		val globalPosition = ProfileUtils.getGlobalExperiencePosition(userProfile)
+		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		if (globalPosition != null)
 			userInfo.add("#$globalPosition / ${userProfile.xp} XP")
 		else
 			userInfo.add("${userProfile.xp} XP")
 
 		if (guild != null) {
-			val localProfile = ProfileUtils.getLocalProfile(guild, user)
+			val localProfile = ProfileUtils.getLocalProfile(loritta, guild, user)
 
-			val localPosition = ProfileUtils.getLocalExperiencePosition(localProfile)
+			val localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
 			val xpLocal = localProfile?.xp
 
@@ -107,7 +107,7 @@ class UndertaleProfileCreator : ProfileCreator("undertaleBattle") {
 			}
 		}
 
-		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(userProfile)
+		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
 		userInfo.add("Sonhos")
 		if (globalEconomyPosition != null)
@@ -119,7 +119,7 @@ class UndertaleProfileCreator : ProfileCreator("undertaleBattle") {
 
 		var y = 347
 		for (line in userInfo) {
-			graphics.drawText(line, 749 - biggestStrWidth - 2, y)
+			graphics.drawText(loritta, line, 749 - biggestStrWidth - 2, y)
 			y += 18
 		}
 

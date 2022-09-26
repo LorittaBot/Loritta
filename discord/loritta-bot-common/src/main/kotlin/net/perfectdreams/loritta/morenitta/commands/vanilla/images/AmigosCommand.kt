@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", "myfriends"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class AmigosCommand(loritta: LorittaBot) : AbstractCommand(loritta, "friends", listOf("amigos", "meusamigos", "myfriends"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "thx.png")) }
 	}
@@ -97,6 +97,6 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 				choosen.add(member)
 		}
 
-		return LorittaUtils.downloadImage(userAvatar!!) ?: Constants.IMAGE_FALLBACK
+		return LorittaUtils.downloadImage(loritta, userAvatar!!) ?: Constants.IMAGE_FALLBACK
 	}
 }

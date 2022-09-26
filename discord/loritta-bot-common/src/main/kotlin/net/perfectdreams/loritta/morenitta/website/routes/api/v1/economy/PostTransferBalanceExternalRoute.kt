@@ -28,7 +28,7 @@ class PostTransferBalanceExternalRoute(loritta: LorittaBot) : RequiresAPIAuthent
 		val garticos = json["garticos"].long
 		val transferRate = json["transferRate"].double
 
-		val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(receiverId)
+		val profile = loritta.getOrCreateLorittaProfile(receiverId)
 
 		logger.info { "$receiverId (has ${profile.money} dreams) is transferring $garticos garticos to Loritta with transfer rate is $transferRate" }
 		val finalMoney = (garticos * transferRate)

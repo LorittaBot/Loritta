@@ -25,55 +25,28 @@ fun BufferedImage.makeRoundedCorners(cornerRadius: Int) : BufferedImage {
 	return ImageUtils.makeRoundedCorner(this, cornerRadius)
 }
 
-fun Graphics.drawStringWrap(text: String, x: Int, y: Int, maxX: Int = 9999, maxY: Int = 9999) {
-	ImageUtils.drawTextWrap(text, x, y, maxX, maxY, this.fontMetrics, this)
+fun Graphics.drawStringWrap(loritta: LorittaBot, text: String, x: Int, y: Int, maxX: Int = 9999, maxY: Int = 9999) {
+	ImageUtils.drawTextWrap(loritta, text, x, y, maxX, maxY, this.fontMetrics, this)
 }
 
 fun Array<String>.remove(index: Int): Array<String> {
 	return ArrayUtils.remove(this, index)
 }
 
-val User.lorittaSupervisor: Boolean
-	get() {
-		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
+fun User.isLorittaSupervisor(lorittaShards: LorittaShards): Boolean {
+	val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
-		if (lorittaGuild != null) {
-			val role = lorittaGuild.getRoleById("351473717194522647")
-			val member = lorittaGuild.getMember(this)
+	if (lorittaGuild != null) {
+		val role = lorittaGuild.getRoleById("351473717194522647")
+		val member = lorittaGuild.getMember(this)
 
-			if (member != null && role != null) {
-				if (member.roles.contains(role))
-					return true
-			}
+		if (member != null && role != null) {
+			if (member.roles.contains(role))
+				return true
 		}
-		return false
 	}
-
-val User.support: Boolean
-	get() {
-		val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-		if (lorittaGuild != null) {
-			val role = lorittaGuild.getRoleById("399301696892829706")
-			val member = lorittaGuild.getMember(this)
-
-			if (member != null && role != null) {
-				if (member.roles.contains(role))
-					return true
-			}
-		}
-		return false
-	}
-
-/**
- * Retorna a instância atual da Loritta
- */
-val loritta get() = LorittaLauncher.loritta
-
-/**
- * Retorna a LorittaShards
- */
-val lorittaShards get() = LorittaLauncher.loritta.lorittaShards
+	return false
+}
 
 val gson get() = LorittaBot.GSON
 
@@ -95,7 +68,7 @@ object LorittaUtilsKotlin {
 	 * @return if the user is banned
 	 */
 	suspend fun handleIfBanned(context: CommandContext, profile: Profile)
-			= handleIfBanned(context.userHandle, profile, context.event.channel, context.locale)
+			= handleIfBanned(context.loritta, context.userHandle, profile, context.event.channel, context.locale)
 
 	/**
 	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
@@ -103,7 +76,7 @@ object LorittaUtilsKotlin {
 	 * @return if the user is banned
 	 */
 	suspend fun handleIfBanned(context: DiscordCommandContext, profile: Profile)
-			= handleIfBanned(context.user, profile, context.discordMessage.channel, context.locale)
+			= handleIfBanned(context.loritta, context.user, profile, context.discordMessage.channel, context.locale)
 
 	/**
 	 * Checks if a user is banned and, if it is, a message is sent to the user via direct messages or, if their DMs are disabled, in the current channel.
@@ -115,8 +88,8 @@ object LorittaUtilsKotlin {
 	 * @param legacyLocale   the user's locale
 	 * @return               if the user is banned
 	 */
-	private suspend fun handleIfBanned(user: User, profile: Profile, commandChannel: MessageChannel, locale: BaseLocale): Boolean {
-		val bannedState = profile.getBannedState()
+	private suspend fun handleIfBanned(loritta: LorittaBot, user: User, profile: Profile, commandChannel: MessageChannel, locale: BaseLocale): Boolean {
+		val bannedState = profile.getBannedState(loritta)
 
 		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...
 			if (bannedState != null) { // E ele ainda está banido...
@@ -132,7 +105,7 @@ object LorittaUtilsKotlin {
 		if (bannedState == null)
 			return false
 
-		LorittaLauncher.loritta.ignoreIds.add(user.idLong)
+		loritta.ignoreIds.add(user.idLong)
 
 		val message = locale.getList(
 				"commands.youAreLorittaBanned",

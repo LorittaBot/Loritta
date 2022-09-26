@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class AfkOffExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val profile = context.loritta.services.users.getUserProfile(UserId(context.user.id.value))
+        val profile = context.loritta.pudding.users.getUserProfile(UserId(context.user.id.value))
 
         if (profile?.isAfk == true)
             profile.disableAfk()

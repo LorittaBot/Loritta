@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -51,7 +50,7 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 						"commitHash" to commitHash,
 						"gitBranch" to gitBranch,
 						"compiledAt" to compiledAt,
-						"environment" to net.perfectdreams.loritta.morenitta.utils.loritta.config.loritta.environment.name
+						"environment" to loritta.config.loritta.environment.name
 				),
 				"memory" to jsonObject(
 						"used" to usedMemory,
@@ -70,7 +69,7 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 
 		val array = jsonArray()
 
-		for (shard in lorittaShards.shardManager.shards) {
+		for (shard in loritta.lorittaShards.shardManager.shards) {
 			array.add(
 					jsonObject(
 							"id" to shard.shardInfo.shardId,

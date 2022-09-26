@@ -42,7 +42,7 @@ interface CommandExecutorWrapper {
 
         suspend fun handleIfBanned(loritta: LorittaCinnamon, context: InteractionContext): Boolean {
             // Check if the user is banned from using Loritta
-            val userBannedState = loritta.services.users.getUserBannedState(UserId(context.user.id.value))
+            val userBannedState = loritta.pudding.users.getUserBannedState(UserId(context.user.id.value))
 
             if (userBannedState != null) {
                 val banDateInEpochSeconds = userBannedState.bannedAt.epochSeconds
@@ -82,7 +82,7 @@ interface CommandExecutorWrapper {
 
     suspend fun getGuildServerConfigOrLoadDefaultConfig(loritta: LorittaCinnamon, guildId: Snowflake?) = if (guildId != null) {
         // TODO: Fix this workaround, while this does work, it isn't that good
-        loritta.services.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: NonGuildServerConfigRoot
+        loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: NonGuildServerConfigRoot
     } else {
         // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
         NonGuildServerConfigRoot
@@ -153,7 +153,7 @@ interface CommandExecutorWrapper {
 
         // Website Update Message
         val patchNotesNotifications =
-            loritta.services.patchNotesNotifications.getUnreadPatchNotesNotificationsAndMarkAsRead(
+            loritta.pudding.patchNotesNotifications.getUnreadPatchNotesNotificationsAndMarkAsRead(
                 UserId(context.sender.id.value),
                 Clock.System.now()
             )

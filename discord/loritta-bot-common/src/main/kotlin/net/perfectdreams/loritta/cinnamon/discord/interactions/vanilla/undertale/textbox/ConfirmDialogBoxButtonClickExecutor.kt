@@ -21,7 +21,7 @@ class ConfirmDialogBoxButtonClickExecutor(
         // We could also use ephemeral messages, but nah, sometimes people *want* to show it off to other people without confirming
         val decoded = context.decodeDataFromComponentAndRequireUserToMatch<SelectGenericData>()
 
-        loritta.services.interactionsData.deleteInteractionData(decoded.interactionDataId)
+        loritta.pudding.interactionsData.deleteInteractionData(decoded.interactionDataId)
 
         context.updateMessage {
             content = ""

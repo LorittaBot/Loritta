@@ -158,7 +158,7 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
                         reputation[Reputations.receivedById]
                     }
 
-                    val receivedByUser = lorittaShards.retrieveUserInfoById(receivedByUserId)
+                    val receivedByUser = loritta.lorittaShards.retrieveUserInfoById(receivedByUserId)
 
                     val name = ("${receivedByUser?.name}#${receivedByUser?.discriminator} ($receivedByUserId)")
                     val content = reputation[Reputations.content]?.stripCodeMarks()
@@ -166,7 +166,7 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
                         ?.replace(Regex("[\\r\\n]"), " ")
                         ?.substringIfNeeded(0..250)
 
-                    val receivedByLoritta = reputation[Reputations.givenById] == net.perfectdreams.loritta.morenitta.utils.loritta.discordConfig.discord.clientId.toLong()
+                    val receivedByLoritta = reputation[Reputations.givenById] == loritta.discordConfig.discord.clientId.toLong()
                     if (receivedByLoritta) {
                         str.append(locale["$LOCALE_PREFIX.receivedReputationByLoritta", "`${user.name + "#" + user.discriminator}`"])
                     } else {

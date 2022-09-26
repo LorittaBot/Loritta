@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.entities.MessageEmbed
@@ -18,8 +17,9 @@ import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import kotlin.streams.toList
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class EmojiInfoCommand : AbstractCommand("emojiinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.emojiinfo.description")
 
 	override fun getUsage(): CommandArguments {
@@ -41,7 +41,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = net.perfectdrea
 			}
 
 			if (arg0.isValidSnowflake()) {
-				val emote = lorittaShards.getEmoteById(arg0)
+				val emote = loritta.lorittaShards.getEmoteById(arg0)
 				if (emote != null) {
 					// Emoji do Discord (via ID)
 					showDiscordEmoteInfo(context, emote)
@@ -109,7 +109,7 @@ class EmojiInfoCommand : AbstractCommand("emojiinfo", category = net.perfectdrea
 		fun getDiscordEmoteInfoEmbed(context: CommandContext, emote: Emote): MessageEmbed {
 			// Se o usuário usar um emoji de um servidor que a Lori NÃO compartilha, então ela não vai conseguir usar!
 			// Por isto, iremos pegar se ela conhece o emoji a partir das shards
-			val cachedEmote = lorittaShards.getEmoteById(emote.id)
+			val cachedEmote = context.loritta.lorittaShards.getEmoteById(emote.id)
 			val canUse = cachedEmote != null
 			// E vamos pegar a fonte da guild a partir do nosso emoji cacheado, já que ela pode conhecer em outra shard, mas não na atual!
 			val sourceGuild = cachedEmote?.guild

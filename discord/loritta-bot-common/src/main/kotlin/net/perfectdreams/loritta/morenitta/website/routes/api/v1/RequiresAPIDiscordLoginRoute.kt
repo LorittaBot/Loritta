@@ -22,25 +22,27 @@ abstract class RequiresAPIDiscordLoginRoute(val loritta: LorittaBot, path: Strin
 	override suspend fun onRequest(call: ApplicationCall) {
 		val session = call.lorittaSession
 
-		val discordAuth = session.getDiscordAuthFromJson()
-		val userIdentification = session.getUserIdentification(call)
+		val discordAuth = session.getDiscordAuthFromJson(loritta)
+		val userIdentification = session.getUserIdentification(loritta, call)
 
 		if (discordAuth == null || userIdentification == null)
 			throw WebsiteAPIException(
 					HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.UNAUTHORIZED,
 							"Invalid Discord Authorization"
 					)
 			)
 
-		val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
-		val bannedState = profile.getBannedState()
+		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+		val bannedState = profile.getBannedState(loritta)
 
 		if (bannedState != null)
 			throw WebsiteAPIException(
 					HttpStatusCode.Unauthorized,
 					WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.BANNED,
 							"You are Loritta Banned!"
 					)

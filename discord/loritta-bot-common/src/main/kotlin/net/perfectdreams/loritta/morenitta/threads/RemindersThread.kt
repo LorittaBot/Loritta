@@ -1,14 +1,12 @@
 package net.perfectdreams.loritta.morenitta.threads
 
+import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.morenitta.dao.Reminder
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.Reminders
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.TimeUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
@@ -17,14 +15,14 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.util.*
 
 /*
 * Thread to check user reminders
 * */
-class RemindersThread : Thread("Reminders Thread") {
+class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
     private val remindersThatFailedToDelete = mutableSetOf<Long>()
 
     companion object {
@@ -49,52 +47,57 @@ class RemindersThread : Thread("Reminders Thread") {
     }
 
     private fun checkReminders() {
-        val reminders = transaction(Databases.loritta) {
-            Reminder.find { Reminders.remindAt.lessEq(System.currentTimeMillis()) }
+        runBlocking {
+            val reminders = loritta.pudding.transaction {
+                Reminder.find { Reminders.remindAt.lessEq(System.currentTimeMillis()) }
                     .toList()
-        }
+            }
 
-        val notifiedReminders = mutableListOf<Reminder>()
+            val notifiedReminders = mutableListOf<Reminder>()
 
-        for (reminder in reminders) {
-            if (reminder.id.value !in remindersThatFailedToDelete) {
-                try {
-                    val channel = lorittaShards.getTextChannelById(reminder.channelId.toString())
+            for (reminder in reminders) {
+                if (reminder.id.value !in remindersThatFailedToDelete) {
+                    try {
+                        val channel = loritta.lorittaShards.getTextChannelById(reminder.channelId.toString())
 
-                    val reminderText = "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${reminder.content.stripCodeMarks().escapeMentions().substringIfNeeded(0..1000)}`\n" +
-                            "🔹 **|** Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
+                        val reminderText =
+                            "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${
+                                reminder.content.stripCodeMarks().escapeMentions().substringIfNeeded(0..1000)
+                            }`\n" +
+                                    "🔹 **|** Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
 
-                    if (channel != null && channel.canTalk()) {
-                        channel.sendMessage(
+                        if (channel != null && channel.canTalk()) {
+                            channel.sendMessage(
                                 MessageBuilder(reminderText)
-                                        .allowMentions(Message.MentionType.USER, Message.MentionType.EMOTE)
-                                        .build()
-                        ).queue {
-                            addSnoozeListener(it, reminder)
+                                    .allowMentions(Message.MentionType.USER, Message.MentionType.EMOTE)
+                                    .build()
+                            ).queue {
+                                addSnoozeListener(it, reminder)
+                            }
+
+                            notifiedReminders += reminder
                         }
-
-                        notifiedReminders += reminder
+                    } catch (e: Exception) {
+                        logger.warn(e) { "Something went wrong while trying to notify ${reminder.userId} about ${reminder.content} at channel ${reminder.channelId}" }
                     }
-                } catch (e: Exception) {
-                    logger.warn(e) { "Something went wrong while trying to notify ${reminder.userId} about ${reminder.content} at channel ${reminder.channelId}" }
+                } else {
+                    notifiedReminders += reminder
                 }
-            } else {
-                notifiedReminders += reminder
             }
-        }
 
-        // Apenas delete os lembretes NOTIFICADOS, as vezes lembretes podem ser de canais em outros clusters, e a gente não deve deletá-los
-        try {
-            transaction(Databases.loritta) {
-                Reminders.deleteWhere { Reminders.id inList notifiedReminders.map { it.id } }
+            // Apenas delete os lembretes NOTIFICADOS, as vezes lembretes podem ser de canais em outros clusters, e a gente não deve deletá-los
+            try {
+                loritta.pudding.transaction {
+                    Reminders.deleteWhere { Reminders.id inList notifiedReminders.map { it.id } }
+                }
+                notifiedReminders.intersect(remindersThatFailedToDelete).forEach(remindersThatFailedToDelete::remove)
+            } catch (e: Exception) {
+                logger.debug(e) { "Could not delete the notified reminders from database." }
+                // Failed to delete reminders from database.
+                // If this ever happen, we should store in memory the reminders that failed to delete
+                // because we don't want to spam servers
+                notifiedReminders.map { it.id.value }.forEach(remindersThatFailedToDelete::add)
             }
-            notifiedReminders.intersect(remindersThatFailedToDelete).forEach(remindersThatFailedToDelete::remove)
-        } catch (e: Exception) {
-            logger.debug(e) { "Could not delete the notified reminders from database." }
-            // Failed to delete reminders from database.
-            // If this ever happen, we should store in memory the reminders that failed to delete
-            // because we don't want to spam servers
-            notifiedReminders.map { it.id.value }.forEach(remindersThatFailedToDelete::add)
         }
     }
 
@@ -102,7 +105,7 @@ class RemindersThread : Thread("Reminders Thread") {
         if (!message.isFromGuild)
             return
 
-        message.onReactionAddByAuthor(reminder.userId) {
+        message.onReactionAddByAuthor(loritta, reminder.userId) {
             if (it.reactionEmote.isEmote(SNOOZE_EMOTE)) {
                 loritta.messageInteractionCache.remove(message.idLong)
 
@@ -144,7 +147,7 @@ class RemindersThread : Thread("Reminders Thread") {
     }
 
     private fun awaitSchedule(reply: Message, originalMessage: Message, reminder: Reminder) {
-        reply.onResponseByAuthor(reminder.userId, originalMessage.guild.idLong, reminder.channelId) {
+        reply.onResponseByAuthor(loritta, reminder.userId, originalMessage.guild.idLong, reminder.channelId) {
             loritta.messageInteractionCache.remove(reply.idLong)
             loritta.messageInteractionCache.remove(originalMessage.idLong)
             reply.delete().queue()
@@ -172,7 +175,7 @@ class RemindersThread : Thread("Reminders Thread") {
             reply.channel.sendMessage("<@${reminder.userId}> $messageContent").queue()
         }
 
-        reply.onReactionAddByAuthor(reminder.userId) {
+        reply.onReactionAddByAuthor(loritta, reminder.userId) {
             if (it.reactionEmote.isEmote(CANCEL_EMOTE)) {
                 loritta.messageInteractionCache.remove(reply.idLong)
                 reply.delete().queue()

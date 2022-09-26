@@ -15,8 +15,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.morenitta.utils.gson
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -24,8 +22,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.GACampaigns
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lorifa"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class LoraffleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "loraffle", listOf("rifa", "raffle", "lorifa"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		const val MAX_TICKETS_BY_USER_PER_ROUND = 100_000
 	}
@@ -56,7 +55,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		if (arg0 == "comprar" || arg0 == "buy") {
 			val quantity = Math.max(context.args.getOrNull(1)?.toIntOrNull() ?: 1, 1)
 
-			val dailyReward = AccountUtils.getUserTodayDailyReward(context.lorittaUser.profile)
+			val dailyReward = AccountUtils.getUserTodayDailyReward(loritta, context.lorittaUser.profile)
 
 			if (dailyReward == null) { // Nós apenas queremos permitir que a pessoa aposte na rifa caso já tenha pegado sonhos alguma vez hoje
 				context.reply(
@@ -78,8 +77,8 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 				return
 			}
 
-			val body = HttpRequest.post("https://${shard.getUrl()}/api/v1/loritta/raffle")
-				.userAgent(loritta.lorittaCluster.getUserAgent())
+			val body = HttpRequest.post("https://${shard.getUrl(loritta)}/api/v1/loritta/raffle")
+				.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 				.header("Authorization", loritta.lorittaInternalApiKey.name)
 				.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
 				.readTimeout(loritta.config.loritta.clusterReadTimeout)
@@ -161,8 +160,8 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 			return
 		}
 
-		val body = HttpRequest.get("https://${shard.getUrl()}/api/v1/loritta/raffle")
-			.userAgent(loritta.lorittaCluster.getUserAgent())
+		val body = HttpRequest.get("https://${shard.getUrl(loritta)}/api/v1/loritta/raffle")
+			.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 			.header("Authorization", loritta.lorittaInternalApiKey.name)
 			.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
 			.readTimeout(loritta.config.loritta.clusterReadTimeout)
@@ -178,7 +177,7 @@ class LoraffleCommand : AbstractCommand("loraffle", listOf("rifa", "raffle", "lo
 		val lastWinnerPrize = json["lastWinnerPrize"].long
 
 		val lastWinner = if (lastWinnerId != null) {
-			lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
+			loritta.lorittaShards.retrieveUserInfoById(lastWinnerId.toLong())
 		} else {
 			null
 		}

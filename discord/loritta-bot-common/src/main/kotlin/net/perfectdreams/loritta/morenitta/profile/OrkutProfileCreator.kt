@@ -16,14 +16,14 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class OrkutProfileCreator : ProfileCreator("orkut") {
+class OrkutProfileCreator(val loritta: LorittaBot) : ProfileCreator("orkut") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/orkut/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
-		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(200, 200, BufferedImage.SCALE_SMOOTH)
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(200, 200, BufferedImage.SCALE_SMOOTH)
 
 		val whitneyMedium = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-medium.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
@@ -53,8 +53,8 @@ class OrkutProfileCreator : ProfileCreator("orkut") {
 
 		graphics.color = Color(102, 102, 102)
 		graphics.font = whitneySemiBold18
-		graphics.drawText(user.name, 14, 251, 201)
-		ImageUtils.drawTextWrapSpaces(aboutMe, 256, 51, 773, 1000, graphics.fontMetrics, graphics)
+		graphics.drawText(loritta, user.name, 14, 251, 201)
+		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 256, 51, 773, 1000, graphics.fontMetrics, graphics)
 
 		graphics.color = Color.BLACK
 		graphics.drawString("Sua sorte do dia", 267, 257)
@@ -62,7 +62,7 @@ class OrkutProfileCreator : ProfileCreator("orkut") {
 		graphics.font = whitneyMedium18
 		graphics.drawString("A Loritta e a Pantufa são suas amigas", 267, 276)
 
-		val reputations = ProfileUtils.getReputationCount(user)
+		val reputations = ProfileUtils.getReputationCount(loritta, user)
 		val reversedRep = reputations.toString().reversed()
 
 		var startX = 202
@@ -74,7 +74,7 @@ class OrkutProfileCreator : ProfileCreator("orkut") {
 
 		drawBadges(badges, graphics)
 
-		/* val mutualGuildsByUsers = lorittaShards.getMutualGuilds(user).filter { it.iconUrl != null }.sortedByDescending { it.members.size }
+		/* val mutualGuildsByUsers = loritta.lorittaShards.getMutualGuilds(user).filter { it.iconUrl != null }.sortedByDescending { it.members.size }
 
 		var startGuildX = 252
 		var startGuildY = 400
@@ -90,9 +90,9 @@ class OrkutProfileCreator : ProfileCreator("orkut") {
 			}
 
 			if (guild.iconUrl != null) {
-				val icon = LorittaUtils.downloadImage(guild.iconUrl!!)!!.getScaledInstance(113, 113, BufferedImage.SCALE_SMOOTH)
+				val icon = LorittaUtils.downloadImage(loritta, guild.iconUrl!!)!!.getScaledInstance(113, 113, BufferedImage.SCALE_SMOOTH)
 				graphics.drawImage(icon, startGuildX, startGuildY, null)
-				graphics.drawText(guild.name, startGuildX, startGuildY + 113 + 18, startGuildX + 113)
+				graphics.drawText(loritta, guild.name, startGuildX, startGuildY + 113 + 18, startGuildX + 113)
 				startGuildX += 113 + 12
 			}
 		}

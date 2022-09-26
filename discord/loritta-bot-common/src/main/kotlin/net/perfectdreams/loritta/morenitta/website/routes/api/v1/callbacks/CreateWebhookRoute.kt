@@ -18,8 +18,8 @@ class CreateWebhookRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks
 		val code = call.parameters["code"]
 
 		val auth = TemmieDiscordAuth(
-				net.perfectdreams.loritta.morenitta.utils.loritta.discordConfig.discord.clientId,
-				net.perfectdreams.loritta.morenitta.utils.loritta.discordConfig.discord.clientSecret,
+				loritta.discordConfig.discord.clientId,
+				loritta.discordConfig.discord.clientSecret,
 				code,
 				"https://$hostHeader/api/v1/callbacks/discord-webhook",
 				listOf("webhook.incoming")

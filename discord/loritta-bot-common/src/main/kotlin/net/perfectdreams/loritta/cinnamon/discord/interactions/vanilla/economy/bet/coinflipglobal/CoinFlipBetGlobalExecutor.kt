@@ -63,7 +63,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                     Emotes.Error
                 )
 
-            val results = context.loritta.services.bets.addToCoinFlipBetGlobalMatchmakingQueue(
+            val results = context.loritta.pudding.bets.addToCoinFlipBetGlobalMatchmakingQueue(
                 UserId(context.user.id.value),
                 context.interaKTionsContext.discordInteraction.token,
                 context.loritta.languageManager.getIdByI18nContext(context.i18nContext),
@@ -93,11 +93,11 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                         val loserCachedUserInfo = context.loritta.getCachedUserInfo(result.loser)
                         val now24HoursAgo = Clock.System.now()
                             .minus(24.hours)
-                        val winnerBetStats = context.loritta.services.bets.getCoinFlipBetGlobalUserBetsStats(
+                        val winnerBetStats = context.loritta.pudding.bets.getCoinFlipBetGlobalUserBetsStats(
                             result.winner,
                             now24HoursAgo
                         )
-                        val loserBetStats = context.loritta.services.bets.getCoinFlipBetGlobalUserBetsStats(
+                        val loserBetStats = context.loritta.pudding.bets.getCoinFlipBetGlobalUserBetsStats(
                             result.loser,
                             now24HoursAgo
                         )
@@ -438,7 +438,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
         )
 
         if (isRemoveFromQueueRequest) {
-            val leftQueue = context.loritta.services.bets.removeFromCoinFlipBetGlobalMatchmakingQueue(
+            val leftQueue = context.loritta.pudding.bets.removeFromCoinFlipBetGlobalMatchmakingQueue(
                 UserId(context.user.id.value),
                 quantity
             )

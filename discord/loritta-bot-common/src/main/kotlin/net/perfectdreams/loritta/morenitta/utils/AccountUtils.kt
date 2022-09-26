@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Daily
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -19,7 +20,7 @@ object AccountUtils {
      * @param afterTime allows filtering dailies by time, only dailies [afterTime] will be retrieven
      * @return the last received daily reward, if it exists
      */
-    suspend fun getUserLastDailyRewardReceived(profile: Profile, afterTime: Long = Long.MIN_VALUE): Daily? {
+    suspend fun getUserLastDailyRewardReceived(loritta: LorittaBot, profile: Profile, afterTime: Long = Long.MIN_VALUE): Daily? {
         return loritta.newSuspendedTransaction {
             val dailyResult = Dailies.select {
                 Dailies.receivedById eq profile.id.value and (Dailies.receivedAt greaterEq afterTime)
@@ -39,7 +40,7 @@ object AccountUtils {
      * @param profile the user's profile
      * @return the last received daily reward, if it exists
      */
-    suspend fun getUserTodayDailyReward(profile: Profile) = getUserDailyRewardInTheLastXDays(profile, 0)
+    suspend fun getUserTodayDailyReward(loritta: LorittaBot, profile: Profile) = getUserDailyRewardInTheLastXDays(loritta, profile, 0)
 
     /**
      * Gets the user's received daily reward from the last [dailyInThePreviousDays] days, or null, if the user didn't get the daily reward in the specified threshold
@@ -48,7 +49,7 @@ object AccountUtils {
      * @param dailyInThePreviousDays the daily minimum days threshold
      * @return the last received daily reward, if it exists
      */
-    suspend fun getUserDailyRewardInTheLastXDays(profile: Profile, dailyInThePreviousDays: Long): Daily? {
+    suspend fun getUserDailyRewardInTheLastXDays(loritta: LorittaBot, profile: Profile, dailyInThePreviousDays: Long): Daily? {
         val dayAtMidnight = Instant.now()
             .atZone(Constants.LORITTA_TIMEZONE)
             .toOffsetDateTime()
@@ -59,11 +60,11 @@ object AccountUtils {
             .toInstant()
             .toEpochMilli()
 
-        return getUserLastDailyRewardReceived(profile, dayAtMidnight)
+        return getUserLastDailyRewardReceived(loritta, profile, dayAtMidnight)
     }
 
     suspend fun checkAndSendMessageIfUserIsBanned(context: CommandContext, userProfile: Profile): Boolean {
-        val bannedState = userProfile.getBannedState()
+        val bannedState = userProfile.getBannedState(context.loritta)
         val locale = context.locale
 
         if (bannedState != null) {

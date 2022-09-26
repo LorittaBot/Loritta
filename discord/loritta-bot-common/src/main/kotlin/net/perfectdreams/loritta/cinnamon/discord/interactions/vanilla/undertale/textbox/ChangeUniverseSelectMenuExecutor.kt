@@ -61,7 +61,7 @@ class ChangeUniverseSelectMenuExecutor(
         }
 
         // Delete the old interaction data ID from the database, the "createMessage" will create a new one anyways :)
-        context.loritta.services.interactionsData.deleteInteractionData(interactionDataId)
+        context.loritta.pudding.interactionsData.deleteInteractionData(interactionDataId)
 
         val builtMessage = TextBoxExecutor.createMessage(
             context.loritta,

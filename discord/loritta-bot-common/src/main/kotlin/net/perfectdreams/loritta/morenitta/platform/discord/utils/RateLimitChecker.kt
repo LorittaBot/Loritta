@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.utils
 
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.internal.JDAImpl
@@ -44,7 +43,7 @@ class RateLimitChecker(val m: LorittaBot) {
 	var lastRequestWipe = System.currentTimeMillis()
 	var lastConsoleWarn = System.currentTimeMillis()
 
-	fun getAllPendingRequests() = lorittaShards.shardManager.shards.flatMap {
+	fun getAllPendingRequests() = m.lorittaShards.shardManager.shards.flatMap {
 		val rateLimiter = getRateLimiter(it)
 		val buckets = bucketsField.get(rateLimiter) as ConcurrentHashMap<String, IBucket>
 		buckets.flatMap { it.value.requests }

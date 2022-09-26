@@ -7,7 +7,6 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import net.perfectdreams.loritta.morenitta.dao.DonationConfig
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
@@ -18,6 +17,7 @@ import net.perfectdreams.dreamstorageservice.data.api.DeleteImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.image.BufferedImage
@@ -27,7 +27,7 @@ import java.io.IOException
 import java.util.*
 import javax.imageio.ImageIO
 
-object DonationConfigTransformer : ConfigTransformer {
+class DonationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "donation"
     override val configKey: String = "donationConfig"
 

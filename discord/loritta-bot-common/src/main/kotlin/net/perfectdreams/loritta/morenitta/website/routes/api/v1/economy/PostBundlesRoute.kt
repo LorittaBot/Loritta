@@ -32,7 +32,7 @@ class PostBundlesRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lorit
 		// This is a security measure, to avoid "high risk" purchases.
 		// We will require that users need to verify their account + have MFA enabled.
 		val refreshedUserIdentification = discordAuth.getUserIdentification()
-		if (!net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils.checkIfAccountHasMFAEnabled(refreshedUserIdentification))
+		if (!WebsiteUtils.checkIfAccountHasMFAEnabled(loritta, refreshedUserIdentification))
 			return
 
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
@@ -70,6 +70,7 @@ class PostBundlesRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lorit
 		} else {
 			throw WebsiteAPIException(HttpStatusCode.NotFound,
 					WebsiteUtils.createErrorPayload(
+							loritta,
 							LoriWebCode.ITEM_NOT_FOUND,
 							"Bundle ID $bundleId not found or it is inactive"
 					)

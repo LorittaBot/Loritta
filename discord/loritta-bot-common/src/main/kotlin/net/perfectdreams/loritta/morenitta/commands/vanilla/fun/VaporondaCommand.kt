@@ -8,8 +8,9 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.text.VaporwaveUtils
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class VaporondaCommand : AbstractCommand("vaporonda", listOf("vaporwave"), category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class VaporondaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vaporonda", listOf("vaporwave"), category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.vaporwave.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.vaporwave.examples")
 

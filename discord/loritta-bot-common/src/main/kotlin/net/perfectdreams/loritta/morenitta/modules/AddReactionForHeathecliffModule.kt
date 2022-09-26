@@ -7,8 +7,9 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class AddReactionForHeathecliffModule : MessageReceivedModule {
+class AddReactionForHeathecliffModule(val loritta: LorittaBot) : MessageReceivedModule {
 	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		return event.channel.idLong == 643828343325851648L || event.channel.idLong == 646871435465326592L
 	}

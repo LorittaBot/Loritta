@@ -14,8 +14,9 @@ import org.json.XML
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.imageio.ImageIO
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class TextCraftCommand : AbstractCommand("textcraft", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class TextCraftCommand(loritta: LorittaBot) : AbstractCommand(loritta, "textcraft", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData(
 			"commands.command.textcraft.description",
 			listOf(

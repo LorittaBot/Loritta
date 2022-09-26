@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.WebhookType
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 object WebhookUtils {
 	/**
@@ -18,7 +19,7 @@ object WebhookUtils {
 	 * @param name        Nome do Webhook
 	 * @return TemmieWebhook pronto para ser usado
 	 */
-	suspend fun getOrCreateWebhook(channel: MessageChannel, name: String): WebhookClient? {
+	suspend fun getOrCreateWebhook(loritta: LorittaBot, channel: MessageChannel, name: String): WebhookClient? {
 		if (channel.type == ChannelType.PRIVATE) // Se a Loritta não pode acessar as webhooks do servidor, retorne null
 			return null
 

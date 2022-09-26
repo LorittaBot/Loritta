@@ -17,7 +17,7 @@ class BrokerStockQuantityAutocompleteExecutor(loritta: LorittaCinnamon, val tick
         val currentInput = focusedOption.value
 
         val ticker = context.getArgument(tickerOption) ?: return mapOf()
-        val tickerInfo = loritta.services.bovespaBroker.getTicker(ticker.uppercase())
+        val tickerInfo = loritta.pudding.bovespaBroker.getTicker(ticker.uppercase())
 
         val quantity = NumberUtils.convertShortenedNumberToLong(context.i18nContext, currentInput) ?: return mapOf(
             context.i18nContext.get(

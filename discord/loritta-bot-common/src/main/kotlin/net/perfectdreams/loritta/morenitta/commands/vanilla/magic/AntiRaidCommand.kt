@@ -5,8 +5,9 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.modules.AutomodModule
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class AntiRaidCommand : AbstractCommand("antiraid", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
+class AntiRaidCommand(loritta: LorittaBot) : AbstractCommand(loritta, "antiraid", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Configura servidores na Lori's Server List"
 	}

@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.user
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.toJsonArray
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.ApplicationCall
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
@@ -13,7 +12,7 @@ class GetMutualGuildsRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val userId = call.parameters["userId"] ?: return
 
-		val user = lorittaShards.getUserById(userId)
+		val user = loritta.lorittaShards.getUserById(userId)
 
 		if (user == null) {
 			call.respondJson(
@@ -24,7 +23,7 @@ class GetMutualGuildsRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute
 			return
 		}
 
-		val mutualGuilds = lorittaShards.getMutualGuilds(user)
+		val mutualGuilds = loritta.lorittaShards.getMutualGuilds(user)
 
 		call.respondJson(
 				jsonObject(

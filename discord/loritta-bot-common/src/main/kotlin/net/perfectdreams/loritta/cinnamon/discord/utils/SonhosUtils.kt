@@ -41,7 +41,7 @@ object SonhosUtils {
             .withSecond(0)
             .withNano(0)
 
-        val todayDailyReward = loritta.services.sonhos.getUserLastDailyRewardReceived(
+        val todayDailyReward = loritta.pudding.sonhos.getUserLastDailyRewardReceived(
             userId,
             now.toKotlinLocalDateTime().toInstant(TimeZone.of("America/Sao_Paulo"))
         )
@@ -79,7 +79,7 @@ object SonhosUtils {
             .withSecond(0)
             .withNano(0)
 
-        val todayDailyReward = loritta.services.sonhos.getUserLastDailyRewardReceived(
+        val todayDailyReward = loritta.pudding.sonhos.getUserLastDailyRewardReceived(
             userId,
             now.toKotlinLocalDateTime().toInstant(TimeZone.of("America/Sao_Paulo"))
         )

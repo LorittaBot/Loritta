@@ -12,8 +12,9 @@ import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import org.apache.commons.codec.digest.DigestUtils
 import java.util.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class EncodeCommand : AbstractCommand("encode", listOf("codificar", "encrypt", "criptografar", "hash"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+class EncodeCommand(loritta: LorittaBot) : AbstractCommand(loritta, "encode", listOf("codificar", "encrypt", "criptografar", "hash"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData(
 			"commands.command.encode.description",
 			listOf(

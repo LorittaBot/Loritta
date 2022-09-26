@@ -15,13 +15,13 @@ import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.extensions.isValidUrl
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class InviteInfoCommand : AbstractCommand("inviteinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class InviteInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "inviteinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.inviteinfo.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.inviteinfo.examples")
 
@@ -107,7 +107,7 @@ class InviteInfoCommand : AbstractCommand("inviteinfo", category = net.perfectdr
 					embed.addField("\uD83D\uDC4B ${locale["commands.command.inviteinfo.whoInvited"]}", "`$username#$discriminator` ($id)", true)
 				}
 
-				val discordGuild = lorittaShards.queryGuildById(id)
+				val discordGuild = loritta.lorittaShards.queryGuildById(id)
 
 				if (discordGuild != null) {
 					embed.setFooter("\uD83D\uDE0A ${context.locale["commands.command.inviteinfo.inThisServer"]}")

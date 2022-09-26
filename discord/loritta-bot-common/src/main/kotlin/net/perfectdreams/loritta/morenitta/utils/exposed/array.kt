@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils.exposed
 
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -8,22 +7,12 @@ import org.jetbrains.exposed.sql.transactions.TransactionManager
 fun <T> Table.array(name: String, columnType: ColumnType): Column<Array<T>> = registerColumn(name, ArrayColumnType(columnType))
 
 class ArrayColumnType(private val type: ColumnType) : ColumnType() {
-
-	private fun supportsArrays() = !loritta.config.database.type.startsWith("SQLite")
-
 	override fun sqlType(): String = buildString {
-		if (!supportsArrays()) {
-			append("TEXT")
-		} else {
 			append(type.sqlType())
 			append(" ARRAY")
-		}
 	}
 
 	override fun valueToDB(value: Any?): Any? {
-		if (!supportsArrays())
-			return "'NOT SUPPORTED'"
-
 		if (value is Array<*>) {
 			val columnType = type.sqlType().split("(")[0]
 			val jdbcConnection = (TransactionManager.current().connection as JdbcConnectionImpl).connection
@@ -34,16 +23,6 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 	}
 
 	override fun valueFromDB(value: Any): Any {
-		if (!supportsArrays()) {
-			val clazz = type::class
-			val clazzName = clazz.simpleName
-			if (clazzName == "LongColumnType")
-				return arrayOf<Long>()
-			if (clazzName == "TextColumnType")
-				return arrayOf<String>()
-			error("Unsupported Column Type")
-		}
-
 		if (value is java.sql.Array) {
 			return value.array
 		}
@@ -54,9 +33,6 @@ class ArrayColumnType(private val type: ColumnType) : ColumnType() {
 	}
 
 	override fun notNullValueToDB(value: Any): Any {
-		if (!supportsArrays())
-			return "'NOT SUPPORTED'"
-
 		if (value is Array<*>) {
 			if (value.isEmpty())
 				return "'{}'"

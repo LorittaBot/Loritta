@@ -6,8 +6,9 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class RemoveEmojiCommand : AbstractCommand("removeemoji", listOf("deleteemoji", "deletaremoji", "removeremoji", "delemoji"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class RemoveEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "removeemoji", listOf("deleteemoji", "deletaremoji", "removeremoji", "delemoji"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	// TODO: Fix Usage
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.removeemoji.description")

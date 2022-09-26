@@ -19,7 +19,7 @@ import java.awt.image.AffineTransformOp
 import java.awt.image.BufferedImage
 import java.io.File
 
-class LavaReversoCommand : AbstractCommand("lavareverse", listOf("lavareverso", "reverselava"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class LavaReversoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lavareverse", listOf("lavareverso", "reverselava"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.reverselava.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.reverselava.examples")
 

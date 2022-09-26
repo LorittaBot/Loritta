@@ -83,7 +83,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         // All prelimary checks have passed, let's defer!
         context.deferChannelMessage() // Defer because this sometimes takes too long
 
-        val userProfile = loritta.services.users.getUserProfile(UserId(context.user.id))
+        val userProfile = loritta.pudding.users.getUserProfile(UserId(context.user.id))
 
         if (userProfile == null || howMuch > userProfile.money) {
             context.fail {
@@ -183,7 +183,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         val now = Clock.System.now()
 
         // Check if the user got daily in the last 14 days before allowing a transaction
-        val gotDailyRewardInTheLastXDays = context.loritta.services.sonhos.getUserLastDailyRewardReceived(
+        val gotDailyRewardInTheLastXDays = context.loritta.pudding.sonhos.getUserLastDailyRewardReceived(
             UserId(context.user.id),
             now - 14.days
         ) != null

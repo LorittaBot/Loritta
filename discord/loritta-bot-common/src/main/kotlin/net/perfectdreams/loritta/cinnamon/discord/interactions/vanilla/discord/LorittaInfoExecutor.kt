@@ -25,9 +25,9 @@ class LorittaInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecut
             .minusSeconds(86400)
             .toKotlinInstant()
 
-        val guildCount = context.loritta.services.stats.getGuildCount()
-        val executedApplicationCommands = context.loritta.services.executedInteractionsLog.getExecutedApplicationCommands(since)
-        val uniqueUsersExecutedApplicationCommands = context.loritta.services.executedInteractionsLog.getUniqueUsersExecutedApplicationCommands(since)
+        val guildCount = context.loritta.pudding.stats.getGuildCount()
+        val executedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getExecutedApplicationCommands(since)
+        val uniqueUsersExecutedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getUniqueUsersExecutedApplicationCommands(since)
 
         context.sendMessage {
             embed {

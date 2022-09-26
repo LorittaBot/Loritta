@@ -76,7 +76,7 @@ class EveryGroupHasExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExec
             }
         }
 
-        val profileSettings = loritta.services.users.getProfileSettingsOfUsers(
+        val profileSettings = loritta.pudding.users.getProfileSettingsOfUsers(
             listOfUsers.map { UserId(it.id) }
         )
 

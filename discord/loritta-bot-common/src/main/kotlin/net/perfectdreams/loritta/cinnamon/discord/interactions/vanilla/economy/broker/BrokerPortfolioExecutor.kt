@@ -14,8 +14,8 @@ class BrokerPortfolioExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessage()
 
-        val stockInformations = context.loritta.services.bovespaBroker.getAllTickers()
-        val userStockAssets = context.loritta.services.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
+        val stockInformations = context.loritta.pudding.bovespaBroker.getAllTickers()
+        val userStockAssets = context.loritta.pudding.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
 
         if (userStockAssets.isEmpty())
             context.fail(

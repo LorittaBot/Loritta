@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
 
-class DeusCommand : AbstractCommand("god", listOf("deus"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class DeusCommand(loritta: LorittaBot) : AbstractCommand(loritta, "god", listOf("deus"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.god.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 

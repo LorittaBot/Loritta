@@ -74,7 +74,7 @@ object MiscUtils {
 		process.waitFor(10, TimeUnit.SECONDS)
 	}
 
-	suspend fun verifyAccount(userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
+	suspend fun verifyAccount(loritta: LorittaBot, userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
 		if (!userIdentification.verified)
 			return AccountCheckResult.NOT_VERIFIED
 
@@ -92,10 +92,10 @@ object MiscUtils {
 		if (matches)
 			return AccountCheckResult.BAD_EMAIL
 
-		return verifyIP(ip)
+		return verifyIP(loritta, ip)
 	}
 
-	suspend fun verifyIP(ip: String): AccountCheckResult {
+	suspend fun verifyIP(loritta: LorittaBot, ip: String): AccountCheckResult {
 		// Para identificar meliantes, cada request terá uma razão determinando porque o IP foi bloqueado
 		// 0 = Stop Forum Spam
 		// 1 = Bad hostname
@@ -153,7 +153,7 @@ object MiscUtils {
 		return AccountCheckResult.SUCCESS
 	}
 
-	fun handleVerification(status: AccountCheckResult) {
+	fun handleVerification(loritta: LorittaBot, status: AccountCheckResult) {
 		if (!status.canAccess) {
 			when (status) {
 				MiscUtils.AccountCheckResult.STOP_FORUM_SPAM,
@@ -165,6 +165,7 @@ object MiscUtils {
 					// 2 = OVH IP
 					throw WebsiteAPIException(HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
+									loritta,
 									LoriWebCode.FORBIDDEN,
 									"Bad IP!"
 							) {
@@ -181,6 +182,7 @@ object MiscUtils {
 				MiscUtils.AccountCheckResult.BAD_EMAIL -> {
 					throw WebsiteAPIException(HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
+									loritta,
 									LoriWebCode.FORBIDDEN,
 									"Bad email!"
 							) { it["code"] = 2 }
@@ -189,6 +191,7 @@ object MiscUtils {
 				MiscUtils.AccountCheckResult.NOT_VERIFIED -> {
 					throw WebsiteAPIException(HttpStatusCode.Forbidden,
 							WebsiteUtils.createErrorPayload(
+									loritta,
 									LoriWebCode.FORBIDDEN,
 									"Account is not verified!"
 							) { it["code"] = 1 }

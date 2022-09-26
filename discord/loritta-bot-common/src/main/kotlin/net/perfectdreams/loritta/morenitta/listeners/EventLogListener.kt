@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -83,8 +82,8 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						?.replace("gif", "png")
 						?: event.user.defaultAvatarUrl
 
-				val rawOldAvatar = LorittaUtils.downloadImage(oldAvatarUrl)
-				val rawNewAvatar = LorittaUtils.downloadImage(event.user.getEffectiveAvatarUrl(ImageFormat.PNG))
+				val rawOldAvatar = LorittaUtils.downloadImage(loritta, oldAvatarUrl)
+				val rawNewAvatar = LorittaUtils.downloadImage(loritta, event.user.getEffectiveAvatarUrl(ImageFormat.PNG))
 
 				if (rawOldAvatar == null || rawNewAvatar == null) { // As vezes o avatar pode ser null
 					downloadedAvatarJobs.remove(event.entity.id)
@@ -150,6 +149,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 									.addFile("avatar.png", bais)
 
 								EventLog.sendMessageInEventLogViaWebhook(
+									loritta,
 									message.build(),
 									guild,
 									eventLogConfig
@@ -177,7 +177,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 			val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
-			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(net.perfectdreams.loritta.morenitta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
@@ -194,7 +194,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					}
 
 					if (storedMessage != null) {
-						val user = lorittaShards.retrieveUserInfoById(storedMessage.authorId) ?: return@launch
+						val user = loritta.lorittaShards.retrieveUserInfoById(storedMessage.authorId) ?: return@launch
 
 						val embed = WebhookEmbedBuilder()
 						embed.setTimestamp(Instant.now())
@@ -203,7 +203,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						embed.setAuthor(WebhookEmbed.EmbedAuthor(user.name + "#" + user.discriminator, null, user.effectiveAvatarUrl))
 
-						var deletedMessage = "\uD83D\uDCDD ${locale.getList("modules.eventLog.messageDeleted", storedMessage.content, "<#${storedMessage.channelId}>").joinToString("\n")}"
+						var deletedMessage = "\uD83D\uDCDD ${locale.getList("modules.eventLog.messageDeleted", storedMessage.decryptContent(loritta), "<#${storedMessage.channelId}>").joinToString("\n")}"
 
 						if (storedMessage.storedAttachments.isNotEmpty()) {
 							deletedMessage += "\n${locale["modules.eventLog.messageDeletedUploads"]}\n" + storedMessage.storedAttachments.joinToString(separator = "\n")
@@ -212,6 +212,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						embed.setDescription(deletedMessage)
 
 						EventLog.sendMessageInEventLogViaWebhook(
+							loritta,
 							WebhookMessageBuilder()
 								.setUsername(event.guild.selfMember.user.name)
 								.setContent(" ")
@@ -242,7 +243,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
 			val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
-			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(net.perfectdreams.loritta.morenitta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
@@ -261,7 +262,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					if (storedMessages.isNotEmpty()) {
 						val retrievedUsers = mutableMapOf<Long, CachedUserInfo?>()
 
-						val user = lorittaShards.retrieveUserInfoById(storedMessages.first().authorId)
+						val user = loritta.lorittaShards.retrieveUserInfoById(storedMessages.first().authorId)
 								?: return@launch
 
 						retrievedUsers[storedMessages.first().authorId] = user
@@ -275,14 +276,14 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 						for (message in storedMessages) {
 							val messageSentByUser = retrievedUsers.getOrPut(message.authorId) {
-								lorittaShards.retrieveUserInfoById(
+								loritta.lorittaShards.retrieveUserInfoById(
 									message.authorId
 								)
 							}
 
 							val creationTime = OffsetDateTime.ofInstant(Instant.ofEpochMilli(message.createdAt), TimeZone.getTimeZone("GMT").toZoneId())
 
-							val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.authorId}) ${messageSentByUser?.name}#${messageSentByUser?.discriminator}: ${message.content}"
+							val line = "[${creationTime.format(DateUtils.PRETTY_DATE_FORMAT)}] (${message.authorId}) ${messageSentByUser?.name}#${messageSentByUser?.discriminator}: ${message.decryptContent(loritta)}"
 							lines.add(line)
 						}
 
@@ -295,6 +296,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						val channelName = event.guild.getTextChannelById(storedMessages.first().channelId)?.name ?: "unknown"
 
 						EventLog.sendMessageInEventLogViaWebhook(
+							loritta,
 							WebhookMessageBuilder()
 								.setUsername(event.guild.selfMember.user.name)
 								.setContent(" ")
@@ -327,7 +329,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(net.perfectdreams.loritta.morenitta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.memberBanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
@@ -353,6 +355,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
 
 				EventLog.sendMessageInEventLogViaWebhook(
+					loritta,
 					WebhookMessageBuilder()
 						.setUsername(event.guild.selfMember.user.name)
 						.setContent(" ")
@@ -377,18 +380,18 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			// Fazer relay de unbans
 			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
-				val relayTo = lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
+				val relayTo = loritta.lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
 
 				relayTo?.unban(event.user)?.queue()
 			}
 			if (event.guild.id == Constants.ENGLISH_SUPPORT_GUILD_ID) {
-				val relayTo = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
+				val relayTo = loritta.lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 				relayTo?.unban(event.user)?.queue()
 			}
 
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(net.perfectdreams.loritta.morenitta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.memberUnbanned) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
@@ -413,6 +416,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.user.id], null))
 
 				EventLog.sendMessageInEventLogViaWebhook(
+					loritta,
 					WebhookMessageBuilder()
 						.setUsername(event.guild.selfMember.user.name)
 						.setContent(" ")
@@ -436,7 +440,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
-			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(net.perfectdreams.loritta.morenitta.utils.loritta, ServerConfig::eventLogConfig) ?: return@launch
+			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
 			if (eventLogConfig.enabled && eventLogConfig.nicknameChanges) {
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
@@ -463,6 +467,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				embed.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", event.member.user.id], null))
 
 				EventLog.sendMessageInEventLogViaWebhook(
+					loritta,
 					WebhookMessageBuilder()
 						.setUsername(event.guild.selfMember.user.name)
 						.setContent(" ")

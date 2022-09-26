@@ -25,7 +25,7 @@ class UnfollowPackageButtonClickExecutor(
         context.deferUpdateMessage()
         val decoded = context.decodeDataFromComponentAndRequireUserToMatch<UnfollowPackageData>()
 
-        loritta.services.packagesTracking.untrackCorreiosPackage(
+        loritta.pudding.packagesTracking.untrackCorreiosPackage(
             UserId(user.id.value),
             decoded.trackingId
         )

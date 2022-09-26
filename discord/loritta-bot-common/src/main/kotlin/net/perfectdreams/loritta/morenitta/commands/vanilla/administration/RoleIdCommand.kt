@@ -7,8 +7,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.util.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class RoleIdCommand(loritta: LorittaBot) : AbstractCommand(loritta, "roleid", listOf("cargoid", "iddocargo"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.roleid.description")
 
 	// TODO: Fix getUsage

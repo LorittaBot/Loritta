@@ -4,9 +4,6 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
-import net.perfectdreams.loritta.morenitta.network.Databases
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -16,7 +13,6 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.io.File
 import java.time.Instant
@@ -26,7 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 /**
  * Thread que atualiza o status da Loritta a cada 1s segundos
  */
-class RaffleThread : Thread("Raffle Thread") {
+class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 	companion object {
 		var lastWinnerId: Long? = null
 		var lastWinnerPrize = 0
@@ -102,7 +98,7 @@ class RaffleThread : Thread("Raffle Thread") {
 					val lorittaProfile = loritta.getOrCreateLorittaProfile(winnerId)
 					logger.info("$lastWinnerId ganhou $lastWinnerPrize sonhos ($moneyWithoutTaxes without taxes; antes ele possuia ${lorittaProfile.money} sonhos) na Rifa!")
 
-					transaction(Databases.loritta) {
+					loritta.pudding.transaction {
 						lorittaProfile.addSonhosAndAddToTransactionLogNested(
 							money.toLong(),
 							SonhosPaymentReason.RAFFLE
@@ -117,7 +113,7 @@ class RaffleThread : Thread("Raffle Thread") {
 
 					// TODO: Locales, maybe get the preferred user locale ID?
 					val locale = loritta.localeManager.getLocaleById("default")
-					val user = runBlocking { lorittaShards.retrieveUserById(lastWinnerId!!) }
+					val user = runBlocking { loritta.lorittaShards.retrieveUserById(lastWinnerId!!) }
 
 					if (user != null && !user.isBot) {
 						try {

@@ -20,7 +20,7 @@ class AfkOnExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
     override val options = Options()
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val profile = context.loritta.services.users.getOrCreateUserProfile(UserId(context.user.id.value))
+        val profile = context.loritta.pudding.users.getOrCreateUserProfile(UserId(context.user.id.value))
         val reason = args[options.reason]?.shortenAndStripCodeBackticks(300)?.stripNewLines()
 
         if (!profile.isAfk || profile.afkReason != reason)

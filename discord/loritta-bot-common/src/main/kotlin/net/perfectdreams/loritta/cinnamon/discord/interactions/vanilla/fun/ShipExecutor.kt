@@ -140,10 +140,10 @@ class ShipExecutor(
             val shipEffects = mutableListOf<PuddingShipEffect>()
 
             if (result1 is UserResult)
-                shipEffects += context.loritta.services.shipEffects.getShipEffectsForUser(UserId(user1Id))
+                shipEffects += context.loritta.pudding.shipEffects.getShipEffectsForUser(UserId(user1Id))
 
             if (result2 is UserResult)
-                shipEffects += context.loritta.services.shipEffects.getShipEffectsForUser(UserId(user2Id))
+                shipEffects += context.loritta.pudding.shipEffects.getShipEffectsForUser(UserId(user2Id))
 
             // TODO: Add RPC call to only get valid (non expired) ship effects
             // TODO: Add RPC call to do what we are doing here in the .firstOrNull { ... } call
@@ -163,8 +163,8 @@ class ShipExecutor(
         } else if (result1 is UserResult && result2 is UserResult) {
             // We will only check for manipulated values if both users are a UserResult
             // Because we don't need to spend requests by checking if an StringResult has a marriage
-            val user1Marriage = context.loritta.services.marriages.getMarriageByUser(UserId(user1Id))
-            val user2Marriage = context.loritta.services.marriages.getMarriageByUser(UserId(user2Id))
+            val user1Marriage = context.loritta.pudding.marriages.getMarriageByUser(UserId(user1Id))
+            val user2Marriage = context.loritta.pudding.marriages.getMarriageByUser(UserId(user2Id))
 
             // If both users are married, and the marriage ID of both are the same, then it means that they are married together, how cute!
             if (user1Marriage != null && user2Marriage != null && user1Marriage.id == user2Marriage.id) {
@@ -174,7 +174,7 @@ class ShipExecutor(
             }
 
             // However ship effects can override the married percentage!
-            val shipEffects = context.loritta.services.shipEffects.getShipEffectsForUser(UserId(user1Id)) + context.loritta.services.shipEffects.getShipEffectsForUser(UserId(user2Id))
+            val shipEffects = context.loritta.pudding.shipEffects.getShipEffectsForUser(UserId(user1Id)) + context.loritta.pudding.shipEffects.getShipEffectsForUser(UserId(user2Id))
 
             // TODO: Add RPC call to only get valid (non expired) ship effects
             // TODO: Add RPC call to do what we are doing here in the .firstOrNull { ... } call

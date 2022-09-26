@@ -22,20 +22,23 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ActionType
 import net.perfectdreams.loritta.morenitta.utils.auditlog.WebAuditLogUtils
+import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.morenitta.website.utils.config.types.ConfigTransformers
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class PatchServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(loritta, "/config") {
+class PatchServerConfigRoute(
+	loritta: LorittaBot,
+	val website: LorittaWebsite
+) : RequiresAPIGuildAuthRoute(loritta, "/config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val type = payload["type"].string
 		val config = payload["config"].obj
 
-		val transformer = ConfigTransformers.ALL_TRANSFORMERS.firstOrNull { it.payloadType == type }
+		val transformer = website.configTransformers.firstOrNull { it.payloadType == type }
 
 		if (transformer != null) {
 			val guildId = guild.idLong
@@ -54,21 +57,22 @@ class PatchServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(lo
 
 			if (actionType != ActionType.RESET_XP) {
 				WebAuditLogUtils.addEntry(
-						guildId,
-						userIdentification.id.toLong(),
-						actionType,
-						params
+					loritta,
+					guildId,
+					userIdentification.id.toLong(),
+					actionType,
+					params
 				)
 			}
 
 			call.respondJson(jsonObject())
 		} else {
 			val payloadHandlers = mapOf(
-					"miscellaneous" to MiscellaneousPayload::class.java,
-					"economy" to EconomyPayload::class.java,
-					"badge" to CustomBadgePayload::class.java,
-					"daily_multiplier" to DailyMultiplierPayload::class.java,
-					"reset_xp" to ResetXpPayload::class.java
+				"miscellaneous" to MiscellaneousPayload::class.java,
+				"economy" to EconomyPayload::class.java,
+				"badge" to CustomBadgePayload::class.java,
+				"daily_multiplier" to DailyMultiplierPayload::class.java,
+				"reset_xp" to ResetXpPayload::class.java
 			)
 
 			val payloadHandlerClass = payloadHandlers[type]
@@ -91,27 +95,31 @@ class PatchServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(lo
 
 				if (actionType != ActionType.RESET_XP) {
 					WebAuditLogUtils.addEntry(
-							guildId,
-							userIdentification.id.toLong(),
-							actionType,
-							params
+						loritta,
+						guildId,
+						userIdentification.id.toLong(),
+						actionType,
+						params
 					)
 				}
 
 				val serverConfigJson = WebsiteUtils.transformToDashboardConfigurationJson(
-						userIdentification,
-						guild,
-						serverConfig
+					loritta,
+					website.configTransformers,
+					userIdentification,
+					guild,
+					serverConfig
 				)
 
 				call.respondJson(serverConfigJson)
 			} else {
 				throw WebsiteAPIException(
-						HttpStatusCode.NotImplemented,
-						net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils.createErrorPayload(
-								LoriWebCode.MISSING_PAYLOAD_HANDLER,
-								"I don't know how to handle a \"${type}\" payload yet!"
-						)
+					HttpStatusCode.NotImplemented,
+					WebsiteUtils.createErrorPayload(
+						loritta,
+						LoriWebCode.MISSING_PAYLOAD_HANDLER,
+						"I don't know how to handle a \"${type}\" payload yet!"
+					)
 				)
 			}
 		}

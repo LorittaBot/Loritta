@@ -4,11 +4,11 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 
-object AutoroleConfigTransformer : ConfigTransformer {
+class AutoroleConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
     override val payloadType: String = "autorole"
     override val configKey: String = "autoroleConfig"
 

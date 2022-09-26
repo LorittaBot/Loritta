@@ -1,9 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
 import com.google.common.cache.CacheBuilder
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.edit
@@ -27,7 +25,6 @@ import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
-import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.util.concurrent.TimeUnit
 
@@ -64,13 +61,13 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 			} else if (context.args.firstOrNull() == "comprar" || context.args.firstOrNull() == "buy") {
 				buyRaspadinha(context, context.lorittaUser.profile)
 			} else {
-				val raspadinhaCount = transaction(Databases.loritta) {
+				val raspadinhaCount = loritta.pudding.transaction {
 					Raspadinhas.select {
 						Raspadinhas.receivedById eq context.user.idLong
 					}.count()
 				}
 				val earnings = Raspadinhas.value.sum()
-				val raspadinhaEarnings = transaction(Databases.loritta) {
+				val raspadinhaEarnings = loritta.pudding.transaction {
 					Raspadinhas.slice(Raspadinhas.receivedById, earnings).select {
 						Raspadinhas.receivedById eq context.user.idLong
 					}.groupBy(Raspadinhas.receivedById)
@@ -205,7 +202,7 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 				}
 			}
 
-			val id = transaction(Databases.loritta) {
+			val id = loritta.pudding.transaction {
 				Raspadinhas.insertAndGetId {
 					it[receivedById] = context.user.idLong
 					it[receivedAt] = System.currentTimeMillis()
@@ -244,11 +241,11 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 
 			theMessage?.onReactionByAuthor(context) {
 				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
-					buyRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.user.idLong), theMessage, boughtScratchCardsInThisMessage + 1)
+					buyRaspadinha(context, loritta.getOrCreateLorittaProfile(context.user.idLong), theMessage, boughtScratchCardsInThisMessage + 1)
 				}
 
 				if (it.reactionEmote.isEmote("593979718919913474")) {
-					checkRaspadinha(context, LorittaLauncher.loritta.getOrCreateLorittaProfile(context.user.idLong), id.value)
+					checkRaspadinha(context, loritta.getOrCreateLorittaProfile(context.user.idLong), id.value)
 				}
 			}
 
@@ -262,7 +259,7 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 	private suspend fun checkRaspadinha(context: DiscordCommandContext, profile: Profile, id: Long?) {
 		val mutex = mutexes.getOrPut(context.user.idLong, { Mutex() })
 		mutex.withLock {
-			val raspadinha = transaction(Databases.loritta) {
+			val raspadinha = loritta.pudding.transaction {
 				Raspadinhas.select {
 					Raspadinhas.id eq id
 				}.firstOrNull()
@@ -347,7 +344,7 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 			prize += (gessyCombos * GESSY_COMBO)
 			prize += (tobiasCombos * TOBIAS_COMBO)
 
-			transaction(Databases.loritta) {
+			loritta.pudding.transaction {
 				Raspadinhas.update({ Raspadinhas.id eq id }) {
 					it[scratched] = true
 					it[value] = prize

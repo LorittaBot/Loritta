@@ -140,7 +140,7 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
     }
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val achievements = context.loritta.services.users.getUserAchievements(context.user)
+        val achievements = context.loritta.pudding.users.getUserAchievements(context.user)
 
         context.sendMessage(
             createMessage(
@@ -165,7 +165,7 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
             val deserialized = context.decodeDataFromComponentAndRequireUserToMatch<ChangeCategoryData>()
 
             val newCategory = values.first()
-            val achievements = loritta.services.users.getUserAchievements(user)
+            val achievements = loritta.pudding.users.getUserAchievements(user)
 
             context.updateMessage(
                 createMessage(

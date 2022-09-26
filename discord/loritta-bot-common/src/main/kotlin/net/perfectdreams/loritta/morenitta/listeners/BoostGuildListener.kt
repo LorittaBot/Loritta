@@ -2,13 +2,15 @@ package net.perfectdreams.loritta.morenitta.listeners
 
 import net.perfectdreams.loritta.morenitta.utils.NitroBoostUtils
 import net.perfectdreams.loritta.morenitta.utils.config.DonatorsOstentationConfig
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class BoostGuildListener(val config: DonatorsOstentationConfig) : ListenerAdapter() {
+class BoostGuildListener(val loritta: LorittaBot) : ListenerAdapter() {
+    val config = loritta.discordConfig.donatorsOstentation
+
     override fun onGuildMemberUpdateBoostTime(event: GuildMemberUpdateBoostTimeEvent) {
         val boostAsDonationGuilds = config.boostEnabledGuilds.map { it.id }
         if (event.guild.idLong !in boostAsDonationGuilds)
@@ -20,7 +22,7 @@ class BoostGuildListener(val config: DonatorsOstentationConfig) : ListenerAdapte
                 return
 
             GlobalScope.launch(loritta.coroutineDispatcher) {
-                NitroBoostUtils.onBoostActivate(event.member)
+                NitroBoostUtils.onBoostActivate(loritta, event.member)
             }
             return
         }
@@ -28,7 +30,7 @@ class BoostGuildListener(val config: DonatorsOstentationConfig) : ListenerAdapte
         if (event.newTimeBoosted != null && event.oldTimeBoosted != null) {
             // Desativou Boost
             GlobalScope.launch(loritta.coroutineDispatcher) {
-                NitroBoostUtils.onBoostDeactivate(event.member)
+                NitroBoostUtils.onBoostDeactivate(loritta, event.member)
             }
             return
         }

@@ -7,12 +7,12 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class MarryCommand : AbstractCommand("marry", listOf("casar"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class MarryCommand(loritta: LorittaBot) : AbstractCommand(loritta, "marry", listOf("casar"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	companion object {
 		val MARRIAGE_COST = 15_000
 	}

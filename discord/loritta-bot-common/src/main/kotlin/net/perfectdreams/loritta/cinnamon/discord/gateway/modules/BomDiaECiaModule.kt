@@ -39,7 +39,7 @@ class BomDiaECiaModule(private val m: LorittaCinnamon) : ProcessDiscordEventsMod
         if (channelId != Snowflake(297732013006389252L))
             return
 
-        val serverConfig = m.services.serverConfigs.getServerConfigRoot(guildId.value) ?: return
+        val serverConfig = m.pudding.serverConfigs.getServerConfigRoot(guildId.value) ?: return
         val miscellaneousConfig = serverConfig.getMiscellaneousConfig() ?: return
 
         if (!miscellaneousConfig.enableBomDiaECia)

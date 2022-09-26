@@ -125,7 +125,7 @@ class GiveawayEndCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 				return@executesDiscord
 			}
 
-			GiveawayManager.finishGiveaway(message, giveaway)
+			loritta.giveawayManager.finishGiveaway(message, giveaway)
 
 			context.reply(
 					LorittaReply(
