@@ -17,15 +17,15 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.MessageEmbed
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.platform.discord.utils.UserFlagBadgeEmotes.getBadges
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), CommandCategory.DISCORD) {
+class UserInfoCommand : AbstractCommand("userinfo", listOf("memberinfo"), net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.userinfo.description")
 
 	override fun canUseInPrivateChannel(): Boolean {

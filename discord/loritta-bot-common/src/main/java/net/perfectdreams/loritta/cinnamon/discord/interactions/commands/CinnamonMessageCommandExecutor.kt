@@ -10,6 +10,7 @@ import net.perfectdreams.discordinteraktions.common.entities.messages.Message
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 
 /**
@@ -64,7 +65,7 @@ abstract class CinnamonMessageCommandExecutor(val loritta: LorittaCinnamon) : Me
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
             Clock.System.now(),
-            net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType.USER,
+            ApplicationCommandType.USER,
             rootDeclarationClazzName,
             executorClazzName,
             buildJsonWithArguments(emptyMap()),

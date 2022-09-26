@@ -8,11 +8,11 @@ import net.perfectdreams.loritta.legacy.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.tables.BomDiaECiaWinners
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.GACampaigns
 import net.perfectdreams.loritta.legacy.utils.PaymentUtils
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
@@ -20,7 +20,7 @@ import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 
-class LigarCommand : AbstractCommand("ligar", category = CommandCategory.ECONOMY) {
+class LigarCommand : AbstractCommand("ligar", category = net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		val coroutineExecutor = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 	}

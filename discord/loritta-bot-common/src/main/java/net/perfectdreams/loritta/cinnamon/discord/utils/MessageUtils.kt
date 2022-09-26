@@ -10,12 +10,12 @@ import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
-import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.discord.LorittaDiscordStuff
 import net.perfectdreams.loritta.cinnamon.discord.utils.parallax.ParallaxMessage
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.TokenSource
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.LorittaPlaceholder
+import net.perfectdreams.loritta.common.utils.LorittaPlaceholder
 
 object MessageUtils {
     private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")

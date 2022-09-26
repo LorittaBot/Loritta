@@ -7,7 +7,7 @@ import dev.kord.rest.json.request.EmbedRequest
 import dev.kord.rest.json.request.EmbedThumbnailRequest
 import dev.kord.rest.json.request.WebhookExecuteRequest
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.utils.Color
+import net.perfectdreams.loritta.common.utils.Color
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor

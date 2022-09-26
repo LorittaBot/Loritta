@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
 import java.time.Instant
 import java.time.ZoneOffset
@@ -31,7 +31,7 @@ object OutdatedCommandUtils {
     }
 
     suspend fun sendOutdatedCommandMessage(
-        context: net.perfectdreams.loritta.legacy.api.commands.CommandContext,
+        context: net.perfectdreams.loritta.common.api.commands.CommandContext,
         locale: BaseLocale,
         slashCommandName: String,
         alwaysSendOutdatedCommandWarning: Boolean = false

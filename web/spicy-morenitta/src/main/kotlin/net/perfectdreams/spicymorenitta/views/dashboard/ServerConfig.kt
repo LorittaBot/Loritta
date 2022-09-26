@@ -1,7 +1,7 @@
 package net.perfectdreams.spicymorenitta.views.dashboard
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.legacy.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import utils.LoriColor
 
 object ServerConfig {

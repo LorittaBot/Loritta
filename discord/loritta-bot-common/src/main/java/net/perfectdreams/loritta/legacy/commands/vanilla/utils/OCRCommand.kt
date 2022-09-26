@@ -15,14 +15,14 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import java.io.ByteArrayOutputStream
 import java.util.*
 import javax.imageio.ImageIO
 
-class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), CommandCategory.UTILS) {
+class OCRCommand : AbstractCommand("ocr", listOf("ler", "read"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ocr.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

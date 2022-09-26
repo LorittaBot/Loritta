@@ -23,10 +23,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBe
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.EmojiFightSonhosTransactionsLog
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.legacy.utils.AccountUtils
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.PaymentUtils
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
-import net.perfectdreams.loritta.legacy.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant

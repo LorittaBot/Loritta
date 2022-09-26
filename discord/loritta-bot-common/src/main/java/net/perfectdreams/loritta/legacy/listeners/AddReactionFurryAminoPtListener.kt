@@ -9,7 +9,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 
 class AddReactionFurryAminoPtListener(val config: QuirkyConfig) : ListenerAdapter() {
     companion object {

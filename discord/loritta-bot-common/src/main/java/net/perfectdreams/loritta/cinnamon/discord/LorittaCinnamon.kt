@@ -45,7 +45,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushCl
 import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileDesignManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
+import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
@@ -58,7 +58,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
-import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import org.jetbrains.exposed.sql.select

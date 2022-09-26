@@ -4,8 +4,8 @@ import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
-import net.perfectdreams.loritta.cinnamon.utils.LorittaPermission
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
+import net.perfectdreams.loritta.common.utils.LorittaPermission
+import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 
 /**
  * Clean up and escape user input, useful when displaying user input

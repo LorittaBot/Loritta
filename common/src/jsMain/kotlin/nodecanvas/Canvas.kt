@@ -3,7 +3,7 @@
 
 package nodecanvas
 
-import net.perfectdreams.loritta.legacy.api.utils.image.Canvas
+import net.perfectdreams.loritta.common.utils.image.Canvas
 import kotlin.js.Promise
 
 external fun createCanvas(width: Int, height: Int): Canvas

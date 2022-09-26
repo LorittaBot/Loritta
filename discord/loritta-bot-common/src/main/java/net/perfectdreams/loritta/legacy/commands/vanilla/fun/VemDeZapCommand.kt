@@ -6,16 +6,16 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.escapeMentions
 import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.CommandArguments
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.CommandArguments
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class VemDeZapCommand : AbstractCommand("vemdezap", category = CommandCategory.FUN) {
+class VemDeZapCommand : AbstractCommand("vemdezap", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		private val fullMatch = mapOf("100" to listOf("💯"),
 			"alface" to listOf("🥗"),

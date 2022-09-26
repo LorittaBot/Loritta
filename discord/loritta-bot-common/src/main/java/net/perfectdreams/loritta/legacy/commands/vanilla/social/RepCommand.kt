@@ -6,18 +6,18 @@ import net.perfectdreams.loritta.legacy.dao.Reputation
 import net.perfectdreams.loritta.legacy.tables.Reputations
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.DateUtils
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.AccountUtils
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 
-class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), CommandCategory.SOCIAL) {
+class RepCommand : AbstractCommand("rep", listOf("reputation", "reputação", "reputacao"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.reputation.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.reputation.examples")
 

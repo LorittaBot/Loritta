@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.utils
 
 import net.perfectdreams.loritta.legacy.utils.extensions.humanize
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.util.*

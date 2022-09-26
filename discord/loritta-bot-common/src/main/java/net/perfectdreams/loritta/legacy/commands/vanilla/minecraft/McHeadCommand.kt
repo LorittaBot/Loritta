@@ -5,13 +5,13 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
 import net.perfectdreams.loritta.legacy.utils.minecraft.MCUtils
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class McHeadCommand : AbstractCommand("mchead", category = CommandCategory.MINECRAFT) {
+class McHeadCommand : AbstractCommand("mchead", category = net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mchead.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.skinPlayerNameExamples")
 

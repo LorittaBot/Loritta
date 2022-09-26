@@ -9,18 +9,18 @@ import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.api.commands.CommandArguments
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.locale.LocaleStringData
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.api.commands.CommandArguments
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
+import net.perfectdreams.loritta.common.utils.Emotes
 import java.awt.Color
 import java.time.Instant
 
-abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
+abstract class AbstractCommand(open val label: String, var aliases: List<String> = listOf(), var category: net.perfectdreams.loritta.common.commands.CommandCategory, var lorittaPermissions: List<LorittaPermission> = listOf(), val onlyOwner: Boolean = false) {
 	@Transient
 	internal val logger = KotlinLogging.logger {}
 

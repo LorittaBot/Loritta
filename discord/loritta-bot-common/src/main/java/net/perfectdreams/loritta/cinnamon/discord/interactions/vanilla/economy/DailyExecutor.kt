@@ -6,9 +6,9 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinLocalDateTime
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.DailyTaxThresholds
-import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
-import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
+import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor

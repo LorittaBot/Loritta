@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.servers
 
-import net.perfectdreams.loritta.cinnamon.utils.LorittaPermission
+import net.perfectdreams.loritta.common.utils.LorittaPermission
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object ServerRolePermissions : LongIdTable() {

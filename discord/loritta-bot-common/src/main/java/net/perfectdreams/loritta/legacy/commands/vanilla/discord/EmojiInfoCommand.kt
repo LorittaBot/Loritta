@@ -6,21 +6,21 @@ import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.DateUtils
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
 import net.perfectdreams.loritta.legacy.utils.isValidSnowflake
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.CommandArguments
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.CommandArguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import kotlin.streams.toList
 
-class EmojiInfoCommand : AbstractCommand("emojiinfo", category = CommandCategory.DISCORD) {
+class EmojiInfoCommand : AbstractCommand("emojiinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.emojiinfo.description")
 
 	override fun getUsage(): CommandArguments {

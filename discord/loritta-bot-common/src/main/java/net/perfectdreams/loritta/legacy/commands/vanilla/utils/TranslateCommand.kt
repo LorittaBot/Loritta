@@ -3,13 +3,13 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.utils
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.escapeMentions
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.translate.GoogleTranslateUtils
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 
-class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), CommandCategory.UTILS) {
+class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.translate.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.translate.examples")
 

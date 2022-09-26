@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.action
 
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import java.awt.Color
 
 class HeadPatCommand(loritta: LorittaDiscord): ActionCommand(loritta, listOf("headpat", "headpet", "cafuné", "cafune", "pat")) {

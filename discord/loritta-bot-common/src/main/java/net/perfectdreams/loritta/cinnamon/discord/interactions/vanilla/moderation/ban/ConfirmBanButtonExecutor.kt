@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.GuildC
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.AdminUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 class ConfirmBanButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.CONFIRM_BAN_BUTTON_EXECUTOR)

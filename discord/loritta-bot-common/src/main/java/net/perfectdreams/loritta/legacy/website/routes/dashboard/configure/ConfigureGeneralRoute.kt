@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.website.routes.dashboard.configure
 
 import net.perfectdreams.loritta.legacy.dao.ServerConfig
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.website.evaluate
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.entities.Guild

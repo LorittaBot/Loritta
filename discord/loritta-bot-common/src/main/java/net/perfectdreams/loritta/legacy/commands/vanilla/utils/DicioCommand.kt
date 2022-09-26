@@ -5,16 +5,16 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.net.URLEncoder
 
 
-class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario", "definir"), CommandCategory.UTILS) {
+class DicioCommand : AbstractCommand("dicio", listOf("dicionário", "dicionario", "definir"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.dicio.description")

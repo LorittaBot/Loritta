@@ -9,10 +9,10 @@ import net.perfectdreams.loritta.legacy.utils.LorittaUtils
 import net.perfectdreams.loritta.legacy.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.legacy.utils.locale.Gender
 import net.perfectdreams.loritta.legacy.utils.locale.PersonalPronoun
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.CommandException
-import net.perfectdreams.loritta.legacy.api.entities.User
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.CommandException
+import net.perfectdreams.loritta.common.api.entities.User
+import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.DiscordUser
@@ -23,7 +23,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
 import java.awt.image.BufferedImage
 
-class TristeRealidadeCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("sadreality", "tristerealidade"), CommandCategory.IMAGES) {
+class TristeRealidadeCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("sadreality", "tristerealidade"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }

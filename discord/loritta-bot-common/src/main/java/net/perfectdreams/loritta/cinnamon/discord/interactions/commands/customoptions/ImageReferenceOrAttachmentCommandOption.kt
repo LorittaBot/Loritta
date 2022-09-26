@@ -9,15 +9,15 @@ import dev.kord.rest.Image
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.attachment
 import dev.kord.rest.builder.interaction.string
-import net.perfectdreams.discordinteraktions.common.commands.options.*
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.images.ImageReference
-import net.perfectdreams.loritta.cinnamon.images.URLImageReference
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionBuilder
+import net.perfectdreams.discordinteraktions.common.commands.options.InteraKTionsCommandOption
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ContentTypeUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.ContextStringToUserInfoConverter
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.images.URLImageReference
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import kotlin.streams.toList
 
 // ===[ OPTION ]===

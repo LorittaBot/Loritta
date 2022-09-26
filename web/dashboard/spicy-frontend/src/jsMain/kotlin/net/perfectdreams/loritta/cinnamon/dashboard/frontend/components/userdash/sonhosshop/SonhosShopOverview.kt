@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.SonhosShopScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Animations
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.FlexDirection
 import org.jetbrains.compose.web.css.display

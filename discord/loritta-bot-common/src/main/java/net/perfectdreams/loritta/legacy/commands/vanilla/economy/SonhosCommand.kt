@@ -5,18 +5,18 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.network.Databases
 import net.perfectdreams.loritta.legacy.tables.Profiles
 import net.perfectdreams.loritta.legacy.utils.loritta
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.EconomyConfig
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
-class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"), category = CommandCategory.ECONOMY) {
+class SonhosCommand : AbstractCommand("sonhos", listOf("atm", "bal", "balance"), category = net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.sonhos.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.sonhos.examples")
 

@@ -4,7 +4,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerTickerInformation
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId

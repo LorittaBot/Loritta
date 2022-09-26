@@ -25,12 +25,12 @@ import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.cinnamon.utils.Rarity
+import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
 import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
-import net.perfectdreams.loritta.legacy.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http

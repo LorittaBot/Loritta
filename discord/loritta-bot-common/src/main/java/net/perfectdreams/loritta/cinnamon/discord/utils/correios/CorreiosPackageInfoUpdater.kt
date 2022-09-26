@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.TrackedCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosPackages
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
-import net.perfectdreams.loritta.cinnamon.utils.PendingImportantNotificationState
+import net.perfectdreams.loritta.common.utils.PendingImportantNotificationState
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.time.LocalDateTime

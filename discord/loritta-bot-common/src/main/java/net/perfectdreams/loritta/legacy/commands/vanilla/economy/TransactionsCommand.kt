@@ -2,20 +2,20 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.economy
 
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.extensions.*
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.utils.onReactionByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.legacy.tables.SonhosTransaction
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.legacy.utils.RankingGenerator.isValidRankingPage
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
@@ -25,7 +25,7 @@ import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.ZoneId
 
-class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações", "transacoes", "transaçoes"), CommandCategory.ECONOMY) {
+class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações", "transacoes", "transaçoes"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command.transactions"
 		private const val ENTRIES_PER_PAGE = 10

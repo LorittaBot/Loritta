@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
@@ -182,9 +182,9 @@ class RateWaifuExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
             )
 
             if (isLoritta)
-                context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.INFLATED_EGO)
+                context.giveAchievementAndNotify(AchievementType.INFLATED_EGO)
             if (isGroovy)
-                context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.PRESS_PLAY_TO_PAY_RESPECTS)
+                context.giveAchievementAndNotify(AchievementType.PRESS_PLAY_TO_PAY_RESPECTS)
         }
     }
 

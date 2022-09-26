@@ -25,7 +25,7 @@ import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
-import net.perfectdreams.loritta.legacy.api.LorittaBot
+import net.perfectdreams.loritta.common.LorittaBot
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
@@ -34,6 +34,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.legacy.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.legacy.commands.vanilla.administration.*
 import net.perfectdreams.loritta.legacy.commands.vanilla.economy.*
@@ -41,9 +42,9 @@ import net.perfectdreams.loritta.legacy.commands.vanilla.magic.*
 import net.perfectdreams.loritta.legacy.commands.vanilla.misc.*
 import net.perfectdreams.loritta.legacy.commands.vanilla.roblox.*
 import net.perfectdreams.loritta.legacy.commands.vanilla.social.*
-import net.perfectdreams.loritta.legacy.common.locale.LocaleManager
-import net.perfectdreams.loritta.legacy.common.utils.MediaTypeUtils
-import net.perfectdreams.loritta.legacy.common.utils.StoragePaths
+import net.perfectdreams.loritta.common.locale.LocaleManager
+import net.perfectdreams.loritta.common.utils.MediaTypeUtils
+import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.legacy.dao.Payment
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandMap
 import net.perfectdreams.loritta.legacy.platform.discord.utils.*

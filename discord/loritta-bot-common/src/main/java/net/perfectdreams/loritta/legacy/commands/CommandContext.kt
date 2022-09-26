@@ -13,8 +13,8 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.DiscordUtils
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
 import net.perfectdreams.loritta.legacy.utils.extensions.build

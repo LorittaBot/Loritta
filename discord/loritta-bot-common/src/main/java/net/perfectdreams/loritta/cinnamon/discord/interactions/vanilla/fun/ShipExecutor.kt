@@ -20,6 +20,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingShipEffect
+import net.perfectdreams.loritta.common.achievements.AchievementType
+import net.perfectdreams.loritta.common.emotes.Emote
 import kotlin.math.absoluteValue
 import kotlin.random.Random
 
@@ -189,7 +191,7 @@ class ShipExecutor(
         }
 
         val loveTextResults: ListI18nData
-        val loveTextEmote: net.perfectdreams.loritta.cinnamon.emotes.Emote
+        val loveTextEmote: Emote
 
         when {
             isLorittaWithShipEffects -> {
@@ -264,21 +266,21 @@ class ShipExecutor(
         }
 
         if (isNatural && isNatural100Ship)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.NATURAL_100_SHIP)
+            context.giveAchievementAndNotify(AchievementType.NATURAL_100_SHIP)
         if (isNatural && isNatural0Ship)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.NATURAL_0_SHIP)
+            context.giveAchievementAndNotify(AchievementType.NATURAL_0_SHIP)
         if (isNatural && isNatural69Ship)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.NATURAL_69_SHIP)
+            context.giveAchievementAndNotify(AchievementType.NATURAL_69_SHIP)
         if (isMarried)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.MARRIED_SHIP)
+            context.giveAchievementAndNotify(AchievementType.MARRIED_SHIP)
         if (isLoveYourself && isShipWithTheSelfUser)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.LOVE_YOURSELF)
+            context.giveAchievementAndNotify(AchievementType.LOVE_YOURSELF)
         if (hasShipEffects)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.FISHY_SHIP)
+            context.giveAchievementAndNotify(AchievementType.FISHY_SHIP)
         if (isLoritta && isShipWithTheSelfUser && !isLorittaWithShipEffects)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.FRIENDZONED_BY_LORITTA)
+            context.giveAchievementAndNotify(AchievementType.FRIENDZONED_BY_LORITTA)
         if (isLorittaWithShipEffects && isShipWithTheSelfUser)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
+            context.giveAchievementAndNotify(AchievementType.SABOTAGED_LORITTA_FRIENDZONE)
     }
 
     sealed class ConverterResult

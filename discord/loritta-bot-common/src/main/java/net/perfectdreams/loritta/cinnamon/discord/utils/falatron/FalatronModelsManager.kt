@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
-import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import kotlin.time.Duration.Companion.minutes
 
 class FalatronModelsManager {

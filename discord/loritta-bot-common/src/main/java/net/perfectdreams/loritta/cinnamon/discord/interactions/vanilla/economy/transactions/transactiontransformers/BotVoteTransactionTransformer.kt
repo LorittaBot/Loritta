@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions.transactiontransformers
 
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.utils.WebsiteVoteSource
+import net.perfectdreams.loritta.common.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.pudding.data.BotVoteSonhosTransaction

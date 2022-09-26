@@ -3,14 +3,14 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.images
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import java.awt.Color
 
-class InverterCommand : AbstractCommand("invert", listOf("inverter"), category = CommandCategory.IMAGES) {
+class InverterCommand : AbstractCommand("invert", listOf("inverter"), category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.invert.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 

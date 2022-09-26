@@ -6,8 +6,8 @@ import kotlinx.datetime.toKotlinLocalDateTime
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled

@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.social
 
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 
-class XpNotificationsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("xpnotifications"), CommandCategory.SOCIAL) {
+class XpNotificationsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("xpnotifications"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun command() = create {
 		localizedDescription("commands.command.xpnotifications.description")
 

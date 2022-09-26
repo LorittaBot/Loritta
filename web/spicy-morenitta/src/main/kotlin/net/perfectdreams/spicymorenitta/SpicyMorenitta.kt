@@ -32,7 +32,7 @@ import kotlinx.html.span
 import kotlinx.html.stream.createHTML
 import kotlinx.html.style
 import loadEmbeddedLocale
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.routes.BaseRoute

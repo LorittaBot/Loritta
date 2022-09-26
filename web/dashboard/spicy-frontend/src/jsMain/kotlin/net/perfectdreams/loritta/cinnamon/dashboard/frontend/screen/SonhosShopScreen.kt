@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.common.responses.GetSonhosBu
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFrontend
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 class SonhosShopScreen(m: LorittaDashboardFrontend) : Screen(m) {
     var sonhosBundlesState = mutableStateOf<State<GetSonhosBundlesResponse>>(State.Loading())

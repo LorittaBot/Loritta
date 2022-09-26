@@ -8,13 +8,14 @@ import net.perfectdreams.discordinteraktions.common.components.ComponentContext
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.SilentCommandException
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
+import net.perfectdreams.loritta.common.components.ComponentType
 
 abstract class CinnamonSelectMenuExecutor(val loritta: LorittaCinnamon) : SelectMenuExecutor {
     companion object {
@@ -140,7 +141,7 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaCinnamon) : Select
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
             Clock.System.now(),
-            net.perfectdreams.loritta.cinnamon.components.ComponentType.BUTTON,
+            ComponentType.BUTTON,
             rootDeclarationClazzName,
             executorClazzName,
             stacktrace == null,

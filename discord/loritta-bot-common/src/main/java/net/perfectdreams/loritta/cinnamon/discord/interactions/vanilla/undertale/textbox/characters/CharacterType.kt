@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.characters
 
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.emotes.Emote
+import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.declarations.UndertaleCommand
 
@@ -10,7 +10,7 @@ enum class CharacterType(
     val charName: StringI18nData,
     val universe: UniverseType,
     val defaultKeyName: String,
-    val emote: net.perfectdreams.loritta.cinnamon.emotes.Emote? = null
+    val emote: Emote? = null
 ) {
     // ===[ DELTARUNE ]===
     DELTARUNE_RALSEI(DeltaruneRalsei, UndertaleCommand.I18N_TEXTBOX_PREFIX.Ralsei.Name, UniverseType.DELTARUNE, "deltarune/ralsei/neutral", Emotes.DeltaruneRalseiNeutral),

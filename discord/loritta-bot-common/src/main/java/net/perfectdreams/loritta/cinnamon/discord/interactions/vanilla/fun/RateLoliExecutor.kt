@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
@@ -43,6 +43,6 @@ class RateLoliExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(
             )
         }
 
-        context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.WEIRDO)
+        context.giveAchievementAndNotify(AchievementType.WEIRDO)
     }
 }

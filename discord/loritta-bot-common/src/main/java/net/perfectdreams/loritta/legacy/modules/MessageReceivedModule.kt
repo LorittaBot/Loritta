@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.legacy.dao.Profile
 import net.perfectdreams.loritta.legacy.dao.ServerConfig
 import net.perfectdreams.loritta.legacy.events.LorittaMessageEvent
 import net.perfectdreams.loritta.legacy.utils.LorittaUser
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 interface MessageReceivedModule {
 	/**

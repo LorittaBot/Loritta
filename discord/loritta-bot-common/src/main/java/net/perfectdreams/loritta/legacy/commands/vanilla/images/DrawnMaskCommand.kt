@@ -3,20 +3,20 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.images
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.utils.LorittaImage
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.locale.LocaleStringData
+import net.perfectdreams.loritta.common.utils.LorittaImage
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.legacy.utils.toBufferedImage
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca"), category = CommandCategory.IMAGES) {
+class DrawnMaskCommand : AbstractCommand("drawnmasksign", listOf("drawnmaskplaca"), category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "drawn_mask_placa.png")) }
 	}

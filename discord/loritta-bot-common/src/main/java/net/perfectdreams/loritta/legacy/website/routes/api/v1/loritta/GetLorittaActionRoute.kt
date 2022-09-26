@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.website.LorittaWebsite
 import io.ktor.server.application.*
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.legacy.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.legacy.website.utils.extensions.respondJson

@@ -8,16 +8,13 @@ import dev.kord.core.Kord
 import dev.kord.rest.Image
 import dev.kord.rest.builder.interaction.BaseInputChatBuilder
 import dev.kord.rest.builder.interaction.string
-import net.perfectdreams.discordinteraktions.common.commands.options.*
-import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.images.URLImageReference
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionBuilder
+import net.perfectdreams.discordinteraktions.common.commands.options.NameableCommandOption
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ContextStringToUserInfoConverter
-import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
-import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
+import net.perfectdreams.loritta.common.images.URLImageReference
+import net.perfectdreams.loritta.common.locale.LanguageManager
 import kotlin.streams.toList
 
 // ===[ OPTION ]===

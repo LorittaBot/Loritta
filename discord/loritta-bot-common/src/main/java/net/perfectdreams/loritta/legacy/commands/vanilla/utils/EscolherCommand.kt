@@ -3,14 +3,14 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.utils
 import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = CommandCategory.UTILS) {
+class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category = net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.choose.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.choose.examples")
 

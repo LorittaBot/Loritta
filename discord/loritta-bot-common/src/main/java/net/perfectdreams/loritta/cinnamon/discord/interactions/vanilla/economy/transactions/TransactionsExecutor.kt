@@ -24,9 +24,9 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.*
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.utils.TransactionType
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.TransactionType
+import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import kotlin.math.ceil
 
 class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {

@@ -9,17 +9,17 @@ import net.perfectdreams.loritta.legacy.utils.LorittaTasks
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.website.LorittaWebsite
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.ReactionOption
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.HoconUtils.decodeFromFile
 import net.perfectdreams.loritta.legacy.website.utils.WebsiteAssetsHashes
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 
-class ReloadCommand : AbstractCommand("reload", category = CommandCategory.MAGIC, onlyOwner = true) {
+class ReloadCommand : AbstractCommand("reload", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Recarrega a Loritta"
 	}

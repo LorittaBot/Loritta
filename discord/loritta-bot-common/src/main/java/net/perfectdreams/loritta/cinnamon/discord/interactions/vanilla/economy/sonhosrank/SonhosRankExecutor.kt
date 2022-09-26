@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.services.UsersService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles

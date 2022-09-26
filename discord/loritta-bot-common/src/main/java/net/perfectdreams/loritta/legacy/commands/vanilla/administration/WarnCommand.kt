@@ -10,18 +10,18 @@ import net.perfectdreams.loritta.legacy.utils.MessageUtils
 import net.perfectdreams.loritta.legacy.utils.TimeUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.isEmote
 import net.perfectdreams.loritta.legacy.utils.extensions.retrieveMemberOrNull
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 
-class WarnCommand : AbstractCommand("warn", listOf("aviso"), CommandCategory.MODERATION) {
+class WarnCommand : AbstractCommand("warn", listOf("aviso"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 	}

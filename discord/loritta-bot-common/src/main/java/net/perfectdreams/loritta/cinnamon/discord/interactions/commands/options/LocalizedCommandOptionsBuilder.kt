@@ -5,7 +5,7 @@ import dev.kord.core.entity.User
 import dev.kord.core.entity.channel.Channel
 import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
+import net.perfectdreams.loritta.common.locale.LanguageManager
 
 // ===[ STRING ]===
 abstract class LocalizedStringCommandOptionBuilderBase<T>(

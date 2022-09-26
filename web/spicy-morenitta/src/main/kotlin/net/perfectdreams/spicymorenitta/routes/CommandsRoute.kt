@@ -22,7 +22,7 @@ import kotlinx.html.thead
 import kotlinx.html.tr
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.serializable.CommandInfo
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
@@ -54,7 +54,7 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
 
             var index = 0
 
-            for (category in CommandCategory.values().filter { it != CommandCategory.MAGIC }) {
+            for (category in net.perfectdreams.loritta.common.commands.CommandCategory.values().filter { it != net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC }) {
                 val commands = list.filter { it.category == category }
                 if (commands.isNotEmpty()) {
                     entriesDiv.append {
@@ -85,14 +85,14 @@ class CommandsRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/comman
                             div(classes = "media") {
                                 div(classes = "media-figure") {
                                     val imageSource = when (category) {
-                                        CommandCategory.SOCIAL -> "https://loritta.website/assets/img/social.png"
-                                        CommandCategory.POKEMON -> "https://loritta.website/assets/img/pokemon.png"
-                                        CommandCategory.MINECRAFT -> "https://loritta.website/assets/img/loritta_pudim.png"
-                                        CommandCategory.FUN -> "https://loritta.website/assets/img/vieirinha.png"
-                                        CommandCategory.UTILS -> "https://loritta.website/assets/img/utils.png"
-                                        CommandCategory.ANIME -> "https://loritta.website/assets/img/loritta_anime.png"
-                                        CommandCategory.ECONOMY -> "https://loritta.website/assets/img/loritta_money_discord.png"
-                                        CommandCategory.FORTNITE -> "https://loritta.website/assets/img/loritta_fortnite_icon.png"
+                                        net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL -> "https://loritta.website/assets/img/social.png"
+                                        net.perfectdreams.loritta.common.commands.CommandCategory.POKEMON -> "https://loritta.website/assets/img/pokemon.png"
+                                        net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT -> "https://loritta.website/assets/img/loritta_pudim.png"
+                                        net.perfectdreams.loritta.common.commands.CommandCategory.FUN -> "https://loritta.website/assets/img/vieirinha.png"
+                                        net.perfectdreams.loritta.common.commands.CommandCategory.UTILS -> "https://loritta.website/assets/img/utils.png"
+                                        net.perfectdreams.loritta.common.commands.CommandCategory.ANIME -> "https://loritta.website/assets/img/loritta_anime.png"
+                                        net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY -> "https://loritta.website/assets/img/loritta_money_discord.png"
+                                        net.perfectdreams.loritta.common.commands.CommandCategory.FORTNITE -> "https://loritta.website/assets/img/loritta_fortnite_icon.png"
                                         else -> "https://loritta.website/assets/img/loritta_gabizinha_v1.png"
                                     }
 

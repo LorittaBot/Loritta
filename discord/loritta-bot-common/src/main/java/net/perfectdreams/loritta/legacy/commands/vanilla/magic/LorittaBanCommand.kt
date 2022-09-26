@@ -5,14 +5,14 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.network.Databases
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.tables.BannedUsers
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class LorittaBanCommand : AbstractCommand("lorittaban", category = CommandCategory.MAGIC, onlyOwner = true) {
+class LorittaBanCommand : AbstractCommand("lorittaban", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Banir usuários de usar a Loritta"
 	}

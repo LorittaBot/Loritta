@@ -5,8 +5,8 @@ import net.perfectdreams.loritta.legacy.tables.GuildProfiles
 import net.perfectdreams.loritta.legacy.tables.Mutes
 import net.perfectdreams.loritta.legacy.tables.ServerConfigs
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.tables.servers.Giveaways
 import net.perfectdreams.loritta.legacy.utils.DiscordUtils
 import org.jetbrains.exposed.sql.deleteWhere

@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.dao.ServerConfig
 import net.perfectdreams.loritta.legacy.utils.LorittaPermission
 import net.perfectdreams.loritta.legacy.utils.LorittaUser
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.website.evaluate
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.entities.Guild

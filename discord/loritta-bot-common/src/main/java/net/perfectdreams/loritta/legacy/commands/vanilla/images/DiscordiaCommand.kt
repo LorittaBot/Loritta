@@ -5,13 +5,13 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.gifs.MentionGIF
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.MiscUtils
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "discord", "discordia"), CommandCategory.IMAGES) {
+class DiscordiaCommand : AbstractCommand("mentions", listOf("discórdia", "discord", "discordia"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.discordping.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 

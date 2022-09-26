@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.legacy.events
 
 import net.perfectdreams.loritta.legacy.dao.ServerConfig
 import net.perfectdreams.loritta.legacy.utils.LorittaUser
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.*
 

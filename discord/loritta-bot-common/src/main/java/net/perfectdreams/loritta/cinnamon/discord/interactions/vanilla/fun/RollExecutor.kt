@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.math.Dice
-import net.perfectdreams.loritta.cinnamon.utils.math.MathUtils
+import net.perfectdreams.loritta.common.utils.math.Dice
+import net.perfectdreams.loritta.common.utils.math.MathUtils
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon

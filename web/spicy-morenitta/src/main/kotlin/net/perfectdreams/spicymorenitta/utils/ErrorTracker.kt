@@ -6,7 +6,7 @@ import kotlinx.browser.document
 import kotlinx.browser.window
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.http
 import net.perfectdreams.spicymorenitta.locale

@@ -5,7 +5,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import net.perfectdreams.cinnamon.pudding.PuddingTestUtils
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.UserAchievements
 import org.jetbrains.exposed.sql.selectAll
@@ -37,7 +37,7 @@ class UsersServiceTest {
                 jobs += async {
                     pudding.users.giveAchievement(
                         UserId(1L),
-                        net.perfectdreams.loritta.cinnamon.achievements.AchievementType.FISHY_SHIP,
+                        AchievementType.FISHY_SHIP,
                         Clock.System.now()
                     )
                 }

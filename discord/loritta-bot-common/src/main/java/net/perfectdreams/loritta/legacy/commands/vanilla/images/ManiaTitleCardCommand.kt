@@ -4,18 +4,18 @@ import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.toBufferedImage
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = CommandCategory.IMAGES) {
+class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.maniatitlecard.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.maniatitlecard.examples")
 	override fun getUsage() = arguments {

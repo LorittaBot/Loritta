@@ -18,7 +18,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.MiscellaneousConfig
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 

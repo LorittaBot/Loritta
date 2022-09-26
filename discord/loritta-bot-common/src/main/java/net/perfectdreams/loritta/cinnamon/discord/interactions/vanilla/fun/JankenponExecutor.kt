@@ -1,15 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.emotes.Emote
+import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.JankenponCommand
-import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import kotlin.random.Random
 
 class JankenponExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -95,7 +93,7 @@ class JankenponExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor
             return JankenponStatus.LOSE
         }
 
-        fun getEmoji(): net.perfectdreams.loritta.cinnamon.emotes.Emote {
+        fun getEmoji(): Emote {
             return when (this) {
                 ROCK -> Emotes.Rock
                 PAPER -> Emotes.Newspaper

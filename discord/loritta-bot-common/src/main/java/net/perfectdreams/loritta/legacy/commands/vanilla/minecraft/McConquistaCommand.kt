@@ -4,16 +4,16 @@ import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.remove
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 
-class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", "mcadvancement", "mcachievement"), CommandCategory.MINECRAFT) {
+class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", "mcadvancement", "mcachievement"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mcadvancement.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.mcadvancement.examples")
 

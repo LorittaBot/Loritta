@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.utils
 
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import io.mockk.every
 import io.mockk.mockk
 import net.dv8tion.jda.api.entities.User

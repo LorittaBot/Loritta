@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay
 
 import dev.kord.common.Color
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.emotes.Emote
+import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import net.perfectdreams.randomroleplaypictures.common.Gender
@@ -14,5 +14,5 @@ data class RoleplayActionAttributes(
     val retributionButtonDeclaration: ButtonExecutorDeclaration,
     val embedResponse: (String, String) -> StringI18nData,
     val embedColor: Color,
-    val embedEmoji: net.perfectdreams.loritta.cinnamon.emotes.Emote
+    val embedEmoji: Emote
 )

@@ -9,8 +9,8 @@ import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuild
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosEvento
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.eventTypeWithStatus
 import net.perfectdreams.loritta.cinnamon.pudding.data.CorreiosPackageUpdateUserNotification

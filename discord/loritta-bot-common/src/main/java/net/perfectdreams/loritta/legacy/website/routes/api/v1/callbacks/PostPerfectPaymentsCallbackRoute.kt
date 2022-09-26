@@ -25,13 +25,13 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.dao.Payment
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.tables.BannedUsers
 import net.perfectdreams.loritta.legacy.tables.Payments
 import net.perfectdreams.loritta.legacy.tables.SonhosBundles
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.PaymentUtils
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.legacy.utils.payments.PaymentReason

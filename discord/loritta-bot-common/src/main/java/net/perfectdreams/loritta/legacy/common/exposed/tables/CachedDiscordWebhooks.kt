@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.legacy.common.exposed.tables
+package net.perfectdreams.loritta.common.exposed.tables
 
-import net.perfectdreams.loritta.legacy.common.utils.webhooks.WebhookState
+import net.perfectdreams.loritta.common.utils.webhooks.WebhookState
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column

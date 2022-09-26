@@ -4,7 +4,7 @@ import dev.kord.common.entity.GuildFeature
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.UserFlag
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeys
+import net.perfectdreams.loritta.i18n.I18nKeys
 
 object RawToFormated {
     @JvmStatic

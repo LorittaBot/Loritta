@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
-import net.perfectdreams.loritta.cinnamon.utils.Gender
+import net.perfectdreams.loritta.common.utils.Gender
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object UserSettings : LongIdTable() {

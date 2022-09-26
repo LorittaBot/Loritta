@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.entities
 
 import kotlinx.datetime.Instant
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
@@ -25,7 +25,7 @@ class PuddingUserProfile(
      * @param  type the achievement type
      * @return if true, the achievement was successfully given, if false, the user already has the achievement
      */
-    suspend fun giveAchievement(type: net.perfectdreams.loritta.cinnamon.achievements.AchievementType, achievedAt: Instant): Boolean = pudding.users.giveAchievement(
+    suspend fun giveAchievement(type: AchievementType, achievedAt: Instant): Boolean = pudding.users.giveAchievement(
         id,
         type,
         achievedAt

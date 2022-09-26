@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.EventLogConfigs
 import net.perfectdreams.loritta.legacy.utils.CachedUserInfo
-import net.perfectdreams.loritta.legacy.api.utils.DateUtils
+import net.perfectdreams.loritta.common.utils.DateUtils
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
 import net.perfectdreams.loritta.legacy.utils.extensions.getEffectiveAvatarUrl
 import org.apache.commons.io.IOUtils

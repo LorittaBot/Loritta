@@ -9,14 +9,14 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.legacy.api.LorittaBot
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.commands.LorittaAbstractCommandBase
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.LorittaBot
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.api.commands.LorittaAbstractCommandBase
+import net.perfectdreams.loritta.common.utils.image.JVMImage
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import java.util.*
 
@@ -36,7 +36,7 @@ abstract class GabrielaImageServerCommandBase(
     val endpoint: String,
     val fileName: String,
     val examplesKey: String? = null,
-    category: CommandCategory = CommandCategory.IMAGES,
+    category: net.perfectdreams.loritta.common.commands.CommandCategory = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES,
     val slashCommandName: String? = null
 ) : LorittaAbstractCommandBase(
     loritta,

@@ -4,12 +4,12 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.TretaNewsGenerator
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 
-class TretaNewsCommand : AbstractCommand("tretanews", category = CommandCategory.FUN) {
+class TretaNewsCommand : AbstractCommand("tretanews", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.tretanews.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.tretanews.examples")
 

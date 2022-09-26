@@ -5,15 +5,15 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
 import net.perfectdreams.loritta.legacy.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
 import java.io.File
 
-class LaranjoCommand : AbstractCommand("laranjo", category = CommandCategory.IMAGES) {
+class LaranjoCommand : AbstractCommand("laranjo", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.laranjo.description")
 
 	override fun getExamples(): List<String> {

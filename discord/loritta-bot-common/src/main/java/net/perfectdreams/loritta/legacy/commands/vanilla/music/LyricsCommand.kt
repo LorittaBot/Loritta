@@ -17,10 +17,10 @@ import net.perfectdreams.loritta.legacy.utils.LorittaUtils
 import net.perfectdreams.loritta.legacy.utils.encodeToUrl
 import net.perfectdreams.loritta.legacy.utils.toBufferedImage
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.safety.Safelist
@@ -34,7 +34,7 @@ import java.io.File
 import java.io.IOException
 import javax.imageio.ImageIO
 
-class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = CommandCategory.UTILS) {
+class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), category = net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.lyrics.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.lyrics.examples")
 

@@ -9,15 +9,15 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 
-class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), CommandCategory.MODERATION) {
+class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
     override fun command() = create {
         localizedDescription("commands.command.baninfo.description")
         localizedExamples("commands.command.baninfo.examples")

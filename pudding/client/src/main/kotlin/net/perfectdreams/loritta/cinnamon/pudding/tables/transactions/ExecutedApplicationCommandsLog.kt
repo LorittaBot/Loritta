@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.pudding.tables.transactions
 
 import net.perfectdreams.exposedpowerutils.sql.jsonb
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
-import net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.pudding.tables.LongIdTableWithoutOverriddenPrimaryKey
 import org.jetbrains.exposed.sql.javatime.timestamp
 
@@ -13,7 +13,7 @@ object ExecutedApplicationCommandsLog : LongIdTableWithoutOverriddenPrimaryKey()
     // Because this is already a partition table, we can't change its type (for now)
     val sentAt = timestamp("sent_at").index()
 
-    val type = postgresEnumeration<net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType>("type").index()
+    val type = postgresEnumeration<ApplicationCommandType>("type").index()
     val declaration = text("declaration").index()
     val executor = text("executor").index()
     val options = jsonb("options")

@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.DiscordB
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.LocalizedText
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.attributes.disabled
 import org.jetbrains.compose.web.css.textAlign
 import org.jetbrains.compose.web.dom.Div

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.showtime.backend.utils.config
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.cinnamon.utils.config.LorittaConfig
+import net.perfectdreams.loritta.common.utils.config.LorittaConfig
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.PuddingConfig
 
 @Serializable

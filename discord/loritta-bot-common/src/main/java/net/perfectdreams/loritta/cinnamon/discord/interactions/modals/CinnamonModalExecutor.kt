@@ -6,7 +6,7 @@ import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandExecutorWrapper

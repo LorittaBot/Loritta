@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.DateUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles

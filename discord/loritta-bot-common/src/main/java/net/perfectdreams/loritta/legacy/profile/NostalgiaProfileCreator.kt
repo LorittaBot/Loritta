@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.legacy.dao.Profile
 import net.perfectdreams.loritta.legacy.tables.GuildProfiles
 import net.perfectdreams.loritta.legacy.tables.Reputations
 import net.perfectdreams.loritta.legacy.utils.*
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.legacy.profile.ProfileUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage

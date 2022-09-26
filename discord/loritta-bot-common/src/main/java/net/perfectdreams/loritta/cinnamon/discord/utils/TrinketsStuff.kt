@@ -4,7 +4,7 @@ import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.cinnamon.utils.Rarity
+import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations

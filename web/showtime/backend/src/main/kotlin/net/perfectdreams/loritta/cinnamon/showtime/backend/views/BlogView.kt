@@ -11,7 +11,7 @@ import kotlinx.html.h1
 import kotlinx.html.unsafe
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
 import net.perfectdreams.loritta.cinnamon.showtime.backend.content.ContentBase
 import net.perfectdreams.loritta.cinnamon.showtime.backend.content.MultilanguageContent

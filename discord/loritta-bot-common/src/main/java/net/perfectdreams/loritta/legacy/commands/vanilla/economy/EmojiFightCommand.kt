@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.economy
 
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 
 class EmojiFightCommand(val m: LorittaDiscord) : DiscordAbstractCommandBase(
 		m,
 		listOf("emojifight", "rinhadeemoji", "emotefight"),
-		CommandCategory.ECONOMY
+		net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
 		localizedDescription("commands.command.emojifight.description")

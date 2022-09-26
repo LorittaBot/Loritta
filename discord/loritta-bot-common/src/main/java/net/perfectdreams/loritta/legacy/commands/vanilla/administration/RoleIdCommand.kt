@@ -2,14 +2,14 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.administration
 
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import java.util.*
 
-class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), CommandCategory.MODERATION) {
+class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.roleid.description")
 
 	// TODO: Fix getUsage
@@ -36,10 +36,12 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 
 			if (mentionedRoles.isNotEmpty()) {
 
-				list.add(LorittaReply(
+				list.add(
+                    LorittaReply(
                         message = locale["commands.command.roleid.identifiers", argument],
                         prefix = "\uD83D\uDCBC"
-                ))
+                )
+                )
 
 				mentionedRoles.mapTo(list) {
                     LorittaReply(
@@ -50,10 +52,12 @@ class RoleIdCommand : AbstractCommand("roleid", listOf("cargoid", "iddocargo"), 
 			} else {
 				val roles = context.guild.roles.filter { it.name.contains(argument, true) }
 
-				list.add(LorittaReply(
+				list.add(
+                    LorittaReply(
                         message = locale["commands.command.roleid.rolesThatContains", argument],
                         prefix = "\uD83D\uDCBC"
-                ))
+                )
+                )
 
 				if (roles.isEmpty()) {
 					list.add(

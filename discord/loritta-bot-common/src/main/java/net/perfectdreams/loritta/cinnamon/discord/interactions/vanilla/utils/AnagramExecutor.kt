@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.AnagramCommand
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.math.MathUtils
+import net.perfectdreams.loritta.common.utils.math.MathUtils
 
 class AnagramExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {

@@ -13,9 +13,9 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon

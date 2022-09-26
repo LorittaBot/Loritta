@@ -5,19 +5,19 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.MessageUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.isEmote
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.PunishmentAction
 
-class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), CommandCategory.MODERATION) {
+class UnbanCommand : AbstractCommand("unban", listOf("desbanir"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.unban.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES

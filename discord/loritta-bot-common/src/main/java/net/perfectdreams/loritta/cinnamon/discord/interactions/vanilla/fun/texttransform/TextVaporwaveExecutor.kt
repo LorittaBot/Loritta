@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Applicat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.TextTransformCommand
-import net.perfectdreams.loritta.cinnamon.utils.text.VaporwaveUtils
+import net.perfectdreams.loritta.common.utils.text.VaporwaveUtils
 
 class TextVaporwaveExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {

@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.legacy.utils.ImageUtils
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
 import net.perfectdreams.loritta.legacy.utils.drawText
 import net.perfectdreams.loritta.legacy.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.makeRoundedCorners
 import net.perfectdreams.loritta.legacy.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Guild

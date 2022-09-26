@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.social
 
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.tables.BomDiaECiaWinners
@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 
-class BomDiaECiaTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top", "bd&c top", "bdc top"), CommandCategory.SOCIAL) {
+class BomDiaECiaTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top", "bd&c top", "bdc top"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun command() = create {
 		localizedDescription("commands.command.bomdiaeciatop.description")
 

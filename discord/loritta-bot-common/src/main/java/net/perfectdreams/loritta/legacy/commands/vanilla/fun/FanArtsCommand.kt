@@ -4,22 +4,22 @@ import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.LorittaLauncher
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.extensions.*
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.legacy.utils.config.FanArt
 import net.perfectdreams.loritta.legacy.utils.config.FanArtArtist
 
-class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("fanarts", "fanart"), CommandCategory.MISC) {
+class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("fanarts", "fanart"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     override fun command() = create {
         localizedDescription("commands.command.fanarts.description", "<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>")
 

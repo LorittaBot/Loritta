@@ -13,9 +13,9 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
-import net.perfectdreams.loritta.legacy.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
 import java.io.File

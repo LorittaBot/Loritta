@@ -10,6 +10,9 @@ import dev.kord.rest.builder.component.SelectMenuBuilder
 import dev.kord.rest.builder.component.SelectOptionBuilder
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.ComponentData
+import net.perfectdreams.loritta.common.emotes.DiscordEmote
+import net.perfectdreams.loritta.common.emotes.Emote
+import net.perfectdreams.loritta.common.emotes.UnicodeEmote
 import java.util.*
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
@@ -184,17 +187,17 @@ fun ActionRowBuilder.disabledButton(
 
 // https://youtrack.jetbrains.com/issue/KT-6519
 @get:JvmSynthetic // Hide from Java callers
-var SelectOptionBuilder.loriEmoji: net.perfectdreams.loritta.cinnamon.emotes.Emote
+var SelectOptionBuilder.loriEmoji: Emote
     @Deprecated("", level = DeprecationLevel.ERROR) // Prevent Kotlin callers
     get() = throw UnsupportedOperationException()
     set(value) {
         this.emoji = when (value) {
-            is net.perfectdreams.loritta.cinnamon.emotes.DiscordEmote -> DiscordPartialEmoji(
+            is DiscordEmote -> DiscordPartialEmoji(
                 Snowflake(value.id),
                 value.name,
                 value.animated.optional()
             )
-            is net.perfectdreams.loritta.cinnamon.emotes.UnicodeEmote -> DiscordPartialEmoji(
+            is UnicodeEmote -> DiscordPartialEmoji(
                 name = value.name
             )
         }
@@ -202,17 +205,17 @@ var SelectOptionBuilder.loriEmoji: net.perfectdreams.loritta.cinnamon.emotes.Emo
 
 // https://youtrack.jetbrains.com/issue/KT-6519
 @get:JvmSynthetic // Hide from Java callers
-var ButtonBuilder.loriEmoji: net.perfectdreams.loritta.cinnamon.emotes.Emote
+var ButtonBuilder.loriEmoji: Emote
     @Deprecated("", level = DeprecationLevel.ERROR) // Prevent Kotlin callers
     get() = throw UnsupportedOperationException()
     set(value) {
         this.emoji = when (value) {
-            is net.perfectdreams.loritta.cinnamon.emotes.DiscordEmote -> DiscordPartialEmoji(
+            is DiscordEmote -> DiscordPartialEmoji(
                 Snowflake(value.id),
                 value.name,
                 value.animated.optional()
             )
-            is net.perfectdreams.loritta.cinnamon.emotes.UnicodeEmote -> DiscordPartialEmoji(
+            is UnicodeEmote -> DiscordPartialEmoji(
                 name = value.name
             )
         }

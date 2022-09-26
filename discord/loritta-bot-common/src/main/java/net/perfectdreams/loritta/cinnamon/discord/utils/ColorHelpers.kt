@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import net.perfectdreams.loritta.cinnamon.utils.Color
+import net.perfectdreams.loritta.common.utils.Color
 import dev.kord.common.Color as KordColor
 import java.awt.Color as JavaColor
 

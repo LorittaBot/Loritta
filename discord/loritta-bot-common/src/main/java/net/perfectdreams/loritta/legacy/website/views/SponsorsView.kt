@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.legacy.website.views
 
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.DIV
 import kotlinx.html.div
 import kotlinx.html.h1

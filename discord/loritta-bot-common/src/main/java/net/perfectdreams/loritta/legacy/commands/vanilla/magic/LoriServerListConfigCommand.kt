@@ -21,12 +21,12 @@ import net.perfectdreams.loritta.legacy.utils.lorittaSupervisor
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.cinnamon.utils.DivineInterventionTransactionEntryAction
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.dao.Payment
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.legacy.tables.BlacklistedGuilds
@@ -43,7 +43,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
 
-class LoriServerListConfigCommand : AbstractCommand("lslc", category = CommandCategory.MAGIC) {
+class LoriServerListConfigCommand : AbstractCommand("lslc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Configura servidores na Lori's Server List"
 	}

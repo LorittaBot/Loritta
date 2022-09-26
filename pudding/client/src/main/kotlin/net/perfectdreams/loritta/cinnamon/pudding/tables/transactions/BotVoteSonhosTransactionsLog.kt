@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables.transactions
 
 import net.perfectdreams.exposedpowerutils.sql.postgresEnumeration
-import net.perfectdreams.loritta.cinnamon.utils.WebsiteVoteSource
+import net.perfectdreams.loritta.common.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import org.jetbrains.exposed.dao.id.LongIdTable
 

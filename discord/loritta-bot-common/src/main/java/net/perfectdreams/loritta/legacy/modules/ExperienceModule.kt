@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.legacy.utils.LorittaUser
 import net.perfectdreams.loritta.legacy.utils.MessageUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.await
 import net.perfectdreams.loritta.legacy.utils.extensions.filterOnlyGiveableRoles
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import kotlinx.coroutines.sync.Mutex
@@ -23,10 +23,10 @@ import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.LevelConfig
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.LevelAnnouncementConfigs
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.RolesByExperience
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.ExperienceUtils
 import net.perfectdreams.loritta.legacy.utils.FeatureFlags
-import net.perfectdreams.loritta.legacy.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.legacy.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.legacy.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SortOrder

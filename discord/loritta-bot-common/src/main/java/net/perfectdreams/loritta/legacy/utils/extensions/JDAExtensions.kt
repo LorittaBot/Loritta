@@ -12,7 +12,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
 import net.dv8tion.jda.api.requests.restaction.MessageAction
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 suspend fun <T> RestAction<T>.await() : T = this.submit().await()
 

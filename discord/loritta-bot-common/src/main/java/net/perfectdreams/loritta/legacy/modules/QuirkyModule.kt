@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.legacy.utils.config.QuirkyConfig
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageType
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.MiscellaneousConfig
 
 class QuirkyModule(val config: QuirkyConfig) : MessageReceivedModule {

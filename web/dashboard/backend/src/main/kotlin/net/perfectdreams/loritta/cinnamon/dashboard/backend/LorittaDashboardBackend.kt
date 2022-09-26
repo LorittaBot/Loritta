@@ -12,7 +12,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.util.*
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
+import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.HomeRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.LocalizedRoute
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.routes.ShipEffectsRoute
@@ -29,7 +29,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.LorittaJsonWeb
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.PerfectPaymentsClient
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.WebsiteAssetsHashManager
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.utils.config.RootConfig
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import java.util.*
 

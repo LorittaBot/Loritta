@@ -2,14 +2,14 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.administration
 
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.loritta
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.Emotes
 
-class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = CommandCategory.MODERATION) {
+class QuickPunishmentCommand : AbstractCommand("quickpunishment", category = net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.quickpunishment.description")
 
 	override fun canUseInPrivateChannel(): Boolean {

@@ -13,19 +13,19 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaMessage
-import net.perfectdreams.loritta.legacy.api.utils.image.Image
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.locale.LocaleStringData
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.messages.LorittaMessage
+import net.perfectdreams.loritta.common.utils.image.Image
+import net.perfectdreams.loritta.common.utils.image.JVMImage
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.DiscordMessage
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.legacy.utils.DiscordUtils
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
 import org.jsoup.Jsoup
 import java.io.File
@@ -33,14 +33,14 @@ import java.io.InputStream
 import java.time.Instant
 
 class DiscordCommandContext(
-    override val loritta: LorittaDiscord,
-    command: Command<CommandContext>,
-    args: List<String>,
-    val discordMessage: Message,
-    locale: BaseLocale,
-    val serverConfig: ServerConfig,
-    val lorittaUser: LorittaUser,
-    val executedCommandLabel: String
+	override val loritta: LorittaDiscord,
+	command: Command<CommandContext>,
+	args: List<String>,
+	val discordMessage: Message,
+	locale: BaseLocale,
+	val serverConfig: ServerConfig,
+	val lorittaUser: LorittaUser,
+	val executedCommandLabel: String
 ) : CommandContext(loritta, command, args, DiscordMessage(discordMessage), locale) {
 	val isPrivateChannel = discordMessage.channelType == ChannelType.PRIVATE
 	val guild: Guild
@@ -82,7 +82,7 @@ class DiscordCommandContext(
 		}
 	}
 
-	override suspend fun sendImage(image: Image, fileName: String, content: String): net.perfectdreams.loritta.legacy.api.entities.Message {
+	override suspend fun sendImage(image: Image, fileName: String, content: String): net.perfectdreams.loritta.common.api.entities.Message {
 		return DiscordMessage(
 				discordMessage.channel.sendMessage(LorittaMessage(content).content)
 						.addFile(image.toByteArray(), fileName)
@@ -91,7 +91,7 @@ class DiscordCommandContext(
 		)
 	}
 
-	override suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String): net.perfectdreams.loritta.legacy.api.entities.Message {
+	override suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String): net.perfectdreams.loritta.common.api.entities.Message {
 		return DiscordMessage(
 				discordMessage.channel.sendMessage(LorittaMessage(content).content)
 						.addFile(byteArray, fileName)

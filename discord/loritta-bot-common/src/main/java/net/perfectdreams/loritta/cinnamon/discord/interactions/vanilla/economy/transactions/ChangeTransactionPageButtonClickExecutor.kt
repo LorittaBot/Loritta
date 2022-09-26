@@ -12,8 +12,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.utils.TransactionType
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.TransactionType
 
 class ChangeTransactionPageButtonClickExecutor(
     loritta: LorittaCinnamon

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.commands
 import net.perfectdreams.discordinteraktions.common.commands.MessageCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
+import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 
 interface CinnamonApplicationCommandDeclarationWrapper

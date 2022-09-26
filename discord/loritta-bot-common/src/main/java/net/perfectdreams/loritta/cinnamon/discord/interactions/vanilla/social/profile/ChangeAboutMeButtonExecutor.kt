@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.Button
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 class ChangeAboutMeButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.CHANGE_ABOUT_ME_BUTTON_EXECUTOR)

@@ -16,13 +16,13 @@ import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.legacy.utils.removeAllFunctions
 import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.legacy.tables.servers.ServerRolePermissions
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher

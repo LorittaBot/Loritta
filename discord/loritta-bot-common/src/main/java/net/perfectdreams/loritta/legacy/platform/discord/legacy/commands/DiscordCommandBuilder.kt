@@ -4,27 +4,27 @@ import net.perfectdreams.loritta.legacy.dao.ServerConfig
 import net.perfectdreams.loritta.legacy.events.LorittaMessageEvent
 import net.perfectdreams.loritta.legacy.utils.LorittaPermission
 import net.perfectdreams.loritta.legacy.utils.LorittaUser
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.legacy.api.commands.CommandBuilder
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.commands.arguments
+import net.perfectdreams.loritta.common.api.commands.CommandBuilder
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 
 fun Any?.discordCommand(
-		loritta: LorittaDiscord,
-		labels: List<String>,
-		category: CommandCategory,
-		builder: DiscordCommandBuilder.() -> (Unit)
+    loritta: LorittaDiscord,
+    labels: List<String>,
+    category: net.perfectdreams.loritta.common.commands.CommandCategory,
+    builder: DiscordCommandBuilder.() -> (Unit)
 ) = discordCommand(loritta, this?.let { this::class.simpleName } ?: "UnknownCommand", labels, category, builder)
 
 fun discordCommand(
-		loritta: LorittaDiscord,
-		commandName: String,
-		labels: List<String>,
-		category: CommandCategory,
-		builder: DiscordCommandBuilder.() -> (Unit)
+    loritta: LorittaDiscord,
+    commandName: String,
+    labels: List<String>,
+    category: net.perfectdreams.loritta.common.commands.CommandCategory,
+    builder: DiscordCommandBuilder.() -> (Unit)
 ): DiscordCommand {
 	val b = DiscordCommandBuilder(loritta, commandName, labels, category)
 	builder.invoke(b)
@@ -36,7 +36,7 @@ class DiscordCommandBuilder(
 		private val lorittaDiscord: LorittaDiscord,
 		commandName: String,
 		labels: List<String>,
-		category: CommandCategory
+		category: net.perfectdreams.loritta.common.commands.CommandCategory
 ) : CommandBuilder<CommandContext>(lorittaDiscord, commandName, labels, category) {
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()

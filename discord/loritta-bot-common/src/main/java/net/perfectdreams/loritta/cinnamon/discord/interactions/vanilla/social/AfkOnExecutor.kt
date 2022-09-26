@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social
 
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenAndStripCodeBackticks
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripNewLines
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
+import net.perfectdreams.loritta.common.utils.text.TextUtils.stripNewLines
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon

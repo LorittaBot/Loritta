@@ -12,8 +12,8 @@ import dev.kord.rest.builder.interaction.user
 import net.perfectdreams.discordinteraktions.common.commands.options.CommandOptionBuilder
 import net.perfectdreams.discordinteraktions.common.commands.options.InteraKTionsCommandOption
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.common.locale.LanguageManager
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
 

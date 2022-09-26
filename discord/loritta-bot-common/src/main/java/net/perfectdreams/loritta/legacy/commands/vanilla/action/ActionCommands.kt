@@ -10,12 +10,12 @@ import net.perfectdreams.loritta.legacy.utils.removeAllFunctions
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
@@ -28,7 +28,7 @@ import java.io.File
 typealias ActionCommandScope = ActionCommandDSL.() -> Unit
 typealias ActionCommandContext = (BaseLocale, User, User) -> String
 
-abstract class ActionCommand(loritta: LorittaDiscord, labels: List<String>): DiscordAbstractCommandBase(loritta, labels, CommandCategory.ACTION) {
+abstract class ActionCommand(loritta: LorittaDiscord, labels: List<String>): DiscordAbstractCommandBase(loritta, labels, net.perfectdreams.loritta.common.commands.CommandCategory.ACTION) {
 
     abstract fun create(): ActionCommandDSL
 

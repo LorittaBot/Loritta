@@ -8,7 +8,7 @@ import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCom
 import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecutor
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
@@ -68,7 +68,7 @@ abstract class CinnamonSlashCommandExecutor(val loritta: LorittaCinnamon) : Slas
             guildId?.value?.toLong(),
             context.channelId.value.toLong(),
             Clock.System.now(),
-            net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType.CHAT_INPUT,
+            ApplicationCommandType.CHAT_INPUT,
             rootDeclarationClazzName,
             executorClazzName,
             buildJsonWithArguments(args.types),

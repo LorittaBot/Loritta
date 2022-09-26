@@ -9,6 +9,7 @@ import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import kotlin.time.Duration.Companion.minutes
 
 interface UserAvatarExecutor {
@@ -60,6 +61,6 @@ interface UserAvatarExecutor {
             }
 
         if (user.id == context.user.id)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE)
+            context.giveAchievementAndNotify(AchievementType.IS_THAT_AN_UNDERTALE_REFERENCE)
     }
 }

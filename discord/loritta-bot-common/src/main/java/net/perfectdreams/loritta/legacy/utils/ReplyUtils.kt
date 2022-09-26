@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.utils
 
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.messages.LorittaReply
 
 /**
  * Class used for building styled replies with DSL to make creating

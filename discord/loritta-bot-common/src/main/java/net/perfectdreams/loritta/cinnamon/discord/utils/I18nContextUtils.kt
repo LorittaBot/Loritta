@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 import dev.kord.common.Locale
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
+import net.perfectdreams.loritta.common.locale.LanguageManager
 
 object I18nContextUtils {
     /**

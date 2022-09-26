@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.`fun`
 
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import java.awt.Color
 
-class GiveawayCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway", "sorteio"), CommandCategory.FUN) {
+class GiveawayCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway", "sorteio"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command"
 	}

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.legacy.website.routes.user
 
 import net.perfectdreams.loritta.legacy.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.legacy.utils.gson
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.website.evaluate
 import io.ktor.server.application.ApplicationCall

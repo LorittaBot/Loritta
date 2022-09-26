@@ -6,11 +6,11 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
 import net.perfectdreams.loritta.legacy.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -18,7 +18,7 @@ import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 
-class LavaCommand : AbstractCommand("lava", category = CommandCategory.IMAGES) {
+class LavaCommand : AbstractCommand("lava", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.lava.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.lava.examples")
 	override fun getUsage() = arguments {

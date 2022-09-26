@@ -9,7 +9,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenAndStripCodeBackticks
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.LorittaColors
 
 class InviteInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {

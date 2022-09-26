@@ -6,7 +6,7 @@ import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.SadRealityRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.Gender
+import net.perfectdreams.loritta.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
@@ -23,9 +23,9 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByte
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.userAvatarCollage
 import net.perfectdreams.loritta.cinnamon.discord.utils.toJavaColor
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import java.awt.Color
 
 class SadRealityExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {

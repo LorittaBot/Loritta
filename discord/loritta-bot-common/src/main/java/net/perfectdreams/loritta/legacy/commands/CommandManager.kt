@@ -29,10 +29,12 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.locale.LocaleStringData
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.legacy.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.legacy.utils.*

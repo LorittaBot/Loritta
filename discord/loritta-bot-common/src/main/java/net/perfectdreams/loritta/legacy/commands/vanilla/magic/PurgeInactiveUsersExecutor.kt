@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.magic
 
 import net.perfectdreams.loritta.legacy.network.Databases
 import net.perfectdreams.loritta.legacy.tables.Profiles
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select

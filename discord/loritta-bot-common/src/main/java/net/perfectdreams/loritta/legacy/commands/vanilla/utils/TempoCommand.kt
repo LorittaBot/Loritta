@@ -6,15 +6,15 @@ import com.google.gson.JsonParser
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import java.awt.Color
 import java.net.URLEncoder
 
-class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "previsao"), CommandCategory.UTILS) {
+class TempoCommand : AbstractCommand("weather", listOf("tempo", "previsão", "previsao"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	// TODO: Fix Usage
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.weather.description")

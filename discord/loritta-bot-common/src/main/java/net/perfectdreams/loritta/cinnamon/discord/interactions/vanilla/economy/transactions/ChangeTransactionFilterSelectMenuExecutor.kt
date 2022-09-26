@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.transactions
 
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.cinnamon.utils.TransactionType
+import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext

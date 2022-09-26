@@ -5,18 +5,18 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.await
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Icon
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.CommandArguments
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.CommandArguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 
-class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji", "createemoji", "criaremoji"), CommandCategory.MODERATION) {
+class AddEmojiCommand : AbstractCommand("addemoji", listOf("adicionaremoji", "createemoji", "criaremoji"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getUsage(): CommandArguments {
 		return arguments {
 			argument(ArgumentType.TEXT) {

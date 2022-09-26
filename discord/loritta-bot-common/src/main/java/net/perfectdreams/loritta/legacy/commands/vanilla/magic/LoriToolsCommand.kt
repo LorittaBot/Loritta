@@ -1,13 +1,13 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.magic
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 
-class LoriToolsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("loritools"), CommandCategory.MAGIC) {
+class LoriToolsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("loritools"), net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

@@ -22,21 +22,21 @@ import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.utils.MediaTypeUtils
-import net.perfectdreams.loritta.legacy.common.utils.StoragePaths
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.MediaTypeUtils
+import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.legacy.tables.BotVotes
 import net.perfectdreams.loritta.legacy.utils.AccountUtils
 import net.perfectdreams.loritta.legacy.utils.ClusterOfflineException
 import net.perfectdreams.loritta.legacy.utils.DiscordUtils
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
-import net.perfectdreams.loritta.legacy.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.legacy.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
@@ -46,7 +46,7 @@ import java.io.File
 import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
-class PerfilCommand : AbstractCommand("profile", listOf("perfil"), CommandCategory.SOCIAL) {
+class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	companion object {
 		/**
 		 * Gets the user's badges, the user's mutual guilds will be retrieved

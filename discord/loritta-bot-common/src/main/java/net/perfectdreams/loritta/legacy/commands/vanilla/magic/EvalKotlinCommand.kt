@@ -3,12 +3,12 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.magic
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.parallax.ParallaxUtils
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import javax.script.Invocable
 import javax.script.ScriptEngineManager
 
-class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin", "evaluate", "evalulatekt", "evaluatekotlin"), category = CommandCategory.MAGIC, onlyOwner = true) {
+class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin", "evaluate", "evalulatekt", "evaluatekotlin"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Executa códigos em Kotlin"
 	}
@@ -33,7 +33,7 @@ class EvalKotlinCommand : AbstractCommand("eval", listOf("evalkt", "evalkotlin",
 			import net.perfectdreams.loritta.legacy.network.*
 			import net.perfectdreams.loritta.legacy.utils.extensions.*
 			import net.perfectdreams.loritta.legacy.utils.locale.*
-			import net.perfectdreams.loritta.legacy.common.locale.*
+			import net.perfectdreams.loritta.common.locale.*
 			import net.perfectdreams.loritta.legacy.tables.*
 			import net.perfectdreams.loritta.legacy.tables.servers.*
 			import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.*

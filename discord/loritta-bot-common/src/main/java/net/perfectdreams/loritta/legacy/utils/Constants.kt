@@ -16,9 +16,9 @@ import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import kotlinx.serialization.hocon.Hocon
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.api.utils.jackson.FixedMapDeserializer
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.jackson.FixedMapDeserializer
+import net.perfectdreams.loritta.common.utils.Emotes
 import org.yaml.snakeyaml.Yaml
 import java.awt.Color
 import java.awt.Font

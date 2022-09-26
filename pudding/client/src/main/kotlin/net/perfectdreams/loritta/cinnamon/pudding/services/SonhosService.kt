@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
-import net.perfectdreams.loritta.cinnamon.utils.TransactionType
+import net.perfectdreams.loritta.common.utils.TransactionType
 import org.jetbrains.exposed.sql.*
 
 class SonhosService(private val pudding: Pudding) : Service(pudding) {

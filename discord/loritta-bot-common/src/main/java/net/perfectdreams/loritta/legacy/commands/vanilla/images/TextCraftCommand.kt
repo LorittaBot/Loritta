@@ -7,16 +7,16 @@ import com.google.gson.JsonParser
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.encodeToUrl
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.locale.LocaleStringData
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import org.json.XML
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.imageio.ImageIO
 
-class TextCraftCommand : AbstractCommand("textcraft", category = CommandCategory.IMAGES) {
+class TextCraftCommand : AbstractCommand("textcraft", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData(
 			"commands.command.textcraft.description",
 			listOf(

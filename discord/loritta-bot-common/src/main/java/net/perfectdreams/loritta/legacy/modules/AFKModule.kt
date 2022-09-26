@@ -11,8 +11,8 @@ import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import net.perfectdreams.loritta.legacy.utils.stripZeroWidthSpace
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.TextChannel
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.jda.JDAUser
 import java.util.concurrent.TimeUnit
 

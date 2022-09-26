@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.WelcomerConfig
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.nio.charset.Charset

@@ -4,7 +4,7 @@ import dev.kord.gateway.Event
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 
 object KordDiscordEventUtils {
     private val logger = KotlinLogging.logger {}

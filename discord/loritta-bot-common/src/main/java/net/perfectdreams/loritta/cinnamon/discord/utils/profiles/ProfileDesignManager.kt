@@ -12,14 +12,14 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.readImageFromResources
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.DonationConfigs
-import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage

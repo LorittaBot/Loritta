@@ -21,9 +21,9 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.utils.Gender
-import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.Gender
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Rectangle

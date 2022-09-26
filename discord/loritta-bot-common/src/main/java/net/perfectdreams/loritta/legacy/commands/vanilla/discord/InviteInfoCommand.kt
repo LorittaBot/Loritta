@@ -12,17 +12,17 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.encodeToUrl
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.extensions.isValidUrl
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class InviteInfoCommand : AbstractCommand("inviteinfo", category = CommandCategory.DISCORD) {
+class InviteInfoCommand : AbstractCommand("inviteinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.inviteinfo.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.inviteinfo.examples")
 

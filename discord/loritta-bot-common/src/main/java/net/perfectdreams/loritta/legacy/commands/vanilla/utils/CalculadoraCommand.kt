@@ -3,15 +3,15 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.utils
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.utils.math.MathUtils
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.math.MathUtils
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator", "calcular", "calculate"), CommandCategory.UTILS) {
+class CalculadoraCommand : AbstractCommand("calc", listOf("calculadora", "calculator", "calcular", "calculate"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	companion object {
 		const val LOCALE_PREFIX = "commands.command.calc"
 	}

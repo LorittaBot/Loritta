@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.showtime.backend
 
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.locale.LorittaLanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.config.ConfigUtils
+import net.perfectdreams.loritta.common.utils.config.ConfigUtils
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.config.RootConfig
 import java.util.*

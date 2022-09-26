@@ -14,23 +14,23 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.utils.AccountUtils
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.GACampaigns
 import net.perfectdreams.loritta.legacy.utils.GenericReplies
 import net.perfectdreams.loritta.legacy.utils.NumberUtils
 import net.perfectdreams.loritta.legacy.utils.PaymentUtils
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
-import net.perfectdreams.loritta.legacy.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.legacy.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.legacy.utils.extensions.toJDA
 import net.perfectdreams.loritta.legacy.utils.sendStyledReply
@@ -42,7 +42,7 @@ class CoinFlipBetCommand(val m: LorittaDiscord) : DiscordAbstractCommandBase(
 	m,
 	listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
 		.flatMap { listOf("$it bet", "$it apostar") },
-	CommandCategory.ECONOMY
+	net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
 ) {
 	companion object {
 		// Used to avoid dupes

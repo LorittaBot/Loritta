@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.LorittaPermission
 import net.perfectdreams.loritta.legacy.utils.LorittaUser
 import net.perfectdreams.loritta.legacy.utils.config.EnvironmentType
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.loritta
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Message

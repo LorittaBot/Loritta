@@ -5,17 +5,17 @@ import net.perfectdreams.loritta.legacy.utils.*
 import net.perfectdreams.loritta.legacy.utils.extensions.doReactions
 import net.perfectdreams.loritta.legacy.utils.extensions.edit
 import net.perfectdreams.loritta.legacy.utils.extensions.isEmote
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
@@ -25,7 +25,7 @@ import java.time.Instant
 class RepListCommand(val m: LorittaDiscord) : DiscordAbstractCommandBase(
         m,
         listOf("rep list", "reps", "reputations", "reputações", "reputacoes", "reputation list", "reputação list", "reputacao list"),
-        CommandCategory.SOCIAL
+        net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL
 ) {
     companion object {
         private const val ENTRIES_PER_PAGE = 10

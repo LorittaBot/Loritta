@@ -2,15 +2,15 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.administration
 
 import net.perfectdreams.loritta.legacy.utils.LorittaPermission
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class DashboardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("dashboard", "painel", "configurar", "config"), CommandCategory.MODERATION) {
+class DashboardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("dashboard", "painel", "configurar", "config"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
     override fun command() = create {
         localizedDescription("commands.command.dashboard.description")
         localizedExamples("commands.command.dashboard.examples")

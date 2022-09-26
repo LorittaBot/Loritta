@@ -4,9 +4,9 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Cinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.ViewXpExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.XpRankExecutor
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.locale.LanguageManager
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
 
 class XpCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {

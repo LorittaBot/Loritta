@@ -5,7 +5,7 @@ import net.perfectdreams.gabrielaimageserver.data.ChavesOpeningRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.gabrielaimageserver.exceptions.InvalidChavesOpeningTextException
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon

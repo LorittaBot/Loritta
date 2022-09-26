@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.magic
 
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.website.routes.api.v1.user.PostDeleteDataRoute
 

@@ -21,8 +21,8 @@ import kotlinx.html.td
 import kotlinx.html.th
 import kotlinx.html.tr
 import kotlinx.serialization.builtins.ListSerializer
-import net.perfectdreams.loritta.legacy.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.legacy.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.locale

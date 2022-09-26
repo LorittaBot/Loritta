@@ -8,12 +8,12 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.inlineField
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementCategory
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.common.achievements.AchievementCategory
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
@@ -44,7 +44,7 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
             )
 
             val userAchievementsInAllCategoriesCount = achievements.size
-            val totalAchievementsInAllCategoriesCount = net.perfectdreams.loritta.cinnamon.achievements.AchievementType.values().size
+            val totalAchievementsInAllCategoriesCount = AchievementType.values().size
             val userAchievementsInCurrentCategoryCount: Int
             val totalAchievementsInCurrentCategoryCount: Int
             val achievementsOfTheCurrentCategory: List<PuddingAchievement>
@@ -55,7 +55,7 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                 achievementsOfTheCurrentCategory = achievements
             } else {
                 userAchievementsInCurrentCategoryCount = achievements.count { it.type.category == category }
-                totalAchievementsInCurrentCategoryCount = net.perfectdreams.loritta.cinnamon.achievements.AchievementType.values().count { it.category == category }
+                totalAchievementsInCurrentCategoryCount = AchievementType.values().count { it.category == category }
                 achievementsOfTheCurrentCategory = achievements.filter { it.type.category == category }
             }
 
@@ -104,7 +104,7 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
                     ) {
                         fun insertOption(optionCategory: AchievementCategory) {
                             val userAchievementsInCategoryCount = achievements.count { it.type.category == optionCategory }
-                            val totalAchievementsInCategoryCount = net.perfectdreams.loritta.cinnamon.achievements.AchievementType.values()
+                            val totalAchievementsInCategoryCount = AchievementType.values()
                                 .count { it.category == optionCategory }
 
                             this.option(

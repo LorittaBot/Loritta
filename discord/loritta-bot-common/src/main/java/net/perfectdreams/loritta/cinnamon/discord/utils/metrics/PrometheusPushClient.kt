@@ -8,7 +8,7 @@ import io.ktor.http.*
 import io.prometheus.client.CollectorRegistry
 import kotlinx.coroutines.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
+import net.perfectdreams.loritta.common.utils.HostnameUtils
 import java.io.Closeable
 import java.io.StringWriter
 import kotlin.time.Duration.Companion.seconds

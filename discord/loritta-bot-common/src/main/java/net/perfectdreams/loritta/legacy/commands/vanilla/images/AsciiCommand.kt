@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.images
 
 import net.perfectdreams.loritta.legacy.utils.toBufferedImage
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 
-class AsciiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("ascii", "asciiart", "img2ascii", "img2asciiart", "image2ascii"), CommandCategory.IMAGES) {
+class AsciiCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("ascii", "asciiart", "img2ascii", "img2asciiart", "image2ascii"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }

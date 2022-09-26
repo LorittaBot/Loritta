@@ -6,11 +6,11 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
 import net.perfectdreams.loritta.legacy.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
 import net.perfectdreams.loritta.legacy.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
@@ -21,7 +21,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
 
-class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupotem"), CommandCategory.IMAGES) {
+class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupotem"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.everygrouphas.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.everygrouphas.examples")
 

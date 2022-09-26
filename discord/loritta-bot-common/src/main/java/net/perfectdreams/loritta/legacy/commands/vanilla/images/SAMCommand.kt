@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.images
 
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.api.utils.image.Image
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.utils.image.Image
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.commands.vanilla.images.base.ImageAbstractCommandBase
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils

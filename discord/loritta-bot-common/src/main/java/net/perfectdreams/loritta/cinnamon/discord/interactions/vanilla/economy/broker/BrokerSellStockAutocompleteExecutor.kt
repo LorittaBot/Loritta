@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.CinnamonAutocompleteHandler
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.cinnamon.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
 
 class BrokerSellStockAutocompleteExecutor(loritta: LorittaCinnamon) : CinnamonAutocompleteHandler<String>(loritta) {
     override suspend fun handle(

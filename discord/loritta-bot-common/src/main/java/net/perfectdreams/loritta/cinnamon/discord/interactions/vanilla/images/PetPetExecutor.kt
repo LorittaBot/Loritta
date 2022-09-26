@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.PetPetRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon

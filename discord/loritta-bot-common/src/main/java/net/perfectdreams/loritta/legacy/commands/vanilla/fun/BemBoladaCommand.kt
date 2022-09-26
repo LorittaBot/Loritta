@@ -6,12 +6,12 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.WebhookUtils
 import net.perfectdreams.loritta.legacy.utils.loritta
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), CommandCategory.FUN) {
+class BemBoladaCommand : AbstractCommand("bembolada", listOf("kenji"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.bembolada.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

@@ -15,15 +15,15 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Raspadinhas
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.GACampaigns
 import net.perfectdreams.loritta.legacy.utils.sendStyledReply
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -33,7 +33,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.util.concurrent.TimeUnit
 
-class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("scratchcard", "raspadinha"), CommandCategory.ECONOMY) {
+class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("scratchcard", "raspadinha"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private val mutexes = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<Long, Mutex>()
 				.asMap()

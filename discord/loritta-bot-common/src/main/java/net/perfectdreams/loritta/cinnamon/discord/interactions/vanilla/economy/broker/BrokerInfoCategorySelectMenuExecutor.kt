@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.BrokerTickerInformation
-import net.perfectdreams.loritta.cinnamon.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
 
 class BrokerInfoCategorySelectMenuExecutor(loritta: LorittaCinnamon) : CinnamonSelectMenuExecutor(loritta) {
     companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_TICKER_CATEGORY_MENU_EXECUTOR)

@@ -9,8 +9,9 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.legacy.tables.ExecutedCommandsLog
 import org.jetbrains.exposed.sql.insert

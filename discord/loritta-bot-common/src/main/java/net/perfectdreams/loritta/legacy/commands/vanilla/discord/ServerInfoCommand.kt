@@ -16,13 +16,13 @@ import net.perfectdreams.loritta.legacy.utils.locale.Gender
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Region
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.DiscordUtils
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
-class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = CommandCategory.DISCORD) {
+class ServerInfoCommand : AbstractCommand("serverinfo", listOf("guildinfo"), category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.serverinfo.description")
 
 	override fun canUseInPrivateChannel(): Boolean {

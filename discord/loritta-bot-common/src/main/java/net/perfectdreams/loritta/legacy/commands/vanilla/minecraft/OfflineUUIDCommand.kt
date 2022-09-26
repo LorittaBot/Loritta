@@ -2,14 +2,14 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.minecraft
 
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import org.apache.commons.codec.Charsets
 import java.util.*
 
-class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"), CommandCategory.MINECRAFT) {
+class OfflineUUIDCommand : AbstractCommand("mcofflineuuid", listOf("offlineuuid"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.mcofflineuuid.description")
     override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.playerNameExamples")
 

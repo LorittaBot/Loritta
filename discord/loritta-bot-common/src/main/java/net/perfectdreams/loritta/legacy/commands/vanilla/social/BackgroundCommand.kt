@@ -2,14 +2,14 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.social
 
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.loritta
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.Emotes
 
-class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), CommandCategory.SOCIAL) {
+class BackgroundCommand : AbstractCommand("background", listOf("papeldeparede"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.background.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

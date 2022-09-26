@@ -5,12 +5,12 @@ import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.WebhookUtils
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), CommandCategory.FUN) {
+class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	private val frases = listOf(
 			"Que isso bicho, ó u cara lá ó",
 			"Vamos ver as vídeo cassetadas!",

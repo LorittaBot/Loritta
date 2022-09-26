@@ -25,9 +25,9 @@ import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.MessageTargetType

@@ -3,9 +3,8 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.commands
 import dev.kord.rest.builder.message.create.MessageCreateBuilder
 import kotlinx.serialization.json.JsonNull.content
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
-import net.perfectdreams.loritta.cinnamon.emotes.Emote
+import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.entities.LorittaReply
 
 /**
  * Appends a Loritta-styled formatted message to the builder's message content.
@@ -17,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.entities.LorittaReply
  * @param content the content of the styled message
  * @param prefix  the emote prefix of the styled message
  */
-fun MessageBuilder.styled(content: String, prefix: net.perfectdreams.loritta.cinnamon.emotes.Emote) = styled(content, prefix.asMention)
+fun MessageBuilder.styled(content: String, prefix: Emote) = styled(content, prefix.asMention)
 
 /**
  * Appends a Loritta-styled formatted message to the builder's message content.
@@ -63,7 +62,7 @@ fun MessageBuilder.styled(reply: net.perfectdreams.loritta.cinnamon.entities.Lor
  * @param content the content of the styled message
  * @param prefix  the emote prefix of the styled message
  */
-fun MessageCreateBuilder.styled(content: String, prefix: net.perfectdreams.loritta.cinnamon.emotes.Emote) = styled(content, prefix.asMention)
+fun MessageCreateBuilder.styled(content: String, prefix: Emote) = styled(content, prefix.asMention)
 
 /**
  * Appends a Loritta-styled formatted message to the builder's message content.
@@ -107,7 +106,7 @@ fun MessageCreateBuilder.styled(reply: net.perfectdreams.loritta.cinnamon.entiti
  * @param content the content of the styled message
  * @param prefix  the emote prefix of the styled message
  */
-fun createStyledContent(content: String, prefix: net.perfectdreams.loritta.cinnamon.emotes.Emote) = createStyledContent(
+fun createStyledContent(content: String, prefix: Emote) = createStyledContent(
     net.perfectdreams.loritta.cinnamon.entities.LorittaReply(content, prefix.asMention)
 )
 

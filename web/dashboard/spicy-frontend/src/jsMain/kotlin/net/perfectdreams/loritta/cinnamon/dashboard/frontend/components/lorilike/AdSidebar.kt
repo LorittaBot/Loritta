@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.CloseMod
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.Ads
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalI18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.css.textAlign
 import org.jetbrains.compose.web.dom.Aside
 import org.jetbrains.compose.web.dom.Div

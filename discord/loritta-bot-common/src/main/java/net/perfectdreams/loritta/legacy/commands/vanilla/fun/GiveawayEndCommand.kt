@@ -1,22 +1,22 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.`fun`
 
-import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.utils.extensions.await
-import net.perfectdreams.loritta.legacy.utils.isValidSnowflake
-import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.legacy.api.commands.*
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.dao.servers.Giveaway
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.tables.servers.Giveaways
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.legacy.utils.Constants
+import net.perfectdreams.loritta.legacy.utils.extensions.await
 import net.perfectdreams.loritta.legacy.utils.giveaway.GiveawayManager
+import net.perfectdreams.loritta.legacy.utils.isValidSnowflake
+import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import org.jetbrains.exposed.sql.and
 
-class GiveawayEndCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway end", "sorteio end"), CommandCategory.FUN) {
+class GiveawayEndCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway end", "sorteio end"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command"
 	}

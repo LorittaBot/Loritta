@@ -9,8 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandE
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.modals.CinnamonModalExecutorDeclaration
-import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
-import net.perfectdreams.loritta.cinnamon.emotes.Emote
+import net.perfectdreams.loritta.common.emotes.Emote
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.entities.LorittaReply
 

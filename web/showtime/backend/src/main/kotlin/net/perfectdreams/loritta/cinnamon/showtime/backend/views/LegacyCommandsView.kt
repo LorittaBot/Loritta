@@ -29,7 +29,7 @@ import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.api.commands.CommandCategory
 import net.perfectdreams.loritta.api.commands.CommandInfo
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.ImageUtils
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.NitroPayAdGenerator

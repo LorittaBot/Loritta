@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.legacy.platform.discord.utils
 
 import net.perfectdreams.loritta.legacy.Loritta
-import net.perfectdreams.loritta.legacy.api.LorittaBot
-import net.perfectdreams.loritta.legacy.api.utils.LorittaAssets
-import net.perfectdreams.loritta.legacy.api.utils.image.Image
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
+import net.perfectdreams.loritta.common.LorittaBot
+import net.perfectdreams.loritta.common.utils.LorittaAssets
+import net.perfectdreams.loritta.common.utils.image.Image
+import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.io.File
 import javax.imageio.ImageIO

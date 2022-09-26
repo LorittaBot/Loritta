@@ -18,6 +18,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
+import net.perfectdreams.loritta.common.utils.Placeholders
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
@@ -367,7 +368,7 @@ class TwitchRoute(val m: SpicyMorenitta) : UpdateNavbarSizePostRender("/guild/{g
 				true,
 				listOf(
 						Placeholder(
-								net.perfectdreams.loritta.legacy.utils.Placeholders.LINK.asKey,
+								Placeholders.LINK.asKey,
 								"https://twitch.tv/alanzoka",
 								locale["${LOCALE_PREFIX}.channelLink"],
 								RenderType.TEXT,

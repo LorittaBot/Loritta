@@ -14,8 +14,8 @@ import kotlinx.html.style
 import kotlinx.html.ul
 import net.perfectdreams.dokyo.WebsiteTheme
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeys
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeys
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.showtime.backend.ShowtimeBackend
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.imgSrcSetFromEtherealGambi
 import net.perfectdreams.loritta.cinnamon.showtime.backend.utils.innerContent

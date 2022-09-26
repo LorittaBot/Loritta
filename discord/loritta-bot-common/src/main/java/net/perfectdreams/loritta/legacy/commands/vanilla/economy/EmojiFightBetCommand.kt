@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.economy
 
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.utils.AccountUtils
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.GACampaigns
 import net.perfectdreams.loritta.legacy.utils.GenericReplies
 import net.perfectdreams.loritta.legacy.utils.NumberUtils
@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.legacy.utils.sendStyledReply
 class EmojiFightBetCommand(val m: LorittaDiscord) : DiscordAbstractCommandBase(
 		m,
 		listOf("emojifight bet", "rinhadeemoji bet", "emotefight bet"),
-		CommandCategory.ECONOMY
+		net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
 		localizedDescription("commands.command.emojifightbet.description")

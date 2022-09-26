@@ -8,17 +8,17 @@ import net.perfectdreams.loritta.legacy.utils.msgFormat
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import org.jsoup.Jsoup
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), CommandCategory.UTILS) {
+class MoneyCommand : AbstractCommand("money", listOf("dinheiro", "grana"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	companion object {
 		var updatedAt = 0L
 		var job: Deferred<Map<String, Double>>? = null

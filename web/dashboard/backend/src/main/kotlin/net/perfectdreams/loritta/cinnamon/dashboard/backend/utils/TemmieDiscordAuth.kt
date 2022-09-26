@@ -21,7 +21,7 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.long
 import kotlinx.serialization.json.longOrNull
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 
 class TemmieDiscordAuth(val clientId: String,
                         val clientSecret: String,

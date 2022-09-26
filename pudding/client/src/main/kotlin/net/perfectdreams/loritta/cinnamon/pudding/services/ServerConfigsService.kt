@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.services
 
-import net.perfectdreams.loritta.cinnamon.utils.LorittaPermission
+import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.*
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerConfigs
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
-import net.perfectdreams.loritta.cinnamon.utils.PunishmentAction
+import net.perfectdreams.loritta.common.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.util.*

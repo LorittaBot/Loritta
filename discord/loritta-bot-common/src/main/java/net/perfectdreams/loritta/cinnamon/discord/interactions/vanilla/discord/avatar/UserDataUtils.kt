@@ -19,7 +19,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.SingleUserComponentData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
@@ -27,7 +27,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotableUserIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import kotlin.time.Duration.Companion.minutes
 
 object UserDataUtils {

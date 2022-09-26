@@ -7,7 +7,7 @@ import net.perfectdreams.gabrielaimageserver.exceptions.ImageTooLargeException
 import net.perfectdreams.gabrielaimageserver.exceptions.StreamExceedsLimitException
 import net.perfectdreams.gabrielaimageserver.exceptions.UntrustedURLException
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 
 suspend fun <R> GabrielaImageServerClient.handleExceptions(context: InteractionContext, block: suspend net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient.() -> (R)): R {

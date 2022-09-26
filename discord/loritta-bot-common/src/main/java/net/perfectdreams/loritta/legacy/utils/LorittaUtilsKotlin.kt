@@ -8,10 +8,10 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.utils.MiscUtil
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.legacy.tables.BannedUsers
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import org.apache.commons.lang3.ArrayUtils
 import java.awt.Graphics
 import java.awt.Image

@@ -9,13 +9,13 @@ import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.legacy.tables.Payments
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
-class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinfo", category = CommandCategory.DISCORD) {
+class BotInfoCommand(private val buildInfo: BuildInfo) : AbstractCommand("botinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.botinfo.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {

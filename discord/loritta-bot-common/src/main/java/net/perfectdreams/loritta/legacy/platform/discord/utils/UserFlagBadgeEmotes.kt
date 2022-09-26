@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.platform.discord.utils
 
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 
 object UserFlagBadgeEmotes {
 

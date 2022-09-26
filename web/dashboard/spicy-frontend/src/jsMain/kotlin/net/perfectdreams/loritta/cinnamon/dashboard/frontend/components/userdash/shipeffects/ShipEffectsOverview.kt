@@ -28,8 +28,8 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.components.userdash
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsScreen
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeys
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeys
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import org.jetbrains.compose.web.attributes.InputType
 import org.jetbrains.compose.web.attributes.disabled

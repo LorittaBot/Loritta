@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.website.views
 
 import com.google.gson.JsonArray
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
 import net.perfectdreams.loritta.legacy.sweetmorenitta.utils.imgSrcSet
 import net.perfectdreams.loritta.legacy.website.session.LorittaJsonWebSession

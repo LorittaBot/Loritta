@@ -16,12 +16,12 @@ import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.getEffectiveAvatarUrl
@@ -33,7 +33,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
 
-class ShipCommand : AbstractCommand("ship", listOf("shippar"), CommandCategory.FUN) {
+class ShipCommand : AbstractCommand("ship", listOf("shippar"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ship.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.ship.examples")
 

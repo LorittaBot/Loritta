@@ -13,9 +13,9 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.createOrUpdatePostgreSQLEnum
 import net.perfectdreams.exposedpowerutils.sql.upsert
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType
-import net.perfectdreams.loritta.cinnamon.components.ComponentType
+import net.perfectdreams.loritta.common.achievements.AchievementType
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.services.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
@@ -30,10 +30,11 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.*
 import net.perfectdreams.loritta.cinnamon.pudding.utils.PuddingTasks
 import net.perfectdreams.loritta.cinnamon.pudding.utils.metrics.PuddingMetrics
-import net.perfectdreams.loritta.cinnamon.utils.*
+import net.perfectdreams.loritta.common.utils.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BoostedCandyChannels
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CollectedCandies
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Halloween2019Players
+import net.perfectdreams.loritta.common.utils.HostnameUtils
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.statements.jdbc.JdbcConnectionImpl
 import org.jetbrains.exposed.sql.transactions.TransactionManager

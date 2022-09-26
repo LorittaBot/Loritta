@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.legacy.utils
 
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
 
 object GenericReplies {

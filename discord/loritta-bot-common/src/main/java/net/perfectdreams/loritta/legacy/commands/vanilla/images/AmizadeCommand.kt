@@ -7,9 +7,9 @@ import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
 import net.perfectdreams.loritta.legacy.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
 import net.perfectdreams.loritta.legacy.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), CommandCategory.IMAGES) {
+class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "amizade_overlay.png")) }
 	}

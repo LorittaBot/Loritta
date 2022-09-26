@@ -9,6 +9,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.common.achievements.AchievementType
 
 open class InteractionContext(
     val loritta: LorittaCinnamon,
@@ -30,6 +31,6 @@ open class InteractionContext(
      * @param type       what achievement should be given
      * @param achievedAt when the achievement was achieved, default is now
      */
-    suspend fun giveAchievementAndNotify(type: net.perfectdreams.loritta.cinnamon.achievements.AchievementType, achievedAt: Instant = Clock.System.now())
+    suspend fun giveAchievementAndNotify(type: AchievementType, achievedAt: Instant = Clock.System.now())
             = AchievementUtils.giveAchievementToUserAndNotifyThem(loritta, this, i18nContext, UserId(user.id.value), type, achievedAt)
 }

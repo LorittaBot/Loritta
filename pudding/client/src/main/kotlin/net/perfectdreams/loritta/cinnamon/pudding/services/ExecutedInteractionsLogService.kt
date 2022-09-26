@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.cinnamon.pudding.services
 import kotlinx.datetime.Instant
 import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.json.JsonObject
-import net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType
-import net.perfectdreams.loritta.cinnamon.components.ComponentType
+import net.perfectdreams.loritta.common.commands.ApplicationCommandType
+import net.perfectdreams.loritta.common.components.ComponentType
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ExecutedComponentsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.ExecutedApplicationCommandsLog
@@ -17,7 +17,7 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
         guildId: Long?,
         channelId: Long,
         sentAt: Instant,
-        type: net.perfectdreams.loritta.cinnamon.commands.ApplicationCommandType,
+        type: ApplicationCommandType,
         declaration: String,
         executor: String,
         options: JsonObject,
@@ -47,7 +47,7 @@ class ExecutedInteractionsLogService(private val pudding: Pudding) : Service(pud
         guildId: Long?,
         channelId: Long,
         sentAt: Instant,
-        type: net.perfectdreams.loritta.cinnamon.components.ComponentType,
+        type: ComponentType,
         declaration: String,
         executor: String,
         // options: JsonObject,

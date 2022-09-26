@@ -4,7 +4,7 @@ import dev.kord.common.Locale
 import dev.kord.common.entity.Permissions
 import net.perfectdreams.discordinteraktions.common.commands.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
+import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
 
 class CinnamonSlashCommandDeclaration(

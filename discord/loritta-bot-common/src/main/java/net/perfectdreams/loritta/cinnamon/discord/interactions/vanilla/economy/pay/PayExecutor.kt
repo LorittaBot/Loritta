@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes

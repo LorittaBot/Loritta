@@ -8,11 +8,11 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.commands.vanilla.images.base.imageData
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit
 class CocieloChavesCommand(m: LorittaDiscord) : DiscordAbstractCommandBase(
 	m,
 	listOf("cocielochaves"),
-	CommandCategory.VIDEOS
+	net.perfectdreams.loritta.common.commands.CommandCategory.VIDEOS
 ) {
 	val heavyGenerationMutexMap = Caffeine.newBuilder()
 		.expireAfterAccess(1L, TimeUnit.MINUTES)

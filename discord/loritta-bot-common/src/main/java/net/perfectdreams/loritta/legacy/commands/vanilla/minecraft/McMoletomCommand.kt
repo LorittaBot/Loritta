@@ -5,18 +5,18 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.minecraft.MCUtils
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Graphics2D
 import java.awt.image.BufferedImage
 import java.io.File
 
-class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), CommandCategory.MINECRAFT) {
+class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mcsweater.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.skinPlayerNameExamples")
 

@@ -4,10 +4,10 @@ import net.perfectdreams.loritta.legacy.LorittaLauncher
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.extensions.await
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.commands.CommandCategory
 
-class ServerInvitesCommand : AbstractCommand("serverinvites", category = CommandCategory.MAGIC, onlyOwner = true) {
+class ServerInvitesCommand : AbstractCommand("serverinvites", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Pega os invites de um servidor a partir do ID dele"
 	}

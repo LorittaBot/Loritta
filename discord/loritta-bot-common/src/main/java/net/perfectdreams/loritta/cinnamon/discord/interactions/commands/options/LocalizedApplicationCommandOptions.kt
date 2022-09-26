@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.CinnamonAutocompleteHandler

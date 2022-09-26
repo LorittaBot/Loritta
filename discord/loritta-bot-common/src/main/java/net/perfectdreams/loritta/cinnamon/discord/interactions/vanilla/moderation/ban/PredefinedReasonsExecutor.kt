@@ -22,9 +22,9 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderatio
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.moduleconfigs.ModerationPredefinedPunishmentMessages
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import org.jetbrains.exposed.sql.deleteAll
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert

@@ -5,20 +5,20 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.dao.Profile
 import net.perfectdreams.loritta.legacy.utils.extensions.edit
 import net.perfectdreams.loritta.legacy.utils.extensions.isEmote
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.locale.LocaleStringData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import java.awt.Color
 
-class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak", "lang"), category = CommandCategory.MISC) {
+class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak", "lang"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     private val resetPersonalLanguageEmote = "\uD83D\uDE45"
 
     override fun getDescriptionKey() = LocaleKeyData(

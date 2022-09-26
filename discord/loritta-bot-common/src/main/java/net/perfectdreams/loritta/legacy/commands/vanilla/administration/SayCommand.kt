@@ -7,19 +7,19 @@ import net.perfectdreams.loritta.legacy.utils.LorittaPermission
 import net.perfectdreams.loritta.legacy.utils.MessageUtils
 import net.perfectdreams.loritta.legacy.utils.escapeMentions
 import net.perfectdreams.loritta.legacy.utils.extensions.await
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.remove
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class SayCommand : AbstractCommand("say", listOf("falar"), CommandCategory.MODERATION) {
+class SayCommand : AbstractCommand("say", listOf("falar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.say.description")
 	override fun getExamplesKey()  = LocaleKeyData("commands.command.say.examples")
 	override fun getUsage() = arguments {

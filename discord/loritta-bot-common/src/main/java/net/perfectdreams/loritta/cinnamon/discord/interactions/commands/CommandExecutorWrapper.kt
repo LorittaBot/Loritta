@@ -16,9 +16,9 @@ import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestState
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.images.ImageReference
-import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.images.ImageReference
+import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
@@ -247,7 +247,7 @@ interface CommandExecutorWrapper {
     fun buildJsonWithArguments(types: Map<OptionReference<*>, Any?>) = buildJsonObject {
         for ((option, value) in types) {
             when (value) {
-                is net.perfectdreams.loritta.cinnamon.images.ImageReference -> put(option.name, value.url)
+                is net.perfectdreams.loritta.common.images.ImageReference -> put(option.name, value.url)
                 is Number -> put(option.name, value)
                 else -> put(option.name, value.toString())
             }

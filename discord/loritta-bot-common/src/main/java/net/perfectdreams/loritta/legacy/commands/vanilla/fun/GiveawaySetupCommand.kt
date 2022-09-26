@@ -2,23 +2,22 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.`fun`
 
 import net.perfectdreams.loritta.legacy.utils.*
 import net.perfectdreams.loritta.legacy.utils.extensions.await
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.TextChannel
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.entities.LorittaEmote
-import net.perfectdreams.loritta.legacy.api.entities.UnicodeEmote
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.entities.LorittaEmote
+import net.perfectdreams.loritta.common.entities.UnicodeEmote
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.DiscordEmote
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.giveaway.GiveawayManager
 
-class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), CommandCategory.FUN) {
+class GiveawaySetupCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
         val logger = KotlinLogging.logger { }

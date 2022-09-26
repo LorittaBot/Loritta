@@ -6,8 +6,8 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.LorittaCommand
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments

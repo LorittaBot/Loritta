@@ -14,7 +14,7 @@ import kotlinx.html.*
 import kotlinx.html.dom.prepend
 import kotlinx.serialization.Serializable
 import loriUrl
-import net.perfectdreams.loritta.legacy.utils.daily.DailyGuildMissingRequirement
+import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http

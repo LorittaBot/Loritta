@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.images.base
 
-import net.perfectdreams.loritta.legacy.api.LorittaBot
-import net.perfectdreams.loritta.legacy.api.commands.LorittaAbstractCommandBase
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.LorittaBot
+import net.perfectdreams.loritta.common.api.commands.LorittaAbstractCommandBase
+import net.perfectdreams.loritta.common.commands.CommandCategory
 
 /**
  * Extends [LorittaAbstractCommandBase] and sets the [category] to [CommandCategory.IMAGES], simple command images in this plugin
@@ -11,5 +11,5 @@ import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
 abstract class ImageAbstractCommandBase(loritta: LorittaBot, labels: List<String>) : LorittaAbstractCommandBase(
 		loritta,
 		labels,
-		CommandCategory.IMAGES
+		net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES
 )

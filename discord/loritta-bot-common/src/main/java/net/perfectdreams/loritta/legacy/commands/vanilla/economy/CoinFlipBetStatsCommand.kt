@@ -1,13 +1,13 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.economy
 
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.tables.SonhosTransaction
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.legacy.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.and
@@ -19,7 +19,7 @@ class CoinFlipBetStatsCommand(val m: LorittaDiscord) : DiscordAbstractCommandBas
 	m,
 	listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
 		.flatMap { listOf("$it bet stats", "$it apostar stats") },
-	CommandCategory.ECONOMY
+	net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
 ) {
 	override fun command() = create {
 		localizedDescription("commands.command.flipcoinbetstats.description")

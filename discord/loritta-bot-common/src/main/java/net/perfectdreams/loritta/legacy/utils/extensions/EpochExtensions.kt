@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.utils.extensions
 
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import java.text.DateFormatSymbols
 import java.time.Instant
 import java.time.OffsetDateTime

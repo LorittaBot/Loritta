@@ -27,14 +27,14 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
-import net.perfectdreams.loritta.legacy.common.utils.MediaTypeUtils
-import net.perfectdreams.loritta.legacy.common.utils.StoragePaths
+import net.perfectdreams.loritta.common.utils.MediaTypeUtils
+import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.legacy.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.legacy.utils.SimpleImageInfo
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
-import net.perfectdreams.loritta.legacy.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import net.perfectdreams.loritta.legacy.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.legacy.website.session.LorittaJsonWebSession

@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.events.LorittaMessageEvent
 import net.perfectdreams.loritta.legacy.parallax.wrappers.ParallaxEmbed
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.ChannelType
@@ -21,10 +21,10 @@ import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
-import net.perfectdreams.loritta.legacy.api.utils.format
+import net.perfectdreams.loritta.common.utils.format
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
-import net.perfectdreams.loritta.legacy.utils.Emotes
-import net.perfectdreams.loritta.legacy.utils.Placeholders
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Placeholders
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set

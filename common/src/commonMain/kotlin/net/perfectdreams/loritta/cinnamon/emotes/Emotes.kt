@@ -1,5 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.emotes
 
+import net.perfectdreams.loritta.common.emotes.DiscordEmote
+import net.perfectdreams.loritta.common.emotes.UnicodeEmote
+
 object Emotes {
     val MissingEmote = UnicodeEmote("\uD83D\uDC1B")
     val DefaultStyledPrefix = UnicodeEmote("\uD83D\uDD39")

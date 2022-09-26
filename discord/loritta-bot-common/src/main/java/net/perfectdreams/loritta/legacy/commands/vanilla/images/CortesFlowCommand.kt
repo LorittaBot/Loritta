@@ -13,12 +13,12 @@ import kotlinx.serialization.json.jsonPrimitive
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import java.awt.Color
 
@@ -29,7 +29,7 @@ class CortesFlowCommand(
     listOf(
         "cortesflow", "flowcortes"
     ),
-    CommandCategory.IMAGES
+    net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES
 ) {
     override fun command() = create {
         localizedDescription("commands.command.cortesflow.description")

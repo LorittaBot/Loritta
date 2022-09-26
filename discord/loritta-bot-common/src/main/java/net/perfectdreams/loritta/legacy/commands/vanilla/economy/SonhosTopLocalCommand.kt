@@ -3,16 +3,16 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.economy
 import net.perfectdreams.loritta.legacy.tables.GuildProfiles
 import net.perfectdreams.loritta.legacy.tables.Profiles
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.legacy.utils.RankingGenerator
 import org.jetbrains.exposed.sql.*
 
-class SonhosTopLocalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("sonhos top local", "atm top local"), CommandCategory.ECONOMY) {
+class SonhosTopLocalCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("sonhos top local", "atm top local"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	override fun command() = create {
 		localizedDescription("commands.command.sonhostoplocal.description")
 

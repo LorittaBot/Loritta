@@ -16,9 +16,9 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.google.HackyGoogleTransl
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.Language
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.text.TextUtils
 
 class TranslateExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     val cinnamonAutocomplete: (AutocompleteContext, FocusedCommandOption, Boolean) -> (Map<String, String>) = { autocompleteContext, focusedCommandOption, includeAuto ->

@@ -8,7 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled

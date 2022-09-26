@@ -6,9 +6,9 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.getEffectiveAvatarUrl
@@ -20,7 +20,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 
-class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), CommandCategory.UNDERTALE) {
+class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.utbox.description")
 
 	override fun getExamples(): List<String> {

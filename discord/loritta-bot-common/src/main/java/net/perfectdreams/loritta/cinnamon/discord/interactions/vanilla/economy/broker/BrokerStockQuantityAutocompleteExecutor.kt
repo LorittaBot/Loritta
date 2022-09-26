@@ -2,9 +2,9 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenAndStripCodeBackticks
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BrokerCommand

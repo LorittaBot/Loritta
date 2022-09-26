@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.LorittaDashboardFro
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalI18nContext
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.dom.A
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text

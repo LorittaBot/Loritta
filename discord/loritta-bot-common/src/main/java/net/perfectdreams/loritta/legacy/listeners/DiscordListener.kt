@@ -51,7 +51,7 @@ import net.perfectdreams.loritta.legacy.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.MemberCounterChannelConfigs
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.WarnActions
-import net.perfectdreams.loritta.legacy.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.legacy.utils.giveaway.GiveawayManager
 import okio.Buffer
 import org.jetbrains.exposed.sql.and

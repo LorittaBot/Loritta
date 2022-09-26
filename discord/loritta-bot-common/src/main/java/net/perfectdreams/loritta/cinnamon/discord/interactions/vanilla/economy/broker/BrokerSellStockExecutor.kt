@@ -8,9 +8,10 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.services.BovespaBrokerService
-import net.perfectdreams.loritta.cinnamon.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import kotlin.math.abs
 
 class BrokerSellStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
@@ -134,8 +135,8 @@ class BrokerSellStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandEx
         )
 
         if (isPositiveProfit)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.STONKS)
+            context.giveAchievementAndNotify(AchievementType.STONKS)
         if (isNegativeProfit)
-            context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.NOT_STONKS)
+            context.giveAchievementAndNotify(AchievementType.NOT_STONKS)
     }
 }

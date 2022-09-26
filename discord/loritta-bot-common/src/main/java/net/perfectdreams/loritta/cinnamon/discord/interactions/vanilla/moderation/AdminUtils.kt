@@ -27,10 +27,10 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.StaffTokenSource
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.UserTokenSource
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.utils.Placeholders
-import net.perfectdreams.loritta.cinnamon.utils.PunishmentAction
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.Placeholders
+import net.perfectdreams.loritta.common.utils.PunishmentAction
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 
 object AdminUtils {
     private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")

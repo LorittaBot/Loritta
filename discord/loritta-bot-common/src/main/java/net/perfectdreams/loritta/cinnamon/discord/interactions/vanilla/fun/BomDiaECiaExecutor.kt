@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 
-import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon

@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.legacy.utils.GuildLorittaUser
 import net.perfectdreams.loritta.legacy.utils.LorittaPermission
 import net.perfectdreams.loritta.legacy.utils.LorittaUser
 import net.perfectdreams.loritta.legacy.utils.extensions.retrieveMemberOrNullById
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.website.LorittaWebsite
 import io.ktor.server.application.*

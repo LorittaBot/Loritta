@@ -6,7 +6,7 @@ import kotlinx.html.h1
 import kotlinx.html.img
 import kotlinx.html.p
 import kotlinx.html.style
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 class Error404View(
     locale: BaseLocale,

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.legacy.website.views.user
 import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.legacy.dao.Reputation
 import net.perfectdreams.loritta.legacy.utils.encodeToUrl
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.loritta
 import kotlinx.html.*
 import net.dv8tion.jda.api.entities.User

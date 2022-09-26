@@ -6,7 +6,7 @@ import kotlinx.datetime.Clock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.HostnameUtils
+import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 
 class DebugGatewayModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {

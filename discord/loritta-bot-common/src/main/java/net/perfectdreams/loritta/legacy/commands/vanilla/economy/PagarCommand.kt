@@ -19,15 +19,16 @@ import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.math.BigDecimal
 
-class PagarCommand : AbstractCommand("pay", listOf("pagar"), CommandCategory.ECONOMY) {
+class PagarCommand : AbstractCommand("pay", listOf("pagar"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private val mutex = Mutex()
 	}

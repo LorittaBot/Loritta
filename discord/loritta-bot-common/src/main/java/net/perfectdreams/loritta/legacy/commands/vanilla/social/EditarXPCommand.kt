@@ -6,13 +6,13 @@ import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
-class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp", "setxp"), category = CommandCategory.SOCIAL) {
+class EditarXPCommand : AbstractCommand("editxp", listOf("editarxp", "setxp"), category = net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.editxp.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.editxp.examples")
 

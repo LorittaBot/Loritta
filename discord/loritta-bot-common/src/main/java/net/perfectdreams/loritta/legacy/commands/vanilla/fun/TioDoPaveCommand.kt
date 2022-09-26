@@ -4,12 +4,12 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.WebhookUtils.getOrCreateWebhook
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), CommandCategory.FUN) {
+class TioDoPaveCommand : AbstractCommand("tiodopave", listOf("piada"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.tiodopave.description")
 
 	companion object {

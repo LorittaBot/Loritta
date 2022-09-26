@@ -13,9 +13,9 @@ import io.ktor.http.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.LorittaPermission
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.LorittaPermission
+import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled

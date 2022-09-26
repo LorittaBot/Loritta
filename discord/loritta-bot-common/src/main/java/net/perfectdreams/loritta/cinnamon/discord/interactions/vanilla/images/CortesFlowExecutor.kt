@@ -4,7 +4,7 @@ import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.CortesFlowRequest
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils
+import net.perfectdreams.loritta.common.utils.text.TextUtils
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon

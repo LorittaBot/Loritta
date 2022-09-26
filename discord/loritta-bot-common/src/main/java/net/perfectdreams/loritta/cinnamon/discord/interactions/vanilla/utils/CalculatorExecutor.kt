@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils
 
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.math.MathUtils
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.stripCodeBackticks
+import net.perfectdreams.loritta.common.utils.math.MathUtils
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
@@ -54,7 +54,7 @@ class CalculatorExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
             )
 
             if (expression.replace(" ", "") == "1+1")
-                context.giveAchievementAndNotify(net.perfectdreams.loritta.cinnamon.achievements.AchievementType.ONE_PLUS_ONE_CALCULATION)
+                context.giveAchievementAndNotify(AchievementType.ONE_PLUS_ONE_CALCULATION)
         } else {
             // TODO: Fix stripCodeMarks
             context.failEphemerally(

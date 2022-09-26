@@ -5,11 +5,11 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.dao.GuildProfile
 import net.perfectdreams.loritta.legacy.tables.GuildProfiles
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.loritta
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.legacy.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 
-class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking"), CommandCategory.SOCIAL) {
+class RankCommand : AbstractCommand("rank", listOf("top", "leaderboard", "ranking"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.rank.description")
 
 	override fun canUseInPrivateChannel(): Boolean {

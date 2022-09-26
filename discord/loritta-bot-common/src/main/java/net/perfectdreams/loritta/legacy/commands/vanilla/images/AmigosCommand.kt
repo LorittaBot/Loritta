@@ -5,20 +5,20 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Member
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
 import net.perfectdreams.loritta.legacy.utils.extensions.getEffectiveAvatarUrl
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", "myfriends"), CommandCategory.IMAGES) {
+class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", "myfriends"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "thx.png")) }
 	}

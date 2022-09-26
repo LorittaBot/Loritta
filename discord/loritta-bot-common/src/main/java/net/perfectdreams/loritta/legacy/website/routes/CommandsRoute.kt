@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.legacy.website.routes
 
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord

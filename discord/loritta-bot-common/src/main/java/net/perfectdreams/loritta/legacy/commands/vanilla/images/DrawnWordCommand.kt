@@ -4,10 +4,10 @@ import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
 import net.perfectdreams.loritta.legacy.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.legacy.utils.substringIfNeeded
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
@@ -18,7 +18,7 @@ import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.io.File
 
-class DrawnWordCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("drawnword"), CommandCategory.IMAGES) {
+class DrawnWordCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("drawnword"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }

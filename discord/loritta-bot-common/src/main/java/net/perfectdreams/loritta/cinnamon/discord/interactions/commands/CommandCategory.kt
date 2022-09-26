@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.commands
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 enum class CommandCategory(val localizedName: StringI18nData, val localizedDescription: ListI18nData) {
     FUN(I18nKeysData.Commands.Category.Fun.Name, I18nKeysData.Commands.Category.Fun.Description),

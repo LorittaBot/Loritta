@@ -2,17 +2,17 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.social
 
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import net.perfectdreams.loritta.legacy.utils.stripNewLines
 import net.perfectdreams.loritta.legacy.utils.substringIfNeeded
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), CommandCategory.SOCIAL) {
+class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.afk.description")
 	override fun getExamplesKey() = LocaleKeyData("commands.command.afk.examples")
 

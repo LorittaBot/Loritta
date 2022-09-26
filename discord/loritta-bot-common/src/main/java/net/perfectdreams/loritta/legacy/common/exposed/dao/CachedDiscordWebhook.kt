@@ -1,6 +1,6 @@
-package net.perfectdreams.loritta.legacy.common.exposed.dao
+package net.perfectdreams.loritta.common.exposed.dao
 
-import net.perfectdreams.loritta.legacy.common.exposed.tables.CachedDiscordWebhooks
+import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import org.jetbrains.exposed.dao.LongEntity
 import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID

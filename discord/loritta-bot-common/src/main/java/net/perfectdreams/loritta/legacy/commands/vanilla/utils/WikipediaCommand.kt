@@ -5,16 +5,16 @@ import com.google.gson.JsonParser
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder
 
-class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), CommandCategory.UTILS) {
+class WikipediaCommand : AbstractCommand("wikipedia", listOf("wiki"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	companion object {
 		// https://en.wikipedia.org/wiki/List_of_Wikipedias
 		private val VALID_WIKIPEDIAS = listOf(

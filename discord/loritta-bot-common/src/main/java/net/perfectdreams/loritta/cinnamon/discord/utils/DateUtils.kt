@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import java.time.*
 
 object DateUtils {

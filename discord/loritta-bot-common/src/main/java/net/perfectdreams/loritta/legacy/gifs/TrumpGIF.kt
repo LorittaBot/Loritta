@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.legacy.gifs
 
 import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
-import net.perfectdreams.loritta.legacy.utils.LorittaImage
+import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File

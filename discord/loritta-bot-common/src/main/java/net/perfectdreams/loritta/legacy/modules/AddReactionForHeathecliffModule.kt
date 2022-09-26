@@ -6,8 +6,8 @@ import net.perfectdreams.loritta.legacy.events.LorittaMessageEvent
 import net.perfectdreams.loritta.legacy.modules.MessageReceivedModule
 import net.perfectdreams.loritta.legacy.utils.LorittaUser
 import net.perfectdreams.loritta.legacy.utils.extensions.await
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.Emotes
 
 class AddReactionForHeathecliffModule : MessageReceivedModule {
 	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {

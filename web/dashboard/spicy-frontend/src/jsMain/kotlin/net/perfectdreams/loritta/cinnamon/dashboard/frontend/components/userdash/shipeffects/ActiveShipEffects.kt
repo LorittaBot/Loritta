@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.screen.ShipEffectsS
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalUserIdentification
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.dom.Div
 import org.jetbrains.compose.web.dom.Text
 

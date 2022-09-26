@@ -1,13 +1,13 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.misc
 
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.tables.BotVotes
 import org.jetbrains.exposed.sql.select
 
-class DiscordBotListStatusCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("dbl status", "upvote status"), CommandCategory.MISC) {
+class DiscordBotListStatusCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("dbl status", "upvote status"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.dblstatus"
     }

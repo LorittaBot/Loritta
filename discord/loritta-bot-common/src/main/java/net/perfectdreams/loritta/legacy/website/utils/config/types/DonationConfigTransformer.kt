@@ -16,8 +16,8 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.DeleteImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest
-import net.perfectdreams.loritta.legacy.common.utils.MediaTypeUtils
-import net.perfectdreams.loritta.legacy.common.utils.StoragePaths
+import net.perfectdreams.loritta.common.utils.MediaTypeUtils
+import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.legacy.utils.SimpleImageInfo
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.image.BufferedImage

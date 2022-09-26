@@ -5,6 +5,7 @@ import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.tables.SonhosTransaction
 import org.jetbrains.exposed.sql.SortOrder

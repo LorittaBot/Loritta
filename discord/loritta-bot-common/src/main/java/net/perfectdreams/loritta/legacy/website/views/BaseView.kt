@@ -12,7 +12,7 @@ import kotlinx.html.stream.appendHTML
 import kotlinx.html.styleLink
 import kotlinx.html.title
 import kotlinx.html.unsafe
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.website.LorittaWebsite
 import net.perfectdreams.loritta.legacy.website.utils.WebsiteAssetsHashes
 

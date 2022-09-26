@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.config
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.cinnamon.utils.config.GabrielaImageServerConfig
+import net.perfectdreams.loritta.common.utils.config.GabrielaImageServerConfig
 
 @Serializable
 class ServicesConfig(

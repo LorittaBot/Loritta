@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.pudding.tables
 
-import net.perfectdreams.loritta.cinnamon.utils.WebsiteVoteSource
+import net.perfectdreams.loritta.common.utils.WebsiteVoteSource
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object BotVotes : LongIdTable() {

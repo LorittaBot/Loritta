@@ -1,9 +1,9 @@
 package net.perfectdreams.spicymorenitta.utils
 
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
-import net.perfectdreams.loritta.legacy.utils.Placeholders
+import net.perfectdreams.loritta.common.utils.Placeholders
 import kotlinx.browser.window
 
 object EmbedEditorStuff {

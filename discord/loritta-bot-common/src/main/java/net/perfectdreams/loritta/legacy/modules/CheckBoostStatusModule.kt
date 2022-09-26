@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.legacy.network.Databases
 import net.perfectdreams.loritta.legacy.utils.LorittaUser
 import net.perfectdreams.loritta.legacy.utils.NitroBoostUtils
 import net.perfectdreams.loritta.legacy.utils.config.DonatorsOstentationConfig
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.dao.Payment
 import net.perfectdreams.loritta.legacy.tables.Payments
 import net.perfectdreams.loritta.legacy.utils.payments.PaymentGateway

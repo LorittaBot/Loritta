@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.legacy.website.routes
 
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.website.utils.extensions.redirect
 import net.perfectdreams.sequins.ktor.BaseRoute

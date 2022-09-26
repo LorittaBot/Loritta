@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.magic
 
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
+import net.perfectdreams.loritta.common.api.commands.CommandContext
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.utils.PaymentUtils
 

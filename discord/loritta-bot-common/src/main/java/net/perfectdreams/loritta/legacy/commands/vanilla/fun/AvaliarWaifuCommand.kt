@@ -4,15 +4,15 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import java.util.*
 
-class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", "ratemywaifu", "ratewaifu", "avaliarminhawaifu", "notawaifu"), CommandCategory.FUN) {
+class AvaliarWaifuCommand : AbstractCommand("ratewaifu", listOf("avaliarwaifu", "ratemywaifu", "ratewaifu", "avaliarminhawaifu", "notawaifu"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command.ratewaifu"
 	}

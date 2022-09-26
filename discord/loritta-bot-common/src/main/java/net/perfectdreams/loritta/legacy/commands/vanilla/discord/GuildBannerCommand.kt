@@ -2,14 +2,14 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.discord
 
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("guildbanner", "serverbanner"), CommandCategory.MODERATION) {
+class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("guildbanner", "serverbanner"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
     override fun command() = create {
         localizedDescription("commands.command.guildbanner.description")
 

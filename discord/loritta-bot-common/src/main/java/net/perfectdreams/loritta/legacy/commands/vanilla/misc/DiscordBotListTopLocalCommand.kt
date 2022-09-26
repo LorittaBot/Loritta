@@ -2,16 +2,16 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.misc
 
 import net.perfectdreams.loritta.legacy.tables.GuildProfiles
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.image.JVMImage
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.tables.BotVotes
 import net.perfectdreams.loritta.legacy.utils.RankingGenerator
 import org.jetbrains.exposed.sql.*
 
-class DiscordBotListTopLocalCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("dbl top local"), CommandCategory.MISC) {
+class DiscordBotListTopLocalCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("dbl top local"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.dbltoplocal"
     }

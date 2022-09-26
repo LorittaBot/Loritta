@@ -38,7 +38,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
-import net.perfectdreams.loritta.legacy.common.exposed.tables.CachedDiscordWebhooks
+import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.legacy.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.utils.BucketedController
@@ -54,7 +54,7 @@ import net.perfectdreams.loritta.legacy.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.*
 import net.perfectdreams.loritta.legacy.twitch.TwitchAPI
 import net.perfectdreams.loritta.legacy.utils.CachedUserInfo
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.ProcessDiscordGatewayCommands
 import net.perfectdreams.loritta.legacy.utils.Sponsor
 import net.perfectdreams.loritta.legacy.utils.metrics.Prometheus

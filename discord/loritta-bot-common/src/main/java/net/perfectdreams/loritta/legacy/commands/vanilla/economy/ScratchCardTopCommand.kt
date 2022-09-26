@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.economy
 
-import net.perfectdreams.loritta.legacy.network.Databases
-import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.api.commands.*
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Raspadinhas
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.image.JVMImage
+import net.perfectdreams.loritta.legacy.network.Databases
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class ScratchCardTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("scratchcard top", "raspadinha top"), CommandCategory.ECONOMY) {
+class ScratchCardTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("scratchcard top", "raspadinha top"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command"
 	}

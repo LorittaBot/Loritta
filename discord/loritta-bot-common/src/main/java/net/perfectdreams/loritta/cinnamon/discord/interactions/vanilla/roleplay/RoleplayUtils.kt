@@ -9,8 +9,8 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.Gender
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.Gender
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.declarations.RoleplayCommand
@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.intera
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import net.perfectdreams.randomroleplaypictures.common.data.api.PictureSource
 
@@ -123,7 +124,7 @@ object RoleplayUtils {
             // ===[ KISS ]===
             KISS_ATTRIBUTES -> {
                 if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
-                    return RoleplayResponse(listOf(AchievementTarget(giver, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.TRIED_KISSING_LORITTA))) {
+                    return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA))) {
                         styled(
                             i18nContext.get(I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseLori),
                             Emotes.LoriBonk
@@ -141,11 +142,11 @@ object RoleplayUtils {
                     // "Grass cutter"/"Grass cutter" in english
                     if (receiverMarriage != null && giverMarriage?.id != receiverMarriage.id) {
                         // Talarico achievement
-                        achievements.add(AchievementTarget(giver, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.GRASS_CUTTER))
+                        achievements.add(AchievementTarget(giver, AchievementType.GRASS_CUTTER))
                     }
 
-                    achievements.add(AchievementTarget(giver, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.GAVE_FIRST_KISS))
-                    achievements.add(AchievementTarget(receiver, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.RECEIVED_FIRST_KISS))
+                    achievements.add(AchievementTarget(giver, AchievementType.GAVE_FIRST_KISS))
+                    achievements.add(AchievementTarget(receiver, AchievementType.RECEIVED_FIRST_KISS))
                 }
             }
 
@@ -154,7 +155,7 @@ object RoleplayUtils {
                 if (giver == receiver) {
                     embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Slap.ResponseSelf(giverMention) }
                 } else if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
-                    achievements.add(AchievementTarget(giver, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.TRIED_HURTING_LORITTA))
+                    achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
 
                     val oldGiver = giver
                     val oldReceiver = receiver
@@ -171,7 +172,7 @@ object RoleplayUtils {
                 if (giver == receiver) {
                     embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Attack.ResponseSelf(giverMention) }
                 } else if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
-                    achievements.add(AchievementTarget(giver, net.perfectdreams.loritta.cinnamon.achievements.AchievementType.TRIED_HURTING_LORITTA))
+                    achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
 
                     val oldGiver = giver
                     val oldReceiver = receiver
@@ -321,6 +322,6 @@ object RoleplayUtils {
 
     data class AchievementTarget(
         val target: Snowflake,
-        val achievement: net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+        val achievement: AchievementType
     )
 }

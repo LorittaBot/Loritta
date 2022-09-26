@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.platform.discord.legacy.entities
 
 import net.dv8tion.jda.api.entities.Emote
-import net.perfectdreams.loritta.legacy.api.entities.LorittaEmote
+import net.perfectdreams.loritta.common.entities.LorittaEmote
 
 open class DiscordEmote(code: String) : LorittaEmote(code) {
     val id: String

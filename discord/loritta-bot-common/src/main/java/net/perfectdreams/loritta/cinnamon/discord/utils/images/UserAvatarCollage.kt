@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
-import net.perfectdreams.loritta.cinnamon.utils.Gender
+import net.perfectdreams.loritta.common.utils.Gender
 import java.awt.Color
 import java.awt.image.BufferedImage
 

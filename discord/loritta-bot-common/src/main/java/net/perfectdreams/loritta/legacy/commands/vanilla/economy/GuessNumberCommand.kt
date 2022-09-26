@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.economy
 
 import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.arguments
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.GACampaigns
 import net.perfectdreams.loritta.legacy.utils.GenericReplies
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.legacy.utils.sendStyledReply
 class GuessNumberCommand(plugin: LorittaDiscord) : DiscordAbstractCommandBase(
         plugin,
         listOf("guessnumber", "adivinharnumero", "adivinharnúmero"),
-        CommandCategory.ECONOMY
+        net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
 ) {
     companion object {
         const val VICTORY_PRIZE = 1_000L

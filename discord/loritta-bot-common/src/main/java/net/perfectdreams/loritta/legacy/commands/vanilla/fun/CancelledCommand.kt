@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.`fun`
 
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.commands.LorittaAbstractCommandBase
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.LorittaAbstractCommandBase
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class CancelledCommand(val m: LorittaDiscord) : LorittaAbstractCommandBase(m, listOf("cancelled", "cancelado", "cancel", "cancelar"), CommandCategory.FUN) {
+class CancelledCommand(val m: LorittaDiscord) : LorittaAbstractCommandBase(m, listOf("cancelled", "cancelado", "cancel", "cancelar"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	override fun command() = create {
 		localizedDescription("commands.command.cancelled.description")
 		localizedExamples("commands.command.cancelled.examples")

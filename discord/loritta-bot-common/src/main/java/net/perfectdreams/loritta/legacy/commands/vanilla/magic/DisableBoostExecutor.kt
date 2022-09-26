@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.magic
 
 import net.perfectdreams.loritta.legacy.utils.NitroBoostUtils
-import net.perfectdreams.loritta.legacy.api.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.jda.JDAUser
 

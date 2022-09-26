@@ -6,8 +6,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.Auto
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.CinnamonAutocompleteHandler
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 
 // TODO: Switch this to long when Discord finally rolls out React Native for all Android devices
 class ShortenedToLongSonhosAutocompleteExecutor(loritta: LorittaCinnamon) : CinnamonAutocompleteHandler<String>(loritta) {

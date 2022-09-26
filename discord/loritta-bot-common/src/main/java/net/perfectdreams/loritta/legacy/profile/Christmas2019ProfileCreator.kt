@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.utils.makeRoundedCorners
 import net.perfectdreams.loritta.legacy.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.profile.ProfileUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.Color

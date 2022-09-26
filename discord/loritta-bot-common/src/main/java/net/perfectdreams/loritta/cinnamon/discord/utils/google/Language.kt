@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.google
 
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils
+import net.perfectdreams.loritta.common.utils.text.TextUtils
 
 enum class Language(val code: String) {
     AUTO_DETECT("auto"), // Not a "real language"

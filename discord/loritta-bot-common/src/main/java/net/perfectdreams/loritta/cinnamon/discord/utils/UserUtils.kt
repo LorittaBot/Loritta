@@ -20,9 +20,9 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContex
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.GACampaigns
-import net.perfectdreams.loritta.cinnamon.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification

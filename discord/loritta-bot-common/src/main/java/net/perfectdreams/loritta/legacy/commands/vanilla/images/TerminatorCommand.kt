@@ -2,9 +2,9 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.images
 
 import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.utils.extensions.drawStringWithOutline
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.api.utils.extensions.enableFontAntiAliasing
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.utils.extensions.enableFontAntiAliasing
+import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.commands.vanilla.images.base.ImageAbstractCommandBase
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils

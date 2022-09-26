@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.profile
 
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.Gender
+import net.perfectdreams.loritta.common.utils.Gender
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.de
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.ProfileCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.getOrCreateUserProfile
-import net.perfectdreams.loritta.cinnamon.utils.TodoFixThisData
+import net.perfectdreams.loritta.common.utils.TodoFixThisData
 
 class AboutMeExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {

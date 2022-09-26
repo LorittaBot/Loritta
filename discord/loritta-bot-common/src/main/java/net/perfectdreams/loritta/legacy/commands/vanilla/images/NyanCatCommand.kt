@@ -5,16 +5,16 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class NyanCatCommand : AbstractCommand("nyan", category = CommandCategory.IMAGES) {
+class NyanCatCommand : AbstractCommand("nyan", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val CAT_LEFT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_left_v2.png")) }
 		val CAT_RIGHT by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cat_right_v2.png")) }

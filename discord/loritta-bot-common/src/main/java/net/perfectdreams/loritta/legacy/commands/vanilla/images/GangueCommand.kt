@@ -4,18 +4,18 @@ import net.perfectdreams.loritta.legacy.Loritta
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.utils.LorittaImage
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.LorittaImage
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.makeRoundedCorners
 import net.perfectdreams.loritta.legacy.utils.toBufferedImage
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class GangueCommand : AbstractCommand("gang", listOf("gangue"), CommandCategory.IMAGES) {
+class GangueCommand : AbstractCommand("gang", listOf("gangue"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE_OVERLAY by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "cocielo/overlay.png")) }
 	}

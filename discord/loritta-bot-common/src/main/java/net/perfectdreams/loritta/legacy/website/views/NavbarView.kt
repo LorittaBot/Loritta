@@ -18,7 +18,7 @@ import kotlinx.html.p
 import kotlinx.html.script
 import kotlinx.html.style
 import kotlinx.html.unsafe
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 abstract class NavbarView(
     locale: BaseLocale,

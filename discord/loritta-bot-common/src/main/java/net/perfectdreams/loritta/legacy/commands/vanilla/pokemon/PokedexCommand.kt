@@ -4,15 +4,15 @@ import com.github.kevinsawicki.http.HttpRequest
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.encodeToUrl
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import org.jsoup.Jsoup
 import java.awt.Color
 import java.util.*
 
-class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), CommandCategory.POKEMON) {
+class PokedexCommand : AbstractCommand("pokedex", listOf("pokédex"), net.perfectdreams.loritta.common.commands.CommandCategory.POKEMON) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.pokedex.description")
 
     override fun getExamples(): List<String> {

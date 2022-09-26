@@ -7,7 +7,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserCommand

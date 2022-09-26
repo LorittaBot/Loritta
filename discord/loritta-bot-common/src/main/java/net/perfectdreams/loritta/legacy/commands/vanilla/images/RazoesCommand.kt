@@ -5,12 +5,12 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
-import net.perfectdreams.loritta.legacy.utils.LorittaImage
+import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
 import net.perfectdreams.loritta.legacy.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
@@ -21,7 +21,7 @@ import java.awt.image.FilteredImageSource
 import java.awt.image.RGBImageFilter
 import java.io.File
 
-class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), CommandCategory.IMAGES) {
+class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.reasons.description")
 	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 

@@ -33,11 +33,11 @@ import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.exceptions.HierarchyException
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -46,7 +46,7 @@ import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
-class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), CommandCategory.MODERATION) {
+class MuteCommand : AbstractCommand("mute", listOf("mutar", "silenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mute.description")
 	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES

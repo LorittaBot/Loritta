@@ -29,7 +29,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.html.title
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.legacy.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.legacy.utils.CachedUserInfo

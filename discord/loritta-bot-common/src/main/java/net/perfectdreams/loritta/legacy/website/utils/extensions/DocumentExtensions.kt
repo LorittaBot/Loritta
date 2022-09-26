@@ -10,7 +10,7 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.sessions.*
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.legacy.website.utils.WebsiteUtils
 import org.w3c.dom.Document

@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.legacy.utils.MessageUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.await
 import net.perfectdreams.loritta.legacy.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.legacy.utils.extensions.sendMessageAsync
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.lorittaShards
 import net.perfectdreams.loritta.legacy.utils.substringIfNeeded
@@ -20,7 +20,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
 import net.perfectdreams.loritta.legacy.dao.servers.Giveaway
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.DiscordEmote
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.FeatureFlags
 import net.perfectdreams.sequins.text.StringUtils
 import org.jetbrains.exposed.sql.transactions.transaction

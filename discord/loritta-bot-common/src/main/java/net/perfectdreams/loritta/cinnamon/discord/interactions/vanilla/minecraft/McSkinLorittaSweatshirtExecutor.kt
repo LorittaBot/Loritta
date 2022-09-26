@@ -6,8 +6,8 @@ import net.perfectdreams.gabrielaimageserver.data.MinecraftSkinLorittaSweatshirt
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.gabrielaimageserver.exceptions.InvalidMinecraftSkinException
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.utils.URLUtils
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.utils.URLUtils
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor

@@ -2,10 +2,10 @@ package net.perfectdreams.loritta.legacy.platform.discord
 
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.loritta
-import net.perfectdreams.loritta.legacy.api.entities.LorittaEmote
-import net.perfectdreams.loritta.legacy.api.entities.UnicodeEmote
+import net.perfectdreams.loritta.common.entities.LorittaEmote
+import net.perfectdreams.loritta.common.entities.UnicodeEmote
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.DiscordEmote
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.HoconUtils.decodeFromFile
 import java.io.File
 

@@ -26,10 +26,10 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.VoiceChannel
 import net.dv8tion.jda.api.entities.Webhook
 import net.dv8tion.jda.api.entities.WebhookType
-import net.perfectdreams.loritta.legacy.common.exposed.dao.CachedDiscordWebhook
-import net.perfectdreams.loritta.legacy.common.exposed.tables.CachedDiscordWebhooks
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.utils.webhooks.WebhookState
+import net.perfectdreams.loritta.common.exposed.dao.CachedDiscordWebhook
+import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.webhooks.WebhookState
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.EventLogConfig
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.json.JSONException

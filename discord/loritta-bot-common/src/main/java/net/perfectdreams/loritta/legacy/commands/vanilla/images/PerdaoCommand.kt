@@ -3,15 +3,15 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.images
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.api.commands.Command
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
 
-class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), CommandCategory.IMAGES) {
+class PerdaoCommand : AbstractCommand("perdao", listOf("perdão"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		val TEMPLATE by lazy { ImageIO.read(File(Constants.ASSETS_FOLDER, "perdao.png")) }
 	}

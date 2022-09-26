@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.magic
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.modules.AutomodModule
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.commands.CommandCategory
 
-class AntiRaidCommand : AbstractCommand("antiraid", category = CommandCategory.MAGIC) {
+class AntiRaidCommand : AbstractCommand("antiraid", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
 	override fun getDescription(locale: BaseLocale): String {
 		return "Configura servidores na Lori's Server List"
 	}

@@ -5,20 +5,20 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.ColorUtils
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.drawText
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.makeRoundedCorners
 import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 
-class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker"), CommandCategory.UTILS) {
+class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", "hex", "colorpick", "colorpicker"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	companion object {
 		val COLOR_UTILS = ColorUtils()
 		const val FACTOR = 0.7
@@ -33,7 +33,7 @@ class ColorInfoCommand : AbstractCommand("colorinfo", listOf("rgb", "hexcolor", 
 			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "colorinfo")
 
 			val input = context.args.joinToString(" ")
-			val color = net.perfectdreams.loritta.legacy.api.utils.ColorUtils.getColorFromString(input)
+			val color = net.perfectdreams.loritta.common.utils.ColorUtils.getColorFromString(input)
 
 			if (color == null) { // Cor inválida!
 				context.reply(

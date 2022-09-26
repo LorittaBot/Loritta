@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.legacy.dao.DonationKey
 import net.perfectdreams.loritta.legacy.tables.DonationKeys
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import io.ktor.server.application.ApplicationCall
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.website.LorittaWebsite

@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.de
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileDesignManager
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {

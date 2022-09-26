@@ -29,11 +29,11 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.jda.JDAUser
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
 import java.util.concurrent.TimeUnit

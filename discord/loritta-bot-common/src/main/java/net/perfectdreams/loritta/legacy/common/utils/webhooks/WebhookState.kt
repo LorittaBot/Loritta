@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.legacy.common.utils.webhooks
+package net.perfectdreams.loritta.common.utils.webhooks
 
 enum class WebhookState {
     SUCCESS,

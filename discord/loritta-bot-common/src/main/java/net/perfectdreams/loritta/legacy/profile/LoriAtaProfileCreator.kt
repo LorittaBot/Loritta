@@ -5,8 +5,9 @@ import net.perfectdreams.loritta.legacy.dao.Profile
 import net.perfectdreams.loritta.legacy.profile.ProfileCreator
 import net.perfectdreams.loritta.legacy.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.legacy.utils.*
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.legacy.profile.ProfileUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.Color

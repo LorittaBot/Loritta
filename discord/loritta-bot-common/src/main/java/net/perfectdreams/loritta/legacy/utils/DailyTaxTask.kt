@@ -11,7 +11,7 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.legacy.dao.Payment
 import net.perfectdreams.loritta.legacy.tables.Payments
-import net.perfectdreams.loritta.legacy.utils.Emotes
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and

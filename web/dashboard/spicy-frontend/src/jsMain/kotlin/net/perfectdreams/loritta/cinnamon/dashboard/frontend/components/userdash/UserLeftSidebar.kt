@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.LocalSpicyInf
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.SVGIconManager
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.State
 import net.perfectdreams.loritta.cinnamon.dashboard.frontend.utils.paths.ScreenPath
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import org.jetbrains.compose.web.css.DisplayStyle
 import org.jetbrains.compose.web.css.JustifyContent
 import org.jetbrains.compose.web.css.display

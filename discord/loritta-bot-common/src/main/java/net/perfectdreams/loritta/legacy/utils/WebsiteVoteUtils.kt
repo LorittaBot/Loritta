@@ -12,6 +12,7 @@ import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.BotVoteSonhosTransactionsLog
+import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.legacy.dao.BotVote
 import net.perfectdreams.loritta.legacy.tables.BotVotes
 import org.jetbrains.exposed.sql.*
@@ -76,7 +77,7 @@ object WebsiteVoteUtils {
 
 				BotVoteSonhosTransactionsLog.insert {
 					it[BotVoteSonhosTransactionsLog.timestampLog] = transactionLogId
-					it[BotVoteSonhosTransactionsLog.websiteSource] = net.perfectdreams.loritta.cinnamon.utils.WebsiteVoteSource.TOP_GG
+					it[BotVoteSonhosTransactionsLog.websiteSource] = net.perfectdreams.loritta.common.utils.WebsiteVoteSource.TOP_GG
 					it[BotVoteSonhosTransactionsLog.sonhos] = SONHOS_AMOUNT
 				}
 			}

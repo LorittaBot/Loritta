@@ -10,15 +10,15 @@ import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.correios.CorreiosResponse
 import net.perfectdreams.loritta.legacy.utils.correios.EncomendaResponse
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 import java.awt.Color
 import java.util.*
 
-class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ctt"), CommandCategory.UTILS) {
+class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ctt"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.packageinfo.description")
 
 	override fun getExamples(): List<String> {

@@ -3,14 +3,14 @@ package net.perfectdreams.loritta.legacy.commands.vanilla.discord
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.DateUtils
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.commands.arguments
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("channelinfo", "channel"), CommandCategory.DISCORD) {
+class ChannelInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("channelinfo", "channel"), net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command"
 	}

@@ -2,7 +2,7 @@ package net.perfectdreams.cinnamon.pudding.services
 
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.cinnamon.pudding.PuddingTestUtils
-import net.perfectdreams.loritta.cinnamon.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetGlobalMatchmakingResults

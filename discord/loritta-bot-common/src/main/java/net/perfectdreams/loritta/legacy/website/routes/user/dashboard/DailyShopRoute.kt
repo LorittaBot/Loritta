@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.website.routes.user.dashboard
 
 import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.website.evaluate
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.*

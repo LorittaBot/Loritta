@@ -8,8 +8,8 @@ import dev.kord.core.entity.channel.Channel
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteHandler
 import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.common.locale.LanguageManager
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
 

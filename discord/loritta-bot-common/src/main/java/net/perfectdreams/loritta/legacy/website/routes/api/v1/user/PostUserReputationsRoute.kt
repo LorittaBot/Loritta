@@ -35,12 +35,12 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.utils.ClusterOfflineException
 import net.perfectdreams.loritta.legacy.utils.DiscordUtils
-import net.perfectdreams.loritta.legacy.utils.Emotes
-import net.perfectdreams.loritta.legacy.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.legacy.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.legacy.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.legacy.website.utils.WebsiteUtils

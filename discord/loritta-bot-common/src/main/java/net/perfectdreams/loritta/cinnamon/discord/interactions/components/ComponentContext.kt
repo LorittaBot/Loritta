@@ -15,7 +15,7 @@ import net.perfectdreams.discordinteraktions.common.requests.InteractionRequestS
 import net.perfectdreams.discordinteraktions.platforms.kord.utils.runIfNotMissing
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
@@ -23,7 +23,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.SingleUserComponentData
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
-import net.perfectdreams.loritta.cinnamon.emotes.DiscordEmote
+import net.perfectdreams.loritta.common.emotes.DiscordEmote
 
 open class ComponentContext(
     loritta: LorittaCinnamon,

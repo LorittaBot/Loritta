@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.legacy.tables.Dailies
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.DateUtils
 import net.perfectdreams.loritta.legacy.utils.loritta
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.tables.BannedUsers
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and

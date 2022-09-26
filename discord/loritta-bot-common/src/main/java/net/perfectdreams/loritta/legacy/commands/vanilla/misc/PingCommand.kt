@@ -6,11 +6,11 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.LorittaShards
 import net.perfectdreams.loritta.legacy.utils.extensions.await
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
 import io.ktor.client.request.get
@@ -21,13 +21,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
 import net.dv8tion.jda.api.JDA
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.ClusterOfflineException
 import net.perfectdreams.loritta.legacy.utils.NetAddressUtils
 import net.perfectdreams.loritta.legacy.utils.extensions.build
 import java.util.concurrent.TimeUnit
 
-class PingCommand : AbstractCommand("ping", category = CommandCategory.MISC) {
+class PingCommand : AbstractCommand("ping", category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ping.description")
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

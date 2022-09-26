@@ -3,15 +3,15 @@ package net.perfectdreams.loritta.legacy.commands.nashorn
 import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.MessageUtils
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.legacy.utils.ExperienceUtils
 
 /**
  * Comandos usando a Nashorn Engine
  */
-class NashornCommand(label: String, val javaScriptCode: String, val codeType: CustomCommandCodeType) : AbstractCommand(label, category = CommandCategory.MISC) {
+class NashornCommand(label: String, val javaScriptCode: String, val codeType: CustomCommandCodeType) : AbstractCommand(label, category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		when (codeType) {
 			CustomCommandCodeType.SIMPLE_TEXT -> {

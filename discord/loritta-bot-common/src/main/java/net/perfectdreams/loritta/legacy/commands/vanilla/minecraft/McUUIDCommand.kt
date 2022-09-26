@@ -7,12 +7,12 @@ import net.perfectdreams.loritta.legacy.commands.AbstractCommand
 import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
 
-class McUUIDCommand : AbstractCommand("mcuuid", category = CommandCategory.MINECRAFT) {
+class McUUIDCommand : AbstractCommand("mcuuid", category = net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.mcuuid.description")
     override fun getExamplesKey() = LocaleKeyData("commands.category.minecraft.playerNameExamples")
 

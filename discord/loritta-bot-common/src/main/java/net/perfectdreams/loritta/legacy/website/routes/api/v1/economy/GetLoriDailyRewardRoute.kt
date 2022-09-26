@@ -27,10 +27,10 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.legacy.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
-import net.perfectdreams.loritta.legacy.utils.UserPremiumPlans
-import net.perfectdreams.loritta.legacy.utils.daily.DailyGuildMissingRequirement
+import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.daily.DailyGuildMissingRequirement
 import net.perfectdreams.loritta.legacy.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.legacy.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.legacy.website.utils.WebsiteUtils

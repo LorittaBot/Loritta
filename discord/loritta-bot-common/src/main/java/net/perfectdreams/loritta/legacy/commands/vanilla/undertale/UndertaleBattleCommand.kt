@@ -7,16 +7,16 @@ import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.ImageUtils
 import net.perfectdreams.loritta.legacy.utils.LorittaUtils
 import net.perfectdreams.loritta.legacy.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.utils.extensions.readImage
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
 
-class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), CommandCategory.UNDERTALE) {
+class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebattle"), net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.utbattle.description")
 
     override fun getExamples(): List<String> {

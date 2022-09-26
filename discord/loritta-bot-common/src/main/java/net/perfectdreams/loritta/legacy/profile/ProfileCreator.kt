@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.profile
 
 import net.perfectdreams.loritta.legacy.dao.Profile
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import java.awt.image.BufferedImage
 

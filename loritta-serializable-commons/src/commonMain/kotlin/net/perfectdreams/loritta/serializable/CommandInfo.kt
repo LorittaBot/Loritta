@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.serializable
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.legacy.api.commands.CommandArguments
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.api.commands.CommandArguments
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 
 @Serializable
 class CommandInfo(
     val name: String,
     val label: String,
     val aliases: List<String>,
-    val category: CommandCategory,
+    val category: net.perfectdreams.loritta.common.commands.CommandCategory,
     val description: LocaleKeyData? = null,
     val usage: CommandArguments? = null,
     val examples: LocaleKeyData? = null,

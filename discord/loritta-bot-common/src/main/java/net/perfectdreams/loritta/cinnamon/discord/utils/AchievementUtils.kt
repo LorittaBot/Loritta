@@ -3,9 +3,9 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.achievements.AchievementType
+import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.i18n.I18nKeysData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.BarebonesInteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -25,7 +25,7 @@ object AchievementUtils {
     suspend fun giveAchievementToUser(
         loritta: LorittaCinnamon,
         userId: UserId,
-        type: net.perfectdreams.loritta.cinnamon.achievements.AchievementType,
+        type: AchievementType,
         achievedAt: Instant = Clock.System.now()
     ): Boolean {
         val profile = loritta.services.users.getOrCreateUserProfile(userId)
@@ -48,7 +48,7 @@ object AchievementUtils {
         context: BarebonesInteractionContext,
         i18nContext: I18nContext,
         userId: UserId,
-        type: net.perfectdreams.loritta.cinnamon.achievements.AchievementType,
+        type: AchievementType,
         achievedAt: Instant = Clock.System.now()
     ) {
         val profile = loritta.services.users.getOrCreateUserProfile(userId)

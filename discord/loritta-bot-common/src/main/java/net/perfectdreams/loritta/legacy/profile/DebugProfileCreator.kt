@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.legacy.dao.Profile
 import net.perfectdreams.loritta.legacy.profile.ProfileCreator
 import net.perfectdreams.loritta.legacy.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.legacy.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.makeRoundedCorners
 import net.dv8tion.jda.api.entities.Guild
 import java.awt.Color

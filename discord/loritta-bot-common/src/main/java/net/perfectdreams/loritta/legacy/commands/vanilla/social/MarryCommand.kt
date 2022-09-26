@@ -5,15 +5,15 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.dao.Marriage
 import net.perfectdreams.loritta.legacy.utils.Constants
 import net.perfectdreams.loritta.legacy.utils.extensions.isEmote
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.legacy.utils.loritta
 import net.perfectdreams.loritta.legacy.utils.onReactionAdd
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.legacy.utils.SonhosPaymentReason
 
-class MarryCommand : AbstractCommand("marry", listOf("casar"), CommandCategory.SOCIAL) {
+class MarryCommand : AbstractCommand("marry", listOf("casar"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	companion object {
 		val MARRIAGE_COST = 15_000
 	}

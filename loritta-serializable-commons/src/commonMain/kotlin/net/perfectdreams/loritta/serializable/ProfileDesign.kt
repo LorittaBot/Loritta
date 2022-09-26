@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.serializable
 
 import kotlinx.serialization.Serializable
-import net.perfectdreams.loritta.cinnamon.utils.Rarity
+import net.perfectdreams.loritta.common.utils.Rarity
 
 @Serializable
 class ProfileDesign(

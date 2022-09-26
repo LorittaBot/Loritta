@@ -1,19 +1,19 @@
 package net.perfectdreams.loritta.legacy.commands.vanilla.images
 
-import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.utils.LorittaUtils
-import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
-import net.perfectdreams.loritta.legacy.api.commands.*
-import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.api.utils.image.JVMImage
-import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
-import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordCommandContext
+import net.perfectdreams.loritta.legacy.utils.Constants
+import net.perfectdreams.loritta.legacy.utils.LorittaUtils
+import net.perfectdreams.loritta.legacy.utils.stripCodeMarks
 import java.io.File
 
-open class EmojiMashupCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("emojimashup", "emojismashup", "mashupemoji", "mashupemojis", "misturaremojis", "misturaremoji"), CommandCategory.IMAGES) {
+open class EmojiMashupCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("emojimashup", "emojismashup", "mashupemoji", "mashupemojis", "misturaremojis", "misturaremoji"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command"
 	}

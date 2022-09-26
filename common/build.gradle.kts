@@ -5,7 +5,7 @@ plugins {
 }
 
 val generateI18nKeys = tasks.register<net.perfectdreams.i18nhelper.plugin.GenerateI18nKeysTask>("generateI18nKeys") {
-    generatedPackage.set("net.perfectdreams.loritta.cinnamon.i18n")
+    generatedPackage.set("net.perfectdreams.loritta.i18n")
     languageSourceFolder.set(file("../resources/languages/en/"))
     languageTargetFolder.set(file("$buildDir/generated/languages"))
     translationLoadTransform.set { file, map ->
