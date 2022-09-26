@@ -37,7 +37,6 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
-import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select

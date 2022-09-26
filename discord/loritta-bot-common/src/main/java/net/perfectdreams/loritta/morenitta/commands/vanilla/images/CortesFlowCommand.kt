@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -15,7 +14,6 @@ import kotlinx.serialization.json.putJsonArray
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.common.utils.Emotes

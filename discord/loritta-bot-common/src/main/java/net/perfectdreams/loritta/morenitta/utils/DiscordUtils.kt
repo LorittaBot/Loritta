@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.utils.config.GeneralConfig
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 

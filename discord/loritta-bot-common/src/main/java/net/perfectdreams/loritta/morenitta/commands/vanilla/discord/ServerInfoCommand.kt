@@ -16,7 +16,6 @@ import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Region
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale

@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.utils.loritta
-
 object NetAddressUtils {
 	fun getWithPortIfMissing(address: String, defaultPort: Int): String {
 		if (address.contains(":"))

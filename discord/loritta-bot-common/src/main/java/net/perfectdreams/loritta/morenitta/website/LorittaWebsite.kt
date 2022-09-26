@@ -8,8 +8,6 @@ import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
 import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.website.LoriWebCode
-import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*

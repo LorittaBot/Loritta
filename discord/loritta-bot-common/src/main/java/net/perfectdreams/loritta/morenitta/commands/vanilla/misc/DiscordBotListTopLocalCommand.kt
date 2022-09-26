@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.BotVotes

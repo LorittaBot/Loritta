@@ -25,7 +25,6 @@ import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.DivineInterventionTransactionEntryAction
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.DivineInterventionSonhosTransactionsLog
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EconomyConfig

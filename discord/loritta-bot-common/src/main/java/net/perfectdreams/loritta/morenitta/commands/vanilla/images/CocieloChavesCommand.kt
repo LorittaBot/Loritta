@@ -3,12 +3,10 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.ktor.client.call.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.base.imageData

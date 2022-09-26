@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils.config
 
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable

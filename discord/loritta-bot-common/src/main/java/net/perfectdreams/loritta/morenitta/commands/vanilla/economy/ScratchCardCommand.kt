@@ -19,7 +19,6 @@ import net.perfectdreams.loritta.common.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Raspadinhas
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext

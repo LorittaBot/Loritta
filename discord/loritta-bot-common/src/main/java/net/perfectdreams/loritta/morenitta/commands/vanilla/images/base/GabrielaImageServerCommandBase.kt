@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.images.base
 
 import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
-import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import kotlinx.serialization.json.JsonObject
@@ -14,7 +13,6 @@ import net.perfectdreams.loritta.common.api.commands.Command
 import net.perfectdreams.loritta.common.api.commands.CommandContext
 import net.perfectdreams.loritta.common.api.commands.LorittaAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils

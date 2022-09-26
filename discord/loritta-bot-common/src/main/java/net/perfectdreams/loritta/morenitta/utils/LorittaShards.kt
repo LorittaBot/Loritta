@@ -30,10 +30,6 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
-import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
-import net.perfectdreams.loritta.morenitta.utils.ClusterNotReadyException
-import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
-import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert

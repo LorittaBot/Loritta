@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
-import javax.imageio.ImageIO
 import javax.imageio.stream.FileImageOutputStream
 
 object DemonGIF {

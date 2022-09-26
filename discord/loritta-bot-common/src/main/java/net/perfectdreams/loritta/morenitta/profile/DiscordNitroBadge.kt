@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import com.google.gson.JsonElement
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.network.Databases
 import net.dv8tion.jda.api.entities.User

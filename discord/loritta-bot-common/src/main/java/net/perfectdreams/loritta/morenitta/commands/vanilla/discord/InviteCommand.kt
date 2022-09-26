@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.common.commands.CommandCategory
 
 class InviteCommand : AbstractCommand("invite", listOf("convidar", "convidarbot", "invitebot", "convite"), net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.invite.info")

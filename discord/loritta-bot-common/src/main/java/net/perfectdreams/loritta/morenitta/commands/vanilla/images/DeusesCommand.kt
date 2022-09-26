@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.api.commands.arguments
 import java.awt.Color
 import java.awt.Font

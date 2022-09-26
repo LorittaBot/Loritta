@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.nashorn
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.morenitta.utils.ExperienceUtils

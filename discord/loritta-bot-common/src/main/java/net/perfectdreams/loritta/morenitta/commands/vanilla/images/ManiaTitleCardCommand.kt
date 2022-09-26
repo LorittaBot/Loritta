@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils

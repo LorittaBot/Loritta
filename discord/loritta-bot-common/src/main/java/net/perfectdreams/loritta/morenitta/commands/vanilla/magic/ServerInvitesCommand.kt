@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.commands.CommandCategory
 
 class ServerInvitesCommand : AbstractCommand("serverinvites", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
 	override fun getDescription(locale: BaseLocale): String {

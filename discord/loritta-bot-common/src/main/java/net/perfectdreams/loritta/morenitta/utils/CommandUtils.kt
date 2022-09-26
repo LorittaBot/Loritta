@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.utils
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import mu.KLogger
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType

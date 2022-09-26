@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.api.commands.Command
-import net.perfectdreams.loritta.common.commands.CommandCategory
 
 class GumballCommand : AbstractCommand("gumball", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.gumballliftup.description")

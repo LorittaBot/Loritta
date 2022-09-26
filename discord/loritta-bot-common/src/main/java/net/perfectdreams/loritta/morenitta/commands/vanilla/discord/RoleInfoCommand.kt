@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.localized
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord

@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.api.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.api.commands.arguments
 
 class SlowModeCommand : AbstractCommand("slowmode", listOf("modolento"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {

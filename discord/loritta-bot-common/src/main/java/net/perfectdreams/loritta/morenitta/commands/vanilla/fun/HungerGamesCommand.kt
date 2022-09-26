@@ -7,7 +7,6 @@ import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase

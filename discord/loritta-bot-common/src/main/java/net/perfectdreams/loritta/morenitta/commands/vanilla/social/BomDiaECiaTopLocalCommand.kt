@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage

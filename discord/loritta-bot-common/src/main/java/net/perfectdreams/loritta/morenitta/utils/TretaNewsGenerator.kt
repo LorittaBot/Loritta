@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.morenitta.Loritta
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import java.awt.Color
 import java.awt.Font

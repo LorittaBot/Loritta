@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.common.utils.image.Image
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.io.File
-import javax.imageio.ImageIO
 
 class JVMLorittaAssets(val loritta: LorittaBot) : LorittaAssets {
 	val cachedImages = mutableMapOf<String, Image>()

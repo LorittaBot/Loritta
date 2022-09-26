@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import com.typesafe.config.ConfigFactory
-import com.typesafe.config.ConfigParseOptions
 import kotlinx.serialization.hocon.Hocon
 import kotlinx.serialization.hocon.decodeFromConfig
 import java.io.File

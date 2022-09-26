@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.morenitta.utils.WebhookUtils
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.api.commands.CommandArguments
 import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils

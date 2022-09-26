@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.api.commands.LorittaAbstractCommandBase
 import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils

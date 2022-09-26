@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.Loritta
-import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Graphics2D

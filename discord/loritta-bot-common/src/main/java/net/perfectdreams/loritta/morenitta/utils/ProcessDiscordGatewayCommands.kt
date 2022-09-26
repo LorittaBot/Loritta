@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.Loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import mu.KotlinLogging
 import net.dv8tion.jda.api.utils.data.DataObject
 import net.dv8tion.jda.internal.JDAImpl

@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.modules.AutoroleModule
 import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
 import net.perfectdreams.loritta.morenitta.modules.ReactionModule
-import net.perfectdreams.loritta.morenitta.modules.StarboardModule
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
@@ -23,7 +22,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
@@ -43,7 +41,6 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MemberCounterChannelConfig
-import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways

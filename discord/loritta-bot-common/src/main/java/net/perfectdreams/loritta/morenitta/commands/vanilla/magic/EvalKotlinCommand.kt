@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.parallax.ParallaxUtils
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import javax.script.Invocable
 import javax.script.ScriptEngineManager

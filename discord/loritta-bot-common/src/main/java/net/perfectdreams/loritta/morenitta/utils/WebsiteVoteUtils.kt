@@ -3,10 +3,7 @@ package net.perfectdreams.loritta.morenitta.utils
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.tables.Profiles
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.EmbedBuilder

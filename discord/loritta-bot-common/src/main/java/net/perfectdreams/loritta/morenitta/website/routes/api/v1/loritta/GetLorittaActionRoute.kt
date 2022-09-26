@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite

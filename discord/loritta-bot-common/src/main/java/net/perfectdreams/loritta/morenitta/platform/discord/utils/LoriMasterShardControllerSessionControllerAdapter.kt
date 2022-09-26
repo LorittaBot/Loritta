@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.morenitta.utils.loritta
 import com.neovisionaries.ws.client.OpeningHandshakeException
 import io.ktor.client.request.delete
 import io.ktor.client.request.put
-import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.userAgent
 import kotlinx.coroutines.runBlocking

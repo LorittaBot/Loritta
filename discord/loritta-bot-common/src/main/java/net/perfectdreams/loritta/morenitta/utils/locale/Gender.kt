@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils.locale
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.common.locale.BaseLocale
 
 enum class Gender {

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.tables
 
-import net.perfectdreams.loritta.morenitta.tables.UserSettings
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object CustomBackgroundSettings : LongIdTable() {

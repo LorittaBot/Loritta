@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.tables.Reputations
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select

@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.common.api.commands.Command
 import net.perfectdreams.loritta.common.api.commands.CommandArguments
 import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData

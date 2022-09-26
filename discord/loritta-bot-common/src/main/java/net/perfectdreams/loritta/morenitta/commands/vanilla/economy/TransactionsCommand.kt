@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
@@ -23,7 +22,6 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
-import java.time.ZoneId
 
 class TransactionsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("transactions", "transações", "transacoes", "transaçoes"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {

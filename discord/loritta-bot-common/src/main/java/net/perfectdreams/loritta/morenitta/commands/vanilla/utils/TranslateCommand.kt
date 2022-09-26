@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.translate.GoogleTranslateUtils
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.messages.LorittaReply
 
 class TranslateCommand : AbstractCommand("traduzir", listOf("translate"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {

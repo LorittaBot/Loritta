@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.entities.Icon
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
 import net.perfectdreams.loritta.common.api.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.common.messages.LorittaReply
 

@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.api.commands.arguments
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord

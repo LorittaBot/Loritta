@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 
 object FeatureFlags {

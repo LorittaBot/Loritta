@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.roblox
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils

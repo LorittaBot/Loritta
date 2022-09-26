@@ -33,12 +33,10 @@ import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.utils.LorittaNotificationListener
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.*
-import net.perfectdreams.loritta.morenitta.commands.vanilla.magic.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.misc.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.roblox.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
@@ -51,7 +49,6 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.*
 import net.perfectdreams.loritta.morenitta.tables.*
 import net.perfectdreams.loritta.morenitta.tables.ProfileDesignsPayments.profile
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.config.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.*

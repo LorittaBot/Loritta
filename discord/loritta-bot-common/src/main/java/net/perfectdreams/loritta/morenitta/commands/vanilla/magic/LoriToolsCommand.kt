@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.api.commands.CommandContext
 import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 

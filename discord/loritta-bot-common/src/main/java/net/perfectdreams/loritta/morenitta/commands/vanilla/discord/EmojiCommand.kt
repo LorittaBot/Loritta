@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Emote
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 

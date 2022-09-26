@@ -18,7 +18,6 @@ import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import org.jsoup.Jsoup

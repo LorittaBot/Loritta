@@ -2,13 +2,10 @@ package net.perfectdreams.loritta.morenitta.profile
 
 import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.profile.ProfileCreator
-import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.common.utils.LorittaImage
-import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord

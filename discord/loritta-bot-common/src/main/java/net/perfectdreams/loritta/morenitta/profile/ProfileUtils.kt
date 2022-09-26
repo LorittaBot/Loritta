@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.profile
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.Marriage
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.tables.Reputations

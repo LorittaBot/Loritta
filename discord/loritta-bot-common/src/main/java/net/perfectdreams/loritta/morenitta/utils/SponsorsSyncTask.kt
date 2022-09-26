@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.utils.SponsorManager
 
 class SponsorsSyncTask : Runnable {
 	companion object {

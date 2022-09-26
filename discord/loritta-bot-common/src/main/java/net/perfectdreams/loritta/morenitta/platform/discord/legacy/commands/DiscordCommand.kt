@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.common.api.commands.Command
 import net.perfectdreams.loritta.common.api.commands.CommandArguments
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 

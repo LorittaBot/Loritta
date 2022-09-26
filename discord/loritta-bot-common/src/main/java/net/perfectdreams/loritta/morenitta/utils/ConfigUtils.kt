@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.HoconUtils.decodeFromString
 import java.io.File
 import java.io.IOException

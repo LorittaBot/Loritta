@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.morenitta.utils.eventlog.DeleteOldStoredMessage
 import net.perfectdreams.loritta.morenitta.utils.networkbans.ApplyBansTask
 import net.perfectdreams.loritta.morenitta.website.OptimizeAssetsTask
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
-import net.perfectdreams.loritta.morenitta.utils.LorittaDailyShopUpdateTask
 import net.perfectdreams.loritta.morenitta.utils.giveaway.SpawnGiveawayTask
 import java.time.LocalDate
 import java.time.LocalDateTime

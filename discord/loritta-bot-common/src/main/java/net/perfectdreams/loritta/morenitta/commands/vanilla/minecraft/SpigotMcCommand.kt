@@ -19,7 +19,6 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import java.awt.Color
 import java.net.URLEncoder
 import java.time.Instant

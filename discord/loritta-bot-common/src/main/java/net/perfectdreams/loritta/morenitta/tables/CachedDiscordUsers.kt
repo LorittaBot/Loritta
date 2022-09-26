@@ -1,7 +1,5 @@
 package net.perfectdreams.loritta.morenitta.tables
 
-import net.perfectdreams.loritta.morenitta.tables.SnowflakeTable
-
 object CachedDiscordUsers : SnowflakeTable() {
 	val name = text("name").index()
 	val discriminator = text("discriminator").index()

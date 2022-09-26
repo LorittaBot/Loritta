@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.awt.image.BufferedImage

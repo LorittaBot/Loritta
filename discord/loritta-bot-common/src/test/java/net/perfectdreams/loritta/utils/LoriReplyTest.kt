@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import io.mockk.every
 import io.mockk.mockk

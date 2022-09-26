@@ -2,14 +2,10 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import java.time.Instant
-import java.time.ZoneId
 
 object DonateUtils {
 	/**

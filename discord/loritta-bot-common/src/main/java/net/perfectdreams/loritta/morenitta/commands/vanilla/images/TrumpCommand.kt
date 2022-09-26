@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.morenitta.gifs.TrumpGIF
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.common.api.commands.Command
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils

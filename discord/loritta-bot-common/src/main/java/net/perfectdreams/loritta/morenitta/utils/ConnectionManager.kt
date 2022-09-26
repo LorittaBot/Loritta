@@ -1,14 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import com.github.kevinsawicki.http.HttpRequest
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import java.lang.RuntimeException
-import java.net.InetSocketAddress
-import java.net.Proxy
 import java.net.URL
 import java.net.URLConnection
 

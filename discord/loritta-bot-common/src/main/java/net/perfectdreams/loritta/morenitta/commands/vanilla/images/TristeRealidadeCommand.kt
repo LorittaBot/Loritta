@@ -9,7 +9,6 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.morenitta.utils.locale.PersonalPronoun
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.api.commands.CommandException
 import net.perfectdreams.loritta.common.api.entities.User
 import net.perfectdreams.loritta.common.utils.image.JVMImage

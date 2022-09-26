@@ -8,7 +8,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.listeners.*
-import net.perfectdreams.loritta.morenitta.modules.AddReactionForHeathecliffModule
 import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.*
 import net.perfectdreams.loritta.morenitta.tables.Dailies
@@ -26,8 +25,6 @@ import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordConfig
 import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordInstanceConfig
 import net.perfectdreams.loritta.morenitta.utils.config.GeneralInstanceConfig
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
-import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
-import io.ktor.websocket.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
@@ -43,7 +40,6 @@ import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.RateLimitChecker
-import net.perfectdreams.loritta.morenitta.tables.*
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.tables.Payments
