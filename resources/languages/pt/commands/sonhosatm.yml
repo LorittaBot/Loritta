@@ -1,0 +1,8 @@
+label: "atm"
+description: "Verifique quantos sonhos você, ou outro usuário, tem!"
+youHaveSonhos: "Você possui {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! {rankPositionText}"
+userHasSonhos: "{user} possui {sonhosEmoji} **{sonhosCount,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! {rankPositionText}"
+yourCurrentRankPosition: "Você está em **#{rankPosition,number,#} lugar** no ranking, veja outros ostentadores com {sonhosTopCommand}!"
+userCurrentRankPosition: "E você sabia que {user} está em **#{rankPosition,number,#} lugar** no ranking? Veja outros ostentadores com {sonhosTopCommand}!"
+options:
+  user: "O usuário que você deseja desvendar os sonhos dele"

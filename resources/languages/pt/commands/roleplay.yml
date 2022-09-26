@@ -1,0 +1,66 @@
+---
+label: "roleplay"
+retribute: "Retribuir" #Retribute this Action Button
+pictureSource: "Fonte da Imagem" #Source of the Action's Picture
+hug:
+  label: "abraçar"
+  description: "Abrace um usuário"
+  response: "{giver} abraçou {receiver}!"
+  responseSelfLori: "Awww... você tá se sentindo sozinho? Tome, {giver} abraçou {receiver}!"
+  responseLori: "Awww, obrigada! {giver} abraçou {receiver}!"
+  options:
+    user:
+      text: "O usuário que você deseja abraçar"
+headpat:
+  label: "cafuné"
+  description: "Faça cafuné em um usuário"
+  response: "{giver} fez cafuné em {receiver}!"
+  responseSelfLori: "Eu não acho que fazer cafuné em você mesmo seja bom... Aqui, {giver} fez cafuné em {receiver}!"
+  responseLori: "Awww, obrigada! {giver} fez cafuné em {receiver}!"
+  options:
+    user:
+      text: "O usuário que você quer fazer cafuné"
+highfive:
+  label: "tocaaqui"
+  description: "Mande um toca aqui para um usuário"
+  response: "{giver} mandou um toca aqui para {receiver}!"
+  responseSelfLori: "Como você dar um toca aqui em você mesmo? Aqui, {giver} mandou um toca aqui para {receiver}!"
+  responseLori: "Vambora! {giver} mandou um toca aqui para {receiver}!"
+  options:
+    user:
+      text: "O usuário que você deseja mandar um toca aqui"
+slap:
+  label: "bofetada"
+  description: "Dar um tapa em um usuário"
+  response: "{giver} deu um tapa em {receiver}!"
+  responseLori: "Nossa, como você ousa tentar me bater! {giver} deu um tapa em {receiver}!"
+  responseSelf: "{giver}... se deu um tapa?!"
+  options:
+    user:
+      text: "O usuário que você deseja dar uns tapas"
+attack:
+  label: "atacar"
+  description: "Ataque um usuário"
+  response: "{giver} atacou {receiver}!"
+  responseLori: "Nossa, como você ousa tentar me atacar! {giver} atacou {receiver}!"
+  responseSelf: "{giver}... se atacou?!"
+  options:
+    user:
+      text: "O usuário que você deseja atacar"
+dance:
+  label: "dancar"
+  description: "Dance com um usuário"
+  response: "{giver} dançou com {receiver}!"
+  responseSelf: "{giver} dançou... consigo mesmo?!"
+  options:
+    user:
+      text: "O usuário com o qual você quer dançar"
+kiss:
+  label: "beijar"
+  description: "Beije um usuário"
+  response: "{giver} beijou {receiver}!"
+  responseLori: "Nah, quero te beijar não... mas eu ainda gosto de você como um amigue!"
+  responseSelf: "{giver} beijou... a si mesmo?!"
+  options:
+    user:
+      text: "O usuário que você quer beijar"

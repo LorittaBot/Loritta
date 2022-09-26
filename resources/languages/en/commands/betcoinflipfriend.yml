@@ -1,0 +1,21 @@
+label: "friend"
+description: "The classic \"flip a coin and see on what side it will be!\", but now with sonhos! I don't take responsibility if you lose everything with bets"
+startBet: "{friendMention}, {userMention} quer fazer uma aposta com você! Cada um irá pagar **{betSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} ({taxSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}} é imposto)**. Se cair **Cara**, você irá ganhar **{betSonhosQuantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, se cair **Coroa**, {friendMention} irá ganhar **{betSonhosQuantityAfterTax,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! E aí, vai encarar?"
+startBetNoTax: "{friendMention}, {userMention} quer fazer uma aposta com você! Cada um irá pagar **{betSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**. Se cair **Cara**, você irá ganhar **{betSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**, se cair **Coroa**, {friendMention} irá ganhar **{betSonhosQuantity,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! Como {userWithNoTaxMention} é um usuário premium recomendado, essa daqui vai por conta da casa, sem nenhuma taxa! E aí, vai encarar?"
+congratulations: "Parabéns {winnerMention}, você ganhou {quantityEmoji} **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}**! Financiado por {loserMention} rsrs"
+acceptBet: "Accept Bet"
+betAccepted: "Bet Accepted"
+betFailed: "Bet Failed - {failReason}"
+cantBetSelf: "You accepted your own bet! You have received, and lost, *nothing*!"
+tryingToBetZeroSonhos: "Wow, awesome! You are going to bet *zero* sonhos, wonderful! Less work for me, because that means that I don't need to prepare a bet for you."
+tryingToBetLessThanZeroSonhos: "Wow, outstanding! You are going to bet *negative* sonhos, extraordinary! Isn't negative sonhos... *nightmares*? I know, I know... I'm a genius."
+youNeedToBetMore: "Você precisa apostar mais sonhos! Afinal, eu tenho que cobrar aquela taxa marotex para ajudar a manter a DreamLand!"
+insufficientFundsInvited: "{invitedMention} doesn't have **{sonhos,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** to do this! They need to get more **{howMuchIsNeeded,plural, =0 {# sonhos} one {# sonho} other {# sonhos}}** to accept your bet."
+failReasons:
+  expired: "Expired"
+  insufficientSonhos: "Insufficient Sonhos"
+options:
+  user:
+    text: "The user who you want to bet against"
+  quantity:
+    text: "The quantity of sonhos that you want to bet"

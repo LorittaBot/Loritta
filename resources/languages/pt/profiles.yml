@@ -1,0 +1,4 @@
+profiles:
+  aboutMe: "Sobre Mim"
+  marriedWith: "Casado com"
+  defaultAboutMe: "A Loritta é a minha amiga! Você sabia que você pode alterar este texto usando \"/profile aboutme\"? :3"

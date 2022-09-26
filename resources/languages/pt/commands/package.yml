@@ -1,0 +1,28 @@
+---
+label: "pacote"
+invalidCorreiosTrackingId: "ID de rastreamento inválido! Os IDs de rastreamento dos Correios usam o seguinte formato: `{exampleId}`"
+objectNotFoundCorreios: "Objeto não encontrado no banco de dados de pacotes do Correios! Se você recebeu o código recentemente, poderá levar algumas horas ou dias até que ele seja registrado no banco de dados de pacotes do Correios!"
+packageUpdate: "Atualização sobre o `{trackingId}`" #Update about InsertPackageIdHere, the trackingId is a package tracking ID
+track:
+  label: "rastrear"
+  tooManyEventsFiltered: "Há tantos eventos sobre este pacote que eu filtrei para mostrar apenas os últimos {maxFilterCount,plural, =0 {# eventos} one {# evento} other {# eventos}}!"
+  description: "Ver informações sobre um pacote"
+  followPackageUpdates: "Receber atualizações sobre o pacote"
+  unfollowPackageUpdates: "Parar de receber atualizações sobre o pacote"
+  followPackage:
+    packageAlreadyDelivered: "Este pacote já foi entregue ao seu destinatário!"
+    youAreNowFollowingThePackage: "Agora você receberá atualizações sobre o pacote `{trackingId}`! Você receberá atualizações sobre ele em suas mensagens diretas, então mantenha suas mensagens diretas abertas em pelo ou menos um servidor que eu compartilho com você! Você pode verificar todos os pacotes que você está recebendo atualizações usando {packageListCommandMention}."
+    youAreAlreadyFollowingThePackage: "Você já está recebendo atualizações sobre este pacote!"
+    youAreAlreadyFollowingTooManyPackages: "Você já está recebendo atualizações de muitos pacotes!"
+  unfollowPackage:
+    youUnfollowedThePackage: "Você deixou de receber atualizações sobre o pacote `{trackingId}`!"
+  options:
+    trackingId:
+      text: "O ID de rastreamento do pacote que você deseja rastrear"
+list:
+  label: "lista"
+  description: "Ver todos os pacotes que você configurou para receber atualizações"
+  youAreNotFollowingAnyPackage: "Você não está seguindo nenhum pacote! Você pode ver o status de um pacote e configurar para receber atualizações dele usando {packageTrackCommandMention}."
+  followedPackages: "Pacotes que você está seguindo"
+  youAreFollowingXPackages: "Você está seguindo {packageCount,plural, =0 {# pacotes} one {# pacote} other {# pacotes}}!"
+  trackPackage: "Rastrear pacote"

@@ -1,0 +1,21 @@
+---
+label: "loritta"
+info:
+  label: "info"
+  description: "Mostra informações sobre a garotinha mais fofa deste universo!"
+  embed:
+    title: "Olá, eu me chamo Loritta!"
+    description:
+      - "Olá, eu me chamo Loritta (ou, como meus amigos próximos me chamam, \"Lori\"), tenho 16 anos e, depois que eu fui desenvolvida, deixar o seu servidor único e extraordinário nunca foi tão fácil! {loriSunglasses}"
+      - ""
+      - "Fora da internet eu também sou um robô, mas com sentimentos humanos e com determinação para ajudar e divertir as pessoas mundo afora. Para me conectar ao Discord, eu programei um bot que possui a minha personalidade, sonhos e esperanças... e hospedei ele dentro de mim! {loriYay}"
+      - ""
+      - "Atualmente estou espalhando alegria e diversão em **{guildCount,plural, =0 {# servidores} one {# servidor} other {# servidores}}** com **{commandCount,plural, =0 {# comandos invadores} one {# comando inovador} other {# comandos inovadores}}** e já executei **{executedApplicationCommands,plural, =0 {# comandos} one {# comando} other {# comandos}} para {uniqueUsersExecutedApplicationCommands,plural, =0 {# usuários} one {# usuário} other {# usuários}} nas últimas 24 horas**. Desde 30 de Março de 2017 tentando transformar o mundo em um lugar melhor! {loriKiss}"
+      - ""
+      - "Vamos transformar o mundo em um lugar incrível, juntos {userMention}. {loriHeart}"
+    footer: "Loritta foi criada por {authorTag} - {authorWebsite}"
+  website: "Website"
+  dashboard: "Painel de Configuração"
+  commands: "Comandos"
+  support: "Suporte"
+  premium: "Premium"

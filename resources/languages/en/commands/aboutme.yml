@@ -1,0 +1,6 @@
+label: "aboutme"
+description: "Change the \"About Me\" section of your profile to make it feel like you"
+successfullyChanged: "Your about me message was changed to `{aboutMe}`!"
+options:
+  aboutme:
+    text: "The text that will be in your \"About Me\" section"

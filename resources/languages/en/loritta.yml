@@ -1,0 +1,6 @@
+common:
+  fancyBoolean:
+    'true': "Yes"
+    'false': "No"
+  disabled: "Disabled"
+  unlimited: "Unlimited"

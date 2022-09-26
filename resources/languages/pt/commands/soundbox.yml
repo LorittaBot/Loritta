@@ -1,0 +1,8 @@
+label: "caixadesom"
+falatron:
+  label: "falatron"
+  options:
+    voice:
+      text: "A voz que falará o texto fornecido"
+board:
+  label: "board"

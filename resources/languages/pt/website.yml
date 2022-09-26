@@ -1,0 +1,58 @@
+---
+website:
+  localePathId: "br" #The locale ID that is prefixed on every localized page path, example: "/br/commands/"
+  commands:
+    viewSlashCommands: "Ver a lista de comandos com / (novo)"
+    viewLegacyCommands: "Ver a lista de comandos por mensagem (antigo)"
+    welcomeToMyCommandListIntro:
+      - "Boas-vindas a minha lista de comandos! Aqui você poderá ver as informações, explicações, exemplos e muito mais sobre todos os comandos que eu tenho."
+  blog:
+    keepReading: "Continue lendo!"
+    keepReadingFeature: "Continuar lendo sobre isto"
+  discordInvite:
+    title: "Você foi convidado(a) a entrar em um servidor" #Same string used when someone sends a invite to you in chat
+    lorittaSupportServerDetails: "Precisa de ajuda? Então junte-se ao nosso servidor de suporte!"
+    lorittaCommunityServerDetails: "Servidor da comunidade de fãs da Loritta!"
+    sparklyPowerServerDetails: "Servidor de Minecraft da Loritta!"
+    join: "Juntar-se" #Join the server, same string used when someone sends a invite to you in chat
+  staff:
+    title: "Nossa Equipe"
+    description:
+      - "Por trás da Loritta existem várias pessoas que trabalham arduamente para ela alcançar o sonho de ser uma digital influencer famosa que tornará o mundo em um lugar melhor."
+      - "Vamos aos bastidores para conhecer as pessoas que transformam e moldam a nossa querida Loritta!"
+    lorittaCreator:
+      title: "Criador da Loritta"
+    lorittaBodyguard:
+      title: "Guarda-Costas da Loritta (Moderador)"
+      description:
+        - "É impossível que uma única pessoa consiga moderar uma comunidade gigantesca igual ao da Loritta, então precisamos de ajuda de pessoas de confiança."
+        - "Os Guarda-Costas da Loritta moderam e gerenciam os servidores da Loritta, protegem a Loritta de pessoas mal intencionadas, ajudam usuários com dúvidas e muito mais!"
+    lorittaSupport:
+      title: "Suporte da Loritta"
+      description:
+        - "Não adianta ter um bot inovador se as pessoas não conseguem solucionar as suas dúvidas e problemas."
+        - "O Suporte da Loritta escuta e soluciona os problemas de usuários, para que o usuário foque em melhorar o servidor dele, em vez de perder tempo procurando soluções pela internet."
+    socialNetworks:
+      personalWebsite: "Website Pessoal"
+      currentlyListening: "A música que o usuário está escutando no momento"
+      topSongInTheLast7Days: "A música que o usuário mais escutou nos últimos 7 dias"
+  contact:
+    title: "Fale Conosco"
+    description:
+      - "Você quer conversar com a gente? Então vamos bater um papo! Talvez poderemos te ajudar... ou talvez você possa nos ajudar! {loriSunglasses}"
+      - "A Loritta é muito tímida... então não fique surpreso se não for ela que está respondendo às suas mensagens. {loriZap}"
+    support:
+      title: "Ajuda & Suporte"
+      visitOurSupportPageIf: "Visite a nossa página de suporte se você..."
+      supportReasons:
+        - "Tem dúvidas ou problemas e precisa de ajuda"
+        - "Tem problemas relacionados a pagamentos e precisa de ajuda"
+        - "Quer fazer uma denúncia sobre um usuário"
+        - "Deseja fazer um apelo para ser desbanido"
+    businessContact:
+      title: "Contato Comercial"
+      sendAnEmailIf: "Envie um e-mail se você..."
+      businessContactReasons:
+        - "Deseja fazer uma parceria comercial com Loritta"
+        - "Qualquer outra coisa que não se encaixa em nosso servidor de suporte"
+      businessContactTip: "Se você acha que o e-mail é muito \"formal\", então não se preocupe, nós também achamos. Se você preferir, você também pode entrar em contato conosco através do nosso servidor de suporte, mesmo que seja relacionado a negócios!"
