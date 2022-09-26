@@ -1,54 +1,81 @@
 pluginManagement {
-    resolutionStrategy {
-        eachPlugin {
-            if (requested.id.id == "kotlin2js") {
-                useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:${requested.version}")
-            }
-        }
-        eachPlugin {
-            if (requested.id.id == "kotlin-multiplatform") {
-                useModule("org.jetbrains.kotlin:kotlin-gradle-plugin:${requested.version}")
-            }
-            if (requested.id.id == "kotlinx-serialization") {
-                useModule("org.jetbrains.kotlin:kotlin-serialization:${requested.version}")
-            }
+    repositories {
+        // I don't know why but if "gradlePluginPortal()" is before our custom Maven repo, the i18nHelper plugin isn't found
+        maven("https://repo.perfectdreams.net/")
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        create("libs") {
+            val kotlin = version("kotlin", "1.7.10")
+            val kotlinXSerialization = version("kotlinx-serialization", "1.4.0-RC")
+            val ktor = version("ktor", "2.0.3")
+            val jib = version("jib", "3.2.1")
+            val exposed = version("exposed", "0.38.2")
+            val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
+            val logback = version("logback", "1.3.0-alpha16")
+            val kotlinxCoroutines = version("kotlinx-coroutines", "1.6.4")
+
+            library("kotlinx-coroutines-core", "org.jetbrains.kotlinx", "kotlinx-coroutines-core").version(kotlinxCoroutines)
+            library("kotlinx-coroutines-debug", "org.jetbrains.kotlinx", "kotlinx-coroutines-debug").version(kotlinxCoroutines)
+
+            library("kotlin-logging", "io.github.microutils", "kotlin-logging").version("2.1.23")
+
+            library("kotlinx-serialization-core", "org.jetbrains.kotlinx", "kotlinx-serialization-core").versionRef(kotlinXSerialization)
+            library("kotlinx-serialization-json", "org.jetbrains.kotlinx", "kotlinx-serialization-json").versionRef(kotlinXSerialization)
+            library("kotlinx-serialization-protobuf", "org.jetbrains.kotlinx", "kotlinx-serialization-protobuf").versionRef(kotlinXSerialization)
+            library("kotlinx-serialization-hocon", "org.jetbrains.kotlinx", "kotlinx-serialization-hocon").versionRef(kotlinXSerialization)
+            library("ktor-server-netty", "io.ktor", "ktor-server-netty").versionRef(ktor)
+            library("ktor-client-core", "io.ktor", "ktor-client-core").versionRef(ktor)
+            library("ktor-client-js", "io.ktor", "ktor-client-js").versionRef(ktor)
+            library("ktor-client-cio", "io.ktor", "ktor-client-cio").versionRef(ktor)
+
+            library("exposed-core", "org.jetbrains.exposed", "exposed-core").versionRef(exposed)
+            library("exposed-jdbc", "org.jetbrains.exposed", "exposed-jdbc").versionRef(exposed)
+            library("exposed-javatime", "org.jetbrains.exposed", "exposed-java-time").versionRef(exposed)
+
+            library("logback-classic", "ch.qos.logback", "logback-classic").versionRef(logback)
+
+            library("hikaricp", "com.zaxxer", "HikariCP").version("5.0.1")
         }
     }
 }
 
 rootProject.name = "loritta-parent"
 
+// ===[ PUDDING ]===
+include(":pudding:data")
+include(":pudding:client")
+
+// ===[ COMMON ]===
 include(":common")
-include(":common-legacy")
 include(":loritta-serializable-commons")
-include(":platforms:discord:db-tables")
-include(":platforms:discord:legacy")
 
-// Plugins
-include(":loritta-plugins")
-include(":loritta-plugins:artsy-joy-lori")
-include(":loritta-plugins:minecraft-stuff")
-include(":loritta-plugins:quirky-stuff")
-include(":loritta-plugins:fortnite-stuff")
-include(":loritta-plugins:profile-designs")
-include(":loritta-plugins:rosbife")
-include(":loritta-plugins:funfunfun")
-include(":loritta-plugins:donators-ostentation")
-include(":loritta-plugins:auto-banner-changer")
-include(":loritta-plugins:loritta-birthday-2020-event")
-include(":loritta-plugins:helping-hands")
-include(":loritta-plugins:mal-commands")
-include(":loritta-plugins:lori-guild-stuff")
-include(":loritta-plugins:lori-broker")
-include(":loritta-plugins:html-provider")
+// ===[ LORITTA ]===
+include(":discord:loritta-bot-common")
 
-// Website
-include(":loritta-website")
-include(":loritta-website:spicy-morenitta")
-include(":loritta-website:embed-renderer")
-include(":loritta-website:embed-editor-crosswindow")
-include(":loritta-website:embed-editor")
+// ===[ SPICY MORENITTA ]===
+include(":web:spicy-morenitta")
 
-// Misc
+// ===[ EMBED EDITOR ]===
+include(":web:embed-editor:embed-renderer")
+include(":web:embed-editor:embed-editor-crosswindow")
+include(":web:embed-editor:embed-renderer")
+
+// ===[ SHOWTIME ]===
+include(":web:showtime:web-common")
+// TODO: Disabled for now because it depends on Cinnamon stuff that isn't present yet on loritta-bot
+// include(":web:showtime:backend")
+include(":web:showtime:showtime-frontend")
+
+// ===[ DASHBOARD ]===
+include(":web:dashboard:dashboard-common")
+include(":web:dashboard:backend")
+include(":web:dashboard:spicy-frontend")
+
+// ===[ MISC ]===
 include(":temmie-discord-auth")
 include(":shard-controller")

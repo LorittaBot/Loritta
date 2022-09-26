@@ -1,6 +1,6 @@
 plugins {
-    kotlin("multiplatform") apply true
-    kotlin("plugin.serialization") version Versions.KOTLIN
+    kotlin("multiplatform")
+    kotlin("plugin.serialization")
 }
 
 repositories {
@@ -10,7 +10,7 @@ repositories {
 kotlin {
     jvm {
         compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
+            kotlinOptions.jvmTarget = Versions.JVM_TARGET
         }
         withJava()
     }
@@ -24,11 +24,8 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(kotlin("stdlib-common"))
-                implementation(project(":common-legacy"))
-                api("net.perfectdreams.loritta.cinnamon.pudding:data:${Versions.PUDDING}") {
-                    exclude(group = "io.ktor") // Pudding requires Ktor 2.0.0, but we still use Ktor 1.6.7
-                    exclude(group = "net.perfectdreams.minecraftmojangapi")
-                }
+                api(project(":common"))
+                api(project(":pudding:data"))
             }
         }
 

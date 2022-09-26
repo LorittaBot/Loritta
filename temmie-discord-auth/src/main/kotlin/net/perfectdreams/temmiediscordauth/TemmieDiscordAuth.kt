@@ -10,12 +10,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
 import io.ktor.client.HttpClient
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.url
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.TextContent
 import kotlinx.coroutines.delay
@@ -63,12 +59,12 @@ class TemmieDiscordAuth(val clientId: String,
 		}
 
 		return doStuff {
-			val result = http.post<String> {
+			val result = http.post {
 				url(TOKEN_BASE_URL)
 				userAgent(USER_AGENT)
 
-				body = TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded)
-			}
+				setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
+			}.bodyAsText()
 
 			logger.info { result }
 
@@ -102,7 +98,7 @@ class TemmieDiscordAuth(val clientId: String,
 						url(TOKEN_BASE_URL)
 						userAgent(USER_AGENT)
 
-						body = TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded)
+						setBody(TextContent(parameters.formUrlEncode(), ContentType.Application.FormUrlEncoded))
 					}
 			)
 
@@ -239,7 +235,7 @@ class TemmieDiscordAuth(val clientId: String,
 		if (response.status.value == 401)
 			throw TokenUnauthorizedException(response.status)
 
-		return response.readText()
+		return response.bodyAsText()
 	}
 
 	class TokenUnauthorizedException(status: HttpStatusCode) : RuntimeException()

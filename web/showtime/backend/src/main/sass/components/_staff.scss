@@ -1,0 +1,99 @@
+.staff-content {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.58;
+    max-width: 80em;
+    width: 100%;
+    flex-direction: column;
+
+    // Padding to avoid it being cramped on smol screens
+    @media screen and (max-width: 400px) {
+        width: 90%;
+    }
+
+    p {
+        max-width: 60em;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .staff-section {
+        display: flex;
+        justify-content: space-around;
+        flex-flow: wrap;
+        gap: 1em;
+        width: 100%;
+
+        .staff-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            // 1em = gap
+            width: calc(25% - 1em);
+
+            @media screen and (max-width: 800px) {
+                width: calc(33% - 1em);
+            }
+
+            @media screen and (max-width: 500px) {
+                width: calc(50% - 1em);
+            }
+
+            @media screen and (max-width: 400px) {
+                width: 100%;
+            }
+
+            .staff-avatar {
+                width: 10em;
+                height: 10em;
+                border-radius: 100%;
+                transition: 0.5s;
+
+                &:hover {
+                    transform: scale(1.05);
+                    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+                }
+            }
+
+            .staff-social-networks {
+                display: flex;
+                gap: 0.5em;
+            }
+
+            .staff-title {
+                color: #29a6fe;
+                font-size: 1.25em;
+            }
+
+            .staff-description {
+                text-align: center;
+                text-decoration: underline dotted #fe8129;
+                // https://css-tricks.com/almanac/properties/l/line-clamp/
+                // Clamp the song to only one line
+                // This also works in Firefox, even tho it is prefixed with "-webkit"
+                display: -webkit-box;
+                -webkit-line-clamp: 6;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                line-break: auto;
+                // Chromium browsers have a different thickness for some reason, Firefox seems to use 0.5px
+                text-decoration-thickness: 0.5px;
+            }
+
+            .staff-song {
+                font-size: 0.75em;
+                // https://css-tricks.com/almanac/properties/l/line-clamp/
+                // Clamp the song to only one line
+                // This also works in Firefox, even tho it is prefixed with "-webkit"
+                display: -webkit-box;
+                -webkit-line-clamp: 1;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                // This is required to avoid the line break breaking incorrectly if it is a big word
+                line-break: anywhere;
+            }
+        }
+    }
+}

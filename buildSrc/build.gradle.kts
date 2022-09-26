@@ -1,5 +1,6 @@
 plugins {
     `kotlin-dsl`
+    kotlin("plugin.serialization") version "1.5.31"
 }
 
 repositories {
@@ -7,5 +8,6 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
     implementation("commons-codec:commons-codec:1.15")
 }

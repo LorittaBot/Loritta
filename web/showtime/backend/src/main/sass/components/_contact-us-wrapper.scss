@@ -1,0 +1,33 @@
+.contact-methods-wrapper {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+    width: 75%;
+    max-width: 60em;
+    padding-bottom: 2em;
+    margin-left: auto;
+    margin-right: auto;
+    gap: 1em;
+
+    @media screen and (max-width: $min-image-stacked-width) {
+      flex-direction: column;
+    }
+
+    .contact-method-wrapper {
+        display: flex;
+        flex-direction: column;
+        min-width: 10em;
+        flex: 1;
+
+        .contact-method-content {
+            line-height: 1.58;
+            text-align: center;
+        }
+
+        .contact-method-way {
+            display: flex;
+            margin-top: auto;
+            justify-content: center;
+        }
+    }
+}

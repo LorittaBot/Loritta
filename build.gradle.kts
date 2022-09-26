@@ -1,5 +1,12 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
+plugins {
+    java
+    kotlin("jvm") version Versions.KOTLIN apply false
+    kotlin("plugin.serialization") version Versions.KOTLIN
+    id("io.github.turansky.kfc.latest-webpack") version "5.50.0" apply false
+}
+
 allprojects {
     group = "net.perfectdreams.loritta"
     version = Versions.LORITTA
@@ -19,11 +26,6 @@ allprojects {
     }
 }
 
-plugins {
-    java
-    kotlin("jvm") version Versions.KOTLIN apply false
-}
-
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
@@ -31,7 +33,7 @@ java {
 
 subprojects {
     tasks.withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "1.8"
+        kotlinOptions.jvmTarget = Versions.JVM_TARGET
         kotlinOptions.javaParameters = true
     }
 }

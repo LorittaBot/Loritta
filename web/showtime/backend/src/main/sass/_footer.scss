@@ -1,0 +1,94 @@
+// Usado para deixar o footer láááááá em baixo
+body {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+// O footer
+footer {
+    // Allows the box-shadow to overlap the divs above the footer
+    z-index: 1;
+    background-color: #29a6fe;
+    color: white;
+    padding: 16px 72px;
+    @media screen and (max-width: 400px) {
+        padding: 1em 2em;
+    }
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+    // If this isn't here, on phones with touch enabled (wtf) the div overflows for some reason.
+    overflow: hidden;
+
+    h1, h2, h3 {
+        color: white;
+        margin: 0;
+    }
+
+    a {
+        color: white;
+        opacity: 0.8;
+    }
+
+    .social-networks {
+        gap: 0.25em;
+        display: flex;
+        justify-content: center;
+        font-size: 3em;
+
+        i {
+            margin-left: 8px;
+            margin-right: 8px;
+        }
+    }
+
+    .navigation-footer {
+        display: flex;
+        justify-content: space-around;
+        flex-direction: row;
+        gap: 1em;
+
+        h1, h2, h3 {
+            font-size: 1.25em;
+        }
+
+        .section-entry {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+
+    .call-to-action-footer {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        
+        .lets-transform {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .add-cta {
+            margin-top: 1.5em;
+        }
+
+        @media (max-width: 600px) {
+            flex-direction: column;
+        }
+
+        h2 {
+            font-size: 1.5em;
+        }
+
+        h3 {
+            font-size: 1.1em;
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    footer .navigation-footer {
+        flex-direction: column;
+    }
+}

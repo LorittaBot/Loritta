@@ -1,0 +1,105 @@
+package net.perfectdreams.loritta.legacy.commands.vanilla.social
+
+import net.perfectdreams.loritta.legacy.commands.AbstractCommand
+import net.perfectdreams.loritta.legacy.commands.CommandContext
+import net.perfectdreams.loritta.legacy.tables.Profiles
+import net.perfectdreams.loritta.legacy.utils.Constants
+import net.perfectdreams.loritta.legacy.utils.extensions.await
+import net.perfectdreams.loritta.legacy.utils.extensions.isEmote
+import net.perfectdreams.loritta.legacy.utils.loritta
+import net.perfectdreams.loritta.legacy.utils.lorittaShards
+import net.perfectdreams.loritta.legacy.utils.onReactionAddByAuthor
+import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
+import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
+import net.perfectdreams.loritta.legacy.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.legacy.profile.ProfileUtils
+import net.perfectdreams.loritta.legacy.utils.Emotes
+import org.jetbrains.exposed.sql.update
+
+class DivorceCommand : AbstractCommand("divorce", listOf("divorciar"), CommandCategory.SOCIAL) {
+	companion object {
+		const val LOCALE_PREFIX = "commands.command.divorce"
+		const val DIVORCE_REACTION_EMOJI = "\uD83D\uDC94"
+		const val DIVORCE_EMBED_URI = "https://cdn.discordapp.com/emojis/556524143281963008.png?size=2048"
+	}
+
+	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.description")
+
+	override suspend fun run(context: CommandContext,locale: BaseLocale) {
+		val userProfile = context.lorittaUser._profile ?: run {
+			// If the user doesn't have any profile, then he won't have any marriage anyway
+			context.reply(
+					LorittaReply(
+							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HEART],
+							Constants.ERROR
+					)
+			)
+			return
+		}
+
+		val marriage = ProfileUtils.getMarriageInfo(userProfile) ?: run {
+			// Now that's for when the marriage doesn't exist
+			context.reply(
+					LorittaReply(
+							locale["commands.category.social.youAreNotMarried", "`${context.config.commandPrefix}casar`", Emotes.LORI_HEART],
+							Constants.ERROR
+					)
+			)
+			return
+		}
+
+		val marriagePartner = marriage.partner
+		val userMarriage = marriage.marriage
+
+		val message = context.reply(
+				LorittaReply(
+						locale["$LOCALE_PREFIX.prepareToDivorce", Emotes.LORI_CRYING],
+						"\uD83D\uDDA4"
+				),
+				LorittaReply(
+						locale["$LOCALE_PREFIX.pleaseConfirm", DIVORCE_REACTION_EMOJI],
+						mentionUser = false
+				)
+		)
+
+		message.onReactionAddByAuthor(context) {
+			if (it.reactionEmote.isEmote(DIVORCE_REACTION_EMOJI)) {
+				// depois
+				loritta.newSuspendedTransaction {
+					Profiles.update({ Profiles.marriage eq userMarriage.id }) {
+						it[Profiles.marriage] = null
+					}
+					userMarriage.delete()
+				}
+
+				message.delete().queue()
+
+				context.reply(
+						LorittaReply(
+								locale["$LOCALE_PREFIX.divorced", Emotes.LORI_HEART]
+						)
+				)
+
+				try {
+					// We don't care if we can't find the user, just exit
+					val partner = lorittaShards.retrieveUserById(marriagePartner.id) ?: return@onReactionAddByAuthor
+
+					val userPrivateChannel = partner.openPrivateChannel().await()
+
+					userPrivateChannel.sendMessage(
+							EmbedBuilder()
+									.setTitle(locale["$LOCALE_PREFIX.divorcedTitle"])
+									.setDescription(locale["$LOCALE_PREFIX.divorcedDescription", context.userHandle.name])
+									.setThumbnail(DIVORCE_EMBED_URI)
+									.setColor(Constants.LORITTA_AQUA)
+									.build()
+					).queue()
+				} catch (e: Exception) {}
+			}
+		}
+
+		message.addReaction(DIVORCE_REACTION_EMOJI).queue()
+	}
+}

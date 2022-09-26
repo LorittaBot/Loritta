@@ -1,0 +1,31 @@
+// For code and pre stuff
+
+pre {
+    background-color: var(--background-wrapper-secondary);
+    // From Discord
+    font-family: Consolas,Andale Mono WT,Andale Mono,Lucida Console,Lucida Sans Typewriter,DejaVu Sans Mono,Bitstream Vera Sans Mono,Liberation Mono,Nimbus Mono L,Monaco,Courier New,Courier,monospace;
+    // A smaller font so it is easier to read
+    font-size: 0.8em;
+    // A nice border too!
+    border: 1px solid #cdcdcd;
+    border-radius: 7px;
+    // Needed because pre doesn't really like "width: 100%;", it always overflow :(
+    white-space: pre-wrap;
+    // A bit of padding too
+    padding: 7px;
+}
+
+// Do not style if the parent is pre!
+:not(pre) > code {
+    // Code has a similar style to the pre
+    background-color: var(--background-wrapper-secondary);
+    // From Discord
+    font-family: Consolas,Andale Mono WT,Andale Mono,Lucida Console,Lucida Sans Typewriter,DejaVu Sans Mono,Bitstream Vera Sans Mono,Liberation Mono,Nimbus Mono L,Monaco,Courier New,Courier,monospace;
+    
+    // A smaller font so it is easier to read
+    font-size: 0.8em;
+    
+    border-radius: 3px;
+    // A bit of padding
+    padding: 2px;
+}

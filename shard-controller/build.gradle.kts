@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "1.8"
+    kotlinOptions.jvmTarget = Versions.JVM_TARGET
 }
 
 plugins {
@@ -10,7 +10,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":common-legacy"))
+    api(project(":common"))
     api(kotlin("stdlib-jdk8"))
     api("org.slf4j:slf4j-api:2.0.0-alpha0")
     api("ch.qos.logback:logback-classic:1.3.0-alpha4")

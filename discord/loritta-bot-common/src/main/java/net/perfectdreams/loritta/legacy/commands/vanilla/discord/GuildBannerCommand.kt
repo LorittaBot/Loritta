@@ -1,0 +1,42 @@
+package net.perfectdreams.loritta.legacy.commands.vanilla.discord
+
+import net.perfectdreams.loritta.legacy.utils.Constants
+import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.legacy.api.commands.ArgumentType
+import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
+import net.perfectdreams.loritta.legacy.api.commands.arguments
+import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.legacy.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.legacy.utils.OutdatedCommandUtils
+
+class GuildBannerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("guildbanner", "serverbanner"), CommandCategory.MODERATION) {
+    override fun command() = create {
+        localizedDescription("commands.command.guildbanner.description")
+
+        arguments {
+            argument(ArgumentType.TEXT) {
+                optional = true
+            }
+        }
+
+        canUseInPrivateChannel = false
+
+        executesDiscord {
+            OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "server banner")
+
+            val discordGuild = guild
+
+            // Verificar se a guild tem banner
+            val guildBanner = discordGuild.bannerUrl ?: fail(locale["commands.command.guildbanner.noBanner"])
+
+            val embed = EmbedBuilder()
+
+            embed.setTitle("🖼 ${discordGuild.name}")
+            embed.setColor(Constants.DISCORD_BLURPLE)
+            embed.setDescription(locale["loritta.clickHere", "$guildBanner?size=2048"])
+            embed.setImage("$guildBanner?size=2048")
+
+            sendMessage(embed.build())
+        }
+    }
+}

@@ -1,0 +1,11 @@
+.inline-user-display {
+    img {
+        border-radius: 100%;
+        width: 1em;
+        height: 1em;
+    }
+
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25em;
+}

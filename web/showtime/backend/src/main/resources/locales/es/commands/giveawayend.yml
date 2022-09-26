@@ -1,0 +1,9 @@
+---
+channelDoesNotExist: "¡El canal de sorteo no existe!"
+description: "¡Dios mío, el sorteo tardará demasiado en terminar!\" Exclamas, con un tono de desesperación, \"¡Lori, ayúdame, mis miembros serán enojados si tengo que hacer otro sorteo!\" para evitar la horda de miembros quejándose de que te equivocaste!"
+finishedGiveaway: "¡Listo! Terminé el sorteo que pediste, ahora puedes descansar tranquilo sin tener que soportar la horda de miembros gritando \"¡Creaste el sorteo en el momento equivocado!\""
+giveawayAlreadyEnded: "El sorteo que intentaste terminar... bueno, se acabó. Si busca obtener nuevos ganadores, use {0}"
+giveawayDoesNotExist: "El sorteo que me pediste que tomara no existe. ¡Vea si recibió el enlace al mensaje del sorteo y vuelva a intentarlo!"
+giveawayHowToReroll: "{0}giveaway reroll {1}"
+giveawayInvalidArguments: "¡No vinculaste un mensaje de sorteo! Puede copiar el enlace del mensaje activando el menú de acciones en el mensaje (haciendo clic derecho sobre él, haciendo clic en su menú o manteniendo en el mensaje con el dedo), en el mismo lugar donde puede eliminar y anclar mensajes. Para su referencia, un enlace a un mensaje tiene este aspecto: {0}"
+messageDoesNotExist: "¡El mensaje de regalo no existe!"
