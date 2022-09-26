@@ -14,7 +14,6 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.perfectdreams.loritta.legacy.api.messages.LorittaReply
-import net.perfectdreams.loritta.legacy.api.utils.NoCopyByteArrayOutputStream
 import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
 import net.perfectdreams.loritta.legacy.utils.DiscordUtils
 import net.perfectdreams.loritta.legacy.utils.ImageFormat
@@ -23,6 +22,7 @@ import net.perfectdreams.loritta.legacy.utils.extensions.getEffectiveAvatarUrl
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.util.*
@@ -200,7 +200,7 @@ class CommandContext(val config: ServerConfig, var lorittaUser: LorittaUser, val
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: Message): Message {
-		val output = NoCopyByteArrayOutputStream()
+		val output = ByteArrayOutputStream()
 
 		ImageIO.write(image, "png", output)
 

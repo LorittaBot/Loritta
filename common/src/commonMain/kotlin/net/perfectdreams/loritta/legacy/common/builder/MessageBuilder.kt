@@ -3,12 +3,10 @@ package net.perfectdreams.loritta.legacy.common.builder
 import net.perfectdreams.loritta.legacy.common.emotes.Emote
 import net.perfectdreams.loritta.legacy.common.emotes.Emotes
 import net.perfectdreams.loritta.legacy.common.entities.LorittaEmbed
-import net.perfectdreams.loritta.legacy.common.entities.LorittaImpersonation
 import net.perfectdreams.loritta.legacy.common.entities.LorittaMessage
 import net.perfectdreams.loritta.legacy.common.entities.LorittaReply
 import net.perfectdreams.loritta.legacy.common.entities.Message
 import net.perfectdreams.loritta.legacy.common.entities.User
-import net.perfectdreams.loritta.legacy.common.images.ImageReference
 import net.perfectdreams.loritta.legacy.common.utils.CinnamonDslMarker
 import net.perfectdreams.loritta.legacy.common.utils.embed.EmbedBuilder
 
@@ -21,12 +19,7 @@ class MessageBuilder {
     var files = mutableMapOf<String, ByteArray>()
     var isEphemeral = false
     var allowedMentions = AllowedMentionsBuilder()
-    var impersonation: LorittaImpersonation? = null
     private var messageReferenceId: Long? = null
-
-    fun impersonation(username: String, avatar: ImageReference) {
-        impersonation = LorittaImpersonation(username, avatar)
-    }
 
     /**
      * Appends a embed to this builder
@@ -130,7 +123,6 @@ class MessageBuilder {
             files,
             isEphemeral,
             allowedMentions.build(),
-            impersonation,
             messageReferenceId
         )
     }

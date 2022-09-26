@@ -18,20 +18,11 @@ open class JDAUser(@JsonIgnore val handle: net.dv8tion.jda.api.entities.User) : 
     override val avatarUrl: String?
         get() = handle.effectiveAvatarUrl
 
-    override val effectiveAvatarUrl: String
-        get() = handle.effectiveAvatarUrl
-
-    override val defaultAvatarUrl: String
-        get() = handle.defaultAvatarUrl
-
     override val asMention: String
         get() = handle.asMention
 
     override val isBot: Boolean
         get() = handle.isBot
-
-    override val discriminator: String
-        get() = handle.discriminator
 
     /**
      * Gets the effective avatar URL in the specified [format]
