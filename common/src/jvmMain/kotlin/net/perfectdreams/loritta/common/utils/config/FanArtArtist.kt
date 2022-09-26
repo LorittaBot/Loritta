@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.legacy.utils.config
+package net.perfectdreams.loritta.morenitta.utils.config
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty

@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.legacy.utils.jackson
+package net.perfectdreams.loritta.morenitta.utils.jackson
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonProcessingException

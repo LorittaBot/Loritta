@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.legacy.commands.vanilla.discord
+package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test

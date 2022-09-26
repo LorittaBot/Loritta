@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.legacy.utils.extensions
+package net.perfectdreams.loritta.morenitta.utils.extensions
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.JsonNodeFactory

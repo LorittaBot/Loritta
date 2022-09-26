@@ -1,12 +1,12 @@
-package net.perfectdreams.loritta.legacy.utils
+package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.legacy.LorittaLauncher
-import net.perfectdreams.loritta.legacy.utils.Constants
-import net.perfectdreams.loritta.legacy.utils.config.GeneralConfig
-import net.perfectdreams.loritta.legacy.utils.config.GeneralDiscordConfig
-import net.perfectdreams.loritta.legacy.utils.config.GeneralDiscordInstanceConfig
-import net.perfectdreams.loritta.legacy.utils.config.GeneralInstanceConfig
-import net.perfectdreams.loritta.legacy.utils.HoconUtils.decodeFromString
+import net.perfectdreams.loritta.morenitta.LorittaLauncher
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.config.GeneralConfig
+import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordConfig
+import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordInstanceConfig
+import net.perfectdreams.loritta.morenitta.utils.config.GeneralInstanceConfig
+import net.perfectdreams.loritta.morenitta.utils.HoconUtils.decodeFromString
 import org.junit.jupiter.api.Test
 
 class CheckDefaultConfigsTest {

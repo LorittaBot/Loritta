@@ -1,11 +1,11 @@
-package net.perfectdreams.loritta.legacy.utils
+package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.legacy.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.messages.LorittaReply
 import io.mockk.every
 import io.mockk.mockk
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.legacy.platform.discord.legacy.entities.jda.JDAUser
+import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 

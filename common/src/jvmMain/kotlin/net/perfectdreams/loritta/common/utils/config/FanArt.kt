@@ -1,10 +1,10 @@
-package net.perfectdreams.loritta.legacy.utils.config
+package net.perfectdreams.loritta.morenitta.utils.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import net.perfectdreams.loritta.legacy.utils.jackson.LocalDateDeserializer
-import net.perfectdreams.loritta.legacy.utils.jackson.LocalDateSerializer
+import net.perfectdreams.loritta.morenitta.utils.jackson.LocalDateDeserializer
+import net.perfectdreams.loritta.morenitta.utils.jackson.LocalDateSerializer
 import java.time.LocalDate
 
 data class FanArt(
