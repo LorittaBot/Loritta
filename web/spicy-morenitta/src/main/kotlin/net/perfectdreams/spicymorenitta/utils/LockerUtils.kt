@@ -4,7 +4,7 @@ import kotlinx.browser.window
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.legacy.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.legacy.common.utils.StoragePaths
-import net.perfectdreams.loritta.legacy.serializable.ProfileDesign
+import net.perfectdreams.loritta.serializable.ProfileDesign
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import org.w3c.dom.CanvasRenderingContext2D
 import org.w3c.dom.HTMLCanvasElement

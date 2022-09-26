@@ -13,7 +13,7 @@ import kotlinx.html.id
 import kotlinx.html.style
 import kotlinx.serialization.decodeFromString
 import net.perfectdreams.loritta.cinnamon.pudding.data.DefaultBackgroundVariation
-import net.perfectdreams.loritta.legacy.serializable.BackgroundListResponse
+import net.perfectdreams.loritta.serializable.BackgroundListResponse
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.http

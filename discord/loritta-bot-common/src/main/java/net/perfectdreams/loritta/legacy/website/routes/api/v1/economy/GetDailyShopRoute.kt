@@ -8,8 +8,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.legacy.serializable.DailyShopBackgroundEntry
-import net.perfectdreams.loritta.legacy.serializable.DailyShopResult
+import net.perfectdreams.loritta.serializable.DailyShopBackgroundEntry
+import net.perfectdreams.loritta.serializable.DailyShopResult
 import net.perfectdreams.loritta.legacy.tables.DailyProfileShopItems
 import net.perfectdreams.loritta.legacy.tables.DailyShopItems
 import net.perfectdreams.loritta.legacy.tables.DailyShops

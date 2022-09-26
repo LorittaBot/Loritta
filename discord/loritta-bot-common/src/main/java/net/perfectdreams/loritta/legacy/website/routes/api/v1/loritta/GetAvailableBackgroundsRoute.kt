@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.legacy.serializable.BackgroundListResponse
+import net.perfectdreams.loritta.serializable.BackgroundListResponse
 import net.perfectdreams.loritta.legacy.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.select

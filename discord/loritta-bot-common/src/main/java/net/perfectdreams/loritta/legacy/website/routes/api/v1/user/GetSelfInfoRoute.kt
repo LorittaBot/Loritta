@@ -18,8 +18,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.legacy.serializable.ProfileSectionsResponse
-import net.perfectdreams.loritta.legacy.serializable.UserIdentification
+import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
+import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.legacy.tables.BannedIps
 import net.perfectdreams.loritta.legacy.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.legacy.website.session.LorittaJsonWebSession
@@ -106,7 +106,7 @@ class GetSelfInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/users/@
 			var donationsWrapper: ProfileSectionsResponse.DonationsWrapper? = null
 			var settingsWrapper: ProfileSectionsResponse.SettingsWrapper? = null
 			var backgroundsWrapper: ProfileSectionsResponse.BackgroundsWrapper? = null
-			var profileDesigns: List<net.perfectdreams.loritta.legacy.serializable.ProfileDesign>? = null
+			var profileDesigns: List<net.perfectdreams.loritta.serializable.ProfileDesign>? = null
 
 			if ("profiles" in sections) {
 				profileDataWrapper = ProfileSectionsResponse.ProfileDataWrapper(

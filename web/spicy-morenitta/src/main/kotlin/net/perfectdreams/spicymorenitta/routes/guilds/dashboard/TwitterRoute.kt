@@ -19,7 +19,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import net.perfectdreams.loritta.embededitor.data.crosswindow.Placeholder
 import net.perfectdreams.loritta.embededitor.data.crosswindow.RenderType
-import net.perfectdreams.loritta.legacy.serializable.TrackedTwitterAccount
+import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
 import net.perfectdreams.loritta.legacy.utils.Placeholders
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall

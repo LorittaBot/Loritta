@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.legacy.dao.servers.moduleconfigs.StarboardConfig
 import net.perfectdreams.loritta.legacy.platform.discord.LorittaDiscord
-import net.perfectdreams.loritta.legacy.serializable.CustomCommandCodeType
+import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.legacy.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.legacy.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.legacy.utils.ActionType

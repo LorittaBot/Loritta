@@ -18,7 +18,7 @@ class ProfileDesign(id: EntityID<String>) : Entity<String>(id) {
     var availableToBuyViaMoney by ProfileDesigns.availableToBuyViaMoney
     var set by ProfileDesigns.set
 
-    fun toSerializable() = net.perfectdreams.loritta.legacy.serializable.ProfileDesign(
+    fun toSerializable() = net.perfectdreams.loritta.serializable.ProfileDesign(
             id.value,
             enabled,
             rarity,

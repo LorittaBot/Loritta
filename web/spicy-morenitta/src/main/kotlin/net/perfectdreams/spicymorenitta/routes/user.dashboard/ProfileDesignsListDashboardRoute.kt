@@ -25,8 +25,8 @@ import kotlinx.html.p
 import kotlinx.html.style
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JSON
-import net.perfectdreams.loritta.legacy.serializable.ProfileDesign
-import net.perfectdreams.loritta.legacy.serializable.ProfileSectionsResponse
+import net.perfectdreams.loritta.serializable.ProfileDesign
+import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
 import net.perfectdreams.loritta.legacy.utils.UserPremiumPlans
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall

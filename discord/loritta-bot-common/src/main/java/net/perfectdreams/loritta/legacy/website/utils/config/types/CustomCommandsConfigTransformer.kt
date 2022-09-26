@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.legacy.utils.loritta
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.legacy.serializable.CustomCommand
+import net.perfectdreams.loritta.serializable.CustomCommand
 import net.perfectdreams.loritta.legacy.tables.servers.CustomGuildCommands
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert

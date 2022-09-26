@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.legacy.commands.CommandContext
 import net.perfectdreams.loritta.legacy.utils.MessageUtils
 import net.perfectdreams.loritta.legacy.common.commands.CommandCategory
 import net.perfectdreams.loritta.legacy.common.locale.BaseLocale
-import net.perfectdreams.loritta.legacy.serializable.CustomCommandCodeType
+import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.legacy.utils.ExperienceUtils
 
 /**

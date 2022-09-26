@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.legacy.serializable
+package net.perfectdreams.loritta.serializable
 
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.legacy.api.commands.CommandArguments

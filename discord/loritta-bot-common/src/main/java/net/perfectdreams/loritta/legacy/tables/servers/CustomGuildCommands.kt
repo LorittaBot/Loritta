@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.legacy.tables.servers
 
 import net.perfectdreams.loritta.legacy.tables.ServerConfigs
-import net.perfectdreams.loritta.legacy.serializable.CustomCommandCodeType
+import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object CustomGuildCommands : LongIdTable() {

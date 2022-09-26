@@ -18,7 +18,7 @@ class GetAvailableProfileDesignsRoute(val loritta: LorittaDiscord) : BaseRoute("
 			}.toList()
 		}.map { WebsiteUtils.toSerializable(it) }
 				.let {
-					Json.encodeToJsonElement(ListSerializer(net.perfectdreams.loritta.legacy.serializable.ProfileDesign.serializer()), it)
+					Json.encodeToJsonElement(ListSerializer(net.perfectdreams.loritta.serializable.ProfileDesign.serializer()), it)
 				}
 
 		call.respondJson(array)

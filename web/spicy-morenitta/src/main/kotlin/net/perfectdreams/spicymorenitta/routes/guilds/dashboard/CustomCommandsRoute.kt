@@ -22,8 +22,8 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
-import net.perfectdreams.loritta.legacy.serializable.CustomCommand
-import net.perfectdreams.loritta.legacy.serializable.CustomCommandCodeType
+import net.perfectdreams.loritta.serializable.CustomCommand
+import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.spicymorenitta.SpicyMorenitta
 import net.perfectdreams.spicymorenitta.application.ApplicationCall
 import net.perfectdreams.spicymorenitta.extensions.listIsEmptySection
