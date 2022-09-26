@@ -3,19 +3,18 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.*
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import java.lang.management.ManagementFactory
 import java.util.jar.Attributes
 import java.util.jar.JarFile
 
-class GetStatusRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/status") {
+class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/status") {
 	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as Loritta
+		loritta as LorittaBot
 		val currentShard = loritta.lorittaCluster
 
 		val path = this::class.java.protectionDomain.codeSource.location.path

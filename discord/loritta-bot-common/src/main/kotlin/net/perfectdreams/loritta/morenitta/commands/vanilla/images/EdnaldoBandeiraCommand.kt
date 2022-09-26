@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.base.GabrielaImageServerCommandBase
 
-class EdnaldoBandeiraCommand(m: LorittaDiscord) : GabrielaImageServerCommandBase(
+class EdnaldoBandeiraCommand(m: LorittaBot) : GabrielaImageServerCommandBase(
 	m,
 	listOf("ednaldobandeira"),
 	1,

@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.MessageChannel
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog

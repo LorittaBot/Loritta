@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.action
 
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
 
-class HighFiveCommand(loritta: LorittaDiscord): ActionCommand(loritta, listOf("highfive", "hifive", "tocaaqui")) {
+class HighFiveCommand(loritta: LorittaBot): ActionCommand(loritta, listOf("highfive", "hifive", "tocaaqui")) {
     override fun create(): ActionCommandDSL = action {
         emoji = "\uD83D\uDD90"
         color = Color(27, 224, 96)

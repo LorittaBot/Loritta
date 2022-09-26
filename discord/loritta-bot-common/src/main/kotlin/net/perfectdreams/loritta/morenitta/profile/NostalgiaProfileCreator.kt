@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
@@ -30,7 +30,7 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 	class NostalgiaOrangeProfileCreator : NostalgiaProfileCreator("defaultOrange", "orange")
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/nostalgia/profile_wrapper_$folderName.png"))
+		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/nostalgia/profile_wrapper_$folderName.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -67,13 +67,13 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 			x += 42
 		}
 
-		val whitneyMedium = 	FileInputStream(File(Loritta.ASSETS + "whitney-medium.ttf")).use {
+		val whitneyMedium = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-medium.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneySemiBold = 	FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
+		val whitneySemiBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneyBold = 	FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+		val whitneyBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 
@@ -138,7 +138,7 @@ open class NostalgiaProfileCreator(internalName: String, val folderName: String)
 				marriage.user1
 			}.toString()
 
-			val marrySection = readImage(File(Loritta.ASSETS, "profile/nostalgia/marry.png"))
+			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/nostalgia/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 			val marriedWith = lorittaShards.retrieveUserInfoById(marriedWithId.toLong())
 

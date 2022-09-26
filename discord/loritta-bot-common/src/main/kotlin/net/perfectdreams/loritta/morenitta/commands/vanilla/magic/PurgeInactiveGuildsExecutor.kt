@@ -5,8 +5,8 @@ import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import org.jetbrains.exposed.sql.deleteWhere

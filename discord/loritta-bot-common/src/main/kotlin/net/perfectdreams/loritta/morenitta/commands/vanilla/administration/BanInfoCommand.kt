@@ -9,14 +9,14 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.Emotes
 
-class BanInfoCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
     override fun command() = create {
         localizedDescription("commands.command.baninfo.description")
         localizedExamples("commands.command.baninfo.examples")

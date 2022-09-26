@@ -2,13 +2,13 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks
 
 import io.ktor.server.application.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHeader
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class CreateWebhookRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/discord-webhook") {
+class CreateWebhookRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/discord-webhook") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

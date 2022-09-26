@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -13,7 +13,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.time.Duration.Companion.seconds
 
-class GatewayEventRelayerListener(val m: Loritta) : ListenerAdapter() {
+class GatewayEventRelayerListener(val m: LorittaBot) : ListenerAdapter() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

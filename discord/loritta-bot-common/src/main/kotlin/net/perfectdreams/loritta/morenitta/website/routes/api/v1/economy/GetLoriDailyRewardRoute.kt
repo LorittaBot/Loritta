@@ -5,8 +5,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
-import net.perfectdreams.loritta.morenitta.Loritta.Companion.RANDOM
+import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.tables.Dailies
@@ -26,7 +25,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -44,7 +43,7 @@ import org.jetbrains.exposed.sql.select
 import java.time.ZonedDateTime
 import java.util.concurrent.TimeUnit
 
-class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/daily-reward") {
+class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/daily-reward") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		private val mutexes = Caffeine.newBuilder()
@@ -206,7 +205,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogin
 	fun getDailyMultiplier(value: Double) = ServerPremiumPlans.getPlanFromValue(value).dailyMultiplier
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		loritta as Loritta
+		loritta as LorittaBot
 		val recaptcha = call.parameters["recaptcha"] ?: return
 		val dailyMultiplierGuildIdPriority = call.request.queryParameters["guild"]?.toLongOrNull()
 

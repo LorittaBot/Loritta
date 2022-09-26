@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.roblox
 
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
-class RbUserCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta,listOf("rbuser", "rbplayer"), net.perfectdreams.loritta.common.commands.CommandCategory.ROBLOX) {
+class RbUserCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta,listOf("rbuser", "rbplayer"), net.perfectdreams.loritta.common.commands.CommandCategory.ROBLOX) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.rbuser"
         private val json = Json {

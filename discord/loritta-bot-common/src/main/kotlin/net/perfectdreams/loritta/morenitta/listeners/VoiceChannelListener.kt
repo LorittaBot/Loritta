@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import net.perfectdreams.loritta.morenitta.utils.eventlog.EventLog
 import kotlinx.coroutines.GlobalScope
@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.concurrent.TimeUnit
 
-class VoiceChannelListener(val loritta: Loritta) : ListenerAdapter() {
+class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		private val mutexes = Caffeine.newBuilder()

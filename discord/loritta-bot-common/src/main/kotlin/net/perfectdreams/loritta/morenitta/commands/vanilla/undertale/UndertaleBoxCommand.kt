@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.undertale
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -49,7 +49,7 @@ class UndertaleBoxCommand : AbstractCommand("utbox", listOf("undertalebox"), net
 				// Mas ok, ainda tem uma coisa chamada "nome do usuário mencionado"
 				// Sabe o que a gente faz com ele? Gambiarra!
 				// TODO: Menos gambiarra
-				val bi = readImage(File(Loritta.ASSETS + "undertale_dialogbox.png"))
+				val bi = readImage(File(LorittaBot.ASSETS + "undertale_dialogbox.png"))
 				val graph = bi.graphics
 
 				val determinationMono = Constants.DETERMINATION_MONO

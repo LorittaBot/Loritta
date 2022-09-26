@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
@@ -24,7 +24,7 @@ class PrimeirasPalavrasCommand : AbstractCommand("firstwords", listOf("primeiras
 		if (context.args.isNotEmpty()) {
 			val str = context.args.joinToString(" ")
 
-			val bi = readImage(File(Loritta.ASSETS + "tirinha_baby.png")) // Primeiro iremos carregar o nosso template
+			val bi = readImage(File(LorittaBot.ASSETS + "tirinha_baby.png")) // Primeiro iremos carregar o nosso template
 
 			val baseGraph = bi.graphics.enableFontAntiAliasing()
 

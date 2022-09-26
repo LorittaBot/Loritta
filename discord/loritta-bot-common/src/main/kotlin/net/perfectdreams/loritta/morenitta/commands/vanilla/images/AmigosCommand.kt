@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -9,8 +9,8 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Member
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import java.awt.image.BufferedImage
@@ -89,7 +89,7 @@ class AmigosCommand : AbstractCommand("friends", listOf("amigos", "meusamigos", 
 				userAvatar = context.guild.members.random().user.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
 				break
 			}
-			val member = list[Loritta.RANDOM.nextInt(list.size)]
+			val member = list[LorittaBot.RANDOM.nextInt(list.size)]
 			userAvatar = member.user.avatarUrl
 			if (userAvatar == null)
 				list.remove(member)

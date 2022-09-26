@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Marriage
@@ -16,9 +16,9 @@ import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
@@ -131,7 +131,7 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), net.perfectdreams
 				}
 			}
 
-			if (Loritta.RANDOM.nextInt(0, 50) == 9 && context.lorittaUser.profile.money >= 3000) {
+			if (LorittaBot.RANDOM.nextInt(0, 50) == 9 && context.lorittaUser.profile.money >= 3000) {
 				context.reply(
 					LorittaReply(
 						context.locale["commands.command.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
@@ -163,13 +163,13 @@ class ShipCommand : AbstractCommand("ship", listOf("shippar"), net.perfectdreams
 
 			val emoji = when {
 				percentage >= 50 -> {
-					readImage(File(Loritta.ASSETS + "heart.png"))
+					readImage(File(LorittaBot.ASSETS + "heart.png"))
 				}
 				percentage >= 30 -> {
-					readImage(File(Loritta.ASSETS + "shrug.png"))
+					readImage(File(LorittaBot.ASSETS + "shrug.png"))
 				}
 				else -> {
-					readImage(File(Loritta.ASSETS + "crying.png"))
+					readImage(File(LorittaBot.ASSETS + "crying.png"))
 				}
 			}
 

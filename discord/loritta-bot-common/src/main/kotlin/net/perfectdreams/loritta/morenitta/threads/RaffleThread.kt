@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.morenitta.threads
 
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.morenitta.Loritta
-import net.perfectdreams.loritta.morenitta.Loritta.Companion.RANDOM
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
@@ -56,14 +56,14 @@ class RaffleThread : Thread("Raffle Thread") {
 	}
 
 	fun save() {
-		val loteriaFile = File(Loritta.FOLDER, "raffle.json")
+		val loteriaFile = File(LorittaBot.FOLDER, "raffle.json")
 
 		val json = JsonObject()
 
 		json["started"] = started
 		json["lastWinnerId"] = lastWinnerId
 		json["lastWinnerPrize"] = lastWinnerPrize
-		json["userIds"] = Loritta.GSON.toJsonTree(userIds)
+		json["userIds"] = LorittaBot.GSON.toJsonTree(userIds)
 
 		logger.info { "Salvando raffle.json..." }
 		logger.info { "Iniciou às: $started" }
@@ -142,7 +142,7 @@ class RaffleThread : Thread("Raffle Thread") {
 							val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
 							user.openPrivateChannel().queue {
 								it.sendMessage(message)
-									.addFile(File(Loritta.ASSETS, "loritta_money_discord.png"), "loritta_money.png")
+									.addFile(File(LorittaBot.ASSETS, "loritta_money_discord.png"), "loritta_money.png")
 									.queue()
 							}
 						} catch (e: Exception) {

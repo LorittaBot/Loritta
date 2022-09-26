@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.removeAllFunctions
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote

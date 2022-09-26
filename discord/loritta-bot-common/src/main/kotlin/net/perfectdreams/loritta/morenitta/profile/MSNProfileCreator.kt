@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
@@ -17,7 +17,7 @@ import java.io.FileInputStream
 
 class MSNProfileCreator : ProfileCreator("msn") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/msn/profile_wrapper.png"))
+		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/msn/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -26,17 +26,17 @@ class MSNProfileCreator : ProfileCreator("msn") {
 		val imageToBeDownload = if (sender == user) { guild?.selfMember?.user?.avatarUrl } else { sender.avatarUrl } ?: "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
 		val senderAvatar = LorittaUtils.downloadImage(imageToBeDownload!!)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
-		val msnFont = FileInputStream(File(Loritta.ASSETS + "micross.ttf")).use {
+		val msnFont = FileInputStream(File(LorittaBot.ASSETS + "micross.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 
-		val whitneyMedium = 	FileInputStream(File(Loritta.ASSETS + "whitney-medium.ttf")).use {
+		val whitneyMedium = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-medium.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneySemiBold = 	FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
+		val whitneySemiBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneyBold = 	FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+		val whitneyBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 
@@ -72,7 +72,7 @@ class MSNProfileCreator : ProfileCreator("msn") {
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
 			val marriedWithText = "${locale["profile.marriedWith"]} ${marriedWith.name}#${marriedWith.discriminator}"
-			val gameIcon = readImage(File(Loritta.ASSETS, "profile/msn/game_icon.png"))
+			val gameIcon = readImage(File(LorittaBot.ASSETS, "profile/msn/game_icon.png"))
 			graphics.drawImage(gameIcon, 0, 5, null)
 			graphics.font = msnFont24
 			graphics.color = Color(51, 51, 51)
@@ -140,7 +140,7 @@ class MSNProfileCreator : ProfileCreator("msn") {
 
 			if (index % 14 == 13) {
 				// Aumentar chat box
-				val extendedChatBox = readImage(File(Loritta.ASSETS, "profile/msn/extended_chat_box.png"))
+				val extendedChatBox = readImage(File(LorittaBot.ASSETS, "profile/msn/extended_chat_box.png"))
 				graphics.drawImage(extendedChatBox, 266, y - 38, null)
 				x = 272
 				y -= 32

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
@@ -10,15 +9,15 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.config.FanArt
 import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 
-class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("fanarts", "fanart"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("fanarts", "fanart"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     override fun command() = create {
         localizedDescription("commands.command.fanarts.description", "<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>")
 
@@ -37,7 +36,7 @@ class FanArtsCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lorit
                 it.createdAt
             }
 
-            var fanArtIndex = (index?.toIntOrNull() ?: Loritta.RANDOM.nextInt(fanArtsByDate.size) + 1) - 1
+            var fanArtIndex = (index?.toIntOrNull() ?: LorittaBot.RANDOM.nextInt(fanArtsByDate.size) + 1) - 1
             if (fanArtIndex !in fanArtsByDate.indices) {
                 fanArtIndex = 0
             }

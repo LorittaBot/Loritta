@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.base.GabrielaImageServerCommandBase
 
-class PepeDreamCommand(m: LorittaDiscord) : GabrielaImageServerCommandBase(
+class PepeDreamCommand(m: LorittaBot) : GabrielaImageServerCommandBase(
 	m,
 	listOf("pepedream", "sonhopepe", "pepesonho"),
 	1,

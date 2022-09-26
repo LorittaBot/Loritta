@@ -8,12 +8,12 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class PostLorittaActionRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/action/{actionType}") {
+class PostLorittaActionRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/action/{actionType}") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val body = withContext(Dispatchers.IO) { call.receiveText() }
 		val actionType = call.parameters["actionType"]

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.utils
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.math.MathUtils

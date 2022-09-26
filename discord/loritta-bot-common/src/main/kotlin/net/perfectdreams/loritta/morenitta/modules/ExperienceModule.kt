@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.modules
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -81,7 +81,7 @@ class ExperienceModule : MessageReceivedModule {
 				val nonRepeatedCharsMessage = event.message.contentStripped.replace(Constants.REPEATING_CHARACTERS_REGEX, "$1")
 
 				if (nonRepeatedCharsMessage.length >= 12) {
-					val gainedXp = Math.min(35, Loritta.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
+					val gainedXp = Math.min(35, LorittaBot.RANDOM.nextInt(Math.max(1, nonRepeatedCharsMessage.length / 7), (Math.max(2, nonRepeatedCharsMessage.length / 4))))
 
 					var globalGainedXp = gainedXp
 

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.modules.*
@@ -29,7 +29,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
@@ -39,7 +39,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 
-class MessageListener(val loritta: Loritta) : ListenerAdapter() {
+class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		// Our blacklist of messages (messages that we'll ignore on command execution)

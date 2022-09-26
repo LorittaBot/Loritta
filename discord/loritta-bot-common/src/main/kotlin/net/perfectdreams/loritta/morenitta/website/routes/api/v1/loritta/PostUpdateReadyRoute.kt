@@ -11,13 +11,13 @@ import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import kotlin.concurrent.thread
 import kotlin.system.exitProcess
 
-class PostUpdateReadyRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/update") {
+class PostUpdateReadyRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/update") {
 	companion object {
 		val logger = KotlinLogging.logger {}
 	}

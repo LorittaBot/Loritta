@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.user
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.networkbans.ApplyBansTask
@@ -17,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.ProfileSectionsResponse
 import net.perfectdreams.loritta.serializable.UserIdentification
 import net.perfectdreams.loritta.morenitta.tables.BannedIps
@@ -31,13 +30,13 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import kotlin.collections.set
 
-class GetSelfInfoRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/users/@me/{sections?}") {
+class GetSelfInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/{sections?}") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as Loritta
+		loritta as LorittaBot
 		val sections = call.parameters["sections"]?.split(",")?.toSet()
 
 		println("Get Self Info Route")

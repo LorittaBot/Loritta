@@ -1,13 +1,12 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
@@ -16,7 +15,7 @@ import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 
-class AtendenteCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("atendente"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class AtendenteCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("atendente"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.atendente"
     }
@@ -39,7 +38,7 @@ class AtendenteCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
             if (args.isNotEmpty()) {
                 OutdatedCommandUtils.sendOutdatedCommandMessage(this, this.locale, "drawnmask atendente")
 
-                val template = readImage(File(Loritta.ASSETS, "atendente.png"))
+                val template = readImage(File(LorittaBot.ASSETS, "atendente.png"))
 
                 val width = 214
                 val height = 131

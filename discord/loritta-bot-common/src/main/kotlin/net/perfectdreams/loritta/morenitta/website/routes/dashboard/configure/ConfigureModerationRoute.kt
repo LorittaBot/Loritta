@@ -1,12 +1,11 @@
 package net.perfectdreams.loritta.morenitta.website.routes.dashboard.configure
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
@@ -14,9 +13,9 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import kotlin.collections.set
 
-class ConfigureModerationRoute(loritta: LorittaDiscord) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/moderation") {
+class ConfigureModerationRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/moderation") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as Loritta
+		loritta as LorittaBot
 
 		val moderationConfig = loritta.newSuspendedTransaction {
 			serverConfig.moderationConfig

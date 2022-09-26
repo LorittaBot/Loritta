@@ -6,6 +6,7 @@ import net.perfectdreams.discordinteraktions.common.commands.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
+import net.perfectdreams.loritta.common.commands.CommandCategory
 
 class CinnamonSlashCommandDeclaration(
     val declarationWrapper: CinnamonSlashCommandDeclarationWrapper,

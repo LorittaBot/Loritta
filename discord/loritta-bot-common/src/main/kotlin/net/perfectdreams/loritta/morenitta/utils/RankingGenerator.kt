@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Graphics2D
@@ -19,7 +19,7 @@ object RankingGenerator {
 			rankedUsers: List<UserRankInformation>,
 			onNullUser: (suspend (Long) -> (CachedUserInfo?))? = null
 	): BufferedImage {
-		val rankHeader = readImage(File(Loritta.ASSETS, "rank_header.png"))
+		val rankHeader = readImage(File(LorittaBot.ASSETS, "rank_header.png"))
 		val base = BufferedImage(400, 300, BufferedImage.TYPE_INT_ARGB_PRE)
 		val graphics = base.graphics.enableFontAntiAliasing()
 

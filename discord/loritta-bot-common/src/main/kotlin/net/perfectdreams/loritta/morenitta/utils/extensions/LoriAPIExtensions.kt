@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.utils.extensions
 
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.common.api.entities.Message
-import net.perfectdreams.loritta.common.api.entities.User
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.api.entities.Message
+import net.perfectdreams.loritta.morenitta.api.entities.User
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordMessage
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 

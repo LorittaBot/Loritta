@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.morenitta.api.commands.Command
 
 class GetOverHereCommand : AbstractCommand("getoverhere", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.getoverhere.description")

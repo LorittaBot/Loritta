@@ -11,7 +11,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.dao.Payment
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import java.util.*
@@ -25,7 +25,7 @@ class PerfectPaymentsClient(val url: String) {
      * @return the payment URL
      */
     suspend fun createPayment(
-        loritta: LorittaDiscord,
+        loritta: LorittaBot,
         userId: Long,
         paymentTitle: String,
         amount: Long,

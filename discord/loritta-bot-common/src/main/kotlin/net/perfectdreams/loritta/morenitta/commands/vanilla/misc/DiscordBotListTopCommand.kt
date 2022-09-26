@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.misc
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.BotVotes
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
@@ -11,7 +11,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 
-class DiscordBotListTopCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("dbl top"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class DiscordBotListTopCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("dbl top"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.dbltop"
     }

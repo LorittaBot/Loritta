@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.Loritta.Companion.RANDOM
+import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.utils.loritta
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.common.utils.Emotes

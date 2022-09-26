@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.profile
 
 import net.perfectdreams.loritta.morenitta.profile.badges.*
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class ProfileDesignManager(val m: LorittaDiscord) {
+class ProfileDesignManager(val m: LorittaBot) {
 	val designs = mutableListOf<ProfileCreator>()
 	val badges = mutableListOf<Badge>()
 

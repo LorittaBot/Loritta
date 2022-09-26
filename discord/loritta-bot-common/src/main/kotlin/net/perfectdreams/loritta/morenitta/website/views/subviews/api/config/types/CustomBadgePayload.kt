@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.website.views.subviews.api.config.ty
 import com.github.salomonbrys.kotson.bool
 import com.github.salomonbrys.kotson.nullString
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationConfig
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.network.Databases
@@ -34,7 +34,7 @@ class CustomBadgePayload : ConfigPayloadType("badge") {
 			val img = ImageIO.read(ByteArrayInputStream(imageBytes))
 
 			if (img != null) {
-				ImageIO.write(img, "png", File(Loritta.ASSETS, "badges/custom/${guild.id}.png"))
+				ImageIO.write(img, "png", File(LorittaBot.ASSETS, "badges/custom/${guild.id}.png"))
 			}
 		}
 	}

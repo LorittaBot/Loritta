@@ -9,12 +9,12 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostUserReputationsRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class PostReputationMessageRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/send-reputation-message") {
+class PostReputationMessageRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/send-reputation-message") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 

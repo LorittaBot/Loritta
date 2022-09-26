@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.response.*
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import javax.imageio.ImageIO
 
-class GetSelfUserProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/profile") {
+class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/profile") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
 		val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
 		val settings = loritta.newSuspendedTransaction {

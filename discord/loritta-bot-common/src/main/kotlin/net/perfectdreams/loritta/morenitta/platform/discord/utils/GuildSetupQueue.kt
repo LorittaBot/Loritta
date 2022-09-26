@@ -17,7 +17,7 @@ import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ReactionOptions
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
@@ -34,7 +34,7 @@ import org.jetbrains.exposed.sql.and
  *
  * This also speeds up setup, because retrieving guilds in a batch is faster than doing individually.
  */
-class GuildSetupQueue(val loritta: LorittaDiscord) {
+class GuildSetupQueue(val loritta: LorittaBot) {
     companion object {
         val logger = KotlinLogging.logger {}
     }

@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.morenitta.website.routes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.ApplicationCall
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariables
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 
-class TermsOfServiceRoute(loritta: LorittaDiscord) : LocalizedRoute(loritta, "/privacy") {
+class TermsOfServiceRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/privacy") {
 	override val isMainClusterOnlyRoute = true
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {

@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageEmbed
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.awt.Color
 
 class LanguageCommand : AbstractCommand("language", listOf("linguagem", "speak", "lang"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {

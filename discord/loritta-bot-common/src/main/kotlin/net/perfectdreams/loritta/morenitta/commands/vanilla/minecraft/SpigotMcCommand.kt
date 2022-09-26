@@ -9,7 +9,7 @@ import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -147,7 +147,7 @@ class SpigotMcCommand : AbstractCommand("spigotmc", category = net.perfectdreams
 				json["tag"].string,
 				json["icon"]["url"].string,
 				if (json.has("contributors")) json["contributors"].string else "",
-				Loritta.GSON.fromJson<List<String>>(json["testedVersions"]),
+				LorittaBot.GSON.fromJson<List<String>>(json["testedVersions"]),
 				json["downloads"].int,
 				json["file"]["url"].string,
 				json["releaseDate"].int,

@@ -2,20 +2,19 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.node.ObjectNode
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
 import io.ktor.server.application.ApplicationCall
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.morenitta.utils.extensions.objectNode
 import net.perfectdreams.loritta.morenitta.utils.extensions.set
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class GetFanArtsController(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/fan-arts") {
+class GetFanArtsController(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/fan-arts") {
 	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as Loritta
+		loritta as LorittaBot
 
 		val query = call.parameters["query"]
 		val filter = call.parameters["filter"]?.split(",")
@@ -58,7 +57,7 @@ class GetFanArtsController(val loritta: LorittaDiscord) : BaseRoute("/api/v1/lor
 							}
 							if (aboutMe != null) {
 								it as ObjectNode
-								it["aboutMe"] = aboutMe
+								it.set("aboutMe", aboutMe)
 							}
 						}
 					}

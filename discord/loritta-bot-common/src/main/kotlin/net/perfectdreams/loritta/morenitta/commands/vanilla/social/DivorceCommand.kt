@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils

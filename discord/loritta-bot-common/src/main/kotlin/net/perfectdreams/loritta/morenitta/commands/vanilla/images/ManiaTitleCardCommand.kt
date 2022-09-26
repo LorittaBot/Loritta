@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
@@ -43,9 +43,9 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = net.p
 	}
 
 	fun generateTitleCard(text1: String = "", text2: String = ""): BufferedImage {
-		val image = ImageIO.read(File(Loritta.ASSETS, "sonic_mania_title_card.png"))
-		val left = ImageIO.read(File(Loritta.ASSETS, "mania_font/cut_left.png"))
-		val right = ImageIO.read(File(Loritta.ASSETS, "mania_font/cut_right.png"))
+		val image = ImageIO.read(File(LorittaBot.ASSETS, "sonic_mania_title_card.png"))
+		val left = ImageIO.read(File(LorittaBot.ASSETS, "mania_font/cut_left.png"))
+		val right = ImageIO.read(File(LorittaBot.ASSETS, "mania_font/cut_right.png"))
 
 		val graphics = image.graphics
 		graphics.color = Color.BLACK
@@ -76,7 +76,7 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = net.p
 					x -= 26
 					continue
 				}
-				val charFile = File(Loritta.ASSETS, "mania_font/${c.toLowerCase()}.png")
+				val charFile = File(LorittaBot.ASSETS, "mania_font/${c.toLowerCase()}.png")
 
 				if (charFile.exists()) {
 					val charImg = ImageIO.read(charFile)
@@ -104,7 +104,7 @@ class ManiaTitleCardCommand : AbstractCommand("maniatitlecard", category = net.p
 					x -= 26
 					continue
 				}
-				val charFile = File(Loritta.ASSETS, "mania_font/${c.toLowerCase()}.png")
+				val charFile = File(LorittaBot.ASSETS, "mania_font/${c.toLowerCase()}.png")
 
 				if (charFile.exists()) {
 					val charImg = ImageIO.read(charFile)

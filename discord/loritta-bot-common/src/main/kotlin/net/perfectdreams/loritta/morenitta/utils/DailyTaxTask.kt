@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.Marriage
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -36,7 +36,7 @@ class DailyTaxTask : Runnable {
 		if (!loritta.isMaster)
 			return
 
-		val lastDailyTax = File(Loritta.FOLDER, "last_daily_tax")
+		val lastDailyTax = File(LorittaBot.FOLDER, "last_daily_tax")
 		val hour = LocalDateTime.now(Constants.LORITTA_TIMEZONE).hour
 
 		if (!force) {

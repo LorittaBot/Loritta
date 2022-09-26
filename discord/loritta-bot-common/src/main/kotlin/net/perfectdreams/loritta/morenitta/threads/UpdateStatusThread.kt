@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.threads
 
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.config.GeneralConfig
 import net.perfectdreams.loritta.morenitta.utils.loritta
@@ -67,7 +67,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 					currentAvatarPayloadHash = null
 
 					if (loritta.isMaster)
-						firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/original.png"))).complete()
+						firstInstance.selfUser.manager.setAvatar(Icon.from(File(LorittaBot.ASSETS, "avatar_fanarts/original.png"))).complete()
 
 					loritta.lorittaShards.shardManager.setActivityProvider {
 						Activity.of(
@@ -99,7 +99,7 @@ class UpdateStatusThread : Thread("Update Status Thread") {
 				// Only update the avatar if we are in the first cluster
 				if (firstInstance != null) {
 					if (loritta.isMaster) // Apenas troque o avatar caso seja o cluster principal (ele que controla tudo!)
-						firstInstance.selfUser.manager.setAvatar(Icon.from(File(Loritta.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
+						firstInstance.selfUser.manager.setAvatar(Icon.from(File(LorittaBot.ASSETS, "avatar_fanarts/${fanArt.fileName}"))).complete()
 
 					currentFanArt = fanArt
 					currentIndex++

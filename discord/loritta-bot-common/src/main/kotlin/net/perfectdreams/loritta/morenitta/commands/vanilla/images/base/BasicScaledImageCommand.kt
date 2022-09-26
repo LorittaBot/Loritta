@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images.base
 
-import net.perfectdreams.loritta.common.LorittaBot
-import net.perfectdreams.loritta.common.api.commands.CommandBuilder
-import net.perfectdreams.loritta.common.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.api.commands.CommandBuilder
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.common.utils.createImage
 import net.perfectdreams.loritta.common.utils.image.Image
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
 open class BasicScaledImageCommand(

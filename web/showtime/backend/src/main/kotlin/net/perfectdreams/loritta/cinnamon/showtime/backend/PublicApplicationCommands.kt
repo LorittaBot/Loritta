@@ -5,7 +5,7 @@ import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecuto
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.cinnamon.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationBuilder
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.PublicLorittaCommands
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.ArtExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BobBurningPaperExecutor

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -20,12 +20,12 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 	class PlainGreenHeartsProfileCreator : PlainProfileCreator("plainGreenHearts", "green_hearts")
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
+		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
 
-		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
+		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneyBold = FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
@@ -41,7 +41,7 @@ open class PlainProfileCreator(internalName: String, val folderName: String) : P
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = readImage(File(Loritta.ASSETS, "profile/plain/marry.png"))
+			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/plain/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			graphics.color = Color.WHITE

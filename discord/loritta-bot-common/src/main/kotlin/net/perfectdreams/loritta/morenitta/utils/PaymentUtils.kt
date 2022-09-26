@@ -5,7 +5,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.SonhosTransaction
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and
@@ -54,7 +54,7 @@ object PaymentUtils {
      * @return a map containing all the users and sonhos removals that were done
      */
     suspend fun removeSonhosDueToChargeback(
-            loritta: LorittaDiscord,
+            loritta: LorittaBot,
             userId: Long,
             quantity: Long,
             removeSonhos: Boolean,
@@ -162,7 +162,7 @@ object PaymentUtils {
      * @return how many sonhos were successfully removed
      */
     suspend fun retrieveSonhosRemovalDueToChargeback(
-            loritta: LorittaDiscord,
+            loritta: LorittaBot,
             userId: Long,
             quantity: Long,
             quantityToBeRemovedFromUsers: MutableMap<Long, MutableList<SonhosRemovalData>>,

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.dv8tion.jda.api.OnlineStatus
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
@@ -440,13 +440,13 @@ object TretaNewsGenerator {
 		var avatar = LorittaUtils.downloadImage(url1)
 		var avatar2 = LorittaUtils.downloadImage(url2)
 
-		var tretaCheck = ImageIO.read(File(Loritta.ASSETS + "tretacheck.png"))
+		var tretaCheck = ImageIO.read(File(LorittaBot.ASSETS + "tretacheck.png"))
 
 		val top = BufferedImage(238, 138, BufferedImage.TYPE_INT_ARGB)
 
-		var treta = ImageIO.read(File(Loritta.ASSETS + "tretasmall.png"))
+		var treta = ImageIO.read(File(LorittaBot.ASSETS + "tretasmall.png"))
 
-		var novo = ImageIO.read(File(Loritta.ASSETS + "tretanovo.png"))
+		var novo = ImageIO.read(File(LorittaBot.ASSETS + "tretanovo.png"))
 
 		val tempRI1 = avatar!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 		val tempRI2 = avatar2!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
@@ -467,7 +467,7 @@ object TretaNewsGenerator {
 		run {
 			val font = Font("Arial", Font.BOLD, 11)
             graphics.font = font
-			graphics.drawString(Loritta.RANDOM.nextInt(2, 10).toString() + ":" + Loritta.RANDOM.nextInt(10, 60), 211, 122 + font.size)
+			graphics.drawString(LorittaBot.RANDOM.nextInt(2, 10).toString() + ":" + LorittaBot.RANDOM.nextInt(10, 60), 211, 122 + font.size)
 		}
 
 		val youtube = BufferedImage(655, 138, BufferedImage.TYPE_INT_ARGB)
@@ -481,9 +481,9 @@ object TretaNewsGenerator {
 		var font = Font("Arial", Font.PLAIN, 18)
 		g2d.font = font
 
-		var t = titleBef[Loritta.RANDOM.nextInt(0, titleBef.size - 1)]
-		val `object` = objects[Loritta.RANDOM.nextInt(0, objects.size - 1)]
-		val emotion = emotions[Loritta.RANDOM.nextInt(0, emotions.size - 1)]
+		var t = titleBef[LorittaBot.RANDOM.nextInt(0, titleBef.size - 1)]
+		val `object` = objects[LorittaBot.RANDOM.nextInt(0, objects.size - 1)]
+		val emotion = emotions[LorittaBot.RANDOM.nextInt(0, emotions.size - 1)]
 		val social = social.random()
 
 		var rndYt1_1 = TretaNewsGenerator.randomYt.random()
@@ -504,10 +504,10 @@ object TretaNewsGenerator {
 		t = t.replace("{@youtuber-5}", rndYt5_1)
 		t = t.replace("{@game}", game)
 
-		if (Loritta.RANDOM.nextInt(0, 12) != 5) {
-			var t2 = titleBef[Loritta.RANDOM.nextInt(0, titleBef.size - 1)]
-			val object2 = objects[Loritta.RANDOM.nextInt(0, objects.size - 1)]
-			val emotion2 = emotions[Loritta.RANDOM.nextInt(0, emotions.size - 1)]
+		if (LorittaBot.RANDOM.nextInt(0, 12) != 5) {
+			var t2 = titleBef[LorittaBot.RANDOM.nextInt(0, titleBef.size - 1)]
+			val object2 = objects[LorittaBot.RANDOM.nextInt(0, objects.size - 1)]
+			val emotion2 = emotions[LorittaBot.RANDOM.nextInt(0, emotions.size - 1)]
 			val social2 = TretaNewsGenerator.social.random()
 
 			rndYt1_1 = randomYt.random()
@@ -554,14 +554,14 @@ object TretaNewsGenerator {
 		dfs.groupingSeparator = '.'
 		df.decimalFormatSymbols = dfs
 
-		val views = Loritta.RANDOM.nextInt(0, 1000000).toLong()
-		val texto = Loritta.RANDOM.nextInt(1, 24).toString() + " horas atrás • " + df.format(views) + " visualizações"
+		val views = LorittaBot.RANDOM.nextInt(0, 1000000).toLong()
+		val texto = LorittaBot.RANDOM.nextInt(1, 24).toString() + " horas atrás • " + df.format(views) + " visualizações"
 
 		checkY = ImageUtils.drawTextWrap(texto, 244, checkY, 655, 0, g2d.fontMetrics, g2d)
 
 		checkY += 18
 
-		var descricao = TretaNewsGenerator.randomDescriptions[Loritta.RANDOM.nextInt(0, TretaNewsGenerator.randomDescriptions.size - 1)]
+		var descricao = TretaNewsGenerator.randomDescriptions[LorittaBot.RANDOM.nextInt(0, TretaNewsGenerator.randomDescriptions.size - 1)]
 
 		if (descricao.length > 127) {
 			descricao = descricao.substring(0, 127) + "..."
@@ -573,7 +573,7 @@ object TretaNewsGenerator {
 
 		g2d.drawImage(novo, 244, checkY, null)
 
-		return GeneratedTretaNews(originalTitle, views, Loritta.RANDOM.nextInt(30000, 100000), Loritta.RANDOM.nextInt(1000, 10000), youtube)
+		return GeneratedTretaNews(originalTitle, views, LorittaBot.RANDOM.nextInt(30000, 100000), LorittaBot.RANDOM.nextInt(1000, 10000), youtube)
 	}
 
 	class GeneratedTretaNews(

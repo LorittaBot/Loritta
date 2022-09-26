@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.WebhookUtils
@@ -53,12 +53,12 @@ class FaustaoCommand : AbstractCommand("faustão", listOf("faustao"), net.perfec
 
 		val temmie = WebhookUtils.getOrCreateWebhook(context.event.channel, "Faustão")
 
-		val mensagem = frases[Loritta.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention)
+		val mensagem = frases[LorittaBot.RANDOM.nextInt(frases.size)].replace("{user}", context.userHandle.asMention)
 
 		context.sendMessage(temmie, WebhookMessageBuilder()
 				.setUsername("Faustão")
 				.setContent(mensagem)
-				.setAvatarUrl(avatars[Loritta.RANDOM.nextInt(avatars.size)])
+				.setAvatarUrl(avatars[LorittaBot.RANDOM.nextInt(avatars.size)])
 				.build())
 	}
 }

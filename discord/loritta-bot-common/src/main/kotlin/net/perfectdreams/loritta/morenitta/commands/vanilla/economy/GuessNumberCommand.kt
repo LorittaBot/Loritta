@@ -1,10 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.GACampaigns
@@ -12,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.utils.GenericReplies
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 
-class GuessNumberCommand(plugin: LorittaDiscord) : DiscordAbstractCommandBase(
+class GuessNumberCommand(plugin: LorittaBot) : DiscordAbstractCommandBase(
         plugin,
         listOf("guessnumber", "adivinharnumero", "adivinharnúmero"),
         net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
@@ -69,7 +68,7 @@ class GuessNumberCommand(plugin: LorittaDiscord) : DiscordAbstractCommandBase(
                 return@executesDiscord
             }
 
-            val randomNumber = Loritta.RANDOM.nextInt(1, 11)
+            val randomNumber = LorittaBot.RANDOM.nextInt(1, 11)
             val won = number == randomNumber
 
             if (won) {

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.minecraft
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.minecraft.MCUtils
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Graphics2D
@@ -133,7 +133,7 @@ class McMoletomCommand : AbstractCommand("mcmoletom", listOf("mcsweater"), net.p
 			val alexTestColor = Color(skin.getRGB(50, 16), true)
 			val isAlex = alexTestColor.alpha != 255
 
-			val template = if (isAlex) readImage(File(Loritta.ASSETS, "template_alex.png")) else readImage(File(Loritta.ASSETS, "template_steve.png"))
+			val template = if (isAlex) readImage(File(LorittaBot.ASSETS, "template_alex.png")) else readImage(File(LorittaBot.ASSETS, "template_steve.png"))
 			val handColor = if (isAlex) {
 				Color(skin.getRGB(48, 17), true)
 			} else {

@@ -6,24 +6,24 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.api.commands.CommandBuilder
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.api.commands.CommandBuilder
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 
 fun Any?.discordCommand(
-    loritta: LorittaDiscord,
-    labels: List<String>,
-    category: net.perfectdreams.loritta.common.commands.CommandCategory,
-    builder: DiscordCommandBuilder.() -> (Unit)
+	loritta: LorittaBot,
+	labels: List<String>,
+	category: net.perfectdreams.loritta.common.commands.CommandCategory,
+	builder: DiscordCommandBuilder.() -> (Unit)
 ) = discordCommand(loritta, this?.let { this::class.simpleName } ?: "UnknownCommand", labels, category, builder)
 
 fun discordCommand(
-    loritta: LorittaDiscord,
-    commandName: String,
-    labels: List<String>,
-    category: net.perfectdreams.loritta.common.commands.CommandCategory,
-    builder: DiscordCommandBuilder.() -> (Unit)
+	loritta: LorittaBot,
+	commandName: String,
+	labels: List<String>,
+	category: net.perfectdreams.loritta.common.commands.CommandCategory,
+	builder: DiscordCommandBuilder.() -> (Unit)
 ): DiscordCommand {
 	val b = DiscordCommandBuilder(loritta, commandName, labels, category)
 	builder.invoke(b)
@@ -31,11 +31,11 @@ fun discordCommand(
 }
 
 class DiscordCommandBuilder(
-		// Needs to be private to avoid accessing this variable on the builder itself
-		private val lorittaDiscord: LorittaDiscord,
-		commandName: String,
-		labels: List<String>,
-		category: net.perfectdreams.loritta.common.commands.CommandCategory
+	// Needs to be private to avoid accessing this variable on the builder itself
+	private val lorittaDiscord: LorittaBot,
+	commandName: String,
+	labels: List<String>,
+	category: net.perfectdreams.loritta.common.commands.CommandCategory
 ) : CommandBuilder<CommandContext>(lorittaDiscord, commandName, labels, category) {
 	var userRequiredPermissions = listOf<Permission>()
 	var botRequiredPermissions = listOf<Permission>()
@@ -70,17 +70,17 @@ class DiscordCommandBuilder(
 		}
 
 		return DiscordCommand(
-				lorittaDiscord = lorittaDiscord,
-				commandName = commandName,
-				category = category,
-				labels = labels,
-				descriptionKey = builderDescriptionKey,
-				description = descriptionCallback ?: {
-					it.get(builderDescriptionKey)
-				},
-				usage = usage,
-				examplesKey = builderExamplesKey,
-				executor = executeCallback!!
+			lorittaDiscord = lorittaDiscord,
+			commandName = commandName,
+			category = category,
+			labels = labels,
+			descriptionKey = builderDescriptionKey,
+			description = descriptionCallback ?: {
+				it.get(builderDescriptionKey)
+			},
+			usage = usage,
+			examplesKey = builderExamplesKey,
+			executor = executeCallback!!
 		).apply { build2().invoke(this) }.also {
 			it.userRequiredPermissions = userRequiredPermissions
 			it.botRequiredPermissions = botRequiredPermissions

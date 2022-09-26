@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.action
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -10,12 +10,12 @@ import net.perfectdreams.loritta.morenitta.utils.removeAllFunctions
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.Command
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.morenitta.api.commands.Command
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
@@ -27,7 +27,7 @@ import java.io.File
 typealias ActionCommandScope = ActionCommandDSL.() -> Unit
 typealias ActionCommandContext = (BaseLocale, User, User) -> String
 
-abstract class ActionCommand(loritta: LorittaDiscord, labels: List<String>): DiscordAbstractCommandBase(loritta, labels, net.perfectdreams.loritta.common.commands.CommandCategory.ACTION) {
+abstract class ActionCommand(loritta: LorittaBot, labels: List<String>): DiscordAbstractCommandBase(loritta, labels, CommandCategory.ROLEPLAY) {
 
     abstract fun create(): ActionCommandDSL
 
@@ -79,7 +79,7 @@ data class CachedGif(
 private fun getCachedGifs(dsl: ActionCommandDSL): MutableList<CachedGif> {
     val list = mutableListOf<CachedGif>()
 
-    val folder = File(Loritta.ASSETS, "actions/${dsl.folderName}")
+    val folder = File(LorittaBot.ASSETS, "actions/${dsl.folderName}")
     val folderNames = listOf(
             Constants.ACTION_GENERIC,
             Constants.ACTION_MALE_AND_FEMALE,
@@ -103,7 +103,7 @@ private fun getCachedGifs(dsl: ActionCommandDSL): MutableList<CachedGif> {
 
 private fun ActionCommandDSL.selectGifsByGender(userGender: Gender, receiverGender: Gender): List<CachedGif> {
     val folderNames = userGender.getValidActionFolderNames(receiverGender).toMutableList()
-    if (folderNames.size != 1 && Loritta.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
+    if (folderNames.size != 1 && LorittaBot.RANDOM.nextBoolean()) // Remover "generic", para evitar muitas gifs repetidas
         folderNames.remove("generic")
 
     return getCachedGifs(this).filter { folderNames.any { folderName -> folderName == it.folderName } }

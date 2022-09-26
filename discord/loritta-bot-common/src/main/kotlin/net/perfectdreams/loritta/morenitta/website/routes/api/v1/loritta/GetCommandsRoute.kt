@@ -3,13 +3,13 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 import io.ktor.server.application.*
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommand
 import net.perfectdreams.loritta.serializable.CommandInfo
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
 
-class GetCommandsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/commands/{localeId}") {
+class GetCommandsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/commands/{localeId}") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val localeId = call.parameters["localeId"] ?: return
 

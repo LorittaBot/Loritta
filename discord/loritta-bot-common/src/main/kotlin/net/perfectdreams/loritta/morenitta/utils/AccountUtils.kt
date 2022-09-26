@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Daily
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.tables.Dailies
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.and

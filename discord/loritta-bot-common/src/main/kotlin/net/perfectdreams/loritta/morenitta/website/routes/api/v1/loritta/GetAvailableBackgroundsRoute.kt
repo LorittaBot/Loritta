@@ -7,13 +7,13 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.BackgroundListResponse
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.select
 
-class GetAvailableBackgroundsRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/backgrounds") {
+class GetAvailableBackgroundsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/backgrounds") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val response = loritta.newSuspendedTransaction {
 			Backgrounds.select {

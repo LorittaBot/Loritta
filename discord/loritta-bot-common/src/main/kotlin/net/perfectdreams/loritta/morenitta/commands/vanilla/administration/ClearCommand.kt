@@ -9,10 +9,10 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.TextChannel
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.Command
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.morenitta.api.commands.Command
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class ClearCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("clean", "limpar", "clear"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("clean", "limpar", "clear"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 
     override fun command(): Command<CommandContext> = create {
         localizedDescription("commands.command.clear.description")

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images.base
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -8,10 +8,9 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.common.LorittaBot
-import net.perfectdreams.loritta.common.api.commands.Command
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.api.commands.LorittaAbstractCommandBase
+import net.perfectdreams.loritta.morenitta.api.commands.Command
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.api.commands.LorittaAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -105,7 +104,7 @@ abstract class GabrielaImageServerCommandBase(
  */
 suspend fun CommandContext.imageData(argument: Int): JsonObject? {
     val url = imageUrl(argument, 0)
-    val castedLoritta = (loritta as Loritta)
+    val castedLoritta = (loritta as LorittaBot)
 
     if (url != null && castedLoritta.connectionManager.isTrusted(url))
         return buildJsonObject {

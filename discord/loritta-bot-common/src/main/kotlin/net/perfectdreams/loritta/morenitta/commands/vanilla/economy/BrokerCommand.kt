@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 
-class BrokerCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, ALIASES, net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class BrokerCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, ALIASES, net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		val ALIASES = listOf(
 			"broker",

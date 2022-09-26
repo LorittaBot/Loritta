@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.morenitta.utils.GenericReplies
 import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 
-class EmojiFightBetCommand(val m: LorittaDiscord) : DiscordAbstractCommandBase(
+class EmojiFightBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 		m,
 		listOf("emojifight bet", "rinhadeemoji bet", "emotefight bet"),
 		net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY

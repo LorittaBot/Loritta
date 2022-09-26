@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -16,13 +16,13 @@ import java.io.FileInputStream
 
 class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 	val KOMIKA by lazy {
-		FileInputStream(File(Loritta.ASSETS + "komika.ttf")).use {
+		FileInputStream(File(LorittaBot.ASSETS + "komika.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/monica_ata/profile_wrapper.png"))
+		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/monica_ata/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -94,7 +94,7 @@ class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 		ImageUtils.drawCenteredString(graphics, "${reputations} reps", Rectangle(552, 440, 228, 54), graphics.font)
 
 		if (badges.isNotEmpty()) {
-			val badgesBackground = readImage(File(Loritta.ASSETS, "profile/monica_ata/badges.png"))
+			val badgesBackground = readImage(File(LorittaBot.ASSETS, "profile/monica_ata/badges.png"))
 			graphics.drawImage(badgesBackground, 0, 0, null)
 
 			var x = 196
@@ -105,7 +105,7 @@ class MonicaAtaProfileCreator : ProfileCreator("monicaAta") {
 		}
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = readImage(File(Loritta.ASSETS, "profile/monica_ata/marry.png"))
+			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/monica_ata/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			graphics.font = KOMIKA.deriveFont(21f)

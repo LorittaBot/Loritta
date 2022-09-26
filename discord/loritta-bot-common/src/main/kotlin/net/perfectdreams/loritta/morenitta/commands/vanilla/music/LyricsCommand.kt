@@ -9,7 +9,7 @@ import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import org.jsoup.Jsoup
@@ -220,7 +220,7 @@ class LyricsCommand : AbstractCommand("lyrics", listOf("letra", "letras"), categ
 		if (cover == null) {
 			// Baixar imagem de outras fontes
 			// Usar cover art padrão
-			cover = ImageIO.read(File(Loritta.ASSETS, "lobby_mural1.png"))
+			cover = ImageIO.read(File(LorittaBot.ASSETS, "lobby_mural1.png"))
 		}
 
 		return cover!!

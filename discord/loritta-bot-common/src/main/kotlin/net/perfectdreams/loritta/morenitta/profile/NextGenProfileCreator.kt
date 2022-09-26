@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -13,12 +13,12 @@ import java.io.FileInputStream
 
 class NextGenProfileCreator : ProfileCreator("nextGenDark") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/next_gen/profile_wrapper.png"))
+		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/next_gen/profile_wrapper.png"))
 
-		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
+		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneyBold = FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)

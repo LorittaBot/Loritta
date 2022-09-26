@@ -8,10 +8,10 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.sequins.ktor.BaseRoute
 
-class AdsTxtRoute(private val loritta: LorittaDiscord) : BaseRoute("/ads.txt") {
+class AdsTxtRoute(private val loritta: LorittaBot) : BaseRoute("/ads.txt") {
     override suspend fun onRequest(call: ApplicationCall) {
         if (System.currentTimeMillis() - lastJoinedCachedAds >= 900_000) {
             // Check again

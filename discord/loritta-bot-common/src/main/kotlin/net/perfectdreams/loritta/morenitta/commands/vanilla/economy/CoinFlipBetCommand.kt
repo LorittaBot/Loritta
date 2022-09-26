@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.CaraCoroaCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -14,13 +13,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.AccountUtils
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -37,7 +36,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
 
-class CoinFlipBetCommand(val m: LorittaDiscord) : DiscordAbstractCommandBase(
+class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 	m,
 	listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
 		.flatMap { listOf("$it bet", "$it apostar") },
@@ -235,7 +234,7 @@ class CoinFlipBetCommand(val m: LorittaDiscord) : DiscordAbstractCommandBase(
 										if (number > invitedUserProfile.money)
 											return@withLock
 
-										val isTails = Loritta.RANDOM.nextBoolean()
+										val isTails = LorittaBot.RANDOM.nextBoolean()
 										val prefix: String
 										val message: String
 

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.modules
 
-import net.perfectdreams.loritta.morenitta.Loritta.Companion.RANDOM
+import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.TioDoPaveCommand
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig

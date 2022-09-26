@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.time.Instant
 
 object DonateUtils {

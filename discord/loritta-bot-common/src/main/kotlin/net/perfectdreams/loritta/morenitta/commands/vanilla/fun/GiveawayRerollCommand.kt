@@ -5,16 +5,16 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
 
-class GiveawayRerollCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway reroll", "sorteio reroll"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class GiveawayRerollCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("giveaway reroll", "sorteio reroll"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command"
 	}

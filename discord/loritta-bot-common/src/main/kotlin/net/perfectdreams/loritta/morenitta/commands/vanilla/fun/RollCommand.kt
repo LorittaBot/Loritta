@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.commands.vanilla.utils.CalculadoraCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.remove
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.CommandArguments
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandArguments
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
@@ -74,7 +74,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), net
 				if (context.args.size >= 2) {
 					expression = context.args.remove(0).joinToString(" ")
 					try {
-						MathUtils.evaluate(Loritta.RANDOM.nextLong(lowerBound, upperBound + 1).toString() + expression).toInt().toString()
+						MathUtils.evaluate(LorittaBot.RANDOM.nextLong(lowerBound, upperBound + 1).toString() + expression).toInt().toString()
 					} catch (ex: RuntimeException) {
 						context.reply(
                                 LorittaReply(
@@ -118,7 +118,7 @@ class RollCommand : AbstractCommand("roll", listOf("rolar", "dice", "dado"), net
 
 		var response = ""
 		for (i in 1..quantity) {
-			val rolledSide = Loritta.RANDOM.nextLong(lowerBound, upperBound + 1)
+			val rolledSide = LorittaBot.RANDOM.nextLong(lowerBound, upperBound + 1)
 			rolledSides.add(rolledSide)
 		}
 

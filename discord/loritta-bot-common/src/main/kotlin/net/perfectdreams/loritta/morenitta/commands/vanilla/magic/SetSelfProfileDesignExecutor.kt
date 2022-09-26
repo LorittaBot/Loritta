@@ -2,8 +2,8 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.network.Databases
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import org.jetbrains.exposed.sql.transactions.transaction
 

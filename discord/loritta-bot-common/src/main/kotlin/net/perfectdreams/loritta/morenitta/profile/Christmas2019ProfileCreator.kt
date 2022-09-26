@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
@@ -26,10 +26,10 @@ import java.io.FileInputStream
 
 class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
+		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneyBold = FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 
@@ -43,7 +43,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 				.deriveFont(42F)
 
 		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
-		val marrySection = readImage(File(Loritta.ASSETS, "profile/christmas_2019/marry.png"))
+		val marrySection = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/marry.png"))
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
@@ -73,7 +73,7 @@ class Christmas2019ProfileCreator : ProfileCreator("christmas2019") {
 
 		val resizedBadges = badges.map { it.getScaledInstance(30, 30, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 
-		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/christmas_2019/perfil_padoru.png"))
+		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/perfil_padoru.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()

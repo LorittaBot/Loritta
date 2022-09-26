@@ -6,11 +6,11 @@ import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.response.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.sequins.ktor.BaseRoute
 
-class GetPubSubHubbubCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/pubsubhubbub") {
+class GetPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/pubsubhubbub") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

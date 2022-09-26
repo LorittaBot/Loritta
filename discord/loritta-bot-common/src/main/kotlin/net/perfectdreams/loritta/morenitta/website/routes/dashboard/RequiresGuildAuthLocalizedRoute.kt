@@ -14,7 +14,7 @@ import io.ktor.server.response.*
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
@@ -24,7 +24,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaDiscord, originalDashboardPath: String) : RequiresDiscordLoginLocalizedRoute(loritta, "/guild/{guildId}$originalDashboardPath") {
+abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDashboardPath: String) : RequiresDiscordLoginLocalizedRoute(loritta, "/guild/{guildId}$originalDashboardPath") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

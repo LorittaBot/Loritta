@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 
 /**
  * Class used for building styled replies with DSL to make creating

@@ -5,15 +5,15 @@ import net.perfectdreams.loritta.morenitta.tables.Warns
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.Emotes
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 
-class UnwarnCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("unwarn", "desavisar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class UnwarnCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("unwarn", "desavisar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
     companion object {
         const val LOCALE_PREFIX = "commands.command.unwarn"
     }

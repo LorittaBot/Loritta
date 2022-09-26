@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks
 
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.common.cache.CacheBuilder
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
 import net.perfectdreams.loritta.morenitta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
@@ -38,7 +37,7 @@ import java.util.concurrent.TimeUnit
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
-class PostPubSubHubbubCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/pubsubhubbub") {
+class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/pubsubhubbub") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		private val streamingSince = CacheBuilder.newBuilder()
@@ -48,7 +47,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/a
 	}
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as Loritta
+		loritta as LorittaBot
 		val response = withContext(Dispatchers.IO) {
 			call.receiveStream().bufferedReader(charset = Charsets.UTF_8).readText()
 		}

@@ -14,11 +14,11 @@ import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class PostSearchUsersRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/users/search") {
+class PostSearchUsersRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/users/search") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 		val isRegexPattern = json["isRegExPattern"].nullBool ?: false

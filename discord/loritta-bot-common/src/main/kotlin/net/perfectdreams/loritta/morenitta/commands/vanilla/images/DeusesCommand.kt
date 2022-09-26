@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -8,8 +8,8 @@ import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
 import java.awt.Color
 import java.awt.Font
 import java.awt.image.BufferedImage
@@ -43,7 +43,7 @@ class DeusesCommand : AbstractCommand("deuses", category = net.perfectdreams.lor
 			graphics.color = Color.BLACK
 			graphics.drawImage(TEMPLATE, 0, 200, null)
 
-			val font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(42F)
+			val font = Font.createFont(0, File(LorittaBot.ASSETS + "mavenpro-bold.ttf")).deriveFont(42F)
 			graphics.font = font
 			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 630, 9999, graphics.fontMetrics, graphics)
 

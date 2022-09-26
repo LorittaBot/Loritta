@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import io.mockk.every
 import io.mockk.mockk
 import net.dv8tion.jda.api.entities.User

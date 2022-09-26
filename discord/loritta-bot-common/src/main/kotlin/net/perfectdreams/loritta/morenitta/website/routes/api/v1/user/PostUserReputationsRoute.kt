@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.Reputation
 import net.perfectdreams.loritta.morenitta.tables.Reputations
@@ -35,8 +34,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -50,7 +49,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 
-class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
+class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/{userId}/reputation") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		private val mutex = Mutex()
@@ -197,7 +196,7 @@ class PostUserReputationsRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLogi
 
 			if (chance(randomChance)) { // Lori é fofis e retribuiu reputações :eu_te_moido:
 				GlobalScope.launch(net.perfectdreams.loritta.morenitta.utils.loritta.coroutineDispatcher) {
-					delay(Loritta.RANDOM.nextLong(8000, 15001)) // Delay aleatório para ficar mais "real"
+					delay(LorittaBot.RANDOM.nextLong(8000, 15001)) // Delay aleatório para ficar mais "real"
 
 					giveReputation(
 							loritta.discordConfig.discord.clientId.toLong(),

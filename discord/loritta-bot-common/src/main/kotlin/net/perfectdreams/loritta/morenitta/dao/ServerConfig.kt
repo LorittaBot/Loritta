@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.dao
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
@@ -161,7 +161,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	/**
 	 * Gets or retrieves from the database the object you've requested
 	 */
-	suspend fun <T> getCachedOrRetreiveFromDatabaseAsync(loritta: Loritta, property: KMutableProperty1<ServerConfig, *>): T {
+	suspend fun <T> getCachedOrRetreiveFromDatabaseAsync(loritta: LorittaBot, property: KMutableProperty1<ServerConfig, *>): T {
 		if (!cachedData.containsKey(property)) {
 			val databaseObject = loritta.newSuspendedTransaction {
 				property.call(this@ServerConfig)
@@ -175,7 +175,7 @@ class ServerConfig(id: EntityID<Long>) : Entity<Long>(id) {
 	/**
 	 * Gets or retrieves from the database the object you've requested
 	 */
-	suspend fun <T> getCachedOrRetreiveFromDatabaseDeferred(loritta: Loritta, property: KMutableProperty1<ServerConfig, *>): Deferred<T> {
+	suspend fun <T> getCachedOrRetreiveFromDatabaseDeferred(loritta: LorittaBot, property: KMutableProperty1<ServerConfig, *>): Deferred<T> {
 		if (!cachedData.containsKey(property)) {
 			val job = loritta.suspendedTransactionAsync {
 				val result = property.call(this@ServerConfig)

@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.modules.AutomodModule
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 
 class AntiRaidCommand : AbstractCommand("antiraid", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {

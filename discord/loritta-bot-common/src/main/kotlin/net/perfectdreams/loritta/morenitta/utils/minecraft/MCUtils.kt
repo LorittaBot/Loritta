@@ -5,7 +5,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta.Companion.GSON
+import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.GSON
 import net.perfectdreams.loritta.morenitta.utils.extensions.success
 import java.util.*
 import java.util.concurrent.TimeUnit

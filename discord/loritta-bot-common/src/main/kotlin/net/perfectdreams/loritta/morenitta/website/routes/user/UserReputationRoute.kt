@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.website.routes.user
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.dao.Reputation
 import net.perfectdreams.loritta.morenitta.tables.Reputations
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -8,7 +7,7 @@ import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
@@ -18,7 +17,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.or
 
-class UserReputationRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/{userId}/rep") {
+class UserReputationRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/{userId}/rep") {
 	override suspend fun onUnauthenticatedRequest(call: ApplicationCall, locale: BaseLocale) {
 		if (call.request.header("User-Agent") == Constants.DISCORD_CRAWLER_USER_AGENT) {
 			createReputationPage(call, locale, null, null)
@@ -33,7 +32,7 @@ class UserReputationRoute(loritta: LorittaDiscord) : RequiresDiscordLoginLocaliz
 	}
 
 	suspend fun createReputationPage(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth?, userIdentification: LorittaJsonWebSession.UserIdentification?) {
-		loritta as Loritta
+		loritta as LorittaBot
 		val userId = call.parameters["userId"] ?: return
 
 		val user = lorittaShards.retrieveUserById(userId)!!

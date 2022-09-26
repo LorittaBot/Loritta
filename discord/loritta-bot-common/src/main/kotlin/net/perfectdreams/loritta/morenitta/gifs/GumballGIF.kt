@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.gifs
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
@@ -19,11 +19,11 @@ object GumballGIF {
 		toUse.graphics.drawImage(_toUse, 0, 0, null)
 		toUse.graphics.dispose()
 
-		var fileName = Loritta.TEMP + "gumball-" + System.currentTimeMillis() + ".gif"
+		var fileName = LorittaBot.TEMP + "gumball-" + System.currentTimeMillis() + ".gif"
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 12, true)
 
-		val gumballHand = readImage(File(Loritta.ASSETS + "gumball/gumball_hand.png"))
+		val gumballHand = readImage(File(LorittaBot.ASSETS + "gumball/gumball_hand.png"))
 		val paper = LorittaImage(toUse)
 		paper.resize(400, 280)
 		paper.setCorners(
@@ -42,9 +42,9 @@ object GumballGIF {
 		var font = toUse.graphics.font.deriveFont(Font.BOLD, 14f)
 
 		for (i in 0..49) {
-			val file = File(Loritta.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png")
+			val file = File(LorittaBot.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
-				var ogImage = readImage(File(Loritta.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png"))
+				var ogImage = readImage(File(LorittaBot.ASSETS + "gumball/gumball_${i.toString().padStart(6, '0')}.png"))
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 				val graphics = image.graphics.enableFontAntiAliasing()
 

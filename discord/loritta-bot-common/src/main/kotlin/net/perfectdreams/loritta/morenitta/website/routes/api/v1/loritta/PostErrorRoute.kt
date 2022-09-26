@@ -10,13 +10,13 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receiveText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.SpicyStacktraces
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import org.jetbrains.exposed.sql.insertAndGetId
 
-class PostErrorRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/loritta/error/{type}") {
+class PostErrorRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/error/{type}") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val body = withContext(Dispatchers.IO) { call.receiveText() }
 		val type = call.parameters["type"]

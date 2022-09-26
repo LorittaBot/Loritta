@@ -4,7 +4,7 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.TimeUnit
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 /**
  * Used to manage ratelimits for commands.
  */
-class CommandCooldownManager(val loritta: LorittaDiscord) {
+class CommandCooldownManager(val loritta: LorittaBot) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

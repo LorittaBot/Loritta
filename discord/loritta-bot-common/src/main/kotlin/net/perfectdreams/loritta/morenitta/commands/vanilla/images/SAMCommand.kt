@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.common.utils.image.Image
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.base.ImageAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import kotlin.math.max
 
-class SAMCommand(m: LorittaDiscord) : ImageAbstractCommandBase(
+class SAMCommand(m: LorittaBot) : ImageAbstractCommandBase(
 		m,
 		listOf("sam", "southamericamemes")
 ) {

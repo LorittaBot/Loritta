@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.AuditLog
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
@@ -16,7 +16,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 
-class GetGuildWebAuditLogRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/audit-log") {
+class GetGuildWebAuditLogRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(loritta, "/audit-log") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		val guildId = guild.idLong
 

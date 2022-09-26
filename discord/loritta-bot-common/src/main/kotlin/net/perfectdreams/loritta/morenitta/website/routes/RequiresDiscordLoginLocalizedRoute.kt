@@ -5,7 +5,6 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.set
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
@@ -17,7 +16,7 @@ import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
@@ -35,7 +34,7 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
 import java.util.*
 
-abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path: String) : LocalizedRoute(loritta, path) {
+abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: String) : LocalizedRoute(loritta, path) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -43,7 +42,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaDiscord, path:
 	abstract suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification)
 
 	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
-		loritta as Loritta
+		loritta as LorittaBot
 
 		if (call.request.path().endsWith("/dashboard")) {
 			val hostHeader = call.request.hostFromHeader()

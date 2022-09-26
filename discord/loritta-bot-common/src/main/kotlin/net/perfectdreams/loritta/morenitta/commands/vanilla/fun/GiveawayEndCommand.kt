@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.jetbrains.exposed.sql.and
 
-class GiveawayEndCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("giveaway end", "sorteio end"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class GiveawayEndCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("giveaway end", "sorteio end"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command"
 	}

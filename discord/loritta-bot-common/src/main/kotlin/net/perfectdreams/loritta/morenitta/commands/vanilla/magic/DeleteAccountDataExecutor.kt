@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostDeleteDataRoute
 
 object DeleteAccountDataExecutor : LoriToolsCommand.LoriToolsExecutor {
@@ -13,10 +13,7 @@ object DeleteAccountDataExecutor : LoriToolsCommand.LoriToolsExecutor {
 			return@task false
 		val userId = args[1].toLong()
 
-		PostDeleteDataRoute.deleteAccountData(
-				loritta as LorittaDiscord,
-				userId
-		)
+		PostDeleteDataRoute.deleteAccountData(loritta, userId)
 
 		reply(
 				LorittaReply(

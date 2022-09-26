@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -8,8 +8,8 @@ import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -35,7 +35,7 @@ class LavaReversoCommand : AbstractCommand("lavareverse", listOf("lavareverso", 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
 			val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-			val template = readImage(File(Loritta.ASSETS + "lavareverso.png")) // Template
+			val template = readImage(File(LorittaBot.ASSETS + "lavareverso.png")) // Template
 
 			context.rawArgs = context.rawArgs.sliceArray(1..context.rawArgs.size - 1)
 
@@ -73,7 +73,7 @@ class LavaReversoCommand : AbstractCommand("lavareverse", listOf("lavareverso", 
 			graphics.color = Color.BLACK
 			graphics.drawImage(template, 0, 100, null)
 
-			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(32F)
+			var font = Font.createFont(0, File(LorittaBot.ASSETS + "mavenpro-bold.ttf")).deriveFont(32F)
 			graphics.font = font
 			ImageUtils.drawCenteredString(graphics, "O chão " + (if (singular) "é" else "são") + " $joined", Rectangle(2, 2, 693, 100), font)
 

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -13,12 +13,12 @@ import java.io.FileInputStream
 
 class CowboyProfileCreator : ProfileCreator("cowboy") {
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = readImage(File(Loritta.ASSETS, "profile/cowboy/profile_wrapper.png"))
+		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/cowboy/profile_wrapper.png"))
 
-		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
+		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneyBold = FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
@@ -34,7 +34,7 @@ class CowboyProfileCreator : ProfileCreator("cowboy") {
 		drawAvatar(avatar, graphics)
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = readImage(File(Loritta.ASSETS, "profile/cowboy/marry.png"))
+			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/cowboy/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)

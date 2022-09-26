@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -34,7 +34,7 @@ class GangueCommand : AbstractCommand("gang", listOf("gangue"), net.perfectdream
 		val contextImage3 = context.getImageAt(2) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage4 = context.getImageAt(3) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val contextImage5 = context.getImageAt(4) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val template = readImage(File(Loritta.ASSETS + "cocielo/cocielo.png"))
+		val template = readImage(File(LorittaBot.ASSETS + "cocielo/cocielo.png"))
 
 		val scaled = contextImage.getScaledInstance(59, 59, BufferedImage.SCALE_SMOOTH)
 				.toBufferedImage()

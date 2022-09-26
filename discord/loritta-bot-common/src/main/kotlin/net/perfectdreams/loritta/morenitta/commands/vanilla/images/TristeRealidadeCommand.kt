@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -9,10 +8,10 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.morenitta.utils.locale.PersonalPronoun
-import net.perfectdreams.loritta.common.api.commands.CommandException
-import net.perfectdreams.loritta.common.api.entities.User
+import net.perfectdreams.loritta.morenitta.api.commands.CommandException
+import net.perfectdreams.loritta.morenitta.api.entities.User
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordUser
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
@@ -22,7 +21,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.*
 import java.awt.image.BufferedImage
 
-class TristeRealidadeCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("sadreality", "tristerealidade"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("sadreality", "tristerealidade"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }
@@ -63,7 +62,7 @@ class TristeRealidadeCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBa
 
             while (6 > users.size) {
                 val member = if (members.isNotEmpty()) {
-                    members[Loritta.RANDOM.nextInt(members.size)]
+                    members[LorittaBot.RANDOM.nextInt(members.size)]
                 } else {
                     throw CommandException("Não existem membros suficientes para fazer uma triste realidade, sorry ;w;", Constants.ERROR)
                 }

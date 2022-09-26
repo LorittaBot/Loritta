@@ -7,7 +7,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.putJsonArray
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.base.imageData
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
-class CocieloChavesCommand(m: LorittaDiscord) : DiscordAbstractCommandBase(
+class CocieloChavesCommand(m: LorittaBot) : DiscordAbstractCommandBase(
 	m,
 	listOf("cocielochaves"),
 	net.perfectdreams.loritta.common.commands.CommandCategory.VIDEOS

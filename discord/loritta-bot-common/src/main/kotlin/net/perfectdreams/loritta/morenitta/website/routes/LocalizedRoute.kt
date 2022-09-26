@@ -3,11 +3,11 @@ package net.perfectdreams.loritta.morenitta.website.routes
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
 import net.perfectdreams.sequins.ktor.BaseRoute
 
-abstract class LocalizedRoute(val loritta: LorittaDiscord, val originalPath: String) : BaseRoute("/{localeId}$originalPath") {
+abstract class LocalizedRoute(val loritta: LorittaBot, val originalPath: String) : BaseRoute("/{localeId}$originalPath") {
 	open val isMainClusterOnlyRoute = false
 
 	override suspend fun onRequest(call: ApplicationCall) {

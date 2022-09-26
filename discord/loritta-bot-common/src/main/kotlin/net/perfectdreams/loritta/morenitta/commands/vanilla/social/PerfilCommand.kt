@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.nullArray
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -22,9 +22,9 @@ import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
@@ -118,31 +118,31 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdr
 				loritta.profileDesignManager.badges.filter { it.checkIfUserDeservesBadge(user, profile, mutualGuilds) }
 					.sortedByDescending { it.priority }
 					.map {
-						readImage(File(Loritta.ASSETS, it.badgeFileName))
+						readImage(File(LorittaBot.ASSETS, it.badgeFileName))
 					}
 			)
 
-			if (isLoriBodyguard) badges += ImageIO.read(File(Loritta.ASSETS + "supervisor.png"))
-			if (isPocketDreamsStaff) badges += ImageIO.read(File(Loritta.ASSETS + "pocketdreams_staff.png"))
-			if (isLoriSupport) badges += ImageIO.read(File(Loritta.ASSETS + "support.png"))
-			if (hasLoriStickerArt) badges += ImageIO.read(File(Loritta.ASSETS + "sticker_badge.png"))
+			if (isLoriBodyguard) badges += ImageIO.read(File(LorittaBot.ASSETS + "supervisor.png"))
+			if (isPocketDreamsStaff) badges += ImageIO.read(File(LorittaBot.ASSETS + "pocketdreams_staff.png"))
+			if (isLoriSupport) badges += ImageIO.read(File(LorittaBot.ASSETS + "support.png"))
+			if (hasLoriStickerArt) badges += ImageIO.read(File(LorittaBot.ASSETS + "sticker_badge.png"))
 
 			val money = loritta.getActiveMoneyFromDonationsAsync(user.idLong)
 
 			if (money != 0.0) {
-				badges += ImageIO.read(File(Loritta.ASSETS + "donator.png"))
+				badges += ImageIO.read(File(LorittaBot.ASSETS + "donator.png"))
 
 				if (money >= 99.99) {
-					badges += ImageIO.read(File(Loritta.ASSETS + "super_donator.png"))
+					badges += ImageIO.read(File(LorittaBot.ASSETS + "super_donator.png"))
 				}
 			}
 
-			if (isLorittaPartner) badges += ImageIO.read(File(Loritta.ASSETS + "lori_hype.png"))
-			if (isTranslator) badges += ImageIO.read(File(Loritta.ASSETS + "translator.png"))
-			if (isGitHubContributor) badges += ImageIO.read(File(Loritta.ASSETS + "github_contributor.png"))
+			if (isLorittaPartner) badges += ImageIO.read(File(LorittaBot.ASSETS + "lori_hype.png"))
+			if (isTranslator) badges += ImageIO.read(File(LorittaBot.ASSETS + "translator.png"))
+			if (isGitHubContributor) badges += ImageIO.read(File(LorittaBot.ASSETS + "github_contributor.png"))
 
 			if (user.idLong == 249508932861558785L || user.idLong == 336892460280315905L)
-				badges += ImageIO.read(File(Loritta.ASSETS + "loritta_sweater.png"))
+				badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_sweater.png"))
 
 			val dssNamespace = loritta.dreamStorageService.getCachedNamespaceOrRetrieve()
 
@@ -169,17 +169,17 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdr
 				}
 			}
 
-			if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
-			if (user.id == loritta.discordConfig.discord.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
-			if (user.isBot) badges += ImageIO.read(File(Loritta.ASSETS + "robot_badge.png"))
+			if (hasNotifyMeRole) badges += ImageIO.read(File(LorittaBot.ASSETS + "notify_me.png"))
+			if (user.id == loritta.discordConfig.discord.clientId) badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_badge.png"))
+			if (user.isBot) badges += ImageIO.read(File(LorittaBot.ASSETS + "robot_badge.png"))
 			val marriage = loritta.newSuspendedTransaction { profile.marriage }
 			if (marriage != null) {
 				if (System.currentTimeMillis() - marriage.marriedSince > 2_592_000_000) {
-					badges += ImageIO.read(File(Loritta.ASSETS + "blob_snuggle.png"))
+					badges += ImageIO.read(File(LorittaBot.ASSETS + "blob_snuggle.png"))
 				}
-				badges += ImageIO.read(File(Loritta.ASSETS + "ring.png"))
+				badges += ImageIO.read(File(LorittaBot.ASSETS + "ring.png"))
 			}
-			if (hasUpvoted) badges += ImageIO.read(File(Loritta.ASSETS + "upvoted_badge.png"))
+			if (hasUpvoted) badges += ImageIO.read(File(LorittaBot.ASSETS + "upvoted_badge.png"))
 
 			return badges
 		}
@@ -292,7 +292,7 @@ class PerfilCommand : AbstractCommand("profile", listOf("perfil"), net.perfectdr
 			context.sendFile(images.first(), "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["commands.command.profile.profile"]) // E agora envie o arquivo
 		} else {
 			// Montar a GIF
-			val fileName = Loritta.TEMP + "profile-" + System.currentTimeMillis() + ".gif"
+			val fileName = LorittaBot.TEMP + "profile-" + System.currentTimeMillis() + ".gif"
 
 			val output = FileImageOutputStream(File(fileName))
 			val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)

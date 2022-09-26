@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundWithVariations
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.DailyShopBackgroundEntry
 import net.perfectdreams.loritta.serializable.DailyShopResult
 import net.perfectdreams.loritta.morenitta.tables.DailyProfileShopItems
@@ -20,7 +20,7 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 
-class GetDailyShopRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/economy/daily-shop") {
+class GetDailyShopRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/economy/daily-shop") {
 	override suspend fun onRequest(call: ApplicationCall) {
 		val generatedAt: Long?
 

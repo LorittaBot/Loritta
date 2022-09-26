@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.gifs.GifSequenceWriter
@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MiscUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -30,7 +30,7 @@ class TriggeredCommand : AbstractCommand("triggered", category = net.perfectdrea
 
 		val input = contextImage
 
-		val triggeredLabel = readImage(File(Loritta.ASSETS, "triggered.png"))
+		val triggeredLabel = readImage(File(LorittaBot.ASSETS, "triggered.png"))
 		// scale
 
 		val subtractW = input.width / 16
@@ -54,15 +54,15 @@ class TriggeredCommand : AbstractCommand("triggered", category = net.perfectdrea
 		tintGraphics.color = color
 		tintGraphics.fillRect(0, 0, tint.width, tint.height)
 
-		var fileName = Loritta.TEMP + "triggered-" + System.currentTimeMillis() + ".gif"
+		var fileName = LorittaBot.TEMP + "triggered-" + System.currentTimeMillis() + ".gif"
 		val outputFile = File(fileName)
 		var output = FileImageOutputStream(outputFile)
 
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 4, true)
 
 		for (i in 0..5) {
-			var offsetX = Loritta.RANDOM.nextInt(0, subtractW)
-			var offsetY = Loritta.RANDOM.nextInt(0, subtractH)
+			var offsetX = LorittaBot.RANDOM.nextInt(0, subtractW)
+			var offsetY = LorittaBot.RANDOM.nextInt(0, subtractH)
 
 			val subimage = input.getSubimage(offsetX, offsetY, inputWidth, inputHeight)
 

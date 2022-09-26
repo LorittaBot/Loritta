@@ -7,6 +7,7 @@ import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
+import net.perfectdreams.loritta.common.commands.CommandCategory
 
 // ===[ SLASH COMMANDS ]===
 fun slashCommand(

@@ -14,13 +14,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.WebsiteVoteSource
 import net.perfectdreams.loritta.morenitta.utils.WebsiteVoteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.sequins.ktor.BaseRoute
 
-class PostDiscordBotsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/discord-bots") {
+class PostDiscordBotsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/discord-bots") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

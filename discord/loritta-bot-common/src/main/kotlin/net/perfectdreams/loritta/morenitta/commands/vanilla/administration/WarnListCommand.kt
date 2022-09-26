@@ -11,9 +11,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.CommandArguments
-import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.CommandArguments
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 

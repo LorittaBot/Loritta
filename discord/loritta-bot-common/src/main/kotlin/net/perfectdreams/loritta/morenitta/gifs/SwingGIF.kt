@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.gifs
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.image.BufferedImage
@@ -9,7 +9,7 @@ import javax.imageio.stream.FileImageOutputStream
 
 object SwingGIF {
 	suspend fun getGIF(_toUse1: BufferedImage, _toUse2: BufferedImage): File {
-		var fileName = Loritta.TEMP + "swing-" + System.currentTimeMillis() + ".gif"
+		var fileName = LorittaBot.TEMP + "swing-" + System.currentTimeMillis() + ".gif"
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 6, true)
 
@@ -24,7 +24,7 @@ object SwingGIF {
 		val pipimi = _pipimi.bufferedImage
 
 		for (i in 0..54) {
-			val file = File(Loritta.ASSETS + "swing/swing_${i.toString().padStart(6, '0')}.png")
+			val file = File(LorittaBot.ASSETS + "swing/swing_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
 				var ogImage = readImage(file)
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)

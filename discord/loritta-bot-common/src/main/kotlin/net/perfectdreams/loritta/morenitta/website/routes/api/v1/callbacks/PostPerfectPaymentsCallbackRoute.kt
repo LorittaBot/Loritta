@@ -8,7 +8,6 @@ import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
@@ -27,7 +26,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.Payment
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.morenitta.tables.SonhosBundles
@@ -48,7 +47,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 import kotlin.collections.set
 
-class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/callbacks/perfect-payments") {
+class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/perfect-payments") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 
@@ -75,7 +74,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 			}
 		}
 
-		private suspend fun retrieveSonhosBundleFromMetadata(loritta: LorittaDiscord, metadata: JsonObject): ResultRow? {
+		private suspend fun retrieveSonhosBundleFromMetadata(loritta: LorittaBot, metadata: JsonObject): ResultRow? {
 			val metadataAsObj = metadata.obj
 
 			val bundleType = metadataAsObj["bundleType"].nullString
@@ -111,7 +110,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaDiscord) : BaseRoute(
 	private val jobs = ConcurrentHashMap<Long, Job>()
 
 	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as Loritta
+		loritta as LorittaBot
 		val sellerTokenHeader = call.request.header("Authorization")
 
 		if (sellerTokenHeader == null || loritta.config.perfectPayments.notificationToken != sellerTokenHeader) {

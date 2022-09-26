@@ -19,7 +19,7 @@ import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ActionType
 import net.perfectdreams.loritta.morenitta.utils.auditlog.WebAuditLogUtils
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
@@ -29,7 +29,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.config.types.ConfigTran
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class PatchServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/config") {
+class PatchServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(loritta, "/config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val type = payload["type"].string

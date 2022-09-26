@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.utils
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -21,7 +21,7 @@ class EscolherCommand : AbstractCommand("choose", listOf("escolher"), category =
 			val split = joined.split(",").map { it.trim() } // E vamos separar!
 
 			// Hora de escolher algo aleatório!
-			val chosen = split[Loritta.RANDOM.nextInt(split.size)]
+			val chosen = split[LorittaBot.RANDOM.nextInt(split.size)]
 			context.reply(
                     LorittaReply(
                             message = context.locale["commands.command.choose.result", chosen],

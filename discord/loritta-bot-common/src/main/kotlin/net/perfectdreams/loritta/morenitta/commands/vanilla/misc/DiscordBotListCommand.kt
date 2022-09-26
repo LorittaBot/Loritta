@@ -2,11 +2,11 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.misc
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.Emotes
 
-class DiscordBotListCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("dbl", "upvote"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class DiscordBotListCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("dbl", "upvote"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.dbl"
     }

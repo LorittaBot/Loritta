@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
@@ -27,8 +27,8 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 	}
 
 	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		val profileWrapper = readImage(File(Loritta.ASSETS, "profile_wrapper_v4.png"))
-		val profileWrapperOverlay = readImage(File(Loritta.ASSETS, "profile_wrapper_v4_overlay.png"))
+		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile_wrapper_v4.png"))
+		val profileWrapperOverlay = readImage(File(LorittaBot.ASSETS, "profile_wrapper_v4_overlay.png"))
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
@@ -39,13 +39,13 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 		graphics.drawImage(profileWrapper, 0, 0, null)
 		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(115), 6, 6, null)
 
-		val whitneyMedium = FileInputStream(File(Loritta.ASSETS + "whitney-medium.ttf")).use {
+		val whitneyMedium = FileInputStream(File(LorittaBot.ASSETS + "whitney-medium.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
+		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneyBold = FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 
@@ -119,7 +119,7 @@ class DefaultProfileCreator : ProfileCreator("modernBlurple") {
 			drawSection(graphics, whitneyBold20, whitneySemiBold20, locale["economy.currency.name.plural"], "${userProfile.money}", 562, 492)
 
 		ProfileUtils.getMarriageInfo(userProfile)?.let { (marriage, marriedWith) ->
-			val marrySection = readImage(File(Loritta.ASSETS, "profile/modern/marry.png"))
+			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/modern/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			drawSection(graphics, whitneyBold20, whitneySemiBold20, locale["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)

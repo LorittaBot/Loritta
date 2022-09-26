@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.set
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonObject
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -193,7 +193,7 @@ object WebsiteUtils {
 		val correctUrl = LorittaWebsite.WEBSITE_URL.replace("https://", "https://$languageCode.")
 		variables["currentUrl"] = correctUrl + req.path().substring(1)
 
-		variables["localeAsJson"] = Loritta.GSON.toJson(legacyLocale.strings)
+		variables["localeAsJson"] = LorittaBot.GSON.toJson(legacyLocale.strings)
 		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
 		variables["locale"] = locale
 

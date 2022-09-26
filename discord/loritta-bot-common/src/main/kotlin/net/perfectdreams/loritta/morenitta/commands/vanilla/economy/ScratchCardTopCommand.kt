@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Raspadinhas
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.network.Databases
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 import org.jetbrains.exposed.sql.transactions.transaction
 
-class ScratchCardTopCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("scratchcard top", "raspadinha top"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("scratchcard top", "raspadinha top"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command"
 	}

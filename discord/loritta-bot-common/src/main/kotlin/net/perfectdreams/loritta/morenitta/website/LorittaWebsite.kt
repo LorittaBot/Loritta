@@ -6,7 +6,7 @@ import com.mitchellbosecke.pebble.attributes.methodaccess.NoOpMethodAccessValida
 import com.mitchellbosecke.pebble.cache.tag.CaffeineTagCache
 import com.mitchellbosecke.pebble.cache.template.CaffeineTemplateCache
 import com.mitchellbosecke.pebble.loader.FileLoader
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.loritta
 import io.ktor.server.application.*
 import io.ktor.http.*
@@ -53,9 +53,9 @@ import java.util.concurrent.TimeUnit
  * This is used as a "hack" until the new website is done
  */
 class LorittaWebsite(
-	val loritta: Loritta,
-	val websiteUrl: String,
-	var frontendFolder: String
+    val loritta: LorittaBot,
+    val websiteUrl: String,
+    var frontendFolder: String
 ) {
 	companion object {
 		lateinit var INSTANCE: LorittaWebsite

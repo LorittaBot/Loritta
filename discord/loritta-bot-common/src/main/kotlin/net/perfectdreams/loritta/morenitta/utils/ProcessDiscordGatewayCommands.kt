@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import mu.KotlinLogging
 import net.dv8tion.jda.api.utils.data.DataObject
 import net.dv8tion.jda.internal.JDAImpl
@@ -11,7 +11,7 @@ import redis.clients.jedis.exceptions.JedisException
 import redis.clients.jedis.util.KeyValue
 
 class ProcessDiscordGatewayCommands(
-    private val loritta: Loritta,
+    private val loritta: LorittaBot,
     private val jedisPool: JedisPool
 ) : Runnable {
     companion object {

@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.stripNewLines
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
 class AfkCommand : AbstractCommand("afk", listOf("awayfromthekeyboard"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {

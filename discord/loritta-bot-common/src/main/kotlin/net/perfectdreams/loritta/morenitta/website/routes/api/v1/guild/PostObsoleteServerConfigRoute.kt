@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import io.ktor.server.application.ApplicationCall
@@ -14,7 +13,7 @@ import net.dv8tion.jda.api.entities.Guild
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.CustomCommandCodeType
 import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
@@ -27,9 +26,9 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 
-class PostObsoleteServerConfigRoute(loritta: LorittaDiscord) : RequiresAPIGuildAuthRoute(loritta, "/old-config") {
+class PostObsoleteServerConfigRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(loritta, "/old-config") {
 	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as Loritta
+		loritta as LorittaBot
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val receivedPayload = payload.obj
 		val type = receivedPayload["type"].string

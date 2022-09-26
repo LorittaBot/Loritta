@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.profile
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -19,10 +19,10 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019"
 	override suspend fun createGif(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): List<BufferedImage> {
 		val list = mutableListOf<BufferedImage>()
 
-		val whitneySemiBold = FileInputStream(File(Loritta.ASSETS + "whitney-semibold.ttf")).use {
+		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
-		val whitneyBold = FileInputStream(File(Loritta.ASSETS + "whitney-bold.ttf")).use {
+		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 
@@ -36,7 +36,7 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019"
 				.deriveFont(42F)
 
 		val avatar = LorittaUtils.downloadImage(user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
-		val marrySection = readImage(File(Loritta.ASSETS, "profile/christmas_2019/marry.png"))
+		val marrySection = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/marry.png"))
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
@@ -67,7 +67,7 @@ class LorittaChristmas2019ProfileCreator : ProfileCreator("lorittaChristmas2019"
 		val resizedBadges = badges.map { it.getScaledInstance(30, 30, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 
 		for (i in 0..7) {
-			val profileWrapper = readImage(File(Loritta.ASSETS, "profile/christmas_2019/frames/christmas_2019_${i.toString().padStart(6, '0')}.png"))
+			val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/frames/christmas_2019_${i.toString().padStart(6, '0')}.png"))
 
 			val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 			val graphics = base.graphics.enableFontAntiAliasing()

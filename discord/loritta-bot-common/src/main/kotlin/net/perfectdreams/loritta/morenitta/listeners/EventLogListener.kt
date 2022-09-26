@@ -4,7 +4,7 @@ import club.minnced.discord.webhook.send.WebhookEmbed
 import club.minnced.discord.webhook.send.WebhookEmbedBuilder
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.StoredMessage
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
@@ -48,7 +48,7 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import javax.imageio.ImageIO
 
-class EventLogListener(internal val loritta: Loritta) : ListenerAdapter() {
+class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		val downloadedAvatarJobs = ConcurrentHashMap<String, Job>()

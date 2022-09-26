@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.minecraft
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -28,7 +28,7 @@ class McConquistaCommand : AbstractCommand("mcconquista", listOf("mcprogresso", 
 
 			val advancementText = context.rawArgs.remove(0).joinToString(" ")
 
-			val template = readImage(File(Loritta.ASSETS + "mcconquista.png")) // Template
+			val template = readImage(File(LorittaBot.ASSETS + "mcconquista.png")) // Template
 
 			val graphics = template.graphics
 

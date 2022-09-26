@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 
 object ChargebackRunExecutor : LoriToolsCommand.LoriToolsExecutor {
@@ -18,7 +18,7 @@ object ChargebackRunExecutor : LoriToolsCommand.LoriToolsExecutor {
 		val notifyUser = args[5].toBoolean()
 
 		val triggeredSonhos = PaymentUtils.removeSonhosDueToChargeback(
-				loritta as LorittaDiscord,
+				loritta,
 				userId,
 				quantity,
 				removeSonhos,

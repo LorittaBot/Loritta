@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.gifs
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.image.BufferedImage
 import java.io.File
@@ -8,15 +8,15 @@ import javax.imageio.stream.FileImageOutputStream
 
 object GetOverHereGIF {
 	suspend fun getGIF(toUse: BufferedImage): File {
-		var fileName = Loritta.TEMP + "getoverherescorpion-" + System.currentTimeMillis() + ".gif"
+		var fileName = LorittaBot.TEMP + "getoverherescorpion-" + System.currentTimeMillis() + ".gif"
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
 		val scaled = toUse.getScaledInstance(50, 50, BufferedImage.SCALE_SMOOTH)
 		for (i in 0..52) {
-			val file = File(Loritta.ASSETS + "getoverhere/scorpion_${i.toString().padStart(6, '0')}.png")
+			val file = File(LorittaBot.ASSETS + "getoverhere/scorpion_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
-				var ogImage = readImage(File(Loritta.ASSETS + "getoverhere/scorpion_${i.toString().padStart(6, '0')}.png"))
+				var ogImage = readImage(File(LorittaBot.ASSETS + "getoverhere/scorpion_${i.toString().padStart(6, '0')}.png"))
 				var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 				image.graphics.drawImage(ogImage, 0, 0, null)
 				if (i in 0..4) {

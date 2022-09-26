@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaTasks
 import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.ReactionOption
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -203,20 +203,6 @@ class ReloadCommand : AbstractCommand("reload", category = net.perfectdreams.lor
 			context.reply(
                     LorittaReply(
                             "Datas exportadas!"
-                    )
-			)
-			return
-		}
-
-		if (arg0 == "config") {
-			val file = File(System.getProperty("conf") ?: "./loritta.conf")
-			loritta.config = Constants.HOCON.decodeFromFile(file)
-			val file2 = File(System.getProperty("discordConf") ?: "./discord.conf")
-			loritta.discordConfig = Constants.HOCON.decodeFromFile(file2)
-
-			context.reply(
-                    LorittaReply(
-                            "Config recarregada!"
                     )
 			)
 			return

@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
 import org.jetbrains.exposed.sql.select
 
-class BomDiaECiaStatusCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia status", "bd&c status", "bdc status"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class BomDiaECiaStatusCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia status", "bd&c status", "bdc status"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.bomdiaeciastatus"
     }

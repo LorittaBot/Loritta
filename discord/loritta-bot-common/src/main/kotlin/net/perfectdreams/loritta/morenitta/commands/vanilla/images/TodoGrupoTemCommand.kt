@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
@@ -29,7 +29,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val bi = readImage(File(Loritta.ASSETS + context.locale["commands.command.everygrouphas.file"])) // Primeiro iremos carregar o nosso template
+		val bi = readImage(File(LorittaBot.ASSETS + context.locale["commands.command.everygrouphas.file"])) // Primeiro iremos carregar o nosso template
 
 		val base = BufferedImage(366, 266, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
 		val baseGraph = base.graphics.enableFontAntiAliasing()
@@ -42,9 +42,9 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 		while (6 > users.size) {
 			val member = if (members.isEmpty()) {
 				// omg
-				context.guild.members[Loritta.RANDOM.nextInt(context.guild.members.size)]
+				context.guild.members[LorittaBot.RANDOM.nextInt(context.guild.members.size)]
 			} else {
-				members[Loritta.RANDOM.nextInt(members.size)]
+				members[LorittaBot.RANDOM.nextInt(members.size)]
 			}
 
 			users.add(member.user)
@@ -54,7 +54,7 @@ class TodoGrupoTemCommand : AbstractCommand("everygrouphas", listOf("todogrupote
 		var x = 0
 		var y = 20
 
-		val font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(16f)
+		val font = Font.createFont(0, File(LorittaBot.ASSETS + "mavenpro-bold.ttf")).deriveFont(16f)
 		baseGraph.font = font
 		ImageUtils.drawCenteredStringOutlined(baseGraph, locale["commands.command.everygrouphas.everygrouphas"], Rectangle(0, 0, 366, 22), font)
 

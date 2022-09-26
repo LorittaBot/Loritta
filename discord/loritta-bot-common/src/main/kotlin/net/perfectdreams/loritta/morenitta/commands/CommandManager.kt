@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.nashorn.NashornCommand
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.*
@@ -31,7 +31,7 @@ import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
@@ -45,7 +45,7 @@ import java.util.*
 import java.util.concurrent.CancellationException
 import java.util.jar.JarFile
 
-class CommandManager(loritta: Loritta) {
+class CommandManager(loritta: LorittaBot) {
 	companion object {
 		val logger = KotlinLogging.logger {}
 	}

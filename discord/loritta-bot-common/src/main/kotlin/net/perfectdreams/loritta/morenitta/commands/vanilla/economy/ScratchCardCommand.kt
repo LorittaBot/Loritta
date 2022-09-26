@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
 import com.google.common.cache.CacheBuilder
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.network.Databases
@@ -15,11 +14,11 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Raspadinhas
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -32,7 +31,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import java.util.concurrent.TimeUnit
 
-class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("scratchcard", "raspadinha"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("scratchcard", "raspadinha"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private val mutexes = CacheBuilder.newBuilder().expireAfterWrite(1L, TimeUnit.MINUTES).build<Long, Mutex>()
 				.asMap()
@@ -169,7 +168,7 @@ class ScratchCardCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(l
 
 			for (x in 0 until 3) {
 				for (y in 0 until 3) {
-					val randomNumber = Loritta.RANDOM.nextInt(1, 101)
+					val randomNumber = LorittaBot.RANDOM.nextInt(1, 101)
 
 					when (randomNumber) {
 						100 -> { // 1

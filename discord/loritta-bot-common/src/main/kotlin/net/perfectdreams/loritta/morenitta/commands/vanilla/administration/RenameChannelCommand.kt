@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.Constants
 
-class RenameChannelCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("renamechannel", "renomearcanal"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("renamechannel", "renomearcanal"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }

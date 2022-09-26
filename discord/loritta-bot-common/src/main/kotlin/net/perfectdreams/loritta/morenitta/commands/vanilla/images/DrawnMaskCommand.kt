@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
-import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.awt.geom.Path2D
 import java.awt.image.BufferedImage

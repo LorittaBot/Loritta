@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.gifs
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
@@ -13,12 +13,12 @@ object TrumpGIF {
 		var ogTeste = ImageUtils.toBufferedImage(toUse.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH))
 		var ogTeste2 = ImageUtils.toBufferedImage(toUse2.getScaledInstance(240, 240, BufferedImage.SCALE_SMOOTH))
 
-		var fileName = Loritta.TEMP + "trump-" + System.currentTimeMillis() + ".gif"
+		var fileName = LorittaBot.TEMP + "trump-" + System.currentTimeMillis() + ".gif"
 		var output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
 		for (i in 0..70) {
-			var ogImage = readImage(File(Loritta.ASSETS + "trump/frame_${i}_delay-0.1s.gif"))
+			var ogImage = readImage(File(LorittaBot.ASSETS + "trump/frame_${i}_delay-0.1s.gif"))
 			var image = BufferedImage(ogImage.width, ogImage.height, BufferedImage.TYPE_INT_ARGB)
 			image.graphics.drawImage(ogImage, 0, 0, null)
 			if (frames.size > i) {

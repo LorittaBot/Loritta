@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
 import club.minnced.discord.webhook.send.WebhookMessageBuilder
-import net.perfectdreams.loritta.morenitta.Loritta.Companion.RANDOM
+import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.WebhookUtils

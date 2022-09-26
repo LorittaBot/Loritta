@@ -8,10 +8,10 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -21,7 +21,7 @@ import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
-class RepListCommand(val m: LorittaDiscord) : DiscordAbstractCommandBase(
+class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
         m,
         listOf("rep list", "reps", "reputations", "reputações", "reputacoes", "reputation list", "reputação list", "reputacao list"),
         net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL

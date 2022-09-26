@@ -6,7 +6,6 @@ import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 import net.perfectdreams.loritta.morenitta.dao.ShipEffect
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -29,7 +28,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.morenitta.tables.ProfileDesignsPayments
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
@@ -51,9 +50,9 @@ import java.io.IOException
 import java.util.*
 import javax.imageio.ImageIO
 
-class PatchProfileRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/self-profile") {
+class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/self-profile") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		loritta as Loritta
+		loritta as LorittaBot
 		val profile = net.perfectdreams.loritta.morenitta.utils.loritta.getOrCreateLorittaProfile(userIdentification.id)
 		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 

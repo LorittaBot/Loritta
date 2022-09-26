@@ -9,9 +9,8 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.api.commands.Command
-import net.perfectdreams.loritta.common.api.commands.CommandArguments
-import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.morenitta.api.commands.Command
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
@@ -40,7 +39,7 @@ abstract class AbstractCommand(open val label: String, var aliases: List<String>
 
 	open fun getDescription(locale: BaseLocale) = locale.get(getDescriptionKey())
 
-	open fun getUsage(): CommandArguments {
+	open fun getUsage(): net.perfectdreams.loritta.common.commands.CommandArguments {
 		return arguments {}
 	}
 

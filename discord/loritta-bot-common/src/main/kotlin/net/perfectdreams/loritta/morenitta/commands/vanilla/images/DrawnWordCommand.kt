@@ -1,13 +1,12 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
@@ -17,7 +16,7 @@ import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.io.File
 
-class DrawnWordCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, listOf("drawnword"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class DrawnWordCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("drawnword"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }
@@ -80,9 +79,9 @@ class DrawnWordCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(lor
                 return currentY
             }
 
-            val drawnMaskWordImage = readImage(File(Loritta.ASSETS, "drawn_mask_word.png"))
-            val drawnMaskWordBottomImage = readImage(File(Loritta.ASSETS, "drawn_mask_word_bottom.png"))
-            val babyMaskChairImage = readImage(File(Loritta.ASSETS, "baby_mask_chair.png"))
+            val drawnMaskWordImage = readImage(File(LorittaBot.ASSETS, "drawn_mask_word.png"))
+            val drawnMaskWordBottomImage = readImage(File(LorittaBot.ASSETS, "drawn_mask_word_bottom.png"))
+            val babyMaskChairImage = readImage(File(LorittaBot.ASSETS, "baby_mask_chair.png"))
 
             var wordScreenHeight = drawnMaskWordImage.height
 

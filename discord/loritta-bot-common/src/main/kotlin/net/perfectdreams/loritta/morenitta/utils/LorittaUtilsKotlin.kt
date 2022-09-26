@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -75,7 +75,7 @@ val loritta get() = LorittaLauncher.loritta
  */
 val lorittaShards get() = LorittaLauncher.loritta.lorittaShards
 
-val gson get() = Loritta.GSON
+val gson get() = LorittaBot.GSON
 
 fun String.isValidSnowflake(): Boolean {
 	try {

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -79,14 +79,14 @@ class NyanCatCommand : AbstractCommand("nyan", category = net.perfectdreams.lori
 				Color(243, 254, 255)
 			}
 
-			val randomDots = Loritta.RANDOM.nextInt(0, 6)
+			val randomDots = LorittaBot.RANDOM.nextInt(0, 6)
 
 			val invalidDotsPositionsX = ArrayList<Int>()
 			val invalidDotsPositionsY = ArrayList<Int>()
 
 			for (i in 0..randomDots) {
-				val randomX = Loritta.RANDOM.nextInt(0, 2)
-				val randomY = Loritta.RANDOM.nextInt(2, 16)
+				val randomX = LorittaBot.RANDOM.nextInt(0, 2)
+				val randomY = LorittaBot.RANDOM.nextInt(2, 16)
 				if (invalidDotsPositionsX.contains(randomX) || invalidDotsPositionsX.contains(randomX - 1) || invalidDotsPositionsX.contains(randomX + 1)) {
 					continue
 				}

@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.morenitta.utils.loritta
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.io.File
 import java.io.PrintStream
 import java.lang.management.ManagementFactory
@@ -68,7 +68,7 @@ object DebugLog {
 		logger.info("> Executors")
 
 		val pendingMessagesSize = loritta.pendingMessages.size
-		val availableProcessors = LorittaDiscord.MESSAGE_EXECUTOR_THREADS
+		val availableProcessors = LorittaBot.MESSAGE_EXECUTOR_THREADS
 		val isMessagesOverloaded = pendingMessagesSize > availableProcessors
 		logger.info("Pending Messages ($pendingMessagesSize): Active: ${loritta.pendingMessages.filter { it.isActive }.count()}; Cancelled: ${loritta.pendingMessages.filter { it.isCancelled }.count()}; Complete: ${loritta.pendingMessages.filter { it.isCompleted }.count()};")
 		if (isMessagesOverloaded)

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.gifs
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import java.awt.Color
@@ -15,7 +15,7 @@ object KnucklesThrowGIF {
 		toUse.graphics.drawImage(_toUse, 0, 0, null)
 		toUse.graphics.dispose()
 
-		val fileName = Loritta.TEMP + "knuxthrow-" + System.currentTimeMillis() + ".gif"
+		val fileName = LorittaBot.TEMP + "knuxthrow-" + System.currentTimeMillis() + ".gif"
 		val output = FileImageOutputStream(File(fileName))
 		val writer = GifSequenceWriter(output, BufferedImage.TYPE_INT_ARGB, 10, true)
 
@@ -48,9 +48,9 @@ object KnucklesThrowGIF {
 		val overrideHue = overrideHsbVals[0] * 360
 
 		for (i in 0..61) {
-			val file = File(Loritta.ASSETS, "knux_throw/knuxthrow_${i.toString().padStart(6, '0')}.png")
+			val file = File(LorittaBot.ASSETS, "knux_throw/knuxthrow_${i.toString().padStart(6, '0')}.png")
 			if (file.exists()) {
-				val ogImage = ImageIO.read(File(Loritta.ASSETS, "knux_throw/knuxthrow_${i.toString().padStart(6, '0')}.png"))
+				val ogImage = ImageIO.read(File(LorittaBot.ASSETS, "knux_throw/knuxthrow_${i.toString().padStart(6, '0')}.png"))
 				val graphics = ogImage.graphics
 
 				if (i in 2..19) {
@@ -82,7 +82,7 @@ object KnucklesThrowGIF {
 					}
 				}
 
-				val overlayFile = File(Loritta.ASSETS, "knux_throw/knuxthrow_overlay_${i.toString().padStart(6, '0')}.png")
+				val overlayFile = File(LorittaBot.ASSETS, "knux_throw/knuxthrow_overlay_${i.toString().padStart(6, '0')}.png")
 				if (overlayFile.exists()) {
 					val overlay = ImageIO.read(overlayFile)
 					graphics.drawImage(overlay, 0, 0, null)

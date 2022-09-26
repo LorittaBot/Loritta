@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils

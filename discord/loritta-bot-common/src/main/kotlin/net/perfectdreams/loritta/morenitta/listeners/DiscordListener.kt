@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
 import net.perfectdreams.loritta.morenitta.dao.Mute
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -58,7 +58,7 @@ import org.slf4j.LoggerFactory
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
-class DiscordListener(internal val loritta: Loritta) : ListenerAdapter() {
+class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 	companion object {
 		// You can update a channel 2 times every 10 minutes
 		// https://cdn.discordapp.com/attachments/681830234168754226/716341063912128636/unknown.png

@@ -4,7 +4,6 @@ import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.commands.vanilla.economy.PagarCommand
 import net.perfectdreams.loritta.morenitta.tables.Dailies
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -18,7 +17,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PaymentSonhosTransactionResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.PaymentSonhosTransactionsLog
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
@@ -31,14 +30,14 @@ import org.jetbrains.exposed.sql.select
 import java.time.Instant
 import java.time.ZonedDateTime
 
-class PostTransferBalanceRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/transfer-balance") {
+class PostTransferBalanceRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/transfer-balance") {
 	companion object {
 		private val mutex = Mutex()
 		private val logger = KotlinLogging.logger {}
 	}
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		loritta as Loritta
+		loritta as LorittaBot
 		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 		val giverId = json["giverId"].long
 		val receiverId = json["receiverId"].long

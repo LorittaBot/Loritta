@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.dv8tion.jda.api.events.*
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 /**
  * Used to track Discord events to Prometheus
  */
-class DiscordMetricsListener(val loritta: Loritta) : ListenerAdapter() {
+class DiscordMetricsListener(val loritta: LorittaBot) : ListenerAdapter() {
     override fun onStatusChange(event: StatusChangeEvent) {
         Prometheus.SHARD_STATUS.labels(event.jda.shardInfo.shardId.toString()).set(event.newStatus.ordinal.toDouble())
     }

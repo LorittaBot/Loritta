@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.SonhosTransaction
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -14,7 +14,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
 import java.math.BigDecimal
 
-class CoinFlipBetStatsCommand(val m: LorittaDiscord) : DiscordAbstractCommandBase(
+class CoinFlipBetStatsCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 	m,
 	listOf("coinflip", "flipcoin", "girarmoeda", "caracoroa")
 		.flatMap { listOf("$it bet stats", "$it apostar stats") },

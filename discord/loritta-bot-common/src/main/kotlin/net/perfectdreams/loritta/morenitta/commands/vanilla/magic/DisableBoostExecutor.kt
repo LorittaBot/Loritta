@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
 import net.perfectdreams.loritta.morenitta.utils.NitroBoostUtils
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 

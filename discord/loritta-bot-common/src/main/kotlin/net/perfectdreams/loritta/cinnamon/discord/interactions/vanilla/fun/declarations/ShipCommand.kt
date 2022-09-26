@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.de
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.ShipExecutor
 
 class ShipCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {

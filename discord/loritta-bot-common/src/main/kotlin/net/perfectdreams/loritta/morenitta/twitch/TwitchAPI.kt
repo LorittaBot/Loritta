@@ -7,7 +7,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.annotations.SerializedName
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import io.ktor.client.HttpClient
 import io.ktor.client.request.*
@@ -283,10 +283,10 @@ class TwitchAPI(val clientId: String,
 		}
 
 		val channel = data[0].obj
-		val gameInfo = Loritta.GSON.fromJson<GameInfo>(channel)
+		val gameInfo = LorittaBot.GSON.fromJson<GameInfo>(channel)
 		cachedGames[gameId] = gameInfo
 
-		return Loritta.GSON.fromJson(channel)
+		return LorittaBot.GSON.fromJson(channel)
 	}
 
 	suspend fun makeTwitchApiRequest(url: String, method: String = "GET", form: Map<String, String>? = null): HttpResponse {

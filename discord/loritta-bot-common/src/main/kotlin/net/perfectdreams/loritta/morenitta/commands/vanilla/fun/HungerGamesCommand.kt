@@ -1,26 +1,25 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import org.jsoup.Jsoup
 
-class HungerGamesCommand(m: LorittaDiscord) : DiscordAbstractCommandBase(m, listOf("hungergames", "jogosvorazes", "hg"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
+class HungerGamesCommand(m: LorittaBot) : DiscordAbstractCommandBase(m, listOf("hungergames", "jogosvorazes", "hg"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
     private val LOCALE_PREFIX = "commands.command.hungergames"
     private val WEBSITE_URL = "https://brantsteele.net"
 
     override fun command() = create {
-        loritta as Loritta
+        loritta as LorittaBot
 
         localizedDescription("$LOCALE_PREFIX.description")
         localizedExamples("$LOCALE_PREFIX.examples")

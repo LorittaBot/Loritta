@@ -22,12 +22,12 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
-import net.perfectdreams.loritta.common.api.commands.Command
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.api.commands.CommandException
-import net.perfectdreams.loritta.common.api.commands.CommandMap
-import net.perfectdreams.loritta.common.api.commands.SilentCommandException
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.api.commands.Command
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.api.commands.CommandException
+import net.perfectdreams.loritta.morenitta.api.commands.CommandMap
+import net.perfectdreams.loritta.morenitta.api.commands.SilentCommandException
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.commands.vanilla.action.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.*
 import net.perfectdreams.loritta.morenitta.commands.vanilla.discord.GuildBannerCommand
@@ -46,7 +46,7 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.social.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.CommandCooldownManager
 import net.perfectdreams.loritta.morenitta.utils.CommandUtils
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -55,7 +55,7 @@ import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import java.sql.Connection
 import java.util.concurrent.CancellationException
 
-class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command<CommandContext>> {
+class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandContext>> {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -65,109 +65,109 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 	init {
 		registerAll(
 			// ===[ MAGIC ]===
-			LoriToolsCommand(discordLoritta),
+			LoriToolsCommand(loritta),
 
 			// ===[ ROLEPLAY ]===
-			AttackCommand(discordLoritta),
-			DanceCommand(discordLoritta),
-			HeadPatCommand(discordLoritta),
-			HighFiveCommand(discordLoritta),
-			HugCommand(discordLoritta),
-			KissCommand(discordLoritta),
-			SlapCommand(discordLoritta),
+			AttackCommand(loritta),
+			DanceCommand(loritta),
+			HeadPatCommand(loritta),
+			HighFiveCommand(loritta),
+			HugCommand(loritta),
+			KissCommand(loritta),
+			SlapCommand(loritta),
 
 			// ===[ ECONOMY ]===
-			SonhosTopCommand(discordLoritta),
-			SonhosTopLocalCommand(discordLoritta),
-			TransactionsCommand(discordLoritta),
-			BrokerCommand(discordLoritta),
-			BrokerBuyStockCommand(discordLoritta),
-			BrokerSellStockCommand(discordLoritta),
-			BrokerPortfolioCommand(discordLoritta),
-			GuessNumberCommand(discordLoritta),
-			ScratchCardCommand(discordLoritta),
-			ScratchCardTopCommand(discordLoritta),
+			SonhosTopCommand(loritta),
+			SonhosTopLocalCommand(loritta),
+			TransactionsCommand(loritta),
+			BrokerCommand(loritta),
+			BrokerBuyStockCommand(loritta),
+			BrokerSellStockCommand(loritta),
+			BrokerPortfolioCommand(loritta),
+			GuessNumberCommand(loritta),
+			ScratchCardCommand(loritta),
+			ScratchCardTopCommand(loritta),
 
 			// ===[ SOCIAL ]===
-			BomDiaECiaStatusCommand(discordLoritta),
-			BomDiaECiaTopCommand(discordLoritta),
-			BomDiaECiaTopLocalCommand(discordLoritta),
-			RepTopCommand(discordLoritta),
-			XpNotificationsCommand(discordLoritta),
-			RepListCommand(discordLoritta),
-			DashboardCommand(discordLoritta),
-			RenameChannelCommand(discordLoritta),
-			RenameEmojiCommand(discordLoritta),
+			BomDiaECiaStatusCommand(loritta),
+			BomDiaECiaTopCommand(loritta),
+			BomDiaECiaTopLocalCommand(loritta),
+			RepTopCommand(loritta),
+			XpNotificationsCommand(loritta),
+			RepListCommand(loritta),
+			DashboardCommand(loritta),
+			RenameChannelCommand(loritta),
+			RenameEmojiCommand(loritta),
 
 			// ===[ ADMIN ]===
-			BanInfoCommand(discordLoritta),
-			ClearCommand(discordLoritta),
-			UnwarnCommand(discordLoritta),
+			BanInfoCommand(loritta),
+			ClearCommand(loritta),
+			UnwarnCommand(loritta),
 
 			// ===[ MISC ]===
-			FanArtsCommand(discordLoritta),
-			DiscordBotListCommand(discordLoritta),
-			DiscordBotListStatusCommand(discordLoritta),
-			DiscordBotListTopCommand(discordLoritta),
-			DiscordBotListTopLocalCommand(discordLoritta),
+			FanArtsCommand(loritta),
+			DiscordBotListCommand(loritta),
+			DiscordBotListStatusCommand(loritta),
+			DiscordBotListTopCommand(loritta),
+			DiscordBotListTopLocalCommand(loritta),
 
 			// ===[ DISCORD ]===
-			ChannelInfoCommand(discordLoritta),
-			GuildBannerCommand(discordLoritta),
-			RoleInfoCommand(discordLoritta),
+			ChannelInfoCommand(loritta),
+			GuildBannerCommand(loritta),
+			RoleInfoCommand(loritta),
 
 			// ===[ FUN ]===
-			GiveawayCommand(discordLoritta),
-			GiveawayEndCommand(discordLoritta),
-			GiveawayRerollCommand(discordLoritta),
-			GiveawaySetupCommand(discordLoritta),
-			CancelledCommand(discordLoritta),
-			HungerGamesCommand(discordLoritta),
+			GiveawayCommand(loritta),
+			GiveawayEndCommand(loritta),
+			GiveawayRerollCommand(loritta),
+			GiveawaySetupCommand(loritta),
+			CancelledCommand(loritta),
+			HungerGamesCommand(loritta),
 
 			// ===[ IMAGES ]===
-			ArtCommand(discordLoritta),
-			AtaCommand(discordLoritta),
-			BobBurningPaperCommand(discordLoritta),
-			BolsoDrakeCommand(discordLoritta),
-			BolsoFrameCommand(discordLoritta),
-			Bolsonaro2Command(discordLoritta),
-			BolsonaroCommand(discordLoritta),
-			BriggsCoverCommand(discordLoritta),
-			BuckShirtCommand(discordLoritta),
-			CanellaDvdCommand(discordLoritta),
-			ChicoAtaCommand(discordLoritta),
-			DrakeCommand(discordLoritta),
-			GessyAtaCommand(discordLoritta),
-			LoriAtaCommand(discordLoritta),
-			LoriDrakeCommand(discordLoritta),
-			LoriSignCommand(discordLoritta),
-			PassingPaperCommand(discordLoritta),
-			PepeDreamCommand(discordLoritta),
-			QuadroCommand(discordLoritta),
-			RomeroBrittoCommand(discordLoritta),
-			SAMCommand(discordLoritta),
-			StudiopolisTvCommand(discordLoritta),
-			SustoCommand(discordLoritta),
-			CarlyAaahCommand(discordLoritta),
-			PetPetCommand(discordLoritta),
-			EdnaldoTvCommand(discordLoritta),
-			EdnaldoBandeiraCommand(discordLoritta),
-			RipTvCommand(discordLoritta),
-			AttackOnHeartCommand(discordLoritta),
-			ToBeContinuedCommand(discordLoritta),
-			TerminatorCommand(discordLoritta),
-			MorrePragaCommand(discordLoritta),
-			CortesFlowCommand(discordLoritta),
-			CocieloChavesCommand(discordLoritta),
-			AsciiCommand(discordLoritta),
-			AtendenteCommand(discordLoritta),
-			DrawnWordCommand(discordLoritta),
-			EmojiMashupCommand(discordLoritta),
-			TristeRealidadeCommand(discordLoritta),
+			ArtCommand(loritta),
+			AtaCommand(loritta),
+			BobBurningPaperCommand(loritta),
+			BolsoDrakeCommand(loritta),
+			BolsoFrameCommand(loritta),
+			Bolsonaro2Command(loritta),
+			BolsonaroCommand(loritta),
+			BriggsCoverCommand(loritta),
+			BuckShirtCommand(loritta),
+			CanellaDvdCommand(loritta),
+			ChicoAtaCommand(loritta),
+			DrakeCommand(loritta),
+			GessyAtaCommand(loritta),
+			LoriAtaCommand(loritta),
+			LoriDrakeCommand(loritta),
+			LoriSignCommand(loritta),
+			PassingPaperCommand(loritta),
+			PepeDreamCommand(loritta),
+			QuadroCommand(loritta),
+			RomeroBrittoCommand(loritta),
+			SAMCommand(loritta),
+			StudiopolisTvCommand(loritta),
+			SustoCommand(loritta),
+			CarlyAaahCommand(loritta),
+			PetPetCommand(loritta),
+			EdnaldoTvCommand(loritta),
+			EdnaldoBandeiraCommand(loritta),
+			RipTvCommand(loritta),
+			AttackOnHeartCommand(loritta),
+			ToBeContinuedCommand(loritta),
+			TerminatorCommand(loritta),
+			MorrePragaCommand(loritta),
+			CortesFlowCommand(loritta),
+			CocieloChavesCommand(loritta),
+			AsciiCommand(loritta),
+			AtendenteCommand(loritta),
+			DrawnWordCommand(loritta),
+			EmojiMashupCommand(loritta),
+			TristeRealidadeCommand(loritta),
 
 			// ===[ ROBLOX ]===
-			RbUserCommand(discordLoritta),
-			RbGameCommand(discordLoritta)
+			RbUserCommand(loritta),
+			RbGameCommand(loritta)
 		)
 	}
 
@@ -263,7 +263,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 
 				// Cooldown
 				var commandCooldown = command.cooldown
-				val donatorPaid = discordLoritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
+				val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
 				val guildId = ev.guild?.idLong
 				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue() } ?: 0.0
 
@@ -273,7 +273,7 @@ class DiscordCommandMap(val discordLoritta: LorittaDiscord) : CommandMap<Command
 					commandCooldown /= 2
 				}
 
-				val (cooldownStatus, cooldownTriggeredAt, cooldown) = discordLoritta.commandCooldownManager.checkCooldown(
+				val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
 					ev,
 					commandCooldown
 				)

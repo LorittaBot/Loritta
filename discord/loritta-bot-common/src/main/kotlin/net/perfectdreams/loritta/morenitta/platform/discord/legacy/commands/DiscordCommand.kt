@@ -7,13 +7,13 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.common.api.commands.Command
-import net.perfectdreams.loritta.common.api.commands.CommandArguments
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.api.commands.Command
+import net.perfectdreams.loritta.common.commands.CommandArguments
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class DiscordCommand(
-    val lorittaDiscord: LorittaDiscord,
+    val lorittaDiscord: LorittaBot,
     labels: List<String>,
     commandName: String,
     category: net.perfectdreams.loritta.common.commands.CommandCategory,

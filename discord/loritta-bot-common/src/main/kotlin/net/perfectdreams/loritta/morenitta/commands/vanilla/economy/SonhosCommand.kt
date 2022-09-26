@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EconomyConfig

@@ -4,11 +4,11 @@ import com.github.salomonbrys.kotson.jsonObject
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.OnlineStatus
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class GetGuildInfoRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/guilds/{guildId}") {
+class GetGuildInfoRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/guilds/{guildId}") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val guildId = call.parameters["guildId"] ?: return
 

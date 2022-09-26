@@ -1,15 +1,15 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.base.ImageAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-class ToBeContinuedCommand(m: LorittaDiscord) : ImageAbstractCommandBase(m, listOf("tobecontinued")) {
+class ToBeContinuedCommand(m: LorittaBot) : ImageAbstractCommandBase(m, listOf("tobecontinued")) {
 	override fun command() = create {
 		localizedDescription("commands.command.tobecontinued.description")
 		localizedExamples(Command.SINGLE_IMAGE_EXAMPLES_KEY)

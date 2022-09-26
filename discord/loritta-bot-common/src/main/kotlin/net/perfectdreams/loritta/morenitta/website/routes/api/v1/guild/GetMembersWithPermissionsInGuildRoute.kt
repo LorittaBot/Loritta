@@ -5,11 +5,11 @@ import com.github.salomonbrys.kotson.toJsonArray
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import io.ktor.server.application.ApplicationCall
 import net.dv8tion.jda.api.Permission
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class GetMembersWithPermissionsInGuildRoute(loritta: LorittaDiscord) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/guilds/{guildId}/users-with-any-permission/{permissionList}") {
+class GetMembersWithPermissionsInGuildRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/guilds/{guildId}/users-with-any-permission/{permissionList}") {
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
 		val guildId = call.parameters["guildId"] ?: return
 

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
@@ -27,13 +27,13 @@ class LaranjoCommand : AbstractCommand("laranjo", category = net.perfectdreams.l
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.isNotEmpty()) {
-			val template = readImage(File(Loritta.ASSETS + "laranjo.png")) // Template
+			val template = readImage(File(LorittaBot.ASSETS + "laranjo.png")) // Template
 			val texto = context.args.joinToString(" ")
 
 			var graphics = template.graphics.enableFontAntiAliasing()
 			graphics.color = Color.BLACK
 
-			var font = Font.createFont(0, File(Loritta.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F)
+			var font = Font.createFont(0, File(LorittaBot.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F)
 			graphics.font = font
 			ImageUtils.drawTextWrapSpaces(texto, 2, 40, 334, 9999, graphics.fontMetrics, graphics)
 

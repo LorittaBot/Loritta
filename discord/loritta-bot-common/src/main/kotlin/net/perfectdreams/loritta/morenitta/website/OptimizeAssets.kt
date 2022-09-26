@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.website
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteAssetsHashes
 import java.io.File
@@ -20,13 +20,13 @@ object OptimizeAssets {
 		WebsiteAssetsHashes.websiteFileHashes.clear()
 		WebsiteAssetsHashes.legacyWebsiteFileHashes.clear()
 
-		val root = File(Loritta.FRONTEND, "css")
-		val output = File(Loritta.FRONTEND, "static/assets/css/style.css")
+		val root = File(LorittaBot.FRONTEND, "css")
+		val output = File(LorittaBot.FRONTEND, "static/assets/css/style.css")
 		val assetOrderFile = File(root, "asset_order")
 		val assets = assetOrderFile.readLines().map { File(root, it) }
-		val fingerprintFile = File(Loritta.FRONTEND, "css/fingerprints")
+		val fingerprintFile = File(LorittaBot.FRONTEND, "css/fingerprints")
 		val fingerprints = if (fingerprintFile.exists()) {
-			File(Loritta.FRONTEND, "css/fingerprints").readLines()
+			File(LorittaBot.FRONTEND, "css/fingerprints").readLines()
 		} else {
 			mutableListOf()
 		}

@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.TextChannel
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 
 class UnlockCommand : AbstractCommand("unlock", listOf("destrancar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {

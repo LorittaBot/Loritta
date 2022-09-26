@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.undertale
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -34,7 +34,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
             list = list.takeLast(list.size - 1)
             var text = list.joinToString(" ")
             // Será que é um monstro válido?
-            val dir = File(Loritta.ASSETS + "utmonsters")
+            val dir = File(LorittaBot.ASSETS + "utmonsters")
             val directoryListing = dir.listFiles()
             var valid = false
             val validMonsterList = ArrayList<String>()
@@ -56,7 +56,7 @@ class UndertaleBattleCommand : AbstractCommand("utbattle", listOf("undertalebatt
                 if (!LorittaUtils.canUploadFiles(context)) { return }
                 // Sim, é válido!
                 var undertaleMonster = readImage(file!!) // Monstro
-                var undertaleSpeechBox = readImage(File(Loritta.ASSETS, "speech_box.png")) // Speech Box
+                var undertaleSpeechBox = readImage(File(LorittaBot.ASSETS, "speech_box.png")) // Speech Box
 
                 val blackWhite = BufferedImage(undertaleMonster.width + undertaleSpeechBox.width + 2, undertaleMonster.height, BufferedImage.TYPE_INT_ARGB) // Criar nosso template
                 val graphics = blackWhite.graphics.enableFontAntiAliasing()

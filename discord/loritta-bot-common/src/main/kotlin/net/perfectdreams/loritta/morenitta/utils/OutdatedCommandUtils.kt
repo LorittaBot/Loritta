@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -29,7 +29,7 @@ object OutdatedCommandUtils {
     }
 
     suspend fun sendOutdatedCommandMessage(
-        context: net.perfectdreams.loritta.common.api.commands.CommandContext,
+        context: net.perfectdreams.loritta.morenitta.api.commands.CommandContext,
         locale: BaseLocale,
         slashCommandName: String,
         alwaysSendOutdatedCommandWarning: Boolean = false
@@ -45,7 +45,7 @@ object OutdatedCommandUtils {
     private fun shouldSendOutdatedCommandWarning(): Boolean {
         val now = Instant.now()
         val dayDiff = now.until(OUTDATED_COMMAND_WARNING_DEADLINE, ChronoUnit.DAYS)
-        return Loritta.RANDOM.nextLong(0, dayDiff.coerceAtLeast(1L)) == 0L
+        return LorittaBot.RANDOM.nextLong(0, dayDiff.coerceAtLeast(1L)) == 0L
     }
 
     private fun buildEmbed(locale: BaseLocale, slashCommandName: String) = EmbedBuilder()

@@ -2,17 +2,17 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.*
 
-class BomDiaECiaTopLocalCommand(loritta: LorittaDiscord): DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top local", "bd&c top local", "bdc top local"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class BomDiaECiaTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top local", "bd&c top local", "bdc top local"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.bomdiaeciatoplocal"
     }

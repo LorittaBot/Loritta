@@ -13,10 +13,10 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule
 import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import kotlinx.serialization.hocon.Hocon
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.jackson.FixedMapDeserializer
 import net.perfectdreams.loritta.common.utils.Emotes
 import org.yaml.snakeyaml.Yaml
@@ -126,7 +126,7 @@ object Constants {
 	val DISCORD_BLURPLE = Color(114, 137, 218)
 	val LORITTA_AQUA = Color(26, 160, 254)
 	val ROBLOX_RED = Color(226, 35, 26)
-	val IMAGE_FALLBACK by lazy { ImageIO.read(File(Loritta.ASSETS, "avatar0.png")) }
+	val IMAGE_FALLBACK by lazy { ImageIO.read(File(LorittaBot.ASSETS, "avatar0.png")) }
 	val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
 	val HTTP_URL_PATTERN = Pattern.compile("https?:\\/\\/[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
 	val EMOJI_PATTERN = Pattern.compile("(?:[\uD83C\uDF00-\uD83D\uDDFF]|[\uD83E\uDD00-\uD83E\uDDFF]|" +
@@ -148,7 +148,7 @@ object Constants {
 	val DISCORD_INVITE_PATTERN = Pattern.compile(".*(discord\\.gg|(?:discordapp.com|discord.com)(?:/invite))/([A-z0-9]+).*", Pattern.CASE_INSENSITIVE)
 
 	val YOUTUBE_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-	val ASSETS_FOLDER by lazy { File(Loritta.ASSETS) }
+	val ASSETS_FOLDER by lazy { File(LorittaBot.ASSETS) }
 
 	val INVALID_IMAGE_URL: String by lazy {
 		loritta.instanceConfig.loritta.website.url + "assets/img/oopsie_woopsie_invalid_image.png"
@@ -219,49 +219,49 @@ object Constants {
 
 	// ===[ FONTS ]===
 	val OSWALD_REGULAR: Font by lazy {
-		FileInputStream(File(Loritta.ASSETS + "oswald_regular.ttf")).use {
+		FileInputStream(File(LorittaBot.ASSETS + "oswald_regular.ttf")).use {
 			Font.createFont(java.awt.Font.TRUETYPE_FONT, it)
 		}
 	}
 
 	val MINECRAFTIA: Font by lazy {
-		FileInputStream(File(Loritta.ASSETS + "minecraftia.ttf")).use {
+		FileInputStream(File(LorittaBot.ASSETS + "minecraftia.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
 
 	val DOTUMCHE: Font by lazy {
-		FileInputStream(File(Loritta.ASSETS + "dotumche.ttf")).use {
+		FileInputStream(File(LorittaBot.ASSETS + "dotumche.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
 
 	val DETERMINATION_MONO: Font by lazy {
-		FileInputStream(File(Loritta.ASSETS + "DTM-Mono.otf")).use {
+		FileInputStream(File(LorittaBot.ASSETS + "DTM-Mono.otf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
 
 	val VOLTER: Font by lazy {
-		FileInputStream(File(Loritta.ASSETS + "Volter__28Goldfish_29.ttf")).use {
+		FileInputStream(File(LorittaBot.ASSETS + "Volter__28Goldfish_29.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
 
 	val JACKEY: Font by lazy {
-		FileInputStream(File(Loritta.ASSETS + "jackeyfont.ttf")).use {
+		FileInputStream(File(LorittaBot.ASSETS + "jackeyfont.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
 
 	val BURBANK_BIG_CONDENSED_BLACK: Font by lazy {
-		FileInputStream(File(Loritta.ASSETS + "burbank-big-condensed-black.otf")).use {
+		FileInputStream(File(LorittaBot.ASSETS + "burbank-big-condensed-black.otf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}
 
 	val BURBANK_BIG_CONDENSED_BOLD: Font by lazy {
-		FileInputStream(File(Loritta.ASSETS + "burbank-big-condensed-bold.otf")).use {
+		FileInputStream(File(LorittaBot.ASSETS + "burbank-big-condensed-bold.otf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 	}

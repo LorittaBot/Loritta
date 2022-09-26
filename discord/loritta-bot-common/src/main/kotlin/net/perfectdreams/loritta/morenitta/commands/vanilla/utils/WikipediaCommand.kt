@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import org.apache.commons.lang3.StringUtils
 import java.awt.Color
 import java.net.URLEncoder

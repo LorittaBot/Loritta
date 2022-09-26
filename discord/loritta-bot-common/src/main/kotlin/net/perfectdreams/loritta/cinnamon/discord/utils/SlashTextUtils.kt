@@ -5,7 +5,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandCategory
+import net.perfectdreams.loritta.common.commands.CommandCategory
 
 /**
  * Miscellaneous utilities for Application Commands' text

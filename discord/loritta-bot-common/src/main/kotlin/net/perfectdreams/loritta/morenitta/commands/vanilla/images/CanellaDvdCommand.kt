@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.base.GabrielaImageServerCommandBase
 
-class CanellaDvdCommand(m: LorittaDiscord) : GabrielaImageServerCommandBase(
+class CanellaDvdCommand(m: LorittaBot) : GabrielaImageServerCommandBase(
 	m,
 	listOf("canelladvd", "matheuscanelladvd", "canellacover", "matheuscanelladvd"),
 	1,

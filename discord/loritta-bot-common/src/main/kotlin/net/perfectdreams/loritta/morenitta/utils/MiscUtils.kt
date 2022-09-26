@@ -4,7 +4,7 @@ import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.client.request.*
@@ -60,7 +60,7 @@ object MiscUtils {
 
 	fun optimizeGIF(file: File, lossy: Int = 200) {
 		val processBuilder = ProcessBuilder(
-				File(Loritta.FOLDER, "gifsicle-static").toString(), // https://github.com/kornelski/giflossy/releases
+				File(LorittaBot.FOLDER, "gifsicle-static").toString(), // https://github.com/kornelski/giflossy/releases
 				"-i",
 				file.toString(),
 				"-O3",
@@ -85,7 +85,7 @@ object MiscUtils {
 			return AccountCheckResult.NOT_VERIFIED
 
 
-		val list = File(Loritta.ASSETS, "data/blacklisted-emails.txt").readLines()
+		val list = File(LorittaBot.ASSETS, "data/blacklisted-emails.txt").readLines()
 
 		val matches = list.any { it == domain[1] }
 

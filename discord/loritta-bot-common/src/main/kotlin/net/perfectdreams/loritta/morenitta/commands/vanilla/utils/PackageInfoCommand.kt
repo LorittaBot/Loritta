@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.utils
 
 import com.github.kevinsawicki.http.HttpRequest
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.commands.vanilla.utils.PackageInfoCommand.PackageSource.CORREIOS
@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.correios.CorreiosResponse
 import net.perfectdreams.loritta.morenitta.utils.correios.EncomendaResponse
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
@@ -88,7 +88,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 				// E sim, não importa qual é o usuário/senha/token, ele sempre retorna algo válido
 				.send("<rastroObjeto><usuario>LorittaBot</usuario><senha>LorittaSuperFofa</senha><tipo>L</tipo><resultado>T</resultado><objetos>$packageId</objetos><lingua>101</lingua><token>Loritta-Discord</token></rastroObjeto>")
 
-		var correios = Loritta.GSON.fromJson(response.body(), CorreiosResponse::class.java)
+		var correios = LorittaBot.GSON.fromJson(response.body(), CorreiosResponse::class.java)
 
 		var objeto = correios.objeto[0]
 
@@ -108,7 +108,7 @@ class PackageInfoCommand : AbstractCommand("packageinfo", listOf("correios", "ct
 	fun getCttInfo(packageId: String): Pair<String, String>? {
 		val packageHtml = HttpRequest.get("http://pesquisarencomendas.com/ws/?ref=" + packageId).body()
 
-		val encRes = Loritta.GSON.fromJson(packageHtml, EncomendaResponse::class.java)
+		val encRes = LorittaBot.GSON.fromJson(packageHtml, EncomendaResponse::class.java)
 
 		if (encRes.error != null) {
 			return null

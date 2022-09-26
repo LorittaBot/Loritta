@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.youtube
 
 import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.fromJson
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.network.Databases
 import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.morenitta.utils.loritta
@@ -39,7 +39,7 @@ class CreateYouTubeWebhooksTask : Runnable {
 			val channelIds = mutableSetOf<String>()
 			channelIds.addAll(allChannelIds.map { it[TrackedYouTubeAccounts.youTubeChannelId] })
 
-			val youtubeWebhookFile = File(Loritta.FOLDER, "youtube_webhook.json")
+			val youtubeWebhookFile = File(LorittaBot.FOLDER, "youtube_webhook.json")
 
 			if (!fileLoaded && youtubeWebhookFile.exists()) {
 				fileLoaded = true

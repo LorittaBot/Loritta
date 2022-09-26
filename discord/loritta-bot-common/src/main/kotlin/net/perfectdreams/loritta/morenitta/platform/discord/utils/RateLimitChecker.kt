@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.utils
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.lorittaShards
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
@@ -11,7 +11,7 @@ import net.dv8tion.jda.internal.requests.ratelimit.BotRateLimiter
 import net.dv8tion.jda.internal.requests.ratelimit.IBucket
 import java.util.concurrent.ConcurrentHashMap
 
-class RateLimitChecker(val m: Loritta) {
+class RateLimitChecker(val m: LorittaBot) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 

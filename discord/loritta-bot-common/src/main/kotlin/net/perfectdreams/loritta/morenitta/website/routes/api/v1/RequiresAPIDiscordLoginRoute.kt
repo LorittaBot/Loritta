@@ -5,14 +5,14 @@ import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
 import io.ktor.http.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-abstract class RequiresAPIDiscordLoginRoute(val loritta: LorittaDiscord, path: String) : BaseRoute(path) {
+abstract class RequiresAPIDiscordLoginRoute(val loritta: LorittaBot, path: String) : BaseRoute(path) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

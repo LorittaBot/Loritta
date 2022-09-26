@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
 import com.github.kevinsawicki.http.HttpRequest
-import net.perfectdreams.loritta.common.api.commands.CommandContext
-import net.perfectdreams.loritta.common.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 
 object RegisterYouTubeChannelExecutor : LoriToolsCommand.LoriToolsExecutor {
 	override val args = "register youtube <channel-id>"

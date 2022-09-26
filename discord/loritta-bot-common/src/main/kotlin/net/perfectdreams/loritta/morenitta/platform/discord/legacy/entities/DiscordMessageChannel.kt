@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities
 
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.common.api.entities.Message
-import net.perfectdreams.loritta.common.api.entities.MessageChannel
-import net.perfectdreams.loritta.common.messages.LorittaMessage
+import net.perfectdreams.loritta.morenitta.api.entities.Message
+import net.perfectdreams.loritta.morenitta.api.entities.MessageChannel
+import net.perfectdreams.loritta.morenitta.messages.LorittaMessage
 
 class DiscordMessageChannel(handle: net.dv8tion.jda.api.entities.MessageChannel) : DiscordChannel(handle),
     MessageChannel {

@@ -1,11 +1,10 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
 import net.perfectdreams.loritta.morenitta.utils.extensions.drawStringWithOutline
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.utils.extensions.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.utils.image.JVMImage
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.vanilla.images.base.ImageAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import java.awt.Color
@@ -13,7 +12,7 @@ import java.awt.Font
 import java.awt.image.BufferedImage
 import java.io.File
 
-class TerminatorCommand(m: LorittaDiscord) : ImageAbstractCommandBase(
+class TerminatorCommand(m: LorittaBot) : ImageAbstractCommandBase(
 		m,
 		listOf("terminator", "animeterminator", "terminatoranime")
 ) {
@@ -31,7 +30,7 @@ class TerminatorCommand(m: LorittaDiscord) : ImageAbstractCommandBase(
 			OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "terminatoranime")
 
 			// TODO: Multiplatform
-			loritta as Loritta
+			loritta as LorittaBot
 
 			val args = args.joinToString(" ")
 			val split = args.split("|")
@@ -52,7 +51,7 @@ class TerminatorCommand(m: LorittaDiscord) : ImageAbstractCommandBase(
 			val graphics = terminatorAnime.createGraphics()
 
 			graphics.enableFontAntiAliasing()
-			val lato = Font.createFont(Font.TRUETYPE_FONT, File(Loritta.ASSETS, "fonts/Lato-Bold.ttf"))
+			val lato = Font.createFont(Font.TRUETYPE_FONT, File(LorittaBot.ASSETS, "fonts/Lato-Bold.ttf"))
 			val font = lato.deriveFont(24f)
 			graphics.color = Color(255, 251, 0)
 			graphics.font = font

@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -44,7 +44,7 @@ class AmizadeCommand : AbstractCommand("friendship", listOf("amizade"), net.perf
 			val avatar2 = LorittaUtils.downloadImage(user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
 			val avatar3 = LorittaUtils.downloadImage(user2.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
 
-			val template = readImage(File(Loritta.ASSETS + "amizade.png")) // Template
+			val template = readImage(File(LorittaBot.ASSETS + "amizade.png")) // Template
 
 			val graphics = template.graphics.enableFontAntiAliasing() // É necessário usar Graphics2D para usar gradients
 

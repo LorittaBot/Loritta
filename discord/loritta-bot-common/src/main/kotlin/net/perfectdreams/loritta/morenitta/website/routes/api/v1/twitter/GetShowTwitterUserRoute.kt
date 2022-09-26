@@ -8,7 +8,7 @@ import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
 import io.ktor.http.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -18,7 +18,7 @@ import twitter4j.conf.ConfigurationBuilder
 import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
-class GetShowTwitterUserRoute(val loritta: LorittaDiscord) : BaseRoute("/api/v1/twitter/users/show") {
+class GetShowTwitterUserRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/twitter/users/show") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

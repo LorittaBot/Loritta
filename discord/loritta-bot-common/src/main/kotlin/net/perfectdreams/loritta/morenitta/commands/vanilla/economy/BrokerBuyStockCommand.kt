@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
 import mu.KotlinLogging
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 
-class BrokerBuyStockCommand(loritta: LorittaDiscord) : DiscordAbstractCommandBase(loritta, BrokerCommand.ALIASES.flatMap { listOf("$it buy", "$it comprar") }, net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
+class BrokerBuyStockCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, BrokerCommand.ALIASES.flatMap { listOf("$it buy", "$it comprar") }, net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}

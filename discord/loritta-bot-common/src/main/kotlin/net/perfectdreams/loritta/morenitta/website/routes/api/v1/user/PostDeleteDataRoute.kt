@@ -15,7 +15,7 @@ import io.ktor.server.application.*
 import io.ktor.server.sessions.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.morenitta.tables.BotVotes
@@ -33,11 +33,11 @@ import org.jetbrains.exposed.sql.or
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
 
-class PostDeleteDataRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/delete") {
+class PostDeleteDataRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/@me/delete") {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 
-		suspend fun deleteAccountData(loritta: LorittaDiscord, userId: Long) {
+		suspend fun deleteAccountData(loritta: LorittaBot, userId: Long) {
 			loritta.newSuspendedTransaction {
 				// According to Discord, IDs aren't user identifiable information, so we aren't going to delete the following stuff:
 				// Mutes (Useful for moderation, doesn't store anything related to the user, also IDs aren't personally identifiable)

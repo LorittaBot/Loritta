@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.utils
 
-import net.perfectdreams.loritta.morenitta.Loritta
-import net.perfectdreams.loritta.common.LorittaBot
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.common.utils.LorittaAssets
 import net.perfectdreams.loritta.common.utils.image.Image
 import net.perfectdreams.loritta.common.utils.image.JVMImage
@@ -15,7 +14,7 @@ class JVMLorittaAssets(val loritta: LorittaBot) : LorittaAssets {
 		if (loadFromCache && cachedImages.containsKey(path))
 			return cachedImages[path]!!
 
-		val image = JVMImage(readImage(File(Loritta.ASSETS + path)))
+		val image = JVMImage(readImage(File(LorittaBot.ASSETS + path)))
 
 		if (storeInCache)
 			cachedImages[path] = image

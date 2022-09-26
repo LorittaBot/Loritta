@@ -13,7 +13,7 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
@@ -22,7 +22,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-abstract class RequiresAPIGuildAuthRoute(loritta: LorittaDiscord, originalDashboardPath: String) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/guilds/{guildId}$originalDashboardPath") {
+abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardPath: String) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/guilds/{guildId}$originalDashboardPath") {
 	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig)
 
 	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {

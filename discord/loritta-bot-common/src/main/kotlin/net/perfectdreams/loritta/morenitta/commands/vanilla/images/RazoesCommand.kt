@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.images
 
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.common.utils.LorittaImage
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.common.api.commands.Command
+import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
@@ -30,7 +30,7 @@ class RazoesCommand : AbstractCommand("reasons", listOf("razões", "razoes"), ne
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		var template = readImage(File(Loritta.ASSETS + "reasons.png")) // Template
+		var template = readImage(File(LorittaBot.ASSETS + "reasons.png")) // Template
 		val image = BufferedImage(346, 600, BufferedImage.TYPE_INT_ARGB)
 
 		val graphics = image.graphics

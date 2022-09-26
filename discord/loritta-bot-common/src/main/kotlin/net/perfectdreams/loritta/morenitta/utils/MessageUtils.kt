@@ -4,7 +4,7 @@ import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.Loritta
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.parallax.wrappers.ParallaxEmbed
@@ -185,7 +185,7 @@ object MessageUtils {
 			val jsonEmbed = jsonObject["embed"].nullObj
 			if (jsonEmbed != null) {
 				try {
-					val parallaxEmbed = Loritta.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
+					val parallaxEmbed = LorittaBot.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
 					messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed(safe))
 				} catch (e: Exception) {
 					// Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope

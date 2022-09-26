@@ -22,7 +22,7 @@ import java.util.jar.JarFile
  */
 object LorittaLauncher {
 	// STATIC MAGIC(tm)
-	lateinit var loritta: Loritta
+	lateinit var loritta: LorittaBot
 
 	@JvmStatic
 	fun main(args: Array<String>) {
@@ -81,7 +81,7 @@ object LorittaLauncher {
 		System.setProperty("cluster.name", config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }.getUserAgent(config.loritta.environment))
 
 		// Iniciar instância da Loritta
-		loritta = Loritta(discordConfig, discordInstanceConfig, config, instanceConfig, jedisPool)
+		loritta = LorittaBot(discordConfig, discordInstanceConfig, config, instanceConfig, jedisPool)
 		loritta.start()
 	}
 

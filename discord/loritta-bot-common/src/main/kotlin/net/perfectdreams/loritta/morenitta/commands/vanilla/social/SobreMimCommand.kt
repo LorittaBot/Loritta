@@ -5,8 +5,8 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.loritta
-import net.perfectdreams.loritta.common.api.commands.ArgumentType
-import net.perfectdreams.loritta.common.api.commands.arguments
+import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
 class SobreMimCommand : AbstractCommand("aboutme", listOf("sobremim"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {

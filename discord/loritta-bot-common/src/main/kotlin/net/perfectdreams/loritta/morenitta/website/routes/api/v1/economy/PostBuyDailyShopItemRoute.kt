@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundPayments
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesigns
-import net.perfectdreams.loritta.morenitta.platform.discord.LorittaDiscord
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.DailyProfileShopItems
 import net.perfectdreams.loritta.morenitta.tables.DailyShopItems
 import net.perfectdreams.loritta.morenitta.tables.DailyShops
@@ -35,7 +35,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.concurrent.TimeUnit
 
-class PostBuyDailyShopItemRoute(loritta: LorittaDiscord) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/daily-shop/buy/{type}/{internalName}") {
+class PostBuyDailyShopItemRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/daily-shop/buy/{type}/{internalName}") {
 	companion object {
 		private val mutexes = Caffeine.newBuilder()
 				.expireAfterAccess(60, TimeUnit.SECONDS)
