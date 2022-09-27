@@ -377,6 +377,8 @@ class LorittaBot(
 	val welcomeModule = WelcomeModule(this)
 	val ecbManager = ECBManager()
 
+	private val debugWebServer = DebugWebServer()
+
 	init {
 		FOLDER = config.loritta.folders.root
 		ASSETS = config.loritta.folders.assets
@@ -501,6 +503,9 @@ class LorittaBot(
 
 	// Inicia a Loritta
 	fun start() {
+		logger.info { "Starting Debug Web Server..." }
+		debugWebServer.start()
+
 		logger.info { "Registering Prometheus Collectors..." }
 		Prometheus.register()
 

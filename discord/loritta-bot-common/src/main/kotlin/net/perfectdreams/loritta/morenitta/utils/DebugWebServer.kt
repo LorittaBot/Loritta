@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord.utils
+package net.perfectdreams.loritta.morenitta.utils
 
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
