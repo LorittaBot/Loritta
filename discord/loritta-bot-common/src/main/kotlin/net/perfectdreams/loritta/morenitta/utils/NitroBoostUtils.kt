@@ -5,13 +5,11 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.nullLong
 import com.github.salomonbrys.kotson.obj
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.tables.Dailies
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
-import net.perfectdreams.loritta.morenitta.utils.config.DonatorsOstentationConfig
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.editMessageIfContentWasChanged
 import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
@@ -26,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.SortOrder
@@ -42,7 +41,7 @@ object NitroBoostUtils {
 	private val logger = KotlinLogging.logger {}
 	private val REQUIRED_TO_RECEIVE_DREAM_BOOST = 19.00.toBigDecimal()
 
-	internal fun createBoostTask(loritta: LorittaBot, config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {
+	internal fun createBoostTask(loritta: LorittaBot, config: LorittaConfig.DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = {
 		while (true) {
 			delay(60_000)
 			logger.info { "Giving Sonhos to Donators..." }
@@ -186,7 +185,7 @@ object NitroBoostUtils {
 		}
 	}
 
-	internal fun updateValidBoostServers(loritta: LorittaBot, config: DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = update@{
+	internal fun updateValidBoostServers(loritta: LorittaBot, config: LorittaConfig.DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = update@{
 		while (true) {
 			delay(60_000)
 			logger.info { "Updating Valid Guild Boost Messages..." }
@@ -214,7 +213,7 @@ object NitroBoostUtils {
 
 				val await = guilds.awaitAll()
 
-				val canBoostGuilds = mutableListOf<DonatorsOstentationConfig.BoostEnabledGuild>()
+				val canBoostGuilds = mutableListOf<LorittaConfig.DonatorsOstentationConfig.BoostEnabledGuild>()
 
 				await.filterNotNull().sortedByDescending { it["boostCount"].int }.forEach { queriedGuild ->
 					val boostCount = queriedGuild["boostCount"].int

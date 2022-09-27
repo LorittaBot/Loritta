@@ -12,7 +12,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralConfig
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
 import io.ktor.client.request.*
@@ -32,7 +31,7 @@ import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.gateway.JDAToKordDiscordGatewayManager
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
-import net.perfectdreams.loritta.morenitta.utils.newconfig.LorittaConfig
+import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert

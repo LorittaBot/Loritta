@@ -26,9 +26,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.datetime.Clock
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -88,7 +85,6 @@ import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
@@ -124,7 +120,6 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.GuildSetupQueu
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 import net.perfectdreams.loritta.morenitta.utils.BomDiaECia
-import net.perfectdreams.loritta.morenitta.utils.ProcessDiscordGatewayCommands
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
 import net.perfectdreams.loritta.morenitta.utils.config.FanArt
 import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
@@ -133,8 +128,8 @@ import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
-import net.perfectdreams.loritta.morenitta.utils.newconfig.BaseConfig
-import net.perfectdreams.loritta.morenitta.utils.newconfig.LorittaConfig
+import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient

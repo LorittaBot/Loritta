@@ -1,10 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.LorittaLauncher
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralConfig
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordConfig
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordInstanceConfig
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralInstanceConfig
 import net.perfectdreams.loritta.morenitta.utils.HoconUtils.decodeFromString
 import org.junit.jupiter.api.Test
 

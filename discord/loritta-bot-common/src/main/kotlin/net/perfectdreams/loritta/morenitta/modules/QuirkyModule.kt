@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.chance
-import net.perfectdreams.loritta.morenitta.utils.config.QuirkyConfig
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageType
 import net.perfectdreams.loritta.common.locale.BaseLocale

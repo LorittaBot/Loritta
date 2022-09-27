@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.utils.config
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class FortniteApiConfig(
-        val token: String,
-        val creatorCode: String
+data class BaseConfig(
+    val loritta: LorittaConfig
 )

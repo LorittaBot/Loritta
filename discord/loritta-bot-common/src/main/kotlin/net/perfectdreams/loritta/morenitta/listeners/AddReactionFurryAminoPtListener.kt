@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.config.QuirkyConfig
 import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.morenitta.utils.newconfig
+package net.perfectdreams.loritta.morenitta.utils.config
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
@@ -6,7 +6,6 @@ import net.dv8tion.jda.api.OnlineStatus
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
-import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 
 @Serializable
 data class LorittaConfig(

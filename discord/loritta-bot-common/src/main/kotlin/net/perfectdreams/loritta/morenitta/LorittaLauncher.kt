@@ -8,16 +8,12 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetr
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
-import net.perfectdreams.loritta.morenitta.utils.newconfig.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
 import java.io.File
-import java.io.FileNotFoundException
-import java.nio.file.Paths
 import java.util.*
-import java.util.jar.Attributes
-import java.util.jar.JarFile
 import javax.imageio.ImageIO
 
 /**

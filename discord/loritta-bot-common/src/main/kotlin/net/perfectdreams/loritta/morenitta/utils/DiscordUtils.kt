@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.morenitta.utils
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.newconfig.LorittaConfig
+import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 
 object DiscordUtils {
 	/**

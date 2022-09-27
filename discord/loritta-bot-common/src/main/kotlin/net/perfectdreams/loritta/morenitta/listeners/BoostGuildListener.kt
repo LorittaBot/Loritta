@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import net.perfectdreams.loritta.morenitta.utils.NitroBoostUtils
-import net.perfectdreams.loritta.morenitta.utils.config.DonatorsOstentationConfig
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateBoostTimeEvent
