@@ -148,7 +148,9 @@ import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import java.awt.image.BufferedImage
 import java.io.File
+import java.io.InputStream
 import java.lang.reflect.Modifier
+import java.nio.file.*
 import java.security.SecureRandom
 import java.sql.Connection
 import java.time.*
@@ -157,6 +159,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
+import kotlin.io.path.inputStream
 import kotlin.math.ceil
 import kotlin.reflect.KClass
 import kotlin.time.Duration
@@ -350,7 +353,12 @@ class LorittaBot(
 
 	val random = SecureRandom()
 
-	var fanArtArtists = listOf<FanArtArtist>()
+	val fanArtArtists = getPathFromResources("/fan_arts_artists/")!!
+		.let { Files.list(it).toList() }
+		.map {
+			loadFanArtArtist(it.inputStream())
+		}
+
 	val fanArts: List<FanArt>
 		get() = fanArtArtists.flatMap { it.fanArts }
 	val profileDesignManager = ProfileDesignManager(this)
@@ -388,7 +396,6 @@ class LorittaBot(
 
 		val dispatcher = Dispatcher()
 		dispatcher.maxRequestsPerHost = config.loritta.discord.maxRequestsPerHost
-
 
 		val okHttpBuilder = OkHttpClient.Builder()
 			.dispatcher(dispatcher)
@@ -515,16 +522,11 @@ class LorittaBot(
 		File(TEMP).mkdirs()
 		File(LOCALES).mkdirs()
 		File(FRONTEND).mkdirs()
-		File(config.loritta.folders.fanArts).mkdirs()
 
 		logger.info { "Success! Loading locales..." }
 
 		localeManager.loadLocales()
 		loadLegacyLocales()
-
-		logger.info { "Success! Loading fan arts..." }
-		if (this.isMainInstance) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
-			loadFanArts()
 
 		logger.info { "Success! Loading emotes..." }
 
@@ -878,22 +880,9 @@ class LorittaBot(
 	}
 
 	/**
-	 * Loads the artists from the Fan Arts folder
-	 *
-	 * In the future this will be loaded from Loritta's website!
-	 */
-	fun loadFanArts() {
-		val f = File(config.loritta.folders.fanArts)
-
-		fanArtArtists = f.listFiles().filter { it.extension == "conf" }.map {
-			loadFanArtArtist(it)
-		}
-	}
-
-	/**
 	 * Loads an specific fan art artist
 	 */
-	fun loadFanArtArtist(file: File): FanArtArtist = Constants.HOCON_MAPPER.readValue(file)
+	private fun loadFanArtArtist(inputStream: InputStream): FanArtArtist = Constants.HOCON_MAPPER.readValue(inputStream)
 
 	fun getFanArtArtistByFanArt(fanArt: FanArt) = fanArtArtists.firstOrNull { fanArt in it.fanArts }
 
@@ -1512,5 +1501,19 @@ class LorittaBot(
 			t.discard()
 			throw e
 		}
+	}
+
+	private fun getPathFromResources(path: String): Path? {
+		// https://stackoverflow.com/a/67839914/7271796
+		val resource = LorittaBot::class.java.getResource(path) ?: return null
+		val uri = resource.toURI()
+		val dirPath = try {
+			Paths.get(uri)
+		} catch (e: FileSystemNotFoundException) {
+			// If this is thrown, then it means that we are running the JAR directly (example: not from an IDE)
+			val env = mutableMapOf<String, String>()
+			FileSystems.newFileSystem(uri, env).getPath(path)
+		}
+		return dirPath
 	}
 }

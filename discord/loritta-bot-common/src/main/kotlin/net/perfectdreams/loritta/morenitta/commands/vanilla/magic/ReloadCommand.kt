@@ -52,15 +52,6 @@ class ReloadCommand(loritta: LorittaBot) : AbstractCommand(loritta, "reload", ca
 			)
 			return
 		}
-		if (arg0 == "fan_arts" || arg0 == "fanarts") {
-			loritta.loadFanArts()
-			context.reply(
-                    LorittaReply(
-                            message = "Fan Arts recarregadas!"
-                    )
-			)
-			return
-		}
 		if (arg0 == "locales") {
 			loritta.localeManager.loadLocales()
 			loritta.loadLegacyLocales()

@@ -125,8 +125,7 @@ data class LorittaConfig(
         val assets: String,
         val temp: String,
         val locales: String,
-        val website: String,
-        val fanArts: String
+        val website: String
     )
 
     @Serializable

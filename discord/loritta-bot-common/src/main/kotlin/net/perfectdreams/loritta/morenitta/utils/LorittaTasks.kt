@@ -29,7 +29,6 @@ class LorittaTasks(val loritta: LorittaBot) {
 		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
 		scheduleWithFixedDelay(SpawnGiveawayTask(loritta), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(loritta), 0L, 1L, TimeUnit.HOURS)
-		scheduleWithFixedDelay(UpdateFanArtsTask(loritta), 0L, 5L, TimeUnit.MINUTES)
 
 		if (loritta.isMainInstance) {
 			val midnight = LocalTime.MIDNIGHT
