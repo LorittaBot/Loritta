@@ -631,11 +631,6 @@ class LorittaBot(
 		DebugLog.startCommandListenerThread(this)
 
 		// Ou seja, agora a Loritta está funcionando, Yay!
-
-		Thread(
-			ProcessDiscordGatewayCommands(this, jedisPool),
-			"Loritta Gateway Commands Processor Notification Listener"
-		).start()
 	}
 
 	fun initPostgreSql() {
