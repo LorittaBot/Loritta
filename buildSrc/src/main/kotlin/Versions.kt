@@ -6,7 +6,6 @@ object Versions {
     const val JDA = "4.4.0_352"
     const val KOTLIN_SERIALIZATION = "1.4.0"
     const val KOTLIN_COROUTINES = "1.6.0"
-    const val EXPOSED = "0.39.2"
     const val KOTLIN_LOGGING = "2.1.16"
 
     const val JVM_TARGET = "17"
