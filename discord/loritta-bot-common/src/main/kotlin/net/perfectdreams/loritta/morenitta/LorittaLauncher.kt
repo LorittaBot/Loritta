@@ -17,6 +17,7 @@ import java.nio.file.Paths
 import java.util.*
 import java.util.jar.Attributes
 import java.util.jar.JarFile
+import javax.imageio.ImageIO
 
 /**
  * Loritta's Launcher
@@ -30,8 +31,12 @@ object LorittaLauncher {
 	fun main(args: Array<String>) {
 		// https://github.com/JetBrains/Exposed/issues/1356
 		TimeZone.setDefault(TimeZone.getTimeZone("UTC"))
-
 		installCoroutinesDebugProbes()
+
+		// Speeds up image loading/writing/etc
+		// https://stackoverflow.com/a/44170254/7271796
+		ImageIO.setUseCache(false)
+
 		try {
 			setKotlinScriptingClasspath()
 		} catch (e: FileNotFoundException) {
