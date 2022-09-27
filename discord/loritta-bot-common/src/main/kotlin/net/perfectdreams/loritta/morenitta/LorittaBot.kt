@@ -377,8 +377,6 @@ class LorittaBot(
 	val welcomeModule = WelcomeModule(this)
 	val ecbManager = ECBManager()
 
-	fun redisKey(key: String) = "${config.loritta.redis.keyPrefix}:$key"
-
 	init {
 		FOLDER = config.loritta.folders.root
 		ASSETS = config.loritta.folders.assets

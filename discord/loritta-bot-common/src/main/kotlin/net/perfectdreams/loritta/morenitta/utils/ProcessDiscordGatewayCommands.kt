@@ -20,7 +20,7 @@ class ProcessDiscordGatewayCommands(
 
     private val shardsHandledByThisProcessor = (loritta.lorittaCluster.minShard..loritta.lorittaCluster.maxShard)
     private val keys = shardsHandledByThisProcessor.map {
-        loritta.redisKey("discord_gateway_commands:shard_$it")
+        loritta.redisKeys.discordGatewayCommands(it)
     }.toTypedArray()
 
     override fun run() {

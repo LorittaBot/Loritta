@@ -104,8 +104,8 @@ data class LorittaConfig(
         class LorittaClusterConfig(
             val id: Int,
             val name: String,
-            val minShard: Long,
-            val maxShard: Long,
+            val minShard: Int,
+            val maxShard: Int,
             val websiteUrl: String
         ) {
             fun getUrl(loritta: LorittaBot) = DiscordUtils.getUrlForLorittaClusterId(loritta, id)
