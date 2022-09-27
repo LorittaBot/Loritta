@@ -116,6 +116,7 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
@@ -353,7 +354,7 @@ class LorittaBot(
 
 	val random = SecureRandom()
 
-	val fanArtArtists = getPathFromResources("/fan_arts_artists/")!!
+	val fanArtArtists = LorittaBot::class.getPathFromResources("/fan_arts_artists/")!!
 		.let { Files.list(it).toList() }
 		.map {
 			loadFanArtArtist(it.inputStream())
@@ -1501,19 +1502,5 @@ class LorittaBot(
 			t.discard()
 			throw e
 		}
-	}
-
-	private fun getPathFromResources(path: String): Path? {
-		// https://stackoverflow.com/a/67839914/7271796
-		val resource = LorittaBot::class.java.getResource(path) ?: return null
-		val uri = resource.toURI()
-		val dirPath = try {
-			Paths.get(uri)
-		} catch (e: FileSystemNotFoundException) {
-			// If this is thrown, then it means that we are running the JAR directly (example: not from an IDE)
-			val env = mutableMapOf<String, String>()
-			FileSystems.newFileSystem(uri, env).getPath(path)
-		}
-		return dirPath
 	}
 }

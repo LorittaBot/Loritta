@@ -8,6 +8,7 @@ import net.perfectdreams.i18nhelper.core.Language
 import net.perfectdreams.i18nhelper.core.LanguageInfo
 import net.perfectdreams.i18nhelper.core.TextBundle
 import net.perfectdreams.i18nhelper.formatters.ICUFormatter
+import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import org.yaml.snakeyaml.Yaml
 import java.nio.file.FileSystemNotFoundException
 import java.nio.file.FileSystems
@@ -128,10 +129,10 @@ class LanguageManager(
     }
 
     fun loadLanguage(id: String, loadedLanguages: Map<String, Language>): Language? {
-        val path = getPathFromResources("$languagesPath$id/language.yml")
+        val path = clazz.getPathFromResources("$languagesPath$id/language.yml")
         require(path?.exists() == true) { "Missing \"language.yml\" for language $id!" }
 
-        val languageInfoText = Files.readString(getPathFromResources("$languagesPath$id/language.yml"))
+        val languageInfoText = Files.readString(clazz.getPathFromResources("$languagesPath$id/language.yml"))
         val languageInfo = serializationYaml.decodeFromString<LanguageInfo>(languageInfoText)
 
         val inheritsFrom = languageInfo.inheritsFrom
@@ -157,7 +158,7 @@ class LanguageManager(
             lists
         )
 
-        loadLanguage(id, getPathFromResources("$languagesPath$id/")!!, strings, lists)
+        loadLanguage(id, clazz.getPathFromResources("$languagesPath$id/")!!, strings, lists)
 
         // Before we say "okay everything is OK! Let's go!!" we are going to format every single string on the locale
         // to check if everything is really OK
@@ -249,7 +250,7 @@ class LanguageManager(
      */
     fun loadLanguages() {
         val notLoadedYetLanguages = Files.list(
-            getPathFromResources(languagesPath) ?: error("Language folder $languagesPath is not present in the application resources folder!")
+            clazz.getPathFromResources(languagesPath) ?: error("Language folder $languagesPath is not present in the application resources folder!")
         ).filter {
             it.isDirectory() && !it.name.startsWith(".") // Ignore ".github"
         }
@@ -292,19 +293,5 @@ class LanguageManager(
     fun loadLanguagesAndContexts() {
         loadLanguages()
         loadI18nContexts()
-    }
-
-    private fun getPathFromResources(path: String): Path? {
-        // https://stackoverflow.com/a/67839914/7271796
-        val resource = clazz.java.getResource(path) ?: return null
-        val uri = resource.toURI()
-        val dirPath = try {
-            Paths.get(uri)
-        } catch (e: FileSystemNotFoundException) {
-            // If this is thrown, then it means that we are running the JAR directly (example: not from an IDE)
-            val env = mutableMapOf<String, String>()
-            FileSystems.newFileSystem(uri, env).getPath(path)
-        }
-        return dirPath
     }
 }
