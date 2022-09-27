@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.broker
 
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.CinnamonAutocompleteHandler
 import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
 
-class BrokerBuyStockAutocompleteExecutor(loritta: LorittaCinnamon) : CinnamonAutocompleteHandler<String>(loritta) {
+class BrokerBuyStockAutocompleteExecutor(loritta: LorittaBot) : CinnamonAutocompleteHandler<String>(loritta) {
     override suspend fun handle(
         context: AutocompleteContext,
         focusedOption: FocusedCommandOption

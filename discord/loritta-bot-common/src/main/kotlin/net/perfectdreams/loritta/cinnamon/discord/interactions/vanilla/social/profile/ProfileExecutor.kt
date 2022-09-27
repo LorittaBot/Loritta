@@ -6,7 +6,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuild
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
@@ -19,14 +19,14 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileDesignMa
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
 
-class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class ProfileExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val user = optionalUser("user", ProfileCommand.PROFILE_VIEW_I18N_PREFIX.Options.User.Text)
     }
 
     companion object {
         suspend fun createMessage(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             i18nContext: I18nContext,
             sender: User,
             userToBeViewed: User,
@@ -67,7 +67,7 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
 
         val guild = if (context is GuildApplicationCommandContext) loritta.kord.getGuild(context.guildId) else null
 
-        val result = loritta.profileDesignManager.createProfile(
+        /* val result = loritta.profileDesignManager.createProfile(
             loritta,
             context.i18nContext,
             context.user,
@@ -79,6 +79,6 @@ class ProfileExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(l
 
         context.sendMessage {
             message()
-        }
+        } */
     }
 }

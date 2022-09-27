@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
@@ -28,10 +28,10 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.getUserAchievements
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 
-class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class AchievementsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
         fun createMessage(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             user: User,
             i18nContext: I18nContext,
             achievements: List<PuddingAchievement>,
@@ -153,7 +153,7 @@ class AchievementsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
         )
     }
 
-    class ChangeCategoryMenuExecutor(loritta: LorittaCinnamon) : CinnamonSelectMenuExecutor(loritta) {
+    class ChangeCategoryMenuExecutor(loritta: LorittaBot) : CinnamonSelectMenuExecutor(loritta) {
         companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_CATEGORY_MENU_EXECUTOR)
 
         override suspend fun onSelect(

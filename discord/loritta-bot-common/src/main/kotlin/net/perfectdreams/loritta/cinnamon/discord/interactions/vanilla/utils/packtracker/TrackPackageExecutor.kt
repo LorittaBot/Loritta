@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
@@ -27,7 +27,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.correios.exceptions.Inva
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
-class TrackPackageExecutor(loritta: LorittaCinnamon, val client: CorreiosClient) : CinnamonSlashCommandExecutor(loritta) {
+class TrackPackageExecutor(loritta: LorittaBot, val client: CorreiosClient) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
         fun createMessage(
             i18nContext: I18nContext,

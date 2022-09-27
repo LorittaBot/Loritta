@@ -9,7 +9,7 @@ import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandC
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.UserCommandExecutor
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Applicat
 /**
  * Discord InteraKTions' [UserCommandExecutor] wrapper, used to provide Cinnamon-specific features.
  */
-abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserCommandExecutor(), CommandExecutorWrapper {
+abstract class CinnamonUserCommandExecutor(val loritta: LorittaBot) : UserCommandExecutor(), CommandExecutorWrapper {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -25,7 +25,7 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaCinnamon) : UserC
     private val executorClazzName = this::class.simpleName ?: "UnknownExecutor"
 
     val rest = loritta.rest
-    val applicationId = Snowflake(loritta.discordConfig.applicationId)
+    val applicationId = loritta.config.loritta.discord.applicationId
 
     abstract suspend fun execute(context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext, targetUser: User, targetMember: Member?)
 

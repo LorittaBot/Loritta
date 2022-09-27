@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.profiles
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
@@ -18,7 +18,7 @@ import java.awt.Graphics
 import java.awt.image.BufferedImage
 import kotlin.streams.toList
 
-abstract class ProfileCreator(val loritta: LorittaCinnamon, val internalName: String) {
+abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String) {
     /**
      * Gets the user's global position in the economy ranking
      *

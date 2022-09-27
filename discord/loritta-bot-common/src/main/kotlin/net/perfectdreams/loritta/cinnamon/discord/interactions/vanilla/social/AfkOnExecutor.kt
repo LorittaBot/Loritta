@@ -5,14 +5,14 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCode
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripNewLines
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AfkCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
-class AfkOnExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class AfkOnExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val reason = optionalString("reason", AfkCommand.I18N_PREFIX.On.Options.Reason)
     }

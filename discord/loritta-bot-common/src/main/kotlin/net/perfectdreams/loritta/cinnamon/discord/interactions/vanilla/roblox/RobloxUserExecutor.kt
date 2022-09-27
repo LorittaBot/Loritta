@@ -20,7 +20,7 @@ import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
@@ -34,7 +34,7 @@ import java.io.ByteArrayOutputStream
 import java.net.URL
 import javax.imageio.ImageIO
 
-class RobloxUserExecutor(loritta: LorittaCinnamon, val http: HttpClient) : CinnamonSlashCommandExecutor(loritta) {
+class RobloxUserExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val username = string("username", RobloxCommand.I18N_PREFIX.User.Options.Username.Text)
     }

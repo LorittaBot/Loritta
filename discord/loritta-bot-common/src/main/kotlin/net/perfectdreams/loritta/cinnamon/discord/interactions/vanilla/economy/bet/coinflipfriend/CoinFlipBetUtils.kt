@@ -9,7 +9,7 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.HighLevelEditableMessage
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.SlashContextHighLevelEditableMessage
@@ -39,14 +39,14 @@ import org.jetbrains.exposed.sql.update
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
-class CoinFlipBetUtils(val loritta: LorittaCinnamon) {
+class CoinFlipBetUtils(val loritta: LorittaBot) {
     suspend fun createBet(
         context: InteractionContext,
         howMuch: Long,
         receiverId: Snowflake,
         combo: Int
     ) {
-        val isLoritta = receiverId == Snowflake(loritta.config.discord.applicationId)
+        val isLoritta = receiverId == loritta.config.loritta.discord.applicationId
         val ttlDuration = 3.minutes
 
         checkIfSelfAccountIsOldEnough(context)
@@ -217,7 +217,7 @@ class CoinFlipBetUtils(val loritta: LorittaCinnamon) {
             // If it is Loritta, we will mimick that she is *actually* accepting the bet!
             acceptBet(
                 context,
-                Snowflake(loritta.config.discord.applicationId),
+                loritta.config.loritta.discord.applicationId,
                 SlashContextHighLevelEditableMessage(message),
                 data
             )

@@ -79,7 +79,7 @@ object CommandUtils {
 			if (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_SERVER)) {
 				replies.add(
 					LorittaReply(
-						locale["commands.howToReEnableCommands", "<${loritta.instanceConfig.loritta.website.url}guild/${member.guild.idLong}/configure/commands>"],
+						locale["commands.howToReEnableCommands", "<${loritta.config.loritta.website.url}guild/${member.guild.idLong}/configure/commands>"],
 						Emotes.LORI_SMILE
 					)
 				)

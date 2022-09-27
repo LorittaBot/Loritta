@@ -4,7 +4,7 @@ import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandO
 import net.perfectdreams.discordinteraktions.common.commands.options.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.CinnamonAutocompleteHandler
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customoptions.ImageReferenceCommandOptionBuilder
@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.customop
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
 
-abstract class LocalizedApplicationCommandOptions(val loritta: LorittaCinnamon) : ApplicationCommandOptions() {
+abstract class LocalizedApplicationCommandOptions(val loritta: LorittaBot) : ApplicationCommandOptions() {
     val languageManager = loritta.languageManager
 
     fun string(
@@ -190,7 +190,7 @@ abstract class LocalizedApplicationCommandOptions(val loritta: LorittaCinnamon) 
             register(it)
         }
 
-    fun <T, ChoiceableType> ChoiceableCommandOptionBuilder<T, ChoiceableType>.autocomplete(loritta: LorittaCinnamon, block: suspend (AutocompleteContext, FocusedCommandOption) -> (Map<String, ChoiceableType>))
+    fun <T, ChoiceableType> ChoiceableCommandOptionBuilder<T, ChoiceableType>.autocomplete(loritta: LorittaBot, block: suspend (AutocompleteContext, FocusedCommandOption) -> (Map<String, ChoiceableType>))
             = autocomplete(
         object: CinnamonAutocompleteHandler<ChoiceableType>(loritta) {
             override suspend fun handle(

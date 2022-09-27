@@ -37,12 +37,12 @@ class PerfectPaymentsClient(val url: String) {
     ): String {
         logger.info { "Requesting PerfectPayments payment URL for $userId" }
         val payments = loritta.http.post("${url}api/v1/payments") {
-            header("Authorization", loritta.config.perfectPayments.token)
+            header("Authorization", loritta.config.loritta.perfectPayments.token)
 
             setBody(
                 jsonObject(
                     "title" to paymentTitle,
-                    "callbackUrl" to "${loritta.instanceConfig.loritta.website.url}api/v1/callbacks/perfect-payments",
+                    "callbackUrl" to "${loritta.config.loritta.website.url}api/v1/callbacks/perfect-payments",
                     "amount" to amount,
                     "currencyId" to "BRL",
                     "externalReference" to externalReference

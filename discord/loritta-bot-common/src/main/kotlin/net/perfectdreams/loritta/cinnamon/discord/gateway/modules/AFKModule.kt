@@ -6,7 +6,7 @@ import dev.kord.rest.builder.message.create.allowedMentions
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
-class AFKModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
+class AFKModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
     override suspend fun processEvent(context: GatewayEventContext): ModuleResult {
         when (context.event) {
             // ===[ CHANNEL CREATE ]===

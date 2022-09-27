@@ -55,7 +55,7 @@ class CommandCooldownManager(val loritta: LorittaBot) {
         // growingRatelimitUsers is set to 3
         //
         // Up until 5 messages are allowed, after that Lori will start to ratelimit the messages until 100 ratelimited commands, which triggers a one week ban.
-        if (commandCooldownMultiplied >= diff && !loritta.config.isOwner(ev.author.idLong)) {
+        if (commandCooldownMultiplied >= diff && !loritta.isOwner(ev.author.idLong)) {
             // To avoid users creating a lot of "Watch out! You need to wait ..." messages, we are going to ratelimit the ratelimit message.
             //
             // So, if the user already used a command and is still on cooldown, we are going to ignore the message until the command cooldown is complete.

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertal
 
 import dev.kord.core.entity.User
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.TextBoxExecutor
@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.Cinnam
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 
 class ChangeColorPortraitTypeButtonClickExecutor(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     val client: GabrielaImageServerClient
 ) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.CHANGE_COLOR_PORTRAIT_TYPE_BUTTON_EXECUTOR)

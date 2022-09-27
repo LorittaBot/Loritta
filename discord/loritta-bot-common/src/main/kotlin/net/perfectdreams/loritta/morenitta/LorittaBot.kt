@@ -8,12 +8,33 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
+import dev.kord.common.annotation.KordExperimental
+import dev.kord.common.annotation.KordUnsafe
+import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
+import dev.kord.core.entity.User
+import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
+import dev.kord.rest.ratelimit.ParallelRequestRateLimiter
+import dev.kord.rest.request.KtorRequestException
+import dev.kord.rest.request.KtorRequestHandler
+import dev.kord.rest.request.StackTraceRecoveringKtorRequestHandler
+import dev.kord.rest.service.RestClient
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
+import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.datetime.Clock
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.decodeFromJsonElement
+import kotlinx.serialization.json.encodeToJsonElement
+import kotlinx.serialization.json.jsonObject
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.listeners.*
 import net.perfectdreams.loritta.morenitta.tables.*
@@ -25,7 +46,6 @@ import net.perfectdreams.loritta.morenitta.tables.StarboardMessages
 import net.perfectdreams.loritta.morenitta.tables.UserSettings
 import net.perfectdreams.loritta.morenitta.threads.RaffleThread
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
-import net.perfectdreams.loritta.morenitta.threads.UpdateStatusThread
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import mu.KotlinLogging
@@ -33,22 +53,51 @@ import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.Event
 import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
+import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
+import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
-import net.perfectdreams.loritta.cinnamon.discord.utils.ecb.ECBManager
+import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
+import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionsManager
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipfriend.CoinFlipBetUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.*
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosPackageInfoUpdater
+import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxCollector
+import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxWarner
+import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.PendingImportantNotificationsProcessor
+import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.DiscordCacheService
+import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
+import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionOCRClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.google.HackyGoogleTranslateClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.images.EmojiImageCache
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.PrometheusPushClient
+import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.Soundboard
+import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Background
 import net.perfectdreams.loritta.cinnamon.pudding.data.BackgroundVariation
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.LorittaNotification
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingBackground
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.services.fromRow
 import net.perfectdreams.loritta.cinnamon.pudding.tables.*
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BotVotes
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CustomBackgroundSettings
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Reputations
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
+import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedController
@@ -73,15 +122,21 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.GuildSetupQueue
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.JVMLorittaAssets
 import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
+import net.perfectdreams.loritta.morenitta.utils.BomDiaECia
 import net.perfectdreams.loritta.morenitta.utils.ProcessDiscordGatewayCommands
 import net.perfectdreams.loritta.morenitta.utils.Sponsor
-import net.perfectdreams.loritta.morenitta.utils.config.*
+import net.perfectdreams.loritta.morenitta.utils.config.FanArt
+import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.morenitta.utils.locale.LegacyBaseLocale
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
+import net.perfectdreams.loritta.morenitta.utils.newconfig.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.newconfig.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
+import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
+import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
@@ -89,21 +144,29 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.transaction
+import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import java.awt.image.BufferedImage
 import java.io.File
 import java.lang.reflect.Modifier
-import java.net.InetSocketAddress
-import java.net.Proxy
 import java.security.SecureRandom
 import java.sql.Connection
+import java.time.*
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
 import kotlin.math.ceil
+import kotlin.reflect.KClass
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.minutes
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.DurationUnit
+import kotlin.time.ExperimentalTime
+import kotlin.time.measureTimedValue
 
 /**
  * Loritta's main class, where everything (and anything) can happen!
@@ -111,12 +174,12 @@ import kotlin.math.ceil
  * @author MrPowerGamerBR
  */
 class LorittaBot(
-	val discordConfig: GeneralDiscordConfig,
-	val discordInstanceConfig: GeneralDiscordInstanceConfig,
-	val config: GeneralConfig,
-	val instanceConfig: GeneralInstanceConfig,
+	val clusterId: Int,
+	val config: BaseConfig,
+	val languageManager: LanguageManager,
 	val pudding: Pudding,
-	val jedisPool: JedisPool
+	val jedisPool: JedisPool,
+	val redisKeys: RedisKeys,
 ) {
 	// ===[ STATIC ]===
 	companion object {
@@ -144,8 +207,67 @@ class LorittaBot(
 		val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
 	}
 
+	@OptIn(KordUnsafe::class)
+	val rest = RestClient(
+		BetterSTRecoveringKtorRequestHandler(
+			KtorRequestHandler(
+				config.loritta.discord.token,
+				// By default, Kord uses ExclusionRequestRateLimiter, and that suspends all coroutines if a request is ratelimited
+				// So we need to use the ParallelRequestRateLimiter
+				requestRateLimiter = ParallelRequestRateLimiter()
+			)
+		)
+	)
+
+	@OptIn(KordExperimental::class)
+	val kord = Kord.restOnly(config.loritta.discord.token) {
+		requestHandler {
+			StackTraceRecoveringKtorRequestHandler(KtorRequestHandler(it.token))
+		}
+	}
+
+	val cache = DiscordCacheService(this)
+
+	val interaKTions = DiscordInteraKTions(
+		kord,
+		config.loritta.discord.applicationId
+	)
+
+	val interactionsManager = InteractionsManager(
+		this,
+		interaKTions
+	)
+
+	val gabrielaImageServerClient = GabrielaImageServerClient(
+		config.loritta.gabrielaImageServer.url,
+		HttpClient {
+			// Increase the default timeout for image generation, because some video generations may take too long to be generated
+			install(HttpTimeout) {
+				this.socketTimeoutMillis = 60_000
+				this.requestTimeoutMillis = 60_000
+				this.connectTimeoutMillis = 60_000
+			}
+		}
+	)
+	val mojangApi = MinecraftMojangAPI()
+	val correiosClient = CorreiosClient()
+	val randomRoleplayPicturesClient = RandomRoleplayPicturesClient(config.loritta.randomRoleplayPictures.url)
+	val falatronModelsManager = FalatronModelsManager().also {
+		it.startUpdater()
+	}
+	val falatron = Falatron(config.loritta.falatron.url, config.loritta.falatron.key)
+	val soundboard = Soundboard()
+	// TODO: This is very hacky, maybe this could be improved somehow?
+	lateinit var commandMentions: CommandMentions
+	val unicodeEmojiManager = UnicodeEmojiManager()
+	val emojiImageCache = EmojiImageCache()
+	val graphicsFonts = GraphicsFonts()
+	val googleTranslateClient = HackyGoogleTranslateClient()
+	val googleVisionOCRClient = GoogleVisionOCRClient(config.loritta.googleVision.key)
+	val coinFlipBetUtils = CoinFlipBetUtils(this)
+
 	// ===[ LORITTA ]===
-	var lorittaShards = LorittaShards(this) // Shards da Loritta
+	lateinit var lorittaShards: LorittaShards
 	val webhookExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), ThreadFactoryBuilder().setNameFormat("Webhook Sender %d").build())
 	val webhookOkHttpClient = OkHttpClient()
 
@@ -162,6 +284,7 @@ class LorittaBot(
 	var discordMetricsListener = DiscordMetricsListener(this)
 	val gatewayRelayerListener = GatewayEventRelayerListener(this)
 	val addReactionFurryAminoPtListener = AddReactionFurryAminoPtListener(this)
+	val boostGuildListener = BoostGuildListener(this)
 	var builder: DefaultShardManagerBuilder
 
 	lateinit var raffleThread: RaffleThread
@@ -170,7 +293,7 @@ class LorittaBot(
 	var newWebsite: net.perfectdreams.loritta.morenitta.website.LorittaWebsite? = null
 	var newWebsiteThread: Thread? = null
 
-	var twitch = TwitchAPI(config.twitch.clientId, config.twitch.clientSecret)
+	var twitch = TwitchAPI(config.loritta.twitch.clientId, config.loritta.twitch.clientSecret)
 	val connectionManager = ConnectionManager(this)
 	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
@@ -179,13 +302,11 @@ class LorittaBot(
 	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
 
-	var pendingGatewayEventsCount = 0L
-
-	val perfectPaymentsClient = PerfectPaymentsClient(config.perfectPayments.url)
+	val perfectPaymentsClient = PerfectPaymentsClient(config.loritta.perfectPayments.url)
 
 	val commandMap = DiscordCommandMap(this)
 	val assets = JVMLorittaAssets(this)
-	val localeManager = LocaleManager(File(instanceConfig.loritta.folders.locales))
+	val localeManager = LocaleManager(File(config.loritta.folders.locales))
 	var legacyLocales = mapOf<String, LegacyBaseLocale>()
 	val http = HttpClient(Apache) {
 		this.expectSuccess = false
@@ -222,8 +343,8 @@ class LorittaBot(
 		}
 	}
 	val dreamStorageService = DreamStorageServiceClient(
-		config.dreamStorageService.url,
-		config.dreamStorageService.token,
+		config.loritta.dreamStorageService.url,
+		config.loritta.dreamStorageService.token,
 		httpWithoutTimeout
 	)
 
@@ -234,14 +355,11 @@ class LorittaBot(
 		get() = fanArtArtists.flatMap { it.fanArts }
 	val profileDesignManager = ProfileDesignManager(this)
 
-	val isMaster: Boolean
-		get() {
-			return instanceConfig.loritta.currentClusterId == 1L
-		}
+	val isMainInstance = clusterId == 1
 
 	val cachedServerConfigs = Caffeine.newBuilder()
-		.maximumSize(config.caches.serverConfigs.maximumSize)
-		.expireAfterWrite(config.caches.serverConfigs.expireAfterWrite, TimeUnit.SECONDS)
+		.maximumSize(100)
+		.expireAfterWrite(300, TimeUnit.SECONDS)
 		.build<Long, ServerConfig>()
 
 	// Used for message execution
@@ -259,48 +377,60 @@ class LorittaBot(
 	val welcomeModule = WelcomeModule(this)
 	val ecbManager = ECBManager()
 
-	fun redisKey(key: String) = "${config.redis.keyPrefix}:$key"
+	fun redisKey(key: String) = "${config.loritta.redis.keyPrefix}:$key"
 
 	init {
-		FOLDER = instanceConfig.loritta.folders.root
-		ASSETS = instanceConfig.loritta.folders.assets
-		TEMP = instanceConfig.loritta.folders.temp
-		LOCALES = instanceConfig.loritta.folders.locales
-		FRONTEND = instanceConfig.loritta.website.folder
+		FOLDER = config.loritta.folders.root
+		ASSETS = config.loritta.folders.assets
+		TEMP = config.loritta.folders.temp
+		LOCALES = config.loritta.folders.locales
+		FRONTEND = config.loritta.folders.website
 
 		val dispatcher = Dispatcher()
-		dispatcher.maxRequestsPerHost = discordConfig.discord.maxRequestsPerHost
+		dispatcher.maxRequestsPerHost = config.loritta.discord.maxRequestsPerHost
+
 
 		val okHttpBuilder = OkHttpClient.Builder()
 			.dispatcher(dispatcher)
-			.connectTimeout(discordConfig.okHttp.connectTimeout, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
-			.readTimeout(discordConfig.okHttp.readTimeout, TimeUnit.SECONDS)
-			.writeTimeout(discordConfig.okHttp.writeTimeout, TimeUnit.SECONDS)
+			.connectTimeout(config.loritta.discord.okHttp.connectTimeout, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
+			.readTimeout(config.loritta.discord.okHttp.readTimeout, TimeUnit.SECONDS)
+			.writeTimeout(config.loritta.discord.okHttp.writeTimeout, TimeUnit.SECONDS)
 			.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
-			.apply {
-				if (discordConfig.okHttp.proxyUrl != null) {
-					val split = discordConfig.okHttp.proxyUrl.split(":")
-					this.proxy(Proxy(Proxy.Type.HTTP, InetSocketAddress(split[0], split[1].toInt())))
-				}
-			}
 
 
-		builder = DefaultShardManagerBuilder.create(discordConfig.discord.clientToken, discordConfig.discord.intents)
+		builder = DefaultShardManagerBuilder.create(
+			config.loritta.discord.token,
+			GatewayIntent.GUILD_MEMBERS,
+			GatewayIntent.GUILD_EMOJIS,
+			GatewayIntent.GUILD_BANS,
+			GatewayIntent.GUILD_EMOJIS,
+			GatewayIntent.GUILD_INVITES,
+			GatewayIntent.GUILD_MESSAGES,
+			GatewayIntent.GUILD_MESSAGE_REACTIONS,
+			GatewayIntent.GUILD_VOICE_STATES,
+			GatewayIntent.DIRECT_MESSAGES,
+			GatewayIntent.DIRECT_MESSAGE_REACTIONS
+		)
 			// By default all flags are enabled, so we disable all flags and then...
 			.disableCache(CacheFlag.values().toList())
-			.enableCache(discordConfig.discord.cacheFlags) // ...we enable all the flags again
+			// ...we enable all the flags again
+			.enableCache(
+				CacheFlag.EMOTE,
+				CacheFlag.MEMBER_OVERRIDES,
+				CacheFlag.VOICE_STATE
+			)
 			.setChunkingFilter(ChunkingFilter.NONE) // No chunking policy because trying to load all members is hard
 			.setMemberCachePolicy(MemberCachePolicy.ALL) // Cache all members!!
 			.apply {
-				if (discordConfig.shardController.enabled) {
+				if (config.loritta.discord.shardController.enabled) {
 					logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
-					bucketedController = BucketedController(this@LorittaBot, discordConfig.shardController.buckets)
+					bucketedController = BucketedController(this@LorittaBot, config.loritta.discord.shardController.buckets, config.loritta.discord.shardController.gatewayUrl)
 					this.setSessionController(bucketedController)
 				}
 			}
-			.setShardsTotal(discordConfig.discord.maxShards)
+			.setShardsTotal(config.loritta.discord.maxShards)
 			.setShards(lorittaCluster.minShard.toInt(), lorittaCluster.maxShard.toInt())
-			.setStatus(discordConfig.discord.status)
+			.setStatus(config.loritta.discord.status)
 			.setBulkDeleteSplittingEnabled(false)
 			.setHttpClientBuilder(okHttpBuilder)
 			.setRawEventsEnabled(true)
@@ -314,8 +444,8 @@ class LorittaBot(
 				val currentCluster = this.lorittaCluster
 
 				Activity.of(
-					Activity.ActivityType.valueOf(discordConfig.discord.activity.type),
-					"${discordConfig.discord.activity.name} | Cluster ${currentCluster.id} [$it]"
+					Activity.ActivityType.valueOf(config.loritta.discord.activity.type),
+					"${config.loritta.discord.activity.name} | Cluster ${currentCluster.id} [$it]"
 				)
 			}
 			.addEventListeners(
@@ -325,19 +455,51 @@ class LorittaBot(
 				voiceChannelListener,
 				discordMetricsListener,
 				gatewayRelayerListener,
-				addReactionFurryAminoPtListener
+				addReactionFurryAminoPtListener,
+				boostGuildListener
 			)
 	}
 
-	val lorittaCluster: GeneralConfig.LorittaClusterConfig
+	val lorittaCluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig
 		get() {
-			return config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }
+			return config.loritta.clusters.instances.first { it.id == clusterId }
 		}
 
-	val lorittaInternalApiKey: GeneralConfig.LorittaConfig.WebsiteConfig.AuthenticationKey
+	val lorittaInternalApiKey: LorittaConfig.WebsiteConfig.AuthenticationKey
 		get() {
 			return config.loritta.website.apiKeys.first { it.description == "Loritta Internal Key" }
 		}
+
+	val activeEvents = ConcurrentLinkedQueue<Job>()
+
+	val prometheusPushClient = PrometheusPushClient("loritta-morenitta", config.loritta.prometheusPush.url)
+	val voiceConnectionsManager = LorittaVoiceConnectionManager(this)
+
+	private val scope = CoroutineScope(Dispatchers.Default)
+
+	val analyticHandlers = mutableListOf<EventAnalyticsTask.AnalyticHandler>()
+	val cinnamonTasks = CinnamonTasks(this)
+	val tasksScope = CoroutineScope(Dispatchers.Default)
+
+	private val starboardModule = StarboardModule(this)
+	private val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)
+	private val discordCacheModule = DiscordCacheModule(this)
+	private val bomDiaECiaModule = BomDiaECiaModule(this)
+	private val debugGatewayModule = DebugGatewayModule(this)
+	private val owoGatewayModule = OwOGatewayModule(this)
+	private val inviteBlockerModule = InviteBlockerModule(this)
+	private val afkModule = AFKModule(this)
+
+	// This is executed sequentially!
+	val modules = listOf(
+		discordCacheModule,
+		inviteBlockerModule,
+		afkModule,
+		addFirstToNewChannelsModule,
+		starboardModule,
+		owoGatewayModule,
+		debugGatewayModule
+	)
 
 	// Inicia a Loritta
 	fun start() {
@@ -350,8 +512,7 @@ class LorittaBot(
 		File(TEMP).mkdirs()
 		File(LOCALES).mkdirs()
 		File(FRONTEND).mkdirs()
-		File(this.instanceConfig.loritta.folders.plugins).mkdirs()
-		File(this.instanceConfig.loritta.folders.fanArts).mkdirs()
+		File(config.loritta.folders.fanArts).mkdirs()
 
 		logger.info { "Success! Loading locales..." }
 
@@ -359,7 +520,7 @@ class LorittaBot(
 		loadLegacyLocales()
 
 		logger.info { "Success! Loading fan arts..." }
-		if (this.isMaster) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
+		if (this.isMainInstance) // Apenas o master cluster deve carregar as fan arts, os outros clusters irão carregar pela API
 			loadFanArts()
 
 		logger.info { "Success! Loading emotes..." }
@@ -381,14 +542,47 @@ class LorittaBot(
 		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 
 		val shardManager = builder.build()
-		lorittaShards.shardManager = shardManager
+		lorittaShards = LorittaShards(
+			this,
+			shardManager
+		)
 
-		logger.info { "Sucesso! Iniciando plugins da this..." }
+		logger.info { "Starting Pudding tasks..." }
+		// TODO: Fix this
+		// services.startPuddingTasks()
 
-		logger.info { "Sucesso! Iniciando threads da this..." }
+		logger.info { "Registering interactions features..." }
+		runBlocking {
+			interactionsManager.register()
+		}
 
-		logger.info { "Iniciando Update Status Thread..." }
-		UpdateStatusThread(this).start() // Iniciar thread para atualizar o status da Loritta
+		logger.info { "Starting Cinnamon tasks..." }
+		cinnamonTasks.start()
+		startTasks()
+
+		// On every gateway instance present on our gateway manager, collect and process events
+		logger.info { "Preparing gateway event collectors for ${lorittaShards.gatewayManager.gateways.size} gateway instances..." }
+		lorittaShards.gatewayManager.gateways.forEach { (shardId, gateway) ->
+			gateway.installDiscordInteraKTions(interaKTions)
+
+			scope.launch {
+				gateway.events.collect {
+					DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
+						.labels(shardId.toString(), it::class.simpleName ?: "Unknown")
+						.inc()
+
+					launchEventProcessorJob(
+						GatewayEventContext(
+							it,
+							shardId,
+							Clock.System.now()
+						)
+					)
+				}
+			}
+		}
+
+		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
 		logger.info { "Iniciando Tasks..." }
 		val tasks = LorittaTasks(this)
@@ -400,7 +594,7 @@ class LorittaBot(
 		logger.info { "Iniciando bom dia & cia..." }
 		bomDiaECia = BomDiaECia(this)
 
-		if (this.isMaster) {
+		if (this.isMainInstance) {
 			logger.info { "Loading raffle..." }
 			val raffleFile = File(FOLDER, "raffle.json")
 
@@ -533,7 +727,7 @@ class LorittaBot(
 	fun startWebServer() {
 		// Carregar os blog posts
 		newWebsiteThread = thread(true, name = "Website Thread") {
-			val nWebsite = net.perfectdreams.loritta.morenitta.website.LorittaWebsite(this, instanceConfig.loritta.website.url, instanceConfig.loritta.website.folder)
+			val nWebsite = net.perfectdreams.loritta.morenitta.website.LorittaWebsite(this, lorittaCluster.websiteUrl, config.loritta.folders.website)
 			newWebsite = nWebsite
 			nWebsite.start()
 		}
@@ -577,6 +771,22 @@ class LorittaBot(
 		val activeProfileDesignInternalName = this.newSuspendedTransaction { profile.settings.activeProfileDesignInternalName }?.value
 		val activeBackgroundInternalName = this.newSuspendedTransaction { profile.settings.activeBackgroundInternalName }?.value
 		return getUserProfileBackgroundUrl(profile.userId, settingsId, activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
+	}
+
+	/**
+	 * Gets an user's profile background URL
+	 *
+	 * This does *not* crop the profile background
+	 *
+	 * @param profile the user's profile
+	 * @return the background image
+	 */
+	suspend fun getUserProfileBackgroundUrl(profile: PuddingUserProfile): String {
+		val profileSettings = profile.getProfileSettings()
+		val activeProfileDesignInternalName = profileSettings.activeProfileDesign
+		val activeBackgroundInternalName = profileSettings.activeBackground
+		// TODO: Fix default profile design ID
+		return getUserProfileBackgroundUrl(profile.id.value.toLong(), profileSettings.id, activeProfileDesignInternalName ?: ProfileDesign.DEFAULT_PROFILE_DESIGN_ID, activeBackgroundInternalName ?: Background.DEFAULT_BACKGROUND_ID)
 	}
 
 	/**
@@ -633,7 +843,7 @@ class LorittaBot(
 				if (resultRow != null) {
 					val file = resultRow[net.perfectdreams.loritta.morenitta.tables.CustomBackgroundSettings.file]
 					val extension = MediaTypeUtils.convertContentTypeToExtension(resultRow[net.perfectdreams.loritta.morenitta.tables.CustomBackgroundSettings.preferredMediaType])
-					return "${this.config.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBackground(userId, file).join()}.$extension"
+					return "${this.config.loritta.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBackground(userId, file).join()}.$extension"
 				}
 			}
 
@@ -645,7 +855,7 @@ class LorittaBot(
 
 		val dssNamespace = dreamStorageService.getCachedNamespaceOrRetrieve()
 		val variation = background.getVariationForProfileDesign(activeProfileDesignInternalName)
-		return getBackgroundUrlWithCropParameters(this.config.dreamStorageService.url, dssNamespace, variation)
+		return getBackgroundUrlWithCropParameters(this.config.loritta.dreamStorageService.url, dssNamespace, variation)
 	}
 
 	private fun getBackgroundUrl(
@@ -675,7 +885,7 @@ class LorittaBot(
 	 * In the future this will be loaded from Loritta's website!
 	 */
 	fun loadFanArts() {
-		val f = File(instanceConfig.loritta.folders.fanArts)
+		val f = File(config.loritta.folders.fanArts)
 
 		fanArtArtists = f.listFiles().filter { it.extension == "conf" }.map {
 			loadFanArtArtist(it)
@@ -697,7 +907,7 @@ class LorittaBot(
 	fun loadLegacyLocales() {
 		val locales = mutableMapOf<String, LegacyBaseLocale>()
 
-		val legacyLocalesFolder = File(instanceConfig.loritta.folders.locales, "legacy")
+		val legacyLocalesFolder = File(config.loritta.folders.locales, "legacy")
 
 		// Carregar primeiro o locale padrão
 		val defaultLocaleFile = File(legacyLocalesFolder, "default.json")
@@ -866,10 +1076,7 @@ class LorittaBot(
 
 	private fun _getOrCreateServerConfig(guildId: Long): ServerConfig {
 		val result = ServerConfig.findById(guildId) ?: ServerConfig.new(guildId) {}
-
-		if (this.config.caches.serverConfigs.maximumSize != 0L)
-			cachedServerConfigs.put(guildId, result)
-
+		cachedServerConfigs.put(guildId, result)
 		return result
 	}
 
@@ -976,6 +1183,336 @@ class LorittaBot(
 			if (diff >= 60_000) {
 				logger.warn { "Message Coroutine $job took too long to process! ${diff}ms" }
 			}
+		}
+	}
+
+	fun isOwner(userId: String) = isOwner(Snowflake(userId))
+	fun isOwner(userId: Long) = isOwner(Snowflake(userId))
+	fun isOwner(userId: Snowflake) = userId in config.loritta.ownerIds
+
+	suspend fun getCachedUserInfo(userId: Snowflake) = getCachedUserInfo(UserId(userId.value))
+
+	suspend fun getCachedUserInfo(userId: UserId): net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo? {
+		// First, try getting the cached user info from the database
+		val cachedUserInfoFromDatabase = pudding.users.getCachedUserInfoById(userId)
+		if (cachedUserInfoFromDatabase != null)
+			return cachedUserInfoFromDatabase
+
+		// If not present, get it from Discord!
+		val restUser = try {
+			rest.user.getUser(Snowflake(userId.value))
+		} catch (e: KtorRequestException) {
+			null
+		}
+
+		if (restUser != null) {
+			// If the REST user really exists, then let's update it in our database and then return the cached user info
+			pudding.users.insertOrUpdateCachedUserInfo(
+				UserId(restUser.id.value),
+				restUser.username,
+				restUser.discriminator,
+				restUser.avatar
+			)
+
+			return net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo(
+				UserId(restUser.id.value),
+				restUser.username,
+				restUser.discriminator,
+				restUser.avatar
+			)
+		}
+
+		return null
+	}
+
+	suspend fun insertOrUpdateCachedUserInfo(user: User) {
+		pudding.users.insertOrUpdateCachedUserInfo(
+			UserId(user.id.value),
+			user.username,
+			user.discriminator,
+			user.data.avatar
+		)
+	}
+
+	suspend inline fun <reified T> encodeDataForComponentOnDatabase(data: T, ttl: Duration = 15.minutes): ComponentOnDatabaseStoreResult<T> {
+		// Can't fit on a button... Let's store it on the database!
+		val now = Clock.System.now()
+
+		val interactionDataId = pudding.interactionsData.insertInteractionData(
+			Json.encodeToJsonElement<T>(
+				data
+			).jsonObject,
+			now,
+			now + ttl
+		)
+
+		val storedGenericInteractionData = StoredGenericInteractionData(ComponentDataUtils.KTX_SERIALIZATION_SIMILAR_PROTOBUF_STRUCTURE_ISSUES_WORKAROUND_DUMMY, interactionDataId)
+
+		return ComponentOnDatabaseStoreResult(
+			interactionDataId,
+			storedGenericInteractionData,
+			ComponentDataUtils.encode(storedGenericInteractionData)
+		)
+	}
+
+	suspend inline fun <reified T> decodeDataFromComponentOnDatabase(data: String): ComponentOnDatabaseQueryResult<T> {
+		val genericInteractionData = ComponentDataUtils.decode<StoredGenericInteractionData>(data)
+
+		val dataFromDatabase = pudding.interactionsData.getInteractionData(genericInteractionData.interactionDataId)
+			?.jsonObject ?: return ComponentOnDatabaseQueryResult(genericInteractionData, null)
+
+		return ComponentOnDatabaseQueryResult(genericInteractionData, Json.decodeFromJsonElement<T>(dataFromDatabase))
+	}
+
+	/**
+	 * Encodes the [data] to fit on a button. If it doesn't fit in a button, a [StoredGenericInteractionData] will be encoded instead and the data will be stored on the database.
+	 */
+	suspend inline fun <reified T> encodeDataForComponentOrStoreInDatabase(data: T, ttl: Duration = 15.minutes): String {
+		val encoded = ComponentDataUtils.encode(data)
+
+		// Let's suppose that all components always have 5 characters at the start
+		// (Technically it is true: Discord InteraKTions uses ":" as the separator, and we only use 4 chars for ComponentExecutorIds)
+		val padStart = 5 // "0000:"
+
+		if (100 - padStart >= encoded.length) {
+			// Can fit on a button! So let's just return what we currently have
+			return encoded
+		} else {
+			// Can't fit on a button... Let's store it on the database!
+			return encodeDataForComponentOnDatabase(data, ttl).serializedData
+		}
+	}
+
+	/**
+	 * Decodes the [data] based on the source data:
+	 * * If [data] is a [StoredGenericInteractionData], the data will be retrieved from the database and deserialized using [T]
+	 * * If else, the data will be deserialized using [T]
+	 *
+	 * This should be used in conjuction with [encodeDataForComponentOrStoreInDatabase]
+	 */
+	suspend inline fun <reified T> decodeDataFromComponentOrFromDatabase(data: String): T? {
+		return try {
+			val result = decodeDataFromComponentOnDatabase<T>(data)
+			result.data
+		} catch (e: SerializationException) {
+			// If the deserialization failed, then let's try deserializing as T
+			ComponentDataUtils.decode<T>(data)
+		}
+	}
+
+	data class ComponentOnDatabaseStoreResult<T>(
+		val interactionDataId: Long,
+		val data: StoredGenericInteractionData,
+		val serializedData: String
+	)
+
+	data class ComponentOnDatabaseQueryResult<T>(
+		val genericInteractionData: StoredGenericInteractionData,
+		val data: T?
+	)
+
+
+	private fun launchEventJob(
+		coroutineName: String,
+		durations: Map<KClass<*>, Duration>,
+		block: suspend CoroutineScope.() -> Unit
+	) {
+		val start = System.currentTimeMillis()
+
+		val job = scope.launch(
+			CoroutineName(coroutineName),
+			block = block
+		)
+
+		activeEvents.add(job)
+		DiscordGatewayEventsProcessorMetrics.activeEvents.set(activeEvents.size.toDouble())
+
+		// Yes, the order matters, since sometimes the invokeOnCompletion would be invoked before the job was
+		// added to the list, causing leaks.
+		// invokeOnCompletion is also invoked even if the job was already completed at that point, so no worries!
+		job.invokeOnCompletion {
+			activeEvents.remove(job)
+			DiscordGatewayEventsProcessorMetrics.activeEvents.set(activeEvents.size.toDouble())
+
+			val diff = System.currentTimeMillis() - start
+			if (diff >= 60_000) {
+				logger.warn { "Coroutine $job ($coroutineName) took too long to process! ${diff}ms - Module Durations: $durations" }
+			}
+		}
+	}
+
+	@OptIn(ExperimentalTime::class)
+	private fun launchEventProcessorJob(context: GatewayEventContext) {
+		if (context.event != null) {
+			val coroutineName = "Event ${context.event::class.simpleName}"
+			launchEventJob(coroutineName, context.durations) {
+				try {
+					for (module in modules) {
+						val (result, duration) = measureTimedValue { module.processEvent(context) }
+						context.durations[module::class] = duration
+						DiscordGatewayEventsProcessorMetrics.executedModuleLatency
+							.labels(module::class.simpleName!!, context.event::class.simpleName!!)
+							.observe(duration.toDouble(DurationUnit.SECONDS))
+
+						when (result) {
+							ModuleResult.Cancel -> {
+								// Module asked us to stop processing the events
+								return@launchEventJob
+							}
+							ModuleResult.Continue -> {
+								// Module asked us to continue processing the events
+							}
+						}
+					}
+				} catch (e: Throwable) {
+					logger.warn(e) { "Something went wrong while trying to process $coroutineName! We are going to ignore..." }
+				}
+			}
+		} else
+			logger.warn { "Unknown Discord event received! We are going to ignore the event... kthxbye!" }
+	}
+
+	/**
+	 * Gets the current registered application commands count
+	 */
+	fun getCommandCount() = interactionsManager.interaKTions.manager.applicationCommandsExecutors.size
+
+	/**
+	 * Sends the [builder] message to the [userId] via the user's direct message channel.
+	 *
+	 * The ID of the direct message channel is cached.
+	 */
+	suspend fun sendMessageToUserViaDirectMessage(userId: Snowflake, builder: UserMessageCreateBuilder.() -> (Unit)) = sendMessageToUserViaDirectMessage(
+		UserId(userId),
+		builder
+	)
+
+	/**
+	 * Sends the [builder] message to the [userId] via the user's direct message channel.
+	 *
+	 * The ID of the direct message channel is cached.
+	 */
+	suspend fun sendMessageToUserViaDirectMessage(userId: UserId, builder: UserMessageCreateBuilder.() -> (Unit)) = UserUtils.sendMessageToUserViaDirectMessage(
+		pudding,
+		rest,
+		userId,
+		builder
+	)
+
+	/**
+	 * Adds an analytic handler, used for debugging logs on the [EventAnalyticsTask]
+	 */
+	fun addAnalyticHandler(handler: EventAnalyticsTask.AnalyticHandler) = analyticHandlers.add(handler)
+
+	/**
+	 * Schedules [action] to be executed on [tasksScope] every [period] with a [initialDelay]
+	 */
+	private fun scheduleCoroutineAtFixedRate(
+		period: Duration,
+		initialDelay: Duration = Duration.ZERO,
+		action: RunnableCoroutine
+	) {
+		logger.info { "Scheduling ${action::class.simpleName} to be ran every $period with a $initialDelay initial delay" }
+		scheduleCoroutineAtFixedRate(tasksScope, period, initialDelay, action)
+	}
+
+	/**
+	 * Schedules [action] to be executed on [tasksScope] every [period] with a [initialDelay] if this [isMainReplica]
+	 */
+	private fun scheduleCoroutineAtFixedRateIfMainReplica(
+		period: Duration,
+		initialDelay: Duration = Duration.ZERO,
+		action: RunnableCoroutine
+	) {
+		if (isMainInstance)
+			scheduleCoroutineAtFixedRate(period, initialDelay, action)
+	}
+
+	private fun scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(time: LocalTime, action: RunnableCoroutine) {
+		val now = Instant.now()
+		val today = LocalDate.now(ZoneOffset.UTC)
+		val todayAtTime = LocalDateTime.of(today, time)
+		val gonnaBeScheduledAtTime =  if (now > todayAtTime.toInstant(ZoneOffset.UTC)) {
+			// If today at time is larger than today, then it means that we need to schedule it for tomorrow
+			todayAtTime.plusDays(1)
+		} else todayAtTime
+
+		val diff = gonnaBeScheduledAtTime.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
+
+		scheduleCoroutineAtFixedRateIfMainReplica(
+			1.days,
+			diff.milliseconds,
+			action
+		)
+	}
+
+	private fun startTasks() {
+		scheduleCoroutineAtFixedRateIfMainReplica(15.seconds, action = CorreiosPackageInfoUpdater(this@LorittaBot))
+		scheduleCoroutineAtFixedRateIfMainReplica(1.seconds, action = PendingImportantNotificationsProcessor(this@LorittaBot))
+
+		val dailyTaxWarner = DailyTaxWarner(this)
+		val dailyTaxCollector = DailyTaxCollector(this)
+
+		// 12 hours before
+		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			LocalTime.of(12, 0),
+			dailyTaxWarner
+		)
+
+		// 4 hours before
+		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			LocalTime.of(20, 0),
+			dailyTaxWarner
+		)
+
+		// 1 hour before
+		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			LocalTime.of(23, 0),
+			dailyTaxWarner
+		)
+
+		// at midnight + notify about the user about taxes
+		scheduleCoroutineEveryDayAtSpecificHourIfMainReplica(
+			LocalTime.MIDNIGHT,
+			dailyTaxCollector
+		)
+	}
+
+	/**
+	 * Gets an user's profile background image or, if the user has a custom background, loads the custom background.
+	 *
+	 * To avoid exceeding the available memory, profiles are loaded from the "cropped_profiles" folder,
+	 * which has all the images in 800x600 format.
+	 *
+	 * @param background the user's background
+	 * @return the background image
+	 */
+	suspend fun getUserProfileBackground(profile: PuddingUserProfile): BufferedImage {
+		val backgroundUrl = getUserProfileBackgroundUrl(profile)
+		val response = http.get(backgroundUrl) {
+			userAgent(lorittaCluster.getUserAgent(this@LorittaBot))
+		}
+
+		val bytes = response.readBytes()
+
+		return net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage(bytes.inputStream())
+	}
+
+	suspend fun <T> redisConnection(action: (Jedis) -> (T)) = withContext(Dispatchers.IO) {
+		jedisPool.resource.use {
+			action.invoke(it)
+		}
+	}
+
+	suspend fun <T> redisTransaction(action: (redis.clients.jedis.Transaction) -> (T)) = redisConnection {
+		val t = it.multi()
+		try {
+			action.invoke(t)
+			t.exec()
+		} catch (e: Throwable) {
+			e.printStackTrace()
+			t.discard()
+			throw e
 		}
 	}
 }

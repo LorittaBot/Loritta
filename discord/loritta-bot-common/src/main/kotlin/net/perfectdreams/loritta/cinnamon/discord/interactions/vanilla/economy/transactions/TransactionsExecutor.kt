@@ -9,7 +9,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
@@ -29,12 +29,12 @@ import net.perfectdreams.loritta.common.utils.TransactionType
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import kotlin.math.ceil
 
-class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
         private const val TRANSACTIONS_PER_PAGE = 10
 
         suspend fun createMessage(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             i18nContext: I18nContext,
             userId: Snowflake,
             viewingTransactionsOfUserId: Snowflake,
@@ -178,7 +178,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
         }
 
         private suspend fun EmbedBuilder.createTransactionViewEmbed(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             i18nContext: I18nContext,
             isSelf: Boolean,
             cachedUserInfo: CachedUserInfo,
@@ -254,7 +254,7 @@ class TransactionsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecu
         }
 
         private fun createNoMatchingTransactionsEmbed(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             i18nContext: I18nContext,
             isSelf: Boolean,
             cachedUserInfo: CachedUserInfo?,

@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.magic
 
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.threads.UpdateStatusThread
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -49,15 +48,6 @@ class ReloadCommand(loritta: LorittaBot) : AbstractCommand(loritta, "reload", ca
 			context.reply(
                     LorittaReply(
                             message = "Shard $shardId está sendo reiniciada... Gotta go fast!!!"
-                    )
-			)
-			return
-		}
-		if (arg0 == "setindex") {
-			UpdateStatusThread.skipToIndex = context.args[1].toInt()
-			context.reply(
-                    LorittaReply(
-                            message = "Index alterada!"
                     )
 			)
 			return

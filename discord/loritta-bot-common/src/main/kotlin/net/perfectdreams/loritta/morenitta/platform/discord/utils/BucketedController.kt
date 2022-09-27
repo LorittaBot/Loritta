@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.utils.SessionController
 import net.dv8tion.jda.api.utils.SessionController.SessionConnectNode
 import net.dv8tion.jda.api.utils.SessionControllerAdapter
@@ -16,7 +17,7 @@ import javax.annotation.Nonnegative
  *
  * Thanks Mantaro! https://github.com/Mantaro/MantaroBot/blob/0abd5d98af728e24a5b0fb4a0ad63fc451ef8d0f/src/main/java/net/kodehawa/mantarobot/core/shard/jda/BucketedController.java
  */
-class BucketedController @JvmOverloads constructor(val loritta: LorittaBot, @Nonnegative bucketFactor: Int = 16) : SessionControllerAdapter() {
+class BucketedController @JvmOverloads constructor(val loritta: LorittaBot, @Nonnegative bucketFactor: Int = 16, val gatewayUrl: String?) : SessionControllerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 	}
@@ -45,10 +46,10 @@ class BucketedController @JvmOverloads constructor(val loritta: LorittaBot, @Non
 				removeOutdatedGlobalRateLimitHits()
 
 				rateLimits.add(
-						RateLimitHit(
-								ratelimit,
-								System.currentTimeMillis()
-						)
+					RateLimitHit(
+						ratelimit,
+						System.currentTimeMillis()
+					)
 				)
 			}
 		}
@@ -88,8 +89,15 @@ class BucketedController @JvmOverloads constructor(val loritta: LorittaBot, @Non
 		return shardControllers[node.shardInfo.shardId % shardControllers.size]
 	}
 
+	override fun getGateway(api: JDA): String {
+		if (gatewayUrl != null)
+			return gatewayUrl
+
+		return super.getGateway(api)
+	}
+
 	private data class RateLimitHit(
-			val wait: Long,
-			val hitAt: Long
+		val wait: Long,
+		val hitAt: Long
 	)
 }

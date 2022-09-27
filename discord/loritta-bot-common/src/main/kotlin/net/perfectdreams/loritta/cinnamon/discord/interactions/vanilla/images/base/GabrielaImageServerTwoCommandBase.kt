@@ -8,10 +8,10 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Applicat
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 open class GabrielaImageServerTwoCommandBase(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     val client: GabrielaImageServerClient,
     val block: suspend GabrielaImageServerClient.(TwoImagesRequest) -> (ByteArray),
     val fileName: String

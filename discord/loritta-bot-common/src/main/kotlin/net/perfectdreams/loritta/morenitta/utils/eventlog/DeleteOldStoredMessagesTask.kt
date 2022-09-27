@@ -16,7 +16,7 @@ class DeleteOldStoredMessagesTask(val loritta: LorittaBot) : Runnable {
         // Because this is only a clean up task, we don't care about reading uncommited changes.
         // We also try executing it 999 times, not really a big issue because we *want* the data to be deleted.
         runBlocking {
-            loritta.pudding.transaction(Connection.TRANSACTION_READ_UNCOMMITTED, 999) {
+            loritta.pudding.transaction(999, Connection.TRANSACTION_READ_UNCOMMITTED) {
                 StoredMessages.deleteWhere {
                     StoredMessages.createdAt lessEq System.currentTimeMillis() - TWO_WEEKS
                 }

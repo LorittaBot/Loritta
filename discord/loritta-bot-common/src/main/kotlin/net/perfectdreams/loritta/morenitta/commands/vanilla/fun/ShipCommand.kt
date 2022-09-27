@@ -125,7 +125,7 @@ class ShipCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ship", listOf
 					percentage = effect.editedShipValue
 				}
 
-				if ((user1.id == loritta.discordConfig.discord.clientId || user2.id == loritta.discordConfig.discord.clientId) && (!loritta.config.isOwner(user1.id) && !loritta.config.isOwner(user2.id))) {
+				if ((user1.id == loritta.config.loritta.discord.applicationId.toString() || user2.id == loritta.config.loritta.discord.applicationId.toString()) && (!loritta.isOwner(user1.id) && !loritta.isOwner(user2.id))) {
 					percentage = random.nextInt(0, 51)
 				}
 			}
@@ -133,7 +133,7 @@ class ShipCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ship", listOf
 			if (LorittaBot.RANDOM.nextInt(0, 50) == 9 && context.lorittaUser.profile.money >= 3000) {
 				context.reply(
 					LorittaReply(
-						context.locale["commands.command.ship.bribeLove", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/ship-effects"]
+						context.locale["commands.command.ship.bribeLove", "${loritta.config.loritta.website.url}user/@me/dashboard/ship-effects"]
 					)
 				)
 			}

@@ -46,21 +46,12 @@ class OCRCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ocr", listOf("
 					)
 			)
 
-			val response = loritta.http.post("https://content-vision.googleapis.com/v1/images:annotate?key=${loritta.config.googleVision.apiKey}&alt=json") {
-				contentType(ContentType.Application.Json)
-				userAgent("Google-API-Java-Client Google-HTTP-Java-Client/1.21.0 (gzip)")
-
-				setBody(gson.toJson(json))
-			}
-
-			val body = response.bodyAsText()
-
-			val parsedResponse = JsonParser.parseString(body)
+			val responses = loritta.googleVisionOCRClient.ocr(it.toByteArray())
 
 			val builder = EmbedBuilder()
 			builder.setTitle("\uD83D\uDCDD\uD83D\uDD0D OCR")
 			try {
-				builder.setDescription("```${parsedResponse["responses"][0]["textAnnotations"][0]["description"].string}```")
+				builder.setDescription("```${responses.responses.first().textAnnotations!!.first().description}```")
 			} catch (e: Exception) {
 				builder.setDescription("**${locale["commands.command.ocr.couldntFind"]}**")
 			}

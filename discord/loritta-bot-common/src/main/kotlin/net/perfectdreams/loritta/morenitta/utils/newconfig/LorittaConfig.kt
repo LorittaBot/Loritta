@@ -1,0 +1,287 @@
+package net.perfectdreams.loritta.morenitta.utils.newconfig
+
+import dev.kord.common.entity.Snowflake
+import kotlinx.serialization.Serializable
+import net.dv8tion.jda.api.OnlineStatus
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
+import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
+
+@Serializable
+data class LorittaConfig(
+    val environment: EnvironmentType,
+    val ownerIds: List<Snowflake>,
+    val clusterReadTimeout: Int,
+    val clusterConnectionTimeout: Int,
+    val webhookSecret: String,
+    val discord: DiscordConfig,
+    val interactions: InteractionsConfig,
+    val clusters: LorittaClustersConfig,
+    val folders: FoldersConfig,
+    val commands: CommandsConfig,
+    val website: WebsiteConfig,
+    val pudding: PuddingConfig,
+    val redis: RedisConfig,
+    val perfectPayments: PerfectPaymentsConfig,
+    val binaries: BinariesConfig,
+    val prometheusPush: PrometheusPushConfig,
+    val falatron: FalatronConfig,
+    val gabrielaImageServer: GabrielaImageServerConfig,
+    val dreamStorageService: DreamStorageServiceConfig,
+    val randomRoleplayPictures: RandomRoleplayPicturesConfig,
+    val youtube: YouTubeConfig,
+    val openWeatherMap: OpenWeatherMapConfig,
+    val googleVision: GoogleVisionConfig,
+    val googleRecaptcha: GoogleRecaptchaConfig,
+    val messageEncryption: MessageEncryptionConfig,
+    val crowdin: CrowdinConfig,
+    val twitter: TwitterConfig,
+    val twitch: TwitchConfig,
+    val quirky: QuirkyConfig,
+    val donatorsOstentation: DonatorsOstentationConfig,
+    val connectionManager: ConnectionManagerConfig,
+    val antiRaidIds: List<Snowflake>
+) {
+    @Serializable
+    data class DiscordConfig(
+        val token: String,
+        val applicationId: Snowflake,
+        val clientSecret: String,
+        val addBotUrl: String,
+        val authorizationUrl: String,
+        val maxShards: Int,
+        val maxRequestsPerHost: Int,
+        val status: OnlineStatus,
+        val activity: LorittaGameStatus,
+        val okHttp: JdaOkHttpConfig,
+        val shardController: ShardControllerConfig,
+        val requestLimiter: RequestLimiterConfig
+    ) {
+        @Serializable
+        data class LorittaGameStatus(
+            val name: String,
+            val type: String
+        )
+
+        @Serializable
+        data class JdaOkHttpConfig(
+            val readTimeout: Long,
+            val connectTimeout: Long,
+            val writeTimeout: Long
+        )
+
+        @Serializable
+        data class ShardControllerConfig(
+            val enabled: Boolean,
+            val url: String,
+            val buckets: Int,
+            val gatewayUrl: String?,
+        )
+
+        @Serializable
+        data class RequestLimiterConfig(
+            val enabled: Boolean,
+            val maxRequestsPer10Minutes: Int,
+            val consoleWarnCooldown: Long,
+            val removePendingRequestsCooldown: Long
+        )
+    }
+
+    @Serializable
+    data class InteractionsConfig(
+        val registerGlobally: Boolean,
+        val guildsToBeRegistered: List<Snowflake>
+    )
+
+    @Serializable
+    class LorittaClustersConfig(
+        val getClusterIdFromHostname: Boolean,
+        val clusterIdOverride: Int? = null,
+        val instances: List<LorittaClusterConfig>
+    ) {
+        @Serializable
+        class LorittaClusterConfig(
+            val id: Int,
+            val name: String,
+            val minShard: Long,
+            val maxShard: Long,
+            val websiteUrl: String
+        ) {
+            fun getUrl(loritta: LorittaBot) = DiscordUtils.getUrlForLorittaClusterId(loritta, id)
+            fun getUserAgent(loritta: LorittaBot) = getUserAgent(loritta.config.loritta.environment)
+            fun getUserAgent(environmentType: EnvironmentType) = (
+                    if (environmentType == EnvironmentType.CANARY)
+                        Constants.CANARY_CLUSTER_USER_AGENT
+                    else
+                        Constants.CLUSTER_USER_AGENT
+                    ).format(id, name)
+        }
+    }
+
+    @Serializable
+    data class FoldersConfig(
+        val root: String,
+        val assets: String,
+        val temp: String,
+        val locales: String,
+        val website: String,
+        val fanArts: String
+    )
+
+    @Serializable
+    data class CommandsConfig(
+        val cooldown: Int,
+        val imageCooldown: Int,
+        val commandsCooldown: Map<String, Int>
+    )
+
+    @Serializable
+    data class WebsiteConfig(
+        val url: String,
+        val port: Int,
+        val apiKeys: List<AuthenticationKey>,
+        val maxGuildTries: Int,
+        val sessionHex: String,
+        val sessionName: String
+    ) {
+        @Serializable
+        data class AuthenticationKey (
+            val name: String,
+            val description: String,
+            val allowed: List<String>
+        )
+    }
+
+    @Serializable
+    data class PuddingConfig(
+        val database: String,
+        val address: String,
+        val username: String,
+        val password: String
+    )
+
+    @Serializable
+    data class RedisConfig(
+        val keyPrefix: String,
+        val address: String,
+        val password: String?
+    )
+
+    @Serializable
+    data class PerfectPaymentsConfig(
+        val url: String,
+        val notificationToken: String,
+        val token: String
+    )
+
+    @Serializable
+    data class BinariesConfig(
+        val ffmpeg: String
+    )
+
+    @Serializable
+    data class FalatronConfig(
+        val url: String,
+        val key: String
+    )
+
+    @Serializable
+    data class GabrielaImageServerConfig(val url: String)
+
+    @Serializable
+    data class DreamStorageServiceConfig(
+        val url: String,
+        val token: String
+    )
+
+    @Serializable
+    data class RandomRoleplayPicturesConfig(val url: String)
+
+    @Serializable
+    data class PrometheusPushConfig(val url: String)
+
+    @Serializable
+    data class YouTubeConfig(val key: String)
+
+    @Serializable
+    data class OpenWeatherMapConfig(val key: String)
+
+    @Serializable
+    data class GoogleVisionConfig(val key: String)
+
+    @Serializable
+    data class GoogleRecaptchaConfig(
+        val serverVoteToken: String,
+        val reputationToken: String
+    )
+
+    @Serializable
+    data class CrowdinConfig(val url: String)
+
+    @Serializable
+    data class MessageEncryptionConfig(val encryptionKey: String)
+
+    @Serializable
+    data class TwitterConfig(
+        val oAuthConsumerKey: String,
+        val oAuthConsumerSecret: String,
+        val oAuthAccessToken: String,
+        val oAuthAccessTokenSecret: String
+    )
+
+    @Serializable
+    data class TwitchConfig(
+        val clientId: String,
+        val clientSecret: String
+    )
+
+    @Serializable
+    class QuirkyConfig(
+        val randomReactions: RandomReactionsConfig,
+        val tioDoPave: TioDoPaveConfig,
+        val canecaUsers: List<Long>
+    ) {
+        @Serializable
+        class RandomReactionsConfig(
+            val enabled: Boolean,
+            val maxBound: Int,
+            val reactions: List<String>,
+            val contextAwareReactions: List<ContextAwareReaction>
+        ) {
+            @Serializable
+            class ContextAwareReaction(
+                val match: String,
+                val chanceOf: Double,
+                val reactions: List<String>
+            )
+        }
+        @Serializable
+        class TioDoPaveConfig(
+            val enabled: Boolean,
+            val chance: Double
+        )
+    }
+
+    @Serializable
+    class DonatorsOstentationConfig(
+        val boostEnabledGuilds: List<BoostEnabledGuild>,
+        val boostMax: Int,
+        val automaticallyUpdateMessage: Boolean,
+        val channelId: Long,
+        val messageId: Long
+    ) {
+        @Serializable
+        class BoostEnabledGuild(
+            val id: Long,
+            val inviteId: String,
+            val priority: Int
+        )
+    }
+
+    @Serializable
+    data class ConnectionManagerConfig(
+        val trustedDomains: List<String>,
+        val blockedDomains: List<String>
+    )
+}

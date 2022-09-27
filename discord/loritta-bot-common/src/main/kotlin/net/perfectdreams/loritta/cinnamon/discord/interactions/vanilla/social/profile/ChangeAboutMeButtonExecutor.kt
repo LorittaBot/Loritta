@@ -2,14 +2,14 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.p
 
 import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.modals.components.textInput
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.i18n.I18nKeysData
 
-class ChangeAboutMeButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecutor(loritta) {
+class ChangeAboutMeButtonExecutor(loritta: LorittaBot) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.CHANGE_ABOUT_ME_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext) {

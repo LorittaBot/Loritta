@@ -15,7 +15,7 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
@@ -36,10 +36,10 @@ import java.util.*
 object UserUtils {
     private val logger = KotlinLogging.logger {}
 
-    suspend fun handleIfUserIsBanned(loritta: LorittaCinnamon, context: InteractionContext, user: User)
+    suspend fun handleIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, user: User)
             = handleIfUserIsBanned(loritta, context, user.id)
 
-    suspend fun handleIfUserIsBanned(loritta: LorittaCinnamon, context: InteractionContext, userId: Snowflake): Boolean {
+    suspend fun handleIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, userId: Snowflake): Boolean {
         // Check if the user is banned from using Loritta
         val userBannedState = loritta.pudding.users.getUserBannedState(UserId(userId))
 

@@ -35,7 +35,7 @@ class DailyShopRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
 							setMetaProperty("og:site_name", "Loritta")
 							setMetaProperty("og:title", "Loja Diária")
 							setMetaProperty("og:description", "Bem-vind@ a loja diária de itens! O lugar para comprar itens para o seu \"+perfil\" da Loritta!\n\nTodo o dia as 00:00 UTC (21:00 no horário do Brasil) a loja é atualizada com novos itens! Então volte todo o dia para verificar ^-^")
-							setMetaProperty("og:image", loritta.instanceConfig.loritta.website.url + "assets/img/loritta_daily_shop.png")
+							setMetaProperty("og:image", loritta.config.loritta.website.url + "assets/img/loritta_daily_shop.png")
 							setMetaProperty("og:image:width", "320")
 							setMetaProperty("og:ttl", "660")
 							setMetaProperty("og:image:width", "320")

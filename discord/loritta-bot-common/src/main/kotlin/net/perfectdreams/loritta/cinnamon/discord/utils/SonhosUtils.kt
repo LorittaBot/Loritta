@@ -8,7 +8,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
@@ -28,7 +28,7 @@ object SonhosUtils {
     fun insufficientSonhos(sonhos: Long, howMuch: Long) = I18nKeysData.Commands.InsufficientFunds(howMuch, howMuch - sonhos)
 
     suspend fun MessageBuilder.appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         i18nContext: I18nContext,
         userId: UserId,
         upsellMedium: String,
@@ -51,7 +51,7 @@ object SonhosUtils {
             styled(
                 i18nContext.get(
                     GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                        loritta.config.loritta.website,
+                        loritta.config.loritta.website.url,
                         upsellMedium,
                         upsellCampaignContent
                     )
@@ -68,7 +68,7 @@ object SonhosUtils {
     }
 
     suspend fun sendEphemeralMessageIfUserHaventGotDailyRewardToday(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         context: InteractionContext,
         userId: UserId
     ) {

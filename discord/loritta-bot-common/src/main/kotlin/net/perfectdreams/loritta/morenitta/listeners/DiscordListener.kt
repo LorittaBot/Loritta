@@ -205,7 +205,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
 		val user = e.user ?: return
 
-		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(user.idLong) && user.isBot) // Se uma mensagem de um bot, ignore a mensagem!
+		if (user.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
 		if (DebugLog.cancelAllEvents)
@@ -438,7 +438,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			try {
-				if (event.user.id == loritta.discordConfig.discord.clientId)
+				if (event.user.id == loritta.config.loritta.discord.applicationId.toString())
 					return@launch
 
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)

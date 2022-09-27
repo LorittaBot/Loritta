@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.
 
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonUserCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.UserAvatarUserExecutor
 

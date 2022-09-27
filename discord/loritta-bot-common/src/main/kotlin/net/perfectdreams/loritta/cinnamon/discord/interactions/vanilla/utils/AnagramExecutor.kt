@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils
 
 import com.ionspin.kotlin.bignum.integer.toBigInteger
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.dec
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.math.MathUtils
 
-class AnagramExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class AnagramExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val text = string("text", AnagramCommand.I18N_PREFIX.Options.Text)
     }

@@ -23,7 +23,7 @@ class TempoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "weather", li
 		if (context.args.isNotEmpty()) {
 			val cidade = context.args.joinToString(separator = " ")
 
-			val cidadeResponse = HttpRequest.get("http://api.openweathermap.org/data/2.5/forecast?q=" + URLEncoder.encode(cidade, "UTF-8") + "&units=metric&lang=pt&APPID=" + loritta.config.openWeatherMap.apiKey).body()
+			val cidadeResponse = HttpRequest.get("http://api.openweathermap.org/data/2.5/forecast?q=" + URLEncoder.encode(cidade, "UTF-8") + "&units=metric&lang=pt&APPID=" + loritta.config.loritta.openWeatherMap.key).body()
 			val cidadeJsonResponse = JsonParser.parseString(cidadeResponse).asJsonObject // Base
 
 			if (cidadeJsonResponse.get("cod").asString == "200") { // Nós encontramos alguma coisa?

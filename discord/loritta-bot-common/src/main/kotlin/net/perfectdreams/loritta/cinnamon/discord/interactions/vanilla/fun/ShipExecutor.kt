@@ -11,7 +11,7 @@ import net.perfectdreams.i18nhelper.core.keydata.ListI18nData
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.ShipCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
@@ -26,7 +26,7 @@ import kotlin.math.absoluteValue
 import kotlin.random.Random
 
 class ShipExecutor(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     val client: GabrielaImageServerClient
 ) : CinnamonSlashCommandExecutor(loritta) {
     companion object {

@@ -34,7 +34,6 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostSendM
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetAvailableBackgroundsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetAvailableProfileDesignsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetCommandsRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetCurrentFanMadeAvatarRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetFanArtsController
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetLocaleRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetLorittaActionRoute
@@ -174,7 +173,6 @@ object DefaultRoutes {
 
 		// Loritta
 		GetCommandsRoute(loritta),
-		GetCurrentFanMadeAvatarRoute(loritta),
 		GetFanArtsController(loritta),
 		GetLocaleRoute(loritta),
 		GetLorittaActionRoute(loritta),

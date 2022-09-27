@@ -162,7 +162,7 @@ class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf
 				var tellUserLorittaIsGrateful = false
 				val userProfile = loritta.getOrCreateLorittaProfile(user.idLong)
 
-				if (user.idLong == loritta.discordConfig.discord.clientId.toLong()) {
+				if (user.idLong == loritta.config.loritta.discord.applicationId.toString().toLong()) {
 					// If it is Loritta, she doesn't want to *feel* that she is poor if she is rich
 					// So, to do that, the check is dynamic
 					// If she has 1_000_000 sonhos, she will want *at least* 100_000 sonhos
@@ -206,7 +206,7 @@ class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf
 								mentionUser = false
 						),
 						LorittaReply(
-								context.locale["commands.command.pay.sellDisallowedWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
+								context.locale["commands.command.pay.sellDisallowedWarning", "${loritta.config.loritta.website.url}guidelines"],
 								Emotes.LORI_BAN_HAMMER,
 								mentionUser = false
 						)
@@ -226,7 +226,7 @@ class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf
 									message.removeAllFunctions(loritta)
 
 									logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
-									val shard = loritta.config.clusters.first { it.id == 1L }
+									val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
 
 									val body = HttpRequest.post("https://${shard.getUrl(loritta)}/api/v1/loritta/transfer-balance")
 											.userAgent(loritta.lorittaCluster.getUserAgent(loritta))

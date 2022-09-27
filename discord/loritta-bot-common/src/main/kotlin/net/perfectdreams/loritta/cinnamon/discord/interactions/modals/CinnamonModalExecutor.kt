@@ -7,7 +7,7 @@ import net.perfectdreams.discordinteraktions.common.modals.components.ModalArgum
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.EphemeralCommandException
@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetr
 import net.perfectdreams.discordinteraktions.common.modals.ModalContext
 
 abstract class CinnamonModalExecutor(
-    val loritta: LorittaCinnamon
+    val loritta: LorittaBot
 ) : ModalExecutor {
     companion object {
         private val logger = KotlinLogging.logger {}

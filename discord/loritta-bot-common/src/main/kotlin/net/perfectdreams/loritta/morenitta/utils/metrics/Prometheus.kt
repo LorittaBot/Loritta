@@ -65,8 +65,6 @@ object Prometheus {
             .create()
 
     fun register() {
-        JFRExports.register()
-
         GUILD_COUNT.register<Gauge>()
         USER_COUNT.register<Gauge>()
         RECEIVED_GUILD_MESSAGES.register<Counter>()

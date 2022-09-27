@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox
 
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
@@ -10,7 +10,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnection
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnectionManager
 
-class PlayAudioClipButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecutor(loritta) {
+class PlayAudioClipButtonExecutor(loritta: LorittaBot) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.PLAY_AUDIO_CLIP_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext) {

@@ -145,7 +145,7 @@ class LorittaWebsite(
 
 		val routes = DefaultRoutes.defaultRoutes(loritta, this)
 
-		val server = embeddedServer(Netty, loritta.instanceConfig.loritta.website.port) {
+		val server = embeddedServer(Netty, loritta.config.loritta.website.port) {
 			install(CachingHeaders) {
 				options { call, outgoingContent ->
 					val contentType = outgoingContent.contentType
@@ -257,7 +257,7 @@ class LorittaWebsite(
 
 				cookie<LorittaJsonWebSession>(loritta.config.loritta.website.sessionName) {
 					cookie.path = "/"
-					cookie.domain = loritta.instanceConfig.loritta.website.url.split("/").dropLast(1).last().split(":").first()
+					cookie.domain = loritta.config.loritta.website.url.split("/").dropLast(1).last().split(":").first()
 					cookie.maxAgeInSeconds = 365L * 24 * 3600 // one year
 					transform(SessionTransportTransformerMessageAuthentication(secretHashKey, "HmacSHA256"))
 				}
@@ -342,15 +342,6 @@ class LorittaWebsite(
 				val httpMethod = call.request.httpMethod.value
 
 				logger.info("${trueIp} (${userAgent}): ${httpMethod} ${call.request.path()}${queryString}")
-
-				/* if (loritta.config.loritta.website.blockedIps.contains(trueIp)) {
-					logger.warn("$trueIp ($userAgent): ${httpMethod} ${call.request.path()}$queryString - Request was IP blocked")
-					this.finish()
-				}
-				if (loritta.config.loritta.website.blockedUserAgents.contains(trueIp)) {
-					logger.warn("$trueIp ($userAgent): ${httpMethod} ${call.request.path()}$queryString - Request was User-Agent blocked")
-					this.finish()
-				} */
 			}
 
 			this.environment.monitor.subscribe(Routing.RoutingCallFinished) { call: RoutingApplicationCall ->
@@ -377,8 +368,8 @@ class LorittaWebsite(
 
 	class WebsiteConfig(val loritta: LorittaBot) {
 		val websiteUrl: String
-			get() = loritta.instanceConfig.loritta.website.url.removeSuffix("/")
-		val websiteFolder = File(loritta.instanceConfig.loritta.website.folder)
+			get() = loritta.config.loritta.website.url.removeSuffix("/")
+		val websiteFolder = File(loritta.config.loritta.folders.website)
 	}
 
 	enum class UserPermissionLevel {

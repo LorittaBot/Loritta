@@ -13,7 +13,7 @@ class UpdateFanArtsTask(val loritta: LorittaBot) : Runnable {
 	}
 
 	override fun run() {
-		if (!loritta.isMaster) {
+		if (!loritta.isMainInstance) {
 			try {
 				val content = runBlocking { loritta.lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/fan-arts").await() }
 				loritta.fanArtArtists = Constants.JSON_MAPPER.readValue(gson.toJson(content)) // Gambiarra para converter de Gson para Jackson

@@ -59,40 +59,11 @@ class AvatarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "avatar", ca
 			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.polluxCute"]}* ${Emotes.LORI_HEART}")
 
 		// Easter Egg: Loritta
-		if (getAvatar.id == loritta.discordConfig.discord.clientId) {
+		if (getAvatar.id == loritta.config.loritta.discord.applicationId.toString()) {
 			val calendar = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE))
 			val currentDay = calendar.get(Calendar.DAY_OF_WEEK)
 
 			embed.appendDescription("\n*${context.locale["$LOCALE_PREFIX.lorittaCute"]}* ${Emotes.LORI_SMILE}")
-			if (loritta.discordConfig.discord.fanArtExtravaganza.enabled && currentDay == loritta.discordConfig.discord.fanArtExtravaganza.dayOfTheWeek) {
-				val currentFanArtInMasterCluster = loritta.lorittaShards.queryMasterLorittaCluster("/api/v1/loritta/current-fan-art-avatar").await().obj
-
-				val artistId = currentFanArtInMasterCluster["artistId"].nullString
-				val fancyName = currentFanArtInMasterCluster["fancyName"].nullString
-
-				if (artistId != null) {
-					val user = loritta.lorittaShards.retrieveUserInfoById(artistId.toLong())
-
-					val displayName = fancyName ?: user?.name
-
-					embed.appendDescription("\n\n**" + locale["commands.command.fanarts.madeBy", displayName] + "**")
-					// TODO: Readicionar redes sociais depois
-					/* val artist = loritta.fanArtArtists.firstOrNull {
-						it.socialNetworks
-								?.firstIsInstanceOrNull<FanArtArtist.SocialNetwork.DiscordSocialNetwork>()
-					}?.id
-
-					if (artist != null) {
-						for (socialNetwork in artist.socialNetworks) {
-							var root = socialNetwork.display
-							if (socialNetwork.link != null) {
-								root = "[$root](${socialNetwork.link})"
-							}
-							embed.appendDescription("\n**${socialNetwork.socialNetwork.fancyName}:** $root")
-						}
-					} */
-				}
-			}
 		}
 
 		embed.setTitle("\uD83D\uDDBC ${getAvatar.name}")

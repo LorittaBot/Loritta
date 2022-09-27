@@ -2,13 +2,13 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 
-class SwitchToGlobalAvatarExecutor(loritta: LorittaCinnamon, val lorittaId: Snowflake) : CinnamonButtonExecutor(loritta) {
+class SwitchToGlobalAvatarExecutor(loritta: LorittaBot, val lorittaId: Snowflake) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(
         SwitchToGlobalAvatarExecutor::class,
         ComponentExecutorIds.SWITCH_TO_GLOBAL_AVATAR_EXECUTOR

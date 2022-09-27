@@ -1,12 +1,13 @@
 package net.perfectdreams.loritta.morenitta
 
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralConfig
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordConfig
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralDiscordInstanceConfig
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralInstanceConfig
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
+import net.perfectdreams.loritta.common.utils.HostnameUtils
+import net.perfectdreams.loritta.morenitta.utils.newconfig.BaseConfig
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.JedisPoolConfig
@@ -38,40 +39,48 @@ object LorittaLauncher {
 		}
 
 		val configurationFile = File(System.getProperty("conf") ?: "./loritta.conf")
-		val discordConfigurationFile = File(System.getProperty("discordConf") ?: "./discord.conf")
-		val configurationInstanceFile = File(System.getProperty("instanceConf") ?: "./loritta.instance.conf")
-		val discordInstanceConfigurationFile = File(System.getProperty("discordConf") ?: "./discord.instance.conf")
 
-		if (!configurationFile.exists() || !discordConfigurationFile.exists()) {
+		if (!configurationFile.exists()) {
 			println("Welcome to Loritta Morenitta! :3")
 			println("")
 			println("I want to make the world a better place... helping people, making them laugh... I hope I succeed!")
 			println("")
-			println("Before we start, you will need to configure me.")
-			println("I will create a file named \"loritta.conf\" (general configuration) and \"discord.conf\" (platform specific configuration), open it on your favorite text editor and change it!")
+			println("Before we start, you need to configure me!")
+			println("I created a file named \"loritta.conf\", there you can configure a lot of things and stuff related to me, open it on your favorite text editor and change it!")
 			println("")
 			println("After configuring the file, run me again!")
 
 			copyFromJar("/loritta.conf", "./loritta.conf")
-			copyFromJar("/loritta.instance.conf", "./loritta.instance.conf")
-			copyFromJar("/discord.conf", "./discord.conf")
-			copyFromJar("/discord.instance.conf", "./discord.instance.conf")
 			copyFromJar("/emotes.conf", "./emotes.conf")
 
 			System.exit(1)
 			return
 		}
 
-		val config = readConfigurationFromFile<GeneralConfig>(configurationFile)
-		val discordConfig = readConfigurationFromFile<GeneralDiscordConfig>(discordConfigurationFile)
-		val instanceConfig = readConfigurationFromFile<GeneralInstanceConfig>(configurationInstanceFile)
-		val discordInstanceConfig = readConfigurationFromFile<GeneralDiscordInstanceConfig>(discordInstanceConfigurationFile)
+		val config = readConfigurationFromFile<BaseConfig>(configurationFile)
+		logger.info { "Loaded Loritta's configuration file" }
+
+		val clusterId = if (config.loritta.clusters.getClusterIdFromHostname) {
+			val hostname = HostnameUtils.getHostname()
+			hostname.substringAfterLast("-").toIntOrNull() ?: error("Clusters are enabled, but I couldn't get the Cluster ID from the hostname!")
+		} else {
+			config.loritta.clusters.clusterIdOverride ?: 1
+		}
+
+		logger.info { "Loritta's Cluster ID: $clusterId" }
+
+		InteractionsMetrics.registerJFRExports()
+		InteractionsMetrics.registerInteractions()
+
+		logger.info { "Registered Prometheus Metrics" }
+
+		val languageManager = LorittaLanguageManager(LorittaBot::class)
 
 		val services = Pudding.createPostgreSQLPudding(
-			config.database.address,
-			config.database.databaseName,
-			config.database.username,
-			config.database.password
+			config.loritta.pudding.address,
+			config.loritta.pudding.database,
+			config.loritta.pudding.username,
+			config.loritta.pudding.password
 		)
 		services.setupShutdownHook()
 
@@ -82,17 +91,17 @@ object LorittaLauncher {
 
 		val jedisPool = JedisPool(
 			jedisPoolConfig,
-			config.redis.address.substringBefore(":"),
-			config.redis.address.substringAfter(":").toIntOrNull() ?: 6379,
+			config.loritta.redis.address.substringBefore(":"),
+			config.loritta.redis.address.substringAfter(":").toIntOrNull() ?: 6379,
 			null,
-			config.redis.password
+			config.loritta.redis.password
 		)
 
 		// Used for Logback
-		System.setProperty("cluster.name", config.clusters.first { it.id == instanceConfig.loritta.currentClusterId }.getUserAgent(config.loritta.environment))
+		System.setProperty("cluster.name", config.loritta.clusters.instances.first { it.id == clusterId }.getUserAgent(config.loritta.environment))
 
 		// Iniciar instância da Loritta
-		val loritta = LorittaBot(discordConfig, discordInstanceConfig, config, instanceConfig, services, jedisPool)
+		val loritta = LorittaBot(clusterId, config, languageManager, services, jedisPool, RedisKeys(config.loritta.redis.keyPrefix))
 		loritta.start()
 	}
 

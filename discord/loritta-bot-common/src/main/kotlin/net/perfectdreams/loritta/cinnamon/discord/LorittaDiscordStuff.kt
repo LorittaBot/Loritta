@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord
+/* package net.perfectdreams.loritta.cinnamon.discord
 
 import dev.kord.common.annotation.KordUnsafe
 import dev.kord.common.entity.Snowflake
@@ -159,4 +159,4 @@ abstract class LorittaDiscordStuff(
         val genericInteractionData: StoredGenericInteractionData,
         val data: T?
     )
-}
+} */

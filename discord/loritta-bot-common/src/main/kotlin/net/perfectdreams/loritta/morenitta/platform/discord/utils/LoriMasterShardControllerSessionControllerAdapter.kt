@@ -75,7 +75,7 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 				fun setLoginPoolLockToShardController(): ControllerResponseType {
 					return runBlocking {
 						try {
-							val status = loritta.http.put("http://${NetAddressUtils.fixIp(loritta, loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
+							val status = loritta.http.put("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
 								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 							}.status
 
@@ -97,7 +97,7 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 				fun removeLoginPoolLockFromShardController() {
 					runBlocking {
 						try {
-							loritta.http.delete("http://${NetAddressUtils.fixIp(loritta, loritta.discordConfig.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
+							loritta.http.delete("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
 								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 							}
 						} catch (e: Exception) {

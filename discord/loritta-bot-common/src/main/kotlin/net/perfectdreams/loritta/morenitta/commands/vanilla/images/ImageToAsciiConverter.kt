@@ -29,7 +29,7 @@ class ImageToAsciiConverter(private val loritta: LorittaBot, private vararg val 
         newImageGraph.color = Color(54, 57, 63)
         newImageGraph.fillRect(0, 0, width, height)
         newImageGraph.color = Color.BLACK
-        newImageGraph.font = Font.createFont(Font.PLAIN, File(loritta.instanceConfig.loritta.folders.assets, "MorePerfectDOSVGA.ttf")).deriveFont(18f)
+        newImageGraph.font = Font.createFont(Font.PLAIN, File(loritta.config.loritta.folders.assets, "MorePerfectDOSVGA.ttf")).deriveFont(18f)
 
         val fontMetrics = newImageGraph.fontMetrics
         var x = 0

@@ -4,12 +4,12 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.MessageCreate
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 
-class DebugGatewayModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
+class DebugGatewayModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -35,7 +35,7 @@ class DebugGatewayModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
         val guildId = messageCreate.message.guildId.value ?: return
         val contentInLowerCase = messageCreate.message.content.lowercase()
 
-        val isMessage = contentInLowerCase == "<@${m.config.discord.applicationId}> debug"
+        val isMessage = contentInLowerCase == "<@${m.config.loritta.discord.applicationId}> debug"
         if (!isMessage)
             return
 

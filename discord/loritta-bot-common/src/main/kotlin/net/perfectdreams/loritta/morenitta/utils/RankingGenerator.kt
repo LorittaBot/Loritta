@@ -27,7 +27,7 @@ object RankingGenerator {
 		val serverIconUrl = if (guildIconUrl != null) {
 			guildIconUrl.replace("jpg", "png")
 		} else {
-			"${loritta.instanceConfig.loritta.website.url}assets/img/unknown.png"
+			"${loritta.config.loritta.website.url}assets/img/unknown.png"
 		}
 
 		val serverIcon = (LorittaUtils.downloadImage(loritta, serverIconUrl) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR)

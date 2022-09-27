@@ -9,7 +9,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.sync.withPermit
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildMember
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildVoiceState
@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArrayOrDelIfMapIsEmpty
 import java.util.concurrent.TimeUnit
 
-class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
+class DiscordCacheModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -67,7 +67,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                     val guildMembers = event.guild.members.value ?: emptyList()
                     val guildVoiceStates = event.guild.voiceStates.value ?: emptyList()
 
-                    val lorittaVoiceState = guildVoiceStates.firstOrNull { it.userId == Snowflake(m.config.discord.applicationId) }
+                    val lorittaVoiceState = guildVoiceStates.firstOrNull { it.userId == m.config.loritta.discord.applicationId }
                     if (lorittaVoiceState != null) {
                         // Wait... that's us! omg omg omg
                         val lorittaVoiceConnection = m.voiceConnectionsManager.voiceConnections[guildId]
@@ -75,7 +75,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                         if (lorittaVoiceConnection == null) {
                             // B-but... we shouldn't be here!? Uhhh, meow? Time to disconnect maybe??
                             logger.warn { "Looks like we are connected @ $guildId but we don't have any active voice connections here! We will disconnect from the voice channel to avoid issues..." }
-                            val gatewayProxy = m.gatewayManager.getGatewayForGuild(guildId)
+                            val gatewayProxy = m.lorittaShards.gatewayManager.getGatewayForGuild(guildId)
                             gatewayProxy.send(
                                 UpdateVoiceStatus(
                                     guildId,
@@ -258,7 +258,7 @@ class DiscordCacheModule(private val m: LorittaCinnamon) : ProcessDiscordEventsM
                 val channelId = event.voiceState.channelId
                 val userId = event.voiceState.userId
 
-                if (userId == Snowflake(m.config.discord.applicationId)) {
+                if (userId == m.config.loritta.discord.applicationId) {
                     // Wait... that's us! omg omg omg
                     val lorittaVoiceConnection = m.voiceConnectionsManager.voiceConnections[guildId]
                     if (lorittaVoiceConnection != null) {

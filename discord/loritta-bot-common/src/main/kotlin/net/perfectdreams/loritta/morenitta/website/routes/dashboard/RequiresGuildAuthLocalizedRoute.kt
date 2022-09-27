@@ -49,7 +49,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 			redirect("$scheme://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
 		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
-				?: redirect(loritta.discordInstanceConfig.discord.addBotUrl + "&guild_id=$guildId", false)
+				?: redirect(loritta.config.loritta.discord.addBotUrl + "&guild_id=$guildId", false)
 
 		logger.info { "JDA Guild get and check: ${System.currentTimeMillis() - start}" }
 		start = System.currentTimeMillis()
@@ -73,7 +73,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 			logger.info { "Lori User Perm Check: ${System.currentTimeMillis() - start}" }
 		}
 
-		val canBypass = loritta.config.isOwner(userIdentification.id) || canAccessDashboardViaPermission
+		val canBypass = loritta.isOwner(userIdentification.id) || canAccessDashboardViaPermission
 		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id)) {
 			call.respondText("Você não tem permissão!")
 			return

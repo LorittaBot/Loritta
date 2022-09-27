@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Font
 
 class GraphicsFonts {
@@ -11,5 +11,5 @@ class GraphicsFonts {
     val latoBlack = loadFont("lato-black.ttf")
     val bebasNeueRegular = loadFont("bebas-neue-regular.ttf")
 
-    private fun loadFont(name: String) = Font.createFont(Font.TRUETYPE_FONT, LorittaCinnamon::class.java.getResourceAsStream("/fonts/$name"))
+    private fun loadFont(name: String) = Font.createFont(Font.TRUETYPE_FONT, LorittaBot::class.java.getResourceAsStream("/fonts/$name"))
 }

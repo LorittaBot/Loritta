@@ -411,7 +411,7 @@ object EventLog {
 		val initVector = generateRandomInitVector(loritta)
 
 		val iv = IvParameterSpec(initVector)
-		val skeySpec = SecretKeySpec(loritta.discordConfig.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
+		val skeySpec = SecretKeySpec(loritta.config.loritta.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
 
 		val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
 		cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv)
@@ -421,7 +421,7 @@ object EventLog {
 
 	fun decryptMessage(loritta: LorittaBot, initVector: String, encryptedContent: String): String {
 		val iv = IvParameterSpec(Base64.getDecoder().decode(initVector))
-		val skeySpec = SecretKeySpec(loritta.discordConfig.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
+		val skeySpec = SecretKeySpec(loritta.config.loritta.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
 
 		val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
 		cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv)

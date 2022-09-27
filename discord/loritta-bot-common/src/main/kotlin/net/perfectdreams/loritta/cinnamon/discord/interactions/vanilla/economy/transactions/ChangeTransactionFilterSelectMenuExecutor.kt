@@ -2,14 +2,14 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 
 import dev.kord.core.entity.User
 import net.perfectdreams.loritta.common.utils.TransactionType
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonSelectMenuExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.SelectMenuExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 
 class ChangeTransactionFilterSelectMenuExecutor(
-    loritta: LorittaCinnamon
+    loritta: LorittaBot
 ) : CinnamonSelectMenuExecutor(loritta) {
     companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR)
 

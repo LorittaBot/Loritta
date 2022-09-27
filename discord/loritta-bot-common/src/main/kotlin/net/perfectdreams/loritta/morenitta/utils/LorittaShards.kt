@@ -30,7 +30,9 @@ import net.dv8tion.jda.api.entities.TextChannel
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.gateway.JDAToKordDiscordGatewayManager
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
+import net.perfectdreams.loritta.morenitta.utils.newconfig.LorittaConfig
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
@@ -42,11 +44,11 @@ import java.util.concurrent.TimeUnit
 /**
  * Guarda todos as shards da Loritta
  */
-class LorittaShards(val loritta: LorittaBot) {
+class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 	companion object {
 		internal val logger = KotlinLogging.logger {}
 	}
-	lateinit var shardManager: ShardManager
+	val gatewayManager = JDAToKordDiscordGatewayManager(this)
 	val cachedRetrievedUsers = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES)
 		.build<Long, Optional<User>>()
 
@@ -254,7 +256,7 @@ class LorittaShards(val loritta: LorittaBot) {
 	}
 
 	fun queryMasterLorittaCluster(path: String): Deferred<JsonElement> {
-		val shard = loritta.config.clusters.first { it.id == 1L }
+		val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
 
 		return GlobalScope.async(loritta.coroutineDispatcher) {
 			try {
@@ -277,7 +279,7 @@ class LorittaShards(val loritta: LorittaBot) {
 		}
 	}
 
-	fun queryCluster(cluster: GeneralConfig.LorittaClusterConfig, path: String): Deferred<JsonElement> {
+	fun queryCluster(cluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig, path: String): Deferred<JsonElement> {
 		return GlobalScope.async(loritta.coroutineDispatcher) {
 			try {
 				val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
@@ -300,7 +302,7 @@ class LorittaShards(val loritta: LorittaBot) {
 	}
 
 	fun queryAllLorittaClusters(path: String): List<Deferred<JsonElement>> {
-		val shards = loritta.config.clusters
+		val shards = loritta.config.loritta.clusters.instances
 
 		return shards.map {
 			GlobalScope.async(loritta.coroutineDispatcher) {
@@ -346,7 +348,7 @@ class LorittaShards(val loritta: LorittaBot) {
 	}
 
 	suspend fun searchUserInAllLorittaClusters(username: String, discriminator: String? = null, isRegExPattern: Boolean = false, limit: Int? = null): List<JsonObject> {
-		val shards = loritta.config.clusters
+		val shards = loritta.config.loritta.clusters.instances
 
 		val results = shards.map {
 			GlobalScope.async(loritta.coroutineDispatcher) {
@@ -396,7 +398,7 @@ class LorittaShards(val loritta: LorittaBot) {
 	}
 
 	suspend fun searchGuildInAllLorittaClusters(pattern: String): List<JsonObject> {
-		val shards = loritta.config.clusters
+		val shards = loritta.config.loritta.clusters.instances
 
 		val results = shards.map {
 			GlobalScope.async(loritta.coroutineDispatcher) {

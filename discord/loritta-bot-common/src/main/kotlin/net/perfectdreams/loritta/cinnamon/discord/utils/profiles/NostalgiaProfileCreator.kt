@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.profiles
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.DateUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
@@ -19,16 +19,16 @@ import java.awt.Color
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 
-open class NostalgiaProfileCreator(loritta: LorittaCinnamon, internalName: String, val folderName: String) : StaticProfileCreator(loritta, internalName) {
-	class NostalgiaDarkProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultDark", "dark")
-	class NostalgiaBlurpleProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultBlurple", "blurple")
-	class NostalgiaRedProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultRed", "red")
-	class NostalgiaBlueProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultBlue", "blue")
-	class NostalgiaGreenProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultGreen", "green")
-	class NostalgiaPurpleProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultPurple", "purple")
-	class NostalgiaPinkProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultPink", "pink")
-	class NostalgiaYellowProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultYellow", "yellow")
-	class NostalgiaOrangeProfileCreator(loritta: LorittaCinnamon) : NostalgiaProfileCreator(loritta, "defaultOrange", "orange")
+open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, val folderName: String) : StaticProfileCreator(loritta, internalName) {
+	class NostalgiaDarkProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultDark", "dark")
+	class NostalgiaBlurpleProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultBlurple", "blurple")
+	class NostalgiaRedProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultRed", "red")
+	class NostalgiaBlueProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultBlue", "blue")
+	class NostalgiaGreenProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultGreen", "green")
+	class NostalgiaPurpleProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultPurple", "purple")
+	class NostalgiaPinkProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultPink", "pink")
+	class NostalgiaYellowProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultYellow", "yellow")
+	class NostalgiaOrangeProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultOrange", "orange")
 
 	override suspend fun create(
 		sender: ProfileUserInfoData,

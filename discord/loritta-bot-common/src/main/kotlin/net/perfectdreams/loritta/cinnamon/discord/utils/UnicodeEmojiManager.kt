@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 /**
  * Parses Unicode's emoji list https://unicode.org/Public/emoji/14.0/
@@ -23,7 +23,7 @@ class UnicodeEmojiManager {
     }
 
     private fun loadFromPath(path: String) {
-        LorittaCinnamon::class.java.getResourceAsStream(path)
+        LorittaBot::class.java.getResourceAsStream(path)
             .readAllBytes()
             .toString(Charsets.UTF_8)
             .lines()

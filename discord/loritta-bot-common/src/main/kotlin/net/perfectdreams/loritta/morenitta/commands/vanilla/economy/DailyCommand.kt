@@ -29,7 +29,7 @@ class DailyCommand(loritta: LorittaBot) : AbstractCommand(loritta, "daily", list
 					Constants.ERROR
 				),
 				LorittaReply(
-					locale["commands.command.daily.pleaseWaitBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+					locale["commands.command.daily.pleaseWaitBuySonhos", "<${loritta.config.loritta.website.url}user/@me/dashboard/bundles>"],
 					"\uD83D\uDCB3"
 				)
 			)
@@ -37,9 +37,9 @@ class DailyCommand(loritta: LorittaBot) : AbstractCommand(loritta, "daily", list
 		}
 
 		val url = if (context.isPrivateChannel)
-			"${loritta.instanceConfig.loritta.website.url}daily"
+			"${loritta.config.loritta.website.url}daily"
 		else // Used for daily multiplier priority
-			"${loritta.instanceConfig.loritta.website.url}daily?guild=${context.guild.idLong}"
+			"${loritta.config.loritta.website.url}daily?guild=${context.guild.idLong}"
 
 		context.reply(
 			LorittaReply(
@@ -47,12 +47,12 @@ class DailyCommand(loritta: LorittaBot) : AbstractCommand(loritta, "daily", list
 				Emotes.LORI_RICH
 			),
 			LorittaReply(
-				context.locale["commands.command.daily.dailyWarning", "${loritta.instanceConfig.loritta.website.url}guidelines"],
+				context.locale["commands.command.daily.dailyWarning", "${loritta.config.loritta.website.url}guidelines"],
 				Emotes.LORI_BAN_HAMMER,
 				mentionUser = false
 			),
 			LorittaReply(
-				locale["commands.command.daily.dailyLinkBuySonhos", "<${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/bundles>"],
+				locale["commands.command.daily.dailyLinkBuySonhos", "<${loritta.config.loritta.website.url}user/@me/dashboard/bundles>"],
 				"\uD83D\uDCB3",
 				mentionUser = false
 			)

@@ -5,7 +5,7 @@ import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.NotificationsCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotifica
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownUserNotification
 
-class NotificationsListExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class NotificationsListExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
 
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {

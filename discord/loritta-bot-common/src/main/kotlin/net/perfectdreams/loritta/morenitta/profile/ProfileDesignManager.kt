@@ -1,27 +1,35 @@
 package net.perfectdreams.loritta.morenitta.profile
 
+import dev.kord.common.entity.Snowflake
+import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.StaticProfileCreator
 import net.perfectdreams.loritta.morenitta.profile.badges.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.ProfileDesign
 
 class ProfileDesignManager(val m: LorittaBot) {
+	companion object {
+		private val FREE_EMOJIS_GUILDS = listOf(
+			Snowflake(297732013006389252), // Apartamento da Loritta
+			Snowflake(320248230917046282), // SparklyPower
+			Snowflake(417061847489839106), // Rede Dark
+			Snowflake(769892417025212497), // Kuraminha's House
+			Snowflake(769030809159073795)  // Saddest of the Sads
+		)
+	}
+
 	val designs = mutableListOf<ProfileCreator>()
+	val defaultProfileDesign: StaticProfileCreator
+		get() = designs.first { it.internalName == ProfileDesign.DEFAULT_PROFILE_DESIGN_ID } as StaticProfileCreator
+
 	val badges = mutableListOf<Badge>()
 
 	fun registerBadge(badge: Badge) {
 		badges.add(badge)
 	}
 
-	fun unregisterBadge(badge: Badge) {
-		badges.remove(badge)
-	}
-
 	fun registerDesign(design: ProfileCreator) {
 		designs.removeIf { it.internalName == design.internalName }
 		designs.add(design)
-	}
-
-	fun unregisterDesign(design: ProfileCreator) {
-		designs.removeIf { it.internalName == design.internalName }
 	}
 
 	init {
@@ -67,7 +75,7 @@ class ProfileDesignManager(val m: LorittaBot) {
 
 		registerBadge(ArtistBadge(m))
 
-		registerBadge(CanecaBadge(m.config.quirky))
+		// registerBadge(CanecaBadge(m.config.quirky))
 		registerBadge(HalloweenBadge(m))
 		registerBadge(ChristmasBadge(m))
 		registerBadge(GabrielaBadge(m))

@@ -64,7 +64,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 					} else {
 						val state = JsonObject()
 						state["redirectUrl"] = "$scheme://$hostHeader" + call.request.path()
-						redirect(loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+						redirect(loritta.config.loritta.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 					}
 				}
 			} else {
@@ -77,12 +77,12 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 						// Iremos apenas pedir para o usuário reautenticar, porque alguma coisa deu super errado!
 						val state = JsonObject()
 						state["redirectUrl"] = "$scheme://$hostHeader" + call.request.path()
-						redirect(loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+						redirect(loritta.config.loritta.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 					}
 				} else {
 					val auth = TemmieDiscordAuth(
-						loritta.discordConfig.discord.clientId,
-						loritta.discordConfig.discord.clientSecret,
+						loritta.config.loritta.discord.applicationId.toString(),
+						loritta.config.loritta.discord.clientSecret,
 						code,
 						"$scheme://$hostHeader/dashboard",
 						listOf("identify", "guilds", "email")
@@ -127,7 +127,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 					if (redirectUrl != null) {
 						// Check if we are redirecting to Loritta's trusted URLs
-						val lorittaDomain = loritta.connectionManager.getDomainFromUrl(loritta.instanceConfig.loritta.website.url)
+						val lorittaDomain = loritta.connectionManager.getDomainFromUrl(loritta.config.loritta.website.url)
 						val redirectDomain = loritta.connectionManager.getDomainFromUrl(redirectUrl)
 
 						if (lorittaDomain == redirectDomain)
@@ -228,11 +228,11 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 												"website.router.addedOnServer",
 												user.asMention,
 												guild.name,
-												loritta.instanceConfig.loritta.website.url + "commands",
-												loritta.instanceConfig.loritta.website.url + "guild/${guild.id}/configure/",
-												loritta.instanceConfig.loritta.website.url + "guidelines",
-												loritta.instanceConfig.loritta.website.url + "donate",
-												loritta.instanceConfig.loritta.website.url + "support",
+												loritta.config.loritta.website.url + "commands",
+												loritta.config.loritta.website.url + "guild/${guild.id}/configure/",
+												loritta.config.loritta.website.url + "guidelines",
+												loritta.config.loritta.website.url + "donate",
+												loritta.config.loritta.website.url + "support",
 												Emotes.LORI_PAT,
 												Emotes.LORI_NICE,
 												Emotes.LORI_HEART,
@@ -328,6 +328,6 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 		// redirect to authentication owo
 		val state = JsonObject()
 		state["redirectUrl"] = LorittaWebsite.WEBSITE_URL.substring(0, LorittaWebsite.Companion.WEBSITE_URL.length - 1) + call.request.path()
-		redirect(loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
+		redirect(loritta.config.loritta.discord.authorizationUrl + "&state=${Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}", false)
 	}
 }

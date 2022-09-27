@@ -6,7 +6,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
@@ -17,7 +17,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 
-class ActivateInviteBlockerBypassButtonClickExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecutor(loritta) {
+class ActivateInviteBlockerBypassButtonClickExecutor(loritta: LorittaBot) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.ACTIVATE_INVITE_BLOCKER_BYPASS_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext) {

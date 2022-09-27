@@ -4,7 +4,7 @@ import dev.kord.core.entity.User
 import dev.kord.rest.builder.message.create.embed
 import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.common.utils.LorittaColors
 
-class OCRTranslateButtonExecutor(loritta: LorittaCinnamon) : CinnamonButtonExecutor(loritta) {
+class OCRTranslateButtonExecutor(loritta: LorittaBot) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.OCR_TRANSLATE_BUTTON_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext) {

@@ -11,7 +11,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.Gender
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.declarations.RoleplayCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.retribute.RetributeAttackButtonExecutor
@@ -105,7 +105,7 @@ object RoleplayUtils {
     )
 
     suspend fun handleRoleplayMessage(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         i18nContext: I18nContext,
         data: RetributeRoleplayData,
         client: RandomRoleplayPicturesClient,
@@ -123,7 +123,7 @@ object RoleplayUtils {
         when (roleplayActionAttributes) {
             // ===[ KISS ]===
             KISS_ATTRIBUTES -> {
-                if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                if (receiver == loritta.config.loritta.discord.applicationId) {
                     return RoleplayResponse(listOf(AchievementTarget(giver, AchievementType.TRIED_KISSING_LORITTA))) {
                         styled(
                             i18nContext.get(I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseLori),
@@ -154,7 +154,7 @@ object RoleplayUtils {
             SLAP_ATTRIBUTES -> {
                 if (giver == receiver) {
                     embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Slap.ResponseSelf(giverMention) }
-                } else if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                } else if (receiver == loritta.config.loritta.discord.applicationId) {
                     achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
 
                     val oldGiver = giver
@@ -171,7 +171,7 @@ object RoleplayUtils {
             ATTACK_ATTRIBUTES -> {
                 if (giver == receiver) {
                     embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Attack.ResponseSelf(giverMention) }
-                } else if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                } else if (receiver == loritta.config.loritta.discord.applicationId) {
                     achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
 
                     val oldGiver = giver
@@ -186,11 +186,11 @@ object RoleplayUtils {
 
             // ===[ HUG ]===
             HUG_ATTRIBUTES -> {
-                if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                if (receiver == loritta.config.loritta.discord.applicationId) {
                     embedResponse = I18nKeysData.Commands.Command.Roleplay.Hug::ResponseLori
                 } else if (giver == receiver) {
                     // If the giver is the same as the receiver, let's switch it to Loritta hugging the user
-                    giver = Snowflake(loritta.discordConfig.applicationId)
+                    giver = loritta.config.loritta.discord.applicationId
 
                     embedResponse = I18nKeysData.Commands.Command.Roleplay.Hug::ResponseSelfLori
                 }
@@ -198,11 +198,11 @@ object RoleplayUtils {
 
             // ===[ HEAD PAT ]===
             HEAD_PAT_ATTRIBUTES -> {
-                if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                if (receiver == loritta.config.loritta.discord.applicationId) {
                     embedResponse = I18nKeysData.Commands.Command.Roleplay.Headpat::ResponseLori
                 } else if (giver == receiver) {
                     // If the giver is the same as the receiver, let's switch it to Loritta hugging the user
-                    giver = Snowflake(loritta.discordConfig.applicationId)
+                    giver = loritta.config.loritta.discord.applicationId
 
                     embedResponse = I18nKeysData.Commands.Command.Roleplay.Headpat::ResponseSelfLori
                 }
@@ -210,11 +210,11 @@ object RoleplayUtils {
 
             // ===[ HIGH FIVE ]===
             HIGH_FIVE_ATTRIBUTES -> {
-                if (receiver.value.toLong() == loritta.discordConfig.applicationId) {
+                if (receiver == loritta.config.loritta.discord.applicationId) {
                     embedResponse = I18nKeysData.Commands.Command.Roleplay.Highfive::ResponseLori
                 } else if (giver == receiver) {
                     // If the giver is the same as the receiver, let's switch it to Loritta hugging the user
-                    giver = Snowflake(loritta.discordConfig.applicationId)
+                    giver = loritta.config.loritta.discord.applicationId
 
                     embedResponse = I18nKeysData.Commands.Command.Roleplay.Highfive::ResponseSelfLori
                 }

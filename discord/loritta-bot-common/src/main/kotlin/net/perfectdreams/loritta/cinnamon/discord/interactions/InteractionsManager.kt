@@ -6,7 +6,7 @@ import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.discordinteraktions.common.components.ButtonExecutor
 import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecutor
 import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonMessageCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonUserCommandDeclarationWrapper
@@ -40,19 +40,14 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.pac
 import kotlin.system.exitProcess
 
 class InteractionsManager(
-    private val loritta: LorittaCinnamon,
+    private val loritta: LorittaBot,
     val interaKTions: DiscordInteraKTions
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val discordConfig = loritta.config.discord
-    private val servicesConfig = loritta.config.services
-    private val rest = loritta.rest
-
-    private val random = loritta.random
-    private val http = loritta.http
+    private val discordConfig = loritta.config.loritta.discord
 
     val interactionsRegistry = InteractionsRegistry(
         loritta,
@@ -69,8 +64,8 @@ class InteractionsManager(
 
         // ===[ DISCORD ]===
         register(UserAvatarUserCommand(languageManager))
-        register(SwitchToGuildProfileAvatarExecutor(loritta, Snowflake(discordConfig.applicationId)))
-        register(SwitchToGlobalAvatarExecutor(loritta, Snowflake(discordConfig.applicationId)))
+        register(SwitchToGuildProfileAvatarExecutor(loritta, discordConfig.applicationId))
+        register(SwitchToGlobalAvatarExecutor(loritta, discordConfig.applicationId))
 
         register(UserInfoUserCommand(languageManager))
         register(ShowGuildMemberPermissionsExecutor(loritta))

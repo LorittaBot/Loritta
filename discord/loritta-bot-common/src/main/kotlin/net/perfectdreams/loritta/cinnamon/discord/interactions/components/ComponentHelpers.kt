@@ -8,7 +8,7 @@ import dev.kord.rest.builder.component.ActionRowBuilder
 import dev.kord.rest.builder.component.ButtonBuilder
 import dev.kord.rest.builder.component.SelectMenuBuilder
 import dev.kord.rest.builder.component.SelectOptionBuilder
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.ComponentData
 import net.perfectdreams.loritta.common.emotes.DiscordEmote
 import net.perfectdreams.loritta.common.emotes.Emote
@@ -71,7 +71,7 @@ fun ActionRowBuilder.interactiveButton(
  * @see LorittaCinnamon.encodeDataForComponentOrStoreInDatabase
  */
 suspend inline fun <reified T : ComponentData> ActionRowBuilder.interactiveButtonWithHybridData(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     style: ButtonStyle,
     executor: ButtonExecutorDeclaration,
     data: T,
@@ -95,7 +95,7 @@ suspend inline fun <reified T : ComponentData> ActionRowBuilder.interactiveButto
  * @see LorittaCinnamon.encodeDataForComponentOnDatabase
  */
 suspend inline fun <reified T : ComponentData> ActionRowBuilder.interactiveButtonWithDatabaseData(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     style: ButtonStyle,
     executor: ButtonExecutorDeclaration,
     data: T,

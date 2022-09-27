@@ -11,7 +11,7 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.CoinFlipCommand
@@ -31,7 +31,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
 import kotlin.time.Duration.Companion.hours
 
-class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class CoinFlipBetGlobalExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
         val QUANTITIES = listOf<Long>(
             0,
@@ -230,7 +230,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
         }
 
         private fun createCoinFlipResultMessage(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             i18nContext: I18nContext,
             selfUser: UserId,
             result: BetsService.CoinFlipResult,
@@ -327,7 +327,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommand
                             i18nContext.get(
                                 BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.DontWantTaxAnymorePremiumPlanUpsellOtherUserHasPremium(
                                     GACampaigns.premiumUpsellDiscordMessageUrl(
-                                        loritta.config.loritta.website,
+                                        loritta.config.loritta.website.url,
                                         "bet-coinflip-global",
                                         "victory-against-premium-users"
                                     )

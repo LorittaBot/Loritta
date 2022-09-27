@@ -32,7 +32,7 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 		val arg0 = context.args.getOrNull(0)
 
 		if (arg0 == "shards" || arg0 == "clusters") {
-			val results = loritta.config.clusters.map {
+			val results = loritta.config.loritta.clusters.instances.map {
 				GlobalScope.async(loritta.coroutineDispatcher) {
 					try {
 						withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
@@ -54,10 +54,10 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 					}
 				}
 			}
-			val shardControllerStatus = if (loritta.discordConfig.shardController.enabled) {
+			val shardControllerStatus = if (loritta.config.loritta.discord.shardController.enabled) {
 				GlobalScope.async(loritta.coroutineDispatcher) {
 					try {
-						val body = HttpRequest.get("http://${NetAddressUtils.fixIp(loritta, loritta.discordConfig.shardController.url)}/api/v1/login-pools")
+						val body = HttpRequest.get("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/login-pools")
 								.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
 								.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
 								.readTimeout(loritta.config.loritta.clusterReadTimeout)
@@ -239,7 +239,7 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 
 			val replies = mutableListOf(
                     LorittaReply(
-                            message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${loritta.discordConfig.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${loritta.lorittaCluster.id} (`${loritta.lorittaCluster.name}`))",
+                            message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${loritta.config.loritta.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${loritta.lorittaCluster.id} (`${loritta.lorittaCluster.name}`))",
                             prefix = ":ping_pong:"
                     ),
                     LorittaReply(

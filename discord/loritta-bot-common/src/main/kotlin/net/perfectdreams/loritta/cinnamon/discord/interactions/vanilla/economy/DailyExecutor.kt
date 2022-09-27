@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.DailyCommand
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
@@ -25,7 +25,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
-class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class DailyExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.deferChannelMessageEphemerally()
 
@@ -84,13 +84,13 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
 
         val url = if (context is GuildApplicationCommandContext)
             GACampaigns.dailyWebRewardDiscordCampaignUrl(
-                context.loritta.config.loritta.website,
+                context.loritta.config.loritta.website.url,
                 "daily",
                 "cmd-with-multiplier"
             ) + "&guild=${context.guildId.value}"
         else // Used for daily multiplier priority
             GACampaigns.dailyWebRewardDiscordCampaignUrl(
-                context.loritta.config.loritta.website,
+                context.loritta.config.loritta.website.url,
                 "daily",
                 "cmd-without-multiplier"
             )
@@ -194,7 +194,7 @@ class DailyExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lor
             styled(
                 context.i18nContext.get(
                     GACampaigns.sonhosBundlesUpsellDiscordMessage(
-                        context.loritta.config.loritta.website,
+                        context.loritta.config.loritta.website.url,
                         "daily",
                         "daily-reward"
                     )

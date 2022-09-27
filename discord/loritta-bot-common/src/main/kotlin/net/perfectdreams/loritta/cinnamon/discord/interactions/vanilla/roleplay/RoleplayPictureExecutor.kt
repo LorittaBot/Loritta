@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay
 
 import kotlinx.coroutines.delay
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
 abstract class RoleplayPictureExecutor(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     private val client: RandomRoleplayPicturesClient,
     private val attributes: RoleplayActionAttributes
 ) : CinnamonSlashCommandExecutor(loritta) {
@@ -50,7 +50,7 @@ abstract class RoleplayPictureExecutor(
         }
 
         // Easter Egg: Small chance for Loritta to retribute the action (1%)
-        val shouldLorittaRetribute = receiver.id.value.toLong() == context.loritta.discordConfig.applicationId && attributes in RoleplayUtils.RETRIBUTABLE_ACTIONS_BY_LORITTA_EASTER_EGG && context.loritta.random.nextInt(0, 100) == 0
+        val shouldLorittaRetribute = receiver.id == context.loritta.config.loritta.discord.applicationId && attributes in RoleplayUtils.RETRIBUTABLE_ACTIONS_BY_LORITTA_EASTER_EGG && context.loritta.random.nextInt(0, 100) == 0
 
         if (shouldLorittaRetribute) {
             // Wait 5s just so it feels more "natural"

@@ -168,7 +168,7 @@ object LorittaUtils {
 		val bannedState = ownerProfile.getBannedState(loritta)
 
 		if (bannedState != null && bannedState[BannedUsers.expiresAt] == null) { // Se o dono está banido e não é um ban temporário...
-			if (!loritta.config.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
+			if (!loritta.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
@@ -191,7 +191,7 @@ object LorittaUtils {
 		}
 
 		if (blacklisted != null) { // Se o servidor está banido...
-			if (!loritta.config.isOwner(guild.ownerIdLong)) { // E ele não é o dono do bot!
+			if (!loritta.isOwner(guild.ownerIdLong)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ *${blacklisted[BlacklistedGuilds.reason]}")
 				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true

@@ -3,12 +3,12 @@ package net.perfectdreams.loritta.cinnamon.discord.gateway.modules
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.ChannelCreate
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 
-class AddFirstToNewChannelsModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
+class AddFirstToNewChannelsModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
     companion object {
         private val FUNNY_FIRST_EMOJIS = listOf(
             Emotes.LoriCoffee,

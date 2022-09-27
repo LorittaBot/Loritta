@@ -5,14 +5,14 @@ import net.perfectdreams.discordinteraktions.common.commands.options.OptionRefer
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BrokerCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.CinnamonAutocompleteHandler
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
 
-class BrokerStockQuantityAutocompleteExecutor(loritta: LorittaCinnamon, val tickerOption: OptionReference<String>) : CinnamonAutocompleteHandler<String>(loritta) {
+class BrokerStockQuantityAutocompleteExecutor(loritta: LorittaBot, val tickerOption: OptionReference<String>) : CinnamonAutocompleteHandler<String>(loritta) {
     override suspend fun handle(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
         val currentInput = focusedOption.value
 

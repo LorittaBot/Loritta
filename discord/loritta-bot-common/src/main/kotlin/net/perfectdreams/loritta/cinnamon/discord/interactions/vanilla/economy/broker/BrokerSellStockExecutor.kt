@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.broker
 
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
@@ -14,7 +14,7 @@ import net.perfectdreams.loritta.common.utils.LorittaBovespaBrokerUtils
 import net.perfectdreams.loritta.common.achievements.AchievementType
 import kotlin.math.abs
 
-class BrokerSellStockExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class BrokerSellStockExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Sell.Options.Ticker.Text) {
             autocomplete(BrokerSellStockAutocompleteExecutor(loritta))

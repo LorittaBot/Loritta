@@ -69,7 +69,7 @@ object WebsiteUtils {
 		val jsonObject = jsonObject(
 			"code" to code.errorId,
 			"reason" to code.fancyName,
-			"help" to "${loritta.instanceConfig.loritta.website.url}docs/api"
+			"help" to "${loritta.config.loritta.website.url}docs/api"
 		)
 
 		if (message != null) {
@@ -114,7 +114,7 @@ object WebsiteUtils {
 				setMetaProperty("og:site_name", "Loritta")
 				setMetaProperty("og:title", "Painel da Loritta")
 				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
-				setMetaProperty("og:image", loritta.instanceConfig.loritta.website.url + "assets/img/loritta_dashboard.png")
+				setMetaProperty("og:image", loritta.config.loritta.website.url + "assets/img/loritta_dashboard.png")
 				setMetaProperty("og:image:width", "320")
 				setMetaProperty("og:ttl", "660")
 				setMetaProperty("og:image:width", "320")
@@ -162,7 +162,7 @@ object WebsiteUtils {
 			"userIdentification" to null,
 			"epochMillis" to System.currentTimeMillis(),
 			"path" to req.path(),
-			"clientId" to loritta.discordConfig.discord.clientId,
+			"clientId" to loritta.config.loritta.discord.applicationId.toString(),
 			"cssAssetVersion" to OptimizeAssets.cssAssetVersion,
 			"environment" to loritta.config.loritta.environment
 		)
@@ -187,7 +187,7 @@ object WebsiteUtils {
 		variables["pathNL"] = pathNoLanguageCode // path no language code
 		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
 
-		variables["addBotUrl"] = loritta.discordInstanceConfig.discord.addBotUrl
+		variables["addBotUrl"] = loritta.config.loritta.discord.addBotUrl
 
 		val correctUrl = LorittaWebsite.WEBSITE_URL.replace("https://", "https://$languageCode.")
 		variables["currentUrl"] = correctUrl + req.path().substring(1)

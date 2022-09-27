@@ -7,7 +7,7 @@ import dev.kord.rest.Image
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
@@ -29,7 +29,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import org.jetbrains.exposed.sql.*
 import kotlin.math.ceil
 
-class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class SonhosRankExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val rankType = string("rank_type", SonhosCommand.SONHOS_RANK_I18N_PREFIX.Options.RankType.Text) {
             choice(SonhosCommand.SONHOS_RANK_I18N_PREFIX.GlobalSonhosRank, SonhosRankType.GLOBAL.name)
@@ -43,7 +43,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
 
     companion object {
         suspend fun createMessageGlobal(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             context: InteractionContext,
             page: Long
         ): suspend MessageBuilder.() -> (Unit) = {
@@ -117,7 +117,7 @@ class SonhosRankExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecuto
         }
 
         suspend fun createMessageLocal(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             context: InteractionContext,
             guild: Guild,
             page: Long

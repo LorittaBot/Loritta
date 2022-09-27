@@ -61,7 +61,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 				)
 
 		val output = if (originalSignature.startsWith("sha1=")) {
-			val signingKey = SecretKeySpec(loritta.config.generalWebhook.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
+			val signingKey = SecretKeySpec(loritta.config.loritta.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
 			val mac = Mac.getInstance("HmacSHA1")
 			mac.init(signingKey)
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
@@ -73,7 +73,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 
 			output
 		} else if (originalSignature.startsWith("sha256=")) {
-			val signingKey = SecretKeySpec(loritta.config.generalWebhook.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
+			val signingKey = SecretKeySpec(loritta.config.loritta.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
 			val mac = Mac.getInstance("HmacSHA256")
 			mac.init(signingKey)
 			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
@@ -110,7 +110,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 
 			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
 
-			if (loritta.isMaster) {
+			if (loritta.isMainInstance) {
 				val wasAlreadySent = loritta.newSuspendedTransaction {
 					SentYouTubeVideoIds.select {
 						SentYouTubeVideoIds.channelId eq channelId and (SentYouTubeVideoIds.videoId eq videoId)
@@ -192,7 +192,7 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 	fun relayPubSubHubbubNotificationToOtherClusters(call: ApplicationCall, originalSignature: String, response: String) {
 		logger.info { "Relaying PubSubHubbub request to other instances, because I'm the master server! :3" }
 
-		val shards = loritta.config.clusters.filter { it.id != 1L }
+		val shards = loritta.config.loritta.clusters.instances.filter { it.id != 1 }
 
 		shards.map {
 			GlobalScope.launch {

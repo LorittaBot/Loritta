@@ -5,11 +5,11 @@ import dev.kord.core.entity.Member
 import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.components.ComponentContext
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext as CinnamonComponentContext
 
 class GuildComponentContext(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     i18nContext: I18nContext,
     user: User,
     interaKTionsContext: ComponentContext,

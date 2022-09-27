@@ -1420,7 +1420,7 @@ class ConnectionManager(val loritta: LorittaBot) {
         val domain = getDomainFromUrl(url)
 
         return if (domain != null) {
-            loritta.config.connectionManager.trustedDomains.any { it.endsWith(domain) }
+            loritta.config.loritta.connectionManager.trustedDomains.any { it.endsWith(domain) }
         } else {
             false
         }
@@ -1430,7 +1430,7 @@ class ConnectionManager(val loritta: LorittaBot) {
         val domain = getDomainFromUrl(url)
 
         return if (domain != null) {
-            loritta.config.connectionManager.blockedDomains.any { it.endsWith(domain, true) }
+            loritta.config.loritta.connectionManager.blockedDomains.any { it.endsWith(domain, true) }
         } else {
             false
         }

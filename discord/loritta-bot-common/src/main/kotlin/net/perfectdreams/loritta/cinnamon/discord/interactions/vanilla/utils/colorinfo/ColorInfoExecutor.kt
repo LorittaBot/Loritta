@@ -3,7 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.co
 import dev.kord.common.kColor
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.ColorInfoCommand
@@ -15,7 +15,7 @@ import java.awt.Font
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 
-abstract class ColorInfoExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+abstract class ColorInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
         private const val FACTOR = 0.7
     }

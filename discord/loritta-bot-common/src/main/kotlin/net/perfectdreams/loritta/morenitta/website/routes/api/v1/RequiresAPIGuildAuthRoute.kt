@@ -59,7 +59,7 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
 		}
 
-		val canBypass = loritta.config.isOwner(userIdentification.id) || canAccessDashboardViaPermission
+		val canBypass = loritta.isOwner(userIdentification.id) || canAccessDashboardViaPermission
 		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id)) {
 			throw WebsiteAPIException(
 					HttpStatusCode.Forbidden,

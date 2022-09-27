@@ -6,14 +6,14 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.math.MathUtils
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.CalculatorCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 
-class CalculatorExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class CalculatorExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val expression = string("expression", CalculatorCommand.I18N_PREFIX.Options.Expression) {
             cinnamonAutocomplete { context, focused ->

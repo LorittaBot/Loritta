@@ -112,7 +112,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 		loritta as LorittaBot
 		val sellerTokenHeader = call.request.header("Authorization")
 
-		if (sellerTokenHeader == null || loritta.config.perfectPayments.notificationToken != sellerTokenHeader) {
+		if (sellerTokenHeader == null || loritta.config.loritta.perfectPayments.notificationToken != sellerTokenHeader) {
 			logger.warn { "Request Seller Token is different than what it is expected or null! Received Seller Token: $sellerTokenHeader"}
 			call.respondJson(jsonObject(), status = HttpStatusCode.Forbidden)
 			return
@@ -259,7 +259,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 						}
 					}
 
-					sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.instanceConfig.loritta.website.url}support")
+					sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.config.loritta.website.url}support")
 
 					call.respondJson(jsonObject())
 					return
@@ -302,7 +302,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 				}
 			}
 
-			sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.instanceConfig.loritta.website.url}support")
+			sendPaymentApprovedDirectMessage(loritta, internalPayment.userId, loritta.localeManager.getLocaleById("default"), "${loritta.config.loritta.website.url}support")
 		}
 
 		call.respondJson(jsonObject())

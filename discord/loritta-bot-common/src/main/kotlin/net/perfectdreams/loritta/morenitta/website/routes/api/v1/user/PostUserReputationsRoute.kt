@@ -119,7 +119,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 								"<@$receiverId>",
 								reputationCount,
 								Emotes.LORI_OWO,
-								"<${loritta.instanceConfig.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
+								"<${loritta.config.loritta.website.url}user/${receiverId}/rep?guild=${guildId}&channel=${channelId}>",
 								receiverSettings.gender.getPersonalPronoun(locale, PersonalPronoun.THIRD_PERSON, "<@$receiverId>")
 						],
 						Emotes.LORI_HEART
@@ -151,7 +151,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 		val guildId = json["guildId"].nullString
 		val channelId = json["channelId"].nullString
 
-		if (!MiscUtils.checkRecaptcha(loritta.config.googleRecaptcha.reputationToken, token))
+		if (!MiscUtils.checkRecaptcha(loritta.config.loritta.googleRecaptcha.reputationToken, token))
 			throw WebsiteAPIException(
 				HttpStatusCode.Forbidden,
 				WebsiteUtils.createErrorPayload(
@@ -200,7 +200,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 					delay(LorittaBot.RANDOM.nextLong(8000, 15001)) // Delay aleatório para ficar mais "real"
 
 					giveReputation(
-						loritta.discordConfig.discord.clientId.toLong(),
+						loritta.config.loritta.discord.applicationId.toString().toLong(),
 						"127.0.0.1",
 						"me@loritta.website",
 						userIdentification.id.toLong(),
@@ -212,7 +212,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 					}
 
 					if (guildId != null && channelId != null) {
-						sendReputationToCluster(loritta, guildId, channelId, loritta.discordConfig.discord.clientId, userIdentification.id, reputationCount)
+						sendReputationToCluster(loritta, guildId, channelId, loritta.config.loritta.discord.applicationId.toString(), userIdentification.id, reputationCount)
 					}
 				}
 			}

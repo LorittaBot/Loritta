@@ -36,6 +36,7 @@ dependencyResolutionManagement {
             library("exposed-core", "org.jetbrains.exposed", "exposed-core").versionRef(exposed)
             library("exposed-jdbc", "org.jetbrains.exposed", "exposed-jdbc").versionRef(exposed)
             library("exposed-javatime", "org.jetbrains.exposed", "exposed-java-time").versionRef(exposed)
+            library("exposed-dao", "org.jetbrains.exposed", "exposed-dao").versionRef(exposed)
 
             library("logback-classic", "ch.qos.logback", "logback-classic").versionRef(logback)
 

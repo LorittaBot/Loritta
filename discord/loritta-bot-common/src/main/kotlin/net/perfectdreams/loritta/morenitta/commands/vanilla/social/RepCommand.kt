@@ -71,7 +71,7 @@ class RepCommand(loritta: LorittaBot) : AbstractCommand(loritta, "rep", listOf("
 				return
 			}
 
-			var url = "${loritta.instanceConfig.loritta.website.url}user/${user.id}/rep"
+			var url = "${loritta.config.loritta.website.url}user/${user.id}/rep"
 			if (!context.isPrivateChannel)
 				url += "?guild=${context.guild.id}&channel=${context.message.channel.id}"
 

@@ -57,7 +57,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 	private val messageReceivedModules = mutableListOf(
 		automodModule,
-		inviteLinkModule,
+		// inviteLinkModule,
 		experienceModule,
 		afkModule,
 		bomDiaECiaModule,
@@ -72,7 +72,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	)
 
 	override fun onGuildMessageReceived(event: GuildMessageReceivedEvent) {
-		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
+		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
 		if (DebugLog.cancelAllEvents)
@@ -92,7 +92,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 					return@launchMessageJob
 				}
 
-				val enableProfiling = loritta.config.isOwner(member.idLong)
+				val enableProfiling = loritta.isOwner(member.idLong)
 
 				var start = System.nanoTime()
 
@@ -132,15 +132,6 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 				start = System.nanoTime()
 				val lorittaUser = GuildLorittaUser(loritta, member, memberLorittaPermissions, lorittaProfile)
 				logIfEnabled(enableProfiling) { "Wrapping $member and $lorittaProfile in a GuildLorittaUser took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
-
-				start = System.nanoTime()
-				if (lorittaProfile != null && lorittaProfile.isAfk && !loritta.config.gatewayProxy.disableAFK) {
-					loritta.newSuspendedTransaction {
-						lorittaProfile.isAfk = false
-						lorittaProfile.afkReason = null
-					}
-				}
-				logIfEnabled(enableProfiling) { "Changing AFK status took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
 				EventLog.onMessageReceived(loritta, serverConfig, event.message)
@@ -330,7 +321,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 	override fun onPrivateMessageReceived(event: PrivateMessageReceivedEvent) {
 		// Bots não conseguem enviar mensagens para si mesmo... mas a Lori consegue e, com o "say", é possível fazer ela executar os próprios comandos
-		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
+		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
 		if (DebugLog.cancelAllEvents)
@@ -384,7 +375,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 		// Checking if message was sent before 15 minutes ago (900 000ms)
 		if (System.currentTimeMillis() - 900_000 >= event.message.timeCreated.toEpochSecond() * 1000) return
 
-		if (loritta.discordConfig.discord.disallowBots && !loritta.discordConfig.discord.botWhitelist.contains(event.author.idLong) && event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
+		if (event.author.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
 
 		if (DebugLog.cancelAllEvents)
@@ -463,7 +454,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 			return false
 
 		val author = lorittaMessageEvent.author
-		val enableProfiling = loritta.config.isOwner(author.idLong)
+		val enableProfiling = loritta.isOwner(author.idLong)
 
 		val rawMessage = lorittaMessageEvent.message.contentRaw
 
@@ -473,7 +464,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 		val firstLabel = rawArguments.first()
 		val startsWithCommandPrefix = firstLabel.startsWith(serverConfig.commandPrefix)
-		val startsWithLorittaMention = firstLabel == "<@${loritta.discordConfig.discord.clientId}>" || firstLabel == "<@!${loritta.discordConfig.discord.clientId}>"
+		val startsWithLorittaMention = firstLabel == "<@${loritta.config.loritta.discord.applicationId.toString()}>" || firstLabel == "<@!${loritta.config.loritta.discord.applicationId.toString()}>"
 
 		if (startsWithCommandPrefix || startsWithLorittaMention) {
 			if (startsWithCommandPrefix) // If it is a command prefix, remove the prefix
@@ -514,7 +505,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	 * @param contentRaw the raw content of the message
 	 * @returns if the message is mentioning only me
 	 */
-	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${loritta.discordConfig.discord.clientId}>"
+	fun isMentioningOnlyMe(contentRaw: String): Boolean = contentRaw.replace("!", "").trim() == "<@${loritta.config.loritta.discord.applicationId.toString()}>"
 
 	fun logIfEnabled(doLog: Boolean, msg: () -> Any?) {
 		if (doLog)

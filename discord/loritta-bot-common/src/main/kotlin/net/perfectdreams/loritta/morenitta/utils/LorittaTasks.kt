@@ -31,7 +31,7 @@ class LorittaTasks(val loritta: LorittaBot) {
 		scheduleWithFixedDelay(DeleteOldStoredMessagesTask(loritta), 0L, 1L, TimeUnit.HOURS)
 		scheduleWithFixedDelay(UpdateFanArtsTask(loritta), 0L, 5L, TimeUnit.MINUTES)
 
-		if (loritta.isMaster) {
+		if (loritta.isMainInstance) {
 			val midnight = LocalTime.MIDNIGHT
 			val today = LocalDate.now(ZoneOffset.UTC)
 			val todayMidnight = LocalDateTime.of(today, midnight)

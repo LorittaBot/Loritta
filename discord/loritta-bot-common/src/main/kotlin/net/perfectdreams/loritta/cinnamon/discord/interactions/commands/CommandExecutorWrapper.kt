@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.images.ImageReference
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
@@ -40,7 +40,7 @@ interface CommandExecutorWrapper {
 
         private val logger = KotlinLogging.logger {}
 
-        suspend fun handleIfBanned(loritta: LorittaCinnamon, context: InteractionContext): Boolean {
+        suspend fun handleIfBanned(loritta: LorittaBot, context: InteractionContext): Boolean {
             // Check if the user is banned from using Loritta
             val userBannedState = loritta.pudding.users.getUserBannedState(UserId(context.user.id.value))
 
@@ -49,7 +49,7 @@ interface CommandExecutorWrapper {
                 val expiresDateInEpochSeconds = userBannedState.expiresAt?.epochSeconds
 
                 context.sendEphemeralMessage {
-                    val banAppealPageUrl = loritta.config.loritta.website + "extras/faq-loritta/loritta-ban-appeal"
+                    val banAppealPageUrl = loritta.config.loritta.website.url + "extras/faq-loritta/loritta-ban-appeal"
                     content = context.i18nContext.get(
                         if (expiresDateInEpochSeconds != null) {
                             I18nKeysData.Commands.YouAreLorittaBannedTemporary(
@@ -80,7 +80,7 @@ interface CommandExecutorWrapper {
         }
     }
 
-    suspend fun getGuildServerConfigOrLoadDefaultConfig(loritta: LorittaCinnamon, guildId: Snowflake?) = if (guildId != null) {
+    suspend fun getGuildServerConfigOrLoadDefaultConfig(loritta: LorittaBot, guildId: Snowflake?) = if (guildId != null) {
         // TODO: Fix this workaround, while this does work, it isn't that good
         loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: NonGuildServerConfigRoot
     } else {
@@ -88,7 +88,7 @@ interface CommandExecutorWrapper {
         NonGuildServerConfigRoot
     }
 
-    fun convertInteraKTionsContextToCinnamonContext(loritta: LorittaCinnamon, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext) = if (context is InteraKTionsGuildApplicationCommandContext) {
+    fun convertInteraKTionsContextToCinnamonContext(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext) = if (context is InteraKTionsGuildApplicationCommandContext) {
         GuildApplicationCommandContext(
             loritta,
             i18nContext,
@@ -107,7 +107,7 @@ interface CommandExecutorWrapper {
     }
 
     // TODO: Don't use GlobalScope!
-    fun launchUserInfoCacheUpdater(loritta: LorittaCinnamon, context: InteraKTionsApplicationCommandContext, args: net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments? = null) = GlobalScope.launch {
+    fun launchUserInfoCacheUpdater(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, args: net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments? = null) = GlobalScope.launch {
         // Update the cached Discord users
         // Updating in a separate task to avoid delaying the command processing too much
         val users = mutableSetOf(context.sender)
@@ -135,7 +135,7 @@ interface CommandExecutorWrapper {
      * Additional messages that must be sent after the command sends at least one message
      */
     // TODO: Don't use GlobalScope!
-    fun launchAdditionalNotificationsCheckerAndSender(loritta: LorittaCinnamon, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext) = GlobalScope.launch {
+    fun launchAdditionalNotificationsCheckerAndSender(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext) = GlobalScope.launch {
         var state = context.bridge.state.value
 
         try {
@@ -164,7 +164,7 @@ interface CommandExecutorWrapper {
                     i18nContext.get(
                         I18nKeysData.Commands.CheckOutNews(
                             GACampaigns.patchNotesUrl(
-                                loritta.config.loritta.website,
+                                loritta.config.loritta.website.url,
                                 i18nContext.get(I18nKeysData.Website.LocalePathId),
                                 patchNote.path,
                                 "discord",
@@ -180,7 +180,7 @@ interface CommandExecutorWrapper {
         }
     }
 
-    suspend fun convertThrowableToCommandExecutionResult(loritta: LorittaCinnamon, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext?, rootDeclarationClazzName: String, executorClazzName: String, e: Throwable): CommandExecutionResult {
+    suspend fun convertThrowableToCommandExecutionResult(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext?, rootDeclarationClazzName: String, executorClazzName: String, e: Throwable): CommandExecutionResult {
         if (e is SilentCommandException)
             return CommandExecutionSuccess // SilentCommandExceptions should be ignored
 

@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions
 
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.common.utils.LorittaPermission
@@ -25,7 +25,7 @@ suspend fun cleanUpForOutput(
  * Clean up and escape user input, useful when displaying user input
  */
 suspend fun cleanUpForOutput(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     guildId: Snowflake?,
     memberRoleIds: Set<Snowflake>?,
     input: String,

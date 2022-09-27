@@ -8,7 +8,7 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.ComponentContextHighLevelEditableMessage
 import net.perfectdreams.loritta.cinnamon.discord.interactions.HighLevelEditableMessage
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
@@ -30,11 +30,11 @@ import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.update
 
 class TransferSonhosButtonExecutor(
-    loritta: LorittaCinnamon
+    loritta: LorittaBot
 ) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.TRANSFER_SONHOS_BUTTON_EXECUTOR) {
         suspend fun acceptSonhos(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             context: InteractionContext,
             acceptedUserId: Snowflake,
             transactionRequestMessage: HighLevelEditableMessage,

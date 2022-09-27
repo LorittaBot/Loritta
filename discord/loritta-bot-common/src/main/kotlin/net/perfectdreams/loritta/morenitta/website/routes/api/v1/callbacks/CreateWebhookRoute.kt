@@ -18,11 +18,11 @@ class CreateWebhookRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks
 		val code = call.parameters["code"]
 
 		val auth = TemmieDiscordAuth(
-				loritta.discordConfig.discord.clientId,
-				loritta.discordConfig.discord.clientSecret,
-				code,
-				"https://$hostHeader/api/v1/callbacks/discord-webhook",
-				listOf("webhook.incoming")
+			loritta.config.loritta.discord.applicationId.toString(),
+			loritta.config.loritta.discord.clientSecret,
+			code,
+			"https://$hostHeader/api/v1/callbacks/discord-webhook",
+			listOf("webhook.incoming")
 		)
 
 		val authExchangePayload = auth.doTokenExchange()

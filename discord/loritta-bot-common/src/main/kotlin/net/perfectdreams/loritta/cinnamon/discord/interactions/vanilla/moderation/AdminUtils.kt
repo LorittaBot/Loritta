@@ -16,7 +16,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuild
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.ConfirmBanData
@@ -35,7 +35,7 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 object AdminUtils {
     private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
 
-    suspend fun appendCheckResultReason(loritta: LorittaCinnamon, i18nContext: I18nContext, punisherMember: Member, builder: MessageBuilder, check: InteractionCheck) {
+    suspend fun appendCheckResultReason(loritta: LorittaBot, i18nContext: I18nContext, punisherMember: Member, builder: MessageBuilder, check: InteractionCheck) {
         val (issuer, target, result) = check
 
         val punisherMemberPermissions = punisherMember.getPermissions() // TODO: Get permissions from the interaction itself
@@ -49,7 +49,7 @@ object AdminUtils {
                     )
                 }
                 InteractionCheckResult.TARGET_ROLE_POSITION_HIGHER_OR_EQUAL_TO_ISSUER -> {
-                    if (issuer.id == Snowflake(loritta.config.discord.applicationId)) {
+                    if (issuer.id == loritta.config.loritta.discord.applicationId) {
                         styled(
                             i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.RoleTooLow(target.mention)),
                             Emotes.LoriBonk
@@ -76,7 +76,7 @@ object AdminUtils {
                     }
                 }
                 InteractionCheckResult.TRYING_TO_INTERACT_WITH_SELF -> {
-                    if (issuer.id == Snowflake(loritta.config.discord.applicationId)) {
+                    if (issuer.id == loritta.config.loritta.discord.applicationId) {
                         styled(
                             i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.TargetIsLoritta),
                             Emotes.LoriBonk
@@ -95,7 +95,7 @@ object AdminUtils {
         }
     }
 
-    suspend fun banUsers(loritta: LorittaCinnamon, i18nContext: I18nContext, confirmBanData: ConfirmBanData) {
+    suspend fun banUsers(loritta: LorittaBot, i18nContext: I18nContext, confirmBanData: ConfirmBanData) {
         val guild = Guild(confirmBanData.guild, loritta.kord)
 
         val sendPunishmentViaDirectMessage = confirmBanData.sendPunishmentViaDirectMessage

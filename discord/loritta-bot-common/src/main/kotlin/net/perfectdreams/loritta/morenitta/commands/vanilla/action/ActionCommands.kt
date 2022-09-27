@@ -112,7 +112,7 @@ private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, send
     val receiverProfile = context.loritta.getLorittaProfile(receiver.idLong)
 
     // Anti-idiot people
-    if (command is KissCommand && receiver.id == context.loritta.discordConfig.discord.clientId) {
+    if (command is KissCommand && receiver.id == context.loritta.config.loritta.discord.applicationId.toString()) {
         context.addIdiotReply()
         return
     }
@@ -124,7 +124,7 @@ private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, send
     val response: String
 
     // If the sender tried to slap Lori, Lori'll slap him!
-    var files = if ((command is SlapCommand || command is AttackCommand) && receiver.id == context.loritta.discordConfig.discord.clientId) {
+    var files = if ((command is SlapCommand || command is AttackCommand) && receiver.id == context.loritta.config.loritta.discord.applicationId.toString()) {
         response = response(context.locale, receiver, sender)
         selectGifsByGender(receiverGender, userGender)
     } else {
@@ -143,7 +143,7 @@ private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, send
             EmbedBuilder()
                     .setDescription("$emoji $response")
                     .setColor(color)
-                    .setImage(context.loritta.instanceConfig.loritta.website.url + "assets/img/actions/$folderName/${randomImage.folderName}/${randomImage.fileName}")
+                    .setImage(context.loritta.config.loritta.website.url + "assets/img/actions/$folderName/${randomImage.folderName}/${randomImage.fileName}")
                     .also {
                         if (sender != receiver && !repeat) {
                             it.setFooter(context.locale["commands.category.action.clickToRetribute", "\uD83D\uDD01"], null)

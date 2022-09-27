@@ -1,10 +1,9 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
-import net.perfectdreams.loritta.morenitta.utils.config.GeneralConfig
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.newconfig.LorittaConfig
 
 object DiscordUtils {
 	/**
@@ -12,7 +11,7 @@ object DiscordUtils {
 	 *
 	 * @return the shard ID
 	 */
-	fun getLorittaClusterForGuildId(loritta: LorittaBot, id: Long): GeneralConfig.LorittaClusterConfig {
+	fun getLorittaClusterForGuildId(loritta: LorittaBot, id: Long): LorittaConfig.LorittaClustersConfig.LorittaClusterConfig {
 		val shardId = getShardIdFromGuildId(loritta, id)
 		return getLorittaClusterForShardId(loritta, shardId)
 	}
@@ -22,22 +21,22 @@ object DiscordUtils {
 	 *
 	 * @return the shard ID
 	 */
-	fun getShardIdFromGuildId(loritta: LorittaBot, id: Long) = getShardIdFromGuildId(id, loritta.discordConfig.discord.maxShards)
+	fun getShardIdFromGuildId(loritta: LorittaBot, id: Long) = getShardIdFromGuildId(id, loritta.config.loritta.discord.maxShards)
 
 	/**
 	 * Gets a Discord Shard ID from the provided Guild ID
 	 *
 	 * @return the shard ID
 	 */
-	fun getShardIdFromGuildId(id: Long, maxShards: Int) = (id shr 22).rem(maxShards)
+	fun getShardIdFromGuildId(id: Long, maxShards: Int) = (id shr 22).rem(maxShards).toInt()
 
 	/**
 	 * Gets the cluster where the guild that has the specified ID is in
 	 *
 	 * @return the cluster
 	 */
-	fun getLorittaClusterForShardId(loritta: LorittaBot, id: Long): GeneralConfig.LorittaClusterConfig {
-		val lorittaShard = loritta.config.clusters.firstOrNull { id in it.minShard..it.maxShard }
+	fun getLorittaClusterForShardId(loritta: LorittaBot, id: Int): LorittaConfig.LorittaClustersConfig.LorittaClusterConfig {
+		val lorittaShard = loritta.config.loritta.clusters.instances.firstOrNull { id in it.minShard..it.maxShard }
 		return lorittaShard ?: throw RuntimeException("Frick! I don't know what is the Loritta Shard for Discord Shard ID $id")
 	}
 
@@ -46,19 +45,16 @@ object DiscordUtils {
 	 *
 	 * @return the cluster ID
 	 */
-	fun getLorittaClusterIdForShardId(loritta: LorittaBot, id: Long) = getLorittaClusterForShardId(loritta, id).id
+	fun getLorittaClusterIdForShardId(loritta: LorittaBot, id: Int) = getLorittaClusterForShardId(loritta, id).id
 
 	/**
 	 * Gets the URL for the specified Loritta Cluster
 	 *
 	 * @return the url in a "test.example.com" format
 	 */
-	fun getUrlForLorittaClusterId(loritta: LorittaBot, id: Long): String {
-		if (id == 1L)
-			return loritta.instanceConfig.loritta.website.url.substring(loritta.instanceConfig.loritta.website.url.indexOf("//") + 2).removeSuffix("/")
-
-		return loritta.instanceConfig.loritta.website.clusterUrl.format(id)
-	}
+	fun getUrlForLorittaClusterId(loritta: LorittaBot, id: Int) = loritta.config.loritta.clusters.instances.first() {
+		it.id == id
+	}.websiteUrl.format(id)
 
 	suspend fun extractUserFromString(
 		loritta: LorittaBot,

@@ -23,11 +23,11 @@ class DashboardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
         executesDiscord {
             OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "dashboard")
 
-            val dashboardUrl = "${loritta.instanceConfig.loritta.website.url}dashboard"
+            val dashboardUrl = "${loritta.config.loritta.website.url}dashboard"
             var url = dashboardUrl
 
             if (!isPrivateChannel) {
-                url = "${loritta.instanceConfig.loritta.website.url}guild/${guild.id}/configure/"
+                url = "${loritta.config.loritta.website.url}guild/${guild.id}/configure/"
             }
 
             /*

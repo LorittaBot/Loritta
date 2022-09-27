@@ -243,7 +243,7 @@ fun RestAction<Message>.queueAfterWithMessagePerSecondTargetAndClusterLoadBalanc
     // So, let's reserve (5 - how many clusters we have) of the total 10 messages to sending notification updates.
     // This should avoid spamming the API with requests.
     this.queueAfter(
-        sentMessages / Math.max(1, targetMessagesPerSecond - loritta.config.clusters.size.toLong()),
+        sentMessages / Math.max(1, targetMessagesPerSecond - loritta.config.loritta.clusters.instances.size.toLong()),
         java.util.concurrent.TimeUnit.SECONDS
     )
 }

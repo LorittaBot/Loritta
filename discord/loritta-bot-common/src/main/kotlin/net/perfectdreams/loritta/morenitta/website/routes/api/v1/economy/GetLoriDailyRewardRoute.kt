@@ -103,7 +103,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 			}
 
 			if (lastReceivedDailyAt.isNotEmpty() || sameIpDailyOneHourAgoAt.isNotEmpty()) {
-				if (!loritta.config.isOwner(userIdentification.id.toLong())) {
+				if (!loritta.isOwner(userIdentification.id.toLong())) {
 					throw WebsiteAPIException(
 						HttpStatusCode.Forbidden,
 						WebsiteUtils.createErrorPayload(
@@ -213,7 +213,7 @@ class GetLoriDailyRewardRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 		val recaptcha = call.parameters["recaptcha"] ?: return
 		val dailyMultiplierGuildIdPriority = call.request.queryParameters["guild"]?.toLongOrNull()
 
-		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${loritta.config.googleRecaptcha.serverVoteToken}&response=$recaptcha")
+		val body = HttpRequest.get("https://www.google.com/recaptcha/api/siteverify?secret=${loritta.config.loritta.googleRecaptcha.serverVoteToken}&response=$recaptcha")
 			.body()
 
 		val jsonParser = JsonParser.parseString(body).obj

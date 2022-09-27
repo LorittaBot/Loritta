@@ -95,7 +95,7 @@ object NitroBoostUtils {
 					}
 				}
 
-				if (loritta.isMaster) {
+				if (loritta.isMainInstance) {
 					val moneySumId = Payments.money.sum()
 					val mostPayingUsers = loritta.newSuspendedTransaction {
 						Payments.slice(Payments.userId, moneySumId)

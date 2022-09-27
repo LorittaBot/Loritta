@@ -32,7 +32,7 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 	}
 
 	fun runDailyTax(force: Boolean) {
-		if (!loritta.isMaster)
+		if (!loritta.isMainInstance)
 			return
 
 		val lastDailyTax = File(LorittaBot.FOLDER, "last_daily_tax")
@@ -107,15 +107,15 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 						when (dayNow) {
 							2L -> {
 								embed.setThumbnail("https://i.imgur.com/HSmy9yK.png")
-								embed.setDescription("Estou passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe você quiser manter a key, renove ela [no meu website](${loritta.instanceConfig.loritta.website.url}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}\n\nContinue sendo incrível! ${Emotes.LORI_OWO}")
+								embed.setDescription("Estou passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe você quiser manter a key, renove ela [no meu website](${loritta.config.loritta.website.url}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}\n\nContinue sendo incrível! ${Emotes.LORI_OWO}")
 							}
 							1L -> {
 								embed.setThumbnail("https://i.imgur.com/oleb4HP.png")
-								embed.setDescription("Hey! Estou passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe a sua key expirar, você irá perder vantagens incríveis, como...\n$coolFeatures\n\nAh, e não se esqueça das vantagens que você ganha como usuário!\n\nSe você quiser manter a key, renove ela [no meu website](${loritta.instanceConfig.loritta.website.url}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}\n\nMas se você não puder, tudo bem... continue sendo incrível! ${Emotes.LORI_OWO}")
+								embed.setDescription("Hey! Estou passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSe a sua key expirar, você irá perder vantagens incríveis, como...\n$coolFeatures\n\nAh, e não se esqueça das vantagens que você ganha como usuário!\n\nSe você quiser manter a key, renove ela [no meu website](${loritta.config.loritta.website.url}donate) antes dela expirar para conseguir 20% de desconto! ${Emotes.LORI_HAPPY}\n\nMas se você não puder, tudo bem... continue sendo incrível! ${Emotes.LORI_OWO}")
 							}
 							0L -> {
 								embed.setThumbnail("https://i.imgur.com/L8oyJQ7.png")
-								embed.setDescription("Heeeeey! Estou passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSério mesmo que você vai deixar a sua key expirar e deixar de ter vantagens incríveis como...\n$coolFeatures\nE ainda perder todas as vantagens que você ganha como usuário?\n\nMas eu vou te dar uma promoção exclusiva: Renove a key e eu irei te dar 20% de desconto! Pense bem, se você não renovar e quiser as vantagens de novo terá que pagar o preço sem desconto! ${Emotes.LORI_CRYING}\n\nSe você quiser renovar a key, [aqui está o link](${loritta.instanceConfig.loritta.website.url}donate)! ${Emotes.LORI_OWO}\n\nMas obrigada por ter contribuido! Sua ajuda me ajudou bastante a continuar a ficar online, divertir e ajudar outros membros, você é uma pessoa incrível e, por favor, continue sendo uma pessoa assim! ${Emotes.LORI_HEART}\n\nObrigada por tudo... e continue sendo uma pessoa incrível! ${Emotes.LORI_OWO}")
+								embed.setDescription("Heeeeey! Estou passando para avisar que a key de R$ ${donationKey.value} que você está usando em `${guild.name}` irá expirar em breve!\n\nSério mesmo que você vai deixar a sua key expirar e deixar de ter vantagens incríveis como...\n$coolFeatures\nE ainda perder todas as vantagens que você ganha como usuário?\n\nMas eu vou te dar uma promoção exclusiva: Renove a key e eu irei te dar 20% de desconto! Pense bem, se você não renovar e quiser as vantagens de novo terá que pagar o preço sem desconto! ${Emotes.LORI_CRYING}\n\nSe você quiser renovar a key, [aqui está o link](${loritta.config.loritta.website.url}donate)! ${Emotes.LORI_OWO}\n\nMas obrigada por ter contribuido! Sua ajuda me ajudou bastante a continuar a ficar online, divertir e ajudar outros membros, você é uma pessoa incrível e, por favor, continue sendo uma pessoa assim! ${Emotes.LORI_HEART}\n\nObrigada por tudo... e continue sendo uma pessoa incrível! ${Emotes.LORI_OWO}")
 							}
 						}
 
@@ -171,15 +171,15 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 						when (dayNow) {
 							2L -> {
 								embed.setThumbnail("https://i.imgur.com/HSmy9yK.png")
-								embed.setDescription("Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição! ${Emotes.LORI_HAPPY}\n\nSe você quiser continuar a ser um maravilhoso contribuidor que me ajuda a pagar o meu aluguel e a ficar online, por favor, doe novamente [no meu website](${loritta.instanceConfig.loritta.website.url}donate)! ${Emotes.LORI_TEMMIE}\n\nContinue sendo incrível! ${Emotes.LORI_OWO}")
+								embed.setDescription("Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição! ${Emotes.LORI_HAPPY}\n\nSe você quiser continuar a ser um maravilhoso contribuidor que me ajuda a pagar o meu aluguel e a ficar online, por favor, doe novamente [no meu website](${loritta.config.loritta.website.url}donate)! ${Emotes.LORI_TEMMIE}\n\nContinue sendo incrível! ${Emotes.LORI_OWO}")
 							}
 							1L -> {
 								embed.setThumbnail("https://i.imgur.com/oleb4HP.png")
-								embed.setDescription("Hey! Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição!\n\nEu sei que é chatinho ficar pedindo para doar novamente, mas se você puder... por favoooor doeeeee! ${Emotes.LORI_CRYING}\n\nMesmo que a sua compra seja pequena, ela sempre me ajuda a ficar mais tempo online!\n\nMas bem, se você estiver afim de doar novamente... Aqui está o [link para doar](${loritta.instanceConfig.loritta.website.url}donate)! ${Emotes.LORI_HAPPY}\n\nMas se você não puder, tudo bem... continue sendo incrível! ${Emotes.LORI_OWO}")
+								embed.setDescription("Hey! Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição!\n\nEu sei que é chatinho ficar pedindo para doar novamente, mas se você puder... por favoooor doeeeee! ${Emotes.LORI_CRYING}\n\nMesmo que a sua compra seja pequena, ela sempre me ajuda a ficar mais tempo online!\n\nMas bem, se você estiver afim de doar novamente... Aqui está o [link para doar](${loritta.config.loritta.website.url}donate)! ${Emotes.LORI_HAPPY}\n\nMas se você não puder, tudo bem... continue sendo incrível! ${Emotes.LORI_OWO}")
 							}
 							0L -> {
 								embed.setThumbnail("https://i.imgur.com/L8oyJQ7.png")
-								embed.setDescription("Heeeeey! Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição!\n\nEssa será a última vez que eu irei pedir para você contribuir novamente (eu sei, por dentro você deve estar \"nossa, finalmente hein lori, já estava ficando chato ${Emotes.LORI_SHRUG}\")...\n\nMas obrigada por ter contribuido! Sua ajuda me ajudou bastante a continuar a ficar online, divertir e ajudar outros membros, você é uma pessoa incrível e, por favor, continue sendo uma pessoa assim! ${Emotes.LORI_HEART}\n\nSe você estiver afim de doar novamente, [aqui está o link](${loritta.instanceConfig.loritta.website.url}donate)! ${Emotes.LORI_OWO}\n\nObrigada por tudo... e continue sendo uma pessoa incrível! ${Emotes.LORI_OWO}")
+								embed.setDescription("Heeeeey! Estou passando para avisar que irá fazer 30 dias desde a sua última contribuição!\n\nEssa será a última vez que eu irei pedir para você contribuir novamente (eu sei, por dentro você deve estar \"nossa, finalmente hein lori, já estava ficando chato ${Emotes.LORI_SHRUG}\")...\n\nMas obrigada por ter contribuido! Sua ajuda me ajudou bastante a continuar a ficar online, divertir e ajudar outros membros, você é uma pessoa incrível e, por favor, continue sendo uma pessoa assim! ${Emotes.LORI_HEART}\n\nSe você estiver afim de doar novamente, [aqui está o link](${loritta.config.loritta.website.url}donate)! ${Emotes.LORI_OWO}\n\nObrigada por tudo... e continue sendo uma pessoa incrível! ${Emotes.LORI_OWO}")
 							}
 						}
 

@@ -2,9 +2,9 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import mu.KLogger
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class EventAnalyticsTask(private val m: LorittaCinnamon) : Runnable {
+class EventAnalyticsTask(private val m: LorittaBot) : Runnable {
     companion object {
         val logger = KotlinLogging.logger {}
     }

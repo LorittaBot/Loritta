@@ -3,13 +3,13 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.so
 import dev.kord.common.entity.ButtonStyle
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.utils.soundboard.SoundboardAudio
 
-class SoundboardBoardExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class SoundboardBoardExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         if (context !is GuildApplicationCommandContext) // Only guilds
             return

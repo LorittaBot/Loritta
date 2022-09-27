@@ -1,44 +1,15 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
-import kotlinx.datetime.Instant
-import mu.KotlinLogging
 import net.dv8tion.jda.api.events.RawGatewayEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.time.Duration.Companion.seconds
+import net.perfectdreams.loritta.cinnamon.discord.gateway.KordDiscordEventUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class GatewayEventRelayerListener(val m: LorittaBot) : ListenerAdapter() {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
-
-    val backingOffSince = ConcurrentHashMap<Int, Instant>()
-
     override fun onRawGateway(event: RawGatewayEvent) {
-        val backingOffTime = backingOffSince[event.jda.shardInfo.shardId]
-
-        if (backingOffTime != null && 5.seconds > Clock.System.now() - backingOffTime)
-            return
-
-        GlobalScope.launch(m.coroutineDispatcher) {
-            val packageAsString = event.`package`.toString()
-
-            withContext(Dispatchers.IO) {
-                m.jedisPool.resource.use {
-                    val elementsInTheList = it.rpush(m.redisKey("discord_gateway_events:shard_${event.jda.shardInfo.shardId}"), packageAsString)
-
-                    if (elementsInTheList > 5_000) {
-                        logger.warn { "Too many elements on ${event.jda.shardInfo.shardId}'s queue ($elementsInTheList events)! We will back off for now..." }
-                        backingOffSince[event.jda.shardInfo.shardId] = Clock.System.now()
-                    }
-                }
-            }
-        }
+        val gateway = m.lorittaShards.gatewayManager.gateways[event.jda.shardInfo.shardId] ?: error("Missing JDAProxiedKordGateway instance for ${event.jda.shardInfo.shardId}!")
+        val kordEvent = KordDiscordEventUtils.parseEventFromString(event.`package`.toString())
+        if (kordEvent != null)
+            gateway.events.tryEmit(kordEvent)
     }
 }

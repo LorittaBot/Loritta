@@ -54,7 +54,7 @@ class RateLimitChecker(val m: LorittaBot) {
 	}
 
 	fun checkIfRequestShouldBeIgnored(): Boolean {
-		if (!m.discordConfig.discord.requestLimiter.enabled)
+		if (!m.config.loritta.discord.requestLimiter.enabled)
 			return false
 
 		// https://i.imgur.com/crENfcG.png
@@ -67,19 +67,19 @@ class RateLimitChecker(val m: LorittaBot) {
 		// extremamente baixo porque ficar alguns minutos sem responder comandos é bem melhor do que ser banido por
 		// uma hora
 		val rateLimitHits = m.bucketedController?.getGlobalRateLimitHitsInTheLastMinute() ?: 0
-		val maxRequestsPer10Minutes = m.discordConfig.discord.requestLimiter.maxRequestsPer10Minutes
+		val maxRequestsPer10Minutes = m.config.loritta.discord.requestLimiter.maxRequestsPer10Minutes
 		val shouldIgnore = rateLimitHits >= maxRequestsPer10Minutes
 
 		if (shouldIgnore) {
 			val diff2 = System.currentTimeMillis() - this.lastConsoleWarn
-			if (diff2 >= m.discordConfig.discord.requestLimiter.consoleWarnCooldown) {
+			if (diff2 >= m.config.loritta.discord.requestLimiter.consoleWarnCooldown) {
 				logger.warn { "All received events are cancelled and ignored due to too many global ratelimited requests being sent! $rateLimitHits >= $maxRequestsPer10Minutes" }
 				this.lastConsoleWarn = System.currentTimeMillis()
 			}
 
 			val diff = System.currentTimeMillis() - lastRequestWipe
 
-			if (diff >= m.discordConfig.discord.requestLimiter.removePendingRequestsCooldown) {
+			if (diff >= m.config.loritta.discord.requestLimiter.removePendingRequestsCooldown) {
 				logger.info { "Cancelling and removing outdated global rate limit hits..." }
 				m.bucketedController?.removeOutdatedGlobalRateLimitHits()
 

@@ -345,7 +345,7 @@ abstract class NavbarView(
                             }
 
                             div(classes = "add-cta") {
-                                a(classes = "add-me button pink shadow big", href = loritta.discordInstanceConfig.discord.addBotUrl) {
+                                a(classes = "add-me button pink shadow big", href = loritta.config.loritta.discord.addBotUrl) {
                                     style = "font-size: 1.5em;"
 
                                     i(classes = "fas fa-plus") {}

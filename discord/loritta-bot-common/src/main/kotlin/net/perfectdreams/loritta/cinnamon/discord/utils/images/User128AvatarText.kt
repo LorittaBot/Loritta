@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.images
 
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
 import java.awt.Graphics
 import java.awt.Rectangle
@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage
 
 object User128AvatarText {
     suspend fun draw(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         image: BufferedImage,
         x: Int,
         y: Int,
@@ -54,7 +54,7 @@ object User128AvatarText {
     }
 
     private suspend fun drawCentralizedTextOutlined(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         graphics: Graphics,
         text: String,
         rectangle: Rectangle,

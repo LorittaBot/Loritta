@@ -8,7 +8,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.commands.options.NameableCommandOption
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.CommandMentions
 import net.perfectdreams.loritta.cinnamon.pudding.tables.DiscordLorittaApplicationCommandHashes
 import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
@@ -16,7 +16,7 @@ import org.postgresql.util.PGobject
 import java.util.*
 
 class InteractionsRegistry(
-    val loritta: LorittaCinnamon,
+    val loritta: LorittaBot,
     val manager: InteractionsManager
 ) {
     companion object {
@@ -32,7 +32,7 @@ class InteractionsRegistry(
             xactLockStatement.setInt(1, "loritta-cinnamon-application-command-updater".hashCode())
             xactLockStatement.execute()
 
-            if (loritta.config.interactions.registerGlobally) {
+            if (loritta.config.loritta.interactions.registerGlobally) {
                 val pairData = connection.prepareStatement("SELECT hash, data FROM ${DiscordLorittaApplicationCommandHashes.tableName} WHERE id = 0;")
                     .executeQuery()
                     .let {
@@ -68,7 +68,7 @@ class InteractionsRegistry(
                     registeredCommands = Json.decodeFromString(pairData.second!!)
                 }
             } else {
-                for (guildId in loritta.config.interactions.guildsToBeRegistered) {
+                for (guildId in loritta.config.loritta.interactions.guildsToBeRegistered) {
                     val pairData = connection.prepareStatement("SELECT hash, data FROM ${DiscordLorittaApplicationCommandHashes.tableName} WHERE id = $guildId;")
                         .executeQuery()
                         .let {
@@ -85,7 +85,7 @@ class InteractionsRegistry(
                     if (pairData == null || currentHash != pairData.first) {
                         // Needs to be updated!
                         logger.info { "Updating Loritta guild commands on $guildId... Hash: $currentHash" }
-                        val updatedCommands = manager.interaKTions.updateAllCommandsInGuild(Snowflake(guildId))
+                        val updatedCommands = manager.interaKTions.updateAllCommandsInGuild(guildId)
 
                         val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES ($guildId, $currentHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $currentHash, data = ?;")
 

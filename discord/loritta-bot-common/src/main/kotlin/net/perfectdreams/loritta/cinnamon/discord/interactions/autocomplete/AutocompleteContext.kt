@@ -5,11 +5,11 @@ import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteContext
 import net.perfectdreams.discordinteraktions.common.commands.options.OptionReference
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 // This doesn't inherit from InteractionContext because we can't send messages on an autocomplete request
 open class AutocompleteContext(
-    val loritta: LorittaCinnamon,
+    val loritta: LorittaBot,
     val i18nContext: I18nContext,
     val sender: User,
     val interaKTionsContext: AutocompleteContext

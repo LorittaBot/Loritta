@@ -11,7 +11,7 @@ import dev.kord.rest.builder.message.create.allowedMentions
 import dev.kord.rest.request.KtorRequestException
 import io.ktor.http.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
-class InviteBlockerModule(val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
+class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
     companion object {
         private val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
         private val logger = KotlinLogging.logger {}

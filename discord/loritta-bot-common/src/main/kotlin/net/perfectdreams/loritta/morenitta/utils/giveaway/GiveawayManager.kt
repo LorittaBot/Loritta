@@ -364,13 +364,13 @@ class GiveawayManager(val loritta: LorittaBot) {
                     .takeAsync(messageReaction.count)
                     .await()
 
-            if (users.size == 1 && users[0].id == loritta.discordConfig.discord.clientId) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
+            if (users.size == 1 && users[0].id == loritta.config.loritta.discord.applicationId.toString()) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
                 val reactedUsers = users
                         .asSequence()
-                        .filter { it.id != loritta.discordConfig.discord.clientId }
+                        .filter { it.id != loritta.config.loritta.discord.applicationId.toString() }
                         .toMutableList()
 
                 while (true) {

@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
 import org.jetbrains.exposed.sql.and
 
 class CheckBoostStatusModule(val loritta: LorittaBot) : MessageReceivedModule {
-	val config = loritta.discordConfig.donatorsOstentation
+	val config = loritta.config.loritta.donatorsOstentation
 
 	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		val guildId = event.guild?.idLong ?: return false

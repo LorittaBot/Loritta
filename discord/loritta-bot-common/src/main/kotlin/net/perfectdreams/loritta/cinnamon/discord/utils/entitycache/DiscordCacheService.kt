@@ -15,7 +15,7 @@ import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.protobuf.ProtoBuf
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetAllByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArrayOrDelIfMapIsEmpty
@@ -28,14 +28,14 @@ import java.util.*
  * Services related to Discord entity caching
  */
 class DiscordCacheService(
-    private val loritta: LorittaCinnamon
+    private val loritta: LorittaBot
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     private val rest = loritta.rest
-    private val lorittaDiscordConfig = loritta.discordConfig
+    private val lorittaDiscordConfig = loritta.config.loritta.discord
     private val pudding = loritta.pudding
     val zstdDictionaries = ZstdDictionaries()
 
@@ -92,7 +92,7 @@ class DiscordCacheService(
      *
      * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
      */
-    fun getLazyCachedLorittaPermissions(guildId: Snowflake, channelId: Snowflake) = LazyCachedPermissions(rest, loritta, this, guildId, channelId, Snowflake(lorittaDiscordConfig.applicationId))
+    fun getLazyCachedLorittaPermissions(guildId: Snowflake, channelId: Snowflake) = LazyCachedPermissions(rest, loritta, this, guildId, channelId, lorittaDiscordConfig.applicationId)
 
     /**
      * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
@@ -126,7 +126,7 @@ class DiscordCacheService(
      *
      * @see getPermissions
      */
-    suspend fun getLorittaPermissions(guildId: Snowflake, channelId: Snowflake) = getPermissions(guildId, channelId, Snowflake(lorittaDiscordConfig.applicationId))
+    suspend fun getLorittaPermissions(guildId: Snowflake, channelId: Snowflake) = getPermissions(guildId, channelId, lorittaDiscordConfig.applicationId)
 
     /**
      * Gets [userId]'s permissions in [channelId] on [guildId].

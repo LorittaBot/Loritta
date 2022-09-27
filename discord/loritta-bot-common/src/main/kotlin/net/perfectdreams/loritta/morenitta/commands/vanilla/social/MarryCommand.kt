@@ -40,7 +40,7 @@ class MarryCommand(loritta: LorittaBot) : AbstractCommand(loritta, "marry", list
 				return
 			}
 
-			if (proposeTo.id == loritta.discordConfig.discord.clientId) {
+			if (proposeTo.id == loritta.config.loritta.discord.applicationId.toString()) {
 				context.reply(
                         LorittaReply(
                                 locale["commands.command.marry.marryLoritta"],
@@ -130,7 +130,7 @@ class MarryCommand(loritta: LorittaBot) : AbstractCommand(loritta, "marry", list
 						return@onReactionAdd
 					}
 
-					if (proposeTo.id == loritta.discordConfig.discord.clientId) {
+					if (proposeTo.id == loritta.config.loritta.discord.applicationId.toString()) {
 						context.reply(
                                 LorittaReply(
                                         locale["commands.command.marry.loritta"],

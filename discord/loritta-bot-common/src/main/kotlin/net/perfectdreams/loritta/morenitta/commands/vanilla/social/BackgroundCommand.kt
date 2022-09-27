@@ -14,11 +14,11 @@ class BackgroundCommand(loritta: LorittaBot) : AbstractCommand(loritta, "backgro
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		context.reply(
                 LorittaReply(
-                        "Altere o background e embeleze o seu perfil aqui! <${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/backgrounds>",
+                        "Altere o background e embeleze o seu perfil aqui! <${loritta.config.loritta.website.url}user/@me/dashboard/backgrounds>",
                         Emotes.LORI_WOW
                 ),
                 LorittaReply(
-                        "Você pode comprar mais backgrounds para o seu perfil na nossa loja diária! <${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/daily-shop>",
+                        "Você pode comprar mais backgrounds para o seu perfil na nossa loja diária! <${loritta.config.loritta.website.url}user/@me/dashboard/daily-shop>",
                         Emotes.LORI_WOW,
                         mentionUser = false
                 )

@@ -97,10 +97,10 @@ class GetShowTwitterUserRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/twit
 	fun buildTwitterConfig(): Configuration {
 		val cb = ConfigurationBuilder()
 		cb.setDebugEnabled(true)
-				.setOAuthConsumerKey(loritta.config.twitter.oAuthConsumerKey)
-				.setOAuthConsumerSecret(loritta.config.twitter.oAuthConsumerSecret)
-				.setOAuthAccessToken(loritta.config.twitter.oAuthAccessToken)
-				.setOAuthAccessTokenSecret(loritta.config.twitter.oAuthAccessTokenSecret)
+				.setOAuthConsumerKey(loritta.config.loritta.twitter.oAuthConsumerKey)
+				.setOAuthConsumerSecret(loritta.config.loritta.twitter.oAuthConsumerSecret)
+				.setOAuthAccessToken(loritta.config.loritta.twitter.oAuthAccessToken)
+				.setOAuthAccessTokenSecret(loritta.config.loritta.twitter.oAuthAccessTokenSecret)
 
 		return cb.build()
 	}

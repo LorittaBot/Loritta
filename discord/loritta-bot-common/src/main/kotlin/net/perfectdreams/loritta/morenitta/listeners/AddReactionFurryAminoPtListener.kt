@@ -17,7 +17,7 @@ class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter
         private val logger = KotlinLogging.logger {}
     }
 
-    val config = loritta.config.quirky
+    val config = loritta.config.loritta.quirky
 
     override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
         if (!event.reactionEmote.isEmote

@@ -13,8 +13,8 @@ class InviteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "invite", li
 
     override suspend fun run(context: CommandContext,locale: BaseLocale) {
         var embed = EmbedBuilder()
-                .setDescription(context.locale.getList("commands.command.invite.inviteInfo", loritta.discordInstanceConfig.discord.addBotUrl, "${loritta.instanceConfig.loritta.website.url}dashboard", "${loritta.instanceConfig.loritta.website.url}support").joinToString("\n"))
-                .setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
+                .setDescription(context.locale.getList("commands.command.invite.inviteInfo", loritta.config.loritta.discord.addBotUrl, "${loritta.config.loritta.website.url}dashboard", "${loritta.config.loritta.website.url}support").joinToString("\n"))
+                .setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
                 .setColor(Constants.LORITTA_AQUA)
                 .build()
 

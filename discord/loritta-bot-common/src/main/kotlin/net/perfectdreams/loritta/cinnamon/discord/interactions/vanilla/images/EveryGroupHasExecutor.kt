@@ -6,7 +6,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
@@ -29,7 +29,7 @@ import java.awt.Graphics
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 
-class EveryGroupHasExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class EveryGroupHasExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val user1 = optionalUser("user1", EveryGroupHasCommand.I18N_PREFIX.Options.User1.Text(EveryGroupHasCommand.I18N_PREFIX.Slot.Popular.Male))
         val user2 = optionalUser("user2", EveryGroupHasCommand.I18N_PREFIX.Options.User1.Text(EveryGroupHasCommand.I18N_PREFIX.Slot.Quiet.Male))

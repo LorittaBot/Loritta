@@ -364,7 +364,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 						var message = locale["commands.loriMissingPermission", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
-							message += " ${locale["commands.loriMissingPermissionCanConfigure", loritta.instanceConfig.loritta.website.url]}"
+							message += " ${locale["commands.loriMissingPermissionCanConfigure", loritta.config.loritta.website.url]}"
 						}
 						context.reply(
 							LorittaReply(
@@ -381,7 +381,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 					return true
 				}
 
-				if (command.onlyOwner && !loritta.config.isOwner(user.id)) {
+				if (command.onlyOwner && !loritta.isOwner(user.id)) {
 					context.reply(
 						LorittaReply(
 							locale["commands.commandOnlyForOwner"],

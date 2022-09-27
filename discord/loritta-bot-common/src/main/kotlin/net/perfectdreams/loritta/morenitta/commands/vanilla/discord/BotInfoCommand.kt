@@ -56,8 +56,8 @@ class BotInfoCommand(loritta: LorittaBot, private val buildInfo: BuildInfo) : Ab
 			}.count()
 		}
 
-		embed.setAuthor("${context.locale["commands.command.botinfo.title"]} 💁", loritta.instanceConfig.loritta.website.url, "${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
-		embed.setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
+		embed.setAuthor("${context.locale["commands.command.botinfo.title"]} 💁", loritta.config.loritta.website.url, "${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
+		embed.setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_gabizinha_v1.png")
 		embed.setColor(Color(0, 193, 223))
 		embed.setDescription(
 				context.locale.getList(
@@ -74,11 +74,11 @@ class BotInfoCommand(loritta: LorittaBot, private val buildInfo: BuildInfo) : Ab
 				).joinToString("\n\n")
 		)
 
-		embed.addField("\uD83C\uDF80 ${context.locale["website.donate.title"]}", "${loritta.instanceConfig.loritta.website.url}donate", true)
-		embed.addField("<:loritta:331179879582269451> ${context.locale["website.jumbotron.addMe"]}", "${loritta.instanceConfig.loritta.website.url}dashboard", true)
-		embed.addField("<:lori_ok_hand:426183783008698391> ${context.locale["modules.sectionNames.commands"]}", "${loritta.instanceConfig.loritta.website.url}commands", true)
-		embed.addField("\uD83D\uDC81 ${context.locale["website.support.title"]}", "${loritta.instanceConfig.loritta.website.url}support", true)
-		embed.addField(locale["commands.command.botinfo.crowdin"], loritta.config.crowdin.url, true)
+		embed.addField("\uD83C\uDF80 ${context.locale["website.donate.title"]}", "${loritta.config.loritta.website.url}donate", true)
+		embed.addField("<:loritta:331179879582269451> ${context.locale["website.jumbotron.addMe"]}", "${loritta.config.loritta.website.url}dashboard", true)
+		embed.addField("<:lori_ok_hand:426183783008698391> ${context.locale["modules.sectionNames.commands"]}", "${loritta.config.loritta.website.url}commands", true)
+		embed.addField("\uD83D\uDC81 ${context.locale["website.support.title"]}", "${loritta.config.loritta.website.url}support", true)
+		embed.addField(locale["commands.command.botinfo.crowdin"], loritta.config.loritta.crowdin.url, true)
 		embed.addField("<:twitter:552840901886738433> Twitter", "[@LorittaBot](https://twitter.com/LorittaBot)", true)
 		embed.addField("<:instagram:552841049660325908> Instagram", "[@lorittabot](https://instagram.com/lorittabot/)", true)
 

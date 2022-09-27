@@ -20,7 +20,7 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.SingleUserComponentData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
@@ -32,7 +32,7 @@ import kotlin.time.Duration.Companion.minutes
 
 object UserDataUtils {
     suspend fun getInteractionDataOrRetrieveViaRestIfItDoesNotExist(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         decodedInteractionData: SwitchAvatarInteractionIdData,
         isLookingGuildProfileAvatar: Boolean
     ): ViewingUserAvatarData {
@@ -79,7 +79,7 @@ object UserDataUtils {
      * Creates an avatar preview embed from the data in [data]
      */
     fun createAvatarPreviewMessage(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         i18nContext: I18nContext,
         lorittaId: Snowflake,
         interactionData: SwitchAvatarInteractionIdData,

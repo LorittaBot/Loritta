@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.modules
 import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.EvictingQueue
 import com.google.common.collect.Queues
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.AdminUtils
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.BanCommand
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -85,7 +86,7 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 	}
 
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		if (ANTIRAID_ENABLED && (loritta.discordConfig.antiRaidIds.contains(event.channel.id)) && loritta.config.loritta.environment == EnvironmentType.CANARY) {
+		if (ANTIRAID_ENABLED && (loritta.config.loritta.antiRaidIds.contains(Snowflake(event.channel.id))) && loritta.config.loritta.environment == EnvironmentType.CANARY) {
 			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {

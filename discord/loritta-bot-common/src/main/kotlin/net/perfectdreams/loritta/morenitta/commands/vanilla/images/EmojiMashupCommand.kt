@@ -46,7 +46,7 @@ open class EmojiMashupCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
 				return@executesDiscord
 			}
 
-			val emojiMasher = EmojiMasher(File(loritta.instanceConfig.loritta.folders.assets, "emoji_mashup"))
+			val emojiMasher = EmojiMasher(File(loritta.config.loritta.folders.assets, "emoji_mashup"))
 
 			val emojiArg3 = context.args.getOrNull(2)
 			val emojiArg4 = context.args.getOrNull(3)

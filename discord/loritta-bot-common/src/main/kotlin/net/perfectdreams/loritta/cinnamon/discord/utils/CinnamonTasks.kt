@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class CinnamonTasks(m: LorittaCinnamon) {
+class CinnamonTasks(m: LorittaBot) {
     private val executorService = Executors.newScheduledThreadPool(2)
     private val eventAnalytics = EventAnalyticsTask(m)
 

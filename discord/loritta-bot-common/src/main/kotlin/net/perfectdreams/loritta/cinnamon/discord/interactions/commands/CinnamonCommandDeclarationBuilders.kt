@@ -5,7 +5,7 @@ import net.perfectdreams.discordinteraktions.common.commands.*
 import net.perfectdreams.discordinteraktions.common.utils.InteraKTionsDslMarker
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
 import net.perfectdreams.loritta.common.locale.LanguageManager
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.SlashTextUtils
 import net.perfectdreams.loritta.common.commands.CommandCategory
 
@@ -33,7 +33,7 @@ class CinnamonSlashCommandDeclarationBuilder(
     val description: StringI18nData,
     val category: CommandCategory
 ) {
-    var executor: ((LorittaCinnamon) -> SlashCommandExecutor)? = null
+    var executor: ((LorittaBot) -> SlashCommandExecutor)? = null
     // var executor: SlashCommandExecutor? = null
     val subcommands = mutableListOf<CinnamonSlashCommandDeclarationBuilder>()
     val subcommandGroups = mutableListOf<CinnamonSlashCommandGroupDeclarationBuilder>()
@@ -49,7 +49,7 @@ class CinnamonSlashCommandDeclarationBuilder(
         subcommandGroups += CinnamonSlashCommandGroupDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
     }
 
-    fun build(loritta: LorittaCinnamon): SlashCommandDeclaration {
+    fun build(loritta: LorittaBot): SlashCommandDeclaration {
         return CinnamonSlashCommandDeclaration(
             declarationWrapper,
             languageManager,
@@ -80,7 +80,7 @@ class CinnamonSlashCommandGroupDeclarationBuilder(
         subcommands += CinnamonSlashCommandDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
     }
 
-    fun build(loritta: LorittaCinnamon): SlashCommandGroupDeclaration {
+    fun build(loritta: LorittaBot): SlashCommandGroupDeclaration {
         return CinnamonSlashCommandGroupDeclaration(
             languageManager,
             name,
@@ -96,7 +96,7 @@ fun userCommand(
     declarationWrapper: CinnamonUserCommandDeclarationWrapper,
     languageManager: LanguageManager,
     name: StringI18nData,
-    executor: (LorittaCinnamon) -> (UserCommandExecutor),
+    executor: (LorittaBot) -> (UserCommandExecutor),
     block: CinnamonUserCommandDeclarationBuilder.() -> (Unit) = {}
 ) = CinnamonUserCommandDeclarationBuilder(declarationWrapper, languageManager, name, executor)
     .apply(block)
@@ -106,12 +106,12 @@ class CinnamonUserCommandDeclarationBuilder(
     val declarationWrapper: CinnamonUserCommandDeclarationWrapper,
     val languageManager: LanguageManager,
     val name: StringI18nData,
-    val executor: (LorittaCinnamon) -> (UserCommandExecutor)
+    val executor: (LorittaBot) -> (UserCommandExecutor)
 ) {
     var defaultMemberPermissions: Permissions? = null
     var dmPermission: Boolean? = null
 
-    fun build(loritta: LorittaCinnamon): CinnamonUserCommandDeclaration {
+    fun build(loritta: LorittaBot): CinnamonUserCommandDeclaration {
         return CinnamonUserCommandDeclaration(
             declarationWrapper,
             languageManager,
@@ -128,7 +128,7 @@ fun messageCommand(
     declarationWrapper: CinnamonMessageCommandDeclarationWrapper,
     languageManager: LanguageManager,
     name: StringI18nData,
-    executor: (LorittaCinnamon) -> (MessageCommandExecutor),
+    executor: (LorittaBot) -> (MessageCommandExecutor),
     block: CinnamonMessageCommandDeclarationBuilder.() -> (Unit) = {}
 ) = CinnamonMessageCommandDeclarationBuilder(declarationWrapper, languageManager, name, executor)
     .apply(block)
@@ -138,12 +138,12 @@ class CinnamonMessageCommandDeclarationBuilder(
     val declarationWrapper: CinnamonMessageCommandDeclarationWrapper,
     val languageManager: LanguageManager,
     val name: StringI18nData,
-    val executor: (LorittaCinnamon) -> (MessageCommandExecutor)
+    val executor: (LorittaBot) -> (MessageCommandExecutor)
 ) {
     var defaultMemberPermissions: Permissions? = null
     var dmPermission: Boolean? = null
 
-    fun build(loritta: LorittaCinnamon): CinnamonMessageCommandDeclaration {
+    fun build(loritta: LorittaBot): CinnamonMessageCommandDeclaration {
         return CinnamonMessageCommandDeclaration(
             declarationWrapper,
             languageManager,

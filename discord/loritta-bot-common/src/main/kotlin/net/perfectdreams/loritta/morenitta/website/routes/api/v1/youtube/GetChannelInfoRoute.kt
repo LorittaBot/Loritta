@@ -54,7 +54,7 @@ class GetChannelInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/youtube/
 
 		val urlPath = URL(channelLink).path
 
-		val key = loritta.config.youtube.apiKey
+		val key = loritta.config.loritta.youtube.key
 
 		try {
 			// Paths que começam com "/channel/" significa que já é um channel ID,

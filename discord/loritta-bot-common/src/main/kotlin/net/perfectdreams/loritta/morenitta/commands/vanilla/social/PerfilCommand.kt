@@ -159,7 +159,7 @@ class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", l
 					val badgeMediaType = config.donationConfig?.customBadgePreferredMediaType
 					if (ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge && badgeFile != null && badgeMediaType != null) {
 						val extension = MediaTypeUtils.convertContentTypeToExtension(badgeMediaType)
-						val badge = LorittaUtils.downloadImage(loritta, "${loritta.config.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBadge(config.guildId, badgeFile).join()}.$extension", bypassSafety = true)
+						val badge = LorittaUtils.downloadImage(loritta, "${loritta.config.loritta.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBadge(config.guildId, badgeFile).join()}.$extension", bypassSafety = true)
 
 						if (badge != null) {
 							badges += badge
@@ -169,7 +169,7 @@ class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", l
 			}
 
 			if (hasNotifyMeRole) badges += ImageIO.read(File(LorittaBot.ASSETS + "notify_me.png"))
-			if (user.id == loritta.discordConfig.discord.clientId) badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_badge.png"))
+			if (user.id == loritta.config.loritta.discord.applicationId.toString()) badges += ImageIO.read(File(LorittaBot.ASSETS + "loritta_badge.png"))
 			if (user.isBot) badges += ImageIO.read(File(LorittaBot.ASSETS + "robot_badge.png"))
 			val marriage = loritta.newSuspendedTransaction { profile.marriage }
 			if (marriage != null) {
@@ -217,7 +217,7 @@ class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", l
 		val settings = loritta.newSuspendedTransaction { userProfile.settings }
 
 		if (contextUser == null && context.args.isNotEmpty() && (context.args.first() == "shop" || context.args.first() == "loja")) {
-			context.reply(LorittaReply(context.locale["commands.command.profile.profileshop", "${loritta.instanceConfig.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
+			context.reply(LorittaReply(context.locale["commands.command.profile.profileshop", "${loritta.config.loritta.website.url}user/@me/dashboard/profiles"], Emotes.LORI_OWO))
 			return
 		}
 
@@ -240,7 +240,7 @@ class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", l
 
 		var aboutMe: String? = null
 
-		if (userProfile.userId == loritta.discordConfig.discord.clientId.toLong()) {
+		if (userProfile.userId == loritta.config.loritta.discord.applicationId.toString().toLong()) {
 			aboutMe = locale["commands.command.profile.lorittaDescription"]
 		}
 

@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 @Serializable
 class GeneralConfig(
 		val loritta: LorittaConfig,
-		val clusters: List<LorittaClusterConfig>,
 		val database: DatabaseConfig,
 		val redis: RedisConfig,
 		val gatewayProxy: GatewayProxyConfig,
@@ -33,22 +32,6 @@ class GeneralConfig(
 			val url: String
 	)
 
-	@Serializable
-	class LorittaClusterConfig(
-			val id: Long,
-			val name: String,
-			val minShard: Long,
-			val maxShard: Long
-	) {
-		fun getUrl(loritta: LorittaBot) = DiscordUtils.getUrlForLorittaClusterId(loritta, id)
-		fun getUserAgent(loritta: LorittaBot) = getUserAgent(loritta.config.loritta.environment)
-		fun getUserAgent(environmentType: EnvironmentType) = (
-				if (environmentType == EnvironmentType.CANARY)
-					Constants.CANARY_CLUSTER_USER_AGENT
-				else
-					Constants.CLUSTER_USER_AGENT
-				).format(id, name)
-	}
 	@Serializable
 	data class LorittaConfig(
 			val environment: EnvironmentType,

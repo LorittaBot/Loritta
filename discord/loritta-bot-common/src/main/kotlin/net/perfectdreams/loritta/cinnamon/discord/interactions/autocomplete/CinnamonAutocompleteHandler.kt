@@ -5,11 +5,11 @@ import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteCon
 import net.perfectdreams.discordinteraktions.common.autocomplete.AutocompleteHandler
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.autocomplete.GuildAutocompleteContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 
-abstract class CinnamonAutocompleteHandler<T>(val loritta: LorittaCinnamon) : AutocompleteHandler<T> {
+abstract class CinnamonAutocompleteHandler<T>(val loritta: LorittaBot) : AutocompleteHandler<T> {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

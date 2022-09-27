@@ -202,7 +202,7 @@ class BemBoladaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "bembolad
 		context.sendMessage(temmie, WebhookMessageBuilder()
 				.setUsername("Kenji do Loop Infinito")
 				.setContent(context.getAsMention(true) + bemBoladas[RANDOM.nextInt(bemBoladas.size)])
-				.setAvatarUrl("${loritta.instanceConfig.loritta.website.url}assets/img/kenji.jpg")
+				.setAvatarUrl("${loritta.config.loritta.website.url}assets/img/kenji.jpg")
 				.build())
 	}
 }

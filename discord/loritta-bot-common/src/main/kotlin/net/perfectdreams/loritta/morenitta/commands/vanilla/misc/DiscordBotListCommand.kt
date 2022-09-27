@@ -18,13 +18,13 @@ class DiscordBotListCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lor
             val context = this
             val embed = EmbedBuilder().apply {
                 setColor(Constants.LORITTA_AQUA)
-                setThumbnail("${loritta.instanceConfig.loritta.website.url}assets/img/loritta_star.png")
+                setThumbnail("${loritta.config.loritta.website.url}assets/img/loritta_star.png")
                 setTitle("✨ Discord Bot List")
                 setDescription(
                     locale[
                             "$LOCALE_PREFIX.info",
                             context.serverConfig.commandPrefix,
-                            "https://top.gg/bot/${loritta.discordConfig.discord.clientId}",
+                            "https://top.gg/bot/${loritta.config.loritta.discord.applicationId.toString()}",
                             Emotes.DISCORD_BOT_LIST
                     ]
                 )

@@ -7,7 +7,7 @@ import net.perfectdreams.loritta.common.achievements.AchievementType
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.BarebonesInteractionContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
@@ -23,7 +23,7 @@ object AchievementUtils {
      * @param achievedAt when the achievement was achieved, default is now
      */
     suspend fun giveAchievementToUser(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         userId: UserId,
         type: AchievementType,
         achievedAt: Instant = Clock.System.now()
@@ -44,7 +44,7 @@ object AchievementUtils {
      * @param achievedAt when the achievement was achieved, default is now
      */
     suspend fun giveAchievementToUserAndNotifyThem(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         context: BarebonesInteractionContext,
         i18nContext: I18nContext,
         userId: UserId,

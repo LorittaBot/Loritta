@@ -1,4 +1,4 @@
-package net.perfectdreams.loritta.cinnamon.discord
+/* package net.perfectdreams.loritta.cinnamon.discord
 
 import dev.kord.common.annotation.KordExperimental
 import dev.kord.common.entity.Snowflake
@@ -101,7 +101,7 @@ class LorittaCinnamon(
     }
 
     @OptIn(KordExperimental::class)
-    val kord = Kord.restOnly(config.discord.token) {
+    val kord = Kord.restOnly(config.loritta.discord.token) {
         requestHandler {
             StackTraceRecoveringKtorRequestHandler(KtorRequestHandler(it.token))
         }
@@ -570,4 +570,4 @@ class LorittaCinnamon(
             throw e
         }
     }
-}
+} */

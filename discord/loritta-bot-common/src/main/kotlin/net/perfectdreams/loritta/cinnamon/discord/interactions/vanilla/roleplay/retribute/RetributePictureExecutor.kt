@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.retribute
 
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.RoleplayActionAttributes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay.RoleplayUtils
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
 abstract class RetributePictureExecutor(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     private val client: RandomRoleplayPicturesClient,
     private val attributes: RoleplayActionAttributes,
 ) : CinnamonButtonExecutor(loritta) {

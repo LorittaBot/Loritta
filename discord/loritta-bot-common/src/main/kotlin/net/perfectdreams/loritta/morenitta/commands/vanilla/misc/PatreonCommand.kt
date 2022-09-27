@@ -20,7 +20,7 @@ class PatreonCommand(loritta: LorittaBot) : AbstractCommand(loritta, "donator", 
 			setTitle("${Emotes.LORI_RICH} ${context.locale["commands.command.donate.thanks"]}")
 			setColor(Color(0, 193, 223))
 			setDescription(patrons)
-			addField("\uD83C\uDF80 " + context.locale["commands.command.donate.doYouWannaHelp"], context.locale["commands.command.donate.howToHelp", "${loritta.instanceConfig.loritta.website.url}donate", Emotes.LORI_HEART, Emotes.LORI_CRYING, Emotes.LORI_RICH], false)
+			addField("\uD83C\uDF80 " + context.locale["commands.command.donate.doYouWannaHelp"], context.locale["commands.command.donate.howToHelp", "${loritta.config.loritta.website.url}donate", Emotes.LORI_HEART, Emotes.LORI_CRYING, Emotes.LORI_RICH], false)
 		}
 
 		context.sendMessage(context.getAsMention(true), embed.build())

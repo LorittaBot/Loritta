@@ -7,7 +7,7 @@ import kotlinx.serialization.json.Json
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalComponents
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.modals.CinnamonModalExecutor
@@ -18,7 +18,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.getOrCreateUserProfile
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 
-class ChangeAboutMeModalExecutor(loritta: LorittaCinnamon) : CinnamonModalExecutor(loritta) {
+class ChangeAboutMeModalExecutor(loritta: LorittaBot) : CinnamonModalExecutor(loritta) {
     companion object : CinnamonModalExecutorDeclaration(ComponentExecutorIds.CHANGE_ABOUT_ME_MODAL_SUBMIT_EXECUTOR) {
         object Options : ModalComponents() {
             val aboutMe = textInput("about_me", TextInputStyle.Paragraph)
@@ -46,7 +46,7 @@ class ChangeAboutMeModalExecutor(loritta: LorittaCinnamon) : CinnamonModalExecut
 
         val guild = context.interaKTionsModalContext.discordInteraction.guildId.value?.let { loritta.kord.getGuild(it) }
 
-        val result = loritta.profileDesignManager.createProfile(
+        /* val result = loritta.profileDesignManager.createProfile(
             loritta,
             context.i18nContext,
             context.user,
@@ -63,6 +63,6 @@ class ChangeAboutMeModalExecutor(loritta: LorittaCinnamon) : CinnamonModalExecut
                 message()
             }.toInteractionMessageResponseModifyBuilder()
                 .toRequest()
-        )
+        ) */
     }
 }

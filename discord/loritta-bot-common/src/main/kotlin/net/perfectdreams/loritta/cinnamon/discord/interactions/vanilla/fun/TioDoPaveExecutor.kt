@@ -5,10 +5,10 @@ import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 
-class TioDoPaveExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class TioDoPaveExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     // TODO: Localization
     // https://www.reddit.com/r/tiodopave/top/?sort=top&t=all&count=375&after=t3_666izg
     val PIADAS = listOf(

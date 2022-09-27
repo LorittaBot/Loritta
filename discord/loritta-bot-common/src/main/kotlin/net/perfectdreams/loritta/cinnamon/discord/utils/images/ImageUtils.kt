@@ -7,7 +7,7 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.gabrielaimageserver.exceptions.ContentLengthTooLargeException
 import net.perfectdreams.gabrielaimageserver.exceptions.ImageTooLargeException
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.UnicodeEmojiManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileCreator
@@ -125,7 +125,7 @@ object ImageUtils {
     }
 
     suspend fun drawString(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         graphics: Graphics,
         text: String,
         x: Int,
@@ -313,7 +313,7 @@ object ImageUtils {
      * @param rect The Rectangle to center the text in.
      */
     suspend fun drawCenteredString(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         graphics: Graphics,
         text: String,
         rect: Rectangle,

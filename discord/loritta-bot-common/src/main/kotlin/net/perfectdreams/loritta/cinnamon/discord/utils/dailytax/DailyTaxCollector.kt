@@ -4,7 +4,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
@@ -20,7 +20,7 @@ import java.sql.Connection
 import java.time.LocalDateTime
 import java.time.ZoneOffset
 
-class DailyTaxCollector(val m: LorittaCinnamon) : RunnableCoroutine {
+class DailyTaxCollector(val m: LorittaBot) : RunnableCoroutine {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -48,7 +48,7 @@ class DailyTaxCollector(val m: LorittaCinnamon) : RunnableCoroutine {
             // We need to use Read Commited to avoid "Could not serialize access due to concurrent update"
             // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
             m.pudding.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
-                DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 0) { threshold, inactiveDailyUser ->
+                DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.loritta.discord.applicationId, 0) { threshold, inactiveDailyUser ->
                     logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax taxed" }
 
                     alreadyWarnedThatTheyWereTaxed.add(inactiveDailyUser.id)
@@ -108,7 +108,7 @@ class DailyTaxCollector(val m: LorittaCinnamon) : RunnableCoroutine {
                     .toKotlinInstant()
 
                 m.pudding.transaction {
-                    DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.discord.applicationId, 1) { threshold, inactiveDailyUser ->
+                    DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.loritta.discord.applicationId, 1) { threshold, inactiveDailyUser ->
                         // Don't warn them about the tax if they were already taxed before
                         if (inactiveDailyUser.id !in alreadyWarnedThatTheyWereTaxed && inactiveDailyUser.id !in alreadyWarnedThatTheyAreGoingToBeTaxed) {
                             logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax warn" }

@@ -6,7 +6,7 @@ import dev.kord.core.entity.User
 import dev.kord.rest.Image
 import kotlinx.coroutines.flow.toList
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
@@ -25,7 +25,7 @@ import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
 import kotlin.time.Duration.Companion.hours
 
-class ProfileDesignManager(val loritta: LorittaCinnamon) {
+class ProfileDesignManager(val loritta: LorittaBot) {
     companion object {
         private val FREE_EMOJIS_GUILDS = listOf(
             Snowflake(297732013006389252), // Apartamento da Loritta
@@ -87,7 +87,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
         registerBadge(ArtistBadge()) */
     }
     suspend fun createProfile(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         i18nContext: I18nContext,
         sender: User,
         userToBeViewed: User,
@@ -192,7 +192,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
      * @return a list containing all the images of the user's badges
      */
     suspend fun getUserBadges(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         user: User,
         profile: PuddingUserProfile,
         mutualGuilds: Set<Long>,
@@ -275,7 +275,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
                 // TODO: Only enable it if the server still has an active DonationConfigs custom plan
                 if (customBadge && badgeFile != null && badgeMediaType != null /* && ServerPremiumPlans.getPlanFromValue(donationKeysValue).hasCustomBadge */) {
                     val extension = MediaTypeUtils.convertContentTypeToExtension(badgeMediaType)
-                    val badge = ImageUtils.downloadImage("${loritta.config.services.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBadge(guildId, badgeFile).join()}.$extension", bypassSafety = true)
+                    val badge = ImageUtils.downloadImage("${loritta.config.loritta.dreamStorageService.url}/$dssNamespace/${StoragePaths.CustomBadge(guildId, badgeFile).join()}.$extension", bypassSafety = true)
 
                     if (badge != null) {
                         badges += badge
@@ -286,7 +286,7 @@ class ProfileDesignManager(val loritta: LorittaCinnamon) {
 
         // TODO: Fix this
         // if (hasNotifyMeRole) badges += ImageIO.read(File(Loritta.ASSETS + "notify_me.png"))
-        // if (user.id == loritta.discordConfig.discord.clientId) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
+        // if (user.id == loritta.config.loritta.discord.applicationId.toString()) badges += ImageIO.read(File(Loritta.ASSETS + "loritta_badge.png"))
         if (user.isBot) badges += readImageFromResources("/badges/bot.png")
         // TODO: Fix this
         // val marriage = loritta.newSuspendedTransaction { profile.marriage }

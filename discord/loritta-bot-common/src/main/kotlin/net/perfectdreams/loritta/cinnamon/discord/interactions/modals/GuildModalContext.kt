@@ -4,10 +4,10 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.Member
 import dev.kord.core.entity.User
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 open class GuildModalContext(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     i18nContext: I18nContext,
     user: User,
     interaKTionsContext: net.perfectdreams.discordinteraktions.common.modals.GuildModalContext,

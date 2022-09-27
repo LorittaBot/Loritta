@@ -9,7 +9,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class BoostGuildListener(val loritta: LorittaBot) : ListenerAdapter() {
-    val config = loritta.discordConfig.donatorsOstentation
+    val config = loritta.config.loritta.donatorsOstentation
 
     override fun onGuildMemberUpdateBoostTime(event: GuildMemberUpdateBoostTimeEvent) {
         val boostAsDonationGuilds = config.boostEnabledGuilds.map { it.id }

@@ -406,7 +406,7 @@ class CommandManager(val loritta: LorittaBot) {
 						var message = locale["commands.loriMissingPermission", required]
 
 						if (ev.member.hasPermission(Permission.ADMINISTRATOR) || ev.member.hasPermission(Permission.MANAGE_SERVER)) {
-							message += " ${locale["commands.loriMissingPermissionCanConfigure", loritta.instanceConfig.loritta.website.url]}"
+							message += " ${locale["commands.loriMissingPermissionCanConfigure", loritta.config.loritta.website.url]}"
 						}
 						ev.textChannel.sendMessage(Constants.ERROR + " **|** ${ev.member.asMention} $message")
 							.referenceIfPossible(ev.message, serverConfig, true)
@@ -420,7 +420,7 @@ class CommandManager(val loritta: LorittaBot) {
 					return true
 				}
 
-				if (context.cmd.onlyOwner && !loritta.config.isOwner(ev.author.id)) {
+				if (context.cmd.onlyOwner && !loritta.isOwner(ev.author.id)) {
 					context.reply(
 						LorittaReply(
 							locale["commands.commandOnlyForOwner"],

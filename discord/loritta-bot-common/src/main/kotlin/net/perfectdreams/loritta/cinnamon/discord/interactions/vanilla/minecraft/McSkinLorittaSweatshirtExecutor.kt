@@ -8,7 +8,7 @@ import net.perfectdreams.gabrielaimageserver.exceptions.InvalidMinecraftSkinExce
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.URLUtils
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.minecraft.declarations.MinecraftCommand
@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import java.util.*
 
-class McSkinLorittaSweatshirtExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerClient, val mojang: MinecraftMojangAPI) : CinnamonSlashCommandExecutor(loritta) {
+class McSkinLorittaSweatshirtExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient, val mojang: MinecraftMojangAPI) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val skin = string("skin", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.Skin.Text)
 

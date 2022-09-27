@@ -10,13 +10,13 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
 import org.jetbrains.exposed.sql.insert
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
-class BomDiaECia(private val m: LorittaCinnamon) {
+class BomDiaECia(private val m: LorittaBot) {
     companion object {
         private val logger = KotlinLogging.logger {}
 

@@ -16,7 +16,6 @@ import com.jasonclawson.jackson.dataformat.hocon.HoconFactory
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import kotlinx.serialization.hocon.Hocon
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.jackson.FixedMapDeserializer
 import net.perfectdreams.loritta.common.utils.Emotes

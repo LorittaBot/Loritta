@@ -47,7 +47,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 		val arg3 = context.rawArgs.getOrNull(3)
 
 		// Sub-comandos que só o Dono pode usar
-		if (context.loritta.config.isOwner(context.userHandle.id)) {
+		if (context.loritta.isOwner(context.userHandle.id)) {
 			if (arg0 == "inject_economy") {
 				val config = context.loritta.getOrCreateServerConfig(context.guild.idLong)
 
@@ -80,7 +80,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 				return
 			}
 			if (arg0 == "set_update_post") {
-				val shards = context.loritta.config.clusters
+				val shards = context.loritta.config.loritta.clusters.instances
 
 				val jobs = shards.map {
 					GlobalScope.async(context.loritta.coroutineDispatcher) {
@@ -236,7 +236,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 		}
 
 		// Sub-comandos que o dono e os Supervisores de Lori podem usar
-		if (context.loritta.config.isOwner(context.userHandle.id) || context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
+		if (context.loritta.isOwner(context.userHandle.id) || context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
 			if (arg0 == "guild_ban" && arg1 != null) {
 				val guildId = arg1.toLong()
 
@@ -351,7 +351,7 @@ class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta
 			if (arg0 == "economy") {
 				val value = arg1!!.toBoolean()
 
-				val shards = context.loritta.config.clusters
+				val shards = context.loritta.config.loritta.clusters.instances
 
 				shards.map {
 					GlobalScope.async(context.loritta.coroutineDispatcher) {

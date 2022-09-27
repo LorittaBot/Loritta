@@ -6,7 +6,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
@@ -120,7 +120,7 @@ class UserAvatarCollage(val width: Int, val height: Int) {
         }
     )
 
-    suspend fun generate(loritta: LorittaCinnamon): BufferedImage {
+    suspend fun generate(loritta: LorittaBot): BufferedImage {
         if (slots.size != maxSlots)
             error("Not enough slots! Currently there are ${slots.size} slots, but it should be $maxSlots slots!")
 

@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import java.awt.Color
@@ -19,7 +19,7 @@ object RankingGenerator {
      * Generates a ranking image
      */
     suspend fun generateRanking(
-        loritta: LorittaCinnamon,
+        loritta: LorittaBot,
         currentPosition: Long,
         title: String,
         guildIconUrl: String?,

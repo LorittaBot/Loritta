@@ -116,8 +116,8 @@ object LorittaUtilsKotlin {
 					else
 						locale["commands.command.mute.forever"]
 				},
-				loritta.instanceConfig.loritta.website.url + "support",
-				loritta.instanceConfig.loritta.website.url + "guidelines",
+				loritta.config.loritta.website.url + "support",
+				loritta.config.loritta.website.url + "guidelines",
 				Emotes.DEFAULT_DANCE,
 				Emotes.LORI_DEMON
 		).joinToString("\n")

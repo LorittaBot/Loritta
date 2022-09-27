@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotificationUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.common.utils.PendingImportantNotificationState
 
-class PendingImportantNotificationsProcessor(val loritta: LorittaCinnamon) : RunnableCoroutine {
+class PendingImportantNotificationsProcessor(val loritta: LorittaBot) : RunnableCoroutine {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -50,7 +50,7 @@ class PendingImportantNotificationsProcessor(val loritta: LorittaCinnamon) : Run
                             val message = NotificationUtils.buildUserNotificationMessage(
                                 i18nContext,
                                 notification,
-                                loritta.config.loritta.website
+                                loritta.config.loritta.website.url
                             )
 
                             return@runBlocking UserUtils.sendMessageToUserViaDirectMessage(

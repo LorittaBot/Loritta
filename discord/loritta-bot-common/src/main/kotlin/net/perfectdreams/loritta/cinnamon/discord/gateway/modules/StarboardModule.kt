@@ -26,7 +26,7 @@ import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
@@ -44,7 +44,7 @@ import org.jetbrains.exposed.sql.insert
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class StarboardModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
+class StarboardModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
     companion object {
         const val STAR_REACTION = "⭐"
         private val logger = KotlinLogging.logger {}

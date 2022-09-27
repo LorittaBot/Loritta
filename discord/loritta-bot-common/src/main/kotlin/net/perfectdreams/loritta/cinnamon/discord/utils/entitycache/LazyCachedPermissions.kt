@@ -5,7 +5,7 @@ import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.service.RestClient
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.CinnamonMetrics
 
 /**
@@ -13,7 +13,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.CinnamonMetrics
  */
 class LazyCachedPermissions internal constructor(
     private val rest: RestClient,
-    private val loritta: LorittaCinnamon,
+    private val loritta: LorittaBot,
     private val cacheService: DiscordCacheService,
     private val guildId: Snowflake,
     private val channelId: Snowflake,
@@ -84,6 +84,8 @@ class LazyCachedPermissions internal constructor(
             }
 
             this.permissions = permissionsResult.permissions
+
+            println("Permissions: ${permissionsResult}")
 
             // Repeat the check! It shouldn't be null now
             hasPermission(*permissions)

@@ -260,7 +260,7 @@ class UserReputationView(
                             }
                             div {
                                 if (userIdentification == null) {
-                                    var redirectUrl = loritta.instanceConfig.loritta.website.url + "user/${user.id}/rep"
+                                    var redirectUrl = loritta.config.loritta.website.url + "user/${user.id}/rep"
                                     if (channelId != null)
                                         redirectUrl += "?guild=$guildId&channel=$channelId"
 
@@ -268,7 +268,7 @@ class UserReputationView(
                                             "redirectUrl" to redirectUrl
                                     )
 
-                                    a(classes = "button-discord button-discord-info pure-button g-recaptcha reputation-button", href = (loritta.discordInstanceConfig.discord.authorizationUrl + "&state=${java.util.Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")) {
+                                    a(classes = "button-discord button-discord-info pure-button g-recaptcha reputation-button", href = (loritta.config.loritta.discord.authorizationUrl + "&state=${java.util.Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")) {
                                         id = "reputation-button"
                                         attributes["data-need-login"] = "true"
 

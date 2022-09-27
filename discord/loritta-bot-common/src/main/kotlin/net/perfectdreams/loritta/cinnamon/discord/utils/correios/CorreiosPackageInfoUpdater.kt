@@ -5,7 +5,7 @@ import kotlinx.datetime.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosFoundObjeto
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosUnknownObjeto
@@ -21,7 +21,7 @@ import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.time.LocalDateTime
 
-class CorreiosPackageInfoUpdater(val m: LorittaCinnamon) : RunnableCoroutine {
+class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
     companion object {
         private val logger = KotlinLogging.logger {}
         val KTX_DATETIME_CORREIOS_OFFSET = UtcOffset(-3)

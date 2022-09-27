@@ -166,7 +166,7 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
                         ?.replace(Regex("[\\r\\n]"), " ")
                         ?.substringIfNeeded(0..250)
 
-                    val receivedByLoritta = reputation[Reputations.givenById] == loritta.discordConfig.discord.clientId.toLong()
+                    val receivedByLoritta = reputation[Reputations.givenById] == loritta.config.loritta.discord.applicationId.toString().toLong()
                     if (receivedByLoritta) {
                         str.append(locale["$LOCALE_PREFIX.receivedReputationByLoritta", "`${user.name + "#" + user.discriminator}`"])
                     } else {

@@ -3,10 +3,10 @@ package net.perfectdreams.loritta.cinnamon.discord.gateway.modules
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.MessageCreate
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 
-class BomDiaECiaModule(private val m: LorittaCinnamon) : ProcessDiscordEventsModule() {
+class BomDiaECiaModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

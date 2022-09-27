@@ -2,11 +2,11 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.
 
 import dev.kord.core.entity.Member
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonUserCommandExecutor
 
-class UserAvatarUserExecutor(loritta: LorittaCinnamon) : CinnamonUserCommandExecutor(loritta), UserAvatarExecutor {
+class UserAvatarUserExecutor(loritta: LorittaBot) : CinnamonUserCommandExecutor(loritta), UserAvatarExecutor {
     override suspend fun execute(
         context: ApplicationCommandContext,
         targetUser: User,

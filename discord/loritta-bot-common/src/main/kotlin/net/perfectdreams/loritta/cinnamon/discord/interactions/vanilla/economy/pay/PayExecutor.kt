@@ -8,7 +8,7 @@ import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.SlashContextHighLevelEditableMessage
@@ -27,7 +27,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
 
-class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class PayExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val user = user("user", SonhosCommand.PAY_I18N_PREFIX.Options.User.Text)
         val quantity = string("quantity", SonhosCommand.PAY_I18N_PREFIX.Options.Quantity.Text) {
@@ -52,7 +52,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
         val receiver = args[options.user]
         val howMuch = args[options.quantity].toLongOrNull()
         val ttlDuration = args[options.ttlDuration]?.let { Duration.parse(it) } ?: 15.minutes
-        val isLoritta = receiver.id == Snowflake(loritta.config.discord.applicationId)
+        val isLoritta = receiver.id == loritta.config.loritta.discord.applicationId
 
         checkIfSelfAccountIsOldEnough(context)
         checkIfOtherAccountIsOldEnough(context, receiver)
@@ -172,7 +172,7 @@ class PayExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(lorit
             TransferSonhosButtonExecutor.acceptSonhos(
                 loritta,
                 context,
-                Snowflake(loritta.config.discord.applicationId),
+                loritta.config.loritta.discord.applicationId,
                 SlashContextHighLevelEditableMessage(message),
                 data
             )

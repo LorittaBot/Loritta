@@ -12,7 +12,7 @@ import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.SoundboxCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
@@ -23,7 +23,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
 import java.util.*
 import kotlin.concurrent.thread
 
-class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManager: FalatronModelsManager) : CinnamonSlashCommandExecutor(loritta) {
+class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: FalatronModelsManager) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val voice = string("voice", SoundboxCommand.I18N_PREFIX.Falatron.Options.Voice.Text) {
             cinnamonAutocomplete { _, focused ->
@@ -211,7 +211,7 @@ class FalatronExecutor(loritta: LorittaCinnamon, private val falatronModelsManag
 
     private fun convertAudio(byteArray: ByteArray): ByteArray {
         val processBuilder = ProcessBuilder(
-            loritta.config.binaries.ffmpeg,
+            loritta.config.loritta.binaries.ffmpeg,
             // "-hide_banner",
             // "-loglevel",
             // "error",

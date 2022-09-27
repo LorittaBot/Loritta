@@ -142,7 +142,7 @@ open class LorittaUser(val loritta: LorittaBot, val user: User, val permissions:
 	 */
 	open fun canUseCommand(context: CommandContext): Boolean {
 		// A coisa mais importante a se verificar é se o comando só pode ser executado pelo dono (para não causar problemas)
-		if (context.cmd.onlyOwner && !loritta.config.isOwner(context.userHandle.id))
+		if (context.cmd.onlyOwner && !loritta.isOwner(context.userHandle.id))
 			return false
 
 		if (!context.cmd.canHandle(context))

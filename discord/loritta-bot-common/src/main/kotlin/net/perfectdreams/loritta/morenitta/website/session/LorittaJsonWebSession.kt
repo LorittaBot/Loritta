@@ -57,8 +57,8 @@ data class LorittaJsonWebSession(
 		val json = JsonParser.parseString(storedDiscordAuthTokens)
 
 		return TemmieDiscordAuth(
-				loritta.discordConfig.discord.clientId,
-				loritta.discordConfig.discord.clientSecret,
+				loritta.config.loritta.discord.applicationId.toString(),
+				loritta.config.loritta.discord.clientSecret,
 				json["authCode"].string,
 				json["redirectUri"].string,
 				json["scope"].array.map { it.string },

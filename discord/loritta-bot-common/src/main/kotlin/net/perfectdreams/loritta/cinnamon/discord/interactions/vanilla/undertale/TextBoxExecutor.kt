@@ -13,7 +13,7 @@ import net.perfectdreams.gabrielaimageserver.data.TobyTextBoxRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
@@ -47,11 +47,11 @@ import java.io.InputStream
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
-class TextBoxExecutor(loritta: LorittaCinnamon, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
+class TextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
         @OptIn(ExperimentalTime::class)
         suspend fun createMessage(
-            loritta: LorittaCinnamon,
+            loritta: LorittaBot,
             user: User,
             i18nContext: I18nContext,
             data: TextBoxOptionsData

@@ -11,14 +11,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Manages Loritta's voice connections
  */
-class LorittaVoiceConnectionManager(val loritta: LorittaCinnamon) {
+class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -36,7 +36,7 @@ class LorittaVoiceConnectionManager(val loritta: LorittaCinnamon) {
     suspend fun getOrCreateVoiceConnection(
         guildId: Snowflake,
         channelId: Snowflake
-    ) = getOrCreateVoiceConnection(loritta.gatewayManager.getGatewayForGuild(guildId), guildId, channelId)
+    ) = getOrCreateVoiceConnection(loritta.lorittaShards.gatewayManager.getGatewayForGuild(guildId), guildId, channelId)
 
     /**
      * Gets or creates a [LorittaVoiceConnection] on the [guildId] and [channelId]
@@ -64,7 +64,7 @@ class LorittaVoiceConnectionManager(val loritta: LorittaCinnamon) {
 
             val vc = VoiceConnection(
                 gateway,
-                Snowflake(loritta.discordConfig.applicationId),
+                loritta.config.loritta.discord.applicationId,
                 channelId,
                 guildId
             ) {

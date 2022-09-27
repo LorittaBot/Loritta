@@ -9,7 +9,7 @@ import net.perfectdreams.discordinteraktions.common.components.SelectMenuExecuto
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.EphemeralCommandException
@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.SilentCo
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.common.components.ComponentType
 
-abstract class CinnamonSelectMenuExecutor(val loritta: LorittaCinnamon) : SelectMenuExecutor {
+abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuExecutor {
     companion object {
         private val logger = KotlinLogging.logger {}
     }

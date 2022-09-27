@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.entitycache
 
 import com.github.luben.zstd.ZstdDictCompress
 import com.github.luben.zstd.ZstdDictDecompress
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class ZstdDictionaries {
     enum class Dictionary {
@@ -13,15 +13,15 @@ class ZstdDictionaries {
     }
 
     val rolesV1 = ZstdDictionary(
-        LorittaCinnamon::class.java.getResourceAsStream("/zstd_dictionaries/roles_v1")
+        LorittaBot::class.java.getResourceAsStream("/zstd_dictionaries/roles_v1")
             .readAllBytes()
     )
     val channelsV1 = ZstdDictionary(
-        LorittaCinnamon::class.java.getResourceAsStream("/zstd_dictionaries/channels_v1")
+        LorittaBot::class.java.getResourceAsStream("/zstd_dictionaries/channels_v1")
             .readAllBytes()
     )
     val emojisV1 = ZstdDictionary(
-        LorittaCinnamon::class.java.getResourceAsStream("/zstd_dictionaries/emojis_v1")
+        LorittaBot::class.java.getResourceAsStream("/zstd_dictionaries/emojis_v1")
             .readAllBytes()
     )
 

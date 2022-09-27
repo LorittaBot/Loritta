@@ -33,9 +33,6 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 	}
 
 	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		if (loritta.config.gatewayProxy.disableInviteBlocker)
-			return false
-
 		val inviteBlockerConfig = serverConfig.getCachedOrRetreiveFromDatabase<InviteBlockerConfig?>(loritta, ServerConfig::inviteBlockerConfig)
 				?: return false
 
@@ -167,7 +164,7 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 													Emotes.LORI_SMILE
 											),
 											LorittaReply(
-													locale["modules.inviteBlocker.howToReEnableLater", "<${loritta.instanceConfig.loritta.website.url}guild/${event.member.guild.idLong}/configure/permissions>"],
+													locale["modules.inviteBlocker.howToReEnableLater", "<${loritta.config.loritta.website.url}guild/${event.member.guild.idLong}/configure/permissions>"],
 													Emotes.LORI_HM
 											)
 									).joinToString("\n") { it.build(JDAUser(event.member.user)) }

@@ -6,7 +6,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
@@ -31,7 +31,7 @@ import java.awt.image.BufferedImage
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
 
-class ThanksFriendsExecutor(loritta: LorittaCinnamon) : CinnamonSlashCommandExecutor(loritta) {
+class ThanksFriendsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val user1 = optionalUser("user1", ThanksFriendsCommand.I18N_PREFIX.Options.User1.Text(ThanksFriendsCommand.I18N_PREFIX.Slot.Thanks))
         val user2 = optionalUser("user2", ThanksFriendsCommand.I18N_PREFIX.Options.User2.Text(ThanksFriendsCommand.I18N_PREFIX.Slot.For))

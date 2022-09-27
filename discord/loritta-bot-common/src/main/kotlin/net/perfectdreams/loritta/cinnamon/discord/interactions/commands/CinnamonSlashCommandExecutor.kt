@@ -9,14 +9,14 @@ import net.perfectdreams.discordinteraktions.common.commands.SlashCommandExecuto
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.commands.ApplicationCommandType
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext as CinnamonApplicationCommandContext
 
 /**
  * Discord InteraKTions' [SlashCommandExecutor] wrapper, used to provide Cinnamon-specific features.
  */
-abstract class CinnamonSlashCommandExecutor(val loritta: LorittaCinnamon) : SlashCommandExecutor(), CommandExecutorWrapper {
+abstract class CinnamonSlashCommandExecutor(val loritta: LorittaBot) : SlashCommandExecutor(), CommandExecutorWrapper {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -24,7 +24,7 @@ abstract class CinnamonSlashCommandExecutor(val loritta: LorittaCinnamon) : Slas
     private val executorClazzName: String = this::class.simpleName ?: "UnknownExecutor"
 
     val rest = loritta.rest
-    val applicationId = Snowflake(loritta.discordConfig.applicationId)
+    val applicationId = loritta.config.loritta.discord.applicationId
 
     abstract suspend fun execute(
         context: CinnamonApplicationCommandContext,

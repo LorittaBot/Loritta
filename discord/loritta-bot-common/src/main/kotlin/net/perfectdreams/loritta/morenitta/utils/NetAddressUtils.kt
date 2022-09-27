@@ -31,11 +31,12 @@ object NetAddressUtils {
 		val externalAddress = theTwoIps.first()
 		val internalAddress = theTwoIps.last()
 
-		val theRightIp = if (externalAddress == loritta.instanceConfig.machineExternalIp) {
+		// TODO: Fix this, afaik Loritta doesn't need this anymore
+		val theRightIp = externalAddress /* if (externalAddress == loritta.instanceConfig.machineExternalIp) {
 			internalAddress
 		} else {
 			externalAddress
-		}
+		} */
 
 		return if (split.size == 2) {
 			getWithPortIfMissing(theRightIp, split.last().toInt())

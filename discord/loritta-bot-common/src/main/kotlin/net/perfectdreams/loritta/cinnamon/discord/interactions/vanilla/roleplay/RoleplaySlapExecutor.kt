@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roleplay
 
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 
 class RoleplaySlapExecutor(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     client: RandomRoleplayPicturesClient,
 ) : RoleplayPictureExecutor(
     loritta,

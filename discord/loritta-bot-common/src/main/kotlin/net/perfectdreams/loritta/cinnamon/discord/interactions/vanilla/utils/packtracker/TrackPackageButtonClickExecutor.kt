@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.pa
 
 import dev.kord.core.entity.User
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.discord.LorittaCinnamon
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
@@ -15,7 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.correios.exceptions.Inva
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
 class TrackPackageButtonClickExecutor(
-    loritta: LorittaCinnamon,
+    loritta: LorittaBot,
     val client: CorreiosClient
 ) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.TRACK_PACKAGE_BUTTON_EXECUTOR)
