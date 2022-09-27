@@ -201,7 +201,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(LorittaBanCommand(loritta))
 		commandMap.add(LorittaUnbanCommand(loritta))
 		commandMap.add(LoriServerListConfigCommand(loritta))
-		commandMap.add(EvalKotlinCommand(loritta))
 		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
 			commandMap.add(AntiRaidCommand(loritta))
 

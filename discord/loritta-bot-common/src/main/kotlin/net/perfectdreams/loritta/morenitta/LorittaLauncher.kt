@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta
 
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
@@ -36,12 +37,6 @@ object LorittaLauncher {
 		// Speeds up image loading/writing/etc
 		// https://stackoverflow.com/a/44170254/7271796
 		ImageIO.setUseCache(false)
-
-		try {
-			setKotlinScriptingClasspath()
-		} catch (e: FileNotFoundException) {
-			println("Exception while trying to set Kotlin Scripting's classpath, are you running Loritta within a IDE?")
-		}
 
 		val configurationFile = File(System.getProperty("conf") ?: "./loritta.conf")
 
@@ -115,25 +110,7 @@ object LorittaLauncher {
 		File(outputPath).writeBytes(inputStream.readAllBytes())
 	}
 
-	private fun setKotlinScriptingClasspath() {
-		// https://www.reddit.com/r/Kotlin/comments/8qdd4x/kotlin_script_engine_and_your_classpaths_what/
-		val path = this::class.java.protectionDomain.codeSource.location.path
-		val jar = JarFile(path)
-		val mf = jar.manifest
-		val mattr = mf.mainAttributes
-		// Yes, you SHOULD USE Attributes.Name.CLASS_PATH! Don't try using "Class-Path", it won't work!
-		val manifestClassPath = mattr[Attributes.Name.CLASS_PATH] as String
-
-		// The format within the Class-Path attribute is different than the one expected by the property, so let's fix it!
-		// By the way, don't forget to append your original JAR at the end of the string!
-		val clazz = LorittaLauncher::class.java
-		val protectionDomain = clazz.protectionDomain
-		val propClassPath = manifestClassPath.replace(" ", File.pathSeparator) + "${File.pathSeparator}${Paths.get(protectionDomain.codeSource.location.toURI()).fileName}"
-
-		// Now we set it to our own classpath
-		System.setProperty("kotlin.script.classpath", propClassPath)
-	}
-
+	@OptIn(ExperimentalCoroutinesApi::class)
 	private fun installCoroutinesDebugProbes() {
 		// It is recommended to set this to false to avoid performance hits with the DebugProbes option!
 		DebugProbes.enableCreationStackTraces = false
