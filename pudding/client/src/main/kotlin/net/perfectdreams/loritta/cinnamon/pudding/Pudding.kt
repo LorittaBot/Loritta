@@ -190,7 +190,8 @@ class Pudding(
             BackgroundPayments,
             UserSettings,
             Profiles,
-            ServerConfigs,
+            // We won't update ServerConfigs for now, because Pudding's ServerConfig has missing fields
+            // ServerConfigs,
             ShipEffects,
             Marriages,
             UserAchievements,
