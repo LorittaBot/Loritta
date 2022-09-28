@@ -1,4 +1,3 @@
----
 label: "webhook"
 description: "Faça seu servidor mais chique enviando mensagens personalizadas através de webhooks!"
 watchOutDontSendTheWebhookUrlToOtherUsers: "Cuidado! Não envie a URL da Webhook para outros usuários! Se outra pessoa tiver a URL da Webhook eles podem enviar mensagens com ela! Então, se você acabar enviando a URL da webhook para alguém que você não confia, exclua a webhook na aba \"Integrações\" do canal de texto, fique seguro!!"
