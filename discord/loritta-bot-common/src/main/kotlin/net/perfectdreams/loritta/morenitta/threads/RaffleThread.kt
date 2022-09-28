@@ -52,8 +52,6 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 	}
 
 	fun save() {
-		val loteriaFile = File(LorittaBot.FOLDER, "raffle.json")
-
 		val json = JsonObject()
 
 		json["started"] = started
@@ -67,7 +65,11 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 		logger.info { "Prémio do último vencedor: $lastWinnerPrize" }
 		logger.info { "Tickets: ${userIds.size}" }
 
-		loteriaFile.writeText(json.toString())
+		runBlocking {
+			loritta.redisConnection {
+				it.set(loritta.redisKeys.lorittaRaffle("legacy"), json.toString())
+			}
+		}
 	}
 
 	fun handleWin() {

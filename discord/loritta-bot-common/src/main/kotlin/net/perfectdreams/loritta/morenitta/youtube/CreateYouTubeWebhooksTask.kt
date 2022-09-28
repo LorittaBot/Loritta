@@ -11,7 +11,6 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import org.jetbrains.exposed.sql.selectAll
-import java.io.File
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
@@ -38,11 +37,16 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 			val channelIds = mutableSetOf<String>()
 			channelIds.addAll(allChannelIds.map { it[TrackedYouTubeAccounts.youTubeChannelId] })
 
-			val youtubeWebhookFile = File(LorittaBot.FOLDER, "youtube_webhook.json")
-
-			if (!fileLoaded && youtubeWebhookFile.exists()) {
+			if (!fileLoaded) {
+				val youTubeWebhooksData = runBlocking {
+					loritta.redisConnection {
+						it.get(loritta.redisKeys.youTubeWebhooks())
+					}
+				}
 				fileLoaded = true
-				youtubeWebhooks = gson.fromJson(youtubeWebhookFile.readText())
+				if (youTubeWebhooksData != null) {
+					youtubeWebhooks = gson.fromJson(youTubeWebhooksData)
+				}
 			}
 
 			val notCreatedYetChannels = mutableListOf<String>()
@@ -118,14 +122,22 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 
 					if (index % 50 == 0 && index != 0) { // Do not write the file if index == 0, because it would be a *very* unnecessary write
 						logger.info { "Saving YouTube Webhook File... $index channels were processed" }
-						youtubeWebhookFile.writeText(gson.toJson(youtubeWebhooks))
+						runBlocking {
+							loritta.redisConnection {
+								it.set(loritta.redisKeys.youTubeWebhooks(), gson.toJson(youtubeWebhooks))
+							}
+						}
 					}
 				}
 
 				val createdWebhooksCount = webhookCount.get()
 
 				if (createdWebhooksCount != 0) {
-					youtubeWebhookFile.writeText(gson.toJson(youtubeWebhooks))
+					runBlocking {
+						loritta.redisConnection {
+							it.set(loritta.redisKeys.youTubeWebhooks(), gson.toJson(youtubeWebhooks))
+						}
+					}
 
 					logger.info { "Successfully wrote YouTube Webhook File! ${webhookCount.get()} channels were processed" }
 				} else {

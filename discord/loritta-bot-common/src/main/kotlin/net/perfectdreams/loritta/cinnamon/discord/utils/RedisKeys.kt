@@ -13,5 +13,8 @@ class RedisKeys(val keyPrefix: String) {
     fun discordGatewayEvents(shardId: Int) = redisKey("discord_gateway_events:shard_$shardId")
     fun discordGatewayCommands(shardId: Int) = redisKey("discord_gateway_commands:shard_$shardId")
 
+    fun lorittaRaffle(type: String) = redisKey("raffle:raffle_$type")
+    fun youTubeWebhooks() = redisKey("youtube_webhooks")
+
     fun redisKey(key: String) = "$keyPrefix:$key"
 }

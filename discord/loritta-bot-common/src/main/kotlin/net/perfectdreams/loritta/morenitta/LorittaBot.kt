@@ -597,11 +597,15 @@ class LorittaBot(
 
 		if (this.isMainInstance) {
 			logger.info { "Loading raffle..." }
-			val raffleFile = File(FOLDER, "raffle.json")
+			val raffleData = runBlocking {
+				redisConnection {
+					it.get(redisKeys.lorittaRaffle("legacy"))
+				}
+			}
 
-			if (raffleFile.exists()) {
+			if (raffleData != null) {
 				logger.info { "Parsing the JSON object..." }
-				val json = JsonParser.parseString(raffleFile.readText()).obj
+				val json = JsonParser.parseString(raffleData).obj
 
 				logger.info { "Loaded raffle data! ${RaffleThread.started}; ${json["lastWinnerId"].nullString}; ${json["lastWinnerPrize"].nullInt}" }
 				RaffleThread.started = json["started"].long
@@ -613,15 +617,8 @@ class LorittaBot(
 					logger.info { "Loading ${userIdArray.size()} raffle user entries..." }
 					val firstUserIdEntry = userIdArray.firstOrNull()
 					if (firstUserIdEntry != null) {
-						if (firstUserIdEntry.isJsonObject && firstUserIdEntry.asJsonObject.has("second")) {
-							// Old code
-							logger.info { "Loading directly from the JSON array, using the \"first\" property value..." }
-							val data = userIdArray.map { it["first"].long }
-							RaffleThread.userIds.addAll(data)
-						} else {
-							logger.info { "Loading directly from the JSON array..." }
-							RaffleThread.userIds.addAll(userIdArray.map { it.long })
-						}
+						logger.info { "Loading directly from the JSON array..." }
+						RaffleThread.userIds.addAll(userIdArray.map { it.long })
 					}
 				}
 			}
