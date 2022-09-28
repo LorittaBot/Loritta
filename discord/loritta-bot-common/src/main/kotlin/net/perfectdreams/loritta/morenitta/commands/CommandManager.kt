@@ -142,7 +142,7 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(LyricsCommand(loritta))
 
 		// =======[ DISCORD ]=======
-		commandMap.add(BotInfoCommand())
+		commandMap.add(BotInfoCommand(loritta))
 		commandMap.add(AvatarCommand(loritta))
 		commandMap.add(ServerIconCommand(loritta))
 		commandMap.add(EmojiCommand(loritta))
