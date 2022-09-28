@@ -6,6 +6,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
+import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
@@ -70,7 +71,9 @@ object LorittaLauncher {
 
 		logger.info { "Registered Prometheus Metrics" }
 
+		logger.info { "Loading languages..." }
 		val languageManager = LorittaLanguageManager(LorittaBot::class)
+		val localeManager = LocaleManager(LorittaBot::class).also { it.loadLocales() }
 
 		val services = Pudding.createPostgreSQLPudding(
 			config.loritta.pudding.address,
@@ -97,7 +100,7 @@ object LorittaLauncher {
 		System.setProperty("cluster.name", config.loritta.clusters.instances.first { it.id == clusterId }.getUserAgent(config.loritta.environment))
 
 		// Iniciar instância da Loritta
-		val loritta = LorittaBot(clusterId, config, languageManager, services, jedisPool, RedisKeys(config.loritta.redis.keyPrefix))
+		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, jedisPool, RedisKeys(config.loritta.redis.keyPrefix))
 		loritta.start()
 	}
 

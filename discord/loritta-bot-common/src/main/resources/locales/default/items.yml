@@ -1,0 +1,916 @@
+sets:
+  sadCats: "Gatinhos Tristes"
+  discord: "Discord"
+  cuteFoodFaces: "Comidas com Carinhas Fofas"
+  shibas: "Shibas"
+  stevenUniverse: "Steven Universe"
+  lorittaBirthday2020: "Aniversário da Loritta 2020"
+  akira: "Akira"
+  hamptonAndTheHampsters: "Hampton and the Hampsters"
+  gravityFalls: "Gravity Falls"
+  lowPoly: "Low Poly"
+  landscapes: "Paisagens"
+  sonic: "Sonic the Hedgehog"
+  jojo: "JoJo's Bizarre Adventure"
+  transformice: "Transformice"
+  brawlStars: "Brawl Stars"
+  devilMayCry: "Devil May Cry"
+  leagueOfLegends: "League of Legends"
+  adventureTime: "Hora de Aventura"
+  amongUs: "Among Us"
+profileDesigns:
+  name: "Design para Perfil"
+  defaultDark:
+    title: "Padrão Escuro"
+    description: &defaultProfileDesign "O clássico perfil da Loritta"
+  defaultBlurple:
+    title: "Padrão Azoroxo"
+    description: *defaultProfileDesign
+  defaultRed:
+    title: "Padrão Vermelho"
+    description: *defaultProfileDesign
+  defaultBlue:
+    title: "Padrão Azul"
+    description: *defaultProfileDesign
+  defaultGreen:
+    title: "Padrão Verde"
+    description: *defaultProfileDesign
+  defaultPurple:
+    title: "Padrão Roxo"
+    description: *defaultProfileDesign
+  defaultPink:
+    title: "Padrão Rosa"
+    description: *defaultProfileDesign
+  defaultOrange:
+    title: "Padrão Laranja"
+    description: *defaultProfileDesign
+  defaultYellow:
+    title: "Padrão Amarelo"
+    description: *defaultProfileDesign
+  defaultLight:
+    title: "Padrão Claro"
+    description: *defaultProfileDesign
+  modernBlurple:
+    title: "Modernidade Roxa"
+    description: "Modernidade é muito mais chique que simplicidade"
+  msn:
+    title: "MSN"
+    description: "Nostalgia"
+  orkut:
+    title: "Orkut"
+    description: "Nostalgia"
+  plainWhite:
+    title: "Simplesmente Branco"
+    description: &defaultPlainProfile "Simplicidade é muito mais chique que modernidade"
+  plainOrange:
+    title: "Simplesmente Laranja"
+    description: *defaultPlainProfile
+  plainPurple:
+    title: "Simplesmente Roxo"
+    description: *defaultPlainProfile
+  plainAqua:
+    title: "Simplesmente Azul"
+    description: *defaultPlainProfile
+  plainGreen:
+    title: "Simplesmente Verde"
+    description: *defaultPlainProfile
+  plainGreenHearts:
+    title: "Simplesmente Verde com Corações"
+    description: *defaultPlainProfile
+  cowboy:
+    title: "Cowboy"
+    description: "Yee haw"
+  nextGenDark:
+    title: "Próxima Geração Versão Escura"
+    description: "Futurístico"
+  monicaAta:
+    title: "Mônica Ata"
+    description: "ata"
+  loriAta:
+    title: "Loritta Ata"
+    description: "ata"
+  undertaleBattle:
+    title: "Undertale Battle"
+    description: "Stay Determined!"
+  halloween2019:
+    title: "Evento de Halloween 2019"
+    description: "Feliz Halloween!"
+  christmas2019:
+    title: "Evento de Natal 2019"
+    description: "Feliz Natal!"
+  lorittaChristmas2019:
+    title: "Loritta de Natal 2019"
+    description: "Feliz Natal!"
+backgrounds:
+  name: "Fundo para Perfil"
+  defaultBlue:
+    title: "Fundo Azulado"
+    description: &defaultBackground "Os pensamentos da Loritta"
+  defaultRed:
+    title: "Fundo Avermelhado"
+    description: *defaultBackground
+  defaultGreen:
+    title: "Fundo Esverdeado"
+    description: *defaultBackground
+  defaultOrange:
+    title: "Fundo Alaranjado"
+    description: *defaultBackground
+  defaultPink:
+    title: "Fundo Rosinha"
+    description: *defaultBackground
+  defaultPurple:
+    title: "Fundo Roxinho"
+    description: *defaultBackground
+
+  # ===[ DEFAULT + LORITTA + PANTUFA ]===
+  random:
+    title: "Aleatório"
+    description: "Escolhe aleatoriamente um background quando visualizarem o seu perfil"
+  custom:
+    title: "Personalizado"
+    description: "Escolha uma imagem própria para o seu background. Não envie conteúdo NSFW (not safe for work) como conteúdo pornográfico, gore, pessoas nuas ou semi-nuas, imagens contra as diretrizes de comunidade da Loritta ou qualquer outra imagem que deixe outras pessoas desconfortáveis. Caso você quebre as regras, você será permanentemente banido de utilizar a Loritta! Apenas imagens em PNG com tamanho 800x600 são suportadas."
+  defaultBlueLori:
+    title: "Loritta Azulada"
+    description: &defaultBackgroundLori "O que se passa na cabeça dela?"
+  defaultRedLori:
+    title: "Loritta Avermelhada"
+    description: *defaultBackgroundLori
+  defaultGreenLori:
+    title: "Loritta Esverdeada"
+    description: *defaultBackgroundLori
+  defaultOrangeLori:
+    title: "Loritta Alaranjada"
+    description: *defaultBackgroundLori
+  defaultPinkLori:
+    title: "Loritta Rosinha"
+    description: *defaultBackgroundLori
+  defaultPurpleLori:
+    title: "Loritta Roxinha"
+    description: *defaultBackgroundLori
+  defaultBluePantufa:
+    title: "Pantufa Azulada"
+    description: *defaultBackgroundLori
+  defaultRedPantufa:
+    title: "Pantufa Avermelhada"
+    description: *defaultBackgroundLori
+  defaultGreenPantufa:
+    title: "Pantufa Esverdeada"
+    description: *defaultBackgroundLori
+  defaultOrangePantufa:
+    title: "Pantufa Alaranjada"
+    description: *defaultBackgroundLori
+  defaultPinkPantufa:
+    title: "Pantufa Rosinha"
+    description: *defaultBackgroundLori
+  defaultPurplePantufa:
+    title: "Pantufa Roxinha"
+    description: *defaultBackgroundLori
+    
+  # ===[ LORITTA ]===
+  loriSextou:
+    title: "Sextou!"
+    description: "Grande *#$%@, amanhã eu trampo."
+  lorittaAndPantufa:
+    title: "Loritta & Pantufa"
+    description: "Uma selfie de duas melhores amigas"
+  allouetteLoritta:
+    title: "Loritta"
+    description: "Um estilo flat"
+  loriEhMole:
+    title: "Loritta eh mole"
+    description: "A piada que muitos fãs de Fullmetal Alchemist: Brotherhood fazem"
+  lorittaGrafiteira:
+    title: "Loritta Grafiteira"
+    description: "Crianças, não façam grafites em paredes que você não tem permissão!"
+  loriCrowd:
+    title: "Amigos do Apartamento da Loritta"
+    description: "Nada como reunir toda galera em um belo dia ensolarado para se divertir"
+  loritta400k:
+    title: "Loritta 400k"
+    description: "A comemoração de 400k servidores!"
+
+  # ===[ COMIDAS ]===
+  coxinha:
+    title: "Coxinha"
+    description: "Uma coxinha fofinha"
+  kibe:
+    title: "Kibe"
+    description: "Um kibe fofinho"
+  greenApple:
+    title: "Maçã Verde"
+    description: "Uma maçã fofinha"
+  redApple:
+    title: "Maçã Vermelha"
+    description: "Uma maçã fofinha"
+  redAppleEat:
+    title: "Maçã Vermelha Comida"
+    description: "Uma maçã fof... o que aconteceu com VOCÊ?"
+
+  # ===[ LORITTA BIRTHDAY 2020 ]===
+  birthday2020TeamPantufa:
+    title: "Team Pantufa"
+    description: "#TeamPantufa"
+  birthday2020TeamGabriela:
+    title: "Team Gabriela"
+    description: "#TeamGabriela"
+  birthday2020Brabas:
+    title: "Brabas"
+    description: "Duas amigas que até agora não conseguem decidir como vai ser o aniversário da Loritta"
+  birthday2020GabrielaCoffee:
+    title: &birthday2020Title "Aniversário da Loritta"
+    description: &birthday2020Description "Feliz Aniversário, Loritta!"
+  birthday2020GabrielaInnerDesu:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020GabrielaItsGabi:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020GabrielaStar:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020PantufaAllouette:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020PantufaDelly:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020PantufaHugoo:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020PantufaLaurenha:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020PantufaSonikaSan:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020PantufaOusado:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020PantufaDezato:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020GabrielaCoffee2:
+    title: *birthday2020Title
+    description: *birthday2020Description
+  birthday2020GabrielaPinotti:
+    title: *birthday2020Title
+    description: *birthday2020Description
+
+  # ===[ SAD CAT ]===
+  sadCat:
+    title: "Gato Triste"
+    description: &sadCatDescription "As vezes a gente se sente igual um gatinho triste"
+  sadCatTeddyBear:
+    title: "Gato Triste com Ursinho"
+    description: *sadCatDescription
+  sadCatPhone:
+    title: "Gato Triste com Celular"
+    description: *sadCatDescription
+  sadCatMirror:
+    title: "Triste Refletindo"
+    description: *sadCatDescription
+  sadCatSleepy:
+    title: "Soneca Triste"
+    description: *sadCatDescription
+  sadCatShower:
+    title: "Banho Triste"
+    description: *sadCatDescription
+  sadCatPainting:
+    title: "Pintura Triste"
+    description: *sadCatDescription
+  sadCatButter:
+    title: "Gatinho Triste com Manteiga"
+    description: *sadCatDescription
+  sadCatZoom:
+    title: "Focando na sua Tristeza"
+    description: *sadCatDescription
+  sadCatDrama:
+    title: "Drama"
+    description: *sadCatDescription
+  sadCatFat:
+    title: "Gatinho Gordo"
+    description: *sadCatDescription
+  sadCatCoca:
+    title: "Gato Triste com Coca-Cola"
+    description: *sadCatDescription
+  sadCatMoney:
+    title: "Gato Triste com Dinheiro"
+    description: "Dinheiro não te trás felicidade"
+  sadCatSushi:
+    title: "Gatinho Triste enrolado no Sushi"
+    description: *sadCatDescription
+
+  # ===[ DISCORD ]===
+  wumpusSad:
+    title: "Wumpus Triste"
+    description: "Ninguém quer brincar com o Wumpus"
+  wumpusHoodieCool:
+    title: "Wumpus e seu Agasalho"
+    description: "Um agasalho sempre fica bonito no Wumpus"
+  wumpusGame:
+    title: "Wumpus Gamer"
+    description: "Cima Cima Baixo Baixo Esquerda Direita Esquerda Direta B A"
+  wumpusHeart:
+    title: "Amor de Wumpus"
+    description: "Wumpus te ama!"
+  wumpusHackweekPeter:
+    title: "Wumpus e o Discord"
+    description: "Feito para o Hack Week 2019 do Discord"
+  wumpusCool:
+    title: "Wumpus Legal"
+    description: "Você pode ser legal, mas não tão legal como o Wumpus"
+  wumpusLeaf:
+    title: "Folha no Wumpus"
+    description: "Tão inocente e puro"
+  wumpusMovie:
+    title: "Filme com o Wumpus"
+    description: "Sente e relaxe"
+  wumpusBuffDark:
+    title: "Wumpus Bombado"
+    description: "Pague o seu Nitro ou eu irei sequestrar você e a sua família."
+  wumpusBuffBlurple:
+    title: "Wumpus Bombado"
+    description: "Pague o seu Nitro ou eu irei sequestrar você e a sua família."
+  wumpusMania:
+    title: "Wumpus Mania"
+    description: "It's a Wumpus!"
+
+  # ===[ DOGE ]===
+  dogeWolf:
+    title: "wow, lobos, bela lua"
+    description: "wow"
+  dogeAngry:
+    title: "Doge Bravo"
+    description: "grrrrr auau"
+  dogeSurprised:
+    title: "Doge Surpreso"
+    description: "wow"
+  doge:
+    title: "Doge"
+    description: "wow, dogin fofo, quanta beleza"
+  dogeCool:
+    title: "Doge Formal"
+    description: "Um cachorro mais formal que você"
+  dogeCabin:
+    title: "Cabaninha do Doge"
+    description: "Sinto que alguém está te espionando"
+  hotDog:
+    title: "Cachorro-Quente"
+    description: "O cachorrinho mais caliente da região"
+  
+  # ===[ HAMPTON AND THE HAMPSTERS ]===
+  hampsterdance:
+    title: "Hampton and the Hampsters"
+    description: "Dibidi ba didi dou dou"
+
+  # ===[ STEVEN UNIVERSE ]===
+  celesteTower:
+    title: "Torre Celeste"
+    description: "Uma das mais belas partes da trilha para o topo da Torre Celeste"
+  crystalTemple:
+    title: "Templo do Cristal"
+    description: "Paisagem do Templo do Cristal a Luz do Luar"
+  stevenPizza:
+    title: "Pizza na Cara"
+    description: "Pizzas são gostosas"
+  stevenUniverseBeach:
+    title: "Praia de Beach City"
+    description: "Um palco de grandes acontecimentos e uma marca inesquecível de Beach City"
+  crystalGemsTemple:
+    title: "Tarde de sol no Templo de Cristal"
+    description: "Paisagem do Templo do Cristal em um dia ensolarado"
+  stevenUniverseBigDonut:
+    title: "Big Rosquinha"
+    description: "A vista do lugar mais doce de Beach City!"
+  stevenUniverseOceanTemple:
+    title: "Altar Marinho"
+    description: "Bem longe da superfície, uma mágica construção gem embeleza o fundo do mar"
+  stevenUniverseLunarSeaTemple1:
+    title: "Torre Lunar do Mar"
+    description: "Como um oásis para as gems na Terra"
+  stevenUniverseLunarSeaTemple2:
+    title: "Torre Lunar do Mar"
+    description: "Essa torre é gigante, deve ser complicado subi-lá, porém ao chegar lá em cima, ela deve esconder uma visão única!"
+  stevenUniverseLunarSeaTemple3:
+    title: "Torre Lunar do Mar"
+    description: "Ah se você pudesse, sequer imaginar, viemos de além do Sol, até aqui chegar!"
+  stevenUniverseMaskIsland:
+    title: "Ilha da Máscara"
+    description: "A ilha distante onde várias criaturas mágicas vivem"
+  stevenUniverseSparkles:
+    title: "Universo Infinito"
+    description: "Pode até parecer um lugar vazio, porém é cheio de sonhos..."
+  stevenUniverseFutureEnemies:
+    title: "O futuro nos aguarda"
+    description: "O nosso trabalho é constante, e mesmo no futuro, devemos lembrar de quem nós fomos no passado."
+
+  # ===[ AKIRA ]===
+  kanedaBikeSkid:
+    title: "Kaneda"
+    description: "A cena icônica que inspirou vários animes"
+  kaneda:
+    title: "Kaneda"
+    description: "Líder da Capsule Gang"
+  
+  # ===[ PAISAGENS ]===
+  sunsetRiver:
+    title: "Pôr do sol"
+    description: "A natureza é bela"
+  auroraBorealis:
+    title: "Aurora Boreal"
+    description: "A natureza é bela"
+  starryNight:
+    title: "Noite Estrelada"
+    description: "A natureza é bela"
+  constellations:
+    title: "Constelações"
+    description: "A natureza é bela"
+  grass:
+    title: "Grama"
+    description: "A natureza é bela"
+  mist:
+    title: "Neblina"
+    description: "Cuidado com o Slenderman"
+  londrinaRosa:
+    title: "Londrina em ROSA SHOKK"
+    description: "Uma fotografia do céu londrinense, mas o mundo está em SHOKK"
+  londrinaCyber:
+    title: "CyberLondrina"
+    description: "Cidade de Londrina vista da zona sul"
+  londrinaAves:
+    title: "Aves no telhado"
+    description: "\"Você tá vendo aquele Big Mac jogado no chão ou é só a minha imaginação?\""
+
+  # ===[ LOW POLY ]===
+  lowPolyPlanet:
+    title: "Planeta Low Poly"
+    description: "Quais objetos low poly que existem neste planeta?"
+  lowPolyRocket:
+    title: "Foguete Low Poly"
+    description: "Prepare para a decolagem"
+
+  # ===[ JOJO ]===
+  dioBrando:
+    title: "Eu Dioooo"
+    description: "Jonathan Joestar acusa Dio Brando de envenenar o pai dele"
+  stoneMask:
+    title: "Máscara de Pedra"
+    description: "Dio pega a máscara de pedra com poderes secretos"
+  lickOfLove:
+    title: "Lambida maravilhosa"
+    description: "Uma leve lambida"
+
+  # ===[ MISC ]===
+  brawlStarsVirus:
+    title: "Vírus no Arcade"
+    description: "Apenas a Bibi e a Tara podem nos salvar!"
+  porsche911Carrera:
+    title: "Porsche 911 Carrera"
+    description: "Porsche 911 Carrera de 1989, faz parte da antiga época em que os 911 eram quadradinhos"
+  chocoholic:
+    title: "Chocoholic"
+    description: "Uma linda pelúcia amorosa e carismática"
+  bunchOfHearts:
+    title: "Amor para todo o lado!"
+    description: "<3"
+  fordMustang:
+    title: "Ford Mustang"
+    description: "Ford Mustang, o carro mais conhecido e o mais amado da Ford"
+  dogIdk:
+    title: "O que eu estou fazendo?"
+    description: "Não tenho ideia do que eu estou fazendo aqui"
+  tavares:
+    title: "Tavares"
+    description: "nice"
+  katyKatAnime:
+    title: "Katy Kat"
+    description: "Da série Parappa the Rapper"
+  shadowToilet:
+    title: "Shadow na Privada"
+    description: "Até ouriços precisam fazer suas necessidades fisiológicas"
+  kotlinChan:
+    title: "Kotlin-Chan"
+    description: "Kotlin: A linguagem de programação que a Loritta utiliza, personificada."
+  dorimeSortros:
+    title: "Dorime Miku"
+    description: "Ameno"
+  umasou1:
+    title: "A gloomy body"
+    description: "A cena que antecede momentos épicos"
+  archerIllya:
+    title: "Archer Illya"
+    description: "Illya com a carta do espirito heroico \"Archer\" instalada"
+  neekoNeekoNii:
+    title: "Neeko Neeko Nii!"
+    description: "Nico Nico Nii~"
+  sortrosMisfortune:
+    title: "Essa, é Misfortune"
+    description: "Uma criança sem sorte brincando com seus bonecos"
+  sortrosFranbow:
+    title: "O Gato da Loucura"
+    description: "O gato que é louco ou a loucura te faz ver o gato?"
+  cryingLonely:
+    title: "Solidão Entristecida"
+    description: "Espero que ninguém me veja assim..."
+  lumenParkour:
+    title: "Parkour!"
+    description: "O double jump no amiguinho"
+  windowsXpBliss:
+    title: "Felicidade"
+    description: "Nostalgia"
+  countryBalls:
+    title: "Mais um dia comum na Europa"
+    description: "O que será que acontecerá em seguida?"
+  ageOfEmpiresDe:
+    title: "Age of Empires: Definitive Edition"
+    description: &wololo "Wololo"
+  ageOfEmpires2De:
+    title: "Age of Empires II: Definitive Edition"
+    description: *wololo
+  ehMole:
+    title: "eh mole"
+    description: "doguinho eh mole"
+  emojo:
+    title: "Emojo"
+    description: "Bom dia grupooooooooo!"
+  smudgeTheCat:
+    title: "Smudge, o Gato"
+    description: "Smudge não gosta de vegetais"
+  wilsonFusca:
+    title: "Sr. Wilson no Uno"
+    description: "Bem-vindo a internet, eu serei o seu guia"
+  gretchenAngry:
+    title: "Gretchen Braba"
+    description: "A Gretchen tá braba grrrr"
+  loud:
+    title: "LOUD"
+    description: "Faz o L"
+  ashComputer:
+    title: "Ash no Computador"
+    description: "Análise"
+  dokyoSweater:
+    title: "Moletom"
+    description: "Como você se sente ao colocar uma roupa bem maior que você"
+  discordLogin:
+    title: "Login do Discord"
+    description: "Um lugar sereno"
+  bmwM3Gtr2005:
+    title: "BMW M3 GTR 2005"
+    description: "Um carro clássico da série Need for Speed, tendo uma pintura única jamais vista antes"
+  pogChamp:
+    title: "PogChamp"
+    description: "Pog"
+  studiopolis:
+    title: "Studiopolis Act 1"
+    description: "Lights, Camera, Action!"
+  titanicMonarch:
+    title: "Titanic Monarch Act 1"
+    description: "Uma visão mais ampliada sem plataformas"
+  emeraldHill:
+    title: "Emerald Hill"
+    description: "O clássico primeiro nível do Sonic 2"
+  sakuraAdr:
+    title: "Sakura da #ADR"
+    description: "É mais fácil se vender ao YouTube e brincar com amoeba do que ser Ninja"
+  obraDinn:
+    title: "Return of the Obra Dinn"
+    description: "Tripulação do grande Obra Dinn"
+  starMabel:
+    title: "Mabel Rainbow"
+    description: "Mabel com um grande arco-iris"
+  celesteTower:
+    title: "Torre Celeste"
+    description: "Uma das mais belas partes da trilha para o topo da Torre Celeste"
+  crystalTemple:
+    title: "Templo do Cristal"
+    description: "Paisagem do Templo do Cristal a Luz do Luar"
+  fordMustang:
+    title: "Ford Mustang"
+    description: "Ford Mustang, o carro mais conhecido e o mais amado da Ford"
+  rainbowDashPinkFloyd:
+    title: "Rainbow Dash Pink Floyd"
+    description: "Eu sou a pônei mais rápida ahram, ahram"
+  lifeIsStrange:
+    title: "Life is Strange"
+    description: "This action will have consequences..."
+  ponnyBunny:
+    title: "Ponny Bunny"
+    description: "Apenas uma cosplayer de cabelo colorido"
+  mar:
+    title: "Rena"
+    description: "Azul como o céu e as águas, uma híbrida mistura e perdida em seus pensamentos e sensações"
+  paola:
+    title: "Paola Bracho"
+    description: "Não me provoque Elvira, você sabe muito bem do que sou capaz. Eu vou cortar a sua lingua e arrancar o seus olhos, acha isso suficiente?"
+  alanChefe:
+    title: "Alan Chefão"
+    description: "O mundo acabou sendo comandado pelo Alan, respeitar"
+  loriCorona:
+    title: "Corona vs Loritta"
+    description: "Fiquem em casa <3"
+  jonatanMoon:
+    title: "A Lua"
+    description: "Uma bela lua, em um belo lugar"
+  minecraftWindowFox:
+    title: "Raposa Aconchegante"
+    description: "As vezes ficar em casa é melhor"
+  countryBalls2:
+    title: "Country Balls"
+    description: "As clássicas bolinhas de países"
+  bothWorlds:
+    title: "Mundos Paralelos"
+    description: "Qual caminho você deverá seguir?"
+  darkStars:
+    title: "Estrelas"
+    description: "Um céu estrelado para enfeitar o seu perfil"
+  coloredSquares:
+    title: "Quadrados Coloridos"
+    description: "Uma brisa"
+  stevePlane:
+    title: "O que é aquilo lá fora, mãe?"
+    description: "Como o Steve foi parar aí?"
+  cuteBlushCat:
+    title: "Gatinho Fofinho"
+    description: "Gatos são fofos"
+  ultimateStonks:
+    title: "Ultimate Stonks"
+    description: "Apenas os verdadeiros magnatas tem o privilégio de usar este background"
+  deathDance:
+    title: "Os 4 Cavaleiros do Apocalipse"
+    description: "O primeiro background que você ouve a música na cabeça só de olhar"
+  loboGuara:
+    title: "Lobo-Guará"
+    description: "Um belo \"pôr do sol\", não acha?"
+  sonicSonika:
+    title: "Sonic & Sonika"
+    description: "Sonic e Sonika comendo suas comidas favoritas (cachorro quente, e pudim)"
+  starAlissa:
+    title: "Pirata Alissa"
+    description: "Pirata na janela do navio tomando aquele sol"
+  kesokaBeach:
+    title: "Kesoka na Praia"
+    description: "Kesoka na Praia"
+  chemicalPlant:
+    title: "Chemical Plant Act 1"
+    description: "O clássico segundo nível do Sonic 2"
+  stardustSpeedwayAct2:
+    title: "Stardust Speedway Act 2"
+    description: "Hue hue hue"
+  furryFright:
+    title: "Medo de Furries"
+    description: "\"Eita, que cachorrão grande estranho é esse?\""
+  konoha:
+    title: "Afternoon of Konoha"
+    description: "\"Eu nunca vou desistir, Sasuke. Eu vou te parar, mesmo que eu tenha que quebrar todos os seus ossos.\""
+  dollynhoMarshmallow:
+    title: "Dollynho com Marshmallow"
+    description: "Melhor combinação"
+  easterStar:
+    title: "Terra da Páscoa"
+    description: "Aonde será que estão os ovos de páscoa?"
+  alanTriggered:
+    title: "Alanzoka Bravo"
+    description: "Em um dia belo, Felps ficou rindo de sua cara e acabou que ele ficou putasso com Alanzoka... as imagem são fortes, mas antes do acontecimento temos imagens dele com olhares sanguinários"
+  oakmont:
+    title: "Oakmont"
+    description: "Uma cidade pesqueira localizada na costa de Massachusetts. Oakmont não aparece em nenhum mapa"
+  rainingForest:
+    title: "Raining Forest"
+    description: "In the midst of disaster, the hope of it ending is gigantic..."
+  laureneaBoom:
+    title: "Boooom!"
+    description: "Alguma coisa colidiu com a terra causando uma mega explosão, mas o quê aconteceu?"
+  brandNAnimalMichiru:
+    title: "Mi-chi-ru!"
+    description: "Agora tente escrever isto!"
+  brandNAnimalCity:
+    title: "Brand New Animal!"
+    description: "Beastmen have been forced into hiding in Animacity"
+  brandNAnimalBaseball:
+    title: "Vamos jogar basebol?"
+    description: "Tanukis também são bem-vindos!"
+  transformiceClass:
+    title: "Volta às Aulas"
+    description: "Nossa, quantos ratinhos! Sentiram falta das aulas turma?"
+  stevenUniverseThePast:
+    title: "Lembranças do Passado"
+    description: "Relembre um dos acontecimentos mais importantes na história Gem."
+  starAngryPigeon:
+    title: "Pombo Raivoso"
+    description: "Tá olhando o que? Nunca viu um pombo comer pipoca não? grrrr"
+  cute_black_cat:
+    title: "Gatinho Fofo"
+    description: "Ele parece estar concentrado olhando pra algo, talvez ele esteja olhando pra você e falando \"Por favor compre meu background :3\". Vai negar essa oferta?"
+  dollars:
+    title: "Dólares"
+    description: "Ostentar reais todo mundo consegue, mas ostentar dólares?"
+  reais:
+    title: "Reais"
+    description: "Ostentação fora do normal"
+  loriDailyShop:
+    title: "Loja Diária"
+    description: "Sim sim, se eu fosse você eu compraria este background!"
+  wumpusSummer:
+    title: "Wumpus de Férias"
+    description: "Wumpus is vibin right now"
+  paintToolSaiDisgraca:
+    title: "Paint Tool SAI Disgraça"
+    description: "Sai disgraça, eu quero dormir @#$%!"
+  elisahTransformice:
+    title: "Elisah"
+    description: "Shaman, preciso da sua ajuda!"
+  ednaldoPereira:
+    title: "Ednaldo Pereira"
+    description: "Você não vale nada"
+  lofiGirlDay:
+    title: "Lofi Hip-hop Study Girl"
+    description: "Songs to study and relax."
+  winkingDoggo:
+    title: "Shiba Piscando"
+    description: "Cachorros.. Eles são tão fofinhos e se você concorda comigo compre esse background desse lindo doguinho piscando o olho para você :3"
+  brawlStarsJessieNani:
+    title: "Jessie & Nani"
+    description: "Calma, Peep! É apenas a torreta da Jessie."
+  hkDarkAbyss:
+    title: "Abismo Sombrio"
+    description: "Uma aventura de ação épica em um vasto reino arruinado de insetos e heróis."
+  stevenUniverseStarryNight:
+    title: "Noite Estrelada"
+    description: "Quem não aceitaria morar num lugar assim?"
+  transformiceCarnival:
+    title: "Carnaval de Ratos"
+    description: "Peguem as suas melhores fantasias, dancem e chamem seus amigos, pois chegou o Carnaval!"
+  desertStreet:
+    title: "Estrada deserta"
+    description: "Pode não ter carros, mas tem sentimentos."
+  minecraftAlbinoFox:
+    title: "Raposa Albina"
+    description: "A neve não é tão fria para ela quanto parece."
+  brawlStarsIsland:
+    title: "Carl & Colt"
+    description: "No fim, roubamos o tesouro."
+  nyanCat:
+    title: "Nyan Cat"
+    description: "O clássico gato cinza feito em pixel art voando no espaço em loop soltando arco-íris. Nya~"
+  devilMayCryNero:
+    title: "Nero"
+    description: "Bang, bang, bang, pull my Devil Trigger!"
+  workingTable:
+    title: "Mesa de Trabalho"
+    description: "Mais um dia de trabalho, parece que temos um café bem gostoso e uma bela vista, talvez seja o necessário para menos stress."
+  stevenUniverseEmpireCity:
+    title: "Empire City"
+    description: "O que acontece em Empire City, nunca dorme."
+  fluffyPudding:
+    title: "Pudim"
+    description: "O que temos para a sobremesa? Parece que temos um lindo pudim! Hmm... Já sei, vai ser a estampa da minha camisa!"
+  stickLights:
+    title: "Galhos de Luz"
+    description: "Brilhe do seu jeito."
+  lofiWarmAfternoon:
+    title: "Lofi Warm Afternoon"
+    description: "Songs to study and relax."
+  adventureTimeDonutsValley:
+    title: "Vale das Rosquinhas"
+    description: "Desfrute das guloseimas que nascem neste campo."
+  gatinhoDeTouca:
+    title: "Gatinho de Touca"
+    description: "Cadê o meu leitinho?"
+  sunVaporwave:
+    title: "Vaporwave do Sol"
+    description: "Apenas um Vaporware do sol. Bem-vindo aos anos 80 e 90."
+  cafezinho:
+    title: "Cafézinho"
+    description: "Nada melhor do que um café bem quentinho depois do trabalho."
+  sorvetinho:
+    title: "Sorvetinho"
+    description: "Nada que um sorvetinho bem gelado não resolva."
+  docinho:
+    title: "Docinho"
+    description: "Nada melhor do que um docinho para adoçar o momento."
+  melancia:
+    title: "Melancia"
+    description: "Nada melhor do que uma fruta que sacia a sua sede e a sua fome."
+  meAndTheBoys:
+    title: "Me and The Boys"
+    description: "Me and the boys waiting for you to buy this background"
+  mcLarenSenna:
+    title: "McLaren Senna"
+    description: "Olha, uma McLaren Senna! Achamos uma das 500 unidades produzidas, e ainda por cima é um carro fabricado na Inglaterra! Que homenagem, hein."
+  leagueOfLegendsStarGuardians:
+    title: "Guardiãs Estelares"
+    description: "Não tenha medo, pequena estrela! Nós Guardiãs viemos ao resgate."
+  laranjaAzeda:
+    title: "Laranja Azeda"
+    description: "\"Esta laranja está muito boa. Quer um pedaço?\", me disseram..."
+  kurama:
+    title: "Kurama"
+    description: "Já ouviu falar na Kurama? Imagine humanizada!"
+  pizza:
+    title: "Pizza"
+    description: "Duvido que você resistiria a uma pizza desta."
+  leagueOfLegendsPopStars:
+    title: "K/DA Pop Stars"
+    description: "Te desejamos sorte, ninguém ninguém pode nos derrubar, mas eles bem que poderiam tentar."
+  snowBeetle:
+    title: "Fusca na Neve"
+    description: "Um Volkswagen Fusca ano 1978 coberto de neve. Real ou brinquedo?"
+  justMarshmallows:
+    title: "Apenas Marshmallows"
+    description: "Nossa, você é tão fofa que parece até o background de marshmallow da Loritta."
+  bandanaNinja:
+    title: "Bandana Ninja"
+    description: "Aqui, pegue-a como uma recompensa por se graduar na academia. Siga em frente e vire um ninja incrível!"
+  bandageHeart:
+    title: "Coração Ferido"
+    description: "Com o tempo ele vai se curar, tendo ajuda de alguém ou não."
+  lostSouls:
+    title: "Lost Souls"
+    description: "Almas perdidas em busca de redenção."
+  amongUsSkyBridge:
+    title: "Sky Bridge"
+    description: "Anyone can be the impostor."
+  halloweenIsHere:
+    title: "O Halloween Chegou"
+    description: "Chegou o Halloween! Prepare suas fantasias e abóboras e vamos pedir doces."
+  nostalgicMemories:
+    title: "Memórias Nostálgicas"
+    description: "Rabiscos na parte de trás da contracapa da sua apostila para passar o tempo durante a aula."
+  imitandoEmojis:
+    title: "Imitando Emojis"
+    description: "🤨"
+  iHateLoveLoriLight:
+    title: "Eu Amo e Odeio a Loritta!"
+    description: "A bipolaridade de usar um bot que não retribui os seus sentimentos."
+  iHateLoveLoriDark:
+    title: "Eu Amo e Odeio a Loritta!"
+    description: "A bipolaridade de usar um bot que não retribui os seus sentimentos."
+  powerBannerDiscordAd:
+    title: "Loritta no Discord"
+    description: "A Loritta está no Discord! Chocante, né?"
+  powerBannerPalmtreePanic:
+    title: "Loritta em Palmtree Panic"
+    description: "A hora certa para entrar em um Special Stage para conseguir uma Time Stone para corrigir o passado."
+  powerBannerTheSims:
+    title: "Loritta no The Sims"
+    description: "...mas o que Bad Apple está fazendo aí?"
+  powerBannerInsideComputer:
+    title: "Loritta Dentro do Computador"
+    description: "Você já imaginou como seria aventurar dentro do seu computador?"
+  powerBannerInsideComputer2:
+    title: "Loritta Dentro do Computador"
+    description: "Você já imaginou como seria aventurar dentro do seu computador?"
+  badAppleReimuApple:
+    title: "Reimu - Bad Apple!!"
+    description: "Será que isso é uma referência a Touhou?"
+  badAppleMarisaApple:
+    title: "Marisa - Bad Apple!!"
+    description: "Será que isso é uma referência a Touhou?"
+  metaforandoNamoradoDelaAqui:
+    title: "Namorado Dela Aqui"
+    description: "Vitor Metaforando mostrando a sua autoridade como namorado."
+  abacat:
+    title: "Abacat"
+    description: "Você gosta de trocalihos com gatos e abacates?"
+  moPaz:
+    title: "Mó Paz"
+    description: "Apenas curtindo a vibe do momento."
+  bolsolula:
+    title: "BolsoLula"
+    description: "Se um já tá ruim, imagina com os dois fazendo a festa lá no planalto."
+  locodolYukariWhat:
+    title: "Que"
+    description: "Yukari em um estado bugado além de nossa realidade."
+  loralsei:
+    title: "Loralsei"
+    description: "Eu sou a princesa deste reino... O REINO DA ESCURIDÃO."
+  viniccius13CasaAutomatica:
+    title: "A Casa Automática"
+    description: "São mais de 300 episódios em busca dela, apesar de nunca ter saído dali."
+  lorittaCodeDark:
+    title: "Código da Loritta"
+    description: "Tudo que há dentro de mim são códigos e circuitos!"
+  loriSketchSprites:
+    title: "Enxurrada de Loritta"
+    description: "O sonho de alguns, enquanto é o pesadelo de outros."
+  gamblingLifeLight:
+    title: "A Vida de um Apostador"
+    description: "Muito triste por favor dê like se chorou."
+  gamblingLifeDark:
+    title: "A Vida de um Apostador"
+    description: "Muito triste por favor dê like se chorou."
+  fridayLoriFunkin:
+    title: "Friday Lori Funkin"
+    description: "*beep boop intensifies*"
+  circuitBoardGreen:
+    title: "Placa de Circuito"
+    description: "Uma pequena prévia do que há dentro de mim."
+  redditRplace1:
+    title: "/r/place do Reddit"
+    description: "Um projeto do Reddit onde redditors tinham uma tela livre para qualquer usuário do Reddit poder colocar pixels aonde eles quisessem... e depois de 72 horas, esse foi o resultado!"
+  redditRplace2:
+    title: "/r/place do Reddit"
+    description: "Um projeto do Reddit onde redditors tinham uma tela livre para qualquer usuário do Reddit poder colocar pixels aonde eles quisessem... e depois de 72 horas, esse foi o resultado!"
+  sonicMovie2Poster:
+    title: "Sonic 2: O Filme"
+    description: "Gotta Go Fast!"

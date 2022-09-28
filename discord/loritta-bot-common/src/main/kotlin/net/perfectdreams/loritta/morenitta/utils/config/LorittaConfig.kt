@@ -123,7 +123,6 @@ data class LorittaConfig(
         val root: String,
         val assets: String,
         val temp: String,
-        val locales: String,
         val website: String
     )
 

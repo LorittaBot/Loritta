@@ -10,11 +10,8 @@ import net.perfectdreams.i18nhelper.core.TextBundle
 import net.perfectdreams.i18nhelper.formatters.ICUFormatter
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import org.yaml.snakeyaml.Yaml
-import java.nio.file.FileSystemNotFoundException
-import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.*
 import kotlin.io.path.exists
 import kotlin.io.path.isDirectory

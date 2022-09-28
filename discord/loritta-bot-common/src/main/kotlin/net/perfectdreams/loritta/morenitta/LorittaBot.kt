@@ -155,7 +155,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.concurrent.thread
-import kotlin.io.path.inputStream
+import kotlin.io.path.*
 import kotlin.math.ceil
 import kotlin.reflect.KClass
 import kotlin.time.Duration
@@ -176,6 +176,7 @@ class LorittaBot(
 	val clusterId: Int,
 	val config: BaseConfig,
 	val languageManager: LanguageManager,
+	val localeManager: LocaleManager,
 	val pudding: Pudding,
 	val jedisPool: JedisPool,
 	val redisKeys: RedisKeys,
@@ -189,8 +190,6 @@ class LorittaBot(
 		var ASSETS = "/home/servers/loritta/assets/" // Pasta de assets da Loritta
 		@JvmField
 		var TEMP = "/home/servers/loritta/temp/" // Pasta usada para coisas temporarias
-		@JvmField
-		var LOCALES = "/home/servers/loritta/locales/" // Pasta usada para as locales
 		@JvmField
 		var FRONTEND = "/home/servers/loritta/frontend/" // Pasta usada para o frontend
 
@@ -305,7 +304,6 @@ class LorittaBot(
 
 	val commandMap = DiscordCommandMap(this)
 	val assets = JVMLorittaAssets(this)
-	val localeManager = LocaleManager(File(config.loritta.folders.locales))
 	var legacyLocales = mapOf<String, LegacyBaseLocale>()
 	val http = HttpClient(Apache) {
 		this.expectSuccess = false
@@ -387,7 +385,6 @@ class LorittaBot(
 		FOLDER = config.loritta.folders.root
 		ASSETS = config.loritta.folders.assets
 		TEMP = config.loritta.folders.temp
-		LOCALES = config.loritta.folders.locales
 		FRONTEND = config.loritta.folders.website
 
 		val dispatcher = Dispatcher()
@@ -516,12 +513,10 @@ class LorittaBot(
 		File(FOLDER).mkdirs()
 		File(ASSETS).mkdirs()
 		File(TEMP).mkdirs()
-		File(LOCALES).mkdirs()
 		File(FRONTEND).mkdirs()
 
 		logger.info { "Success! Loading locales..." }
 
-		localeManager.loadLocales()
 		loadLegacyLocales()
 
 		logger.info { "Success! Loading emotes..." }
@@ -889,10 +884,10 @@ class LorittaBot(
 	fun loadLegacyLocales() {
 		val locales = mutableMapOf<String, LegacyBaseLocale>()
 
-		val legacyLocalesFolder = File(config.loritta.folders.locales, "legacy")
+		val legacyLocalesFolder = LorittaBot::class.getPathFromResources("/locales/legacy/")!!
 
 		// Carregar primeiro o locale padrão
-		val defaultLocaleFile = File(legacyLocalesFolder, "default.json")
+		val defaultLocaleFile = LorittaBot::class.getPathFromResources("/locales/legacy/default.json")!!
 		val localeAsText = defaultLocaleFile.readText(Charsets.UTF_8)
 		val defaultLocale = LorittaBot.GSON.fromJson(localeAsText, LegacyBaseLocale::class.java) // Carregar locale do jeito velho
 		val defaultJsonLocale = JsonParser.parseString(localeAsText).obj // Mas também parsear como JSON
@@ -909,7 +904,7 @@ class LorittaBot(
 		// Carregar todos os locales
 		val localesFolder = legacyLocalesFolder
 		val prettyGson = GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create()
-		for (file in localesFolder.listFiles()) {
+		for (file in localesFolder.listDirectoryEntries()) {
 			if (file.extension == "json" && file.nameWithoutExtension != "default") {
 				// Carregar o BaseLocale baseado no locale atual
 				val localeAsText = file.readText(Charsets.UTF_8)
@@ -925,7 +920,7 @@ class LorittaBot(
 			if (id != "default") {
 				val jsonObject = JsonParser.parseString(LorittaBot.GSON.toJson(locale))
 
-				val localeFile = File(legacyLocalesFolder, "$id.json")
+				val localeFile = LorittaBot::class.getPathFromResources("/locales/legacy/$id.json")!!
 				val asJson = JsonParser.parseString(localeFile.readText()).obj
 
 				for ((id, obj) in asJson.entrySet()) {
@@ -971,8 +966,6 @@ class LorittaBot(
 						locale.strings.put(id, changedValue!!)
 					}
 				}
-
-				File(legacyLocalesFolder, "$id.json").writeText(prettyGson.toJson(jsonObject))
 			}
 		}
 
