@@ -4,22 +4,22 @@ notEnoughUsers: "Não existem membros suficientes para eu escolher os tipos de p
 slot:
   popular:
     male: "O POPULAR"
-    female: "A POPULAR"
+    female: "O POPULAR"
   quiet:
     male: "O QUIETO"
-    female: "A QUIETA"
+    female: "O QUIETO"
   clown:
     male: "O ENGRAÇADINHO"
-    female: "A ENGRAÇADINHA"
+    female: "O ENGRAÇADINHO"
   nerd:
     male: "O NERD"
-    female: "A NERD"
+    female: "O NERD"
   fanboy:
     male: "O FANBOY"
-    female: "A FANBOY"
+    female: "O FANBOY"
   cranky:
     male: "O IRRITADINHO"
-    female: "A IRRITADINHA"
+    female: "O IRRITADINHO"
 options:
   user1:
     text: "O primeiro usuário na imagem, \"{text}\""
