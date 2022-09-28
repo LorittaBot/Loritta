@@ -1,12 +1,14 @@
-# This is a basic workflow to help you get started with Actions
+name: Continuous Integration
 
-name: Build Loritta
-
-# Controls when the action will run. Triggers the workflow on push or pull request
-# events but only for the master branch
+# Controls when the action will run. Triggers the workflow on push to the "cinnamon" branch.
 on:
   push:
-    branches: [ development ]
+    branches:
+      - main
+
+env:
+  DOCKER_USERNAME: "${{ github.actor }}"
+  DOCKER_PASSWORD: "${{ secrets.GITHUB_TOKEN }}"
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -17,71 +19,35 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
 
-    - name: Get current time
-      uses: gerred/actions/current-time@master
-      id: current-time
+      - name: Install tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install pngquant gifsicle
 
-    - name: Setup Java JDK
-      uses: actions/setup-java@v1.4.3
-      with:
-        java-version: 17
+      - name: Setup Java JDK
+        uses: actions/setup-java@v1.4.3
+        with:
+          java-version: 17
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
-    # Runs a single command using the runners shell
-    - name: Build with Gradle
-      run: "./gradlew build -Dgithub.build.id=$GITHUB_RUN_ID -Dbuild.number=$GITHUB_RUN_NUMBER -Dgit.branch=$GITHUB_REF -Dcommit.hash=$GITHUB_SHA -Dcompiled.at=${{ steps.current-time.outputs.time }}"
-
-    # Upload Artifacts to GitHub
-    # Loritta
-    - uses: actions/upload-artifact@v2
-      name: "Upload Loritta Legacy (Discord)"
-      with:
-        name: Loritta Legacy (Discord)
-        path: platforms/discord/legacy/build/libs/legacy-*.jar
-
-    # Libs
-    - uses: actions/upload-artifact@v2
-      name: "Upload Loritta Legacy (Libs)"
-      with:
-        name: Loritta Legacy (Libs)
-        path: platforms/discord/legacy/build/libs/libs/*
-
-    # Loritta Plugins
-    - uses: actions/upload-artifact@v2
-      name: "Upload Loritta Legacy (Plugins)"
-      with:
-        name: Loritta Legacy (Plugins)
-        path: loritta-plugins/*/build/libs/*.jar
-
-    # Spicy Morenitta
-    - uses: actions/upload-artifact@v2
-      name: "Upload Spicy Morenitta"
-      with:
-        name: Spicy Morenitta
-        path: loritta-website/spicy-morenitta/build/web/*.js
-
-    # Loritta Watchdog
-    - uses: actions/upload-artifact@v2
-      name: "Upload Loritta Watchdog"
-      with:
-        name: Loritta Watchdog
-        path: loritta-watchdog-bot/build/libs/*.jar
-
-    # Parallax Code Server
-    - uses: actions/upload-artifact@v2
-      name: "Upload Parallax Code Server"
-      with:
-        name: Parallax Code Server
-        path: parallax-code-server/build/libs/*.jar
-
-    # Shard Controller
-    - uses: actions/upload-artifact@v2
-      name: "Upload Shard Controller"
-      with:
-        name: Shard Controller
-        path: shard-controller/build/libs/*.jar
+      # We will do everything on the same Gradle task to avoid Gradle executing tasks that it was already executed in a previous step
+      # (Example: Compiling everything again when publishing the Docker container)
+      - name: Build and Publish with Gradle
+        uses: gradle/gradle-build-action@v2
+        env:
+          # GitHub Actions has 7GBs of available RAM for workers, so let's bump it a bit up!
+          GRADLE_OPTS: -Xmx4096m -Xms4096m
+          ORG_GRADLE_PROJECT_PerfectDreamsUsername: ${{ secrets.PERFECTDREAMS_REPO_USERNAME }}
+          ORG_GRADLE_PROJECT_PerfectDreamsPassword: ${{ secrets.PERFECTDREAMS_REPO_PASSWORD }}
+        with:
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+          arguments: |
+            build
+            --scan
