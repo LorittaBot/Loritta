@@ -132,7 +132,7 @@ class BotInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "botinfo", 
                         prefix = "<:loritta:331179879582269451>"
                 ),
                 LorittaReply(
-                        "**Hostname:** ${HostnameUtils.getHostname()}",
+                        "**Hostname:** `${HostnameUtils.getHostname()}`",
                         "\uD83C\uDFD7",
                         mentionUser = false
                 ),
