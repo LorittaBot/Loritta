@@ -96,7 +96,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		registerDesign(Halloween2019ProfileCreator(loritta))
 		registerDesign(Christmas2019ProfileCreator(loritta))
 		registerDesign(LorittaChristmas2019ProfileCreator(loritta))
-		
+
 		// ===[ DISCORD USER FLAGS BADGES ]===
 		registerBadge(DiscordUserFlagBadge.DiscordPartnerBadge())
 		registerBadge(DiscordUserFlagBadge.DiscordVerifiedDeveloperBadge())
@@ -176,20 +176,23 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 				DateUtils.formatDiscordLikeRelativeDate(i18nContext, epochSecond * 1_000, System.currentTimeMillis())
 			}
 
-		val imageAsByteArray = when (profileCreator) {
+		val (imageAsByteArray, imageFormat) = when (profileCreator) {
 			is StaticProfileCreator -> {
-				profileCreator.create(
-					sender,
-					userToBeViewed,
-					userProfile,
-					guild,
-					badges,
-					locale,
-					i18nContext,
-					loritta.getUserProfileBackground(userProfile),
-					modifiedAboutMe,
-					allowedDiscordEmojis
-				).toByteArray(ImageFormatType.PNG)
+				Pair(
+					profileCreator.create(
+						sender,
+						userToBeViewed,
+						userProfile,
+						guild,
+						badges,
+						locale,
+						i18nContext,
+						loritta.getUserProfileBackground(userProfile),
+						modifiedAboutMe,
+						allowedDiscordEmojis
+					).toByteArray(ImageFormatType.PNG),
+					ImageFormat.PNG
+				)
 			}
 			is AnimatedProfileCreator -> {
 				val images = profileCreator.create(
@@ -220,7 +223,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 				val outputFile = File(fileName)
 				loritta.gifsicle.optimizeGIF(outputFile)
 
-				outputFile.readBytes()
+				Pair(outputFile.readBytes(), ImageFormat.GIF)
 			}
 			else -> error("Unsupported Profile Creator Type $profileCreator")
 		}
@@ -231,7 +234,8 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			profileSettings,
 			allowedDiscordEmojis,
 			aboutMe,
-			modifiedAboutMe
+			modifiedAboutMe,
+			imageFormat
 		)
 	}
 
@@ -414,6 +418,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		val profileSettings: ProfileSettings,
 		val allowedDiscordEmojis: List<Snowflake>?,
 		val aboutMe: String,
-		val modifiedAboutMe: String
+		val modifiedAboutMe: String,
+		val imageFormat: ImageFormat
 	)
 }

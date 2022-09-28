@@ -76,6 +76,6 @@ class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", l
 			context.guildOrNull?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) }
 		)
 
-		context.sendFile(result.image.inputStream(), "lori_profile.png", "📝 **|** " + context.getAsMention(true) + context.locale["commands.command.profile.profile"]) // E agora envie o arquivo
+		context.sendFile(result.image.inputStream(), "lori_profile.${result.imageFormat.extension}", "📝 **|** " + context.getAsMention(true) + context.locale["commands.command.profile.profile"]) // E agora envie o arquivo
 	}
 }

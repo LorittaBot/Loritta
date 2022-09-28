@@ -32,9 +32,7 @@ class ProfileExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritt
             userToBeViewed: User,
             result: ProfileDesignManager.ProfileCreationResult
         ): suspend MessageBuilder.() -> (Unit) = {
-            content = "O comando ainda não está pronto! Use `+perfil` para ver o seu perfil com todos os frufrus dele!"
-
-            addFile("profile.png", result.image.inputStream())
+            addFile("profile.${result.imageFormat}", result.image.inputStream())
 
             if (userToBeViewed == sender) {
                 actionRow {
