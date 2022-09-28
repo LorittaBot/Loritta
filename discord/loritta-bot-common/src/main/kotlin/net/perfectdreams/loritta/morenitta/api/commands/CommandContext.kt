@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.api.commands
 
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.common.entities.LorittaEmote
@@ -15,7 +16,8 @@ abstract class CommandContext(
     val command: Command<CommandContext>,
     val args: List<String>,
     val message: Message,
-    val locale: BaseLocale
+    val locale: BaseLocale,
+	val i18nContext: I18nContext
 ) {
 	val sender = message.author
 

@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.tables.Reputations
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import org.jetbrains.exposed.sql.and
@@ -46,7 +47,7 @@ object ProfileUtils {
      * @return the reputation count
      */
     suspend fun getReputationCount(loritta: LorittaBot, userInfo: ProfileUserInfoData) = loritta.newSuspendedTransaction {
-        Reputations.select { Reputations.receivedById eq userInfo.id }.count()
+        Reputations.select { Reputations.receivedById eq userInfo.id.toLong() }.count()
     }
 
     /**
@@ -82,8 +83,8 @@ object ProfileUtils {
      * @param  userInfo the user's information
      * @return the user's current local position in the experience ranking
      */
-    suspend fun getLocalProfile(loritta: LorittaBot, guild: Guild, userInfo: ProfileUserInfoData) = loritta.newSuspendedTransaction {
-        GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq userInfo.id) }.firstOrNull()
+    suspend fun getLocalProfile(loritta: LorittaBot, guild: ProfileGuildInfoData, userInfo: ProfileUserInfoData) = loritta.newSuspendedTransaction {
+        GuildProfile.find { (GuildProfiles.guildId eq guild.id.toLong()) and (GuildProfiles.userId eq userInfo.id.toLong()) }.firstOrNull()
     }
 
     /**

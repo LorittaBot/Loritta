@@ -10,10 +10,13 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.common.achievements.AchievementType
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 open class InteractionContext(
     val loritta: LorittaBot,
     val i18nContext: I18nContext,
+    @Deprecated("This is only provided for backward compatibility, to aid migration between the Cinnamon and Morenitta codebases. Please use i18nContext instead!")
+    val locale: BaseLocale,
     val user: User,
     // Nifty trick: By keeping it "open", implementations can override this variable.
     // By doing this, classes can use their own platform implementation (example: LorittaDiscord instead of LorittaBot)

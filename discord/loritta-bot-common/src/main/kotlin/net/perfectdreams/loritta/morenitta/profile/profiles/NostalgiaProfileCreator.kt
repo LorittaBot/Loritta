@@ -1,5 +1,6 @@
-package net.perfectdreams.loritta.morenitta.profile
+package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.GuildProfile
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -7,7 +8,11 @@ import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.Reputations
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -18,7 +23,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-open class NostalgiaProfileCreator(val loritta: LorittaBot, internalName: String, val folderName: String) : ProfileCreator(internalName) {
+open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, val folderName: String) : StaticProfileCreator(loritta, internalName) {
 	class NostalgiaDarkProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultDark", "dark")
 	class NostalgiaBlurpleProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultBlurple", "blurple")
 	class NostalgiaRedProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultRed", "red")
@@ -29,7 +34,18 @@ open class NostalgiaProfileCreator(val loritta: LorittaBot, internalName: String
 	class NostalgiaYellowProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultYellow", "yellow")
 	class NostalgiaOrangeProfileCreator(loritta: LorittaBot) : NostalgiaProfileCreator(loritta, "defaultOrange", "orange")
 
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+	override suspend fun create(
+        sender: ProfileUserInfoData,
+        user: ProfileUserInfoData,
+        userProfile: Profile,
+        guild: ProfileGuildInfoData?,
+        badges: List<BufferedImage>,
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        background: BufferedImage,
+        aboutMe: String,
+        allowedDiscordEmojis: List<Snowflake>?
+	): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/nostalgia/profile_wrapper_$folderName.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
@@ -50,7 +66,7 @@ open class NostalgiaProfileCreator(val loritta: LorittaBot, internalName: String
 				.deriveFont(29F)
 
 		val reputations = loritta.newSuspendedTransaction {
-			Reputations.select { Reputations.receivedById eq user.id }.count()
+			Reputations.select { Reputations.receivedById eq user.id.toLong() }.count()
 		}
 
 		graphics.color = Color.WHITE
@@ -84,7 +100,7 @@ open class NostalgiaProfileCreator(val loritta: LorittaBot, internalName: String
 
 		graphics.font = whitneyMedium22
 
-		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 6, 522, 800 - 6, 600, graphics.fontMetrics, graphics)
+		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 6, 522, 800 - 6, 600, allowedDiscordEmojis)
 
 		val shiftY = 42
 
@@ -99,7 +115,7 @@ open class NostalgiaProfileCreator(val loritta: LorittaBot, internalName: String
 
 		if (guild != null) {
 			val localProfile = loritta.newSuspendedTransaction {
-				GuildProfile.find { (GuildProfiles.guildId eq guild.idLong) and (GuildProfiles.userId eq user.id) }.firstOrNull()
+				GuildProfile.find { (GuildProfiles.guildId eq guild.id.toLong()) and (GuildProfiles.userId eq user.id.toLong()) }.firstOrNull()
 			}
 
 			val localPosition = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
@@ -132,7 +148,7 @@ open class NostalgiaProfileCreator(val loritta: LorittaBot, internalName: String
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
 		if (marriage != null) {
-			val marriedWithId = if (marriage.user1 == user.id) {
+			val marriedWithId = if (marriage.user1 == user.id.toLong()) {
 				marriage.user2
 			} else {
 				marriage.user1

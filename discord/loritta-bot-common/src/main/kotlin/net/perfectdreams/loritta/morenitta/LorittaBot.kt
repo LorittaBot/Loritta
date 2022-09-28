@@ -644,6 +644,8 @@ class LorittaBot(
 		// And that LOCKS the ServerConfig table, and sometimes that takes a LOOOONG time to complete, which locks up everything
 		if (System.getenv("LORITTA_CREATE_TABLES") != null) {
 			runBlocking {
+				pudding.createMissingTablesAndColumns { true }
+
 				pudding.transaction {
 					SchemaUtils.createMissingTablesAndColumns(
 						StoredMessages,

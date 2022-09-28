@@ -1,22 +1,35 @@
-package net.perfectdreams.loritta.morenitta.profile
+package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class Halloween2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("halloween2019") {
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
-		TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-	}
-
-	override suspend fun createGif(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): List<BufferedImage> {
+class LorittaChristmas2019ProfileCreator(loritta: LorittaBot) : AnimatedProfileCreator(loritta, "lorittaChristmas2019") {
+	override suspend fun create(
+        sender: ProfileUserInfoData,
+        user: ProfileUserInfoData,
+        userProfile: Profile,
+        guild: ProfileGuildInfoData?,
+        badges: List<BufferedImage>,
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        background: BufferedImage,
+        aboutMe: String,
+        allowedDiscordEmojis: List<Snowflake>?
+	): List<BufferedImage> {
 		val list = mutableListOf<BufferedImage>()
 
 		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
@@ -35,12 +48,12 @@ class Halloween2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("hal
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
 				.deriveFont(42F)
 
-		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(152, 152, BufferedImage.SCALE_SMOOTH)
-		val marrySection = readImage(File(LorittaBot.ASSETS, "profile/halloween_2019/marry.png"))
+		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(150, 150, BufferedImage.SCALE_SMOOTH)
+		val marrySection = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/marry.png"))
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
-		val marriedWithId = if (marriage?.user1 == user.id) {
+		val marriedWithId = if (marriage?.user1 == user.id.toLong()) {
 			marriage.user2
 		} else {
 			marriage?.user1
@@ -64,10 +77,10 @@ class Halloween2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("hal
 
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
-		val resizedBadges = badges.map { it.getScaledInstance(35, 35, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
+		val resizedBadges = badges.map { it.getScaledInstance(30, 30, BufferedImage.SCALE_SMOOTH).toBufferedImage() }
 
-		for (i in 0..29) {
-			val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/halloween_2019/frames/halloween_2019_${i.toString().padStart(6, '0')}.png"))
+		for (i in 0..7) {
+			val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/christmas_2019/frames/christmas_2019_${i.toString().padStart(6, '0')}.png"))
 
 			val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 			val graphics = base.graphics.enableFontAntiAliasing()
@@ -79,7 +92,7 @@ class Halloween2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("hal
 			drawAvatar(avatar, graphics)
 
 			graphics.font = oswaldRegular50
-			graphics.drawText(loritta, user.name, 162, 461) // Nome do usuário
+			graphics.drawText(loritta, user.name, 162, 480) // Nome do usuário
 			graphics.font = oswaldRegular42
 
 			drawReputations(user, graphics, reputations)
@@ -91,7 +104,7 @@ class Halloween2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("hal
 
 			graphics.font = whitneyMedium22
 
-			ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+			ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 162, 504, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
 
 			if (marriage != null) {
 				graphics.drawImage(marrySection, 0, 0, null)
@@ -99,11 +112,11 @@ class Halloween2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("hal
 				if (marriedWith != null) {
 					graphics.color = Color.WHITE
 					graphics.font = whitneyBold12
-					ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 350, 165, 14), whitneyBold12)
+					ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 0, 165, 14), whitneyBold12)
 					graphics.font = whitneyMedium16
-					ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), whitneyMedium16)
+					ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 16, 165, 18), whitneyMedium16)
 					graphics.font = whitneyBold12
-					ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 350 + 16 + 18, 165, 14), whitneyBold12)
+					ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 16 + 18, 165, 14), whitneyBold12)
 				}
 			}
 
@@ -117,27 +130,42 @@ class Halloween2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("hal
 		graphics.drawImage(
 				avatar.toBufferedImage()
 						.makeRoundedCorners(999),
-				3,
-				406,
+				7,
+				443,
 				null
 		)
 	}
 
 	fun drawBadges(badges: List<BufferedImage>, graphics: Graphics) {
-		var x = 2
-		for (badge in badges) {
-			graphics.drawImage(badge, x, 564, null)
-			x += 37
+		val treeOrnamentsCoordinates = listOf(
+				Pair(13, 80),
+				Pair(58, 120),
+				Pair(3, 193),
+				Pair(67, 210),
+				Pair(75, 256),
+				Pair(33, 271),
+				Pair(131, 290),
+				Pair(88, 308),
+				Pair(39, 344),
+				Pair(127, 344),
+				Pair(73, 374),
+				Pair(157, 389),
+				Pair(116, 402)
+		)
+
+		for ((idx, badge) in badges.withIndex()) {
+			val coordinate = treeOrnamentsCoordinates.getOrNull(idx) ?: break
+			graphics.drawImage(badge, coordinate.first, coordinate.second, null)
 		}
 	}
 
 	fun drawReputations(user: ProfileUserInfoData, graphics: Graphics, reputations: Long) {
 		val font = graphics.font
 
-		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 404, 166, 52), font)
+		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 454, 166, 52), font)
 	}
 
-	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Long?, localPosition: Long?, xpLocal: Long?, globalEconomyPosition: Long?): Int {
+	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: ProfileGuildInfoData?, graphics: Graphics, globalPosition: Long?, localPosition: Long?, xpLocal: Long?, globalEconomyPosition: Long?): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 
@@ -168,7 +196,7 @@ class Halloween2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("hal
 
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxByOrNull { graphics.fontMetrics.stringWidth(it) }!!)
 
-		var y = 475
+		var y = 515
 		for (line in userInfo) {
 			graphics.drawText(loritta, line, 773 - biggestStrWidth - 2, y)
 			y += 16

@@ -1,5 +1,6 @@
-package net.perfectdreams.loritta.morenitta.profile
+package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
@@ -7,7 +8,10 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.drawText
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -16,8 +20,19 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class OrkutProfileCreator(val loritta: LorittaBot) : ProfileCreator("orkut") {
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+class OrkutProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "orkut") {
+	override suspend fun create(
+        sender: ProfileUserInfoData,
+        user: ProfileUserInfoData,
+        userProfile: Profile,
+        guild: ProfileGuildInfoData?,
+        badges: List<BufferedImage>,
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        background: BufferedImage,
+        aboutMe: String,
+        allowedDiscordEmojis: List<Snowflake>?
+	): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/orkut/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base

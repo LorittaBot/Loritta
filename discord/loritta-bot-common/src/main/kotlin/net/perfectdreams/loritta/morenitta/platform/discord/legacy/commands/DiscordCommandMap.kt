@@ -20,6 +20,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.api.commands.CommandException
@@ -179,7 +180,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 		commands.remove(command)
 	}
 
-	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
 		// We order by more spaces in the first label -> less spaces, to avoid other commands taking precedence over other commands
 		// I don't like how this works, we should create a command tree instead of doing this
 		for (command in commands.sortedByDescending { it.labels.first().count { it.isWhitespace() }}) {
@@ -187,14 +188,14 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				command.commandCheckFilter?.invoke(ev, rawArguments, serverConfig, locale, lorittaUser) ?: true
 			else true
 
-			if (shouldBeProcessed && dispatch(command, rawArguments, ev, serverConfig, locale, lorittaUser))
+			if (shouldBeProcessed && dispatch(command, rawArguments, ev, serverConfig, locale, i18nContext, lorittaUser))
 				return true
 		}
 
 		return false
 	}
 
-	suspend fun dispatch(command: Command<CommandContext>, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun dispatch(command: Command<CommandContext>, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val user = ev.author
 
@@ -247,6 +248,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				rawArgs,
 				ev.message,
 				locale,
+				i18nContext,
 				serverConfig,
 				lorittaUser,
 				validLabel

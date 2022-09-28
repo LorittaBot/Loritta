@@ -1,18 +1,34 @@
-package net.perfectdreams.loritta.morenitta.profile
+package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class NextGenProfileCreator(val loritta: LorittaBot) : ProfileCreator("nextGenDark") {
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+class NextGenProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "nextGenDark") {
+	override suspend fun create(
+        sender: ProfileUserInfoData,
+        user: ProfileUserInfoData,
+        userProfile: Profile,
+        guild: ProfileGuildInfoData?,
+        badges: List<BufferedImage>,
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        background: BufferedImage,
+        aboutMe: String,
+        allowedDiscordEmojis: List<Snowflake>?
+	): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/next_gen/profile_wrapper.png"))
 
 		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
@@ -123,7 +139,7 @@ class NextGenProfileCreator(val loritta: LorittaBot) : ProfileCreator("nextGenDa
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(620, 168, 180, 55), font)
 	}
 
-	suspend fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics): Int {
+	suspend fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: ProfileGuildInfoData?, graphics: Graphics): Int {
 		val userInfo = mutableListOf<String>()
 		graphics.drawText(loritta, "Global", 232, 157)
 		userInfo.add("Global")

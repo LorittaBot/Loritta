@@ -15,9 +15,9 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.intera
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.ProfileCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.profiles.ProfileDesignManager
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.profile.ProfileDesignManager
 
 class ProfileExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -67,18 +67,19 @@ class ProfileExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritt
 
         val guild = if (context is GuildApplicationCommandContext) loritta.kord.getGuild(context.guildId) else null
 
-        /* val result = loritta.profileDesignManager.createProfile(
+        val result = loritta.profileDesignManager.createProfile(
             loritta,
             context.i18nContext,
-            context.user,
-            userToBeViewed,
-            guild
+            context.locale,
+            loritta.profileDesignManager.transformUserToProfileUserInfoData(context.user),
+            loritta.profileDesignManager.transformUserToProfileUserInfoData(userToBeViewed),
+            guild?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) }
         )
 
         val message = createMessage(loritta, context.i18nContext, context.user, userToBeViewed, result)
 
         context.sendMessage {
             message()
-        } */
+        }
     }
 }

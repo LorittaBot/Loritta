@@ -46,12 +46,13 @@ class ChangeAboutMeModalExecutor(loritta: LorittaBot) : CinnamonModalExecutor(lo
 
         val guild = context.interaKTionsModalContext.discordInteraction.guildId.value?.let { loritta.kord.getGuild(it) }
 
-        /* val result = loritta.profileDesignManager.createProfile(
+        val result = loritta.profileDesignManager.createProfile(
             loritta,
             context.i18nContext,
-            context.user,
-            context.user,
-            guild
+            context.locale,
+            loritta.profileDesignManager.transformUserToProfileUserInfoData(context.user),
+            loritta.profileDesignManager.transformUserToProfileUserInfoData(context.user),
+            guild?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) }
         )
 
         val message = ProfileExecutor.createMessage(loritta, context.i18nContext, context.user, context.user, result)
@@ -63,6 +64,6 @@ class ChangeAboutMeModalExecutor(loritta: LorittaBot) : CinnamonModalExecutor(lo
                 message()
             }.toInteractionMessageResponseModifyBuilder()
                 .toRequest()
-        ) */
+        )
     }
 }

@@ -1,27 +1,34 @@
-package net.perfectdreams.loritta.morenitta.profile
+package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.LorittaImage
+import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
-import java.awt.Font
 import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
-import java.io.FileInputStream
 
-class LoriAtaProfileCreator(val loritta: LorittaBot) : ProfileCreator("loriAta") {
-	val KOMIKA by lazy {
-		FileInputStream(File(LorittaBot.ASSETS + "komika.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-	}
-
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+class LoriAtaProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "loriAta") {
+	override suspend fun create(
+		sender: ProfileUserInfoData,
+		user: ProfileUserInfoData,
+		userProfile: Profile,
+		guild: ProfileGuildInfoData?,
+		badges: List<BufferedImage>,
+		locale: BaseLocale,
+		i18nContext: I18nContext,
+		background: BufferedImage,
+		aboutMe: String,
+		allowedDiscordEmojis: List<Snowflake>?
+	): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/lori_ata/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
@@ -63,7 +70,7 @@ class LoriAtaProfileCreator(val loritta: LorittaBot) : ProfileCreator("loriAta")
 		else
 			userInfo.add("${userProfile.money}")
 
-		graphics.font = KOMIKA.deriveFont(13f)
+		graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(13f)
 		val biggestStrWidth = graphics.fontMetrics.stringWidth(userInfo.maxByOrNull { graphics.fontMetrics.stringWidth(it) }!!)
 
 		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(148, 148, BufferedImage.SCALE_SMOOTH)
@@ -81,15 +88,15 @@ class LoriAtaProfileCreator(val loritta: LorittaBot) : ProfileCreator("loriAta")
 		graphics.drawImage(profileWrapper, 0, 0, null)
 		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(148), 6, 446, null)
 
-		graphics.font = KOMIKA.deriveFont(27f)
+		graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(27f)
 		graphics.color = Color.BLACK
 		graphics.drawText(loritta, user.name, 161, 509, 527)
-		graphics.font = KOMIKA.deriveFont(16f)
+		graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(16f)
 		graphics.drawStringWrap(loritta, aboutMe, 161, 532, 773 - biggestStrWidth - 4)
 
 		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
-		graphics.font = KOMIKA.deriveFont(32f)
+		graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(32f)
 
 		ImageUtils.drawCenteredString(graphics, "${reputations} reps", Rectangle(552, 440, 228, 54), graphics.font)
 
@@ -108,15 +115,15 @@ class LoriAtaProfileCreator(val loritta: LorittaBot) : ProfileCreator("loriAta")
 			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/monica_ata/marry.png"))
 			graphics.drawImage(marrySection, 200, 0, null)
 
-			graphics.font = KOMIKA.deriveFont(21f)
+			graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(21f)
 			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(200 + 280, 270, 218, 22), graphics.font)
-			graphics.font = KOMIKA.deriveFont(16f)
+			graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(16f)
 			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(200 + 280, 270 + 23, 218, 18), graphics.font)
-			graphics.font = KOMIKA.deriveFont(12f)
+			graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(12f)
 			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(200 + 280, 270 + 23 + 16, 218, 15), graphics.font)
 		}
 
-		graphics.font = KOMIKA.deriveFont(13f)
+		graphics.font = loritta.graphicsFonts.komikaHand.deriveFont(13f)
 		var y = 513
 		for (line in userInfo) {
 			graphics.drawText(loritta, line, 773 - biggestStrWidth - 2, y)

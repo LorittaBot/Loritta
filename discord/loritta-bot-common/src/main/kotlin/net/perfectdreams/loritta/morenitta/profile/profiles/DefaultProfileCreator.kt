@@ -1,5 +1,6 @@
-package net.perfectdreams.loritta.morenitta.profile
+package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.ImageUtils
@@ -9,7 +10,10 @@ import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Font
 import java.awt.Graphics
@@ -17,7 +21,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class DefaultProfileCreator(val loritta: LorittaBot) : ProfileCreator("modernBlurple") {
+class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "modernBlurple") {
 	fun drawSection(graphics: Graphics, whitneyBold20: Font, whitneySemiBold20: Font, title: String, subtext: String, x: Int, y: Int): Pair<Int, Int> {
 		graphics.font = whitneyBold20
 		graphics.drawText(loritta, title, x, y, 800 - 6)
@@ -26,7 +30,18 @@ class DefaultProfileCreator(val loritta: LorittaBot) : ProfileCreator("modernBlu
 		return Pair(x, y + 19)
 	}
 
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+	override suspend fun create(
+        sender: ProfileUserInfoData,
+        user: ProfileUserInfoData,
+        userProfile: Profile,
+        guild: ProfileGuildInfoData?,
+        badges: List<BufferedImage>,
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        background: BufferedImage,
+        aboutMe: String,
+        allowedDiscordEmojis: List<Snowflake>?
+	): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile_wrapper_v4.png"))
 		val profileWrapperOverlay = readImage(File(LorittaBot.ASSETS, "profile_wrapper_v4_overlay.png"))
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base

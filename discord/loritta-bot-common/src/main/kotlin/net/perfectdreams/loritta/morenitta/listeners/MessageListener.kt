@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
 import net.dv8tion.jda.api.events.message.guild.GuildMessageUpdateEvent
 import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
@@ -118,6 +119,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 					(lorittaProfile?.settings?.language ?: serverConfig.localeId)
 				}
 				val locale = loritta.localeManager.getLocaleById(currentLocale)
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 				logIfEnabled(enableProfiling) { "Loading ${locale.id} locale took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
 				start = System.nanoTime()
@@ -235,7 +237,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 				// Executar comandos
 				start = System.nanoTime()
-				if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser))
+				if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, i18nContext, lorittaUser))
 					return@launchMessageJob
 				logIfEnabled(enableProfiling) { "All commands check took ${System.nanoTime() - start}ns for ${event.author.idLong}" }
 
@@ -341,6 +343,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 				profile.settings.language ?: "default"
 			}
 			val locale = loritta.localeManager.getLocaleById(currentLocale)
+			val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
 			if (isMentioningOnlyMe(event.message.contentRaw)) {
 				event.channel.sendMessage(locale["commands.commandsInDirectMessage", event.message.author.asMention, locale["commands.helpCommandName"]]).queue()
@@ -361,7 +364,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 			)
 
 			// Executar comandos
-			if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser))
+			if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, i18nContext, lorittaUser))
 				return@launchMessageJob
 		}
 	}
@@ -396,6 +399,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 				val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong, true)
 				val lorittaProfile = loritta.getOrCreateLorittaProfile(event.author.idLong)
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+				val i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 				val lorittaUser = GuildLorittaUser(
 					loritta,
 					member,
@@ -425,7 +429,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						return@launch
 				}
 
-				if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, lorittaUser))
+				if (checkCommandsAndDispatch(lorittaMessageEvent, serverConfig, locale, i18nContext, lorittaUser))
 					return@launch
 			}
 		}
@@ -448,7 +452,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 	 *
 	 * @return if a command was dispatched
 	 */
-	suspend fun checkCommandsAndDispatch(lorittaMessageEvent: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun checkCommandsAndDispatch(lorittaMessageEvent: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
 		// If Loritta can't speak in the current channel, do *NOT* try to process a command! If we try to process, Loritta will have issues that she wants to talk in a channel, but she doesn't have the "canTalk()" permission!
 		if (lorittaMessageEvent.channel is TextChannel && !lorittaMessageEvent.channel.canTalk())
 			return false
@@ -486,12 +490,12 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 
 			// Executar comandos
 			var start = System.nanoTime()
-			if (loritta.commandMap.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, lorittaUser))
+			if (loritta.commandMap.dispatch(lorittaMessageEvent, rawArguments, serverConfig, locale, i18nContext, lorittaUser))
 				return true
 			logIfEnabled(enableProfiling) { "Checking for command map commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
 
 			start = System.nanoTime()
-			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, lorittaUser))
+			if (loritta.legacyCommandManager.matches(lorittaMessageEvent, rawArguments, serverConfig, locale, i18nContext, lorittaUser))
 				return true
 			logIfEnabled(enableProfiling) { "Checking for legacy command manager commands took ${System.nanoTime() - start}ns for ${author.idLong}" }
 		}

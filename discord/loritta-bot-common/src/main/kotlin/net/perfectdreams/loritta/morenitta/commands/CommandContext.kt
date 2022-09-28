@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -37,6 +38,7 @@ class CommandContext(
 	val config: ServerConfig,
 	var lorittaUser: LorittaUser,
 	val locale: BaseLocale,
+	val i18nContext: I18nContext,
 	var event: LorittaMessageEvent,
 	var cmd: AbstractCommand,
 	var args: Array<String>,
@@ -67,6 +69,9 @@ class CommandContext(
 
 	val guild: Guild
 		get() = event.guild!!
+
+	val guildOrNull: Guild?
+		get() = event.guild
 
 
 	suspend fun explain() {

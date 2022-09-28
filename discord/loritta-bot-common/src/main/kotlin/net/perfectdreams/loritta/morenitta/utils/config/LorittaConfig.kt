@@ -238,7 +238,7 @@ data class LorittaConfig(
     class QuirkyConfig(
         val randomReactions: RandomReactionsConfig,
         val tioDoPave: TioDoPaveConfig,
-        val canecaUsers: List<Long>
+        val canecaUsers: List<Snowflake>
     ) {
         @Serializable
         class RandomReactionsConfig(

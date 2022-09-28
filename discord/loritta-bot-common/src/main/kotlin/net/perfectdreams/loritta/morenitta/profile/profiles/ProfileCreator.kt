@@ -1,21 +1,18 @@
-package net.perfectdreams.loritta.cinnamon.discord.utils.profiles
+package net.perfectdreams.loritta.morenitta.profile.profiles
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.FontMetrics
 import java.awt.Graphics
-import java.awt.image.BufferedImage
 import kotlin.streams.toList
 
 abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String) {

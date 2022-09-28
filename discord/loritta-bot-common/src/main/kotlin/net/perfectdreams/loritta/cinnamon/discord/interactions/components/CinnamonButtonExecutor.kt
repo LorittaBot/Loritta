@@ -50,6 +50,7 @@ abstract class CinnamonButtonExecutor(val loritta: LorittaBot) : ButtonExecutor 
                 CommandExecutorWrapper.NonGuildServerConfigRoot
             }
 
+            val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
             i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
             cinnamonContext = if (guildId != null) {
@@ -57,6 +58,7 @@ abstract class CinnamonButtonExecutor(val loritta: LorittaBot) : ButtonExecutor 
                 GuildComponentContext(
                     loritta,
                     i18nContext,
+                    locale,
                     context.sender,
                     context,
                     context.guildId,
@@ -66,6 +68,7 @@ abstract class CinnamonButtonExecutor(val loritta: LorittaBot) : ButtonExecutor 
                 ComponentContext(
                     loritta,
                     i18nContext,
+                    locale,
                     context.sender,
                     context
                 )

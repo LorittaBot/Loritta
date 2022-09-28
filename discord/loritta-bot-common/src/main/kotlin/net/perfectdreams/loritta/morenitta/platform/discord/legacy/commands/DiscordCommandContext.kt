@@ -13,6 +13,7 @@ import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.messages.LorittaMessage
 import net.perfectdreams.loritta.common.utils.image.Image
@@ -38,10 +39,11 @@ class DiscordCommandContext(
 	args: List<String>,
 	val discordMessage: Message,
 	locale: BaseLocale,
+	i18nContext: I18nContext,
 	val serverConfig: ServerConfig,
 	val lorittaUser: LorittaUser,
 	val executedCommandLabel: String
-) : CommandContext(loritta, command, args, DiscordMessage(discordMessage), locale) {
+) : CommandContext(loritta, command, args, DiscordMessage(discordMessage), locale, i18nContext) {
 	val isPrivateChannel = discordMessage.channelType == ChannelType.PRIVATE
 	val guild: Guild
 		get() = discordMessage.guild

@@ -29,6 +29,7 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
+import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -201,8 +202,9 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(LorittaBanCommand(loritta))
 		commandMap.add(LorittaUnbanCommand(loritta))
 		commandMap.add(LoriServerListConfigCommand(loritta))
-		if (loritta.config.loritta.environment == EnvironmentType.CANARY)
-			commandMap.add(AntiRaidCommand(loritta))
+		// TODO: Fix compilation?
+		// if (loritta.config.loritta.environment == EnvironmentType.CANARY)
+		// 	commandMap.add(AntiRaidCommand(loritta))
 
 		// =======[ ECONOMIA ]========
 		commandMap.add(LoraffleCommand(loritta))
@@ -220,10 +222,10 @@ class CommandManager(val loritta: LorittaBot) {
 		return BotInfoCommand(loritta, BuildInfo(mainAttributes))
 	}
 
-	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
 		// Primeiro os comandos vanilla da Loritta(tm)
 		for (command in commandMap) {
-			if (matches(command, rawArguments, ev, serverConfig, locale, lorittaUser))
+			if (matches(command, rawArguments, ev, serverConfig, locale, i18nContext, lorittaUser))
 				return true
 		}
 
@@ -243,7 +245,7 @@ class CommandManager(val loritta: LorittaBot) {
 		}
 
 		for (command in nashornCommands) {
-			if (matches(command, rawArguments, ev, serverConfig, locale, lorittaUser))
+			if (matches(command, rawArguments, ev, serverConfig, locale, i18nContext, lorittaUser))
 				return true
 		}
 
@@ -259,7 +261,7 @@ class CommandManager(val loritta: LorittaBot) {
 	 * @param lorittaUser the user that is executing this command
 	 * @return            if the command was handled or not
 	 */
-	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, lorittaUser: LorittaUser): Boolean {
+	suspend fun matches(command: AbstractCommand, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
 		val message = ev.message.contentDisplay
 		val labels = mutableListOf(command.label)
 
@@ -284,7 +286,7 @@ class CommandManager(val loritta: LorittaBot) {
 				strippedArgs = rawArgs
 			}
 
-			val context = CommandContext(loritta, serverConfig, lorittaUser, locale, ev, command, args, rawArgs, strippedArgs)
+			val context = CommandContext(loritta, serverConfig, lorittaUser, locale, i18nContext, ev, command, args, rawArgs, strippedArgs)
 
 			try {
 				CommandUtils.logMessageEvent(ev, logger)

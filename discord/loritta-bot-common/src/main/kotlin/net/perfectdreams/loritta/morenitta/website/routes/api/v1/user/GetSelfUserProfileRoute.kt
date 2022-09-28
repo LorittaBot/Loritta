@@ -1,10 +1,14 @@
 package net.perfectdreams.loritta.morenitta.website.routes.api.v1.user
 
+import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.UserFlags
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.response.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.profile.profiles.AnimatedProfileCreator
+import net.perfectdreams.loritta.morenitta.profile.profiles.StaticProfileCreator
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
@@ -49,25 +53,44 @@ class GetSelfUserProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRout
 		}
 
 		val senderUserData = ProfileUserInfoData(
-				userIdentification.id.toLong(),
-				userIdentification.username,
-				userIdentification.discriminator,
-				avatarUrl
+			Snowflake(userIdentification.id.toLong()),
+			userIdentification.username,
+			userIdentification.discriminator,
+			avatarUrl,
+			false,
+			UserFlags {} // TODO: Fix user flags, afaik they are provided in the UserIdentification
 		)
 
-		val images = profileCreator.createGif(
+		val image = when (profileCreator) {
+			is StaticProfileCreator -> profileCreator.create(
 				senderUserData,
 				senderUserData,
 				profile,
 				null,
 				listOf(),
 				locale,
+				loritta.languageManager.defaultI18nContext, // TODO: Provide the correct i18n context!
 				BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background
-				settings.aboutMe ?: "???"
-        )
+				settings.aboutMe ?: "???",
+				listOf()
+			)
+			is AnimatedProfileCreator -> profileCreator.create(
+				senderUserData,
+				senderUserData,
+				profile,
+				null,
+				listOf(),
+				locale,
+				loritta.languageManager.defaultI18nContext, // TODO: Provide the correct i18n context!
+				BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB), // Create profile with transparent background
+				settings.aboutMe ?: "???",
+				listOf()
+			).first() // We only want the first frame of the list
+			else -> error("Unsupported Profile Creator Type $profileCreator")
+		}
 
 		val baos = ByteArrayOutputStream()
-		ImageIO.write(images.first(), "png", baos)
+		ImageIO.write(image, "png", baos)
 		call.respondBytes(baos.toByteArray(), ContentType.Image.PNG, HttpStatusCode.OK)
 	}
 }

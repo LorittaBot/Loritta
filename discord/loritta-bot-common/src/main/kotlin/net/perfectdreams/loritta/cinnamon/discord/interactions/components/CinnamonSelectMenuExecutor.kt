@@ -50,6 +50,7 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuE
                 CommandExecutorWrapper.NonGuildServerConfigRoot
             }
 
+            val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
             i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
             // val channel = loritta.interactions.rest.channel.getChannel(context.request.channelId)
@@ -58,6 +59,7 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuE
                 GuildComponentContext(
                     loritta,
                     i18nContext,
+                    locale,
                     context.sender,
                     context,
                     context.guildId,
@@ -67,6 +69,7 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuE
                 ComponentContext(
                     loritta,
                     i18nContext,
+                    locale,
                     context.sender,
                     context
                 )

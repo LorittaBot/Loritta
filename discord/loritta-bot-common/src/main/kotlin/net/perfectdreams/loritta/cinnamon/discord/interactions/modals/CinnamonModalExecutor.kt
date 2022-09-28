@@ -50,6 +50,7 @@ abstract class CinnamonModalExecutor(
                 CommandExecutorWrapper.NonGuildServerConfigRoot
             }
 
+            val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
             i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
             cinnamonContext = if (context is net.perfectdreams.discordinteraktions.common.modals.GuildModalContext) {
@@ -57,6 +58,7 @@ abstract class CinnamonModalExecutor(
                 GuildModalContext(
                     loritta,
                     i18nContext,
+                    locale,
                     context.sender,
                     context,
                     context.guildId,
@@ -66,6 +68,7 @@ abstract class CinnamonModalExecutor(
                 ModalContext(
                     loritta,
                     i18nContext,
+                    locale,
                     context.sender,
                     context
                 )

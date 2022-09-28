@@ -88,9 +88,10 @@ abstract class CinnamonMessageCommandExecutor(val loritta: LorittaBot) : Message
 
         try {
             val serverConfig = getGuildServerConfigOrLoadDefaultConfig(loritta, guildId)
+            val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
             i18nContext = loritta.languageManager.getI18nContextByLegacyLocaleId(serverConfig.localeId)
 
-            cinnamonContext = convertInteraKTionsContextToCinnamonContext(loritta, context, i18nContext)
+            cinnamonContext = convertInteraKTionsContextToCinnamonContext(loritta, context, i18nContext, locale)
 
             // Don't let users that are banned from using Loritta
             if (CommandExecutorWrapper.handleIfBanned(loritta, cinnamonContext))

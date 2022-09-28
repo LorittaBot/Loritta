@@ -1,13 +1,14 @@
-package net.perfectdreams.loritta.morenitta.profile
+package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.perfectdreams.loritta.morenitta.utils.ImageUtils
-import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
-import net.perfectdreams.loritta.morenitta.utils.drawText
-import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -15,16 +16,28 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class MSNProfileCreator(val loritta: LorittaBot) : ProfileCreator("msn") {
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "msn") {
+	override suspend fun create(
+		sender: ProfileUserInfoData,
+		user: ProfileUserInfoData,
+		userProfile: Profile,
+		guild: ProfileGuildInfoData?,
+		badges: List<BufferedImage>,
+		locale: BaseLocale,
+		i18nContext: I18nContext,
+		background: BufferedImage,
+		aboutMe: String,
+		allowedDiscordEmojis: List<Snowflake>?
+	): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/msn/profile_wrapper.png"))
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
 
 		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
-		val imageToBeDownload = if (sender == user) { guild?.selfMember?.user?.avatarUrl } else { sender.avatarUrl } ?: "https://cdn.discordapp.com/embed/avatars/0.png?size=256"
-		val senderAvatar = LorittaUtils.downloadImage(loritta, imageToBeDownload!!)!!.getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
+		val imageToBeDownload = sender.avatarUrl
+		// TODO: If the user is not provided, use Loritta's avatar
+		val senderAvatar = (LorittaUtils.downloadImage(loritta, imageToBeDownload) ?: Constants.DEFAULT_DISCORD_BLUE_AVATAR).getScaledInstance(141, 141, BufferedImage.SCALE_SMOOTH)
 
 		val msnFont = FileInputStream(File(LorittaBot.ASSETS + "micross.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)

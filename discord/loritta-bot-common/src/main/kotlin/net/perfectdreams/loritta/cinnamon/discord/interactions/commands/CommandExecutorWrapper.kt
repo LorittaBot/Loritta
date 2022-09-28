@@ -24,6 +24,7 @@ import net.perfectdreams.discordinteraktions.common.commands.options.OptionRefer
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.pudding.data.ServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.discordinteraktions.common.commands.ApplicationCommandContext as InteraKTionsApplicationCommandContext
 import net.perfectdreams.discordinteraktions.common.commands.GuildApplicationCommandContext as InteraKTionsGuildApplicationCommandContext
 
@@ -88,10 +89,11 @@ interface CommandExecutorWrapper {
         NonGuildServerConfigRoot
     }
 
-    fun convertInteraKTionsContextToCinnamonContext(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext) = if (context is InteraKTionsGuildApplicationCommandContext) {
+    fun convertInteraKTionsContextToCinnamonContext(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext, locale: BaseLocale) = if (context is InteraKTionsGuildApplicationCommandContext) {
         GuildApplicationCommandContext(
             loritta,
             i18nContext,
+            locale,
             context.sender,
             context,
             context.guildId,
@@ -101,6 +103,7 @@ interface CommandExecutorWrapper {
         ApplicationCommandContext(
             loritta,
             i18nContext,
+            locale,
             context.sender,
             context
         )

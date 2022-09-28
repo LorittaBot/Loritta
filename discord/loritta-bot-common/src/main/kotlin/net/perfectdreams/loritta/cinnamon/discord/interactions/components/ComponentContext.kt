@@ -24,13 +24,15 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.S
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.LoadingEmojis
 import net.perfectdreams.loritta.common.emotes.DiscordEmote
+import net.perfectdreams.loritta.common.locale.BaseLocale
 
 open class ComponentContext(
     loritta: LorittaBot,
     i18nContext: I18nContext,
+    locale: BaseLocale,
     user: User,
     override val interaKTionsContext: ComponentContext
-) : InteractionContext(loritta, i18nContext, user, interaKTionsContext) {
+) : InteractionContext(loritta, i18nContext, locale, user, interaKTionsContext) {
     val data: String
         get() = interaKTionsContext.data
     val dataOrNull: String?

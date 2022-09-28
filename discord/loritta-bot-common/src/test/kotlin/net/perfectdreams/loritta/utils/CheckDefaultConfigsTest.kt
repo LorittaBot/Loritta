@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.utils.HoconUtils.decodeFromString
+import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
 import org.junit.jupiter.api.Test
 
 class CheckDefaultConfigsTest {
@@ -11,26 +12,8 @@ class CheckDefaultConfigsTest {
 	}
 
 	@Test
-	fun `check general config`() {
+	fun `check config`() {
 		val configurationFile = loadFromJar("/loritta.conf")
-		Constants.HOCON.decodeFromString<GeneralConfig>(configurationFile)
-	}
-
-	@Test
-	fun `check general instance config`() {
-		val configurationFile = loadFromJar("/loritta.instance.conf")
-		Constants.HOCON.decodeFromString<GeneralInstanceConfig>(configurationFile)
-	}
-
-	@Test
-	fun `check discord config`() {
-		val configurationFile = loadFromJar("/discord.conf")
-		Constants.HOCON.decodeFromString<GeneralDiscordConfig>(configurationFile)
-	}
-
-	@Test
-	fun `check discord instance config`() {
-		val configurationFile = loadFromJar("/discord.instance.conf")
-		Constants.HOCON.decodeFromString<GeneralDiscordInstanceConfig>(configurationFile)
+		Constants.HOCON.decodeFromString<BaseConfig>(configurationFile)
 	}
 }

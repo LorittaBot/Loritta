@@ -1,5 +1,6 @@
-package net.perfectdreams.loritta.morenitta.profile
+package net.perfectdreams.loritta.morenitta.profile.profiles
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.Constants
@@ -11,7 +12,12 @@ import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
+import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Color
 import java.awt.Font
@@ -22,8 +28,19 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.FileInputStream
 
-class Christmas2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("christmas2019") {
-	override suspend fun create(sender: ProfileUserInfoData, user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, badges: List<BufferedImage>, locale: BaseLocale, background: BufferedImage, aboutMe: String): BufferedImage {
+class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "christmas2019") {
+	override suspend fun create(
+		sender: ProfileUserInfoData,
+		user: ProfileUserInfoData,
+		userProfile: Profile,
+		guild: ProfileGuildInfoData?,
+		badges: List<BufferedImage>,
+		locale: BaseLocale,
+		i18nContext: I18nContext,
+		background: BufferedImage,
+		aboutMe: String,
+		allowedDiscordEmojis: List<Snowflake>?
+	): BufferedImage {
 		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
@@ -45,7 +62,7 @@ class Christmas2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("chr
 
 		val marriage = loritta.newSuspendedTransaction { userProfile.marriage }
 
-		val marriedWithId = if (marriage?.user1 == user.id) {
+		val marriedWithId = if (marriage?.user1 == user.id.toLong()) {
 			marriage.user2
 		} else {
 			marriage?.user1
@@ -153,7 +170,7 @@ class Christmas2019ProfileCreator(val loritta: LorittaBot) : ProfileCreator("chr
 		ImageUtils.drawCenteredString(graphics, "$reputations reps", Rectangle(634, 454, 166, 52), font)
 	}
 
-	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: Guild?, graphics: Graphics, globalPosition: Long?, localPosition: Long?, xpLocal: Long?, globalEconomyPosition: Long?): Int {
+	fun drawUserInfo(user: ProfileUserInfoData, userProfile: Profile, guild: ProfileGuildInfoData?, graphics: Graphics, globalPosition: Long?, localPosition: Long?, xpLocal: Long?, globalEconomyPosition: Long?): Int {
 		val userInfo = mutableListOf<String>()
 		userInfo.add("Global")
 
