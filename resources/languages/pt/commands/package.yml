@@ -1,4 +1,3 @@
----
 label: "pacote"
 invalidCorreiosTrackingId: "ID de rastreamento inválido! Os IDs de rastreamento dos Correios usam o seguinte formato: `{exampleId}`"
 objectNotFoundCorreios: "Objeto não encontrado no banco de dados de pacotes do Correios! Se você recebeu o código recentemente, poderá levar algumas horas ou dias até que ele seja registrado no banco de dados de pacotes do Correios!"
