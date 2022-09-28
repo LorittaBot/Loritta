@@ -1,5 +1,4 @@
----
-label: "user"
+label: "usuário"
 description: "Comandos relacionados a usuários do Discord"
 avatar:
   label: "avatar"
