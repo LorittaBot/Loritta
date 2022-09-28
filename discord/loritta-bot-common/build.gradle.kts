@@ -8,6 +8,7 @@ plugins {
     java
     kotlin("jvm")
     kotlin("plugin.serialization")
+    id("com.google.cloud.tools.jib") version libs.versions.jib
 }
 
 dependencies {
@@ -128,19 +129,27 @@ tasks {
     processResources {
         from("../../resources/") // Include folders from the resources root folder
     }
+}
 
-    val runnableJar = runnableJarTask(
-        DEFAULT_SHADED_WITHIN_JAR_LIBRARIES,
-        configurations.runtimeClasspath.get(),
-        jar.get(),
-        "net.perfectdreams.loritta.morenitta.LorittaLauncher",
-        mapOf(
-            "JDA-Version" to Versions.JDA
-        )
-    )
+jib {
+    container {
+        mainClass = "net.perfectdreams.loritta.morenitta.LorittaLauncher"
+    }
 
-    "build" {
-        dependsOn(runnableJar)
+    to {
+        image = "ghcr.io/lorittabot/loritta-morenitta"
+
+        auth {
+            username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
+            password = System.getProperty("DOCKER_PASSWORD") ?: System.getenv("DOCKER_PASSWORD")
+        }
+    }
+
+    from {
+        // This image comes from the "docker" folder Dockerfile!
+        // Don't forget to build the image before compiling!
+        // https://github.com/GoogleContainerTools/jib/issues/1468
+        image = "tar://${File(rootDir, "docker/image.tar").absoluteFile}"
     }
 }
 

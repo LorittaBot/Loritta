@@ -37,6 +37,20 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
+      # Because waiting for the Docker image to be built is kinda boring not gonna lie
+      - name: Cache Docker image
+        id: cache-docker-image
+        uses: actions/cache@v2
+        with:
+          path: docker
+          key: docker-image-${{ runner.os }}-${{ hashFiles('docker/Dockerfile') }}
+
+      - name: Build base Docker image
+        if: steps.cache-docker-image.outputs.cache-hit != 'true'
+        run: |
+          cd docker
+          bash build.sh
+
       # We will do everything on the same Gradle task to avoid Gradle executing tasks that it was already executed in a previous step
       # (Example: Compiling everything again when publishing the Docker container)
       - name: Build and Publish with Gradle
@@ -50,4 +64,6 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
           arguments: |
             build
+            :discord:loritta-bot-common:jib
+            :shard-controller:jib
             --scan
