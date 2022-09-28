@@ -1,28 +1,26 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
-import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
-import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.common.utils.HostnameUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
+import net.perfectdreams.loritta.morenitta.commands.CommandContext
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.morenitta.tables.Payments
-import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
+import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
 import java.lang.management.ManagementFactory
 import java.util.concurrent.TimeUnit
-import java.util.jar.Attributes
-import java.util.jar.JarFile
 
-class BotInfoCommand(loritta: LorittaBot, private val buildInfo: BuildInfo) : AbstractCommand(loritta, "botinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class BotInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "botinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.botinfo.description")
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
@@ -121,19 +119,6 @@ class BotInfoCommand(loritta: LorittaBot, private val buildInfo: BuildInfo) : Ab
 	}
 
 	suspend fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {
-		val path = this::class.java.protectionDomain.codeSource.location.path
-		val jar = JarFile(path)
-		val mf = jar.manifest
-		val mattr = mf.mainAttributes
-
-		val lorittaVersion = mattr[Attributes.Name("Loritta-Version")] as String
-		val buildNumber = mattr[Attributes.Name("Build-Number")] as String
-		val commitHash = mattr[Attributes.Name("Commit-Hash")] as String
-		val gitBranch = mattr[Attributes.Name("Git-Branch")] as String
-		val compiledAt = mattr[Attributes.Name("Compiled-At")] as String
-		val kotlinVersion = mattr[Attributes.Name("Kotlin-Version")] as String
-		val jdaVersion = mattr[Attributes.Name("JDA-Version")] as String
-
 		val mb = 1024 * 1024
 		val runtime = Runtime.getRuntime()
 		val usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / mb
@@ -141,36 +126,14 @@ class BotInfoCommand(loritta: LorittaBot, private val buildInfo: BuildInfo) : Ab
 		val maxMemory = runtime.maxMemory() / mb
 		val totalMemory = runtime.totalMemory() / mb
 
-		val buildURL = getBuildURL()
-
 		context.reply(
                 LorittaReply(
                         forceMention = true,
                         prefix = "<:loritta:331179879582269451>"
                 ),
                 LorittaReply(
-                        "**${locale["commands.command.botinfo.lorittaVersion"]}:** $lorittaVersion",
-                        "\uD83D\uDD16",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        "**${locale["commands.command.botinfo.buildNumber"]}:** #$buildNumber <$buildURL>",
+                        "**Hostname:** ${HostnameUtils.getHostname()}",
                         "\uD83C\uDFD7",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        "**Commit:** $commitHash",
-                        "<:github:467329174387032086>",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        "**Git Branch:** $gitBranch",
-                        "<:github:467329174387032086>",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        "**${locale["commands.command.botinfo.compiledAt"]}:** $compiledAt",
-                        "⏰",
                         mentionUser = false
                 ),
                 LorittaReply(
@@ -179,13 +142,8 @@ class BotInfoCommand(loritta: LorittaBot, private val buildInfo: BuildInfo) : Ab
                         mentionUser = false
                 ),
                 LorittaReply(
-                        "**${locale["commands.command.botinfo.kotlinVersion"]}:** $kotlinVersion",
+                        "**${locale["commands.command.botinfo.kotlinVersion"]}:** ${KotlinVersion.CURRENT}",
                         "<:kotlin:453714186925637642>",
-                        mentionUser = false
-                ),
-                LorittaReply(
-                        "**${locale["commands.command.botinfo.jdaVersion"]}:** $jdaVersion",
-                        "<:jda:411518264267767818>",
                         mentionUser = false
                 ),
                 LorittaReply(
@@ -225,6 +183,4 @@ class BotInfoCommand(loritta: LorittaBot, private val buildInfo: BuildInfo) : Ab
                 )
 		)
 	}
-
-	private fun getBuildURL() = buildInfo.buildUrl()
 }

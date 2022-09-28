@@ -44,7 +44,6 @@ import org.jetbrains.exposed.sql.select
 import java.sql.Connection
 import java.util.*
 import java.util.concurrent.CancellationException
-import java.util.jar.JarFile
 
 class CommandManager(val loritta: LorittaBot) {
 	companion object {
@@ -143,12 +142,7 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(LyricsCommand(loritta))
 
 		// =======[ DISCORD ]=======
-		try {
-			commandMap.add(createBotinfoCommand())
-		} catch (e: Exception) {
-			// TODO: Fix this
-			logger.warn(e) { "Exception while registering botinfo, are you running Loritta within a IDE?" }
-		}
+		commandMap.add(BotInfoCommand())
 		commandMap.add(AvatarCommand(loritta))
 		commandMap.add(ServerIconCommand(loritta))
 		commandMap.add(EmojiCommand(loritta))
@@ -212,14 +206,6 @@ class CommandManager(val loritta: LorittaBot) {
 		commandMap.add(PagarCommand(loritta))
 		commandMap.add(SonhosCommand(loritta))
 		commandMap.add(LigarCommand(loritta))
-	}
-
-	private fun createBotinfoCommand(): BotInfoCommand {
-		val path = this::class.java.protectionDomain.codeSource.location.path
-		val jar = JarFile(path)
-		val manifest = jar.manifest
-		val mainAttributes = manifest.mainAttributes
-		return BotInfoCommand(loritta, BuildInfo(mainAttributes))
 	}
 
 	suspend fun matches(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
