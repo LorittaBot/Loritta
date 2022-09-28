@@ -24,7 +24,7 @@ class CepoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "cepo", catego
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val file = CepoDeMadeiraGIF.getGIF(contextImage)
 
-		MiscUtils.optimizeGIF(file)
+		loritta.gifsicle.optimizeGIF(file)
 		context.sendFile(file, "cepo.gif", context.getAsMention(true))
 		file.delete()
 	}

@@ -21,7 +21,7 @@ class GumballCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gumball", 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val file = GumballGIF.getGIF(contextImage, locale)
-		MiscUtils.optimizeGIF(file)
+		loritta.gifsicle.optimizeGIF(file)
 		context.sendFile(file, "gumball.gif", context.getAsMention(true))
 		file.delete()
 	}

@@ -22,7 +22,7 @@ class DemonCommand(loritta: LorittaBot) : AbstractCommand(loritta, "demon", list
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val file = DemonGIF.getGIF(contextImage, context.config.localeId)
 
-		MiscUtils.optimizeGIF(file)
+		loritta.gifsicle.optimizeGIF(file)
 		context.sendFile(file, "demon.gif", context.getAsMention(true))
 		file.delete()
 	}

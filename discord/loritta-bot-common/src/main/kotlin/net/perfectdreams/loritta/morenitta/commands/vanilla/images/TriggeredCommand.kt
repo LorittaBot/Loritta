@@ -76,7 +76,7 @@ class TriggeredCommand(loritta: LorittaBot) : AbstractCommand(loritta, "triggere
 		writer.close()
 		output.close()
 
-		MiscUtils.optimizeGIF(outputFile)
+		loritta.gifsicle.optimizeGIF(outputFile)
 		context.sendFile(outputFile, "triggered.gif", context.getAsMention(true))
 		outputFile.delete()
 	}

@@ -24,7 +24,7 @@ class DiscordiaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mentions
 
 		var contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		var file = MentionGIF.getGIF(contextImage)
-		MiscUtils.optimizeGIF(file)
+		loritta.gifsicle.optimizeGIF(file)
 		context.sendFile(file, "discordia.gif", context.getAsMention(true))
 		file.delete()
 	}

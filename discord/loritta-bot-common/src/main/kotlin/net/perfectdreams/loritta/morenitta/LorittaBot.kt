@@ -346,6 +346,7 @@ class LorittaBot(
 	)
 
 	val random = SecureRandom()
+	val gifsicle = Gifsicle(config.loritta.binaries.gifsicle)
 
 	val fanArtArtists = LorittaBot::class.getPathFromResources("/fan_arts_artists/")!!
 		.let { Files.list(it).toList() }

@@ -26,7 +26,7 @@ class TrumpCommand(loritta: LorittaBot) : AbstractCommand(loritta, "trump", cate
 		val contextImage2 = context.getImageAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val file = TrumpGIF.getGIF(contextImage2, contextImage)
-		MiscUtils.optimizeGIF(file)
+		loritta.gifsicle.optimizeGIF(file)
 		context.sendFile(file, "trump.gif", context.getAsMention(true))
 		file.delete()
 	}

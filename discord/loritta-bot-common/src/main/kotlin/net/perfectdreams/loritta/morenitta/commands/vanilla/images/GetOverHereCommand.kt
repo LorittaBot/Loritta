@@ -21,7 +21,7 @@ class GetOverHereCommand(loritta: LorittaBot) : AbstractCommand(loritta, "getove
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val file = GetOverHereGIF.getGIF(contextImage)
-		MiscUtils.optimizeGIF(file)
+		loritta.gifsicle.optimizeGIF(file)
 		context.sendFile(file, "getoverhere.gif", context.getAsMention(true))
 		file.delete()
 	}

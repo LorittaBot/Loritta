@@ -218,7 +218,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 				output.close()
 
 				val outputFile = File(fileName)
-				MiscUtils.optimizeGIF(outputFile)
+				loritta.gifsicle.optimizeGIF(outputFile)
 
 				outputFile.readBytes()
 			}

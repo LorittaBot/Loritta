@@ -25,7 +25,7 @@ class KnuxThrowCommand(loritta: LorittaBot) : AbstractCommand(loritta, "knuxthro
 		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 		val file = KnucklesThrowGIF.getGIF(contextImage)
 
-		MiscUtils.optimizeGIF(file, 50)
+		loritta.gifsicle.optimizeGIF(file, 50)
 		context.sendFile(file, "knuxthrow.gif", context.getAsMention(true))
 		file.delete()
 	}

@@ -58,22 +58,6 @@ object MiscUtils {
 		return output
 	}
 
-	fun optimizeGIF(file: File, lossy: Int = 200) {
-		val processBuilder = ProcessBuilder(
-				File(LorittaBot.FOLDER, "gifsicle-static").toString(), // https://github.com/kornelski/giflossy/releases
-				"-i",
-				file.toString(),
-				"-O3",
-				"--lossy=$lossy",
-				"--colors",
-				"256",
-				"-o",
-				file.toString())
-
-		val process = processBuilder.start()
-		process.waitFor(10, TimeUnit.SECONDS)
-	}
-
 	suspend fun verifyAccount(loritta: LorittaBot, userIdentification: TemmieDiscordAuth.UserIdentification, ip: String): AccountCheckResult {
 		if (!userIdentification.verified)
 			return AccountCheckResult.NOT_VERIFIED

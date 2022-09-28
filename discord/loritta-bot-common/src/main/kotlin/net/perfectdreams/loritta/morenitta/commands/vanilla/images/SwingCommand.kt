@@ -25,7 +25,7 @@ class SwingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "swing", cate
 		val contextImage2 = context.getImageAt(1, search = 0) ?: LorittaUtils.downloadImage(loritta, context.userHandle.effectiveAvatarUrl) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
 		val file = SwingGIF.getGIF(contextImage, contextImage2)
-		MiscUtils.optimizeGIF(file)
+		loritta.gifsicle.optimizeGIF(file)
 		context.sendFile(file, "swing.gif", context.getAsMention(true))
 		file.delete()
 	}

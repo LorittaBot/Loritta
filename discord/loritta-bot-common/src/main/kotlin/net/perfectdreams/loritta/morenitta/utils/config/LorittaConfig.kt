@@ -174,7 +174,8 @@ data class LorittaConfig(
 
     @Serializable
     data class BinariesConfig(
-        val ffmpeg: String
+        val ffmpeg: String,
+        val gifsicle: String
     )
 
     @Serializable
