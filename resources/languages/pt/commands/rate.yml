@@ -1,4 +1,3 @@
----
 label: "avaliar"
 description: "Já que você precisa de validação de alguém para ser feliz, então deixe-me dar uma nota para você!"
 result: "A minha nota para `{input}` é... **{score}**! **{reason}**"
