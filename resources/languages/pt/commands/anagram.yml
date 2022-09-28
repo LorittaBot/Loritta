@@ -1,4 +1,3 @@
----
 label: "anagrama"
 description: "Crie um anagrama a partir de um texto! Perfeito se você quer ser misterioso com suas mensagens"
 result: "**Seu anagrama é...** `{anagramResult}`"
