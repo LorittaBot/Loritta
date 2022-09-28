@@ -1,4 +1,3 @@
----
 label: "corretora"
 footerDataInfo: "Dados do TradingView • Ao usar o simulador de mercado de ações da Loritta, nós podemos usar as suas transações de ações para estatísticas e usos na bolsa de valores da vida real!"
 thatIsNotAnValidStockTicker: "Isso não é um símbolo de ações válido! Veja todos os símbolos válidos em {brokerInfoCommandMention}."
