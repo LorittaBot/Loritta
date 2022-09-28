@@ -1,4 +1,3 @@
----
 label: "undertale"
 textbox:
   label: "caixadetexto"
@@ -64,7 +63,7 @@ textbox:
     grin: "Sorriso"
     hurt: "Machucado"
     jaws: "Mandíbulas"
-    sassy: "Atrevido"
+    sassy: "Tarado"
     skull: "Crânio"
     terrified: "Apavorado"
     wiltedStandUp: "Murcho se Levantando"
