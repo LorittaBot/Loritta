@@ -8,6 +8,9 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstanc
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.GuildProfile
+import net.perfectdreams.loritta.morenitta.dao.Profile
+import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -22,11 +25,7 @@ abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String)
      * @param  userProfile the user's profile
      * @return the user's current global position in the economy ranking
      */
-    suspend fun getGlobalEconomyPosition(userProfile: PuddingUserProfile) =
-        // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any sonhos, we just return null! :3
-        if (userProfile.money >= 100_000L)
-            loritta.pudding.sonhos.getSonhosRankPositionBySonhos(userProfile.money)
-        else null
+    suspend fun getGlobalEconomyPosition(userProfile: Profile) = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
     /**
      * Gets the user's local position in the experience ranking
@@ -34,14 +33,7 @@ abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String)
      * @param  localProfile the user's local profile
      * @return the user's current local position in the experience ranking
      */
-    suspend fun getLocalExperiencePosition(localProfile: ResultRow?) = if (localProfile != null && localProfile[GuildProfiles.xp] != 0L) {
-        // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any local XP, we just return null! :3
-        loritta.pudding.transaction {
-            GuildProfiles.select { (GuildProfiles.guildId eq localProfile[GuildProfiles.guildId]) and (GuildProfiles.xp greaterEq localProfile[GuildProfiles.xp]) }.count()
-        }
-    } else {
-        null
-    }
+    suspend fun getLocalExperiencePosition(localProfile: GuildProfile?) = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
     /**
      * Draws the user's about me

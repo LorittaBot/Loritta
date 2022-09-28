@@ -31,14 +31,10 @@ class CowboyProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, 
 	): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/cowboy/profile_wrapper.png"))
 
-		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
-		val whitneyBold16 = whitneyBold.deriveFont(16f)
+		val latoBold = loritta.graphicsFonts.latoBold
+		val latoBlack = loritta.graphicsFonts.latoBlack
+		val latoRegular22 = latoBold.deriveFont(22f)
+		val latoBlack16 = latoBlack.deriveFont(16f)
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -53,15 +49,15 @@ class CowboyProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, 
 			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/cowboy/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
-			val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
-			val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
+			val latoBold16 = latoBold.deriveFont(16f)
+			val latoRegular20 = latoRegular22.deriveFont(20f)
 			graphics.color = Color.WHITE
-			graphics.font = whitneySemiBold16
-			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(311, 0, 216, 14), whitneySemiBold16)
-			graphics.font = whitneyMedium20
-			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(311, 0 + 18, 216, 18), whitneyMedium20)
-			graphics.font = whitneySemiBold16
-			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(311, 0 + 18 + 24, 216, 14), whitneySemiBold16)
+			graphics.font = latoBold16
+			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(311, 0, 216, 14), latoBold16)
+			graphics.font = latoRegular20
+			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(311, 0 + 18, 216, 18), latoRegular20)
+			graphics.font = latoBold16
+			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(311, 0 + 18 + 24, 216, 14), latoBold16)
 		}
 
 		graphics.color = Color.BLACK
@@ -80,12 +76,12 @@ class CowboyProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, 
 
 		drawBadges(badges, graphics)
 
-		graphics.font = whitneyBold16
+		graphics.font = latoBlack16
 		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics)
 
-		graphics.font = whitneyMedium22
+		graphics.font = latoRegular22
 
-		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 162, 529, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 162, 529, 773 - biggestStrWidth - 4, 600, allowedDiscordEmojis)
 
 		return base.makeRoundedCorners(15)
 	}

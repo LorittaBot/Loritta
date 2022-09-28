@@ -38,16 +38,12 @@ open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val fo
 	): BufferedImage {
 		val profileWrapper = readImage(File(LorittaBot.ASSETS, "profile/plain/profile_wrapper_$folderName.png"))
 
-		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
-		val whitneyBold16 = whitneyBold.deriveFont(16f)
-		val whitneyMedium16 = whitneySemiBold.deriveFont(16f)
-		val whitneyBold12 = whitneyBold.deriveFont(12f)
+		val latoBold = loritta.graphicsFonts.latoBold
+		val latoBlack = loritta.graphicsFonts.latoBlack
+		val latoRegular22 = latoBold.deriveFont(22f)
+		val latoBlack16 = latoBlack.deriveFont(16f)
+		val latoRegular16 = latoBold.deriveFont(16f)
+		val latoBlack12 = latoBlack.deriveFont(12f)
 
 		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
 		val graphics = base.graphics.enableFontAntiAliasing()
@@ -61,12 +57,12 @@ open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val fo
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			graphics.color = Color.WHITE
-			graphics.font = whitneyBold12
-			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 350, 165, 14), whitneyBold12)
-			graphics.font = whitneyMedium16
-			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), whitneyMedium16)
-			graphics.font = whitneyBold12
-			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 350 + 16 + 18, 165, 14), whitneyBold12)
+			graphics.font = latoBlack12
+			ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 350, 165, 14), latoBlack12)
+			graphics.font = latoRegular16
+			ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 350 + 16, 165, 18), latoRegular16)
+			graphics.font = latoBlack12
+			ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 350 + 16 + 18, 165, 14), latoBlack12)
 		}
 
 		graphics.color = Color.BLACK
@@ -86,12 +82,12 @@ open class PlainProfileCreator(loritta: LorittaBot, internalName: String, val fo
 
 		drawBadges(badges, graphics)
 
-		graphics.font = whitneyBold16
+		graphics.font = latoBlack16
 		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics)
 
-		graphics.font = whitneyMedium22
+		graphics.font = latoRegular22
 
-		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 162, 484, 773 - biggestStrWidth - 4, 600, allowedDiscordEmojis)
 
 		return base.makeRoundedCorners(15)
 	}

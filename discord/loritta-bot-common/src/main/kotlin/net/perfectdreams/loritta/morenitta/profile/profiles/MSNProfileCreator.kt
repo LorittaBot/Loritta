@@ -43,24 +43,18 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 			Font.createFont(Font.TRUETYPE_FONT, it)
 		}
 
-		val whitneyMedium = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-medium.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneySemiBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
+		val latoRegular = 	loritta.graphicsFonts.latoRegular
+		val latoBold = 	loritta.graphicsFonts.latoBold
+		val latoBlack = 	loritta.graphicsFonts.latoBlack
 
-		val whitneySemiBold38 = whitneySemiBold.deriveFont(38f)
-		val whitneyMedium32 = whitneySemiBold.deriveFont(32f)
-		val whitneyBold20 = whitneyBold.deriveFont(20f)
-		val whitneySemiBold20 = whitneySemiBold.deriveFont(20f)
+		val latoBold38 = latoBold.deriveFont(38f)
+		val latoRegular32 = latoBold.deriveFont(32f)
+		val latoBlack20 = latoBlack.deriveFont(20f)
+		val latoBold20 = latoBold.deriveFont(20f)
 
-		val msnFont20 = whitneyMedium.deriveFont(20f)
-		val msnFont15 = whitneyBold20.deriveFont(17f)
-		val msnFont24 = whitneyBold20.deriveFont(24f)
+		val msnFont20 = latoRegular.deriveFont(20f)
+		val msnFont15 = latoBlack20.deriveFont(17f)
+		val msnFont24 = latoBlack20.deriveFont(24f)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 		graphics.drawImage(avatar, 70, 130, null)
@@ -71,7 +65,7 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 		graphics.font = msnFont15
 		graphics.color = Color(255, 255, 255)
 		graphics.drawText(loritta, "${user.name}#${user.discriminator} <${user.id}>", 40, 27)
-		graphics.font = whitneyMedium32
+		graphics.font = latoRegular32
 		// OUTLINE
 		graphics.color = Color(51, 51, 51)
 		graphics.drawText(loritta, user.name, 266, 142)
@@ -108,10 +102,10 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 
 		val shiftY = 291
 
-		graphics.font = whitneyBold20
+		graphics.font = latoBlack20
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		graphics.drawText(loritta, "Global", 4, 21 + shiftY, 244)
-		graphics.font = whitneySemiBold20
+		graphics.font = latoBold20
 
 		if (globalPosition != null)
 			graphics.drawText(loritta, "#$globalPosition / ${userProfile.xp} XP", 4, 39  + shiftY, 244)
@@ -125,9 +119,9 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 
 			val xpLocal = localProfile?.xp
 
-			graphics.font = whitneyBold20
+			graphics.font = latoBlack20
 			graphics.drawText(loritta, guild.name, 4, 61  + shiftY, 244)
-			graphics.font = whitneySemiBold20
+			graphics.font = latoBold20
 			if (xpLocal != null) {
 				if (localPosition != null) {
 					graphics.drawText(loritta, "#$localPosition / $xpLocal XP", 4, 78 + shiftY, 244)
@@ -140,9 +134,9 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 			}
 		}
 
-		graphics.font = whitneyBold20
+		graphics.font = latoBlack20
 		graphics.drawText(loritta, "Sonhos", 4, 98  + shiftY, 244)
-		graphics.font = whitneySemiBold20
+		graphics.font = latoBold20
 		graphics.drawText(loritta, userProfile.money.toString(), 4, 116  + shiftY, 244)
 
 		var x = 272
@@ -163,7 +157,7 @@ class MSNProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "ms
 		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
 		graphics.color = Color.WHITE
-		graphics.font = whitneySemiBold20
+		graphics.font = latoBold20
 		graphics.drawText(loritta, "Reputações: $reputations reps", 11, 73)
 
 		return base

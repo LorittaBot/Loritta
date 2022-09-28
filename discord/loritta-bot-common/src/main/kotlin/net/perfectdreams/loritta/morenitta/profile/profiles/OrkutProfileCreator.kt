@@ -40,26 +40,20 @@ class OrkutProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "
 
 		val avatar = LorittaUtils.downloadImage(loritta, user.avatarUrl)!!.getScaledInstance(200, 200, BufferedImage.SCALE_SMOOTH)
 
-		val whitneyMedium = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-medium.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneySemiBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
+		val latoRegular = 	loritta.graphicsFonts.latoRegular
+		val latoBold = 	loritta.graphicsFonts.latoBold
+		val latoBlack = 	loritta.graphicsFonts.latoBlack
 
-		val whitneySemiBold38 = whitneySemiBold.deriveFont(38f)
-		val whitneyMedium32 = whitneySemiBold.deriveFont(32f)
-		val whitneyMedium18 = whitneyMedium.deriveFont(18f)
-		val whitneyBold20 = whitneyBold.deriveFont(20f)
-		val whitneySemiBold18 = whitneySemiBold.deriveFont(18f)
-		val whitneyMedium16 = whitneyMedium.deriveFont(16f)
+		val latoBold38 = latoBold.deriveFont(38f)
+		val latoRegular32 = latoBold.deriveFont(32f)
+		val latoRegular18 = latoRegular.deriveFont(18f)
+		val latoBlack20 = latoBlack.deriveFont(20f)
+		val latoBold18 = latoBold.deriveFont(18f)
+		val latoRegular16 = latoRegular.deriveFont(16f)
 
-		val msnFont20 = whitneyMedium.deriveFont(20f)
-		val msnFont15 = whitneyBold20.deriveFont(17f)
-		val msnFont24 = whitneyBold20.deriveFont(24f)
+		val msnFont20 = latoRegular.deriveFont(20f)
+		val msnFont15 = latoBlack20.deriveFont(17f)
+		val msnFont24 = latoBlack20.deriveFont(24f)
 
 		graphics.drawImage(background.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH), 0, 0, null)
 		graphics.drawImage(profileWrapper, 0, 0, null)
@@ -67,14 +61,14 @@ class OrkutProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "
 		graphics.drawImage(avatar, 8, 8, null)
 
 		graphics.color = Color(102, 102, 102)
-		graphics.font = whitneySemiBold18
+		graphics.font = latoBold18
 		graphics.drawText(loritta, user.name, 14, 251, 201)
-		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 256, 51, 773, 1000, graphics.fontMetrics, graphics)
+		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 256, 51, 773, 1000, allowedDiscordEmojis)
 
 		graphics.color = Color.BLACK
 		graphics.drawString("Sua sorte do dia", 267, 257)
 
-		graphics.font = whitneyMedium18
+		graphics.font = latoRegular18
 		graphics.drawString("A Loritta e a Pantufa são suas amigas", 267, 276)
 
 		val reputations = ProfileUtils.getReputationCount(loritta, user)
@@ -95,7 +89,7 @@ class OrkutProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "
 		var startGuildY = 400
 
 		graphics.color = Color(42, 127, 212)
-		graphics.font = whitneyMedium16
+		graphics.font = latoRegular16
 		for ((index, guild) in mutualGuildsByUsers.withIndex()) {
 			if (index == 8)
 				break

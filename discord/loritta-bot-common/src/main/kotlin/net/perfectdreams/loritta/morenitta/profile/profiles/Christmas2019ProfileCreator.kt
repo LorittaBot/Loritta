@@ -41,17 +41,13 @@ class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(lo
 		aboutMe: String,
 		allowedDiscordEmojis: List<Snowflake>?
 	): BufferedImage {
-		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
+		val latoBold = loritta.graphicsFonts.latoBold
+		val latoBlack = loritta.graphicsFonts.latoBlack
 
-		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
-		val whitneyBold16 = whitneyBold.deriveFont(16f)
-		val whitneyMedium16 = whitneySemiBold.deriveFont(16f)
-		val whitneyBold12 = whitneyBold.deriveFont(12f)
+		val latoRegular22 = latoBold.deriveFont(22f)
+		val latoBlack16 = latoBlack.deriveFont(16f)
+		val latoRegular16 = latoBold.deriveFont(16f)
+		val latoBlack12 = latoBlack.deriveFont(12f)
 		val oswaldRegular50 = Constants.OSWALD_REGULAR
 				.deriveFont(50F)
 		val oswaldRegular42 = Constants.OSWALD_REGULAR
@@ -107,24 +103,24 @@ class Christmas2019ProfileCreator(loritta: LorittaBot) : StaticProfileCreator(lo
 
 		drawBadges(resizedBadges, graphics)
 
-		graphics.font = whitneyBold16
+		graphics.font = latoBlack16
 		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics, globalPosition, localPosition, xpLocal, globalEconomyPosition)
 
-		graphics.font = whitneyMedium22
+		graphics.font = latoRegular22
 
-		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 162, 504, 773 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 162, 504, 773 - biggestStrWidth - 4, 600, allowedDiscordEmojis)
 
 		if (marriage != null) {
 			graphics.drawImage(marrySection, 0, 0, null)
 
 			if (marriedWith != null) {
 				graphics.color = Color.WHITE
-				graphics.font = whitneyBold12
-				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 0, 165, 14), whitneyBold12)
-				graphics.font = whitneyMedium16
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 16, 165, 18), whitneyMedium16)
-				graphics.font = whitneyBold12
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 16 + 18, 165, 14), whitneyBold12)
+				graphics.font = latoBlack12
+				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(635, 0, 165, 14), latoBlack12)
+				graphics.font = latoRegular16
+				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(635, 16, 165, 18), latoRegular16)
+				graphics.font = latoBlack12
+				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(635, 16 + 18, 165, 14), latoBlack12)
 			}
 		}
 

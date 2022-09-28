@@ -83,30 +83,24 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 			x += 42
 		}
 
-		val whitneyMedium = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-medium.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneySemiBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyBold = 	FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
+		val latoRegular = loritta.graphicsFonts.latoRegular
+		val latoBold = loritta.graphicsFonts.latoBold
+		val latoBlack = loritta.graphicsFonts.latoBlack
 
-		val whitneySemiBold38 = whitneySemiBold.deriveFont(38f)
-		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
-		val whitneyBold20 = whitneyBold.deriveFont(20f)
-		val whitneySemiBold20 = whitneySemiBold.deriveFont(20f)
+		val latoBold38 = latoBold.deriveFont(38f)
+		val latoRegular22 = latoBold.deriveFont(22f)
+		val latoBlack20 = latoBlack.deriveFont(20f)
+		val latoBold20 = latoBold.deriveFont(20f)
 
-		graphics.font = whitneyMedium22
+		graphics.font = latoRegular22
 
 		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 6, 522, 800 - 6, 600, allowedDiscordEmojis)
 
 		val shiftY = 42
 
-		graphics.font = whitneyBold20
+		graphics.font = latoBlack20
 		graphics.drawText(loritta, "Global", 159, 21 + shiftY, 800 - 6)
-		graphics.font = whitneySemiBold20
+		graphics.font = latoBold20
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		if (globalPosition != null)
 			graphics.drawText(loritta, "#$globalPosition / ${userProfile.xp} XP", 159, 39  + shiftY, 800 - 6)
@@ -122,9 +116,9 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 
 			val xpLocal = localProfile?.xp
 
-			graphics.font = whitneyBold20
+			graphics.font = latoBlack20
 			graphics.drawText(loritta, guild.name, 159, 61 + shiftY, 800 - 6)
-			graphics.font = whitneySemiBold20
+			graphics.font = latoBold20
 			if (xpLocal != null) {
 				if (localPosition != null)
 					graphics.drawText(loritta, "#$localPosition / $xpLocal XP", 159, 78 + shiftY, 800 - 6)
@@ -137,9 +131,9 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
-		graphics.font = whitneyBold20
+		graphics.font = latoBlack20
 		graphics.drawText(loritta, "Sonhos", 159, 98  + shiftY, 800 - 6)
-		graphics.font = whitneySemiBold20
+		graphics.font = latoBold20
 		if (globalEconomyPosition != null)
 			graphics.drawText(loritta, "#$globalEconomyPosition / ${userProfile.money}", 159, 116  + shiftY, 800 - 6)
 		else
@@ -159,14 +153,14 @@ open class NostalgiaProfileCreator(loritta: LorittaBot, internalName: String, va
 			val marriedWith = loritta.lorittaShards.retrieveUserInfoById(marriedWithId.toLong())
 
 			if (marriedWith != null) {
-				val whitneySemiBold16 = whitneySemiBold.deriveFont(16f)
-				val whitneyMedium20 = whitneyMedium22.deriveFont(20f)
-				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(545, 108, 256, 14), whitneySemiBold16)
-				graphics.font = whitneyMedium20
-				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), whitneyMedium20)
-				graphics.font = whitneySemiBold16
-				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(545, 108 + 14  + 18, 256, 14), whitneySemiBold16)
+				val latoBold16 = latoBold.deriveFont(16f)
+				val latoRegular20 = latoRegular22.deriveFont(20f)
+				graphics.font = latoBold16
+				ImageUtils.drawCenteredString(graphics, locale["profile.marriedWith"], Rectangle(545, 108, 256, 14), latoBold16)
+				graphics.font = latoRegular20
+				ImageUtils.drawCenteredString(graphics, marriedWith.name + "#" + marriedWith.discriminator, Rectangle(545, 108 + 14, 256, 18), latoRegular20)
+				graphics.font = latoBold16
+				ImageUtils.drawCenteredString(graphics, DateUtils.formatDateDiff(marriage.marriedSince, System.currentTimeMillis(), locale), Rectangle(545, 108 + 14  + 18, 256, 14), latoBold16)
 			}
 		}
 

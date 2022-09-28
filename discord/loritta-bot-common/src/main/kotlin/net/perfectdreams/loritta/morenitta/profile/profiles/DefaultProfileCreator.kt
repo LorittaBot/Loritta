@@ -22,10 +22,10 @@ import java.io.File
 import java.io.FileInputStream
 
 class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "modernBlurple") {
-	fun drawSection(graphics: Graphics, whitneyBold20: Font, whitneySemiBold20: Font, title: String, subtext: String, x: Int, y: Int): Pair<Int, Int> {
-		graphics.font = whitneyBold20
+	fun drawSection(graphics: Graphics, latoBlack20: Font, latoBold20: Font, title: String, subtext: String, x: Int, y: Int): Pair<Int, Int> {
+		graphics.font = latoBlack20
 		graphics.drawText(loritta, title, x, y, 800 - 6)
-		graphics.font = whitneySemiBold20
+		graphics.font = latoBold20
 		graphics.drawText(loritta, subtext, x, y + 19, 800 - 6)
 		return Pair(x, y + 19)
 	}
@@ -54,22 +54,16 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 		graphics.drawImage(profileWrapper, 0, 0, null)
 		graphics.drawImage(avatar.toBufferedImage().makeRoundedCorners(115), 6, 6, null)
 
-		val whitneyMedium = FileInputStream(File(LorittaBot.ASSETS + "whitney-medium.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneySemiBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-semibold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
-		val whitneyBold = FileInputStream(File(LorittaBot.ASSETS + "whitney-bold.ttf")).use {
-			Font.createFont(Font.TRUETYPE_FONT, it)
-		}
+		val latoRegular = loritta.graphicsFonts.latoRegular
+		val latoBold = loritta.graphicsFonts.latoBold
+		val latoBlack = loritta.graphicsFonts.latoBlack
 
-		val whitneySemiBold38 = whitneySemiBold.deriveFont(38f)
-		val whitneyMedium22 = whitneySemiBold.deriveFont(22f)
-		val whitneyBold20 = whitneyBold.deriveFont(20f)
-		val whitneySemiBold20 = whitneySemiBold.deriveFont(20f)
+		val latoBold38 = latoBold.deriveFont(38f)
+		val latoRegular22 = latoBold.deriveFont(22f)
+		val latoBlack20 = latoBlack.deriveFont(20f)
+		val latoBold20 = latoBold.deriveFont(20f)
 
-		graphics.font = whitneySemiBold38
+		graphics.font = latoBold38
 
 		if (badges.isEmpty()) {
 			graphics.drawText(loritta, user.name, 139, 71, 517 - 6)
@@ -93,9 +87,9 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 
 		val globalPosition = ProfileUtils.getGlobalExperiencePosition(loritta, userProfile)
 		if (globalPosition != null)
-			drawSection(graphics, whitneyBold20, whitneySemiBold20, "Global", "#$globalPosition / ${userProfile.xp} XP", 562, 21)
+			drawSection(graphics, latoBlack20, latoBold20, "Global", "#$globalPosition / ${userProfile.xp} XP", 562, 21)
 		else
-			drawSection(graphics, whitneyBold20, whitneySemiBold20, "Global", "${userProfile.xp} XP", 562, 21)
+			drawSection(graphics, latoBlack20, latoBold20, "Global", "${userProfile.xp} XP", 562, 21)
 
 		if (guild != null) {
 			val guildIcon = LorittaUtils.downloadImage(loritta, guild.iconUrl?.replace("jpg", "png") ?: "https://emojipedia-us.s3.amazonaws.com/thumbs/320/google/56/shrug_1f937.png")!!.getScaledInstance(38, 38, BufferedImage.SCALE_SMOOTH)
@@ -106,9 +100,9 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 
 			val xpLocal = localProfile?.xp
 
-			graphics.font = whitneyBold20
+			graphics.font = latoBlack20
 			graphics.drawText(loritta, guild.name, 562, 61, 800 - 6)
-			graphics.font = whitneySemiBold20
+			graphics.font = latoBold20
 			if (xpLocal != null) {
 				if (localPosition != null) {
 					graphics.drawText(loritta, "#$localPosition / $xpLocal XP", 562, 78, 800 - 6)
@@ -124,25 +118,25 @@ class DefaultProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta,
 
 		val reputations = ProfileUtils.getReputationCount(loritta, user)
 
-		drawSection(graphics, whitneyBold20, whitneySemiBold20, "Reputação", "$reputations reps", 562, 102)
+		drawSection(graphics, latoBlack20, latoBold20, "Reputação", "$reputations reps", 562, 102)
 
 		val globalEconomyPosition = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
 		if (globalEconomyPosition != null)
-			drawSection(graphics, whitneyBold20, whitneySemiBold20, locale["economy.currency.name.plural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
+			drawSection(graphics, latoBlack20, latoBold20, locale["economy.currency.name.plural"], "#$globalEconomyPosition / ${userProfile.money}", 562, 492)
 		else
-			drawSection(graphics, whitneyBold20, whitneySemiBold20, locale["economy.currency.name.plural"], "${userProfile.money}", 562, 492)
+			drawSection(graphics, latoBlack20, latoBold20, locale["economy.currency.name.plural"], "${userProfile.money}", 562, 492)
 
 		ProfileUtils.getMarriageInfo(loritta, userProfile)?.let { (marriage, marriedWith) ->
 			val marrySection = readImage(File(LorittaBot.ASSETS, "profile/modern/marry.png"))
 			graphics.drawImage(marrySection, 0, 0, null)
 
-			drawSection(graphics, whitneyBold20, whitneySemiBold20, locale["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)
+			drawSection(graphics, latoBlack20, latoBold20, locale["profile.marriedWith"], marriedWith.name + "#" + marriedWith.discriminator, 562, 533)
 		}
 
-		graphics.font = whitneyMedium22
+		graphics.font = latoRegular22
 
-		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 6, 493, 517 - 6, 600, graphics.fontMetrics, graphics)
+		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 6, 493, 517 - 6, 600, allowedDiscordEmojis)
 
 		graphics.drawImage(profileWrapperOverlay, 0, 0, null)
 

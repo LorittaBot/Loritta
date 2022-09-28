@@ -56,7 +56,7 @@ class UndertaleProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritt
 
 		val biggestStrWidth = drawUserInfo(user, userProfile, guild, graphics)
 
-		ImageUtils.drawTextWrapSpaces(loritta, aboutMe, 56, 375, 751 - biggestStrWidth - 4, 600, graphics.fontMetrics, graphics)
+		drawAboutMeWrapSpaces(graphics, graphics.fontMetrics, aboutMe, 56, 375, 751 - biggestStrWidth - 4, 600, allowedDiscordEmojis)
 
 		return base.makeRoundedCorners(15)
 	}

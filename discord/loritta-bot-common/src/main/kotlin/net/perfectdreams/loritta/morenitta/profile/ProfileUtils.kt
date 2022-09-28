@@ -57,11 +57,10 @@ object ProfileUtils {
      * @return the user's current global position in the experience ranking
      */
     suspend fun getGlobalExperiencePosition(loritta: LorittaBot, userProfile: Profile) =
-            // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any XP, we just return null! :3
-            if (userProfile.xp >= 100_000L)
-                loritta.newSuspendedTransaction {
-                    Profiles.select { Profiles.xp greaterEq userProfile.xp }.count()
-                } else null
+        // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any XP, we just return null! :3
+        if (userProfile.xp >= 100_000L)
+            loritta.pudding.sonhos.getSonhosRankPositionBySonhos(userProfile.money)
+        else null
 
     /**
      * Gets the user's global position in the economy ranking
@@ -70,11 +69,11 @@ object ProfileUtils {
      * @return the user's current global position in the economy ranking
      */
     suspend fun getGlobalEconomyPosition(loritta: LorittaBot, userProfile: Profile) =
-            // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any sonhos, we just return null! :3
-            if (userProfile.money >= 100_000L)
-                loritta.newSuspendedTransaction {
-                    Profiles.select { Profiles.money greaterEq userProfile.money }.count()
-                } else null
+        // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any sonhos, we just return null! :3
+        if (userProfile.money >= 100_000L)
+            loritta.newSuspendedTransaction {
+                Profiles.select { Profiles.money greaterEq userProfile.money }.count()
+            } else null
 
     /**
      * Gets the user's local profile in the [guild] or null if the user does not have a profile in the guild
@@ -103,7 +102,7 @@ object ProfileUtils {
     }
 
     data class MarriageInfo(
-            val marriage: Marriage,
-            val partner: CachedUserInfo
+        val marriage: Marriage,
+        val partner: CachedUserInfo
     )
 }
