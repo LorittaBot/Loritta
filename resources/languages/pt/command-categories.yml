@@ -1,4 +1,3 @@
----
 #This file stores all the locales related to command categories (names and descriptions) and locale keys used by multiple commands in the category
 commands:
   category:
