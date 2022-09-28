@@ -1,19 +1,20 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = Versions.JVM_TARGET
-}
-
 plugins {
     java
     kotlin("jvm")
+    id("com.google.cloud.tools.jib") version libs.versions.jib
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions.jvmTarget = Versions.JVM_TARGET
 }
 
 dependencies {
     api(project(":common"))
     api(kotlin("stdlib-jdk8"))
     api("org.slf4j:slf4j-api:2.0.0-alpha0")
-    api("ch.qos.logback:logback-classic:1.3.0-alpha4")
+    api(libs.logback.classic)
     api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.2")
     api("com.github.ben-manes.caffeine:caffeine:2.7.0")
     api("io.ktor:ktor-server-core:${Versions.KTOR}")
@@ -40,6 +41,28 @@ tasks {
 
     "build" {
         dependsOn(fatJar)
+    }
+}
+
+jib {
+    container {
+        mainClass = "net.perfectdreams.loritta.shardcontroller"
+    }
+
+    to {
+        image = "ghcr.io/lorittabot/shard-controller"
+
+        auth {
+            username = System.getProperty("DOCKER_USERNAME") ?: System.getenv("DOCKER_USERNAME")
+            password = System.getProperty("DOCKER_PASSWORD") ?: System.getenv("DOCKER_PASSWORD")
+        }
+    }
+
+    from {
+        // This image comes from the "docker" folder Dockerfile!
+        // Don't forget to build the image before compiling!
+        // https://github.com/GoogleContainerTools/jib/issues/1468
+        image = "eclipse-temurin:18-focal"
     }
 }
 
