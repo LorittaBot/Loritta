@@ -1,4 +1,3 @@
----
 label: "rolar"
 description: "Rola um, ou múltiplos, dados e mostra o resultado, perfeito se você quiser jogar Monopoly mas você acabou perdendo todos os seus dados."
 howManySides: "Quantos lados o dado que eu irei rolar tem"
