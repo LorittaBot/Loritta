@@ -1,4 +1,3 @@
----
 label: "tristerealidade"
 description: "Cria uma triste realidade com os membros do seu servidor... É, nem sempre a gente sai ganhando."
 notEnoughUsers: "Não existem membros suficientes para fazer uma triste realidade, sorry ;w;"
@@ -33,8 +32,8 @@ slot:
       lovedGenderMale: "MELHOR AMIGO DELE"
       lovedGenderFemale: "MELHOR AMIGO DELA"
     female:
-      lovedGenderMale: "MELHOR AMIGA DELE"
-      lovedGenderFemale: "MELHOR AMIGA DELA"
+      lovedGenderMale: "MELHOR AMIGO DELE"
+      lovedGenderFemale: "MELHOR AMIGO DELA"
   you:
     male: "VOCÊ"
     female: "VOCÊ"
