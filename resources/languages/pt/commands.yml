@@ -1,4 +1,3 @@
----
 commands:
   errorWhileExecutingCommand: "Algo deu extremamente errado ao executar este comando... {loriRage} Desculpe pela inconveniência... {loriSob} Espero que este problema seja resolvido em breve! {stacktrace}"
   commandOnlyAvailableInGuilds: "Este comando só está disponível em um servidor! Se você realmente quiser usá-lo, por favor crie um servidor agradável e aconchegante, me adicione, e use o comando lá!"
