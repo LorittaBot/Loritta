@@ -147,7 +147,6 @@ class KordListener(
         }
 
         gateway.on<MessageCreate> {
-            error("Whoops")
             val event = m.eventFactory.createMessageReceived(gateway, this)
 
             forEachListeners(event, ListenerAdapter::onMessageReceived)
