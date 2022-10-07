@@ -84,7 +84,7 @@ class DeviousCacheManager(val m: JDA) {
         val channelsOfThisGuild = if (guildChannels != null) {
             m.loritta.redisConnection {
                 it.smembers(m.loritta.redisKeys.discordGuildChannels(data.id))
-            }
+            }.ifEmpty { null }
         } else null
 
         val rolesData = data.roles.map { DeviousRoleData.from(it) }
