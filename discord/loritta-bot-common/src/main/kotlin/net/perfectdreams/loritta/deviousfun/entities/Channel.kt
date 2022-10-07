@@ -213,7 +213,7 @@ class Channel(
         val webhook = jda.loritta.rest.webhook.createWebhook(channel.id, name) {}
         return Webhook(
             jda,
-            jda.retrieveChannelById(channel.id),
+            this,
             webhook.user.value?.let { jda.cacheManager.createUser(it, false) },
             jda.loritta.rest.webhook.createWebhook(channel.id, name) {}
         )
