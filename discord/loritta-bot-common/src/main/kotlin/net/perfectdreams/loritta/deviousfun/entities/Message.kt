@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.deviousfun.*
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMemberData
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
 import net.perfectdreams.loritta.deviousfun.cache.DeviousUserData
+import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
 import net.perfectdreams.loritta.morenitta.utils.MarkdownSanitizer
 
 class Message(
@@ -114,7 +115,7 @@ class Message(
         val fragmentData = message.referencedMessage ?: return null
 
         val retrievedMessage = jda.loritta.rest.channel.getMessage(channel.idSnowflake, Snowflake(id))
-        val user = jda.cacheManager.createUser(retrievedMessage.author, retrievedMessage.webhookId.value == null)
+        val user = jda.cacheManager.createUser(retrievedMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage))
         // The member seems to be null in a message reference
         val member = guildOrNull?.let { jda.retrieveMemberById(it, retrievedMessage.author.id) }
 

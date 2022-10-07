@@ -342,7 +342,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						return@launchMessageJob
 				}
 			} catch (e: Exception) {
-				logger.error("[${event.guild?.name}] Erro ao processar mensagem de ${event.author.name} (${event.author.id} - ${event.message.contentRaw}", e)
+				logger.error("[${event.guild?.name}] Erro ao processar mensagem de ${event.author.name} (${event.author.id}) - ${event.message.contentRaw}", e)
 			}
 		}
 	}

@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.deviousfun.events.message.update.MessageUpdateE
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.gateway.on
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
+import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
 import net.perfectdreams.loritta.morenitta.cache.decode
 import net.perfectdreams.loritta.morenitta.cache.encode
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
@@ -153,7 +154,7 @@ class KordListener(
         }
 
         gateway.on<MessageUpdate> {
-            val isWebhook = this.message.webhookId.value != null
+            val isWebhook = DeviousUserUtils.isSenderWebhookOrSpecial(this.message)
             val guildId = this.message.guildId.value
 
             val channel = m.retrieveChannelById(this.message.channelId)

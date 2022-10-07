@@ -26,6 +26,7 @@ import net.perfectdreams.loritta.deviousfun.JDA
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
 import net.perfectdreams.loritta.deviousfun.cache.DeviousChannelData
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
+import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
 import kotlin.math.ceil
 
 class Channel(
@@ -127,7 +128,7 @@ class Channel(
         // Yes, it needs to be from the channel, the ID from the newMessage is null
         // The author ID isn't null however
         val authorId = newMessage.author.id
-        val user = jda.cacheManager.createUser(newMessage.author, newMessage.webhookId.value == null)
+        val user = jda.cacheManager.createUser(newMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(newMessage))
         val member = guildOrNull?.let { jda.retrieveMemberById(it, authorId) }
 
         return Message(
@@ -143,7 +144,7 @@ class Channel(
     suspend fun retrieveMessageById(id: String): Message = retrieveMessageById(id.toLong())
     suspend fun retrieveMessageById(id: Long): Message {
         val retrievedMessage = jda.loritta.rest.channel.getMessage(channel.id, Snowflake(id))
-        val user = jda.cacheManager.createUser(retrievedMessage.author, retrievedMessage.webhookId.value == null)
+        val user = jda.cacheManager.createUser(retrievedMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage))
         val member = guildOrNull?.let { jda.retrieveMemberById(it, retrievedMessage.author.id) }
 
         return Message(

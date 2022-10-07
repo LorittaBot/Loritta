@@ -14,13 +14,14 @@ import net.perfectdreams.loritta.deviousfun.events.message.react.MessageReaction
 import net.perfectdreams.loritta.deviousfun.events.message.react.MessageReactionRemoveEvent
 import net.perfectdreams.loritta.deviousfun.events.message.update.MessageUpdateEvent
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
+import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
 
 /**
  * Creates Devious events based off Kord's gateway events
  */
 class DeviousEventFactory(val m: JDA) {
     suspend fun createMessageReceived(gateway: DeviousGateway, event: MessageCreate): MessageReceivedEvent {
-        val isWebhook = event.message.webhookId.value != null
+        val isWebhook = DeviousUserUtils.isSenderWebhookOrSpecial(event.message)
         val guildId = event.message.guildId.value
 
         val channel = m.retrieveChannelById(event.message.channelId)

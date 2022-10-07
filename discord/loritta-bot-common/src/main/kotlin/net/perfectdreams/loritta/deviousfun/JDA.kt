@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.deviousfun
 
+import dev.kord.common.entity.DiscordPartialMessage
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.json.JsonErrorCode
 import dev.kord.rest.request.KtorRequestException
@@ -186,6 +187,7 @@ class JDA(val loritta: LorittaBot) {
             throw e
         }
     }
+
 
     private class FakeExceptionForContextException(override val message: String) : Exception()
 }

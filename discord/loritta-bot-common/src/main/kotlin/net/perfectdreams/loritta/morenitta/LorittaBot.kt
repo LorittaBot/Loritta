@@ -1117,9 +1117,9 @@ class LorittaBot(
 		val coroutineName = when (event) {
 			is MessageReceivedEvent -> {
 				if (event.guild != null)
-					"Message ${event.message} by user ${event.author} in ${event.channel} on ${event.guild}"
+					"Message ${event.message.idSnowflake} by user ${event.author.idSnowflake} in channel ${event.channel.idSnowflake} on guild ${event.guild.idSnowflake}"
 				else
-					"Message ${event.message} by user ${event.author} in ${event.channel}"
+					"Message ${event.message.idSnowflake} by user ${event.author.idSnowflake} in channel ${event.channel.idSnowflake}"
 			}
 			else -> throw IllegalArgumentException("You can't dispatch a $event in a launchMessageJob!")
 		}
