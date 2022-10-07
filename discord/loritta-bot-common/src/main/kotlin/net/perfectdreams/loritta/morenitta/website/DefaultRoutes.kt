@@ -21,15 +21,12 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.GetLori
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.PostBundlesRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.PostBuyDailyShopItemRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.economy.PostTransferBalanceExternalRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.GetGuildInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.GetGuildWebAuditLogRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.GetMembersWithPermissionsInGuildRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.GetMembersWithRolesInGuildRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.GetServerConfigRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.GetServerConfigSectionRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PatchServerConfigRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostObsoleteServerConfigRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostSearchGuildsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild.PostSendMessageGuildRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetAvailableBackgroundsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.GetAvailableProfileDesignsRoute
@@ -45,11 +42,9 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostLor
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostRaffleStatusRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostReputationMessageRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostTransferBalanceRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostUpdateReadyRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta.PostUpdateUserBackgroundRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.twitch.GetTwitchInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.twitter.GetShowTwitterUserRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.GetMutualGuildsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.GetSelfInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.GetSelfUserProfileRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.GetUserReputationsRoute
@@ -57,7 +52,6 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PatchProfi
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostDeleteDataRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostDonationPaymentRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostLogoutRoute
-import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostSearchUsersRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostUserReputationsRoute
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.youtube.GetChannelInfoRoute
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.DashboardRoute
@@ -160,14 +154,11 @@ object DefaultRoutes {
 		PostBuyDailyShopItemRoute(loritta),
 
 		// Guild
-		GetGuildInfoRoute(loritta),
 		GetGuildWebAuditLogRoute(loritta),
-		GetMembersWithPermissionsInGuildRoute(loritta),
 		GetMembersWithRolesInGuildRoute(loritta),
 		GetServerConfigRoute(loritta, website),
 		PatchServerConfigRoute(loritta, website),
 		PostObsoleteServerConfigRoute(loritta),
-		PostSearchGuildsRoute(loritta),
 		PostSendMessageGuildRoute(loritta),
 		GetServerConfigSectionRoute(loritta, website),
 
@@ -186,7 +177,6 @@ object DefaultRoutes {
 		PostRaffleStatusRoute(loritta),
 		PostReputationMessageRoute(loritta),
 		PostTransferBalanceRoute(loritta),
-		PostUpdateReadyRoute(loritta),
 		PostUpdateUserBackgroundRoute(loritta),
 		PostErrorRoute(loritta),
 
@@ -197,12 +187,10 @@ object DefaultRoutes {
 		GetShowTwitterUserRoute(loritta),
 
 		// User
-		GetMutualGuildsRoute(loritta),
 		GetSelfInfoRoute(loritta),
 		GetUserReputationsRoute(loritta),
 		PatchProfileRoute(loritta),
 		PostDonationPaymentRoute(loritta),
-		PostSearchUsersRoute(loritta),
 		PostUserReputationsRoute(loritta),
 		PostLogoutRoute(loritta),
 		PostDeleteDataRoute(loritta),

@@ -2,25 +2,26 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
 import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.string
+import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.edit
-import net.perfectdreams.loritta.morenitta.utils.extensions.localized
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.entities.Member
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.DeviousEmbed
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.UserFlagBadgeEmotes.getBadges
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -81,7 +82,7 @@ class UserInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "userinfo"
 
 			// If the title contains more than the maximum length, move them to a field
 			// ID that has issues: 53905483156684800
-			if (title.length > MessageEmbed.TITLE_MAX_LENGTH) {
+			if (title.length > DeviousEmbed.TITLE_MAX_LENGTH) {
 				title = "$ownerEmote$typeEmote $nickname"
 				addBadgesToField = true
 			}
@@ -157,8 +158,9 @@ class UserInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "userinfo"
 				val roles = member.roles.joinToString(separator = ", ", transform = { "`${it.name}`" })
 				addField("\uD83D\uDCBC " + context.locale["commands.command.userinfo.roles"] + " (${member.roles.size})", if (roles.isNotEmpty()) roles.substringIfNeeded(0 until 1024) else context.locale["commands.command.userinfo.noRoles"] + " \uD83D\uDE2D", true)
 
-				val permissions = member.getPermissions(context.message.textChannel).joinToString(", ", transform = { "`${it.localized(context.locale)}`" })
-				addField("\uD83D\uDEE1 Permissões", permissions, false)
+				// TODO - DeviousFun
+				val permissions = member.getPermissions(context.message.textChannel).values.toLocalized()?.joinToString(", ", transform = { "`${context.i18nContext.get(it)}`" })
+				addField("\uD83D\uDEE1 Permissões", permissions ?: "", false)
 			}
 		}
 
@@ -170,5 +172,4 @@ class UserInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "userinfo"
 		_message.addReaction("◀").queue()
 		return _message
 	}
-
 }

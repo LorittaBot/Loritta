@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
-import net.dv8tion.jda.api.Permission
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -12,6 +12,7 @@ class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }
+
     override fun command() = create {
         localizedDescription("$LOCALE_PREFIX.renamechannel.description")
         localizedExamples("$LOCALE_PREFIX.renamechannel.examples")
@@ -25,8 +26,8 @@ class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
 
         canUseInPrivateChannel = false
 
-        botRequiredPermissions = listOf(Permission.MANAGE_CHANNEL)
-        userRequiredPermissions = listOf(Permission.MANAGE_CHANNEL)
+        botRequiredPermissions = listOf(Permission.ManageChannels)
+        userRequiredPermissions = listOf(Permission.ManageChannels)
 
         executesDiscord {
             val context = this
@@ -38,16 +39,13 @@ class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
 
             if (textChannel == null && voiceChannel == null) {
                 context.reply(
-                        LorittaReply(
-                                context.locale["$LOCALE_PREFIX.renamechannel.channelNotFound"],
-                                Constants.ERROR
-                        )
+                    LorittaReply(
+                        context.locale["$LOCALE_PREFIX.renamechannel.channelNotFound"],
+                        Constants.ERROR
+                    )
                 )
                 return@executesDiscord
             }
-
-            val textChannelManager = textChannel?.manager
-            val voiceChannelManager = voiceChannel?.manager
 
             val newNameArguments = args.drop(1)
             val toRename = newNameArguments.joinToString(" ")
@@ -56,8 +54,10 @@ class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
                     .replace("(\\s&\\s|&)".toRegex(), "＆")
                     .replace("[\\s]".toRegex(), "-")
             try {
-                if (textChannel != null && voiceChannel == null) {
-                    textChannelManager?.setName(toRename)?.queue()
+                if (textChannel != null) {
+                    textChannel.modifyTextChannel {
+                        name = toRename
+                    }
 
                     context.reply(
                             LorittaReply(
@@ -65,8 +65,10 @@ class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
                                     "\uD83C\uDF89"
                             )
                     )
-                } else if (voiceChannel != null && textChannel == null) {
-                    voiceChannelManager?.setName(args.drop(1).joinToString(" ").trim())?.queue()
+                } else if (voiceChannel != null) {
+                    voiceChannel.modifyVoiceChannel {
+                        name = args.drop(1).joinToString(" ").trim()
+                    }
 
                     context.reply(
                             LorittaReply(

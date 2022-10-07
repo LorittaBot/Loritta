@@ -17,20 +17,16 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.events.guild.GuildBanEvent
-import net.dv8tion.jda.api.events.guild.GuildUnbanEvent
-import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent
-import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
-import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
-import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.EventLogConfigs
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.common.utils.DateUtils
+import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageBulkDeleteEvent
+import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageDeleteEvent
+import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
-import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -56,7 +52,8 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				.build<String, Boolean>()
 	}
 
-	override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
+	// TODO - DeviousFun
+	/* override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -125,13 +122,13 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 							val textChannel = guild.getTextChannelById(eventLogChannelId)
 
 							if (textChannel != null && textChannel.canTalk()) {
-								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_EMBED_LINKS))
+								if (!guild.retrieveSelfMember().hasPermission(textChannel, Permission.EmbedLinks))
 									return@forEach
-								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_ATTACH_FILES))
+								if (!guild.retrieveSelfMember().hasPermission(textChannel, Permission.AttachFiles))
 									return@forEach
-								if (!guild.selfMember.hasPermission(textChannel, Permission.VIEW_CHANNEL))
+								if (!guild.retrieveSelfMember().hasPermission(textChannel, Permission.ViewChannel))
 									return@forEach
-								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_READ))
+								if (!guild.retrieveSelfMember().hasPermission(textChannel, Permission.ReadMessageHistory))
 									return@forEach
 
 								val embed = WebhookEmbedBuilder()
@@ -164,10 +161,12 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				downloadedAvatarJobs.remove(event.entity.id)
 			}
 		}
-	}
+	} */
 
 	// Mensagens
-	override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
+	override fun onMessageDelete(event: MessageDeleteEvent) {
+		val guild = event.guild ?: return
+
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -181,11 +180,11 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
 					return@launch
 
 				if (textChannel != null && textChannel.canTalk()) {
@@ -214,9 +213,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						EventLog.sendMessageInEventLogViaWebhook(
 							loritta,
 							WebhookMessageBuilder()
-								.setUsername(event.guild.selfMember.user.name)
+								.setUsername(event.guild.retrieveSelfMember().user.name)
 								.setContent(" ")
-								.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+								.setAvatarUrl(event.guild.retrieveSelfMember().user.effectiveAvatarUrl)
 								.addEmbeds(embed.build())
 								.build(),
 							event.guild,
@@ -234,6 +233,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 	}
 
 	override fun onMessageBulkDelete(event: MessageBulkDeleteEvent) {
+		if (event.guild == null)
+			return
+
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -247,11 +249,11 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 			if (eventLogConfig.enabled && eventLogConfig.messageDeleted) {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId)
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
 					return@launch
 
 				if (textChannel != null && textChannel.canTalk()) {
@@ -298,9 +300,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 						EventLog.sendMessageInEventLogViaWebhook(
 							loritta,
 							WebhookMessageBuilder()
-								.setUsername(event.guild.selfMember.user.name)
+								.setUsername(event.guild.retrieveSelfMember().user.name)
 								.setContent(" ")
-								.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+								.setAvatarUrl(event.guild.retrieveSelfMember().user.effectiveAvatarUrl)
 								.addEmbeds(embed.build())
 								.addFile("deleted-${event.guild.name}-$channelName-${DateUtils.PRETTY_FILE_SAFE_UNDERSCORE_DATE_FORMAT.format(Instant.now())}.log", targetStream)
 								.build(),
@@ -318,7 +320,8 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		}
 	}
 
-	override fun onGuildBan(event: GuildBanEvent) {
+	// TODO - DeviousFun
+	/* override fun onGuildBan(event: GuildBanEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -337,11 +340,11 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 				if (!textChannel.canTalk())
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
 					return@launch
 
 				val embed = WebhookEmbedBuilder()
@@ -357,9 +360,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				EventLog.sendMessageInEventLogViaWebhook(
 					loritta,
 					WebhookMessageBuilder()
-						.setUsername(event.guild.selfMember.user.name)
+						.setUsername(event.guild.retrieveSelfMember().user.name)
 						.setContent(" ")
-						.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+						.setAvatarUrl(event.guild.retrieveSelfMember().user.effectiveAvatarUrl)
 						.addEmbeds(embed.build())
 						.build(),
 					event.guild,
@@ -398,11 +401,11 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
 					return@launch
 
 				val embed = WebhookEmbedBuilder()
@@ -418,9 +421,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				EventLog.sendMessageInEventLogViaWebhook(
 					loritta,
 					WebhookMessageBuilder()
-						.setUsername(event.guild.selfMember.user.name)
+						.setUsername(event.guild.retrieveSelfMember().user.name)
 						.setContent(" ")
-						.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+						.setAvatarUrl(event.guild.retrieveSelfMember().user.effectiveAvatarUrl)
 						.addEmbeds(embed.build())
 						.build(),
 					event.guild,
@@ -453,11 +456,11 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				val textChannel = event.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return@launch
 				if (!textChannel.canTalk())
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+				if (!event.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
 					return@launch
 
 				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["modules.eventLog.noNickname"]}" else event.oldNickname
@@ -469,9 +472,9 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				EventLog.sendMessageInEventLogViaWebhook(
 					loritta,
 					WebhookMessageBuilder()
-						.setUsername(event.guild.selfMember.user.name)
+						.setUsername(event.guild.retrieveSelfMember().user.name)
 						.setContent(" ")
-						.setAvatarUrl(event.guild.selfMember.user.effectiveAvatarUrl)
+						.setAvatarUrl(event.guild.retrieveSelfMember().user.effectiveAvatarUrl)
 						.addEmbeds(embed.build())
 						.build(),
 					event.guild,
@@ -480,5 +483,5 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				return@launch
 			}
 		}
-	}
+	} */
 }

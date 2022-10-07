@@ -1,21 +1,19 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands
 
 import com.github.kevinsawicki.http.HttpRequest
+import dev.kord.common.entity.AllowedMentionType
+import dev.kord.common.entity.ChannelType
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.localized
-import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.*
-import net.dv8tion.jda.api.exceptions.PermissionException
+import dev.kord.common.entity.Permission
+import dev.kord.common.entity.optional.value
+import dev.kord.rest.request.KtorRequestException
+import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 import net.perfectdreams.loritta.morenitta.api.commands.Command
-import net.perfectdreams.loritta.morenitta.messages.LorittaMessage
 import net.perfectdreams.loritta.common.utils.image.Image
 import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -26,6 +24,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.*
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import org.jsoup.Jsoup
@@ -44,17 +43,16 @@ class DiscordCommandContext(
 	val lorittaUser: LorittaUser,
 	val executedCommandLabel: String
 ) : CommandContext(loritta, command, args, DiscordMessage(discordMessage), locale, i18nContext) {
-	val isPrivateChannel = discordMessage.channelType == ChannelType.PRIVATE
+	val isPrivateChannel = discordMessage.channelType == ChannelType.DM
 	val guild: Guild
-		get() = discordMessage.guild
+		get() = discordMessage.guild!! // TODO - DeviousFun (it wasn't nullable before)
 	val user = discordMessage.author
 	val member = discordMessage.member
 
-	suspend fun sendMessage(message: String, embed: MessageEmbed): Message {
+	suspend fun sendMessage(message: String, embed: DeviousEmbed): Message {
 		return sendMessage(MessageBuilder()
 			.denyMentions(
-				Message.MentionType.EVERYONE,
-				Message.MentionType.HERE
+				AllowedMentionType.EveryoneMentions
 			)
 			.setEmbed(embed)
 			.append(if (message.isEmpty()) " " else message)
@@ -62,11 +60,10 @@ class DiscordCommandContext(
 		)
 	}
 
-	suspend fun sendMessage(embed: MessageEmbed): Message {
+	suspend fun sendMessage(embed: DeviousEmbed): Message {
 		return sendMessage(MessageBuilder()
 			.denyMentions(
-				Message.MentionType.EVERYONE,
-				Message.MentionType.HERE
+				AllowedMentionType.EveryoneMentions
 			)
 			.append(getUserMention(true))
 			.setEmbed(embed)
@@ -74,11 +71,13 @@ class DiscordCommandContext(
 		)
 	}
 
-	suspend fun sendMessage(message: Message): Message {
+	suspend fun sendMessage(message: DeviousMessage): Message {
 		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
-			return discordMessage.channel.sendMessage(message)
-				.referenceIfPossible(discordMessage, serverConfig, true)
-				.await()
+			return discordMessage.channel.sendMessage(
+				MessageBuilder(message)
+					.referenceIfPossible(discordMessage, serverConfig, true)
+					.build()
+			).await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
@@ -86,54 +85,56 @@ class DiscordCommandContext(
 
 	override suspend fun sendImage(image: Image, fileName: String, content: String): net.perfectdreams.loritta.morenitta.api.entities.Message {
 		return DiscordMessage(
-			discordMessage.channel.sendMessage(LorittaMessage(content).content)
-				.addFile(image.toByteArray(), fileName)
-				.referenceIfPossible(discordMessage, serverConfig, true)
-				.await()
+			discordMessage.channel.sendMessage(
+				MessageBuilder(content)
+					.addFile(image.toByteArray(), fileName)
+					.referenceIfPossible(discordMessage, serverConfig, true)
+					.build()
+			).await()
 		)
 	}
 
 	override suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String): net.perfectdreams.loritta.morenitta.api.entities.Message {
 		return DiscordMessage(
-			discordMessage.channel.sendMessage(LorittaMessage(content).content)
-				.addFile(byteArray, fileName)
-				.referenceIfPossible(discordMessage, serverConfig, true)
-				.await()
+			discordMessage.channel.sendMessage(
+				MessageBuilder(content)
+					.addFile(byteArray, fileName)
+					.referenceIfPossible(discordMessage, serverConfig, true)
+					.build()
+			)
 		)
 	}
 
-	suspend fun sendFile(file: File, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
+	suspend fun sendFile(file: File, fileName: String, content: String = this.getUserMention(true), embed: DeviousEmbed? = null): DiscordMessage {
 		return DiscordMessage(
 			discordMessage.channel.sendMessage(
 				MessageBuilder()
 					.denyMentions(
-						Message.MentionType.EVERYONE,
-						Message.MentionType.HERE
+						AllowedMentionType.EveryoneMentions
 					)
 					.append(content)
 					.setEmbed(embed)
+					.addFile(file, fileName)
+					.referenceIfPossible(discordMessage, serverConfig, true)
 					.build()
-			)
-				.addFile(file, fileName)
-				.referenceIfPossible(discordMessage, serverConfig, true)
-				.await()
+			).await()
 		)
 	}
 
-	suspend fun sendFile(inputStream: InputStream, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
-		return DiscordMessage(discordMessage.channel.sendMessage(
-			MessageBuilder()
-				.denyMentions(
-					Message.MentionType.EVERYONE,
-					Message.MentionType.HERE
-				)
-				.append(content)
-				.setEmbed(embed)
-				.build()
-		)
-			.addFile(inputStream, fileName)
-			.referenceIfPossible(discordMessage, serverConfig, true)
-			.await()
+	suspend fun sendFile(inputStream: InputStream, fileName: String, content: String = this.getUserMention(true), embed: DeviousEmbed? = null): DiscordMessage {
+		return DiscordMessage(
+			discordMessage.channel.sendMessage(
+				MessageBuilder()
+					.denyMentions(
+						AllowedMentionType.EveryoneMentions
+					)
+					.append(content)
+					.setEmbed(embed)
+					.addFile(inputStream.readAllBytes(), fileName)
+					.referenceIfPossible(discordMessage, serverConfig, true)
+					.build()
+			)
+				.await()
 		)
 	}
 
@@ -200,8 +201,8 @@ class DiscordCommandContext(
 		}
 
 		// Nothing found? Try retrieving the replied message content
-		if (!this.isPrivateChannel && this.guild.selfMember.hasPermission(this.discordMessage.textChannel, Permission.MESSAGE_HISTORY)) {
-			val referencedMessage = discordMessage.referencedMessage
+		if (!this.isPrivateChannel && this.guild.selfMemberHasPermission(this.discordMessage.textChannel, Permission.ReadMessageHistory)) {
+			val referencedMessage = discordMessage.retrieveReferencedMessage()
 			if (referencedMessage != null) {
 				for (embed in referencedMessage.embeds) {
 					if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!))
@@ -215,12 +216,13 @@ class DiscordCommandContext(
 		}
 
 		// Still nothing valid? You know what? I give up! Let's search old messages from this server & embeds to find attachments...
-		if (searchPreviousMessages > 0 && !this.isPrivateChannel && guild.selfMember.hasPermission(discordMessage.channel as TextChannel, Permission.MESSAGE_HISTORY)) {
-			val textChannel = discordMessage.channel as TextChannel
+		if (searchPreviousMessages > 0 && !this.isPrivateChannel && guild.selfMemberHasPermission(discordMessage.channel, Permission.ReadMessageHistory)) {
+			val textChannel = discordMessage.channel
 			try {
-				val message = textChannel.history.retrievePast(searchPreviousMessages).await()
+				// TODO - DeviousFun
+				val messages = textChannel.history.retrievePast(searchPreviousMessages).await()
 
-				attach@ for (msg in message) {
+				attach@ for (msg in messages) {
 					for (embed in msg.embeds) {
 						if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!))
 							return embed.image!!.url
@@ -230,7 +232,7 @@ class DiscordCommandContext(
 							return attachment.url
 					}
 				}
-			} catch (e: PermissionException) {
+			} catch (e: KtorRequestException) {
 			}
 		}
 
@@ -264,7 +266,7 @@ class DiscordCommandContext(
 		}
 	}
 
-	fun textChannel(argument: Int): TextChannel? {
+	fun textChannel(argument: Int): Channel? {
 		val channelId = args.getOrNull(argument)
 			?.replace("<#", "")
 			?.replace(">", "")
@@ -284,7 +286,7 @@ class DiscordCommandContext(
 		}
 	}
 
-	fun voiceChannel(argument: Int): VoiceChannel? {
+	fun voiceChannel(argument: Int): Channel? {
 		val channelId = args.getOrNull(argument)
 			?.replace("<#", "")
 			?.replace(">", "")
@@ -324,20 +326,12 @@ class DiscordCommandContext(
 		}
 	}
 
-	fun emote(argument: Int): Emote? {
+	fun emote(argument: Int): DiscordGuildEmote? {
 		val regexEmote = Regex("(<)|[a-z]|(_)|(:)|(>)")
 		val emoteId = args.getOrNull(argument)?.let { regexEmote.replace(it, "") }
 
 		return if (emoteId?.isValidSnowflake()!!) {
 			guild.getEmoteById(emoteId)
-		} else {
-			null
-		} ?: if (guild.getEmotesByName(args[0], true).isNotEmpty()) {
-			guild.getEmotesByName(args[0], true).first()
-		} else {
-			null
-		} ?: if (guild.emotes.filter { it.name == args[0] }.isNotEmpty()) {
-			guild.emotes.filter { it.name == args[0] }.first()
 		} else {
 			null
 		}
@@ -355,7 +349,7 @@ class DiscordCommandContext(
 
 		val embed = EmbedBuilder()
 			.setColor(Constants.LORITTA_AQUA)
-			.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.config.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
+			.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.config.loritta.website.url}commands", discordMessage.jda.retrieveSelfUser().effectiveAvatarUrl)
 			.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
 			.setFooter("${user.name + "#" + user.discriminator} • ${command.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
 			.setTimestamp(Instant.now())
@@ -457,10 +451,10 @@ class DiscordCommandContext(
 			if (command.botRequiredPermissions.isNotEmpty() || command.userRequiredPermissions.isNotEmpty()) {
 				var field = ""
 				if (command.userRequiredPermissions.isNotEmpty()) {
-					field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", command.userRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+					field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", command.userRequiredPermissions.toSet().toLocalized()?.joinToString(", ", transform = { "`${i18nContext.get(it)}`" })]}\n"
 				}
 				if (command.botRequiredPermissions.isNotEmpty()) {
-					field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.botRequiredPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+					field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", command.botRequiredPermissions.toSet().toLocalized()?.joinToString(", ", transform = { "`${i18nContext.get(it)}`" })]}\n"
 				}
 				embed.addField(
 					"\uD83D\uDCDB ${locale["commands.explain.permissions"]}",
@@ -494,14 +488,15 @@ class DiscordCommandContext(
 
 		val messageBuilder = MessageBuilder()
 			.denyMentions(
-				Message.MentionType.EVERYONE,
-				Message.MentionType.HERE
+				AllowedMentionType.EveryoneMentions
 			)
 			.append(getUserMention(true))
 			.setEmbed(embed.build())
 
-		discordMessage.channel.sendMessage(messageBuilder.build())
-			.referenceIfPossible(discordMessage, serverConfig, true)
-			.await()
+		discordMessage.channel.sendMessage(
+			messageBuilder
+				.referenceIfPossible(discordMessage, serverConfig, true)
+				.build()
+		).await()
 	}
 }

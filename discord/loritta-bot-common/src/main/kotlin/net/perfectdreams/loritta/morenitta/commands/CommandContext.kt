@@ -3,24 +3,22 @@ package net.perfectdreams.loritta.morenitta.commands
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.send.WebhookMessage
 import com.github.kevinsawicki.http.HttpRequest
+import dev.kord.common.entity.AllowedMentionType
+import dev.kord.common.entity.ChannelType
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.*
-import net.dv8tion.jda.api.exceptions.PermissionException
+import dev.kord.common.entity.Permission
+import dev.kord.rest.request.KtorRequestException
+import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.deviousfun.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.extensions.build
-import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -48,7 +46,7 @@ class CommandContext(
 	var metadata = HashMap<String, Any>()
 
 	val isPrivateChannel: Boolean
-		get() = event.isFromType(ChannelType.PRIVATE)
+		get() = event.isFromType(ChannelType.DM)
 
 	val message: Message
 		get() = event.message
@@ -81,7 +79,7 @@ class CommandContext(
 	/**
 	 * Verifica se o usuário tem permissão para utilizar um comando
 	 */
-	fun canUseCommand(): Boolean {
+	suspend fun canUseCommand(): Boolean {
 		return lorittaUser.canUseCommand(this)
 	}
 
@@ -126,8 +124,7 @@ class CommandContext(
 	suspend fun sendMessage(message: String, addInlineReply: Boolean = true): Message {
 		return sendMessage(MessageBuilder()
 			.denyMentions(
-				Message.MentionType.EVERYONE,
-				Message.MentionType.HERE
+				AllowedMentionType.EveryoneMentions
 			)
 			.append(if (message.isEmpty()) " " else message)
 			.build(),
@@ -135,11 +132,10 @@ class CommandContext(
 		)
 	}
 
-	suspend fun sendMessage(message: String, embed: MessageEmbed, addInlineReply: Boolean = true): Message {
+	suspend fun sendMessage(message: String, embed: DeviousEmbed, addInlineReply: Boolean = true): Message {
 		return sendMessage(MessageBuilder()
 			.denyMentions(
-				Message.MentionType.EVERYONE,
-				Message.MentionType.HERE
+				AllowedMentionType.EveryoneMentions
 			)
 			.setEmbed(embed)
 			.append(if (message.isEmpty()) " " else message)
@@ -148,12 +144,11 @@ class CommandContext(
 		)
 	}
 
-	suspend fun sendMessage(embed: MessageEmbed, addInlineReply: Boolean = true): Message {
+	suspend fun sendMessage(embed: DeviousEmbed, addInlineReply: Boolean = true): Message {
 		return sendMessage(
 			MessageBuilder()
 				.denyMentions(
-					Message.MentionType.EVERYONE,
-					Message.MentionType.HERE
+					AllowedMentionType.EveryoneMentions
 				)
 				.append(getAsMention(true))
 				.setEmbed(embed)
@@ -161,11 +156,13 @@ class CommandContext(
 			addInlineReply = addInlineReply)
 	}
 
-	suspend fun sendMessage(message: Message, addInlineReply: Boolean = true): Message {
+	suspend fun sendMessage(message: DeviousMessage, addInlineReply: Boolean = true): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
-			return event.channel.sendMessage(message)
-				.referenceIfPossible(event.message, config, addInlineReply)
-				.await()
+			return event.channel.sendMessage(
+				MessageBuilder(message)
+					.referenceIfPossible(event.message, config, addInlineReply)
+					.build()
+			).await()
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
@@ -184,29 +181,28 @@ class CommandContext(
 		}
 	}
 
-	suspend fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null): Message {
+	suspend fun sendFile(file: File, name: String, message: String, embed: DeviousEmbed? = null): Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 			.denyMentions(
-				Message.MentionType.EVERYONE,
-				Message.MentionType.HERE
+				AllowedMentionType.EveryoneMentions
 			)
-		builder.append(if (message.isEmpty()) " " else message)
+		builder.append(message.ifEmpty { " " })
 		if (embed != null)
 			builder.setEmbed(embed)
 		return sendFile(file, name, builder.build())
 	}
 
-	suspend fun sendFile(file: File, name: String, message: Message): Message {
+	suspend fun sendFile(file: File, name: String, message: DeviousMessage): Message {
 		val inputStream = file.inputStream()
 		return sendFile(inputStream, name, message)
 	}
 
-	suspend fun sendFile(image: BufferedImage, name: String, embed: MessageEmbed): Message {
+	suspend fun sendFile(image: BufferedImage, name: String, embed: DeviousEmbed): Message {
 		return sendFile(image, name, "", embed)
 	}
 
-	suspend fun sendFile(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null): Message {
+	suspend fun sendFile(image: BufferedImage, name: String, message: String, embed: DeviousEmbed? = null): Message {
 		val builder = MessageBuilder()
 		builder.append(if (message.isEmpty()) " " else message)
 		if (embed != null)
@@ -215,7 +211,7 @@ class CommandContext(
 		return sendFile(image, name, builder.build())
 	}
 
-	suspend fun sendFile(image: BufferedImage, name: String, message: Message): Message {
+	suspend fun sendFile(image: BufferedImage, name: String, message: DeviousMessage): Message {
 		val output = ByteArrayOutputStream()
 
 		ImageIO.write(image, "png", output)
@@ -232,16 +228,15 @@ class CommandContext(
 		return sendFile(inputStream, name, builder.build())
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, embed: MessageEmbed): Message {
+	suspend fun sendFile(inputStream: InputStream, name: String, embed: DeviousEmbed): Message {
 		return sendFile(inputStream, name, "", embed)
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null): Message {
+	suspend fun sendFile(inputStream: InputStream, name: String, message: String, embed: DeviousEmbed? = null): Message {
 		// Corrigir erro ao construir uma mensagem vazia
 		val builder = MessageBuilder()
 			.denyMentions(
-				Message.MentionType.EVERYONE,
-				Message.MentionType.HERE
+				AllowedMentionType.EveryoneMentions
 			)
 		builder.append(if (message.isEmpty()) " " else message)
 		if (embed != null)
@@ -249,12 +244,14 @@ class CommandContext(
 		return sendFile(inputStream, name, builder.build())
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
+	suspend fun sendFile(inputStream: InputStream, name: String, message: DeviousMessage): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
-			val sentMessage = event.channel.sendMessage(message)
-				.addFile(inputStream, name)
-				.referenceIfPossible(event.message, config, true)
-				.await()
+			val sentMessage = event.channel.sendMessage(
+				MessageBuilder(message)
+					.addFile(inputStream.readAllBytes(), name)
+					.referenceIfPossible(event.message, config, true)
+					.build()
+			).await()
 			return sentMessage
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -329,8 +326,8 @@ class CommandContext(
 		}
 
 		// Nothing found? Try retrieving the replied message content
-		if (!this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.textChannel!!, Permission.MESSAGE_HISTORY)) {
-			val referencedMessage = message.referencedMessage
+		if (!this.isPrivateChannel && this.guild.selfMemberHasPermission(this.event.textChannel!!, Permission.ReadMessageHistory)) {
+			val referencedMessage = message.retrieveReferencedMessage()
 			if (referencedMessage != null) {
 				for (embed in referencedMessage.embeds) {
 					if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!))
@@ -344,11 +341,11 @@ class CommandContext(
 		}
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-		if (search > 0 && !this.isPrivateChannel && this.guild.selfMember.hasPermission(this.event.textChannel!!, Permission.MESSAGE_HISTORY)) {
+		if (search > 0 && !this.isPrivateChannel && this.guild.selfMemberHasPermission(this.event.textChannel!!, Permission.ReadMessageHistory)) {
 			try {
-				val message = this.message.channel.history.retrievePast(search).await()
+				val messages = this.message.channel.history.retrievePast(search).await()
 
-				attach@ for (msg in message) {
+				attach@ for (msg in messages) {
 					for (embed in msg.embeds) {
 						if (embed.image != null && loritta.connectionManager.isTrusted(embed.image!!.url!!)) {
 							return embed.image!!.url
@@ -360,7 +357,8 @@ class CommandContext(
 						}
 					}
 				}
-			} catch (e: PermissionException) {
+			} catch (e: KtorRequestException) {
+				// PermissionException - Missing permission
 			}
 
 		}

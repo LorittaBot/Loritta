@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.morenitta.utils.debug
 
 import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
-import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
 import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.io.File
@@ -45,8 +45,8 @@ object DebugLog {
 		logger.info("Total Memory:" + runtime.totalMemory() / mb)
 		logger.info("Max Memory:" + runtime.maxMemory() / mb)
 		logger.info("coroutineExecutor: ${(loritta.coroutineExecutor as ThreadPoolExecutor).activeCount}")
-		logger.info("Pending Requests: ${loritta.rateLimitChecker.getAllPendingRequests().size}")
-		logger.info("Global Rate Limit Hits in the last 10m: ${loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute()} / ${loritta.config.loritta.discord.requestLimiter.maxRequestsPer10Minutes}")
+		// TODO - DeviousFun
+		// logger.info("Global Rate Limit Hits in the last 10m: ${loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute()} / ${loritta.config.loritta.discord.requestLimiter.maxRequestsPer10Minutes}")
 		logger.info("> Command Stuff")
 		logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
 		logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")
@@ -56,12 +56,10 @@ object DebugLog {
 		logger.info("loritta.twitch.cachedGames: ${loritta.twitch.cachedGames.size}")
 		logger.info("loritta.twitch.cachedStreamerInfo: ${loritta.twitch.cachedStreamerInfo.size}")
 		logger.info("gameInfoCache.size: ${loritta.twitch.cachedGames.size}")
-		logger.info("> Invite Stuff")
-		logger.info("cachedInviteLinks.size: ${InviteLinkModule.cachedInviteLinks.size}")
 		logger.info("> Misc Stuff")
 		logger.info("fanArts.size: ${loritta.fanArts.size}")
 		logger.info("eventLogListener.downloadedAvatarJobs: ${EventLogListener.downloadedAvatarJobs}")
-		logger.info("Cached Retrieved Users: ${loritta.lorittaShards.cachedRetrievedUsers.size()}")
+		// TODO - DeviousFun
 		logger.info("> Executors")
 
 		val pendingMessagesSize = loritta.pendingMessages.size
@@ -96,23 +94,30 @@ object DebugLog {
 				println("Cancel all events: $cancelAllEvents")
 			}
 			"info" -> {
-				val mb = 1024 * 1024
-				val runtime = Runtime.getRuntime()
-				println("===[ INFO ]===")
-				println("Shards: ${loritta.lorittaShards.getShards().size}")
-				println("Total Servers: ${loritta.lorittaShards.getGuildCount()}")
-				println("Used Memory:"
-						+ (runtime.totalMemory() - runtime.freeMemory()) / mb)
-				println("Free Memory:"
-						+ runtime.freeMemory() / mb)
-				println("Total Memory:" + runtime.totalMemory() / mb)
-				println("Max Memory:" + runtime.maxMemory() / mb)
+				runBlocking {
+					val mb = 1024 * 1024
+					val runtime = Runtime.getRuntime()
+					println("===[ INFO ]===")
+					println("Shards: ${loritta.lorittaShards.getShards().size}")
+					println("Total Servers: ${loritta.lorittaShards.getGuildCount()}")
+					println(
+						"Used Memory:"
+								+ (runtime.totalMemory() - runtime.freeMemory()) / mb
+					)
+					println(
+						"Free Memory:"
+								+ runtime.freeMemory() / mb
+					)
+					println("Total Memory:" + runtime.totalMemory() / mb)
+					println("Max Memory:" + runtime.maxMemory() / mb)
+				}
 			}
 			"shards" -> {
 				val shards = loritta.lorittaShards.getShards()
 
-				for (shard in shards.sortedByDescending { it.shardInfo.shardId }) {
-					println("SHARD ${shard.shardInfo.shardId} (${shard.status.name} - ${shard.gatewayPing}ms): ${shard.guilds.size} guilds - ${shard.users.size} members")
+				// TODO - DeviousFun: Missing shard status before the ping, guild info (not really needed) and member info (also not needed)
+				for (shard in shards.sortedBy { it.shardId }) {
+					println("SHARD ${shard.shardId} (${shard.ping.value})")
 				}
 			}
 			"extendedinfo" -> {

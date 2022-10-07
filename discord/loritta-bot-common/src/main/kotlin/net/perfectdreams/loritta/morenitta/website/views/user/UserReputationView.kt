@@ -5,7 +5,7 @@ import net.perfectdreams.loritta.morenitta.dao.Reputation
 import net.perfectdreams.loritta.morenitta.utils.encodeToUrl
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import kotlinx.html.*
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.views.BaseView
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession

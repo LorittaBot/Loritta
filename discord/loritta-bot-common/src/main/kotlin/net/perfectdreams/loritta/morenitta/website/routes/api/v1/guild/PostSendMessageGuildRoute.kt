@@ -10,7 +10,6 @@ import com.github.salomonbrys.kotson.toMap
 import com.google.gson.JsonParser
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
@@ -18,7 +17,8 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
@@ -113,7 +113,7 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 						)
 				)
 
-			val message = channel.sendMessage(message).await()
+			val message = channel.sendMessage(message)
 
 			call.respondJson(jsonObject("messageId" to message.id), HttpStatusCode.Created)
 			return

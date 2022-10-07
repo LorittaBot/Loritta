@@ -18,7 +18,7 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.ActionType
 import net.perfectdreams.loritta.morenitta.utils.auditlog.WebAuditLogUtils

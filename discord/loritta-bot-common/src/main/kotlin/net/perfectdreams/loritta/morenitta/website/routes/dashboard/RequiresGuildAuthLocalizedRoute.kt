@@ -4,15 +4,14 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
@@ -74,7 +73,7 @@ abstract class RequiresGuildAuthLocalizedRoute(loritta: LorittaBot, originalDash
 		}
 
 		val canBypass = loritta.isOwner(userIdentification.id) || canAccessDashboardViaPermission
-		if (!canBypass && !(member?.hasPermission(Permission.ADMINISTRATOR) == true || member?.hasPermission(Permission.MANAGE_SERVER) == true || jdaGuild.ownerId == userIdentification.id)) {
+		if (!canBypass && !(member?.hasPermission(Permission.Administrator) == true || member?.hasPermission(Permission.ManageGuild) == true || jdaGuild.ownerId == userIdentification.id)) {
 			call.respondText("Você não tem permissão!")
 			return
 		}

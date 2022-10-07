@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
-import net.dv8tion.jda.api.Permission
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -36,7 +36,7 @@ class DashboardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
             dê o url do dashboard diretamente pro servidor.
             */
 
-            if (args.getOrNull(0) != "\uD83D\uDE45" && !isPrivateChannel && (lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD) || member?.hasPermission(Permission.MANAGE_SERVER) == true)) {
+            if (args.getOrNull(0) != "\uD83D\uDE45" && !isPrivateChannel && (lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD) || member?.hasPermission(Permission.ManageGuild) == true)) {
                 reply(
                         LorittaReply(
                                 "Dashboard: $url",

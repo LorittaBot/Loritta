@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.morenitta.modules
 
+import dev.kord.common.entity.MessageType
 import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.TioDoPaveCommand
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -7,9 +8,9 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.chance
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.MessageType
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 
@@ -19,7 +20,7 @@ class QuirkyModule(val loritta: LorittaBot) : MessageReceivedModule {
     override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
         val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
 
-        return miscellaneousConfig?.enableQuirky == true && event.guild?.selfMember?.hasPermission(event.textChannel!!, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_HISTORY, Permission.MESSAGE_WRITE) == true && event.message.type == MessageType.DEFAULT
+        return miscellaneousConfig?.enableQuirky == true && event.guild?.retrieveSelfMember()?.hasPermission(event.textChannel!!, Permission.AddReactions, Permission.UseExternalEmojis, Permission.ReadMessageHistory, Permission.SendMessages) == true && event.message.type == MessageType.Default
     }
 
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {

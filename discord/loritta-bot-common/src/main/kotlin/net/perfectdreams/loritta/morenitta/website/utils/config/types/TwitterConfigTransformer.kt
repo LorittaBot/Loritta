@@ -7,7 +7,7 @@ import com.google.gson.JsonParser
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.serializable.TrackedTwitterAccount
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedTwitterAccounts

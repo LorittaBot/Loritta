@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.bytesToHex
-import net.perfectdreams.loritta.morenitta.utils.extensions.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
 import io.ktor.server.application.*
@@ -20,6 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
@@ -173,7 +173,6 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 				) ?: continue
 
 				textChannel.sendMessage(discordMessage)
-						.queueAfterWithMessagePerSecondTargetAndClusterLoadBalancing(loritta, canTalkGuildIds.size)
 
 				canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 			}

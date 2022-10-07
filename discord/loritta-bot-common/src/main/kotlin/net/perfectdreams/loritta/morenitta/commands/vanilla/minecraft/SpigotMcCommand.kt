@@ -17,8 +17,9 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.queue
 import java.awt.Color
 import java.net.URLEncoder
 import java.time.Instant
@@ -27,7 +28,7 @@ import java.time.ZonedDateTime
 import java.util.*
 
 class SpigotMcCommand(loritta: LorittaBot) : AbstractCommand(loritta, "spigotmc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MINECRAFT) {
-	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
+	override fun getBotPermissions() = listOf(Permission.ManageMessages)
 
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.spigotmc.description")
 

@@ -5,11 +5,11 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import kotlinx.coroutines.future.asDeferred
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.joinAll
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Message
 import net.perfectdreams.loritta.common.commands.ArgumentType
+import net.perfectdreams.loritta.deviousfun.entities.Channel
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
@@ -26,8 +26,8 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
         localizedDescription("commands.command.clear.description")
         localizedExamples("commands.command.clear.examples")
 
-        userRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
-        botRequiredPermissions = listOf(Permission.MESSAGE_MANAGE, Permission.MESSAGE_HISTORY)
+        userRequiredPermissions = listOf(Permission.ManageMessages)
+        botRequiredPermissions = listOf(Permission.ManageMessages, Permission.ReadMessageHistory)
 
         usage {
             argument(ArgumentType.NUMBER) {
@@ -42,7 +42,7 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
             if (args.isEmpty()) return@executesDiscord explain()
 
             val count = args[0].toIntOrNull()
-            val channel = discordMessage.channel as? TextChannel ?: return@executesDiscord
+            val channel = discordMessage.channel as? Channel ?: return@executesDiscord
 
             // The message count can't be null or be higher than 500 and lower than 2
             if (count == null || count !in 2..MAX_RANGE)
@@ -63,14 +63,12 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
             // Deleting the user's message (the command one, +clear)
             runCatching {
                 discordMessage.delete()
-                        .submit()
-                        .await()
             }
 
-            val messages = channel.iterableHistory.takeAsync(count).await()
+            val messages = channel.history.retrievePast(count)
 
             val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets.filterNotNull().toSet()).minus(discordMessage)
-            val disallowedMessages = messages.minus(allowedMessages)
+            val disallowedMessages = messages.minus(allowedMessages.toSet())
 
             if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
                 fail(locale["commands.command.clear.couldNotFindMessages"], Constants.ERROR)
@@ -159,8 +157,7 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
      */
     private suspend fun DiscordCommandContext.clear(messages: List<Message>) {
         unavailableGuilds.add(guild.idLong) // Adding the operation to the guild
-        discordMessage.textChannel.purgeMessages(messages)
-                .map { it.asDeferred() }.joinAll() // Purging the messages and awaiting
+        discordMessage.textChannel.purgeMessages(messages) // Purging the messages and awaiting
 
         unavailableGuilds.remove(guild.idLong)
     }

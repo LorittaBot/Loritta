@@ -4,18 +4,17 @@ import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Member
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -25,7 +24,7 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.KICK_MEMBERS)
+		return listOf(Permission.KickMembers)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -33,7 +32,7 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.KICK_MEMBERS)
+		return listOf(Permission.KickMembers)
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
@@ -99,7 +98,7 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 	companion object {
 		private val LOCALE_PREFIX = "commands.command"
 
-		fun kick(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, locale: BaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
+		suspend fun kick(context: CommandContext, settings: AdminUtils.ModerationConfigSettings, locale: BaseLocale, member: Member, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
 					try {

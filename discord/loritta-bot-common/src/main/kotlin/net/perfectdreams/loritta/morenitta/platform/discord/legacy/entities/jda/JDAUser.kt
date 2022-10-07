@@ -3,9 +3,8 @@ package net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda
 import com.fasterxml.jackson.annotation.JsonIgnore
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordUser
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
-import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 
-open class JDAUser(@JsonIgnore val handle: net.dv8tion.jda.api.entities.User) : DiscordUser {
+open class JDAUser(@JsonIgnore val handle: net.perfectdreams.loritta.deviousfun.entities.User) : DiscordUser {
     override val id: Long
         get() = handle.idLong
 

@@ -1,21 +1,16 @@
 package net.perfectdreams.loritta.morenitta.threads
 
+import dev.kord.common.entity.AllowedMentionType
+import dev.kord.common.entity.Permission
 import kotlinx.coroutines.runBlocking
 import net.perfectdreams.loritta.morenitta.dao.Reminder
 import net.perfectdreams.loritta.morenitta.tables.Reminders
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.TimeUtils
-import net.perfectdreams.loritta.morenitta.utils.escapeMentions
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
-import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import mu.KotlinLogging
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Message
+import net.perfectdreams.loritta.deviousfun.MessageBuilder
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.*
 import org.jetbrains.exposed.sql.deleteWhere
 import java.util.*
 
@@ -69,7 +64,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                         if (channel != null && channel.canTalk()) {
                             channel.sendMessage(
                                 MessageBuilder(reminderText)
-                                    .allowMentions(Message.MentionType.USER, Message.MentionType.EMOTE)
+                                    .allowMentions(AllowedMentionType.UserMentions)
                                     .build()
                             ).queue {
                                 addSnoozeListener(it, reminder)
@@ -101,7 +96,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
         }
     }
 
-    private fun addSnoozeListener(message: Message, reminder: Reminder) {
+    private suspend fun addSnoozeListener(message: Message, reminder: Reminder) {
         if (!message.isFromGuild)
             return
 
@@ -137,7 +132,8 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                 message.channel.sendMessage(remindStr).queue { reply ->
                     awaitSchedule(reply, message, reminder)
                 }
-                if (message.guild.selfMember.hasPermission(Permission.MESSAGE_MANAGE))
+
+                if (message.guild.selfMemberHasPermission(Permission.ManageMessages))
                     it.user?.let { user -> it.reaction.removeReaction(user).queue() }
             }
 
@@ -146,7 +142,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
         message.addReaction(SCHEDULE_EMOTE).queue()
     }
 
-    private fun awaitSchedule(reply: Message, originalMessage: Message, reminder: Reminder) {
+    private suspend fun awaitSchedule(reply: Message, originalMessage: Message, reminder: Reminder) {
         reply.onResponseByAuthor(loritta, reminder.userId, originalMessage.guild.idLong, reminder.channelId) {
             loritta.messageInteractionCache.remove(reply.idLong)
             loritta.messageInteractionCache.remove(originalMessage.idLong)

@@ -1,8 +1,9 @@
 package net.perfectdreams.loritta.morenitta.utils.config
 
+import dev.kord.common.entity.ActivityType
+import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
-import net.dv8tion.jda.api.OnlineStatus
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
@@ -50,10 +51,8 @@ data class LorittaConfig(
         val addBotUrl: String,
         val authorizationUrl: String,
         val maxShards: Int,
-        val maxRequestsPerHost: Int,
-        val status: OnlineStatus,
+        val status: PresenceStatus,
         val activity: LorittaGameStatus,
-        val okHttp: JdaOkHttpConfig,
         val shardController: ShardControllerConfig,
         val requestLimiter: RequestLimiterConfig
     ) {
@@ -61,13 +60,6 @@ data class LorittaConfig(
         data class LorittaGameStatus(
             val name: String,
             val type: String
-        )
-
-        @Serializable
-        data class JdaOkHttpConfig(
-            val readTimeout: Long,
-            val connectTimeout: Long,
-            val writeTimeout: Long
         )
 
         @Serializable

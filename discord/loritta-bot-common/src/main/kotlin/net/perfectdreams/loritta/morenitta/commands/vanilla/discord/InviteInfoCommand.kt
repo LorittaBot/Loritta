@@ -16,7 +16,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.extensions.isValidUrl
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -107,7 +107,7 @@ class InviteInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "invitei
 					embed.addField("\uD83D\uDC4B ${locale["commands.command.inviteinfo.whoInvited"]}", "`$username#$discriminator` ($id)", true)
 				}
 
-				val discordGuild = loritta.lorittaShards.queryGuildById(id)
+				val discordGuild = loritta.deviousFun.getGuildById(id)
 
 				if (discordGuild != null) {
 					embed.setFooter("\uD83D\uDE0A ${context.locale["commands.command.inviteinfo.inThisServer"]}")

@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.utils.PackageInfoCom
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.correios.CorreiosResponse
 import net.perfectdreams.loritta.morenitta.utils.correios.EncomendaResponse
-import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData

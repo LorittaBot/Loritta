@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.*
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.dashboard.RequiresGuildAuthLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession

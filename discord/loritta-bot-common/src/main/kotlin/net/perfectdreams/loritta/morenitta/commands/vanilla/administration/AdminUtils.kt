@@ -7,13 +7,13 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Member
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.DeviousEmbed
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -161,11 +161,12 @@ object AdminUtils {
 	}
 
 	suspend fun checkPermissions(context: DiscordCommandContext, member: Member): Boolean {
-		if (!context.guild.selfMember.canInteract(member)) {
+		val selfMember = context.guild.retrieveSelfMember()
+		if (!selfMember.canInteract(member)) {
 			val reply = buildString {
 				this.append(context.locale[ROLE_TOO_LOW_KEY])
 
-				if (context.member!!.hasPermission(Permission.MANAGE_ROLES)) {
+				if (context.member!!.hasPermission(Permission.ManageRoles)) {
 					this.append(" ")
 					this.append(context.locale[ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 				}
@@ -184,7 +185,7 @@ object AdminUtils {
 			val reply = buildString {
 				this.append(context.locale[ROLE_TOO_LOW_KEY])
 
-				if (context.member.hasPermission(Permission.MANAGE_ROLES)) {
+				if (context.member.hasPermission(Permission.ManageRoles)) {
 					this.append(" ")
 					this.append(context.locale[PUNISHER_ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 				}
@@ -202,11 +203,12 @@ object AdminUtils {
 	}
 
 	suspend fun checkForPermissions(context: CommandContext, member: Member): Boolean {
-		if (!context.guild.selfMember.canInteract(member)) {
+		val selfMember = context.guild.retrieveSelfMember()
+		if (!selfMember.canInteract(member)) {
 			val reply = buildString {
 				this.append(context.locale[ROLE_TOO_LOW_KEY])
 
-				if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
+				if (context.handle.hasPermission(Permission.ManageRoles)) {
 					this.append(" ")
 					this.append(context.locale[ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 				}
@@ -225,7 +227,7 @@ object AdminUtils {
 			val reply = buildString {
 				this.append(context.locale[ROLE_TOO_LOW_KEY])
 
-				if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
+				if (context.handle.hasPermission(Permission.ManageRoles)) {
 					this.append(" ")
 					this.append(context.locale[PUNISHER_ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 				}
@@ -316,7 +318,7 @@ object AdminUtils {
 		return embed
 	}
 
-	fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: BaseLocale, punisher: User, punishmentAction: String, reason: String): MessageEmbed {
+	fun createPunishmentMessageSentViaDirectMessage(guild: Guild, locale: BaseLocale, punisher: User, punishmentAction: String, reason: String): DeviousEmbed {
 		return createPunishmentEmbedBuilderSentViaDirectMessage(guild, locale, punisher, punishmentAction, reason).build()
 	}
 

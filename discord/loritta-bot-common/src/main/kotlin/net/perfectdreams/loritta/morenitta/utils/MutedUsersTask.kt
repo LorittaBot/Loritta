@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.utils
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteCommand
 import net.perfectdreams.loritta.morenitta.dao.Mute
 import net.perfectdreams.loritta.morenitta.tables.Mutes
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -27,45 +26,58 @@ class MutedUsersTask(val loritta: LorittaBot) : Runnable {
 
 			val guildLocales = mutableMapOf<Long, String>()
 
-			for (mute in mutes) {
-				val expiresAt = mute.expiresAt
+			runBlocking {
+				for (mute in mutes) {
+					val expiresAt = mute.expiresAt
 
-				if (expiresAt != null && expiresAt >= System.currentTimeMillis() + Constants.DELAY_CUT_OFF) { // Não crie giveaways caso o tempo seja alto demais
-					logger.debug { "Not creating mute task ${mute.id.value}, it will expire at ${mute.expiresAt} and that's waaay too damn long!" }
-					continue
+					if (expiresAt != null && expiresAt >= System.currentTimeMillis() + Constants.DELAY_CUT_OFF) { // Não crie giveaways caso o tempo seja alto demais
+						logger.debug { "Not creating mute task ${mute.id.value}, it will expire at ${mute.expiresAt} and that's waaay too damn long!" }
+						continue
+					}
+
+					val guild = loritta.lorittaShards.getGuildById(mute.guildId)
+
+					if (guild == null) {
+						logger.debug { "Guild \"${mute.guildId}\" não existe ou está indisponível!" }
+
+						deleteMuteIfNeeded(mute)
+						continue
+					}
+
+					val member = if (mute.userId in MuteCommand.notInTheServerUserIds) null else runBlocking {
+						guild.retrieveMemberOrNullById(mute.userId)
+					}
+
+					if (member == null) {
+						MuteCommand.notInTheServerUserIds.add(mute.userId)
+						logger.debug { "Member ${mute.userId} has a mute status in $guild, but the member isn't there anymore!" }
+
+						deleteMuteIfNeeded(mute)
+						deleteMuteIfNeededMemberIsNotOnTheServer(mute)
+						continue
+					}
+
+					val jobId = "${guild.idLong}#${member.idLong}"
+
+					val previousJob = MuteCommand.roleRemovalJobs[jobId]
+
+					if (previousJob != null) // Se já tem um job criado, não recrie (é desnecessário!)
+						continue
+
+					logger.info { "Adicionado removal thread pelo MutedUsersThread ~ Guild: ${mute.guildId} - User: ${mute.userId}" }
+
+					val localeId =
+						guildLocales.getOrPut(mute.guildId, { loritta.getOrCreateServerConfig(mute.guildId).localeId })
+					runBlocking {
+						MuteCommand.spawnRoleRemovalThread(
+							loritta,
+							guild,
+							loritta.localeManager.getLocaleById(localeId),
+							member.user,
+							mute.expiresAt!!
+						)
+					}
 				}
-
-				val guild = loritta.lorittaShards.getGuildById(mute.guildId)
-
-				if (guild == null) {
-					logger.debug { "Guild \"${mute.guildId}\" não existe ou está indisponível!" }
-
-					deleteMuteIfNeeded(mute)
-					continue
-				}
-
-				val member = if (mute.userId in MuteCommand.notInTheServerUserIds) null else runBlocking { guild.retrieveMemberOrNullById(mute.userId) }
-
-				if (member == null) {
-					MuteCommand.notInTheServerUserIds.add(mute.userId)
-					logger.debug { "Member ${mute.userId} has a mute status in $guild, but the member isn't there anymore!" }
-
-					deleteMuteIfNeeded(mute)
-					deleteMuteIfNeededMemberIsNotOnTheServer(mute)
-					continue
-				}
-
-				val jobId = "${guild.idLong}#${member.idLong}"
-
-				val previousJob = MuteCommand.roleRemovalJobs[jobId]
-
-				if (previousJob != null) // Se já tem um job criado, não recrie (é desnecessário!)
-					continue
-
-				logger.info { "Adicionado removal thread pelo MutedUsersThread ~ Guild: ${mute.guildId} - User: ${mute.userId}" }
-
-				val localeId = guildLocales.getOrPut(mute.guildId, { loritta.getOrCreateServerConfig(mute.guildId).localeId })
-				MuteCommand.spawnRoleRemovalThread(loritta, guild, loritta.localeManager.getLocaleById(localeId), member.user, mute.expiresAt!!)
 			}
 		} catch (e: Exception) {
 			logger.error(e) { "Erro ao verificar removal threads" }

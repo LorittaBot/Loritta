@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
 import io.ktor.http.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.dreamstorageservice.data.api.CreateImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.DeleteImageLinkRequest
 import net.perfectdreams.dreamstorageservice.data.api.UploadImageRequest

@@ -9,11 +9,12 @@ import kotlinx.atomicfu.atomic
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import mu.KotlinLogging
+import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import kotlin.time.Duration.Companion.minutes
 
 @OptIn(KordVoice::class)
 data class LorittaVoiceConnection(
-    private val gateway: Gateway,
+    private val gateway: DeviousGateway,
     private val guildId: Snowflake,
     var channelId: Snowflake, // Users can move Loritta to another channel
     private val voiceConnection: VoiceConnection,
@@ -36,7 +37,7 @@ data class LorittaVoiceConnection(
 
     suspend fun switchChannel(channelId: Snowflake) {
         if (this.channelId != channelId) {
-            gateway.send(
+            gateway.kordGateway.send(
                 UpdateVoiceStatus(
                     guildId = guildId,
                     channelId = channelId,

@@ -13,7 +13,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EconomyConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig

@@ -7,17 +7,17 @@ import net.perfectdreams.loritta.morenitta.tables.Reminders
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.TimeUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageEmbed
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.DeviousEmbed
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.deviousfun.queue
 import org.jetbrains.exposed.sql.deleteWhere
 import java.awt.Color
 import java.time.Instant
@@ -25,7 +25,7 @@ import java.time.ZonedDateTime
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme", listOf("lembre", "remind", "lembrar", "lembrete", "reminder"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
-	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
+	override fun getBotPermissions() = listOf(Permission.ManageMessages)
 
 	override fun getDescriptionKey() = LocaleKeyData("${LOCALE_PREFIX}.description")
 	override fun getExamplesKey() = LocaleKeyData("${LOCALE_PREFIX}.examples")
@@ -155,7 +155,7 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 				embedBuilder.setThumbnail(guild.iconUrl)
 			}
 
-			embedBuilder.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}".substringIfNeeded(0 until MessageEmbed.TITLE_MAX_LENGTH))
+			embedBuilder.setTitle("<a:lori_notification:394165039227207710> ${reminder.content}".substringIfNeeded(0 until DeviousEmbed.TITLE_MAX_LENGTH))
 			embedBuilder.appendDescription("**${locale["${LOCALE_PREFIX}.remindAt"]} ** ${reminder.remindAt.humanize(locale)}\n")
 			embedBuilder.appendDescription("**${locale["${LOCALE_PREFIX}.createdInGuild"]}** `${guild?.name ?: "Servidor não existe mais..."}`\n")
 			embedBuilder.appendDescription("**${locale["${LOCALE_PREFIX}.remindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")

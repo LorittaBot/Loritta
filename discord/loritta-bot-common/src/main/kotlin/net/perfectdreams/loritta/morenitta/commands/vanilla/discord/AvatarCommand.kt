@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.obj
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.arguments

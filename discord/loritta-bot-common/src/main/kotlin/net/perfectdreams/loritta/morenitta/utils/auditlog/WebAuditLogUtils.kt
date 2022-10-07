@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.morenitta.utils.auditlog
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.JsonObject
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.AuditLog
 import net.perfectdreams.loritta.morenitta.utils.ActionType

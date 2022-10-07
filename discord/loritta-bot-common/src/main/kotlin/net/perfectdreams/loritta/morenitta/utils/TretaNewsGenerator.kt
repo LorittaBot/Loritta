@@ -1,10 +1,8 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.dv8tion.jda.api.OnlineStatus
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
-import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.User
 import java.awt.Color
 import java.awt.Font
 import java.awt.Image
@@ -427,12 +425,6 @@ object TretaNewsGenerator {
 		val str2 = usr2.name.stripCodeMarks()
 		randomYt.add(str1)
 		randomYt.add(str2)
-
-		for (member in guild.members) {
-			if (member.onlineStatus != OnlineStatus.OFFLINE) {
-				randomYt.add(member.effectiveName)
-			}
-		}
 
 		val url1 = usr1.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
 		val url2 = usr2.getEffectiveAvatarUrl(ImageFormat.PNG, 128)

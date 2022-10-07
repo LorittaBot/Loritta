@@ -7,7 +7,6 @@ import com.google.gson.JsonParser
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
@@ -18,7 +17,8 @@ import io.ktor.http.userAgent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
-import net.dv8tion.jda.api.JDA
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.NetAddressUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.build
@@ -114,7 +114,8 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 					row4.add("$totalGuildCount")
 					row5.add("$pendingMessages")
 
-					val unstableShards = json["shards"].array.filter {
+					// TODO - DeviousFun
+					/* val unstableShards = json["shards"].array.filter {
 						it["status"].string != JDA.Status.CONNECTED.toString() || it["ping"].int == -1 || it["ping"].int >= 250
 					}
 
@@ -134,7 +135,7 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 							row4.add("${it["guildCount"].long}")
 							row5.add("---")
 						}
-					}
+					} */
 				} catch (e: ClusterOfflineException) {
 					row0.add("X Cluster ${e.id} (${e.name})")
 					row1.add("---")
@@ -238,11 +239,11 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 
 			val replies = mutableListOf(
                     LorittaReply(
-                            message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.jda.shardInfo.shardId}/${loritta.config.loritta.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${loritta.lorittaCluster.id} (`${loritta.lorittaCluster.name}`))",
+                            message = "**Pong!** (\uD83D\uDCE1 Shard ${context.event.gateway.shardId}/${loritta.config.loritta.discord.maxShards - 1}) (<:loritta:331179879582269451> Loritta Cluster ${loritta.lorittaCluster.id} (`${loritta.lorittaCluster.name}`))",
                             prefix = ":ping_pong:"
                     ),
                     LorittaReply(
-                            message = "**Gateway Ping:** `${context.event.jda.gatewayPing}ms`",
+                            message = "**Gateway Ping:** `${context.event.gateway.ping.value}`",
                             prefix = ":stopwatch:",
                             mentionUser = false
                     ),

@@ -1,20 +1,21 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
+import dev.kord.common.entity.ChannelType
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.remove
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Message
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -27,7 +28,7 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_SERVER)
+		return listOf(Permission.ManageGuild)
 	}
 
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
@@ -84,7 +85,7 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 				}
 			} else { null } ?: context.event.channel
 
-			if (channel is TextChannel) { // Caso seja text channel...
+			if (channel.type == ChannelType.GuildText) { // Caso seja text channel...
 				if (!channel.canTalk()) {
 					context.reply(
 							LorittaReply(
@@ -116,7 +117,7 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 
 			var message = args.joinToString(" ")
 
-			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MENTION_EVERYONE))
+			if (!context.isPrivateChannel && !context.handle.hasPermission(channel, Permission.MentionEveryone))
 				message = message.escapeMentions()
 
 			// Watermarks the message to "deanonymise" the message, to avoid users reporting Loritta for ToS breaking stuff, even tho it was
@@ -159,7 +160,7 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 							channel.sendMessage(message)
 						).queue()
 
-			if (context.event.channel != channel && channel is TextChannel)
+			if (context.event.channel != channel)
 				context.reply(
 						LorittaReply(
 								context.locale["commands.command.say.messageSuccessfullySent", channel.asMention],

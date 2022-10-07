@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.morenitta.parallax.wrappers
 
 import com.google.gson.annotations.SerializedName
+import net.perfectdreams.loritta.deviousfun.DeviousEmbed
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.isValidUrl
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.MessageEmbed
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import java.awt.Color
 
 class ParallaxEmbed {
@@ -85,7 +85,7 @@ class ParallaxEmbed {
 		return this
 	}
 
-	fun toDiscordEmbed(safe: Boolean = false): MessageEmbed {
+	fun toDiscordEmbed(safe: Boolean = false): DeviousEmbed {
 		val embed = EmbedBuilder()
 
 		fun processString(text: String?, maxSize: Int): String? {
@@ -140,7 +140,9 @@ class ParallaxEmbed {
 		}
 
 		if (footer != null) {
-			embed.setFooter(processString(footer!!.text, 256), processImageUrl(footer!!.iconUrl))
+			val footerText = processString(footer!!.text, 256)
+			if (footerText != null)
+				embed.setFooter(footerText, processImageUrl(footer!!.iconUrl))
 		}
 
 		if (image != null) {
@@ -153,7 +155,10 @@ class ParallaxEmbed {
 
 		if (fields != null) {
 			fields!!.forEach {
-				embed.addField(it.name, it.value, it.inline)
+				val name = it.name
+				val value = it.value
+				if (name != null && value != null)
+					embed.addField(name, value, it.inline)
 			}
 		}
 
@@ -161,25 +166,25 @@ class ParallaxEmbed {
 	}
 
 	class ParallaxEmbedAuthor(
-			var name: String?,
-			var url: String?,
-			@SerializedName("icon_url")
-			var iconUrl: String?
+		var name: String?,
+		var url: String?,
+		@SerializedName("icon_url")
+		var iconUrl: String?
 	)
 
 	class ParallaxEmbedImage(
-			var url: String?
+		var url: String?
 	)
 
 	class ParallaxEmbedFooter(
-			var text: String?,
-			@SerializedName("icon_url")
-			var iconUrl: String?
+		var text: String?,
+		@SerializedName("icon_url")
+		var iconUrl: String?
 	)
 
 	class ParallaxEmbedField(
-			var name: String?,
-			var value: String?,
-			var inline: Boolean = false
+		var name: String?,
+		var value: String?,
+		var inline: Boolean = false
 	)
 }

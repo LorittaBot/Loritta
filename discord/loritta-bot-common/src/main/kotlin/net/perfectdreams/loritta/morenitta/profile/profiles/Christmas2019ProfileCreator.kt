@@ -11,7 +11,7 @@ import net.perfectdreams.loritta.morenitta.utils.drawText
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.morenitta.utils.makeRoundedCorners
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.common.locale.BaseLocale

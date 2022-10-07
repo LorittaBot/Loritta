@@ -1,15 +1,15 @@
 /* owo e uwu */
 package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
+import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.DateUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.localized
-import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
+import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
 class RoleInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("roleinfo", "taginfo"), net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
@@ -53,7 +53,7 @@ class RoleInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta,
                 } else {
                     locale["loritta.fancyBoolean.false"]
                 }
-                val permissions = role.permissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })
+                val permissions = role.permissions.values.toLocalized()?.joinToString(", ", transform = { "`${context.i18nContext.get(it)}`" })
 
                 builder.setTitle("\uD83D\uDCBC ${role.name}")
                 if (role.color != null)
@@ -67,7 +67,7 @@ class RoleInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta,
                 builder.addField("\uD83D\uDC65 ${locale["$LOCALE_PREFIX.roleinfo.roleMembers"]}", context.guild.getMembersWithRoles(role).size.toString(),true)
                 if (role.color != null)
                     builder.addField("🎨 ${locale["$LOCALE_PREFIX.roleinfo.roleColor"]}", "`#${Integer.toHexString(role.color!!.rgb).substring(2).toUpperCase()}`", true)
-                builder.addField("\uD83D\uDEE1 ${locale["$LOCALE_PREFIX.roleinfo.rolePermissions"]}", permissions, false)
+                builder.addField("\uD83D\uDEE1 ${locale["$LOCALE_PREFIX.roleinfo.rolePermissions"]}", permissions ?: "", false)
 
                 context.sendMessage(context.getUserMention(true), builder.build())
             } else {

@@ -33,7 +33,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:3.1.1")
 
     // Discord
-    implementation("net.dv8tion:JDA:${Versions.JDA}")
+    // implementation("net.dv8tion:JDA:${Versions.JDA}")
     implementation("club.minnced:discord-webhooks:0.5.7")
 
     // Discord InteraKTions my beloved

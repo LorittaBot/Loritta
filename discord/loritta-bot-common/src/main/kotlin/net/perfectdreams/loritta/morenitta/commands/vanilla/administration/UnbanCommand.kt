@@ -5,16 +5,16 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -24,7 +24,7 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.BAN_MEMBERS)
+		return listOf(Permission.BanMembers)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -32,7 +32,7 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.BAN_MEMBERS)
+		return listOf(Permission.BanMembers)
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
@@ -97,7 +97,7 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 	companion object {
 		private const val LOCALE_PREFIX = "commands.command"
 
-		fun unban(loritta: LorittaBot, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
+		suspend fun unban(loritta: LorittaBot, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				val punishLogMessage = runBlocking {
 					AdminUtils.getPunishmentForMessage(
@@ -129,8 +129,9 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 				}
 			}
 
-			guild.unban(user).reason(AdminUtils.generateAuditLogMessage(locale, punisher, reason))
-				.queue()
+			runBlocking {
+				guild.unban(user, AdminUtils.generateAuditLogMessage(locale, punisher, reason))
+			}
 		}
 	}
 }

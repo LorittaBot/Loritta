@@ -4,6 +4,8 @@ import com.github.benmanes.caffeine.cache.Caffeine
 import com.google.common.collect.EvictingQueue
 import com.google.common.collect.Queues
 import dev.kord.common.entity.Snowflake
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.AdminUtils
 import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.BanCommand
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -15,8 +17,8 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.config.EnvironmentType
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.apache.commons.text.similarity.LevenshteinDistance
 import java.util.*
@@ -77,6 +79,8 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 		private val logger = KotlinLogging.logger {}
 	}
+
+	val mutex = Mutex()
 
 	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		if (lorittaUser.hasPermission(LorittaPermission.BYPASS_AUTO_MOD))
@@ -183,9 +187,9 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 				}
 
 				// Caso o usuário esteja em poucos servidores compartilhados, a chance de ser raider é maior
-				val nonMutualGuildsScore = AutomodModule.MUTUAL_GUILDS_MULTIPLIER * Math.max(5 - raider.mutualGuilds.size, 1)
+				// val nonMutualGuildsScore = AutomodModule.MUTUAL_GUILDS_MULTIPLIER * Math.max(5 - raider.mutualGuilds.size, 1)
 				// analysis(analysis, "+ nonMutualGuildsScore é $nonMutualGuildsScore - Valor atual é $raidingPercentage")
-				raidingPercentage += nonMutualGuildsScore
+				// raidingPercentage += nonMutualGuildsScore
 
 				// Conta nova no Discord
 				val newAccountScore = AutomodModule.FRESH_ACCOUNT_DISCORD_MULTIPLIER * Math.max(0, AutomodModule.FRESH_ACCOUNT_TIMEOUT - (System.currentTimeMillis() - wrapper.author.timeCreated.toInstant().toEpochMilli()))
@@ -214,7 +218,9 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 				val settings = AdminUtils.retrieveModerationInfo(loritta, serverConfig)
 
-				synchronized(event.guild) {
+				val selfMember = event.guild.retrieveSelfMember()
+
+				mutex.withLock {
 					val alreadyBanned = mutableListOf<User>()
 
 					for (storedMessage in messages) {
@@ -225,9 +231,9 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 						if (percentage >= BAN_THRESHOLD) {
 							alreadyBanned.add(storedMessage.author)
-							if (event.guild.selfMember.canInteract(event.member!!)) {
+							if (selfMember.canInteract(event.member!!)) {
 								logger.info("Punindo ${storedMessage.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($percentage%)!")
-								BanCommand.ban(loritta, settings, event.guild, event.guild.selfMember.user, locale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+								BanCommand.ban(loritta, settings, event.guild, selfMember.user, locale, storedMessage.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 							}
 						}
 					}
@@ -235,9 +241,9 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 					if (!event.guild.isMember(event.author) || alreadyBanned.contains(event.author)) // O usuário já pode estar banido
 						return true
 
-					if (event.guild.selfMember.canInteract(event.member!!)) {
+					if (selfMember.canInteract(event.member!!)) {
 						logger.info("Punindo ${event.author.id} em ${event.guild.name} -> ${event.channel.name} por tentativa de raid! ($raidingPercentage%)!")
-						BanCommand.ban(loritta, settings, event.guild, event.guild.selfMember.user, locale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
+						BanCommand.ban(loritta, settings, event.guild, selfMember.user, locale, event.author, "Tentativa de Raid (Spam/Flood)! Que feio, para que fazer isto? Vá procurar algo melhor para fazer em vez de incomodar outros servidores. ᕙ(⇀‸↼‶)ᕗ", false, 7)
 					}
 				}
 				return true

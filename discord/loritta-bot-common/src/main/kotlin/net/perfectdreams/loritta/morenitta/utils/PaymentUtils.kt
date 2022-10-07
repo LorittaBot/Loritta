@@ -1,10 +1,11 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.MessageBuilder
+import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.SonhosTransaction
 import org.jetbrains.exposed.sql.SortOrder
@@ -124,6 +125,7 @@ object PaymentUtils {
 
                         user.openPrivateChannel().await()
                                 .sendMessage(
+                                    MessageBuilder(
                                         loritta.localeManager.getLocaleById("default")
                                                 .getList(
                                                         "commands.receivedSonhosFromAChargedbackUser",
@@ -132,8 +134,9 @@ object PaymentUtils {
                                                         userId.toString(),
                                                         totalQuantity
                                                 ).joinToString("\n")
+                                    ).addFile(builder.toString().toByteArray(Charsets.UTF_8), "transactions.txt")
+                                        .build()
                                 )
-                                .addFile(builder.toString().toByteArray(Charsets.UTF_8), "transactions.txt")
                                 .await()
 
                         logger.info { "Successfully notified ${user.idLong} about $userId chargebacks" }

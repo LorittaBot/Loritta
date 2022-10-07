@@ -8,13 +8,12 @@ import net.perfectdreams.loritta.morenitta.dao.Warn
 import net.perfectdreams.loritta.morenitta.tables.Warns
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.TimeUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Message
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -30,7 +29,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.KICK_MEMBERS)
+		return listOf(Permission.KickMembers)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -38,7 +37,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.KICK_MEMBERS, Permission.BAN_MEMBERS)
+		return listOf(Permission.KickMembers, Permission.BanMembers)
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {

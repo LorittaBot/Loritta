@@ -20,7 +20,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.SonhosBundlePurchaseSonhosTransactionsLog
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.morenitta.tables.SonhosBundles
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason

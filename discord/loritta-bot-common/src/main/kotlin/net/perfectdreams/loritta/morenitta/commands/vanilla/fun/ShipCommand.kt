@@ -12,9 +12,9 @@ import net.perfectdreams.loritta.morenitta.utils.ImageUtils
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.entities.Message
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.MessageBuilder
+import net.perfectdreams.loritta.deviousfun.entities.Message
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -22,7 +22,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.or
@@ -219,7 +218,7 @@ class ShipCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ship", listOf
 			embed.setImage("attachment://ships.png")
 			val msgBuilder = MessageBuilder()
 				.append(texto)
-				.allowMentions(Message.MentionType.EMOTE)
+				.allowMentions()
 			msgBuilder.setEmbed(embed.build())
 			context.sendFile(image, "ships.png", msgBuilder.build())
 		} else {

@@ -6,11 +6,11 @@ import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
 import net.perfectdreams.loritta.morenitta.utils.GuildLorittaUser
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.evaluate
 import io.ktor.server.application.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.RequiresDiscordLoginLocalizedRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession

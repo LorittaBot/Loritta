@@ -12,7 +12,7 @@ import net.perfectdreams.loritta.morenitta.utils.gson
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import java.io.ByteArrayOutputStream

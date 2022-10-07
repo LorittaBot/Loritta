@@ -4,6 +4,7 @@ import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
@@ -11,7 +12,7 @@ import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.and
@@ -26,7 +27,7 @@ class UserDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer {
                     .toList()
         }
         
-        val serverInfo = mutableMapOf<Long, JsonObject?>()
+        val serverInfo = mutableMapOf<Long, Guild?>()
         
         val guildIdsToBeQueried = loritta.newSuspendedTransaction {
             userDonationKeys.filter { it.activeIn != null }.mapNotNull {
@@ -36,7 +37,7 @@ class UserDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer {
 
         val jobs = guildIdsToBeQueried.map {
             GlobalScope.async {
-                serverInfo[it] = loritta.lorittaShards.queryGuildById(it)
+                serverInfo[it] = loritta.deviousFun.retrieveGuildById(Snowflake(it))
             }
         }
 

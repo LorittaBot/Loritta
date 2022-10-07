@@ -9,10 +9,11 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.entities.Emote
+import net.perfectdreams.loritta.deviousfun.MessageBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.entities.DiscordEmote
+import net.perfectdreams.loritta.deviousfun.entities.Emote
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
@@ -32,34 +33,9 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 		if (context.args.size == 1) {
 			val arg0 = context.rawArgs[0]
 			val firstEmote = context.message.emotes.firstOrNull()
-			if (arg0 == firstEmote?.asMention) {
+			if (firstEmote != null) {
 				// Emoji do Discord (via menção)
 				downloadAndSendDiscordEmote(context, firstEmote)
-				return
-			}
-
-			if (arg0.isValidSnowflake()) {
-				val emote = loritta.lorittaShards.getEmoteById(arg0)
-				if (emote != null) {
-					// Emoji do Discord (via ID)
-					downloadAndSendDiscordEmote(context, emote)
-					return
-				} else {
-					context.reply(
-                            LorittaReply(
-                                    locale["commands.command.emoji.notFoundId", "`$arg0`"],
-                                    Constants.ERROR
-                            )
-					)
-					return
-				}
-			}
-
-			val guild = context.guild
-			val foundEmote = guild.getEmotesByName(arg0, true).firstOrNull()
-			if (foundEmote != null) {
-				// Emoji do Discord (via nome)
-				downloadAndSendDiscordEmote(context, foundEmote)
 				return
 			}
 
@@ -90,16 +66,16 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 		}
 	}
 
-	suspend fun downloadAndSendDiscordEmote(context: CommandContext, emote: Emote) {
+	suspend fun downloadAndSendDiscordEmote(context: CommandContext, emote: DiscordEmote) {
 		val emojiUrl = emote.imageUrl
 
 		try {
 			val emojiImage = LorittaUtils.downloadFile(loritta, "$emojiUrl?size=2048", 5000)
 			var fileName = emote.name
-			if (emote.isAnimated) {
-				fileName += ".gif"
+			fileName += if (emote.isAnimated) {
+				".gif"
 			} else {
-				fileName += ".png"
+				".png"
 			}
 			context.sendFile(emojiImage!!, fileName, MessageBuilder().append(" ").build())
 		} catch (e: Exception) {

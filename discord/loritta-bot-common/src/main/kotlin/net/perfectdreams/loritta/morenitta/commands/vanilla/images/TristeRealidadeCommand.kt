@@ -50,7 +50,7 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
             if (user5 != null) users.add(user5)
             if (user6 != null) users.add(user6)
 
-            val members = context.guild.members.filter { !it.user.isBot}.toMutableList()
+            val members = context.guild.retrieveMembers().filter { !it.user.isBot }.toMutableList()
 
             while (6 > users.size) {
                 val member = if (members.isNotEmpty()) {

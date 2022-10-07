@@ -1,24 +1,21 @@
 package net.perfectdreams.loritta.morenitta.utils.giveaway
 
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
-import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
-import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
+import dev.kord.common.entity.AllowedMentionType
+import dev.kord.rest.json.JsonErrorCode
+import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.*
-import kotlinx.coroutines.future.await
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.entities.*
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
-import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.*
+import net.perfectdreams.loritta.deviousfun.entities.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
-import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.Constants
+import net.perfectdreams.loritta.morenitta.utils.MessageUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
+import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import net.perfectdreams.sequins.text.StringUtils
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -27,7 +24,7 @@ class GiveawayManager(val loritta: LorittaBot) {
     var giveawayTasks = ConcurrentHashMap<Long, Job>()
     private val logger = KotlinLogging.logger {}
 
-    fun getReactionMention(reaction: String): String {
+    private fun getReactionMention(reaction: String): String {
         if (reaction.startsWith("discord:"))
             return DiscordEmote(reaction).asMention
 
@@ -35,16 +32,13 @@ class GiveawayManager(val loritta: LorittaBot) {
 
         // Old giveaways still has the emote ID stored in the database, so we need to handle that.
         // This can be removed in the future, or maybe handled in a different way?
-        if (emoteId != null) {
-            val mention = loritta.lorittaShards.getEmoteById(emoteId.toString())?.asMention
-            if (mention != null)
-                return mention
-        }
+        if (emoteId != null)
+            return "<:emoji:$emoteId>"
 
         return reaction
     }
 
-    fun createGiveawayMessage(locale: BaseLocale, reason: String, description: String, reaction: String, epoch: Long, guild: Guild, customMessage: String?): Message {
+    fun createGiveawayMessage(locale: BaseLocale, reason: String, description: String, reaction: String, epoch: Long, guild: Guild, customMessage: String?): DeviousMessage {
         val diff = epoch - System.currentTimeMillis()
         val diffSeconds = diff / 1000 % 60
         val diffMinutes = diff / (60 * 1000) % 60
@@ -60,15 +54,15 @@ class GiveawayManager(val loritta: LorittaBot) {
         }
 
         val builder = MessageBuilder()
-                .setContent(" ")
+            .setContent(" ")
 
         val customResult = customMessage?.let {
             MessageUtils.generateMessage(
-                    it,
-                    listOf(),
-                    guild,
-                    mapOf("time-until-giveaway" to message),
-                    true
+                it,
+                listOf(),
+                guild,
+                mapOf("time-until-giveaway" to message),
+                true
             )
         }
 
@@ -79,20 +73,20 @@ class GiveawayManager(val loritta: LorittaBot) {
             builder.setEmbed(customResult.embeds.first())
         else
             builder.setEmbed(
-                    EmbedBuilder().apply {
-                        setTitle("\uD83C\uDF81 ${reason.substringIfNeeded(0 until 200)}")
-                        setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!")
-                        // addField("⏰ Tempo restante", message, true)
-                        setColor(Constants.DISCORD_BLURPLE)
-                        setFooter("Acabará em", null)
-                        setTimestamp(Instant.ofEpochMilli(epoch))
-                    }.build()
+                EmbedBuilder().apply {
+                    setTitle("\uD83C\uDF81 ${reason.substringIfNeeded(0 until 200)}")
+                    setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!")
+                    // addField("⏰ Tempo restante", message, true)
+                    setColor(Constants.DISCORD_BLURPLE)
+                    setFooter("Acabará em", null)
+                    setTimestamp(Instant.ofEpochMilli(epoch))
+                }.build()
             )
 
         return builder.build()
     }
 
-    suspend fun spawnGiveaway(locale: BaseLocale, channel: TextChannel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int, customMessage: String?, roleIds: List<String>?): Giveaway {
+    suspend fun spawnGiveaway(locale: BaseLocale, channel: Channel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int, customMessage: String?, roleIds: List<String>?): Giveaway {
         logger.debug { "Spawning Giveaway! locale = $locale, channel = $channel, reason = $reason, description = $description, reason = $reason, epoch = $epoch, numberOfWinners = $numberOfWinners, customMessage = $customMessage, roleIds = $roleIds" }
 
         val giveawayMessage = createGiveawayMessage(locale, reason, description, reaction, epoch, channel.guild, customMessage)
@@ -115,13 +109,21 @@ class GiveawayManager(val loritta: LorittaBot) {
                 logger.trace { "Emote $validReaction doesn't look like a valid snowflake..."}
                 message.addReaction(reaction).await()
             }
-        } catch (e: IllegalArgumentException) {
-            logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)"}
+        } catch (e: KtorRequestException) {
+            logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)" }
             message.addReaction("\uD83C\uDF89").await()
             validReaction = "\uD83C\uDF89"
-        }catch (e: InsufficientPermissionException) {
-            logger.error(e) { "Looks like we can't create a giveaway here! Missing some checks, huh? ;3" }
-            throw e
+        } catch (e: KtorRequestException) {
+            if (e.error?.code == JsonErrorCode.UnknownEmoji) {
+                logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)" }
+                message.addReaction("\uD83C\uDF89").await()
+                validReaction = "\uD83C\uDF89"
+            } else {
+                if (e.error?.code == JsonErrorCode.PermissionLack)
+                    logger.error(e) { "Looks like we can't create a giveaway here! Missing some checks, huh? ;3" }
+
+                throw e
+            }
         } catch (e: Exception) {
             logger.error(e) { "Error while trying to add emotes for the giveaway!" }
             throw e
@@ -178,7 +180,7 @@ class GiveawayManager(val loritta: LorittaBot) {
     }
 
     private fun getGiveawayGuild(giveaway: Giveaway, shouldCancel: Boolean): Guild? {
-        val guild = loritta.lorittaShards.getGuildById(giveaway.guildId) ?: run {
+        val guild = runBlocking { loritta.lorittaShards.getGuildById(giveaway.guildId) } ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, guild doesn't exist!" }
 
             if (shouldCancel)
@@ -190,7 +192,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         return guild
     }
 
-    private fun getGiveawayTextChannel(giveaway: Giveaway, guild: Guild, shouldCancel: Boolean): TextChannel? {
+    private fun getGiveawayTextChannel(giveaway: Giveaway, guild: Guild, shouldCancel: Boolean): Channel? {
         val channel = guild.getTextChannelById(giveaway.textChannelId) ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, channel doesn't exist!" }
 
@@ -232,13 +234,13 @@ class GiveawayManager(val loritta: LorittaBot) {
                     val locale = loritta.localeManager.getLocaleById(giveaway.locale)
 
                     val giveawayMessage = createGiveawayMessage(
-                            locale,
-                            giveaway.reason,
-                            giveaway.description,
-                            giveaway.reaction,
-                            giveaway.finishAt,
-                            guild,
-                            giveaway.customMessage
+                        locale,
+                        giveaway.reason,
+                        giveaway.description,
+                        giveaway.reaction,
+                        giveaway.finishAt,
+                        guild,
+                        giveaway.customMessage
                     )
 
                     // if (embed.fields.first().value != message.embeds.first().fields.first().value) {
@@ -288,17 +290,18 @@ class GiveawayManager(val loritta: LorittaBot) {
 
                 finishGiveaway(message, giveaway)
             } catch (e: Exception) {
-                if (e is ErrorResponseException) {
-                    if (e.errorCode == 10008) { // Mensagem não existe, vamos cancelar o giveaway!
-                        logger.warn { "ErrorResponseException ${e.errorCode} while processing giveaway ${giveaway.id.value}, cancelling giveaway..." }
+                if (e is KtorRequestException) {
+                    if (e.error?.code == JsonErrorCode.UnknownMessage) {
+                        logger.warn { "ErrorResponseException ${e.error?.code} while processing giveaway ${giveaway.id.value}, cancelling giveaway..." }
                         cancelGiveaway(giveaway, true)
                         return@launch
                     }
-                }
-                if (e is InsufficientPermissionException) { // Sem permissão, vamos cancelar o giveaway!
-                    logger.warn { "InsufficientPermissionException while processing giveaway ${giveaway.id.value}, cancelling giveaway..." }
-                    cancelGiveaway(giveaway, true)
-                    return@launch
+
+                    if (e.error?.code == JsonErrorCode.PermissionLack) {
+                        logger.warn { "InsufficientPermissionException while processing giveaway ${giveaway.id.value}, cancelling giveaway..." }
+                        cancelGiveaway(giveaway, true)
+                        return@launch
+                    }
                 }
 
                 logger.error(e) { "Error while processing giveaway ${giveaway.id.value}" }
@@ -346,7 +349,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         }
 
         messageReaction = if (isDiscordEmote) {
-            message.reactions.firstOrNull { it.reactionEmote.isEmote && it.reactionEmote.emote.id == reactionId }
+            message.reactions.firstOrNull { (it.reactionEmote.emote as? DiscordGuildEmote)?.id == reactionId }
         } else {
             message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
         }
@@ -356,22 +359,21 @@ class GiveawayManager(val loritta: LorittaBot) {
 
         if (messageReaction != null) {
             logger.info { "Retrieving reactions for the giveaway ${giveaway.id.value}, using ${messageReaction.count} (total reaction count) for the takeAsync(...)" }
-            val users = messageReaction.retrieveUsers()
-                    // "retrieveUsers()" uses pagination, and we want to get all the users that reacted in the giveaway
-                    // So we need to use .takeAsync(...) with a big value that would cover all reactions (in this case, we are going to use the reaction count, heh)
-                    // Before we did use Int.MAX_VALUE, but that allocates a gigantic array, whoops.
-                    // Of course, if a message has A LOT of reactions, that would cause a lot of issues, but I guess that is going to be very rare.
-                    .takeAsync(messageReaction.count)
-                    .await()
+            val users = messageReaction.retrieveUsers(messageReaction.count)
+                // "retrieveUsers()" uses pagination, and we want to get all the users that reacted in the giveaway
+                // So we need to use .takeAsync(...) with a big value that would cover all reactions (in this case, we are going to use the reaction count, heh)
+                // Before we did use Int.MAX_VALUE, but that allocates a gigantic array, whoops.
+                // Of course, if a message has A LOT of reactions, that would cause a lot of issues, but I guess that is going to be very rare.
+                .await()
 
             if (users.size == 1 && users[0].id == loritta.config.loritta.discord.applicationId.toString()) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
             } else {
                 val winners = mutableListOf<User>()
                 val reactedUsers = users
-                        .asSequence()
-                        .filter { it.id != loritta.config.loritta.discord.applicationId.toString() }
-                        .toMutableList()
+                    .asSequence()
+                    .filter { it.id != loritta.config.loritta.discord.applicationId.toString() }
+                    .toMutableList()
 
                 while (true) {
                     if (giveaway.numberOfWinners == winners.size)
@@ -388,13 +390,13 @@ class GiveawayManager(val loritta: LorittaBot) {
 
                     reactedUsers.remove(user)
                 }
-                
+
                 val messageBuilder = MessageBuilder()
 
                 if (winners.size == 1) { // Apenas um ganhador
                     val winner = winners.first()
                     messageBuilder
-                        .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+                        .setAllowedMentions(listOf(AllowedMentionType.UserMentions))
                         .setContent("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
                     message.channel.sendMessageAsync(messageBuilder.build())
                 } else { // Mais de um ganhador
@@ -421,18 +423,19 @@ class GiveawayManager(val loritta: LorittaBot) {
                     val chunkedResponse = StringUtils.chunkedLines(fullString, 1_000, forceSplit = true, forceSplitOnSpaces = true)
                     chunkedResponse.forEach {
                         messageBuilder
-                                .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
-                                .setContent(it)
+                            .setAllowedMentions(listOf(AllowedMentionType.UserMentions))
+                            .setContent(it)
                         message.channel.sendMessageAsync(messageBuilder.build())
                     }
                 }
 
                 if (giveaway.roleIds != null) { // Dar o prêmio para quem ganhou (yay!)
                     val roles = giveaway.roleIds!!.mapNotNull { message.guild.getRoleById(it) }
+                    val selfMember = message.guild.retrieveSelfMember()
 
                     winners.mapNotNull { message.guild.getMember(it) }.forEach { member ->
                         val rolesToBeGiven = roles.filter {
-                            !member.roles.contains(it) && message.guild.selfMember.canInteract(it)
+                            !member.roles.contains(it) && selfMember.canInteract(it)
                         }
 
                         if (rolesToBeGiven.isNotEmpty()) {
@@ -468,8 +471,8 @@ class GiveawayManager(val loritta: LorittaBot) {
     }
 
     private data class GiveawayCombo(
-            val guild: Guild,
-            val channel: TextChannel,
-            val message: Message
+        val guild: Guild,
+        val channel: Channel,
+        val message: Message
     )
 }

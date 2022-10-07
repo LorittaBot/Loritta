@@ -1,17 +1,17 @@
 package net.perfectdreams.loritta.morenitta.utils
 
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.utils.MiscUtil
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.entities.Channel
+import net.perfectdreams.loritta.deviousfun.queue
 import org.apache.commons.lang3.ArrayUtils
 import java.awt.Graphics
 import java.awt.Image
@@ -33,7 +33,7 @@ fun Array<String>.remove(index: Int): Array<String> {
 	return ArrayUtils.remove(this, index)
 }
 
-fun User.isLorittaSupervisor(lorittaShards: LorittaShards): Boolean {
+suspend fun User.isLorittaSupervisor(lorittaShards: LorittaShards): Boolean {
 	val lorittaGuild = lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
 	if (lorittaGuild != null) {
@@ -52,7 +52,7 @@ val gson get() = LorittaBot.GSON
 
 fun String.isValidSnowflake(): Boolean {
 	try {
-		MiscUtil.parseSnowflake(this)
+		Snowflake(this)
 		return true
 	} catch (e: NumberFormatException) {
 		return false
@@ -88,7 +88,7 @@ object LorittaUtilsKotlin {
 	 * @param legacyLocale   the user's locale
 	 * @return               if the user is banned
 	 */
-	private suspend fun handleIfBanned(loritta: LorittaBot, user: User, profile: Profile, commandChannel: MessageChannel, locale: BaseLocale): Boolean {
+	private suspend fun handleIfBanned(loritta: LorittaBot, user: User, profile: Profile, commandChannel: Channel, locale: BaseLocale): Boolean {
 		val bannedState = profile.getBannedState(loritta)
 
 		if (loritta.ignoreIds.contains(profile.userId)) { // Se o usuário está sendo ignorado...

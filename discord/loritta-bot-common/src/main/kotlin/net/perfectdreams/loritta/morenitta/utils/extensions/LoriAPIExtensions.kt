@@ -8,14 +8,14 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 
 /**
- * Converts a Loritta API [Message] to a JDA [net.dv8tion.jda.api.entities.Message]
+ * Converts a Loritta API [Message] to a JDA [net.perfectdreams.loritta.deviousfun.entities.Message]
  *
  * **Attention!** This will make the code not multiplatform! Do not use it if you don't know what you are doing!
  */
 fun Message.toJDA() = (this as DiscordMessage).handle
 
 /**
- * Converts a Loritta API [User] to a JDA [net.dv8tion.jda.api.entities.User]
+ * Converts a Loritta API [User] to a JDA [net.perfectdreams.loritta.deviousfun.entities.User]
  *
  * **Attention!** This will make the code not multiplatform! Do not use it if you don't know what you are doing!
  */
@@ -37,4 +37,4 @@ fun LorittaReply.build(context: CommandContext) = this.build(JDAUser(context.use
  * @param user the user that will be replied to
  * @return     the reply as a string
  */
-fun LorittaReply.build(user: net.dv8tion.jda.api.entities.User) = this.build(JDAUser(user))
+fun LorittaReply.build(user: net.perfectdreams.loritta.deviousfun.entities.User) = this.build(JDAUser(user))

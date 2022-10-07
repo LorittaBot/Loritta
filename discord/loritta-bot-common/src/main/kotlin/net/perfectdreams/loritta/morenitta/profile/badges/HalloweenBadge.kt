@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.profile.badges
 
 import net.perfectdreams.loritta.morenitta.dao.Profile
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.profile.Badge
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CollectedCandies
 import net.perfectdreams.loritta.morenitta.LorittaBot

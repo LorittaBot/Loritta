@@ -4,13 +4,13 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.extensions.sendMessageAsync
 import mu.KLogger
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.ChannelType
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.MessageChannel
+import dev.kord.common.entity.Permission
+import dev.kord.common.entity.ChannelType
+import net.perfectdreams.loritta.deviousfun.entities.Member
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.deviousfun.entities.Channel
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.JDAUser
 import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
@@ -25,8 +25,8 @@ object CommandUtils {
 	 * @see logMessageEventComplete
 	 */
 	fun logMessageEvent(event: LorittaMessageEvent, logger: KLogger) {
-		if (event.message.isFromType(ChannelType.TEXT)) {
-			logger.info("(${event.message.guild.name} -> ${event.message.channel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
+		if (event.message.isFromType(ChannelType.GuildText)) {
+			logger.info("(${event.message.guild!!.name} -> ${event.message.channel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
 		} else {
 			logger.info("(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay}")
 		}
@@ -41,8 +41,8 @@ object CommandUtils {
 	 * @see logMessageEvent
 	 */
 	fun logMessageEventComplete(event: LorittaMessageEvent, logger: KLogger, commandLatency: Long) {
-		if (event.message.isFromType(ChannelType.TEXT)) {
-			logger.info("(${event.message.guild.name} -> ${event.message.channel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
+		if (event.message.isFromType(ChannelType.GuildText)) {
+			logger.info("(${event.message.guild!!.name} -> ${event.message.channel.name}) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
 		} else {
 			logger.info("(Direct Message) ${event.author.name}#${event.author.discriminator} (${event.author.id}): ${event.message.contentDisplay} - OK! Processed in ${commandLatency}ms")
 		}
@@ -58,7 +58,7 @@ object CommandUtils {
 		loritta.newSuspendedTransaction {
 			ExecutedCommandsLog.insert {
 				it[userId] = event.author.idLong
-				it[ExecutedCommandsLog.guildId] = if (event.message.isFromGuild) event.message.guild.idLong else null
+				it[ExecutedCommandsLog.guildId] = if (event.message.isFromGuild) event.message.guild!!.idLong else null
 				it[channelId] = event.message.channel.idLong
 				it[sentAt] = System.currentTimeMillis()
 				it[ExecutedCommandsLog.command] = clazzName
@@ -67,7 +67,7 @@ object CommandUtils {
 		}
 	}
 
-	suspend fun checkIfCommandIsDisabledInGuild(loritta: LorittaBot, serverConfig: ServerConfig, locale: BaseLocale, channel: MessageChannel, member: Member, clazzName: String): Boolean {
+	suspend fun checkIfCommandIsDisabledInGuild(loritta: LorittaBot, serverConfig: ServerConfig, locale: BaseLocale, channel: Channel, member: Member, clazzName: String): Boolean {
 		if (serverConfig.disabledCommands.contains(clazzName)) {
 			val replies = mutableListOf(
 				LorittaReply(
@@ -76,7 +76,7 @@ object CommandUtils {
 				)
 			)
 
-			if (member.hasPermission(Permission.ADMINISTRATOR) || member.hasPermission(Permission.MANAGE_SERVER)) {
+			if (member.hasPermission(Permission.Administrator) || member.hasPermission(Permission.ManageGuild)) {
 				replies.add(
 					LorittaReply(
 						locale["commands.howToReEnableCommands", "<${loritta.config.loritta.website.url}guild/${member.guild.idLong}/configure/commands>"],

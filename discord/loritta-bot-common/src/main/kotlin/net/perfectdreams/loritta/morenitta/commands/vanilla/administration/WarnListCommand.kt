@@ -8,8 +8,8 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.arguments
@@ -34,7 +34,7 @@ class WarnListCommand(loritta: LorittaBot) : AbstractCommand(loritta, "punishmen
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.KICK_MEMBERS)
+		return listOf(Permission.KickMembers)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

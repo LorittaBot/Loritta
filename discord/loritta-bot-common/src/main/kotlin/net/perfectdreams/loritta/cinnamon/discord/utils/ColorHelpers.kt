@@ -6,3 +6,5 @@ import java.awt.Color as JavaColor
 
 fun Color.toJavaColor() = JavaColor(this.rgb, false)
 fun Color.toKordColor() = KordColor(this.rgb)
+
+fun java.awt.Color.toKordColor() = KordColor(this.rgb)

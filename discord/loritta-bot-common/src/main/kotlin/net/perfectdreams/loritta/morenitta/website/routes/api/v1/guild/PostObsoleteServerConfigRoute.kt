@@ -9,7 +9,7 @@ import io.ktor.server.application.ApplicationCall
 import io.ktor.server.request.receiveText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.InviteBlockerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.StarboardConfig

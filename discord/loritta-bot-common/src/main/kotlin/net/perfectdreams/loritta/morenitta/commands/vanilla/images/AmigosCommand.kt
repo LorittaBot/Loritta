@@ -8,11 +8,10 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.toBufferedImage
-import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.deviousfun.entities.Member
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
-import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
@@ -78,15 +77,16 @@ class AmigosCommand(loritta: LorittaBot) : AbstractCommand(loritta, "friends", l
 		context.sendFile(finalImage, "thx.png", context.getAsMention(true))
 	}
 
-	fun getRandomAvatar(context: CommandContext, choosen: MutableList<Member>): BufferedImage {
-		val list = context.guild.members.toMutableList()
+	suspend fun getRandomAvatar(context: CommandContext, choosen: MutableList<Member>): BufferedImage {
+		val guildMembers = context.guild.retrieveMembers()
+		val list = guildMembers.toMutableList()
 		list.removeAll(choosen)
 
 		var userAvatar: String? = null
 		while (userAvatar == null) {
 			if (list.isEmpty()) { // omg, lista vazia!
 				// Vamos pegar um usuário aleatório e vamos cair fora daqui!
-				userAvatar = context.guild.members.random().user.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
+				userAvatar = guildMembers.random().user.getEffectiveAvatarUrl(ImageFormat.PNG, 128)
 				break
 			}
 			val member = list[LorittaBot.RANDOM.nextInt(list.size)]
