@@ -2,10 +2,11 @@ package net.perfectdreams.loritta.deviousfun.gateway
 
 import dev.kord.gateway.DefaultGateway
 import dev.kord.gateway.Event
-import dev.kord.gateway.on
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
+import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.JDA
 import net.perfectdreams.loritta.deviousfun.listeners.KordListener
 import kotlin.time.Duration
@@ -18,6 +19,8 @@ class DeviousGateway(
     val kordGateway: DefaultGateway,
     val shardId: Int
 ) {
+    val logger = KotlinLogging.logger {}
+
     val events: SharedFlow<Event>
         get() = kordGateway.events
 
@@ -33,4 +36,6 @@ class DeviousGateway(
 public inline fun <reified T : Event> DeviousGateway.on(
     scope: CoroutineScope = this.kordGateway,
     crossinline consumer: suspend T.() -> Unit
-) = kordGateway.on(scope, consumer)
+) = kordGateway.events.buffer(Channel.UNLIMITED).filterIsInstance<T>().onEach {
+    scope.launch { it.runCatching { it.consumer() }.onFailure { logger.warn(it) { "Something went wrong while processing event ${T::class}" } } }
+}.launchIn(scope)

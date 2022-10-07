@@ -140,6 +140,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
+import redis.clients.jedis.exceptions.JedisDataException
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.InputStream
