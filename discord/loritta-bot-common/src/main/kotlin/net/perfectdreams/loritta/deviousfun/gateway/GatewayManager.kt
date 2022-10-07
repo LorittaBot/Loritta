@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.deviousfun.gateway
 
 import dev.kord.common.entity.ActivityType
+import dev.kord.common.entity.DiscordShard
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.*
 import kotlinx.coroutines.CoroutineScope
@@ -66,6 +67,8 @@ class GatewayManager(
                             else -> error("I don't know how to handle ${jda.loritta.config.loritta.discord.activity.type}!")
                         }
                     }
+
+                    shard = DiscordShard(shardId, totalShards)
                 }
             }
         }
