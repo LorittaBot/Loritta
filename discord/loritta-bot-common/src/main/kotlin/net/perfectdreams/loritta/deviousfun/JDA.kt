@@ -4,6 +4,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.json.JsonErrorCode
 import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.sync.Mutex
+import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.DeviousEventFactory
@@ -31,6 +32,10 @@ import java.util.concurrent.ConcurrentHashMap
  * * `retrieve`: Will be retrieved from Redis, or from Discord's API if not present. Throws exception if the entity does not exist.
  */
 class JDA(val loritta: LorittaBot) {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     // TODO: Caching
     // TODO: Mutex locking based on the entity ID
     val eventFactory = DeviousEventFactory(this)
@@ -84,7 +89,9 @@ class JDA(val loritta: LorittaBot) {
         if (cachedUser != null)
             return cachedUser
 
-        return cacheManager.createUser(loritta.rest.user.getUser(id), true)
+        addContextToException({ "Something went wrong while trying to query user $id" }) {
+            return cacheManager.createUser(loritta.rest.user.getUser(id), true)
+        }
     }
 
     suspend fun retrieveUserOrNullById(id: Snowflake): User? {
@@ -106,13 +113,15 @@ class JDA(val loritta: LorittaBot) {
         if (cachedMember != null)
             return cachedMember
 
-        val member = loritta.rest.guild.getGuildMember(guild.idSnowflake, id)
+        addContextToException({ "Something went wrong while trying to query member $id in guild ${guild.idSnowflake}" }) {
+            val member = loritta.rest.guild.getGuildMember(guild.idSnowflake, id)
 
-        return cacheManager.createMember(
-            cachedUser,
-            guild,
-            member
-        )
+            return cacheManager.createMember(
+                cachedUser,
+                guild,
+                member
+            )
+        }
     }
 
     suspend fun retrieveGuildById(id: Snowflake): Guild {
@@ -120,9 +129,11 @@ class JDA(val loritta: LorittaBot) {
         if (cachedGuild != null)
             return cachedGuild
 
-        val guild = loritta.rest.guild.getGuild(id, withCounts = true)
-        val channels = loritta.rest.guild.getGuildChannels(id)
-        return cacheManager.createGuild(guild, channels)
+        addContextToException({ "Something went wrong while trying to query guild $id" }) {
+            val guild = loritta.rest.guild.getGuild(id, withCounts = true)
+            val channels = loritta.rest.guild.getGuildChannels(id)
+            return cacheManager.createGuild(guild, channels)
+        }
     }
 
     suspend fun retrieveGuildOrNullById(id: Snowflake): Guild? {
@@ -141,9 +152,11 @@ class JDA(val loritta: LorittaBot) {
         if (cachedChannel != null)
             return cachedChannel
 
-        val channel = loritta.rest.channel.getChannel(id)
-        val guild = channel.guildId.value?.let { retrieveGuildById(it) }
-        return cacheManager.createChannel(guild, channel)
+        addContextToException({ "Something went wrong while trying to query channel $id" }) {
+            val channel = loritta.rest.channel.getChannel(id)
+            val guild = channel.guildId.value?.let { retrieveGuildById(it) }
+            return cacheManager.createChannel(guild, channel)
+        }
     }
 
     suspend fun retrieveChannelById(guild: Guild, id: Snowflake): Channel {
@@ -151,8 +164,10 @@ class JDA(val loritta: LorittaBot) {
         if (cachedChannel != null)
             return cachedChannel
 
-        val channel = loritta.rest.channel.getChannel(id)
-        return cacheManager.createChannel(guild, channel)
+        addContextToException({ "Something went wrong while trying to query channel $id in guild ${guild.idSnowflake}" }) {
+            val channel = loritta.rest.channel.getChannel(id)
+            return cacheManager.createChannel(guild, channel)
+        }
     }
 
     /**
@@ -161,4 +176,16 @@ class JDA(val loritta: LorittaBot) {
     suspend fun getGuildCount() = loritta.redisConnection {
         it.hlen(loritta.redisKeys.discordGuilds())
     }
+
+    private inline fun <T> addContextToException(message: () -> (String), action: () -> (T)): T {
+        try {
+            return action.invoke()
+        } catch (e: KtorRequestException) {
+            val exception = FakeExceptionForContextException(message.invoke())
+            e.addSuppressed(exception)
+            throw e
+        }
+    }
+
+    private class FakeExceptionForContextException(override val message: String) : Exception()
 }
