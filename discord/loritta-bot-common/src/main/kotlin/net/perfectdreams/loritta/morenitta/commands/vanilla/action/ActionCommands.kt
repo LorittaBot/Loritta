@@ -5,14 +5,15 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
 import net.perfectdreams.loritta.morenitta.utils.removeAllFunctions
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
@@ -159,7 +160,7 @@ private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, send
 }
 
 // Adding the "retribute" button
-private fun DiscordCommandContext.addReactionButton(loritta: LorittaBot, dsl: ActionCommandDSL, message: Message, sender: User, receiver: User) {
+private suspend fun DiscordCommandContext.addReactionButton(loritta: LorittaBot, dsl: ActionCommandDSL, message: Message, sender: User, receiver: User) {
     message.addReaction("\uD83D\uDD01").queue()
 
     message.onReactionAdd(this) {

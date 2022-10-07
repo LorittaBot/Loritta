@@ -1,12 +1,10 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.entities.TextChannel
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Role
 import net.perfectdreams.loritta.common.entities.LorittaEmote
 import net.perfectdreams.loritta.common.entities.UnicodeEmote
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -15,7 +13,9 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.entities.Channel
+import net.perfectdreams.loritta.deviousfun.queue
 
 class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
     companion object {
@@ -24,7 +24,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
     }
 
     override fun command() = create {
-        userRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
+        userRequiredPermissions = listOf(Permission.ManageMessages)
 
         canUseInPrivateChannel = false
 
@@ -164,7 +164,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
 
         message.onResponseByAuthor(context) {
             val pop = it.message.contentRaw
-            var channel: TextChannel? = null
+            var channel: Channel? = null
 
             val channels = context.guild.getTextChannelsByName(pop, true)
 
@@ -211,9 +211,9 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 return@onResponseByAuthor
             }
 
-            val lorittaAsMember = context.guild.selfMember
+            val lorittaAsMember = context.guild.retrieveSelfMember()
 
-            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_ADD_REACTION)) {
+            if (!lorittaAsMember.hasPermission(channel, Permission.AddReactions)) {
                 context.reply(
                         LorittaReply(
                                 "Não tenho permissão para reagir nesse canal!",
@@ -223,7 +223,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 return@onResponseByAuthor
             }
 
-            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_EMBED_LINKS)) {
+            if (!lorittaAsMember.hasPermission(channel, Permission.EmbedLinks)) {
                 context.reply(
                         LorittaReply(
                                 "Não tenho permissão para enviar embeds nesse canal!",
@@ -233,7 +233,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 return@onResponseByAuthor
             }
 
-            if (!lorittaAsMember.hasPermission(channel, Permission.MESSAGE_HISTORY)) {
+            if (!lorittaAsMember.hasPermission(channel, Permission.ReadMessageHistory)) {
                 context.reply(
                         LorittaReply(
                                 "Não tenho permissão para ver o histórico desse canal!",
@@ -302,8 +302,9 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         return@onResponseByAuthor
                     }
 
+                    val selfMember = context.guild.retrieveSelfMember()
                     for (role in roles) {
-                        if (!context.guild.selfMember.canInteract(role) || role.isManaged) {
+                        if (!selfMember.canInteract(role) || role.isManaged) {
                             context.reply(
                                     LorittaReply(
                                             locale["commands.command.giveaway.giveawayCantInteractWithRole", "`${role.name}`"],
@@ -377,7 +378,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
         }
     }
 
-    suspend fun buildGiveaway(message: net.dv8tion.jda.api.entities.Message, context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
+    suspend fun buildGiveaway(message: net.perfectdreams.loritta.deviousfun.entities.Message, context: DiscordCommandContext, locale: BaseLocale, builder: GiveawayBuilder) {
         val (reason, description, time, reaction, channel, numberOfWinners, roleIds) = builder
 
         val epoch = TimeUtils.convertToMillisRelativeToNow(time)
@@ -399,7 +400,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
         )
     }
 
-    fun addCancelOption(context: DiscordCommandContext, message: net.dv8tion.jda.api.entities.Message) {
+    suspend fun addCancelOption(context: DiscordCommandContext, message: net.perfectdreams.loritta.deviousfun.entities.Message) {
         message.onReactionAddByAuthor(context) {
             if (it.reactionEmote.idLong == 412585701054611458L) {
                 message.delete().await()
@@ -420,7 +421,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
         var description: String? = null
         var duration: String? = null
         var reaction: LorittaEmote? = null
-        var channel: TextChannel? = null
+        var channel: Channel? = null
         var numberOfWinners: Int? = null
         var roleIds: List<String>? = null
 
@@ -440,7 +441,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
             return reaction!!
         }
 
-        operator fun component5(): TextChannel {
+        operator fun component5(): Channel {
             return channel!!
         }
 

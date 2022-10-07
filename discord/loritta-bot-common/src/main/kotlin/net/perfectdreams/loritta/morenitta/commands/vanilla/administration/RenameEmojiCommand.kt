@@ -1,6 +1,6 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
-import net.dv8tion.jda.api.Permission
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -27,8 +27,8 @@ class RenameEmojiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 
         canUseInPrivateChannel = false
 
-        botRequiredPermissions = listOf(Permission.MANAGE_EMOTES)
-        userRequiredPermissions = listOf(Permission.MANAGE_EMOTES)
+        botRequiredPermissions = listOf(Permission.ManageEmojisAndStickers)
+        userRequiredPermissions = listOf(Permission.ManageEmojisAndStickers)
 
         executesDiscord {
             val context = this
@@ -77,8 +77,8 @@ class RenameEmojiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
                     argumentChangeName
                 }
 
-                if (emote.canInteract(context.guild.selfMember)) {
-                    emote.manager.setName(emoteName).queue()
+                if (emote.canInteract(context.guild.retrieveSelfMember())) {
+                    emote.setName(emoteName)
                     context.reply(
                             LorittaReply(
                                     locale["$LOCALE_PREFIX.renameemoji.renameSucess"],

@@ -40,18 +40,6 @@ class ReloadCommand(loritta: LorittaBot) : AbstractCommand(loritta, "reload", ca
 			Emotes.emoteManager?.loadEmotes()
 			return
 		}
-		if (arg0 == "shard") {
-			val shardId = context.rawArgs.getOrNull(1)!!.split(",").map { it.toInt() }
-			shardId.forEach {
-				loritta.lorittaShards.shardManager.restart(it)
-			}
-			context.reply(
-                    LorittaReply(
-                            message = "Shard $shardId está sendo reiniciada... Gotta go fast!!!"
-                    )
-			)
-			return
-		}
 		if (arg0 == "locales") {
 			loritta.localeManager.loadLocales()
 			loritta.loadLegacyLocales()
@@ -140,35 +128,6 @@ class ReloadCommand(loritta: LorittaBot) : AbstractCommand(loritta, "reload", ca
 			context.reply(
                     LorittaReply(
                             "Website ligado!"
-                    )
-			)
-			return
-		}
-
-		if (arg0 == "exportdate") {
-			val dates = mutableMapOf<String, Int>()
-
-			val file = File("./date_export.txt")
-			file.delete()
-
-			loritta.lorittaShards.getGuilds().forEach {
-				val self = it.selfMember
-				val year = self.timeJoined.year
-				val month = self.timeJoined.monthValue
-
-				val padding = month.toString().padStart(2, '0')
-				dates.put("$year-$padding", dates.getOrDefault("$year-$padding", 0) + 1)
-			}
-
-			val sorted = dates.entries.sortedBy { it.key }
-
-			val servers = sorted.sumBy { it.value }
-
-			file.writeText(sorted.joinToString("\n", transform = { it.key + " - " + it.value + " servidores"}) + "\n\nTotal: ${servers} servidores")
-
-			context.reply(
-                    LorittaReply(
-                            "Datas exportadas!"
                     )
 			)
 			return

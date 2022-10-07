@@ -13,13 +13,14 @@ import io.ktor.server.request.*
 import io.ktor.server.sessions.*
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHeader
@@ -178,7 +179,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 
 								if (member != null) {
 									// E, se o membro não for um bot e possui permissão de gerenciar o servidor ou permissão de administrador...
-									if (!user.isBot && (member.hasPermission(Permission.MANAGE_SERVER) || member.hasPermission(Permission.ADMINISTRATOR))) {
+									if (!user.isBot && (member.hasPermission(Permission.ManageGuild) || member.hasPermission(Permission.Administrator))) {
 										// Verificar coisas antes de adicionar a Lori
 										val blacklisted = loritta.newSuspendedTransaction {
 											BlacklistedGuilds.select {

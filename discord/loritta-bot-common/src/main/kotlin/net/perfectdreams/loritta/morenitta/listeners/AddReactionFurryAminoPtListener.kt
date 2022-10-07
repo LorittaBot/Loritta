@@ -1,14 +1,15 @@
 package net.perfectdreams.loritta.morenitta.listeners
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.events.message.guild.react.GuildMessageReactionAddEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.events.message.react.MessageReactionAddEvent
+import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter() {
@@ -18,29 +19,32 @@ class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter
 
     val config = loritta.config.loritta.quirky
 
-    override fun onGuildMessageReactionAdd(event: GuildMessageReactionAddEvent) {
+    override fun onGuildMessageReactionAdd(event: MessageReactionAddEvent) {
+        val guild = event.guild ?: return
+        val member = event.member ?: return
+
         if (!event.reactionEmote.isEmote
             || event.reactionEmote.idLong != 593161404937404416L)
             return
 
-        val securityRole = event.guild.getRoleById(FurryAmino.SECURITY_ROLE_ID)
-        val adminRole = event.guild.getRoleById(FurryAmino.ADMINISTRATOR_ROLE_ID)
+        val securityRole = guild.getRoleById(FurryAmino.SECURITY_ROLE_ID)
+        val adminRole = guild.getRoleById(FurryAmino.ADMINISTRATOR_ROLE_ID)
 
-        if (event.member.roles.contains(securityRole) || event.member.roles.contains(adminRole)) {
+        if (member.roles.contains(securityRole) || member.roles.contains(adminRole)) {
             GlobalScope.launch {
                 val message = event.channel.retrieveMessageById(event.messageIdLong).await()
                 message.delete().queue()
 
-                val registry = event.guild.getTextChannelById(FurryAmino.LOG_REGISTRY_ID)
+                val registry = guild.getTextChannelById(FurryAmino.LOG_REGISTRY_ID)
 
                 // Mandar no registro
-                registry?.sendMessage("${Emotes.LORI_HEART} **Registro de ${message.author.asMention} (`${message.author.name}#${message.author.discriminator}`), aprovado por ${event.user.asMention}**\n\n${message.contentRaw}")
+                registry?.sendMessage("${Emotes.LORI_HEART} **Registro de ${message.author.asMention} (`${message.author.name}#${message.author.discriminator}`), aprovado por ${event.user?.asMention}**\n\n${message.contentRaw}")
                     ?.queue()
 
                 // Remover cargos e tals
-                val furriesRole = event.guild.getRoleById(FurryAmino.FURRIES_ROLE_ID)!!
+                val furriesRole = guild.getRoleById(FurryAmino.FURRIES_ROLE_ID)!!
 
-                event.guild.addRoleToMember(message.member!!, furriesRole).queue()
+                guild.addRoleToMember(message.member!!, furriesRole).queue()
 
                 try {
                     val channel = message.author.openPrivateChannel().await()

@@ -15,6 +15,9 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.parallax.ParallaxMessage
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.TokenSource
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPlaceholder
+import net.perfectdreams.loritta.deviousfun.cache.DeviousChannelData
+import net.perfectdreams.loritta.deviousfun.cache.DeviousGuildEmojiData
+import net.perfectdreams.loritta.deviousfun.cache.DeviousRoleData
 
 object MessageUtils {
     private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
@@ -43,9 +46,9 @@ object MessageUtils {
         message: String,
         sources: List<TokenSource>,
         tokens: Map<String, String?>,
-        roles: List<DiscordRole>,
-        channels: List<DiscordChannel>,
-        emojis: List<DiscordEmoji>
+        roles: List<DeviousRoleData>,
+        channels: List<DeviousChannelData>,
+        emojis: List<DeviousGuildEmojiData>
     ): ParallaxMessage {
         // TODO: Proper message validation?
 
@@ -67,7 +70,7 @@ object MessageUtils {
             }
         }
 
-        if ((rawParallaxMessage.content == null || rawParallaxMessage.content.isBlank()) && rawParallaxMessage.embeds.isEmpty()) {
+        if (rawParallaxMessage.content.isNullOrBlank() && rawParallaxMessage.embeds.isEmpty()) {
             // The user configured a message with no content, let's bail out.
             // TODO: More verifications
             return INVALID_MESSAGE_CONFIGURED
@@ -123,24 +126,24 @@ object MessageUtils {
     private fun replaceTokensIfNotNull(
         text: String?,
         tokens: Map<String, String?>,
-        roles: List<DiscordRole>,
-        channels: List<DiscordChannel>,
-        emojis: List<DiscordEmoji>
+        roles: List<DeviousRoleData>,
+        channels: List<DeviousChannelData>,
+        emojis: List<DeviousGuildEmojiData>
     ) = text?.let { replaceTokens(text, tokens, roles, channels, emojis) }
 
     private fun replaceTokens(
         text: String,
         tokens: Map<String, String?>,
-        roles: List<DiscordRole>,
-        channels: List<DiscordChannel>,
-        emojis: List<DiscordEmoji>
+        roles: List<DeviousRoleData>,
+        channels: List<DeviousChannelData>,
+        emojis: List<DeviousGuildEmojiData>
     ) = replaceLorittaTokens(replaceDiscordEntities(text, roles, channels, emojis), tokens) // First the Discord Entities, then our user tokens
 
     private fun replaceDiscordEntities(
         text: String,
-        roles: List<DiscordRole>,
-        channels: List<DiscordChannel>,
-        emojis: List<DiscordEmoji>
+        roles: List<DeviousRoleData>,
+        channels: List<DeviousChannelData>,
+        emojis: List<DeviousGuildEmojiData>
     ): String {
         var message = text
 
@@ -149,7 +152,7 @@ object MessageUtils {
         }
 
         for (channel in channels) {
-            val name = channel.name.value ?: continue
+            val name = channel.name ?: continue
             if (name.isBlank())
                 continue
             message = text.replace("#$name", "<#${channel.id}>")
@@ -168,7 +171,7 @@ object MessageUtils {
             if (guildEmoji != null) {
                 buildString {
                     append("<")
-                    if (guildEmoji.animated.discordBoolean)
+                    if (guildEmoji.animated)
                         append("a")
                     append(":")
                     append(guildEmoji.name)

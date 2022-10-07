@@ -4,9 +4,9 @@ import com.google.common.collect.Sets
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Member
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
 import org.jetbrains.exposed.sql.and
@@ -140,7 +140,7 @@ open class LorittaUser(val loritta: LorittaBot, val user: User, val permissions:
 	/**
 	 * Verifica se o usuário tem permissão para utilizar um comando
 	 */
-	open fun canUseCommand(context: CommandContext): Boolean {
+	open suspend fun canUseCommand(context: CommandContext): Boolean {
 		// A coisa mais importante a se verificar é se o comando só pode ser executado pelo dono (para não causar problemas)
 		if (context.cmd.onlyOwner && !loritta.isOwner(context.userHandle.id))
 			return false
@@ -159,7 +159,7 @@ class GuildLorittaUser(loritta: LorittaBot, val member: Member, permissions: Enu
 	/**
 	 * Verifica se o usuário tem permissão para utilizar um comando
 	 */
-	override fun canUseCommand(context: CommandContext): Boolean {
+	override suspend fun canUseCommand(context: CommandContext): Boolean {
 		if (!super.canUseCommand(context))
 			return false
 

@@ -3,8 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.social
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
-import net.dv8tion.jda.api.Permission
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -20,7 +19,7 @@ class EditarXPCommand(loritta: LorittaBot) : AbstractCommand(loritta, "editxp", 
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_SERVER)
+		return listOf(Permission.ManageGuild)
 	}
 
 	override fun getUsage() = arguments {

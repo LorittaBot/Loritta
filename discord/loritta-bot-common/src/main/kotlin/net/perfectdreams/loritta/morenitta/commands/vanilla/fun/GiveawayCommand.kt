@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import java.awt.Color
@@ -12,7 +12,7 @@ class GiveawayCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta,
 	}
 
 	override fun command() = create {
-		userRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
+		userRequiredPermissions = listOf(Permission.ManageMessages)
 
 		canUseInPrivateChannel = false
 

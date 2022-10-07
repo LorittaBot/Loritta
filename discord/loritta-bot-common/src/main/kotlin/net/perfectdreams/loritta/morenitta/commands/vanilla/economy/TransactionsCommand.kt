@@ -4,8 +4,8 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.utils.onReactionByAuthor
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Message
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.entities.Message
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply

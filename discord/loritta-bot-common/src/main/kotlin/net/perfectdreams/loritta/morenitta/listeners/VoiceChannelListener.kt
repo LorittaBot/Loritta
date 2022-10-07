@@ -9,12 +9,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.VoiceChannel
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
+import net.perfectdreams.loritta.deviousfun.entities.Channel
+import net.perfectdreams.loritta.deviousfun.entities.Member
+import net.perfectdreams.loritta.deviousfun.events.guild.voice.GuildVoiceJoinEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.voice.GuildVoiceLeaveEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.voice.GuildVoiceMoveEvent
+import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import java.util.concurrent.TimeUnit
 
 class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
@@ -57,7 +57,7 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 		onVoiceChannelLeave(event.member, event.channelLeft)
 	}
 
-	fun onVoiceChannelConnect(member: Member, channelJoined: VoiceChannel) {
+	fun onVoiceChannelConnect(member: Member, channelJoined: Channel) {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val mutex = mutexes.getOrPut(channelJoined.idLong) { Mutex() }
 
@@ -69,7 +69,7 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 		}
 	}
 
-	fun onVoiceChannelLeave(member: Member, channelLeft: VoiceChannel) {
+	fun onVoiceChannelLeave(member: Member, channelLeft: Channel) {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val mutex = mutexes.getOrPut(channelLeft.idLong) { Mutex() }
 

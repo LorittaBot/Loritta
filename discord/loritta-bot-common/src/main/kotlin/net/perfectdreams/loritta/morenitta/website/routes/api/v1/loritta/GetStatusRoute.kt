@@ -34,7 +34,8 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 				"total" to totalMemory
 			),
 			"threadCount" to ManagementFactory.getThreadMXBean().threadCount,
-			"globalRateLimitHits" to loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute(),
+			// TODO - DeviousFun
+			// "globalRateLimitHits" to loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute(),
 			"isIgnoringRequests" to loritta.rateLimitChecker.checkIfRequestShouldBeIgnored(),
 			"pendingMessages" to loritta.pendingMessages.size,
 			"minShard" to currentShard.minShard,
@@ -44,14 +45,15 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 
 		val array = jsonArray()
 
-		for (shard in loritta.lorittaShards.shardManager.shards) {
+		// TODO - DeviousFun
+		for (shard in loritta.lorittaShards.getShards()) {
 			array.add(
 				jsonObject(
-					"id" to shard.shardInfo.shardId,
-					"ping" to shard.gatewayPing,
-					"status" to shard.status.toString(),
-					"guildCount" to shard.guildCache.size(),
-					"userCount" to shard.userCache.size()
+					"id" to shard.shardId,
+					"ping" to shard.ping.value?.inWholeMilliseconds,
+					// "status" to shard.status.toString(),
+					// "guildCount" to shard.guildCache.size(),
+					// "userCount" to shard.userCache.size()
 				)
 			)
 		}

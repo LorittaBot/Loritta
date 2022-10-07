@@ -25,12 +25,13 @@ object EnableBoostExecutor : LoriToolsCommand.LoriToolsExecutor {
 		}
 		user as JDAUser
 
-		val member = context.discordMessage.guild.getMember(user.handle) ?: run {
+		// TODO - DeviousFun
+		/* val member = context.discordMessage.guild.getMember(user.handle) ?: run {
 			context.sendMessage("Usuário não está na guild atual!")
 			return@task true
 		}
 
-		NitroBoostUtils.onBoostActivate(loritta, member)
+		NitroBoostUtils.onBoostActivate(loritta, member) */
 
 		context.reply(
 				LorittaReply(

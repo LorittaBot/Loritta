@@ -1,19 +1,22 @@
 package net.perfectdreams.loritta.morenitta.events
 
+import dev.kord.common.entity.ChannelType
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.*
+import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.entities.*
+import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 
 class LorittaMessageEvent(
+    val gateway: DeviousGateway,
     val author: User,
     val member: Member?,
     val message: Message,
     val messageId: String,
     val guild: Guild?,
-    val channel: MessageChannel,
-    val textChannel: TextChannel?,
+    val channel: Channel,
+    val textChannel: Channel?,
     val serverConfig: ServerConfig,
     val locale: BaseLocale,
     val lorittaUser: LorittaUser

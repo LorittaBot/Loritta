@@ -239,7 +239,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		)
 	}
 
-	fun transformUserToProfileUserInfoData(user: net.dv8tion.jda.api.entities.User) = ProfileUserInfoData(
+	fun transformUserToProfileUserInfoData(user: net.perfectdreams.loritta.deviousfun.entities.User) = ProfileUserInfoData(
 		Snowflake(user.idLong),
 		user.name,
 		user.discriminator,
@@ -261,7 +261,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 		user.publicFlags ?: UserFlags {}
 	)
 
-	fun transformGuildToProfileGuildInfoData(guild: net.dv8tion.jda.api.entities.Guild) = ProfileGuildInfoData(
+	fun transformGuildToProfileGuildInfoData(guild: net.perfectdreams.loritta.deviousfun.entities.Guild) = ProfileGuildInfoData(
 		Snowflake(guild.idLong),
 		guild.name,
 		guild.iconUrl,

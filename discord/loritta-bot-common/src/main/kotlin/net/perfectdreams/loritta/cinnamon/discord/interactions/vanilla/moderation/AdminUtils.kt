@@ -198,6 +198,7 @@ object AdminUtils {
         }
     }
 
+    // TODO - DeviousFun: Merge this with PermissionInteractionUtils
     suspend fun canInteract(guild: Guild, issuers: List<User>, targets: List<User>): Map<User, List<InteractionCheck>> {
         val interactionChecks = mutableMapOf<User, List<InteractionCheck>>()
 

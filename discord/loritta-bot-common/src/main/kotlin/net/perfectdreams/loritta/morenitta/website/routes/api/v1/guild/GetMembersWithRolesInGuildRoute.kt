@@ -22,7 +22,7 @@ class GetMembersWithRolesInGuildRoute(loritta: LorittaBot) : RequiresAPIAuthenti
 
 		val roles = roleList.split(",").map { guild.getRoleById(it) }
 
-		val membersWithRoles = guild.members.filter {  member ->
+		val membersWithRoles = guild.retrieveMembers().filter { member ->
 			val rolesTheUserHas = roles.filter { role ->
 				member.roles.contains(role)
 			}

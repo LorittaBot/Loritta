@@ -10,19 +10,18 @@ import net.perfectdreams.loritta.morenitta.tables.Dailies
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.editMessageIfContentWasChanged
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Member
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.entities.Member
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
@@ -185,7 +184,8 @@ object NitroBoostUtils {
 		}
 	}
 
-	internal fun updateValidBoostServers(loritta: LorittaBot, config: LorittaConfig.DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = update@{
+	// TODO - DeviousFun
+	/* internal fun updateValidBoostServers(loritta: LorittaBot, config: LorittaConfig.DonatorsOstentationConfig): suspend CoroutineScope.() -> Unit = update@{
 		while (true) {
 			delay(60_000)
 			logger.info { "Updating Valid Guild Boost Messages..." }
@@ -242,7 +242,7 @@ object NitroBoostUtils {
 				logger.info(e) { "Something went wrong while updating the nitro servers messages" }
 			}
 		}
-	}
+	} */
 
 	suspend fun onBoostActivate(loritta: LorittaBot, member: Member) {
 		val guild = member.guild

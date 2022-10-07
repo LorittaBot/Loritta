@@ -6,7 +6,7 @@ import com.google.gson.JsonObject
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.listeners.DiscordListener
 import net.perfectdreams.loritta.morenitta.utils.counter.CounterThemes
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MemberCounterChannelConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.MemberCounterChannelConfigs

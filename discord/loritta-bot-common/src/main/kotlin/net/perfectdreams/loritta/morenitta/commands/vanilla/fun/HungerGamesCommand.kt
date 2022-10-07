@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import io.ktor.client.request.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -36,7 +36,7 @@ class HungerGamesCommand(m: LorittaBot) : DiscordAbstractCommandBase(m, listOf("
             OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "hungergames")
 
             val users = mutableListOf<User>()
-            val copyOfTheGuildUserList = guild.members.map { it.user }
+            val copyOfTheGuildUserList = guild.retrieveMembers().map { it.user }
                     .toMutableList()
 
             for (index in 0 until 24) {

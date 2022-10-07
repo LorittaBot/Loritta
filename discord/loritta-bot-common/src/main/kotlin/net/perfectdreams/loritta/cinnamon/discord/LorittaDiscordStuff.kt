@@ -13,7 +13,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
-import net.perfectdreams.loritta.cinnamon.discord.utils.BetterSTRecoveringKtorRequestHandler
+import net.perfectdreams.loritta.morenitta.utils.BetterSTRecoveringKtorRequestHandler
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
 import net.perfectdreams.loritta.cinnamon.discord.utils.config.LorittaDiscordConfig

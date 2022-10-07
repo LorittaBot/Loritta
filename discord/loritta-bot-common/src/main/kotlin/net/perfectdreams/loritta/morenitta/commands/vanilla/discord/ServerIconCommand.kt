@@ -2,15 +2,17 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
 import com.github.salomonbrys.kotson.nullString
 import com.google.gson.JsonObject
+import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -29,7 +31,7 @@ class ServerIconCommand(loritta: LorittaBot) : AbstractCommand(loritta, "serveri
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "server icon")
 
-		var guild: JsonObject? = null
+		var guild: Guild? = null
 
 		var guildId = context.guild.idLong
 
@@ -37,10 +39,10 @@ class ServerIconCommand(loritta: LorittaBot) : AbstractCommand(loritta, "serveri
 			val id = context.rawArgs.first()
 			if (id.isValidSnowflake()) {
 				guildId = id.toLong()
-				guild = loritta.lorittaShards.queryGuildById(context.args[0])
+				guild = loritta.deviousFun.retrieveGuildOrNullById(Snowflake(context.args[0]))
 			}
 		} else {
-			guild = loritta.lorittaShards.queryGuildById(context.guild.idLong)
+			guild = loritta.deviousFun.retrieveGuildOrNullById(context.guild.idSnowflake)
 		}
 
 		if (guild == null) {
@@ -53,8 +55,8 @@ class ServerIconCommand(loritta: LorittaBot) : AbstractCommand(loritta, "serveri
 			return
 		}
 
-		val name = guild["name"].nullString
-		val iconUrl = guild["iconUrl"].nullString
+		val name = guild.name
+		val iconUrl = guild.iconUrl
 
 		if (iconUrl == null) {
 			context.reply(

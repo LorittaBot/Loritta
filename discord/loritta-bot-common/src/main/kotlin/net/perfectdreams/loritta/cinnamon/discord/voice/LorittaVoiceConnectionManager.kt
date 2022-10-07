@@ -13,6 +13,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
+import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -36,7 +37,7 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
     suspend fun getOrCreateVoiceConnection(
         guildId: Snowflake,
         channelId: Snowflake
-    ) = getOrCreateVoiceConnection(loritta.lorittaShards.gatewayManager.getGatewayForGuild(guildId), guildId, channelId)
+    ): LorittaVoiceConnection = getOrCreateVoiceConnection(loritta.gatewayManager.getGatewayForGuild(guildId), guildId, channelId)
 
     /**
      * Gets or creates a [LorittaVoiceConnection] on the [guildId] and [channelId]
@@ -48,7 +49,7 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
      */
     @OptIn(KordVoice::class)
     suspend fun getOrCreateVoiceConnection(
-        gateway: Gateway,
+        gateway: DeviousGateway,
         guildId: Snowflake,
         channelId: Snowflake
     ): LorittaVoiceConnection {
@@ -63,7 +64,7 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
             val audioProvider = LorittaAudioProvider(notificationChannel)
 
             val vc = VoiceConnection(
-                gateway,
+                gateway.kordGateway,
                 loritta.config.loritta.discord.applicationId,
                 channelId,
                 guildId

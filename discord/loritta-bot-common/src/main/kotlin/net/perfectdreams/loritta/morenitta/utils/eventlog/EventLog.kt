@@ -9,25 +9,20 @@ import club.minnced.discord.webhook.send.WebhookMessageBuilder
 import com.github.benmanes.caffeine.cache.Caffeine
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.StoredMessage
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.entities.VoiceChannel
-import net.dv8tion.jda.api.entities.Webhook
-import net.dv8tion.jda.api.entities.WebhookType
+import dev.kord.common.entity.Permission
+import dev.kord.common.entity.WebhookType
 import net.perfectdreams.loritta.common.exposed.dao.CachedDiscordWebhook
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.webhooks.WebhookState
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
 import org.json.JSONException
@@ -88,7 +83,7 @@ object EventLog {
 	// This is doesn't wrap in a mutex, that's why it is private
 	// The reason it starts with a underscore is because it is a private method and I can't find another good name for it
 	// The reason this is a separate method is to avoid deadlocking due to accessing an already locked mutex when trying to retrieve the webhook
-	private suspend fun _sendMessageInEventLogViaWebhook(loritta: LorittaBot, message: WebhookMessage, guild: Guild, channel: TextChannel): Boolean {
+	private suspend fun _sendMessageInEventLogViaWebhook(loritta: LorittaBot, message: WebhookMessage, guild: Guild, channel: Channel): Boolean {
 		// From SocialRelayer, changed a bit to use JDA
 		val channelId = channel.idLong
 
@@ -119,7 +114,7 @@ object EventLog {
 			logger.info { "First available webhook of $channelId to send a message is missing, trying to pull webhooks from the channel..." }
 
 			try {
-				if (!guild.selfMember.hasPermission(channel, Permission.MANAGE_WEBHOOKS)) {
+				if (!guild.retrieveSelfMember().hasPermission(channel, Permission.ManageWebhooks)) {
 					logger.warn { "Failed to get webhook in channel $channelId due to lack of manage webhooks permission" }
 
 					withContext(Dispatchers.IO) {
@@ -140,7 +135,7 @@ object EventLog {
 
 				// Webhooks created by users or bots are INCOMING and we only want to get webhooks created by Loritta!
 				// See: https://github.com/discord/discord-api-docs/issues/3056
-				val firstAvailableWebhook = webhooks.firstOrNull { it.type == WebhookType.INCOMING && it.ownerAsUser?.idLong == guild.selfMember.idLong }
+				val firstAvailableWebhook = webhooks.firstOrNull { it.type == WebhookType.Incoming && it.ownerAsUser?.idLong == guild.retrieveSelfMember().idLong }
 				var createdWebhook: Webhook? = null
 
 				// Oh no, there isn't any webhooks available, let's create one!
@@ -277,11 +272,11 @@ object EventLog {
 				val textChannel = message.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
 
 				if (textChannel.canTalk()) {
-					if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+					if (!message.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
 						return
-					if (!message.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+					if (!message.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
 						return
-					if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+					if (!message.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
 						return
 
 					val storedMessage = loritta.newSuspendedTransaction {
@@ -299,8 +294,8 @@ object EventLog {
 						sendMessageInEventLogViaWebhook(
 							loritta,
 							WebhookMessageBuilder()
-								.setUsername(message.guild.selfMember.user.name)
-								.setAvatarUrl(message.guild.selfMember.user.effectiveAvatarUrl)
+								.setUsername(message.guild.retrieveSelfMember().user.name)
+								.setAvatarUrl(message.guild.retrieveSelfMember().user.effectiveAvatarUrl)
 								.setContent(" ")
 								.addEmbeds(embed.build())
 								.build(),
@@ -321,7 +316,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onVoiceJoin(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelJoined: VoiceChannel) {
+	suspend fun onVoiceJoin(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelJoined: Channel) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -331,11 +326,11 @@ object EventLog {
 
 				if (!textChannel.canTalk())
 					return
-				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+				if (!member.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
 					return
-				if (!member.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+				if (!member.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
 					return
-				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+				if (!member.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
 					return
 
 				val embed = WebhookEmbedBuilder()
@@ -348,8 +343,8 @@ object EventLog {
 				sendMessageInEventLogViaWebhook(
 					loritta,
 					WebhookMessageBuilder()
-						.setUsername(member.guild.selfMember.user.name)
-						.setAvatarUrl(member.guild.selfMember.user.effectiveAvatarUrl)
+						.setUsername(member.guild.retrieveSelfMember().user.name)
+						.setAvatarUrl(member.guild.retrieveSelfMember().user.effectiveAvatarUrl)
 						.setContent(" ")
 						.addEmbeds(embed.build())
 						.build(),
@@ -363,7 +358,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onVoiceLeave(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelLeft: VoiceChannel) {
+	suspend fun onVoiceLeave(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelLeft: Channel) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -372,11 +367,11 @@ object EventLog {
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 				if (!textChannel.canTalk())
 					return
-				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
+				if (!member.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
 					return
-				if (!member.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
+				if (!member.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
 					return
-				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
+				if (!member.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
 					return
 
 				val embed = WebhookEmbedBuilder()
@@ -389,8 +384,8 @@ object EventLog {
 				sendMessageInEventLogViaWebhook(
 					loritta,
 					WebhookMessageBuilder()
-						.setUsername(member.guild.selfMember.user.name)
-						.setAvatarUrl(member.guild.selfMember.user.effectiveAvatarUrl)
+						.setUsername(member.guild.retrieveSelfMember().user.name)
+						.setAvatarUrl(member.guild.retrieveSelfMember().user.effectiveAvatarUrl)
 						.setContent(" ")
 						.addEmbeds(embed.build())
 						.build(),

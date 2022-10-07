@@ -1,20 +1,21 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
-import net.dv8tion.jda.api.requests.ErrorResponse
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import dev.kord.common.entity.Permission
+import dev.kord.rest.json.JsonErrorCode
+import dev.kord.rest.request.KtorRequestException
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.queue
 
 class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
     override fun command() = create {
@@ -27,8 +28,8 @@ class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
             }
         }
 
-        userRequiredPermissions = listOf(Permission.BAN_MEMBERS)
-        botRequiredPermissions = listOf(Permission.BAN_MEMBERS)
+        userRequiredPermissions = listOf(Permission.BanMembers)
+        botRequiredPermissions = listOf(Permission.BanMembers)
 
         executesDiscord {
             val userId = args.getOrNull(0) ?: explainAndExit()
@@ -61,8 +62,8 @@ class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
                     return@onReactionAddByAuthor
                 }
 
-            } catch (e: ErrorResponseException) {
-                if (e.errorResponse == ErrorResponse.UNKNOWN_BAN)
+            } catch (e: KtorRequestException) {
+                if (e.error?.code == JsonErrorCode.UnknownBan)
                     fail(locale["commands.command.baninfo.banDoesNotExist"])
                 throw e
             }

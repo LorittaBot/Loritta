@@ -13,14 +13,17 @@ import dev.kord.common.annotation.KordUnsafe
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.entity.User
+import dev.kord.gateway.*
 import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.ratelimit.ParallelRequestRateLimiter
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.request.KtorRequestHandler
 import dev.kord.rest.request.StackTraceRecoveringKtorRequestHandler
+import dev.kord.rest.request.withStackTraceRecovery
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
+import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -46,15 +49,7 @@ import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import mu.KotlinLogging
-import net.dv8tion.jda.api.entities.Activity
-import net.dv8tion.jda.api.events.Event
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
-import net.dv8tion.jda.api.requests.GatewayIntent
-import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
-import net.dv8tion.jda.api.utils.ChunkingFilter
-import net.dv8tion.jda.api.utils.MemberCachePolicy
-import net.dv8tion.jda.api.utils.cache.CacheFlag
+import net.perfectdreams.loritta.deviousfun.events.Event
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
@@ -72,6 +67,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxWarner
 import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.PendingImportantNotificationsProcessor
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.DiscordCacheService
+import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.ZstdDictionaries
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionOCRClient
@@ -96,7 +92,6 @@ import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.locale.LocaleManager
 import net.perfectdreams.loritta.morenitta.platform.discord.DiscordEmoteManager
-import net.perfectdreams.loritta.morenitta.platform.discord.utils.BucketedController
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.RateLimitChecker
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
@@ -113,6 +108,9 @@ import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
+import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.events.message.create.MessageReceivedEvent
+import net.perfectdreams.loritta.morenitta.cache.BinaryCacheTransformers
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
@@ -207,13 +205,13 @@ class LorittaBot(
 
 	@OptIn(KordUnsafe::class)
 	val rest = RestClient(
-		BetterSTRecoveringKtorRequestHandler(
+		MetricsKtorRequestHandler(
 			KtorRequestHandler(
 				config.loritta.discord.token,
 				// By default, Kord uses ExclusionRequestRateLimiter, and that suspends all coroutines if a request is ratelimited
 				// So we need to use the ParallelRequestRateLimiter
 				requestRateLimiter = ParallelRequestRateLimiter()
-			)
+			).withStackTraceRecovery()
 		)
 	)
 
@@ -223,6 +221,11 @@ class LorittaBot(
 			StackTraceRecoveringKtorRequestHandler(KtorRequestHandler(it.token))
 		}
 	}
+
+	val zstdDictionaries = ZstdDictionaries()
+	val binaryCacheTransformers = BinaryCacheTransformers(zstdDictionaries)
+	val deviousFun = JDA(this)
+	val gatewayManager = deviousFun.gatewayManager
 
 	val cache = DiscordCacheService(this)
 
@@ -265,7 +268,7 @@ class LorittaBot(
 	val coinFlipBetUtils = CoinFlipBetUtils(this)
 
 	// ===[ LORITTA ]===
-	lateinit var lorittaShards: LorittaShards
+	val lorittaShards = LorittaShards(this)
 	val webhookExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors(), ThreadFactoryBuilder().setNameFormat("Webhook Sender %d").build())
 	val webhookOkHttpClient = OkHttpClient()
 
@@ -280,10 +283,8 @@ class LorittaBot(
 	var messageListener = MessageListener(this)
 	var voiceChannelListener = VoiceChannelListener(this)
 	var discordMetricsListener = DiscordMetricsListener(this)
-	val gatewayRelayerListener = GatewayEventRelayerListener(this)
 	val addReactionFurryAminoPtListener = AddReactionFurryAminoPtListener(this)
 	val boostGuildListener = BoostGuildListener(this)
-	var builder: DefaultShardManagerBuilder
 
 	lateinit var raffleThread: RaffleThread
 	lateinit var bomDiaECia: BomDiaECia
@@ -293,11 +294,9 @@ class LorittaBot(
 
 	var twitch = TwitchAPI(config.loritta.twitch.clientId, config.loritta.twitch.clientSecret)
 	val connectionManager = ConnectionManager(this)
-	var patchData = PatchData()
 	var sponsors: List<Sponsor> = listOf()
 	val cachedRetrievedArtists = CacheBuilder.newBuilder().expireAfterWrite(7, TimeUnit.DAYS)
 		.build<Long, Optional<CachedUserInfo>>()
-	var bucketedController: BucketedController? = null
 	val rateLimitChecker = RateLimitChecker(this)
 
 	val perfectPaymentsClient = PerfectPaymentsClient(config.loritta.perfectPayments.url)
@@ -388,18 +387,8 @@ class LorittaBot(
 		TEMP = config.loritta.folders.temp
 		FRONTEND = config.loritta.folders.website
 
-		val dispatcher = Dispatcher()
-		dispatcher.maxRequestsPerHost = config.loritta.discord.maxRequestsPerHost
-
-		val okHttpBuilder = OkHttpClient.Builder()
-			.dispatcher(dispatcher)
-			.connectTimeout(config.loritta.discord.okHttp.connectTimeout, TimeUnit.SECONDS) // O padrão de timeouts é 10 segundos, mas vamos aumentar para evitar problemas.
-			.readTimeout(config.loritta.discord.okHttp.readTimeout, TimeUnit.SECONDS)
-			.writeTimeout(config.loritta.discord.okHttp.writeTimeout, TimeUnit.SECONDS)
-			.protocols(listOf(Protocol.HTTP_1_1)) // https://i.imgur.com/FcQljAP.png
-
-
-		builder = DefaultShardManagerBuilder.create(
+		// TODO - DeviousFun
+		/* builder = DefaultShardManagerBuilder.create(
 			config.loritta.discord.token,
 			GatewayIntent.GUILD_MEMBERS,
 			GatewayIntent.GUILD_EMOJIS,
@@ -429,26 +418,9 @@ class LorittaBot(
 					this.setSessionController(bucketedController)
 				}
 			}
-			.setShardsTotal(config.loritta.discord.maxShards)
-			.setShards(lorittaCluster.minShard.toInt(), lorittaCluster.maxShard.toInt())
-			.setStatus(config.loritta.discord.status)
 			.setBulkDeleteSplittingEnabled(false)
 			.setHttpClientBuilder(okHttpBuilder)
 			.setRawEventsEnabled(true)
-			.setActivityProvider {
-				// Before we updated the status every 60s and rotated between a list of status
-				// However this causes issues, Discord blocks all gateway events until the status is
-				// updated in all guilds in the shard she is in, which feels... bad, because it takes
-				// long for her to reply to new messages.
-
-				// Used to display the current Loritta cluster in the status
-				val currentCluster = this.lorittaCluster
-
-				Activity.of(
-					Activity.ActivityType.valueOf(config.loritta.discord.activity.type),
-					"${config.loritta.discord.activity.name} | Cluster ${currentCluster.id} [$it]"
-				)
-			}
 			.addEventListeners(
 				discordListener,
 				eventLogListener,
@@ -458,7 +430,16 @@ class LorittaBot(
 				gatewayRelayerListener,
 				addReactionFurryAminoPtListener,
 				boostGuildListener
-			)
+			) */
+		deviousFun.registerListeners(
+			discordListener,
+			eventLogListener,
+			messageListener,
+			voiceChannelListener,
+			discordMetricsListener,
+			addReactionFurryAminoPtListener,
+			boostGuildListener
+		)
 	}
 
 	val lorittaCluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig
@@ -493,7 +474,6 @@ class LorittaBot(
 
 	// This is executed sequentially!
 	val modules = listOf(
-		discordCacheModule,
 		inviteBlockerModule,
 		afkModule,
 		addFirstToNewChannelsModule,
@@ -538,11 +518,32 @@ class LorittaBot(
 		// Vamos criar todas as instâncias necessárias do JDA para nossas shards
 		logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 
-		val shardManager = builder.build()
-		lorittaShards = LorittaShards(
-			this,
-			shardManager
-		)
+		scope.launch {
+			// On every gateway instance present on our gateway manager, collect and process events
+			logger.info { "Preparing gateway event collectors for ${gatewayManager.gateways.size} gateway instances..." }
+
+			gatewayManager.gateways.forEach { (shardId, gateway) ->
+				gateway.kordGateway.installDiscordInteraKTions(interaKTions)
+
+				scope.launch {
+					gateway.events.collect {
+						DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
+							.labels(shardId.toString(), it::class.simpleName ?: "Unknown")
+							.inc()
+
+						launchEventProcessorJob(
+							GatewayEventContext(
+								it,
+								shardId,
+								Clock.System.now()
+							)
+						)
+					}
+				}
+			}
+
+			gatewayManager.start()
+		}
 
 		logger.info { "Starting Pudding tasks..." }
 		// TODO: Fix this
@@ -556,28 +557,6 @@ class LorittaBot(
 		logger.info { "Starting Cinnamon tasks..." }
 		cinnamonTasks.start()
 		startTasks()
-
-		// On every gateway instance present on our gateway manager, collect and process events
-		logger.info { "Preparing gateway event collectors for ${lorittaShards.gatewayManager.gateways.size} gateway instances..." }
-		lorittaShards.gatewayManager.gateways.forEach { (shardId, gateway) ->
-			gateway.installDiscordInteraKTions(interaKTions)
-
-			scope.launch {
-				gateway.events.collect {
-					DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
-						.labels(shardId.toString(), it::class.simpleName ?: "Unknown")
-						.inc()
-
-					launchEventProcessorJob(
-						GatewayEventContext(
-							it,
-							shardId,
-							Clock.System.now()
-						)
-					)
-				}
-			}
-		}
 
 		logger.info { "Sucesso! Iniciando threads da Loritta..." }
 
@@ -625,8 +604,6 @@ class LorittaBot(
 		}
 
 		DebugLog.startCommandListenerThread(this)
-
-		// Ou seja, agora a Loritta está funcionando, Yay!
 	}
 
 	fun initPostgreSql() {
@@ -1134,11 +1111,11 @@ class LorittaBot(
 
 	fun launchMessageJob(event: Event, block: suspend CoroutineScope.() -> Unit) {
 		val coroutineName = when (event) {
-			is GuildMessageReceivedEvent -> {
-				"Message ${event.message} by user ${event.author} in ${event.channel} on ${event.guild}"
-			}
-			is PrivateMessageReceivedEvent -> {
-				"Message ${event.message} by user ${event.author} in ${event.channel}"
+			is MessageReceivedEvent -> {
+				if (event.guild != null)
+					"Message ${event.message} by user ${event.author} in ${event.channel} on ${event.guild}"
+				else
+					"Message ${event.message} by user ${event.author} in ${event.channel}"
 			}
 			else -> throw IllegalArgumentException("You can't dispatch a $event in a launchMessageJob!")
 		}

@@ -4,7 +4,8 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.Permission
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -14,19 +15,20 @@ class RemoveEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remove
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.removeemoji.description")
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_EMOTES)
+		return listOf(Permission.ManageEmojisAndStickers)
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_EMOTES)
+		return listOf(Permission.ManageEmojisAndStickers)
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var deletedEmotes = 0
 
 		context.message.emotes.forEach {
-			if (it.guild == context.guild) {
-				it.delete().queue()
+			val emote = context.guildOrNull?.getEmoteById(it.id)
+			if (emote != null) {
+				emote.delete()
 				deletedEmotes++
 			}
 		}

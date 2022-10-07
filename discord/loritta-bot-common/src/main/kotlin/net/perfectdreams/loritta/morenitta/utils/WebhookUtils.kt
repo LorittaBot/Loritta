@@ -2,13 +2,12 @@ package net.perfectdreams.loritta.morenitta.utils
 
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.WebhookClientBuilder
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.ChannelType
-import net.dv8tion.jda.api.entities.MessageChannel
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.entities.WebhookType
-import net.dv8tion.jda.api.exceptions.PermissionException
+import dev.kord.common.entity.Permission
+import dev.kord.common.entity.ChannelType
+import dev.kord.common.entity.WebhookType
+import dev.kord.rest.request.KtorRequestException
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.entities.Channel
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 object WebhookUtils {
@@ -19,27 +18,28 @@ object WebhookUtils {
 	 * @param name        Nome do Webhook
 	 * @return TemmieWebhook pronto para ser usado
 	 */
-	suspend fun getOrCreateWebhook(loritta: LorittaBot, channel: MessageChannel, name: String): WebhookClient? {
-		if (channel.type == ChannelType.PRIVATE) // Se a Loritta não pode acessar as webhooks do servidor, retorne null
+	suspend fun getOrCreateWebhook(loritta: LorittaBot, channel: Channel, name: String): WebhookClient? {
+		if (channel.type == ChannelType.DM) // Se a Loritta não pode acessar as webhooks do servidor, retorne null
 			return null
 
-		val textChannel = channel as TextChannel
+		val textChannel = channel
 
-		if (!textChannel.guild.selfMember.hasPermission(Permission.MANAGE_WEBHOOKS))
+		if (!textChannel.guild.retrieveSelfMember().hasPermission(Permission.ManageWebhooks))
 			return null
 
+		val selfUser = channel.jda.retrieveSelfUser()
 		val webhookList = textChannel.guild.retrieveWebhooks().await()
 				.filter {
 					// Webhooks created by users or bots are INCOMING and we only want to get webhooks created by Loritta!
 					// See: https://github.com/discord/discord-api-docs/issues/3056
-					it.type == WebhookType.INCOMING && it.ownerAsUser?.idLong == channel.jda.selfUser.idLong
+					it.type == WebhookType.Incoming && it.ownerAsUser?.idLong == selfUser.idLong
 				}
 
 		val webhooks = webhookList.filter { it.channel == textChannel }
 		val webhook = if (webhooks.isEmpty()) {
 			try { // try catch, já que pelo visto a verificação acima falha as vezes
 				textChannel.createWebhook(name).await()
-			} catch (e: PermissionException) {
+			} catch (e: KtorRequestException) {
 				return null
 			}
 		} else {

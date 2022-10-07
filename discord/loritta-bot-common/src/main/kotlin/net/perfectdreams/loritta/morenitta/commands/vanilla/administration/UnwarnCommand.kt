@@ -3,8 +3,7 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 import net.perfectdreams.loritta.morenitta.dao.Warn
 import net.perfectdreams.loritta.morenitta.tables.Warns
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
-import net.dv8tion.jda.api.Permission
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -31,11 +30,11 @@ class UnwarnCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, li
         }
         canUseInPrivateChannel = false
         userRequiredPermissions = listOf(
-            Permission.KICK_MEMBERS
+            Permission.KickMembers
         )
         botRequiredPermissions = listOf(
-            Permission.BAN_MEMBERS,
-            Permission.KICK_MEMBERS
+            Permission.BanMembers,
+            Permission.KickMembers
         )
         executesDiscord {
             if (args.isEmpty())

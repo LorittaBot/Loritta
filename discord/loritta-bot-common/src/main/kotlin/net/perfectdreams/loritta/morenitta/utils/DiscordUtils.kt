@@ -1,7 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 
@@ -92,8 +92,7 @@ object DiscordUtils {
 				if (user != null) // Pelo visto é!
 					return user
 			}
-		} catch (e: Exception) {
-		}
+		} catch (e: Exception) {}
 
 		// Vamos tentar procurar pelo username + discriminator
 		if (guild != null) {

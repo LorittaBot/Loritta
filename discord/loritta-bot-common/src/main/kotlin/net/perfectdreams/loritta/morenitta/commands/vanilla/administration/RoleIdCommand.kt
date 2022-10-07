@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.Permission
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.util.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -19,7 +19,7 @@ class RoleIdCommand(loritta: LorittaBot) : AbstractCommand(loritta, "roleid", li
 	}
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_ROLES)
+		return listOf(Permission.ManageRoles)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {

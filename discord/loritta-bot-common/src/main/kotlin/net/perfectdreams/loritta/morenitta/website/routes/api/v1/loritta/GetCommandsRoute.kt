@@ -17,19 +17,20 @@ class GetCommandsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/com
 
 		val commands = loritta.legacyCommandManager.commandMap.map {
 			CommandInfo(
-					it::class.java.simpleName,
-					it.label,
-					it.aliases,
-					it.category,
-					it.getDescriptionKey(),
-					it.getUsage(),
-					it.getExamplesKey(),
-					it.cooldown,
-					it.canUseInPrivateChannel(),
-					it.getDiscordPermissions().map { it.name },
-					it.lorittaPermissions.map { it.name },
-					it.getBotPermissions().map { it.name },
-					listOf() // Old API doesn't has SimilarCommands
+				it::class.java.simpleName,
+				it.label,
+				it.aliases,
+				it.category,
+				it.getDescriptionKey(),
+				it.getUsage(),
+				it.getExamplesKey(),
+				it.cooldown,
+				it.canUseInPrivateChannel(),
+				// TODO - DeviousFun
+				emptyList(), // it.getDiscordPermissions().map { it.name },
+				it.lorittaPermissions.map { it.name },
+				emptyList(), // it.getBotPermissions().map { it.name },
+				listOf() // Old API doesn't has SimilarCommands
 			)
 		} + loritta.commandMap.commands.filter { !it.hideInHelp }.map {
 			var botRequiredPermissions = listOf<String>()
@@ -37,25 +38,26 @@ class GetCommandsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/com
 			var userRequiredLorittaPermissions = listOf<String>()
 
 			if (it is DiscordCommand) {
-				botRequiredPermissions = it.botRequiredPermissions.map { it.name }
-				userRequiredPermissions = it.userRequiredPermissions.map { it.name }
+				// TODO - DeviousFun
+				// botRequiredPermissions = it.botRequiredPermissions.map { it.name }
+				// userRequiredPermissions = it.userRequiredPermissions.map { it.name }
 				userRequiredLorittaPermissions = it.userRequiredLorittaPermissions.map { it.name }
 			}
 
 			CommandInfo(
-					it.commandName,
-					it.labels.first(),
-					it.labels.drop(1).toList(),
-					it.category,
-					it.descriptionKey,
-					it.usage,
-					it.examplesKey,
-					it.cooldown,
-					it.canUseInPrivateChannel,
-					userRequiredPermissions,
-					userRequiredLorittaPermissions,
-					botRequiredPermissions,
-					it.similarCommands
+				it.commandName,
+				it.labels.first(),
+				it.labels.drop(1).toList(),
+				it.category,
+				it.descriptionKey,
+				it.usage,
+				it.examplesKey,
+				it.cooldown,
+				it.canUseInPrivateChannel,
+				userRequiredPermissions,
+				userRequiredLorittaPermissions,
+				botRequiredPermissions,
+				it.similarCommands
 			)
 		}
 

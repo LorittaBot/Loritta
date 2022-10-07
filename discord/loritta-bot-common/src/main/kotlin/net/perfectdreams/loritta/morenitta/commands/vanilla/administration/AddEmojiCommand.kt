@@ -4,16 +4,17 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Icon
-import net.dv8tion.jda.api.exceptions.ErrorResponseException
+import dev.kord.common.entity.Permission
+import dev.kord.rest.json.JsonErrorCode
+import dev.kord.rest.request.KtorRequestException
+import io.ktor.http.*
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -32,11 +33,11 @@ class AddEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "addemoji"
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.addemoji.description")
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_EMOTES)
+		return listOf(Permission.ManageEmojisAndStickers)
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_EMOTES)
+		return listOf(Permission.ManageEmojisAndStickers)
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
@@ -63,7 +64,7 @@ class AddEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "addemoji"
 
 			if (os != null) {
 				os.use { inputStream ->
-					val emote = context.guild.createEmote(emoteName, Icon.from(inputStream)).await()
+					val emote = context.guild.createEmote(emoteName, inputStream.readAllBytes()).await()
 					context.reply(
                             LorittaReply(
                                     context.locale["commands.command.addemoji.success"],
@@ -75,8 +76,8 @@ class AddEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "addemoji"
 				throw RuntimeException("Couldn't download image!")
 			}
 		} catch (e: Exception) {
-			if (e is ErrorResponseException) {
-				if (e.errorCode == 30008) {
+			if (e is KtorRequestException) {
+				if (e.error?.code == JsonErrorCode.MaxEmojis || e.error?.code == JsonErrorCode.MaxAnimatedEmojis) {
 					context.reply(
                             LorittaReply(
                                     context.locale["commands.command.addemoji.limitReached"],
@@ -85,7 +86,7 @@ class AddEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "addemoji"
 					)
 					return
 				}
-				if (e.errorCode == 400) {
+				if (e.httpResponse.status == HttpStatusCode.BadRequest) {
 					context.reply(
                             LorittaReply(
                                     context.locale["commands.command.addemoji.emoteTooBig", "`256kb`"],

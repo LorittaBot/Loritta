@@ -5,17 +5,17 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.TextChannel
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.entities.Channel
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class UnlockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unlock", listOf("destrancar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.unlock.description")
 	
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_SERVER)
+		return listOf(Permission.ManageGuild)
 	}
 	
 	override fun canUseInPrivateChannel(): Boolean {
@@ -23,20 +23,21 @@ class UnlockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unlock", li
 	}
 	
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)
+		return listOf(Permission.ManageChannels, Permission.ManageRoles)
 	}
 	
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		val channel = getTextChannel(context, context.args.getOrNull(0)) ?: context.event.textChannel!! // Já que o comando não será executado via DM, podemos assumir que textChannel nunca será nulo
-		
+
 		val publicRole = context.guild.publicRole
 		val override = channel.getPermissionOverride(publicRole)
 		
 		if (override != null) {
-			if (Permission.MESSAGE_WRITE in override.denied) {
-				override.manager
-						.grant(Permission.MESSAGE_WRITE)
-						.queue()
+			if (Permission.SendMessages in override.deny) {
+				override.edit {
+					// Undeny SendMessages
+					denied = override.deny.minus(Permission.SendMessages)
+				}
 
 				context.reply(
 					LorittaReply(
@@ -53,10 +54,6 @@ class UnlockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unlock", li
 				)
 			}
 		} else { // Bem, na verdade não seria totalmente necessário este else, mas vamos supor que o cara usou o "+unlock" com o chat destravado sem ter travado antes :rolling_eyes:
-			channel.createPermissionOverride(publicRole)
-					.setAllow(Permission.MESSAGE_WRITE)
-					.queue()
-
 			context.reply(
 				LorittaReply(
 					locale["commands.command.unlock.allowed", context.config.commandPrefix],
@@ -66,7 +63,7 @@ class UnlockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unlock", li
 		}
 	}
 	
-	fun getTextChannel(context: CommandContext, input: String?): TextChannel? {
+	fun getTextChannel(context: CommandContext, input: String?): Channel? {
 		if (input == null)
 			return null
 		

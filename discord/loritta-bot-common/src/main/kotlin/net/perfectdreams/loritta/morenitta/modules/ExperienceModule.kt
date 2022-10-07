@@ -9,15 +9,14 @@ import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.extensions.filterOnlyGiveableRoles
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Role
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.LevelConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ExperienceRoleRates
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.LevelAnnouncementConfigs
@@ -25,6 +24,8 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.RolesByE
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.ExperienceUtils
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.morenitta.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SortOrder
@@ -158,7 +159,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 		var receivedNewRoles = false
 		val givenNewRoles = mutableSetOf<Role>()
 
-		if (guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) {
+		if (guild.retrieveSelfMember().hasPermission(Permission.ManageRoles)) {
 			val configs = loritta.newSuspendedTransaction {
 				RolesByExperience.select {
 					RolesByExperience.guildId eq guild.idLong

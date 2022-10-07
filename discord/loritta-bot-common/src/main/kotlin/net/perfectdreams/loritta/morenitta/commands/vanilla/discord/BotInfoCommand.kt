@@ -1,10 +1,11 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
-import net.dv8tion.jda.api.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.HostnameUtils
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
@@ -13,7 +14,6 @@ import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import org.jetbrains.exposed.sql.select
 import java.awt.Color
@@ -32,7 +32,7 @@ class BotInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "botinfo", 
 
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "loritta info")
 
-		val guildCount = loritta.lorittaShards.queryGuildCount()
+		val guildCount = loritta.lorittaShards.getGuildCount()
 
 		val embed = EmbedBuilder()
 

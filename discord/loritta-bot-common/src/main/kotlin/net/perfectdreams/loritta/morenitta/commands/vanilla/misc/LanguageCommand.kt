@@ -4,14 +4,14 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.extensions.edit
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.MessageEmbed
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.DeviousEmbed
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.awt.Color
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -27,7 +27,7 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
     )
 
     override fun getDiscordPermissions(): List<Permission> {
-        return listOf(Permission.MANAGE_SERVER)
+        return listOf(Permission.ManageGuild)
     }
 
     override suspend fun run(context: CommandContext, locale: BaseLocale) {
@@ -198,7 +198,7 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
             context.reply(newLocale["commands.command.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
     }
 
-    private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>, isPrivateChannel: Boolean, hasPersonalLanguage: Boolean): MessageEmbed {
+    private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>, isPrivateChannel: Boolean, hasPersonalLanguage: Boolean): DeviousEmbed {
         val embed = EmbedBuilder()
         embed.setColor(Color(0, 193, 223))
         embed.setTitle("\uD83C\uDF0E " + locale["commands.command.language.pleaseSelectYourLanguage"])

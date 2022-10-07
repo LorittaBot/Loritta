@@ -5,17 +5,18 @@ import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.TextChannel
+import dev.kord.common.entity.Permission
+import dev.kord.common.entity.Permissions
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.entities.Channel
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class LockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lock", listOf("trancar", "fechar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.lock.description")
 	
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_SERVER)
+		return listOf(Permission.ManageGuild)
 	}
 	
 	override fun canUseInPrivateChannel(): Boolean {
@@ -23,7 +24,7 @@ class LockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lock", listOf
 	}
 	
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)
+		return listOf(Permission.ManageChannels, Permission.ManageRoles)
 	}
 	
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
@@ -33,10 +34,11 @@ class LockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lock", listOf
 		val override = channel.getPermissionOverride(publicRole)
 		
 		if (override != null) {
-			if (Permission.MESSAGE_WRITE !in override.denied) {
-				override.manager
-						.deny(Permission.MESSAGE_WRITE)
-						.queue()
+			if (Permission.SendMessages !in override.deny) {
+				override.edit {
+					// Deny SendMessages
+					denied = override.deny.plus(Permission.SendMessages)
+				}
 
 				context.reply(
 					LorittaReply(
@@ -53,9 +55,11 @@ class LockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lock", listOf
 				)
 			}
 		} else {
-			channel.createPermissionOverride(publicRole)
-					.setDeny(Permission.MESSAGE_WRITE)
-					.queue()
+			channel.createPermissionOverride(publicRole) {
+				denied = Permissions {
+					+ Permission.SendMessages
+				}
+			}
 
 			context.reply(
 				LorittaReply(
@@ -66,7 +70,7 @@ class LockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lock", listOf
 		}
 	}
 	
-	fun getTextChannel(context: CommandContext, input: String?): TextChannel? {
+	fun getTextChannel(context: CommandContext, input: String?): Channel? {
 		if (input == null)
 			return null
 		

@@ -4,17 +4,16 @@ import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import kotlinx.coroutines.runBlocking
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.User
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -26,7 +25,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.KICK_MEMBERS)
+		return listOf(Permission.KickMembers)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -34,7 +33,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS)
+		return listOf(Permission.ManageRoles, Permission.ManageRoles)
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
@@ -92,7 +91,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 	}
 
 	companion object {
-		fun unmute(loritta: LorittaBot, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
+		suspend fun unmute(loritta: LorittaBot, settings: AdminUtils.ModerationConfigSettings, guild: Guild, punisher: User, locale: BaseLocale, user: User, reason: String, isSilent: Boolean) {
 			if (!isSilent) {
 				val punishLogMessage = runBlocking {
 					AdminUtils.getPunishmentForMessage(

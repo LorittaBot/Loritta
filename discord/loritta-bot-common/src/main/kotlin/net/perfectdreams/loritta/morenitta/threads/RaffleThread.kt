@@ -8,11 +8,12 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.MessageBuilder
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.deviousfun.queue
 import java.awt.Color
 import java.io.File
 import java.time.Instant
@@ -137,10 +138,14 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 							)
 
 							embed.setTimestamp(Instant.now())
-							val message = MessageBuilder().setContent(" ").setEmbed(embed.build()).build()
+							val message = MessageBuilder()
+								.setContent(" ")
+								.setEmbed(embed.build())
+								.addFile(File(LorittaBot.ASSETS, "loritta_money_discord.png"), "loritta_money.png")
+								.build()
+
 							user.openPrivateChannel().queue {
 								it.sendMessage(message)
-									.addFile(File(LorittaBot.ASSETS, "loritta_money_discord.png"), "loritta_money.png")
 									.queue()
 							}
 						} catch (e: Exception) {

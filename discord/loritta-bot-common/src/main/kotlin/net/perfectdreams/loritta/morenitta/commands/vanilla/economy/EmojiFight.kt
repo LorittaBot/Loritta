@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
 import net.perfectdreams.loritta.morenitta.dao.Profile
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.removeAllFunctions
@@ -11,10 +10,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageEmbed
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.DeviousEmbed
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatches
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.EmojiFightParticipants
@@ -27,6 +26,8 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.queue
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
@@ -127,7 +128,7 @@ class EmojiFight(
             .queue()
     }
 
-    private fun getEventEmbed(): MessageEmbed {
+    private fun getEventEmbed(): DeviousEmbed {
         val baseEmbed = EmbedBuilder()
             .setTitle("${Emotes.LORI_BAN_HAMMER} ${context.locale["commands.command.emojifight.fightTitle"]}")
             .setDescription(

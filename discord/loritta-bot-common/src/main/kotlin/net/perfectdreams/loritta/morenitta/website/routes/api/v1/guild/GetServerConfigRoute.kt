@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.guild
 
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import io.ktor.server.application.ApplicationCall
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.LorittaWebsite
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute

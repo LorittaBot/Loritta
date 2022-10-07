@@ -57,65 +57,6 @@ class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(lori
 
 		val config = payload["config"].obj
 
-		if (config["buyItem"].nullString == "ship_effect") {
-			val editedValue = Math.max(0, Math.min(config["editedValue"].int, 100))
-
-			val user2Name = config["user2NamePlusDiscriminator"].string
-
-			val user2Id = if (user2Name.isValidSnowflake()) {
-				loritta.lorittaShards.retrieveUserInfoById(user2Name.toLong())?.id
-			} else {
-				val split = user2Name.trim().split("#")
-
-				val username = split[0].trim()
-				if (2 > username.length)
-					throw WebsiteAPIException(HttpStatusCode.NotFound,
-						WebsiteUtils.createErrorPayload(
-							loritta,
-							LoriWebCode.UNKNOWN_USER
-						)
-					)
-
-				val discriminator = split[1].trim()
-
-				val userInfo = loritta.lorittaShards.retrieveUserInfoByTag(username, discriminator)
-
-				userInfo?.id
-			} ?: throw WebsiteAPIException(HttpStatusCode.NotFound,
-				WebsiteUtils.createErrorPayload(
-					loritta,
-					LoriWebCode.UNKNOWN_USER
-				)
-			)
-
-			if (3000 > profile.money) {
-				throw WebsiteAPIException(HttpStatusCode.PaymentRequired,
-					WebsiteUtils.createErrorPayload(
-						loritta,
-						LoriWebCode.INSUFFICIENT_FUNDS
-					)
-				)
-			}
-
-			loritta.newSuspendedTransaction {
-				ShipEffect.new {
-					this.buyerId = userIdentification.id.toLong()
-					this.user1Id = userIdentification.id.toLong()
-					this.user2Id = user2Id
-					this.editedShipValue = editedValue
-					this.expiresAt = System.currentTimeMillis() + Constants.ONE_WEEK_IN_MILLISECONDS
-				}
-
-				profile.takeSonhosAndAddToTransactionLogNested(
-					3000,
-					SonhosPaymentReason.SHIP_EFFECT
-				)
-			}
-
-			call.respondJson(jsonObject())
-			return
-		}
-
 		val profileSettings = loritta.newSuspendedTransaction {
 			profile.settings
 		}

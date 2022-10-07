@@ -2,18 +2,18 @@ package net.perfectdreams.loritta.morenitta.commands
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.localized
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
 import java.time.Instant
@@ -114,7 +114,7 @@ abstract class AbstractCommand(val loritta: LorittaBot, open val label: String, 
 
 		val embed = EmbedBuilder()
 				.setColor(Constants.LORITTA_AQUA)
-				.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.config.loritta.website.url}commands", discordMessage.jda.selfUser.effectiveAvatarUrl)
+				.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.config.loritta.website.url}commands", discordMessage.jda.retrieveSelfUser().effectiveAvatarUrl)
 				.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
 				.setFooter("${user.name + "#" + user.discriminator} • ${this.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
 				.setTimestamp(Instant.now())
@@ -219,10 +219,10 @@ abstract class AbstractCommand(val loritta: LorittaBot, open val label: String, 
 		if (botPermissions.isNotEmpty() || discordPermissions.isNotEmpty()) {
 			var field = ""
 			if (discordPermissions.isNotEmpty()) {
-				field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", discordPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+				field += "\uD83D\uDC81 ${locale["commands.explain.youNeedToHavePermission", discordPermissions.toSet().toLocalized()?.joinToString(", ", transform = { "`${context.i18nContext.get(it)}`" })]}\n"
 			}
 			if (botPermissions.isNotEmpty()) {
-				field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", botPermissions.joinToString(", ", transform = { "`${it.localized(locale)}`" })]}\n"
+				field += "<:loritta:331179879582269451> ${locale["commands.explain.loriNeedToHavePermission", botPermissions.toSet().toLocalized()?.joinToString(", ", transform = { "`${context.i18nContext.get(it)}`" })]}\n"
 			}
 			embed.addField(
 					"\uD83D\uDCDB ${locale["commands.explain.permissions"]}",

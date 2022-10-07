@@ -5,7 +5,7 @@ import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.dv8tion.jda.api.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 
 object RolesTransformer : ConfigTransformer {
     override val payloadType: String = "roles"
@@ -21,7 +21,7 @@ object RolesTransformer : ConfigTransformer {
                     "id" to it.id,
                     "name" to it.name,
                     "colorRaw" to it.colorRaw,
-                    "canInteract" to guild.selfMember.canInteract(it),
+                    "canInteract" to guild.retrieveSelfMember().canInteract(it),
                     "isHoisted" to it.isHoisted,
                     "isManaged" to it.isManaged,
                     "isPublicRole" to it.isPublicRole

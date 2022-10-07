@@ -12,7 +12,9 @@ import com.google.common.cache.CacheBuilder
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
+import dev.kord.common.entity.ChannelType
+import dev.kord.common.entity.Snowflake
+import dev.kord.rest.request.KtorRequestException
 import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -22,14 +24,13 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
-import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Emote
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.sharding.ShardManager
+import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.entities.Channel
+import net.perfectdreams.loritta.deviousfun.entities.Emote
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.User
+import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.gateway.JDAToKordDiscordGatewayManager
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import org.jetbrains.exposed.dao.id.EntityID
@@ -43,57 +44,25 @@ import java.util.concurrent.TimeUnit
 /**
  * Guarda todos as shards da Loritta
  */
-class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
+class LorittaShards(val loritta: LorittaBot) {
 	companion object {
 		internal val logger = KotlinLogging.logger {}
 	}
-	val gatewayManager = JDAToKordDiscordGatewayManager(this)
 	val cachedRetrievedUsers = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES)
 		.build<Long, Optional<User>>()
 
-	fun getGuildById(id: String): Guild? = shardManager.getGuildById(id)
-	fun getGuildById(id: Long): Guild? = shardManager.getGuildById(id)
+	suspend fun getGuildById(id: String): Guild? = loritta.deviousFun.getGuildById(id)
+	suspend fun getGuildById(id: Long): Guild? = loritta.deviousFun.getGuildById(id)
 
-	fun getGuilds(): List<Guild> = shardManager.guilds
+	suspend fun getGuildCount(): Long = loritta.deviousFun.getGuildCount()
 
-	fun getGuildCount(): Int = shardManager.guilds.size
+	suspend fun getUserById(id: String?) = getUserById(id?.toLong())
 
-	fun getCachedGuildCount(): Long = shardManager.guildCache.size()
-
-	fun getUserCount(): Int = shardManager.users.size
-
-	fun getCachedUserCount(): Long = shardManager.userCache.size()
-
-	fun getEmoteCount(): Int = shardManager.emotes.size
-
-	fun getCachedEmoteCount(): Long = shardManager.emoteCache.size()
-
-	fun getChannelCount(): Int = shardManager.textChannels.size + shardManager.voiceChannels.size
-
-	fun getCachedChannelCount(): Long = shardManager.textChannelCache.size() + shardManager.voiceChannels.size
-
-	fun getTextChannelCount(): Int = shardManager.textChannels.size
-
-	fun getCachedTextChannelCount(): Long = shardManager.textChannelCache.size()
-
-	fun getVoiceChannelCount(): Int  = shardManager.voiceChannels.size
-
-	fun getCachedVoiceChannelCount(): Long = shardManager.voiceChannelCache.size()
-
-	fun getUsers(): List<User> = shardManager.users
-
-	fun getUserById(id: String?): User? {
+	suspend fun getUserById(id: Long?): User? {
 		if (id == null)
 			return null
 
-		return shardManager.getUserById(id)
-	}
-
-	fun getUserById(id: Long?): User? {
-		if (id == null)
-			return null
-
-		return shardManager.getUserById(id)
+		return loritta.deviousFun.getUserById(Snowflake(id))
 	}
 
 	suspend fun retrieveUserById(id: String?) = retrieveUserById(id?.toLongOrNull())
@@ -134,53 +103,6 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		} else null
 	}
 
-	suspend fun retrieveUserInfoByTag(username: String, discriminator: String): CachedUserInfo? {
-		// When retrieving the user's info via tag, we will search in JDA's user cache
-		val userInJdaCache = loritta.lorittaShards.shardManager.getUserByTag(username, discriminator)
-		if (userInJdaCache != null)
-			return transformUserToCachedUserInfo(userInJdaCache)
-
-		// If not, we will check on the local cache of retrieved users
-		val cachedRetrievedUser = cachedRetrievedUsers.asMap().values
-			.asSequence()
-			.filter { it.isPresent }
-			.map { it.get() }
-			.filter { it.name == username && it.discriminator == discriminator }
-			.firstOrNull()
-
-		if (cachedRetrievedUser != null)
-			return transformUserToCachedUserInfo(cachedRetrievedUser)
-
-		// If it doesn't exist, check on the external database
-		val cachedUser = loritta.newSuspendedTransaction {
-			CachedDiscordUsers.select { CachedDiscordUsers.name eq username and (CachedDiscordUsers.discriminator eq discriminator) }
-				.firstOrNull()
-		}
-
-		if (cachedUser != null)
-			return CachedUserInfo(
-				cachedUser[CachedDiscordUsers.id].value,
-				cachedUser[CachedDiscordUsers.name],
-				cachedUser[CachedDiscordUsers.discriminator],
-				cachedUser[CachedDiscordUsers.avatarId]
-			)
-
-		// And if it doesn't exist... oh well, let's try finding it in another cluster
-		val results = searchUserInAllLorittaClusters(username, discriminator, limit = 1)
-		val result = results.firstOrNull()
-		if (result != null) {
-			updateCachedUserData(result["id"].long, result["name"].string, result["discriminator"].string, result["avatarId"].nullString)
-			return CachedUserInfo(
-				result["id"].long,
-				result["name"].string,
-				result["discriminator"].string,
-				result["avatarId"].nullString
-			)
-		}
-
-		return null
-	}
-
 	@Suppress("IMPLICIT_CAST_TO_ANY")
 	suspend fun retrieveUserById(id: Long?): User? {
 		if (id == null)
@@ -190,8 +112,7 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		if (cachedUser != null)
 			return cachedUser.getOrNull()
 
-		val user = shardManager.retrieveUserById(id).await()
-		cachedRetrievedUsers.put(id, Optional.of(user))
+		val user = loritta.deviousFun.retrieveUserOrNullById(Snowflake(id))
 
 		if (user != null)
 			updateCachedUserData(user)
@@ -234,25 +155,20 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		user.avatarId
 	)
 
-	fun getMutualGuilds(user: User): List<Guild> = shardManager.getMutualGuilds(user)
+	suspend fun getTextChannelById(id: String?) = getTextChannelById(id?.toLong())
 
-	fun getEmoteById(id: String?): Emote? {
+	suspend fun getTextChannelById(id: Long?): Channel? {
 		if (id == null)
 			return null
 
-		return shardManager.getEmoteById(id)
-	}
-
-	fun getTextChannelById(id: String?): TextChannel? {
-		if (id == null)
+		val cachedChannel = loritta.deviousFun.getChannelById(id) ?: return null
+		if (cachedChannel.type != ChannelType.GuildText)
 			return null
 
-		return shardManager.getTextChannelById(id)
+		return cachedChannel
 	}
 
-	fun getShards(): List<JDA> {
-		return shardManager.shards
-	}
+	fun getShards(): List<DeviousGateway> = loritta.deviousFun.gatewayManager.gateways.values.toList()
 
 	fun queryMasterLorittaCluster(path: String): Deferred<JsonElement> {
 		val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
@@ -346,115 +262,6 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 		return allGuilds
 	}
 
-	suspend fun searchUserInAllLorittaClusters(username: String, discriminator: String? = null, isRegExPattern: Boolean = false, limit: Int? = null): List<JsonObject> {
-		val shards = loritta.config.loritta.clusters.instances
-
-		val results = shards.map {
-			GlobalScope.async(loritta.coroutineDispatcher) {
-				try {
-					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post("https://${it.getUrl(loritta)}/api/v1/users/search") {
-							header("Authorization", loritta.lorittaInternalApiKey.name)
-							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-
-							setBody(
-								gson.toJson(
-									jsonObject(
-										"isRegExPattern" to isRegExPattern,
-										"limit" to limit,
-										"username" to username,
-										"discriminator" to discriminator
-									)
-								)
-							)
-						}
-
-						val body = response.bodyAsText()
-						JsonParser.parseString(
-							body
-						)
-					}
-				} catch (e: Exception) {
-					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw ClusterOfflineException(it.id, it.name)
-				}
-			}
-		}
-
-		val matchedUsers = mutableListOf<JsonObject>()
-
-		results.forEach {
-			try {
-				val json = it.await()
-
-				json.array.forEach {
-					matchedUsers.add(it.obj)
-				}
-			} catch (e: ClusterOfflineException) {}
-		}
-
-		return matchedUsers.distinctBy { it["id"].long }
-	}
-
-	suspend fun searchGuildInAllLorittaClusters(pattern: String): List<JsonObject> {
-		val shards = loritta.config.loritta.clusters.instances
-
-		val results = shards.map {
-			GlobalScope.async(loritta.coroutineDispatcher) {
-				try {
-					withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-						val response = loritta.http.post("https://${it.getUrl(loritta)}/api/v1/guilds/search") {
-							header("Authorization", loritta.lorittaInternalApiKey.name)
-							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-
-							setBody(
-								gson.toJson(
-									jsonObject("pattern" to pattern)
-								)
-							)
-						}
-
-						val body = response.bodyAsText()
-						JsonParser.parseString(
-							body
-						)
-					}
-				} catch (e: Exception) {
-					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw ClusterOfflineException(it.id, it.name)
-				}
-			}
-		}
-
-		val matchedGuilds = mutableListOf<JsonObject>()
-
-		results.forEach {
-			try {
-				val json = it.await()
-
-				json.array.forEach {
-					matchedGuilds.add(it.obj)
-				}
-			} catch (e: ClusterOfflineException) {}
-		}
-
-		return matchedGuilds
-	}
-
-	suspend fun queryGuildCount(): Int {
-		var guildCount = 0
-
-		val results = loritta.lorittaShards.queryAllLorittaClusters("/api/v1/loritta/status")
-		results.forEach {
-			try {
-				val json = it.await()
-
-				guildCount += json["shards"].array.sumBy { it["guildCount"].int }
-			} catch (e: Exception) {}
-		}
-		return guildCount
-	}
-
 	/**
 	 * Queries the current guild count but, if any of the clusters are not ready (offline or not CONNECTED), an exception will be thrown.
 	 *
@@ -482,28 +289,5 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 			}
 		}
 		return guildCount
-	}
-
-	suspend fun queryGuildById(id: String) = queryGuildById(id.toLong())
-
-	suspend fun queryGuildById(id: Long): JsonObject? {
-		val shardId = DiscordUtils.getShardIdFromGuildId(loritta, id)
-		val clusterId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
-		val url = DiscordUtils.getUrlForLorittaClusterId(loritta, clusterId)
-
-		val body = withTimeout(loritta.config.loritta.clusterConnectionTimeout.toLong()) {
-			val response = loritta.http.get("https://$url/api/v1/guilds/$id") {
-				header("Authorization", loritta.lorittaInternalApiKey.name)
-				userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-			}
-
-			response.bodyAsText()
-		}
-
-		val json = JsonParser.parseString(body).obj
-		if (!json.has("id"))
-			return null
-
-		return json
 	}
 }

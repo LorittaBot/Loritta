@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.morenitta.parallax
 
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageChannel
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.MessageBuilder
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.entities.Channel
+import net.perfectdreams.loritta.deviousfun.entities.Message
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
 import java.util.concurrent.ExecutionException
@@ -15,11 +15,11 @@ object ParallaxUtils {
 	private val logger = KotlinLogging.logger {}
 
 	/**
-	 * Sends the [throwable] to a [channel] inside a [net.dv8tion.jda.api.entities.MessageEmbed]
+	 * Sends the [throwable] to a [channel] inside a [net.dv8tion.jda.api.entities.DeviousEmbed]
 	 *
 	 * @return the sent throwable
 	 */
-	suspend fun sendThrowableToChannel(throwable: Throwable, channel: MessageChannel, message: String? = null): Message {
+	suspend fun sendThrowableToChannel(throwable: Throwable, channel: Channel, message: String? = null): Message {
 		logger.warn(throwable) { "Error while evaluating code" }
 
 		val messageBuilder = MessageBuilder()

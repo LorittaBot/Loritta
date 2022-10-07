@@ -3,23 +3,22 @@ package net.perfectdreams.loritta.morenitta.utils
 import net.perfectdreams.loritta.morenitta.LorittaBot.Companion.RANDOM
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.threads.BomDiaECiaThread
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.queueAfterWithMessagePerSecondTarget
 import net.perfectdreams.loritta.morenitta.utils.extensions.stripLinks
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.MessageBuilder
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Guild
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.DeviousMessage
+import net.perfectdreams.loritta.deviousfun.entities.Channel
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
@@ -192,7 +191,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 
 	private val logger = KotlinLogging.logger {}
 
-	var validTextChannels: Set<TextChannel>? = null
+	var validTextChannels: Set<Channel>? = null
 
 	fun handleBomDiaECia(forced: Boolean) {
 		if (forced)
@@ -232,7 +231,9 @@ class BomDiaECia(val loritta: LorittaBot) {
 				embed.setImage(randomImages.random())
 				embed.setColor(Color(74, 39, 138))
 
-				textChannel.sendMessage(embed.build()).queue()
+				runBlocking {
+					textChannel.sendMessage(embed.build()).queue()
+				}
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
@@ -243,13 +244,13 @@ class BomDiaECia(val loritta: LorittaBot) {
 	}
 
 	@Synchronized
-	fun announceWinner(channel: TextChannel, guild: Guild, user: User) {
+	fun announceWinner(channel: Channel, guild: Guild, user: User) {
 		activeTextChannels.clear()
 
 		val validTextChannels = this.validTextChannels
 			?: return // If there isn't any valid active channels, we don't need to announce the winner
 
-		val messageForLocales = mutableMapOf<String, Message>()
+		val messageForLocales = mutableMapOf<String, DeviousMessage>()
 
 		loritta.legacyLocales.forEach { localeId, locale ->
 			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks().stripLinks()}#${user.discriminator}` (`${user.id}`) por ter ligado primeiro em `${guild.name.stripCodeMarks().stripLinks()}` (`${guild.id}`)!")
@@ -259,8 +260,9 @@ class BomDiaECia(val loritta: LorittaBot) {
 
 		validTextChannels.forEachIndexed { index, textChannel ->
 			// TODO: Localization!
-			textChannel.sendMessage(messageForLocales["default"]!!)
-				.queueAfterWithMessagePerSecondTarget(index)
+			runBlocking {
+				textChannel.sendMessage(messageForLocales["default"]!!)
+			}
 		}
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
@@ -272,7 +274,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 				}
 
 				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
-					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+					if (message.guild.retrieveSelfMember().hasPermission(Permission.AddReactions)) {
 						message.onReactionAddByAuthor(loritta, user.idLong) {
 							if (it.reactionEmote.isEmote("⁉")) {
 								loritta.messageInteractionCache.remove(it.messageIdLong)
@@ -290,21 +292,31 @@ class BomDiaECia(val loritta: LorittaBot) {
 		this.validTextChannels = null
 	}
 
-	fun getActiveTextChannels(): Set<TextChannel> {
-		val validTextChannels = mutableSetOf<TextChannel>()
+	fun getActiveTextChannels(): Set<Channel> {
+		val validTextChannels = mutableSetOf<Channel>()
 
-		activeTextChannels.entries.forEach {
-			val textChannel = loritta.lorittaShards.getTextChannelById(it.key)
+		runBlocking {
+			activeTextChannels.entries.forEach {
+				val textChannel = loritta.lorittaShards.getTextChannelById(it.key)
 
-			if (textChannel != null && textChannel.canTalk() && textChannel.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS)) {
-				if (it.value.users.size >= 5 && it.value.lastMessageSent > (System.currentTimeMillis() - 180000)) {
-					val serverConfig = loritta.getOrCreateServerConfig(textChannel.guild.idLong)
-					val miscellaneousConfig = runBlocking { serverConfig.getCachedOrRetreiveFromDatabase<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig) }
+				if (textChannel != null && textChannel.canTalk() && textChannel.guild.retrieveSelfMember().hasPermission(
+						Permission.EmbedLinks
+					)
+				) {
+					if (it.value.users.size >= 5 && it.value.lastMessageSent > (System.currentTimeMillis() - 180000)) {
+						val serverConfig = loritta.getOrCreateServerConfig(textChannel.guild.idLong)
+						val miscellaneousConfig = runBlocking {
+							serverConfig.getCachedOrRetreiveFromDatabase<MiscellaneousConfig?>(
+								loritta,
+								ServerConfig::miscellaneousConfig
+							)
+						}
 
-					val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
+						val enableBomDiaECia = miscellaneousConfig?.enableBomDiaECia ?: false
 
-					if (enableBomDiaECia)
-						validTextChannels.add(textChannel)
+						if (enableBomDiaECia)
+							validTextChannels.add(textChannel)
+					}
 				}
 			}
 		}

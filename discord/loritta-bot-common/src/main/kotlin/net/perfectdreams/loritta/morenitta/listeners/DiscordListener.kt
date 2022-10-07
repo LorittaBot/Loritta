@@ -6,34 +6,18 @@ import net.perfectdreams.loritta.morenitta.commands.vanilla.administration.MuteC
 import net.perfectdreams.loritta.morenitta.dao.Mute
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.modules.AutoroleModule
-import net.perfectdreams.loritta.morenitta.modules.InviteLinkModule
-import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.tables.GuildProfiles
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.events.guild.GuildJoinEvent
-import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
-import net.dv8tion.jda.api.events.guild.GuildReadyEvent
-import net.dv8tion.jda.api.events.guild.invite.GuildInviteCreateEvent
-import net.dv8tion.jda.api.events.guild.invite.GuildInviteDeleteEvent
-import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
-import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
-import net.dv8tion.jda.api.events.http.HttpRequestEvent
-import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
-import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
-import net.dv8tion.jda.api.hooks.ListenerAdapter
+import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MemberCounterChannelConfig
@@ -45,8 +29,16 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.MemberCo
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.ModerationPunishmentMessagesConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.WarnActions
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
-import okio.Buffer
+import net.perfectdreams.loritta.deviousfun.entities.Channel
+import net.perfectdreams.loritta.deviousfun.events.guild.GuildJoinEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.GuildLeaveEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.GuildReadyEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberJoinEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberRemoveEvent
+import net.perfectdreams.loritta.deviousfun.events.message.react.GenericMessageReactionEvent
+import net.perfectdreams.loritta.deviousfun.events.message.react.MessageReactionAddEvent
+import net.perfectdreams.loritta.deviousfun.events.message.react.MessageReactionRemoveEvent
+import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.update
@@ -89,7 +81,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 			val validChannels = guild.textChannels.filter { channel ->
 				val memberCounterConfig = memberCountConfigs.firstOrNull { it.channelId == channel.idLong }
-				memberCounterConfig != null && guild.selfMember.hasPermission(channel, Permission.MANAGE_CHANNEL) && memberCounterConfig.topic.contains("{counter}")
+				memberCounterConfig != null && guild.selfMemberHasPermission(channel, Permission.ManageChannels) && memberCounterConfig.topic.contains("{counter}")
 			}
 
 			val channelsThatWillBeChecked = validChannels.take(ServerPremiumPlans.getPlanFromValue(activeDonationValues).memberCounterCount)
@@ -100,8 +92,8 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				}
 		}
 
-		private suspend fun queueTextChannelTopicUpdate(loritta: LorittaBot, guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel) {
-			if (!guild.selfMember.hasPermission(textChannel, Permission.MANAGE_CHANNEL))
+		private suspend fun queueTextChannelTopicUpdate(loritta: LorittaBot, guild: Guild, serverConfig: ServerConfig, textChannel: Channel) {
+			if (!guild.selfMemberHasPermission(textChannel, Permission.ManageChannels))
 				return
 
 			val memberCountConfig = loritta.newSuspendedTransaction {
@@ -145,7 +137,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			}
 		}
 
-		private suspend fun delayForTextChannelUpdateCooldown(textChannel: TextChannel, diff: Long) {
+		private suspend fun delayForTextChannelUpdateCooldown(textChannel: Channel, diff: Long) {
 			if (MEMBER_COUNTER_COOLDOWN > diff) { // We are also going to offset the update for about ~5m, since we can only update a channel every 5m!
 				logger.info { "Waiting ${diff}ms until the next $textChannel topic update..." }
 
@@ -153,7 +145,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			}
 		}
 
-		private suspend fun updateTextChannelTopic(loritta: LorittaBot, guild: Guild, serverConfig: ServerConfig, textChannel: TextChannel, memberCounterConfig: MemberCounterChannelConfig) {
+		private suspend fun updateTextChannelTopic(loritta: LorittaBot, guild: Guild, serverConfig: ServerConfig, textChannel: Channel, memberCounterConfig: MemberCounterChannelConfig) {
 			val formattedTopic = memberCounterConfig.getFormattedTopic(guild)
 
 			val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
@@ -164,12 +156,15 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 			// The reason we use ".await()" is so we can track when the request is successfully sent!
 			// And, if the request is rate limited, it will take more time to be processed, which is perfect for us!
-			textChannel.manager.setTopic(formattedTopic).reason(locale["loritta.modules.counter.auditLogReason"]).await()
+			textChannel.modifyTextChannel {
+				topic = formattedTopic
+				reason = locale["loritta.modules.counter.auditLogReason"]
+			}
 			memberCounterLastUpdate[textChannel.idLong] = System.currentTimeMillis()
 		}
 	}
 
-	override fun onHttpRequest(event: HttpRequestEvent) {
+	/* override fun onHttpRequest(event: HttpRequestEvent) {
 		val copy = event.requestRaw?.newBuilder()?.build()
 
 		val body = copy?.body()
@@ -192,18 +187,10 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		} else {
 			requestLogger.info("${event.route.method.name} ${event.route.compiledRoute} -> ${event.response?.code}")
 		}
-	}
+	} */
 
-	override fun onGuildInviteCreate(event: GuildInviteCreateEvent) {
-		InviteLinkModule.cachedInviteLinks.remove(event.guild.idLong)
-	}
-
-	override fun onGuildInviteDelete(event: GuildInviteDeleteEvent) {
-		InviteLinkModule.cachedInviteLinks.remove(event.guild.idLong)
-	}
-
-	override fun onGenericMessageReaction(e: GenericMessageReactionEvent) {
-		val user = e.user ?: return
+	override fun onGenericMessageReaction(event: GenericMessageReactionEvent) {
+		val user = event.user ?: return
 
 		if (user.isBot) // Se uma mensagem de um bot, ignore a mensagem!
 			return
@@ -214,14 +201,14 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
-		if (loritta.messageInteractionCache.containsKey(e.messageIdLong)) {
-			val functions = loritta.messageInteractionCache[e.messageIdLong]!!
+		if (loritta.messageInteractionCache.containsKey(event.messageIdLong)) {
+			val functions = loritta.messageInteractionCache[event.messageIdLong]!!
 
-			if (e is MessageReactionAddEvent) {
+			if (event is MessageReactionAddEvent) {
 				if (functions.onReactionAdd != null) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
-							functions.onReactionAdd!!.invoke(e)
+							functions.onReactionAdd!!.invoke(event)
 						} catch (e: Exception) {
 							logger.error("Erro ao tentar processar onReactionAdd", e)
 						}
@@ -231,8 +218,8 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				if (user.idLong == functions.originalAuthor && (functions.onReactionAddByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
-							functions.onReactionByAuthor?.invoke(e)
-							functions.onReactionAddByAuthor?.invoke(e)
+							functions.onReactionByAuthor?.invoke(event)
+							functions.onReactionAddByAuthor?.invoke(event)
 						} catch (e: Exception) {
 							logger.error("Erro ao tentar processar onReactionAddByAuthor", e)
 						}
@@ -240,24 +227,13 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				}
 			}
 
-			if (e is MessageReactionRemoveEvent) {
-				if (functions.onReactionRemove != null) {
+			if (event is MessageReactionRemoveEvent) {
+				if (user.idLong == functions.originalAuthor && (functions.onReactionAddByAuthor != null || functions.onReactionByAuthor != null)) {
 					GlobalScope.launch(loritta.coroutineDispatcher) {
 						try {
-							functions.onReactionRemove!!.invoke(e)
+							functions.onReactionByAuthor?.invoke(event)
 						} catch (e: Exception) {
-							logger.error("Erro ao tentar processar onReactionRemove", e)
-						}
-					}
-				}
-
-				if (user.idLong == functions.originalAuthor && (functions.onReactionRemoveByAuthor != null || functions.onReactionByAuthor != null)) {
-					GlobalScope.launch(loritta.coroutineDispatcher) {
-						try {
-							functions.onReactionByAuthor?.invoke(e)
-							functions.onReactionRemoveByAuthor?.invoke(e)
-						} catch (e: Exception) {
-							logger.error("Erro ao tentar processar onReactionRemoveByAuthor", e)
+							logger.error("Erro ao tentar processar onReactionByAuthor", e)
 						}
 					}
 				}
@@ -266,99 +242,99 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 	}
 
 	override fun onGuildLeave(e: GuildLeaveEvent) {
-		logger.info { "Someone removed me @ ${e.guild}! :(" }
+		logger.info { "Someone removed me @ ${e.guildIdLong}! :(" }
 
-		loritta.cachedServerConfigs.invalidate(e.guild.idLong)
+		loritta.cachedServerConfigs.invalidate(e.guildIdLong)
 
 		// Remover threads de role removal caso a Loritta tenha saido do servidor
 		val toRemove = mutableListOf<String>()
 		MuteCommand.roleRemovalJobs.forEach { key, value ->
-			if (key.startsWith(e.guild.id)) {
-				logger.debug { "Stopping mute job $value @ ${e.guild} because they removed me!" }
+			if (key.startsWith(e.guildId)) {
+				logger.debug { "Stopping mute job $value @ ${e.guildIdLong} because they removed me!" }
 				value.cancel()
 				toRemove.add(key)
 			}
 		}
 		toRemove.forEach { MuteCommand.roleRemovalJobs.remove(it) }
 
-		logger.debug { "Deleting all ${e.guild} related stuff..." }
+		logger.debug { "Deleting all ${e.guildIdLong} related stuff..." }
 
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			loritta.newSuspendedTransaction {
-				logger.trace { "Deleting all ${e.guild} profiles..."}
+				logger.trace { "Deleting all ${e.guildIdLong} profiles..."}
 
 				// Deletar todos os perfis do servidor
 				GuildProfiles.deleteWhere {
-					GuildProfiles.guildId eq e.guild.idLong
+					GuildProfiles.guildId eq e.guildIdLong
 				}
 
 				// Deletar configurações
-				logger.trace { "Deleting all ${e.guild} configurations..." }
-				val serverConfig = ServerConfig.findById(e.guild.idLong)
+				logger.trace { "Deleting all ${e.guildIdLong} configurations..." }
+				val serverConfig = ServerConfig.findById(e.guildIdLong)
 
-				logger.trace { "Removing all donation keys references about ${e.guild}..." }
+				logger.trace { "Removing all donation keys references about ${e.guildIdLong}..." }
 				if (serverConfig != null) {
 					DonationKeys.update({ DonationKeys.activeIn eq serverConfig.id }) {
 						it[activeIn] = null
 					}
 
-					logger.trace { "Deleting all ${e.guild} role perms..." }
+					logger.trace { "Deleting all ${e.guildIdLong} role perms..." }
 
 					ServerRolePermissions.deleteWhere {
 						ServerRolePermissions.guild eq serverConfig.id
 					}
 
-					logger.trace { "Deleting all ${e.guild} custom commands..." }
+					logger.trace { "Deleting all ${e.guildIdLong} custom commands..." }
 
 					CustomGuildCommands.deleteWhere {
 						CustomGuildCommands.guild eq serverConfig.id
 					}
 
 					val moderationConfig = serverConfig?.moderationConfig
-					logger.trace { "Deleting all ${e.guild} warn actions..." }
+					logger.trace { "Deleting all ${e.guildIdLong} warn actions..." }
 					if (moderationConfig != null)
 						WarnActions.deleteWhere {
 							WarnActions.config eq moderationConfig.id
 						}
 
-					logger.trace { "Deleting all ${e.guild} member counters..." }
+					logger.trace { "Deleting all ${e.guildIdLong} member counters..." }
 
 					MemberCounterChannelConfigs.deleteWhere {
 						MemberCounterChannelConfigs.guild eq serverConfig.id
 					}
 
-					logger.trace { "Deleting all ${e.guild} moderation messages counters..." }
+					logger.trace { "Deleting all ${e.guildIdLong} moderation messages counters..." }
 
 					ModerationPunishmentMessagesConfig.deleteWhere {
 						ModerationPunishmentMessagesConfig.guild eq serverConfig.id
 					}
 				}
 
-				logger.trace { "Deleting ${e.guild} config..." }
+				logger.trace { "Deleting ${e.guildIdLong} config..." }
 				serverConfig?.delete()
 
-				logger.trace { "Deleting all ${e.guild}'s giveaways..." }
+				logger.trace { "Deleting all ${e.guildIdLong}'s giveaways..." }
 				val allGiveaways = Giveaway.find {
-					Giveaways.guildId eq e.guild.idLong
+					Giveaways.guildId eq e.guildIdLong
 				}
 
-				logger.trace { "${e.guild} has ${allGiveaways.count()} giveaways that will be cancelled and deleted!" }
+				logger.trace { "${e.guildIdLong} has ${allGiveaways.count()} giveaways that will be cancelled and deleted!" }
 
 				allGiveaways.forEach {
 					loritta.giveawayManager.cancelGiveaway(it, true, true)
 				}
 
 				Mutes.deleteWhere {
-					Mutes.guildId eq e.guild.idLong
+					Mutes.guildId eq e.guildIdLong
 				}
 
-				logger.trace { "Done! Everything related to ${e.guild} was deleted!" }
+				logger.trace { "Done! Everything related to ${e.guildIdLong} was deleted!" }
 			}
 		}
 	}
 
 	override fun onGuildJoin(event: GuildJoinEvent) {
-		logger.info { "Someone added me @ ${event.guild}! :)" }
+		logger.info { "Someone added me @ ${event.guildIdLong}! :)" }
 	}
 
 	override fun onGuildMemberJoin(event: GuildMemberJoinEvent) {
@@ -390,7 +366,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
 				queueTextChannelTopicUpdates(loritta, event.guild, serverConfig)
 
-				if (autoroleConfig != null && autoroleConfig.enabled && !autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMember.hasPermission(Permission.MANAGE_ROLES)) // Está ativado?
+				if (autoroleConfig != null && autoroleConfig.enabled && !autoroleConfig.giveOnlyAfterMessageWasSent && event.guild.selfMemberHasPermission(Permission.ManageRoles)) // Está ativado?
 					AutoroleModule.giveRoles(event.member, autoroleConfig)
 
 				if (welcomerConfig != null) // Está ativado?
@@ -407,7 +383,7 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 					val muteRole = MuteCommand.getMutedRole(loritta, event.guild, loritta.localeManager.getLocaleById(serverConfig.localeId)) ?: return@launch
 
-					event.guild.addRoleToMember(event.member, muteRole).await()
+					event.guild.addRoleToMember(event.member, muteRole)
 
 					if (mute.isTemporary)
 						MuteCommand.spawnRoleRemovalThread(loritta, event.guild, locale, event.user, mute.expiresAt!!)
@@ -425,10 +401,9 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
-		val member = event.member
 		val user = event.user
 
-		logger.debug { "$user ($member) left server ${event.guild}" }
+		logger.debug { "$user left server ${event.guild}" }
 
 		// Remover thread de role removal caso o usuário tenha saido do servidor
 		val job = MuteCommand.roleRemovalJobs[event.guild.id + "#" + user.id]

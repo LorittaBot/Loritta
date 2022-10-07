@@ -3,16 +3,11 @@ package net.perfectdreams.loritta.morenitta.commands.vanilla.administration
 import com.google.common.collect.Sets
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
-import net.perfectdreams.loritta.morenitta.dao.Mute
 import net.perfectdreams.loritta.morenitta.tables.Mutes
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.TimeUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
@@ -23,25 +18,24 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.GuildChannel
-import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.entities.User
-import net.dv8tion.jda.api.exceptions.HierarchyException
+import dev.kord.common.entity.Permission
+import dev.kord.common.entity.Permissions
+import dev.kord.rest.request.KtorRequestException
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.await
+import net.perfectdreams.loritta.deviousfun.entities.*
+import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.transactions.transaction
-import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.TimeUnit
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.dao.Mute
+import java.awt.Color
 
 class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf("mutar", "silenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mute.description")
@@ -49,7 +43,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.KICK_MEMBERS)
+		return listOf(Permission.KickMembers)
 	}
 
 	override fun canUseInPrivateChannel(): Boolean {
@@ -57,7 +51,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_ROLES, Permission.MANAGE_PERMISSIONS, Permission.MANAGE_CHANNEL)
+		return listOf(Permission.ManageRoles, Permission.ManageRoles, Permission.ManageChannels)
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
@@ -248,40 +242,43 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			val mutedRole: Role?
 			if (mutedRoles.isEmpty()) {
 				// Se não existe, vamos criar ela!
-				mutedRole = context.guild.createRole()
-					.setName(mutedRoleName)
-					.setColor(Color.BLACK)
-					.await()
+				mutedRole = context.guild.createRole {
+					name = mutedRoleName
+					color = Color.BLACK.toKordColor()
+				}
 			} else {
 				// Se existe, vamos carregar a atual
 				mutedRole = mutedRoles[0]
 			}
 
-			val couldntEditChannels = mutableListOf<GuildChannel>()
+			val couldntEditChannels = mutableListOf<Channel>()
+			val selfMember = context.guild.retrieveSelfMember()
 
 			// E agora vamos pegar todos os canais de texto do servidor
 			run {
 				var processedRequests = 0
 				for (textChannel in context.guild.textChannels) {
 					try {
-						if (context.guild.selfMember.hasPermission(
+						if (selfMember.hasPermission(
 								textChannel,
-								Permission.MESSAGE_WRITE,
-								Permission.MANAGE_CHANNEL,
-								Permission.MANAGE_PERMISSIONS
+								Permission.SendMessages,
+								Permission.ManageChannels,
+								Permission.ManageRoles
 							)
 						) {
 							val permissionOverride = textChannel.getPermissionOverride(mutedRole)
 							if (permissionOverride == null) { // Se é null...
-								textChannel.createPermissionOverride(mutedRole)
-									.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-									.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
+								textChannel.createPermissionOverride(mutedRole) {
+									this.denied = Permissions {
+										+ Permission.SendMessages // kk eae men, daora ficar mutado né
+									}
+								}
 								processedRequests++
 							} else {
-								if (!permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
-									permissionOverride.manager
-										.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
-										.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
+								if (Permission.SendMessages !in permissionOverride.deny) {
+									permissionOverride.edit {
+										this.denied = permissionOverride.deny.plus(Permission.SendMessages)
+									}
 									processedRequests++
 								}
 							}
@@ -300,18 +297,20 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 				var processedRequests = 0
 				for (voiceChannel in context.guild.voiceChannels) {
 					try {
-						if (context.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_SPEAK, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
+						if (selfMember.hasPermission(voiceChannel, Permission.Speak, Permission.ManageChannels, Permission.ManageRoles)) {
 							val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
 							if (permissionOverride == null) { // Se é null...
-								voiceChannel.createPermissionOverride(mutedRole)
-									.setDeny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
-									.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
+								voiceChannel.createPermissionOverride(mutedRole) {
+									this.denied = Permissions {
+										+ Permission.Speak // kk eae men, daora ficar mutado né
+									}
+								}
 								processedRequests++
 							} else {
-								if (!permissionOverride.denied.contains(Permission.VOICE_SPEAK)) {
-									permissionOverride.manager
-										.deny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
-										.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
+								if (Permission.Speak !in permissionOverride.deny) {
+									permissionOverride.edit {
+										this.denied = permissionOverride.deny.plus(Permission.Speak)
+									}
 									processedRequests++
 								}
 							}
@@ -339,7 +338,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			if (couldntEditChannels.isNotEmpty()) {
 				context.reply(
 					LorittaReply(
-						context.locale["commands.command.mute.couldntEditChannel", couldntEditChannels.joinToString(", ", transform = { "`" + it.name.stripCodeMarks() + "`" })],
+						context.locale["commands.command.mute.couldntEditChannel", couldntEditChannels.joinToString(", ", transform = { "`" + it.name?.stripCodeMarks() + "`" })],
 						Constants.ERROR
 					)
 				)
@@ -380,11 +379,11 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					}
 					spawnRoleRemovalThread(context.loritta, context.guild, context.locale, user, time!!)
 				}
-			} catch (e: HierarchyException) {
+			} catch (e: KtorRequestException) {
 				val reply = buildString {
 					this.append(context.locale[AdminUtils.ROLE_TOO_LOW_KEY])
 
-					if (context.handle.hasPermission(Permission.MANAGE_ROLES)) {
+					if (context.handle.hasPermission(Permission.ManageRoles)) {
 						this.append(" ")
 						this.append(context.locale[AdminUtils.ROLE_TOO_LOW_HOW_TO_FIX_KEY])
 					}
@@ -404,9 +403,9 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 
 		fun getMutedRole(loritta: LorittaBot, guild: Guild, locale: BaseLocale) = guild.getRolesByName(locale["$LOCALE_PREFIX.mute.roleName"], false).getOrNull(0)
 
-		fun spawnRoleRemovalThread(loritta: LorittaBot, guild: Guild, locale: BaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(loritta, guild.idLong, locale, user.idLong, expiresAt)
+		suspend fun spawnRoleRemovalThread(loritta: LorittaBot, guild: Guild, locale: BaseLocale, user: User, expiresAt: Long) = spawnRoleRemovalThread(loritta, guild.idLong, locale, user.idLong, expiresAt)
 
-		fun spawnRoleRemovalThread(loritta: LorittaBot, guildId: Long, locale: BaseLocale, userId: Long, expiresAt: Long) {
+		suspend fun spawnRoleRemovalThread(loritta: LorittaBot, guildId: Long, locale: BaseLocale, userId: Long, expiresAt: Long) {
 			val jobId = "$guildId#$userId"
 			logger.info("Criando role removal thread para usuário $userId na guild $guildId!")
 
@@ -494,6 +493,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 						logger.warn("Então... era para retirar o status de silenciado de $userId na guild $guildId, mas a guild não existe mais!")
 						return@launch
 					}
+					val selfMember = guild.retrieveSelfMember()
 
 					val settings = AdminUtils.retrieveModerationInfo(loritta, loritta.getOrCreateServerConfig(guildId))
 
@@ -501,7 +501,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 						loritta,
 						settings,
 						guild,
-						guild.selfMember.user,
+						selfMember.user,
 						locale,
 						currentMember.user,
 						locale["commands.command.unmute.automaticallyExpired", "<:lori_owo:417813932380520448>"],

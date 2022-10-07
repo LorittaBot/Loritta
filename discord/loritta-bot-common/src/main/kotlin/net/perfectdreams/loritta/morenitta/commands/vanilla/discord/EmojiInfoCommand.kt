@@ -8,12 +8,14 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Emote
-import net.dv8tion.jda.api.entities.MessageEmbed
+import net.perfectdreams.loritta.deviousfun.EmbedBuilder
+import net.perfectdreams.loritta.deviousfun.entities.Emote
+import net.perfectdreams.loritta.deviousfun.DeviousEmbed
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.arguments
+import net.perfectdreams.loritta.deviousfun.entities.DiscordEmote
+import net.perfectdreams.loritta.deviousfun.entities.GuildEmoteFromMessage
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import kotlin.streams.toList
@@ -34,14 +36,14 @@ class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinf
 
 			val arg0 = context.rawArgs[0]
 			val firstEmote = context.message.emotes.firstOrNull()
-			if (arg0 == firstEmote?.asMention) {
+			if (firstEmote != null) {
 				// Emoji do Discord (via menção)
 				showDiscordEmoteInfo(context, firstEmote)
 				return
 			}
 
 			if (arg0.isValidSnowflake()) {
-				val emote = loritta.lorittaShards.getEmoteById(arg0)
+				val emote = context.guildOrNull?.getEmoteById(arg0)
 				if (emote != null) {
 					// Emoji do Discord (via ID)
 					showDiscordEmoteInfo(context, emote)
@@ -55,14 +57,6 @@ class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinf
 					)
 					return
 				}
-			}
-
-			val guild = context.guild
-			val foundEmote = guild.getEmotesByName(arg0, true).firstOrNull()
-			if (foundEmote != null) {
-				// Emoji do Discord (via nome)
-				showDiscordEmoteInfo(context, foundEmote)
-				return
 			}
 
 			val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(arg0).find()
@@ -101,19 +95,13 @@ class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinf
 		}
 	}
 
-	suspend fun showDiscordEmoteInfo(context: CommandContext, emote: Emote) {
+	suspend fun showDiscordEmoteInfo(context: CommandContext, emote: DiscordEmote) {
 		context.sendMessage(context.getAsMention(true), getDiscordEmoteInfoEmbed(context, emote))
 	}
 
 	companion object {
-		fun getDiscordEmoteInfoEmbed(context: CommandContext, emote: Emote): MessageEmbed {
-			// Se o usuário usar um emoji de um servidor que a Lori NÃO compartilha, então ela não vai conseguir usar!
-			// Por isto, iremos pegar se ela conhece o emoji a partir das shards
-			val cachedEmote = context.loritta.lorittaShards.getEmoteById(emote.id)
-			val canUse = cachedEmote != null
-			// E vamos pegar a fonte da guild a partir do nosso emoji cacheado, já que ela pode conhecer em outra shard, mas não na atual!
-			val sourceGuild = cachedEmote?.guild
-
+		fun getDiscordEmoteInfoEmbed(context: CommandContext, emote: DiscordEmote): DeviousEmbed {
+			val canUse = context.guildOrNull?.getEmoteById(emote.id) != null
 			val emoteTitle = if (canUse)
 				emote.asMention
 			else
@@ -126,8 +114,6 @@ class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinf
 			embed.addField("\uD83D\uDCBB ${context.locale["commands.command.emojiinfo.emojiId"]}", "`${emote.id}`", true)
 			embed.addField("\uD83D\uDC40 ${context.locale["commands.command.emojiinfo.mention"]}", "`${emote.asMention}`", true)
 			embed.addField("\uD83D\uDCC5 ${context.locale["commands.command.emojiinfo.emojiCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(emote.timeCreated, context.locale), true)
-			if (sourceGuild != null)
-				embed.addField("\uD83D\uDD0E ${context.locale["commands.command.emojiinfo.seenAt"]}", "`${sourceGuild.name}`", true)
 			embed.addField("⛓ Link", emote.imageUrl + "?size=2048", true)
 			return embed.build()
 		}

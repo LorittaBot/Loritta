@@ -8,10 +8,8 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.enableFontAntiAliasing
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.OnlineStatus
-import net.dv8tion.jda.api.entities.User
+import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
-import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import java.awt.Font
 import java.awt.Image
@@ -35,14 +33,15 @@ class TodoGrupoTemCommand(loritta: LorittaBot) : AbstractCommand(loritta, "every
 		val baseGraph = base.graphics.enableFontAntiAliasing()
 
 		val users = ArrayList<User>()
-		val members = context.guild.members.filter { it.onlineStatus != OnlineStatus.OFFLINE && it.user.avatarUrl != null && !it.user.isBot }.toMutableList()
+		val allMembers = context.guild.retrieveMembers()
+		val members = allMembers.filter { it.user.avatarUrl != null && !it.user.isBot }.toMutableList()
 
 		users.addAll(context.message.mentionedUsers)
 
 		while (6 > users.size) {
 			val member = if (members.isEmpty()) {
 				// omg
-				context.guild.members[LorittaBot.RANDOM.nextInt(context.guild.members.size)]
+				allMembers[LorittaBot.RANDOM.nextInt(allMembers.size)]
 			} else {
 				members[LorittaBot.RANDOM.nextInt(members.size)]
 			}

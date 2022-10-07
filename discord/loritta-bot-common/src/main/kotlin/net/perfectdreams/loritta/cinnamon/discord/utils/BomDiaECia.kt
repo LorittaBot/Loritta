@@ -270,7 +270,7 @@ class BomDiaECia(private val m: LorittaBot) {
     }
 
     /* @Synchronized
-    fun announceWinner(channel: TextChannel, guild: Guild, user: User) {
+    fun announceWinner(channel: Channel, guild: Guild, user: User) {
         activeTextChannels.clear()
 
         val validTextChannels = this.validTextChannels
@@ -298,7 +298,7 @@ class BomDiaECia(private val m: LorittaBot) {
                 }
 
                 channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
-                    if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
+                    if (message.guild.selfMember.hasPermission(Permission.AddReactions)) {
                         message.onReactionAddByAuthor(user.idLong) {
                             if (it.reactionEmote.isEmote("⁉")) {
                                 loritta.messageInteractionCache.remove(it.messageIdLong)

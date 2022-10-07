@@ -1,16 +1,16 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
-import net.dv8tion.jda.api.Permission
+import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
 
@@ -20,7 +20,7 @@ class GiveawayRerollCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 	}
 
 	override fun command() = create {
-		userRequiredPermissions = listOf(Permission.MESSAGE_MANAGE)
+		userRequiredPermissions = listOf(Permission.ManageMessages)
 
 		canUseInPrivateChannel = false
 
