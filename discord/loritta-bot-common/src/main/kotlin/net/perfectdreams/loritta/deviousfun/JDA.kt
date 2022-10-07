@@ -142,7 +142,7 @@ class JDA(val loritta: LorittaBot) {
             return cachedChannel
 
         val channel = loritta.rest.channel.getChannel(id)
-        val guild = channel.guildId.value?.let { retrieveGuildById(channel.id) }
+        val guild = channel.guildId.value?.let { retrieveGuildById(it) }
         return cacheManager.createChannel(guild, channel)
     }
 
