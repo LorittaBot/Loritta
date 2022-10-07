@@ -95,7 +95,7 @@ class DeviousCacheManager(val m: JDA) {
             it.hset(m.loritta.redisKeys.discordGuilds(), data.id.toString(), Json.encodeToString(deviousGuildData))
 
             // Upsert roles
-            it.hsetByteArray(
+            it.hsetByteArrayOrDelIfMapIsEmpty(
                 m.loritta.redisKeys.discordGuildRoles(deviousGuildData.id),
                 rolesData.map {
                     it.id.toString() to m.loritta.binaryCacheTransformers.roles.encode(it)
@@ -108,7 +108,7 @@ class DeviousCacheManager(val m: JDA) {
                 it.del(m.loritta.redisKeys.discordGuildChannels(deviousGuildData.id))
                 it.sadd(
                     m.loritta.redisKeys.discordGuildChannels(deviousGuildData.id),
-                    *data.channels.value!!.map { it.id.toString() }.toTypedArray()
+                    *guildChannels.map { it.id.toString() }.toTypedArray()
                 )
 
                 // Delete all channels related to this guild
@@ -116,7 +116,7 @@ class DeviousCacheManager(val m: JDA) {
                     it.hdel(m.loritta.redisKeys.discordChannels(), *channelsOfThisGuild.toTypedArray())
 
                 // Upsert channels
-                it.hsetByteArray(
+                it.hsetByteArrayOrDelIfMapIsEmpty(
                     m.loritta.redisKeys.discordChannels(),
                     guildChannels.map {
                         it.id.toString() to binaryCacheTransformers.channels.encode(
@@ -209,7 +209,7 @@ class DeviousCacheManager(val m: JDA) {
 
     fun storeEmojis(transaction: Transaction, guildId: Snowflake, emojis: List<DeviousGuildEmojiData>) {
         // Upsert emojis
-        transaction.hsetByteArray(
+        transaction.hsetByteArrayOrDelIfMapIsEmpty(
             m.loritta.redisKeys.discordGuildEmojis(guildId),
             emojis.map {
                 it.id.toString() to binaryCacheTransformers.emojis.encode(it)
