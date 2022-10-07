@@ -131,9 +131,7 @@ import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
-import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
-import okhttp3.Protocol
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.and
@@ -697,7 +695,11 @@ class LorittaBot(
 	fun startWebServer() {
 		// Carregar os blog posts
 		newWebsiteThread = thread(true, name = "Website Thread") {
-			val nWebsite = net.perfectdreams.loritta.morenitta.website.LorittaWebsite(this, lorittaCluster.websiteUrl, config.loritta.folders.website)
+			val nWebsite = net.perfectdreams.loritta.morenitta.website.LorittaWebsite(
+				this,
+				lorittaCluster.websiteUrl,
+				config.loritta.folders.website
+			)
 			newWebsite = nWebsite
 			nWebsite.start()
 		}

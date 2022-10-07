@@ -54,7 +54,7 @@ object DiscordUtils {
 	 */
 	fun getUrlForLorittaClusterId(loritta: LorittaBot, id: Int) = loritta.config.loritta.clusters.instances.first() {
 		it.id == id
-	}.websiteUrl.format(id)
+	}.websiteDomain.format(id)
 
 	suspend fun extractUserFromString(
 		loritta: LorittaBot,

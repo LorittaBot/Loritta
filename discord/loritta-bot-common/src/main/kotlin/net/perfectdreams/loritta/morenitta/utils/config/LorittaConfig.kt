@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.utils.config
 
-import dev.kord.common.entity.ActivityType
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
@@ -97,6 +96,7 @@ data class LorittaConfig(
             val name: String,
             val minShard: Int,
             val maxShard: Int,
+            val websiteDomain: String
             val websiteUrl: String
         ) {
             fun getUrl(loritta: LorittaBot) = DiscordUtils.getUrlForLorittaClusterId(loritta, id)
