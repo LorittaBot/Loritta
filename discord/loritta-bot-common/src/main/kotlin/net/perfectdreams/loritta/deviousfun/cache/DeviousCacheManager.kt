@@ -118,14 +118,14 @@ class DeviousCacheManager(val m: JDA) {
                 // Upsert channels
                 it.hsetByteArrayOrDelIfMapIsEmpty(
                     m.loritta.redisKeys.discordChannels(),
-                    guildChannels.map {
+                    guildChannels.associate {
                         it.id.toString() to binaryCacheTransformers.channels.encode(
                             DeviousChannelData.from(
                                 data.id,
                                 it
                             )
                         )
-                    }.toMap()
+                    }
                 )
             }
 

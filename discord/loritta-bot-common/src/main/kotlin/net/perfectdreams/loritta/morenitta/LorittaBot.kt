@@ -141,6 +141,7 @@ import org.jetbrains.exposed.sql.select
 import redis.clients.jedis.Jedis
 import redis.clients.jedis.JedisPool
 import redis.clients.jedis.exceptions.JedisDataException
+import redis.clients.jedis.exceptions.JedisException
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.InputStream
@@ -1452,9 +1453,18 @@ class LorittaBot(
 		return net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage(bytes.inputStream())
 	}
 
-	suspend fun <T> redisConnection(action: (Jedis) -> (T)) = withContext(Dispatchers.IO) {
-		jedisPool.resource.use {
-			action.invoke(it)
+	suspend fun <T> redisConnection(action: (Jedis) -> (T)): T {
+		val redisException = LorittaJedisException()
+		try {
+			return withContext(Dispatchers.IO) {
+				jedisPool.resource.use {
+					action.invoke(it)
+				}
+			}
+		} catch (e: JedisException) {
+			// Stacktrace recovery, because the stacktrace *vanishes* after calling withContext
+			e.addSuppressed(redisException)
+			throw e
 		}
 	}
 
@@ -1464,9 +1474,17 @@ class LorittaBot(
 			action.invoke(t)
 			t.exec()
 		} catch (e: Throwable) {
-			e.printStackTrace()
-			t.discard()
+			var discard = true
+
+			if (e is JedisDataException) {
+				if (e.message == "EXECABORT Transaction discarded because of previous errors.")
+					discard = false
+			}
+			if (discard)
+				t.discard()
 			throw e
 		}
 	}
+
+	class LorittaJedisException : Exception()
 }
