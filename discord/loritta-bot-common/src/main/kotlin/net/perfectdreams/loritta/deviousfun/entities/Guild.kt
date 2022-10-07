@@ -7,6 +7,7 @@ import dev.kord.common.entity.optional.optional
 import dev.kord.rest.Image
 import dev.kord.rest.builder.role.RoleCreateBuilder
 import dev.kord.rest.json.request.CurrentUserNicknameModifyRequest
+import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
@@ -196,11 +197,17 @@ class Guild(
     suspend fun retrieveMemberOrNull(user: User) = jda.retrieveMemberById(this, user.idSnowflake)
     suspend fun retrieveMemberById(id: String) = jda.retrieveMemberById(this, Snowflake(id))
     suspend fun retrieveMemberById(id: Long) = jda.retrieveMemberById(this, Snowflake(id))
-    fun retrieveMemberOrNullById(id: String): Member? {
-        TODO()
+
+    suspend fun retrieveMemberOrNullById(id: String) = try {
+        jda.retrieveMemberById(this, Snowflake(id))
+    } catch (e: KtorRequestException) {
+        null
     }
-    fun retrieveMemberOrNullById(id: Long): Member? {
-        TODO()
+
+    suspend fun retrieveMemberOrNullById(id: Long) = try {
+        jda.retrieveMemberById(this, Snowflake(id))
+    } catch (e: KtorRequestException) {
+        null
     }
 
     suspend fun createEmote(emoteName: String, byteArray: ByteArray): Emote {
