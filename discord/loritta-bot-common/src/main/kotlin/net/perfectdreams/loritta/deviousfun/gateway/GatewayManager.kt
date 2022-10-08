@@ -4,6 +4,7 @@ import dev.kord.common.entity.ActivityType
 import dev.kord.common.entity.DiscordShard
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.*
+import dev.kord.gateway.retry.LinearRetry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,6 +12,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviousfun.JDA
 import net.perfectdreams.loritta.deviousfun.listeners.KordListener
+import kotlin.time.Duration.Companion.seconds
 
 class GatewayManager(
     val jda: JDA,
@@ -31,7 +33,14 @@ class GatewayManager(
 
     init {
         for (shardId in minShards..maxShards) {
-            val defaultGateway = DeviousGateway(jda, DefaultGateway {}, shardId)
+            val defaultGateway = DeviousGateway(
+                jda,
+                DefaultGateway {
+                    // The default reconnectRetry is 10, but let's try reconnecting indefinitely (well, kind of, it will try reconnecting MAX_VALUE times)
+                    this.reconnectRetry = LinearRetry(2.seconds, 20.seconds, Int.MAX_VALUE)
+                },
+                shardId
+            )
             _gateways[shardId] = defaultGateway
         }
     }
