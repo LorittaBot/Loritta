@@ -16,7 +16,6 @@ class LorittaMessageEvent(
     val messageId: String,
     val guild: Guild?,
     val channel: Channel,
-    val textChannel: Channel?,
     val serverConfig: ServerConfig,
     val locale: BaseLocale,
     val lorittaUser: LorittaUser

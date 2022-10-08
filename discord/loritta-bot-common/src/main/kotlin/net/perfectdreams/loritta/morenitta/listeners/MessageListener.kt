@@ -200,7 +200,6 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						event.messageId,
 						event.guild,
 						channel,
-						if (channel.type == ChannelType.GuildText) channel else null,
 						serverConfig,
 						locale,
 						lorittaUser
@@ -331,7 +330,6 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						event.messageId,
 						null,
 						channel,
-						null,
 						serverConfig,
 						locale,
 						lorittaUser
@@ -402,7 +400,6 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						event.messageId,
 						guild,
 						channel,
-						if (channel.type == ChannelType.GuildText) channel else null,
 						serverConfig,
 						locale,
 						lorittaUser

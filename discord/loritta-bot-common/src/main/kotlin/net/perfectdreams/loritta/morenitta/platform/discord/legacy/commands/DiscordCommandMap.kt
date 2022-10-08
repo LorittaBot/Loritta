@@ -307,14 +307,14 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(
 						LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					if (serverConfig.warnIfBlacklisted) {
-						if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.textChannel != null) {
+						if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.channel != null) {
 							val generatedMessage = MessageUtils.generateMessage(
 								serverConfig.blacklistedWarning ?: "???",
-								listOf(ev.member, ev.textChannel),
+								listOf(ev.member, ev.channel),
 								ev.guild
 							)
 							if (generatedMessage != null)
-								ev.textChannel.sendMessage(
+								ev.channel.sendMessage(
 									MessageBuilder(generatedMessage)
 										.referenceIfPossible(ev.message, serverConfig, true)
 										.build()
@@ -331,14 +331,14 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				}
 
 				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
-				if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.textChannel != null && command is DiscordCommand) {
+				if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.channel != null && command is DiscordCommand) {
 					// Verificar se a Loritta possui todas as permissões necessárias
 					val botPermissions = command.botRequiredPermissions.toMutableList()
 					botPermissions.add(Permission.EmbedLinks)
 					botPermissions.add(Permission.UseExternalEmojis)
 					botPermissions.add(Permission.AddReactions)
 					botPermissions.add(Permission.ReadMessageHistory)
-					val missingPermissions = ArrayList<Permission>(botPermissions.filterNot { ev.guild.retrieveSelfMember().hasPermission(ev.textChannel, it) })
+					val missingPermissions = ArrayList<Permission>(botPermissions.filterNot { ev.guild.retrieveSelfMember().hasPermission(ev.channel, it) })
 
 					if (missingPermissions.isNotEmpty()) {
 						// oh no
@@ -353,7 +353,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 					}
 				}
 
-				if (!isPrivateChannel && ev.member != null && ev.textChannel != null && command is DiscordCommand) {
+				if (!isPrivateChannel && ev.member != null && ev.channel != null && command is DiscordCommand) {
 					val missingPermissions = command.userRequiredLorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
 
 					if (missingPermissions.isNotEmpty()) {
@@ -472,7 +472,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				command.executor.invoke(context)
 
 				if (!isPrivateChannel && ev.guild != null) {
-					if (ev.guild.retrieveSelfMember().hasPermission(ev.textChannel!!, Permission.ManageMessages) && (serverConfig.deleteMessageAfterCommand)) {
+					if (ev.guild.retrieveSelfMember().hasPermission(ev.channel, Permission.ManageMessages) && (serverConfig.deleteMessageAfterCommand)) {
 						ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
 							// We don't care if we weren't able to delete the message because it was already deleted
 						})
@@ -493,7 +493,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 
 				if (e is KtorRequestException) {
 					if (e.error?.code == JsonErrorCode.RequestEntityTooLarge) { // Request entity too large
-						if (ev.isFromType(ChannelType.DM) || (ev.isFromType(ChannelType.GuildText) && ev.textChannel != null && ev.textChannel.canTalk()))
+						if (ev.isFromType(ChannelType.DM) || (ev.isFromType(ChannelType.GuildText) && ev.channel != null && ev.channel.canTalk()))
 							context.reply(
 								LorittaReply(
 									locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
@@ -521,7 +521,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 				if (!e.message.isNullOrEmpty())
 					reply += " `${e.message!!.escapeMentions()}`"
 
-				if (ev.isFromType(ChannelType.DM) || (ev.isFromType(ChannelType.GuildText) && ev.textChannel != null && ev.textChannel.canTalk()))
+				if (ev.isFromType(ChannelType.DM) || (ev.isFromType(ChannelType.GuildText) && ev.channel != null && ev.channel.canTalk()))
 					ev.channel.sendMessage(
 						MessageBuilder(reply)
 							.referenceIfPossible(ev.message, serverConfig, true)

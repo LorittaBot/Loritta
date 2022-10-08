@@ -28,7 +28,7 @@ class LockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lock", listOf
 	}
 	
 	override suspend fun run(context: CommandContext, locale: BaseLocale) {
-		val channel = getTextChannel(context, context.args.getOrNull(0)) ?: context.event.textChannel!! // Já que o comando não será executado via DM, podemos assumir que textChannel nunca será nulo
+		val channel = getTextChannel(context, context.args.getOrNull(0)) ?: context.event.channel // Já que o comando não será executado via DM, podemos assumir que textChannel nunca será nulo
 		
 		val publicRole = context.guild.publicRole
 		val override = channel.getPermissionOverride(publicRole)

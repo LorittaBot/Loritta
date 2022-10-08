@@ -91,7 +91,7 @@ class AutomodModule(val loritta: LorittaBot) : MessageReceivedModule {
 
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		if (ANTIRAID_ENABLED && (loritta.config.loritta.antiRaidIds.contains(Snowflake(event.channel.id))) && loritta.config.loritta.environment == EnvironmentType.CANARY) {
-			val messages = MESSAGES.getOrPut(event.textChannel!!.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
+			val messages = MESSAGES.getOrPut(event.channel.id) { Queues.synchronizedQueue(EvictingQueue.create<Message>(50)) }
 
 			fun calculateRaidingPercentage(wrapper: Message): Double {
 				var content = wrapper.contentRaw.toLowerCase()

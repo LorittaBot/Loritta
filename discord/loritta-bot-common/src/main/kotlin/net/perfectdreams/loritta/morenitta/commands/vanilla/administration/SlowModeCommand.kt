@@ -57,14 +57,14 @@ class SlowModeCommand(loritta: LorittaBot) : AbstractCommand(loritta, "slowmode"
 					this.rateLimitPerUser = null
 				}
 
-				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.locale["commands.command.slowmode.disabledInChannel", context.event.textChannel!!.asMention])
+				context.sendMessage("\uD83C\uDFC3 **|** " + context.getAsMention(true) + context.locale["commands.command.slowmode.disabledInChannel", context.event.channel.asMention])
 				return
 			} else if (seconds in 1..21600) {
 				context.message.textChannel.modifyTextChannel {
 					this.rateLimitPerUser = seconds.seconds
 				}
 
-				context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.locale["commands.command.slowmode.enabledInChannel", context.event.textChannel!!.asMention, seconds])
+				context.sendMessage("\uD83D\uDC0C **|** " + context.getAsMention(true) + context.locale["commands.command.slowmode.enabledInChannel", context.event.channel.asMention, seconds])
 			} else {
 				// TODO: Colocar uma mensagem melhor
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.invalidNumber", context.args[0]])

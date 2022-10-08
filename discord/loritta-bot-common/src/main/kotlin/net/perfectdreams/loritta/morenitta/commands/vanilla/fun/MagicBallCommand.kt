@@ -32,7 +32,7 @@ class MagicBallCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vieirinh
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "vieirinha")
 
 		if (context.args.isNotEmpty()) {
-			val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.textChannel!!, "Vieirinha")
+			val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.channel, "Vieirinha")
 
 			context.sendMessage(temmie, WebhookMessageBuilder()
 					.setUsername("Vieirinha")

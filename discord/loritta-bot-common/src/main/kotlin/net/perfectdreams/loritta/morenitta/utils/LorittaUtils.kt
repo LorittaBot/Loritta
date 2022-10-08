@@ -22,7 +22,7 @@ object LorittaUtils {
 	private val logger = KotlinLogging.logger {}
 
 	suspend fun canUploadFiles(context: CommandContext): Boolean {
-		if (!context.isPrivateChannel && !context.guild.selfMemberHasPermission(context.event.textChannel!!, Permission.AttachFiles)) {
+		if (!context.isPrivateChannel && !context.guild.selfMemberHasPermission(context.event.channel, Permission.AttachFiles)) {
 			context.message.channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["loritta.imageUploadNoPerm"].f() + " \uD83D\uDE22").queue()
 			return false
 		}

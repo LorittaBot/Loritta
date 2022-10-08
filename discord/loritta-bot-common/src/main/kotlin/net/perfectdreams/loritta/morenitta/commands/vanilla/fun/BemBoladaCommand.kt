@@ -197,7 +197,7 @@ class BemBoladaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "bembolad
 				"Por que o médico que trabalha de noite usa verde?\n\nÉ porque ele está de plantão.",
 				"O que o tomate foi fazer no banco?\n\nFoi tirar o extrato.")
 
-		val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.textChannel!!, "Kenji do Loop Infinito")
+		val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.channel, "Kenji do Loop Infinito")
 
 		context.sendMessage(temmie, WebhookMessageBuilder()
 				.setUsername("Kenji do Loop Infinito")

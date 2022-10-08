@@ -164,7 +164,7 @@ class GuildLorittaUser(loritta: LorittaBot, val member: Member, permissions: Enu
 			return false
 
 		// E, finalmente, iremos verificar as permissões do usuário
-		if (member.hasPermission(context.event.textChannel!!, context.cmd.getDiscordPermissions())) {
+		if (member.hasPermission(context.event.channel, context.cmd.getDiscordPermissions())) {
 			return true
 		}
 

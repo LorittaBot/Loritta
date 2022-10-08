@@ -314,7 +314,7 @@ class TioDoPaveCommand(loritta: LorittaBot) : AbstractCommand(loritta, "tiodopav
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "summon tiodopave")
 
-		val temmie = getOrCreateWebhook(loritta, context.event.textChannel!!, "Tio do Pavê")
+		val temmie = getOrCreateWebhook(loritta, context.event.channel, "Tio do Pavê")
 
 		context.sendMessage(temmie, WebhookMessageBuilder()
 				.setUsername("Tio do Pavê")

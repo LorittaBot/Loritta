@@ -157,7 +157,7 @@ class CommandContext(
 	}
 
 	suspend fun sendMessage(message: DeviousMessage, addInlineReply: Boolean = true): Message {
-		if (isPrivateChannel || event.textChannel!!.canTalk()) {
+		if (isPrivateChannel || event.channel.canTalk()) {
 			return event.channel.sendMessage(
 				MessageBuilder(message)
 					.referenceIfPossible(event.message, config, addInlineReply)
@@ -245,7 +245,7 @@ class CommandContext(
 	}
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: DeviousMessage): Message {
-		if (isPrivateChannel || event.textChannel!!.canTalk()) {
+		if (isPrivateChannel || event.channel.canTalk()) {
 			val sentMessage = event.channel.sendMessage(
 				MessageBuilder(message)
 					.addFile(inputStream.readAllBytes(), name)
@@ -326,7 +326,7 @@ class CommandContext(
 		}
 
 		// Nothing found? Try retrieving the replied message content
-		if (!this.isPrivateChannel && this.guild.selfMemberHasPermission(this.event.textChannel!!, Permission.ReadMessageHistory)) {
+		if (!this.isPrivateChannel && this.guild.selfMemberHasPermission(this.event.channel, Permission.ReadMessageHistory)) {
 			val referencedMessage = message.retrieveReferencedMessage()
 			if (referencedMessage != null) {
 				for (embed in referencedMessage.embeds) {
@@ -341,7 +341,7 @@ class CommandContext(
 		}
 
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
-		if (search > 0 && !this.isPrivateChannel && this.guild.selfMemberHasPermission(this.event.textChannel!!, Permission.ReadMessageHistory)) {
+		if (search > 0 && !this.isPrivateChannel && this.guild.selfMemberHasPermission(this.event.channel, Permission.ReadMessageHistory)) {
 			try {
 				val messages = this.message.channel.history.retrievePast(search).await()
 

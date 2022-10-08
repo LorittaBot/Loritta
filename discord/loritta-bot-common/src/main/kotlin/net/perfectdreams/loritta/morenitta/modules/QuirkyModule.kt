@@ -20,7 +20,7 @@ class QuirkyModule(val loritta: LorittaBot) : MessageReceivedModule {
     override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
         val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
 
-        return miscellaneousConfig?.enableQuirky == true && event.guild?.retrieveSelfMember()?.hasPermission(event.textChannel!!, Permission.AddReactions, Permission.UseExternalEmojis, Permission.ReadMessageHistory, Permission.SendMessages) == true && event.message.type == MessageType.Default
+        return miscellaneousConfig?.enableQuirky == true && event.guild?.retrieveSelfMember()?.hasPermission(event.channel, Permission.AddReactions, Permission.UseExternalEmojis, Permission.ReadMessageHistory, Permission.SendMessages) == true && event.message.type == MessageType.Default
     }
 
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
