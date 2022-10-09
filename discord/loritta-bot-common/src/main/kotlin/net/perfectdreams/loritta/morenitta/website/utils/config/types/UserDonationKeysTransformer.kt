@@ -49,7 +49,17 @@ class UserDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer {
                     "value" to it.value,
                     "expiresAt" to it.expiresAt,
                     "user" to WebsiteUtils.transformToJson(loritta.lorittaShards.retrieveUserById(it.userId)!!),
-                    "activeIn" to loritta.newSuspendedTransaction { it.activeIn?.guildId?.let { serverInfo[it] } }
+                    "activeIn" to loritta.newSuspendedTransaction {
+                        it.activeIn?.guildId?.let {
+                            serverInfo[it]?.let {
+                                jsonObject(
+                                    "id" to it.id,
+                                    "name" to it.name,
+                                    "iconUrl" to it.iconUrl
+                                )
+                            }
+                        }
+                    }
             )
         }
         return array.toJsonArray()
