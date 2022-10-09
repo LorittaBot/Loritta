@@ -75,8 +75,7 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 			val row1 = mutableListOf("WS")
 			val row2 = mutableListOf("Lori Web")
 			val row3 = mutableListOf("Uptime")
-			val row4 = mutableListOf("Guilds")
-			val row5 = mutableListOf("MsgQ")
+			val row4 = mutableListOf("MsgQ")
 
 			results.forEach {
 				try {
@@ -85,8 +84,6 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 					val shardId = json["id"].long
 					val name = json["name"].string
 					val pendingMessages = json["pendingMessages"].long
-
-					val totalGuildCount = json["shards"].array.sumBy { it["guildCount"].int }
 
 					var jvmUpTime = json["uptime"].long
 					val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
@@ -111,8 +108,7 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 					row1.add("~${pingAverage}ms")
 					row2.add("~${time}ms")
 					row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
-					row4.add("$totalGuildCount")
-					row5.add("$pendingMessages")
+					row4.add("$pendingMessages")
 
 					// TODO - DeviousFun
 					/* val unstableShards = json["shards"].array.filter {
@@ -142,7 +138,6 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 					row2.add("---")
 					row3.add("OFFLINE!")
 					row4.add("---")
-					row5.add("---")
 				}
 			}
 
@@ -180,7 +175,6 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 						row2.add("---")
 						row3.add("---")
 						row4.add("---")
-						row5.add("---")
 
 						for (usedLoginPool in usedLoginPools) {
 							row0.add("> Login Pool ${usedLoginPool.key}")
@@ -188,7 +182,6 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 							row2.add("---")
 							row3.add("---")
 							row4.add("---")
-							row5.add("---")
 						}
 					}
 				} catch (e: Exception) {
@@ -196,7 +189,6 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 					row2.add("---")
 					row3.add("OFFLINE!")
 					row4.add("---")
-					row5.add("---")
 				}
 			}
 
@@ -213,9 +205,8 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
 				val arg2 = row2.getOrNull(i) ?: "---"
 				val arg3 = row3.getOrNull(i) ?: "---"
 				val arg4 = row4.getOrNull(i) ?: "---"
-				val arg5 = row5.getOrNull(i) ?: "---"
 
-				lines += "${arg0.padEnd(maxRow0, ' ')} | ${arg1.padEnd(maxRow1, ' ')} | ${arg2.padEnd(maxRow2, ' ')} | ${arg3.padEnd(maxRow3, ' ')} | ${arg4.padEnd(maxRow4, ' ')} | ${arg5.padEnd(maxRow4, ' ')}"
+				lines += "${arg0.padEnd(maxRow0, ' ')} | ${arg1.padEnd(maxRow1, ' ')} | ${arg2.padEnd(maxRow2, ' ')} | ${arg3.padEnd(maxRow3, ' ')} | ${arg4.padEnd(maxRow4, ' ')}"
 			}
 
 			val asMessage = mutableListOf<String>()
