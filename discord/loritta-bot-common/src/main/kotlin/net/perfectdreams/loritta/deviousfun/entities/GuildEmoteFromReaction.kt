@@ -4,7 +4,7 @@ import dev.kord.common.entity.DiscordPartialEmoji
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 
 class GuildEmoteFromReaction(
-    val deviousFun: DeviousFun,
+    override val deviousFun: DeviousFun,
     val emoji: DiscordPartialEmoji
 ) : DiscordEmote {
     override val idSnowflake

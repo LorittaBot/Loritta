@@ -4,7 +4,7 @@ import dev.kord.common.entity.DiscordPartialEmoji
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 
 class UnicodeEmoteFromReaction(
-    val deviousFun: DeviousFun,
+    override val deviousFun: DeviousFun,
     val emoji: DiscordPartialEmoji
 ) : Emote {
     override val name: String
