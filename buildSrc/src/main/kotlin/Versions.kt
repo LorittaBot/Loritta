@@ -10,7 +10,7 @@ object Versions {
 
     const val JVM_TARGET = "17"
     const val DISCORD_INTERAKTIONS = "0.0.17-20220915.223922-13"
-    const val KORD = "0.8.x-20220915.153617-252" // Should match Discord InteraKTions
+    const val KORD = "0.8.x-gateway-stuff-SNAPSHOT" // Should match Discord InteraKTions
     const val KOTLINX_DATE_TIME = "0.3.3"
     const val PROMETHEUS = "0.12.0"
 }

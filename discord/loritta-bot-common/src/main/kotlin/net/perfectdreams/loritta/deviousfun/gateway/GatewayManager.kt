@@ -12,6 +12,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviousfun.JDA
 import net.perfectdreams.loritta.deviousfun.listeners.KordListener
+import redis.clients.jedis.Response
 import kotlin.time.Duration.Companion.seconds
 
 class GatewayManager(
@@ -48,8 +49,21 @@ class GatewayManager(
     suspend fun start() {
         for ((shardId, gateway) in gateways) {
             scope.launch {
-                logger.info { "Starting shard $shardId... Hang tight!" }
-                gateway.kordGateway.start(token) {
+                lateinit var sessionIdResponse: Response<String>
+                lateinit var resumeGatewayUrlResponse: Response<String>
+                lateinit var sequenceResponse: Response<String>
+
+                jda.loritta.redisTransaction {
+                    sessionIdResponse = it.hget(jda.loritta.redisKeys.discordGatewaySessions(shardId), "sessionId")
+                    resumeGatewayUrlResponse = it.hget(jda.loritta.redisKeys.discordGatewaySessions(shardId), "resumeGatewayUrl")
+                    sequenceResponse = it.hget(jda.loritta.redisKeys.discordGatewaySessions(shardId), "sequence")
+                }
+
+                val sessionId = sessionIdResponse.get()
+                val resumeGatewayUrl = resumeGatewayUrlResponse.get()
+                val sequence = sequenceResponse.get()?.toInt()
+
+                val builder: GatewayConfigurationBuilder.() -> (Unit) = {
                     @OptIn(PrivilegedIntent::class)
                     intents += Intents {
                         + Intent.GuildMembers
@@ -78,6 +92,14 @@ class GatewayManager(
                     }
 
                     shard = DiscordShard(shardId, totalShards)
+                }
+
+                if (sessionId != null && resumeGatewayUrl != null && sequence != null) {
+                    logger.info { "Resuming shard $shardId... Hang tight!" }
+                    gateway.kordGateway.resume(token, GatewaySession(sessionId, resumeGatewayUrl, sequence), builder)
+                } else {
+                    logger.info { "Starting shard $shardId... Hang tight!" }
+                    gateway.kordGateway.start(token, builder)
                 }
             }
         }

@@ -48,6 +48,18 @@ class KordListener(
             alreadyTriggeredGuildReadyOnStartup = true
 
             logger.info { "Shard $shardId is connected and ready!" }
+
+            m.loritta.redisTransaction {
+                it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sessionId", this.data.sessionId)
+                it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "resumeGatewayUrl", this.data.resumeGatewayUrl)
+                it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sequence", (this.sequence ?: 0).toString())
+            }
+        }
+
+        gateway.on<DispatchEvent> {
+            m.loritta.redisConnection {
+                it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sequence", (this.sequence ?: 0).toString())
+            }
         }
 
         gateway.on<Resumed> {
