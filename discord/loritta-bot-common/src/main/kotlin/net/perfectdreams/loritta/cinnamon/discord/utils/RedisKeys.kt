@@ -17,6 +17,7 @@ class RedisKeys(val keyPrefix: String) {
     fun discordGatewayEvents(shardId: Int) = redisKey("discord_gateway_events:shard_$shardId")
     fun discordGatewayCommands(shardId: Int) = redisKey("discord_gateway_commands:shard_$shardId")
     fun discordGatewaySessions(shardId: Int) = redisKey("discord_gateway_sessions:shard_$shardId")
+    fun discordGatewayConcurrentLogin(bucketId: Int) = redisKey("discord_gateway_concurrent_login:bucket_$bucketId")
 
     fun lorittaRaffle(type: String) = redisKey("raffle:raffle_$type")
     fun youTubeWebhooks() = redisKey("youtube_webhooks")

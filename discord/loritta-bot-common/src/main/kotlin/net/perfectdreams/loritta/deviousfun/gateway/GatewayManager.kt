@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.deviousfun.gateway
 
-import dev.kord.common.entity.ActivityType
 import dev.kord.common.entity.DiscordShard
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.*
@@ -11,7 +10,6 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviousfun.JDA
-import net.perfectdreams.loritta.deviousfun.listeners.KordListener
 import redis.clients.jedis.Response
 import kotlin.time.Duration.Companion.seconds
 
@@ -39,6 +37,12 @@ class GatewayManager(
                 DefaultGateway {
                     // The default reconnectRetry is 10, but let's try reconnecting indefinitely (well, kind of, it will try reconnecting MAX_VALUE times)
                     this.reconnectRetry = LinearRetry(2.seconds, 20.seconds, Int.MAX_VALUE)
+
+                    this.identifyRateLimiter = ParallelIdentifyRateLimiter(
+                        jda.loritta,
+                        shardId,
+                        shardId % jda.loritta.config.loritta.discord.maxConcurrency
+                    )
                 },
                 shardId
             )

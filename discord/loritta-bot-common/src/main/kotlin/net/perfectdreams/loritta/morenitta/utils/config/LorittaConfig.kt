@@ -52,21 +52,13 @@ data class LorittaConfig(
         val maxShards: Int,
         val status: PresenceStatus,
         val activity: LorittaGameStatus,
-        val shardController: ShardControllerConfig,
+        val maxConcurrency: Int,
         val requestLimiter: RequestLimiterConfig
     ) {
         @Serializable
         data class LorittaGameStatus(
             val name: String,
             val type: String
-        )
-
-        @Serializable
-        data class ShardControllerConfig(
-            val enabled: Boolean,
-            val url: String,
-            val buckets: Int,
-            val gatewayUrl: String?,
         )
 
         @Serializable
