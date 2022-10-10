@@ -3,12 +3,12 @@ package net.perfectdreams.loritta.deviousfun.entities
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.UserFlags
 import dev.kord.rest.json.request.DMCreateRequest
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.cache.DeviousChannelData
 import net.perfectdreams.loritta.deviousfun.cache.DeviousUserData
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 
-class User(val jda: JDA, override val idSnowflake: Snowflake, val discordUser: DeviousUserData) : Mentionable, IdentifiableSnowflake {
+class User(val deviousFun: DeviousFun, override val idSnowflake: Snowflake, val discordUser: DeviousUserData) : Mentionable, IdentifiableSnowflake {
     val name: String
         get() = discordUser.username
     val discriminator: String
@@ -59,8 +59,8 @@ class User(val jda: JDA, override val idSnowflake: Snowflake, val discordUser: D
     }
 
     suspend fun openPrivateChannel(): Channel {
-        val privateChannel = jda.loritta.rest.user.createDM(DMCreateRequest(idSnowflake))
-        return Channel(jda, null, DeviousChannelData.from(null, privateChannel))
+        val privateChannel = deviousFun.loritta.rest.user.createDM(DMCreateRequest(idSnowflake))
+        return Channel(deviousFun, null, DeviousChannelData.from(null, privateChannel))
     }
 
     override fun equals(other: Any?): Boolean {

@@ -13,4 +13,5 @@ data class DeviousGuildData(
     val premiumSubscriptionCount: Int,
     val memberCount: Int,
     val splashId: String?,
+    val bannerId: String?
 )

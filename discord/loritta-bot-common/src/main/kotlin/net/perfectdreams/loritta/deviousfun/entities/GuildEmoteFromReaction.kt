@@ -1,12 +1,10 @@
 package net.perfectdreams.loritta.deviousfun.entities
 
 import dev.kord.common.entity.DiscordPartialEmoji
-import dev.kord.common.entity.Snowflake
-import net.perfectdreams.loritta.deviousfun.JDA
-import net.perfectdreams.loritta.deviousfun.cache.DeviousGuildEmojiData
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 
 class GuildEmoteFromReaction(
-    override val jda: JDA,
+    val deviousFun: DeviousFun,
     val emoji: DiscordPartialEmoji
 ) : DiscordEmote {
     override val idSnowflake

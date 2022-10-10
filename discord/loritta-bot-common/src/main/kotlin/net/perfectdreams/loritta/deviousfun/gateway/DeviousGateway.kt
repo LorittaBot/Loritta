@@ -7,7 +7,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.listeners.KordListener
 import kotlin.time.Duration
 
@@ -15,7 +15,7 @@ import kotlin.time.Duration
  * A devious gateway instance
  */
 class DeviousGateway(
-    val jda: JDA,
+    val deviousFun: DeviousFun,
     val kordGateway: DefaultGateway,
     val identifyRateLimiter: ParallelIdentifyRateLimiter,
     val shardId: Int
@@ -30,7 +30,7 @@ class DeviousGateway(
 
     init {
         // Register the JDA-like event and cache listener
-        KordListener(jda, this)
+        KordListener(deviousFun, this)
     }
 }
 

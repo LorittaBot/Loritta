@@ -2,7 +2,7 @@ package net.perfectdreams.loritta.deviousfun.events
 
 import dev.kord.gateway.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.guild.GuildJoinEvent
@@ -12,14 +12,13 @@ import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageBulkDel
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageDeleteEvent
 import net.perfectdreams.loritta.deviousfun.events.message.react.MessageReactionAddEvent
 import net.perfectdreams.loritta.deviousfun.events.message.react.MessageReactionRemoveEvent
-import net.perfectdreams.loritta.deviousfun.events.message.update.MessageUpdateEvent
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
 
 /**
  * Creates Devious events based off Kord's gateway events
  */
-class DeviousEventFactory(val m: JDA) {
+class DeviousEventFactory(val m: DeviousFun) {
     suspend fun createMessageReceived(gateway: DeviousGateway, event: MessageCreate): MessageReceivedEvent {
         val isWebhook = DeviousUserUtils.isSenderWebhookOrSpecial(event.message)
         val guildId = event.message.guildId.value

@@ -3,9 +3,7 @@ package net.perfectdreams.loritta.morenitta.utils
 import com.github.salomonbrys.kotson.array
 import com.github.salomonbrys.kotson.get
 import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.nullString
 import com.github.salomonbrys.kotson.obj
 import com.github.salomonbrys.kotson.string
 import com.google.common.cache.CacheBuilder
@@ -14,7 +12,6 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Snowflake
-import dev.kord.rest.request.KtorRequestException
 import net.perfectdreams.loritta.morenitta.utils.extensions.getOrNull
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -24,9 +21,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
-import net.perfectdreams.loritta.deviousfun.JDA
 import net.perfectdreams.loritta.deviousfun.entities.Channel
-import net.perfectdreams.loritta.deviousfun.entities.Emote
 import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
@@ -34,7 +29,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.CachedDiscordUsers
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import org.jetbrains.exposed.dao.id.EntityID
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update

@@ -6,11 +6,14 @@ import net.perfectdreams.loritta.deviousfun.entities.Member
 import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.deviousfun.events.guild.GuildEvent
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
+import java.time.OffsetDateTime
 
-class GuildMemberJoinEvent(
+class GuildMemberUpdateBoostTimeEvent(
     deviousFun: DeviousFun,
     gateway: DeviousGateway,
     guild: Guild,
     val user: User,
-    val member: Member
+    val member: Member,
+    val oldTimeBoosted: OffsetDateTime?,
+    val newTimeBoosted: OffsetDateTime?
 ) : GuildEvent(deviousFun, gateway, guild)

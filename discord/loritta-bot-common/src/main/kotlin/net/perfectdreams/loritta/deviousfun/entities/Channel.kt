@@ -22,7 +22,7 @@ import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviousfun.DeviousEmbed
 import net.perfectdreams.loritta.deviousfun.DeviousMessage
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
 import net.perfectdreams.loritta.deviousfun.cache.DeviousChannelData
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
@@ -30,7 +30,7 @@ import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
 import kotlin.math.ceil
 
 class Channel(
-    val jda: JDA,
+    val deviousFun: DeviousFun,
     val guildOrNull: Guild?,
     val channel: DeviousChannelData
 ) : IdentifiableSnowflake {
@@ -59,7 +59,7 @@ class Channel(
     val permissionOverwrites: List<Overwrite>
         get() = channel.permissionOverwrites
             ?.map {
-                Overwrite(jda, this, it)
+                Overwrite(deviousFun, this, it)
             } ?: listOf()
     val history: MessageHistory
         get() = MessageHistory(this)
@@ -69,14 +69,14 @@ class Channel(
 
     fun getPermissionOverride(role: Role) = permissionOverwrites.firstOrNull { it.id == role.idSnowflake }
 
-    suspend fun createPermissionOverride(role: Role, builder: ChannelPermissionModifyBuilder.() -> Unit) = jda.loritta.rest.channel.editRolePermission(channel.id, role.idSnowflake, builder)
+    suspend fun createPermissionOverride(role: Role, builder: ChannelPermissionModifyBuilder.() -> Unit) = deviousFun.loritta.rest.channel.editRolePermission(channel.id, role.idSnowflake, builder)
 
     suspend fun modifyTextChannel(builder: TextChannelModifyBuilder.() -> (Unit)) {
-        jda.loritta.rest.channel.patchTextChannel(channel.id, builder)
+        deviousFun.loritta.rest.channel.patchTextChannel(channel.id, builder)
     }
 
     suspend fun modifyVoiceChannel(builder: VoiceChannelModifyBuilder.() -> (Unit)) {
-        jda.loritta.rest.channel.patchVoiceChannel(channel.id, builder)
+        deviousFun.loritta.rest.channel.patchVoiceChannel(channel.id, builder)
     }
 
     suspend fun sendMessage(content: String) = sendMessage(
@@ -91,7 +91,7 @@ class Channel(
     )
 
     suspend fun sendMessage(message: DeviousMessage): Message {
-        val newMessage = jda.loritta.rest.channel.createMessage(channel.id) {
+        val newMessage = deviousFun.loritta.rest.channel.createMessage(channel.id) {
             this.content = message.contentRaw
             this.messageReference = message.referenceId
             this.failIfNotExists = false
@@ -128,11 +128,11 @@ class Channel(
         // Yes, it needs to be from the channel, the ID from the newMessage is null
         // The author ID isn't null however
         val authorId = newMessage.author.id
-        val user = jda.cacheManager.createUser(newMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(newMessage))
-        val member = guildOrNull?.let { jda.retrieveMemberById(it, authorId) }
+        val user = deviousFun.cacheManager.createUser(newMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(newMessage))
+        val member = guildOrNull?.let { deviousFun.retrieveMemberById(it, authorId) }
 
         return Message(
-            jda,
+            deviousFun,
             this,
             user,
             member,
@@ -143,12 +143,12 @@ class Channel(
 
     suspend fun retrieveMessageById(id: String): Message = retrieveMessageById(id.toLong())
     suspend fun retrieveMessageById(id: Long): Message {
-        val retrievedMessage = jda.loritta.rest.channel.getMessage(channel.id, Snowflake(id))
-        val user = jda.cacheManager.createUser(retrievedMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage))
-        val member = guildOrNull?.let { jda.retrieveMemberById(it, retrievedMessage.author.id) }
+        val retrievedMessage = deviousFun.loritta.rest.channel.getMessage(channel.id, Snowflake(id))
+        val user = deviousFun.cacheManager.createUser(retrievedMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage))
+        val member = guildOrNull?.let { deviousFun.retrieveMemberById(it, retrievedMessage.author.id) }
 
         return Message(
-            jda,
+            deviousFun,
             this@Channel,
             user,
             member,
@@ -163,7 +163,7 @@ class Channel(
 
         val guild = guildOrNull ?: error("Can't check if the bot can talk in a channel that has a null guild!")
 
-        val member = guild.getMember(jda.retrieveSelfUser()) ?: return false // Not a member, so get out of here!
+        val member = guild.getMember(deviousFun.retrieveSelfUser()) ?: return false // Not a member, so get out of here!
         return canTalk(member)
     }
 
@@ -174,15 +174,15 @@ class Channel(
 
         val guild = guildOrNull ?: error("Can't check if the bot can talk in a channel that has a null guild!")
 
-        val lazyLoadedPermissions = jda.loritta.cache.getLazyCachedPermissions(guild.idSnowflake, channel.id, member.idSnowflake)
+        val lazyLoadedPermissions = deviousFun.loritta.cache.getLazyCachedPermissions(guild.idSnowflake, channel.id, member.idSnowflake)
         return lazyLoadedPermissions.canTalk()
     }
 
     suspend fun deleteMessageById(id: String) {
-        jda.loritta.rest.channel.deleteMessage(channel.id, Snowflake(id))
+        deviousFun.loritta.rest.channel.deleteMessage(channel.id, Snowflake(id))
     }
     suspend fun deleteMessageById(id: Long) {
-        jda.loritta.rest.channel.deleteMessage(channel.id, Snowflake(id))
+        deviousFun.loritta.rest.channel.deleteMessage(channel.id, Snowflake(id))
     }
 
     suspend fun purgeMessages(messages: List<Message>) = purgeMessagesById(messages.map { it.idLong })
@@ -191,7 +191,7 @@ class Channel(
         val messageIdsAsSnowflakes = messageIds.map { Snowflake(it) }
         val chunkedMessagesToBeDeleted = messageIdsAsSnowflakes.chunked(100)
         for (messagesToBeDeleted in chunkedMessagesToBeDeleted) {
-            jda.loritta.rest.channel.bulkDelete(
+            deviousFun.loritta.rest.channel.bulkDelete(
                 channel.id,
                 BulkDeleteRequest(messagesToBeDeleted)
             )
@@ -199,24 +199,24 @@ class Channel(
     }
 
     suspend fun retrieveWebhooks(): List<Webhook> {
-        return jda.loritta.rest.webhook.getChannelWebhooks(channel.id)
+        return deviousFun.loritta.rest.webhook.getChannelWebhooks(channel.id)
             .map {
                 Webhook(
-                    jda,
-                    jda.retrieveChannelById(guild, it.channelId),
-                    it.user.value?.let { jda.cacheManager.createUser(it, false) },
+                    deviousFun,
+                    deviousFun.retrieveChannelById(guild, it.channelId),
+                    it.user.value?.let { deviousFun.cacheManager.createUser(it, false) },
                     it
                 )
             }
     }
 
     suspend fun createWebhook(name: String): Webhook {
-        val webhook = jda.loritta.rest.webhook.createWebhook(channel.id, name) {}
+        val webhook = deviousFun.loritta.rest.webhook.createWebhook(channel.id, name) {}
         return Webhook(
-            jda,
+            deviousFun,
             this,
-            webhook.user.value?.let { jda.cacheManager.createUser(it, false) },
-            jda.loritta.rest.webhook.createWebhook(channel.id, name) {}
+            webhook.user.value?.let { deviousFun.cacheManager.createUser(it, false) },
+            deviousFun.loritta.rest.webhook.createWebhook(channel.id, name) {}
         )
     }
 
@@ -236,7 +236,7 @@ class Channel(
             val messagesFound = mutableListOf<Message>()
 
             for (i in 0 until howManySearchesShouldBeDone) {
-                val messages = channel.jda.loritta.rest.channel.getMessages(
+                val messages = channel.deviousFun.loritta.rest.channel.getMessages(
                     channel.idSnowflake,
                     position = position,
                     limit = search
@@ -252,9 +252,9 @@ class Channel(
                         val member = guild?.retrieveMemberById(authorId.toLong())
 
                         Message(
-                            channel.jda,
+                            channel.deviousFun,
                             channel,
-                            channel.jda.retrieveUserById(it.author.id),
+                            channel.deviousFun.retrieveUserById(it.author.id),
                             member,
                             guild,
                             DeviousMessageFragmentData.from(it)

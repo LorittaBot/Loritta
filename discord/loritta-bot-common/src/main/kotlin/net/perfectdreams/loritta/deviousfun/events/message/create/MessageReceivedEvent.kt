@@ -1,13 +1,13 @@
 package net.perfectdreams.loritta.deviousfun.events.message.create
 
 import dev.kord.gateway.MessageCreate
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.message.GenericMessageEvent
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 
 class MessageReceivedEvent(
-    jda: JDA,
+    deviousFun: DeviousFun,
     gateway: DeviousGateway,
     val author: User,
     val message: Message,
@@ -15,4 +15,4 @@ class MessageReceivedEvent(
     val guild: Guild?,
     val member: Member?,
     val event: MessageCreate
-) : GenericMessageEvent(jda, gateway, event.message.id, channel)
+) : GenericMessageEvent(deviousFun, gateway, event.message.id, channel)

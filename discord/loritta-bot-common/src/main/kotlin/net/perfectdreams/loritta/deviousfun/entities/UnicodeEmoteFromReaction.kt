@@ -1,10 +1,10 @@
 package net.perfectdreams.loritta.deviousfun.entities
 
 import dev.kord.common.entity.DiscordPartialEmoji
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 
 class UnicodeEmoteFromReaction(
-    override val jda: JDA,
+    val deviousFun: DeviousFun,
     val emoji: DiscordPartialEmoji
 ) : Emote {
     override val name: String

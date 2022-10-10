@@ -1,12 +1,10 @@
 package net.perfectdreams.loritta.deviousfun.entities
 
 import dev.kord.common.entity.DiscordEmoji
-import dev.kord.common.entity.Snowflake
-import net.perfectdreams.loritta.deviousfun.JDA
-import net.perfectdreams.loritta.deviousfun.cache.DeviousGuildEmojiData
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 
 class UnicodeEmote(
-    override val jda: JDA,
+    override val deviousFun: DeviousFun,
     val emoji: DiscordEmoji
 ) : Emote {
     override val name: String

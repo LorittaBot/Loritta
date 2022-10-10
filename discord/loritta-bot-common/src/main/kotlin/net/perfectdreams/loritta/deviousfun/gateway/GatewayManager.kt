@@ -9,12 +9,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import redis.clients.jedis.Response
 import kotlin.time.Duration.Companion.seconds
 
 class GatewayManager(
-    val jda: JDA,
+    val deviousFun: DeviousFun,
     val token: String,
     minShards: Int,
     maxShards: Int,
@@ -33,13 +33,13 @@ class GatewayManager(
     init {
         for (shardId in minShards..maxShards) {
             val identifyRateLimiter = ParallelIdentifyRateLimiter(
-                jda.loritta,
+                deviousFun.loritta,
                 shardId,
-                shardId % jda.loritta.config.loritta.discord.maxConcurrency
+                shardId % deviousFun.loritta.config.loritta.discord.maxConcurrency
             )
 
             val defaultGateway = DeviousGateway(
-                jda,
+                deviousFun,
                 DefaultGateway {
                     // The default reconnectRetry is 10, but let's try reconnecting indefinitely (well, kind of, it will try reconnecting MAX_VALUE times)
                     this.reconnectRetry = LinearRetry(2.seconds, 20.seconds, Int.MAX_VALUE)
@@ -60,10 +60,10 @@ class GatewayManager(
                 lateinit var resumeGatewayUrlResponse: Response<String>
                 lateinit var sequenceResponse: Response<String>
 
-                jda.loritta.redisTransaction {
-                    sessionIdResponse = it.hget(jda.loritta.redisKeys.discordGatewaySessions(shardId), "sessionId")
-                    resumeGatewayUrlResponse = it.hget(jda.loritta.redisKeys.discordGatewaySessions(shardId), "resumeGatewayUrl")
-                    sequenceResponse = it.hget(jda.loritta.redisKeys.discordGatewaySessions(shardId), "sequence")
+                deviousFun.loritta.redisTransaction {
+                    sessionIdResponse = it.hget(deviousFun.loritta.redisKeys.discordGatewaySessions(shardId), "sessionId")
+                    resumeGatewayUrlResponse = it.hget(deviousFun.loritta.redisKeys.discordGatewaySessions(shardId), "resumeGatewayUrl")
+                    sequenceResponse = it.hget(deviousFun.loritta.redisKeys.discordGatewaySessions(shardId), "sequence")
                 }
 
                 val sessionId = sessionIdResponse.get()
@@ -85,16 +85,16 @@ class GatewayManager(
                     }
 
                     presence {
-                        this.status = jda.loritta.config.loritta.discord.status
+                        this.status = deviousFun.loritta.config.loritta.discord.status
 
-                        val activityText = "${jda.loritta.config.loritta.discord.activity.name} | Cluster ${jda.loritta.lorittaCluster.id} [$shardId]"
-                        when (jda.loritta.config.loritta.discord.activity.type) {
+                        val activityText = "${deviousFun.loritta.config.loritta.discord.activity.name} | Cluster ${deviousFun.loritta.lorittaCluster.id} [$shardId]"
+                        when (deviousFun.loritta.config.loritta.discord.activity.type) {
                             "PLAYING" -> this.playing(activityText)
                             "STREAMING" -> this.streaming(activityText, "https://twitch.tv/mrpowergamerbr")
                             "LISTENING" -> this.listening(activityText)
                             "WATCHING" -> this.watching(activityText)
                             "COMPETING" -> this.competing(activityText)
-                            else -> error("I don't know how to handle ${jda.loritta.config.loritta.discord.activity.type}!")
+                            else -> error("I don't know how to handle ${deviousFun.loritta.config.loritta.discord.activity.type}!")
                         }
                     }
 

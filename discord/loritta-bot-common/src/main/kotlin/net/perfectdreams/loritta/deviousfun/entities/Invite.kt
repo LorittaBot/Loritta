@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.deviousfun.entities
 
 import dev.kord.common.entity.DiscordInviteWithMetadata
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 
-class Invite(val jda: JDA, val inviter: User?, val invite: DiscordInviteWithMetadata) {
+class Invite(val deviousFun: DeviousFun, val inviter: User?, val invite: DiscordInviteWithMetadata) {
     val code: String
         get() = invite.code
     val uses: Int

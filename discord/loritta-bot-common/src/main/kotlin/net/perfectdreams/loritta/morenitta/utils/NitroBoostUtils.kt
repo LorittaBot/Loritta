@@ -64,7 +64,7 @@ object NitroBoostUtils {
 						continue
 
 					val guild = loritta.lorittaShards.getGuildById(guildWithBoostFeature[ServerConfigs.id].value) ?: continue
-					val boosters = guild.boosters
+					val boosters = guild.retrieveBoosters()
 
 					logger.info { "Guild $guild has donation features enabled! Checking how many $boosters users can receive the reward..." }
 

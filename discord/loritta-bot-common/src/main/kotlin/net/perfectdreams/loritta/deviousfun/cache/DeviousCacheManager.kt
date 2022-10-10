@@ -9,8 +9,10 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuild
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArrayOrDelIfMapIsEmpty
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.entities.*
+import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent
+import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.cache.decode
 import net.perfectdreams.loritta.morenitta.cache.encode
 import redis.clients.jedis.Transaction
@@ -18,7 +20,7 @@ import redis.clients.jedis.Transaction
 /**
  * Manages cache
  */
-class DeviousCacheManager(val m: JDA) {
+class DeviousCacheManager(val m: DeviousFun) {
     private val binaryCacheTransformers = m.loritta.binaryCacheTransformers
 
     suspend fun getGuild(id: Snowflake): Guild? {
@@ -77,6 +79,7 @@ class DeviousCacheManager(val m: JDA) {
             data.premiumSubscriptionCount.value ?: 0,
             data.memberCount.value ?: data.approximateMemberCount.value ?: 0,
             data.splash.value,
+            data.banner,
         )
         val guildMembers = data.members.value ?: emptyList()
         val guildVoiceStates = data.voiceStates.value ?: emptyList()
@@ -279,6 +282,9 @@ class DeviousCacheManager(val m: JDA) {
     }
 
     suspend fun createMember(user: User, guild: Guild, deviousMemberData: DeviousMemberData): Member {
+        // Let's compare the old member x new member data to trigger events
+        val oldMember = getMember(user, guild)
+
         m.loritta.redisConnection {
             it.hsetByteArray(
                 m.loritta.redisKeys.discordGuildMembers(guild.idSnowflake),
@@ -287,12 +293,36 @@ class DeviousCacheManager(val m: JDA) {
             )
         }
 
-        return Member(
+        val newMember = Member(
             m,
             deviousMemberData,
             guild,
             user
         )
+
+        if (oldMember != null) {
+            val oldTimeBoosted = oldMember.timeBoosted
+            val newTimeBoosted = newMember.timeBoosted
+
+            if (oldTimeBoosted != newTimeBoosted) {
+                m.forEachListeners(
+                    GuildMemberUpdateBoostTimeEvent(
+                        m,
+                        // Because we don't have access to the gateway instance here, let's get the gateway manually
+                        // This needs to be refactored later, because some events (example: user update) may not have a specific gateway bound to it
+                        m.gatewayManager.getGatewayForGuild(guild.idSnowflake),
+                        guild,
+                        user,
+                        newMember,
+                        oldTimeBoosted,
+                        newTimeBoosted
+                    ),
+                    ListenerAdapter::onGuildMemberUpdateBoostTime
+                )
+            }
+        }
+
+        return newMember
     }
 
     suspend fun deleteMember(guild: Guild, userId: Snowflake) {

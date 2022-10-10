@@ -108,7 +108,7 @@ import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.events.message.create.MessageReceivedEvent
 import net.perfectdreams.loritta.morenitta.cache.BinaryCacheTransformers
 import net.perfectdreams.loritta.morenitta.dao.*
@@ -224,7 +224,7 @@ class LorittaBot(
 
 	val zstdDictionaries = ZstdDictionaries()
 	val binaryCacheTransformers = BinaryCacheTransformers(zstdDictionaries)
-	val deviousFun = JDA(this)
+	val deviousFun = DeviousFun(this)
 	val gatewayManager = deviousFun.gatewayManager
 
 	val cache = DiscordCacheService(this)

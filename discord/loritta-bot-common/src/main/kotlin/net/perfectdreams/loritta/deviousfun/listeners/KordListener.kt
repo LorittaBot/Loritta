@@ -5,15 +5,13 @@ import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.DiscordCacheModule
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildVoiceState
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArray
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
 import net.perfectdreams.loritta.deviousfun.entities.Message
-import net.perfectdreams.loritta.deviousfun.events.Event
 import net.perfectdreams.loritta.deviousfun.events.guild.GuildReadyEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberJoinEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberRemoveEvent
@@ -26,16 +24,13 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.cache.decode
 import net.perfectdreams.loritta.morenitta.cache.encode
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
-import redis.clients.jedis.Response
 import kotlin.io.path.readText
-import kotlin.reflect.KFunction2
 import kotlin.time.ExperimentalTime
-import kotlin.time.measureTime
 import kotlin.time.measureTimedValue
 
 @OptIn(ExperimentalTime::class)
 class KordListener(
-    val m: JDA,
+    val m: DeviousFun,
     val gateway: DeviousGateway
 ) {
     companion object {
@@ -128,7 +123,7 @@ class KordListener(
                 val guild = cacheManager.getGuild(guildId)
                     ?: continue // Should NOT be null, but if it is, then let's just pretend that it doesn't exist
                 val event = GuildReadyEvent(m, gateway, guild)
-                forEachListeners(event, ListenerAdapter::onGuildReady)
+                m.forEachListeners(event, ListenerAdapter::onGuildReady)
             }
         }
 
@@ -145,7 +140,7 @@ class KordListener(
                 if (!isGuildCached) {
                     val event = m.eventFactory.createGuildJoinEvent(gateway, guild, this)
 
-                    forEachListeners(event, ListenerAdapter::onGuildJoin)
+                    m.forEachListeners(event, ListenerAdapter::onGuildJoin)
                 }
 
                 val lorittaVoiceState = this.guild.voiceStates.value?.firstOrNull { it.userId == m.loritta.config.loritta.discord.applicationId }
@@ -175,7 +170,7 @@ class KordListener(
 
             // Guild is ready!
             val event = GuildReadyEvent(m, gateway, guild)
-            forEachListeners(event, ListenerAdapter::onGuildReady)
+            m.forEachListeners(event, ListenerAdapter::onGuildReady)
         }
 
         gateway.on<GuildUpdate> {
@@ -196,7 +191,7 @@ class KordListener(
 
             val event = m.eventFactory.createGuildLeaveEvent(gateway, guild, this)
 
-            forEachListeners(event, ListenerAdapter::onGuildLeave)
+            m.forEachListeners(event, ListenerAdapter::onGuildLeave)
 
             m.cacheManager.deleteGuild(guild.idSnowflake)
         }
@@ -204,7 +199,7 @@ class KordListener(
         gateway.on<MessageCreate> {
             val event = m.eventFactory.createMessageReceived(gateway, this)
 
-            forEachListeners(event, ListenerAdapter::onMessageReceived)
+            m.forEachListeners(event, ListenerAdapter::onMessageReceived)
         }
 
         gateway.on<MessageUpdate> {
@@ -245,31 +240,31 @@ class KordListener(
                 this
             )
 
-            forEachListeners(event, ListenerAdapter::onMessageUpdate)
+            m.forEachListeners(event, ListenerAdapter::onMessageUpdate)
         }
 
         gateway.on<MessageDelete> {
             val event = m.eventFactory.create(gateway, this)
 
-            forEachListeners(event, ListenerAdapter::onMessageDelete)
+            m.forEachListeners(event, ListenerAdapter::onMessageDelete)
         }
 
         gateway.on<MessageReactionAdd> {
             val event = m.eventFactory.create(gateway, this)
 
-            forEachListeners(event, ListenerAdapter::onGenericMessageReaction)
+            m.forEachListeners(event, ListenerAdapter::onGenericMessageReaction)
         }
 
         gateway.on<MessageReactionRemove> {
             val event = m.eventFactory.create(gateway, this)
 
-            forEachListeners(event, ListenerAdapter::onGenericMessageReaction)
+            m.forEachListeners(event, ListenerAdapter::onGenericMessageReaction)
         }
 
         gateway.on<MessageDeleteBulk> {
             val event = m.eventFactory.create(gateway, this)
 
-            forEachListeners(event, ListenerAdapter::onMessageBulkDelete)
+            m.forEachListeners(event, ListenerAdapter::onMessageBulkDelete)
         }
 
         gateway.on<GuildMemberAdd> {
@@ -284,7 +279,7 @@ class KordListener(
 
             val event = GuildMemberJoinEvent(m, gateway, guild, user, member)
 
-            forEachListeners(event, ListenerAdapter::onGuildMemberJoin)
+            m.forEachListeners(event, ListenerAdapter::onGuildMemberJoin)
         }
 
         gateway.on<GuildMemberUpdate> {
@@ -299,7 +294,7 @@ class KordListener(
 
             val event = GuildMemberJoinEvent(m, gateway, guild, user, member)
 
-            forEachListeners(event, ListenerAdapter::onGuildMemberJoin)
+            m.forEachListeners(event, ListenerAdapter::onGuildMemberJoin)
         }
 
         gateway.on<GuildMemberRemove> {
@@ -313,7 +308,7 @@ class KordListener(
 
             val event = GuildMemberRemoveEvent(m, gateway, guild, user)
 
-            forEachListeners(event, ListenerAdapter::onGuildMemberRemove)
+            m.forEachListeners(event, ListenerAdapter::onGuildMemberRemove)
         }
 
         gateway.on<GuildEmojisUpdate> {
@@ -422,16 +417,6 @@ class KordListener(
             }
 
             // TODO: Voice events
-        }
-    }
-
-    private fun <T : Event> forEachListeners(event: T, method: KFunction2<ListenerAdapter, T, Unit>) {
-        for (listener in m.listeners) {
-            try {
-                method.invoke(listener, event)
-            } catch (e: Throwable) {
-                logger.warn(e) { "Something went wrong while sending ${method.name} to $listener!" }
-            }
         }
     }
 }

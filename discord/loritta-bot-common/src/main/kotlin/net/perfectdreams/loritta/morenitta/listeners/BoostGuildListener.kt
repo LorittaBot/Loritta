@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.morenitta.listeners
 import net.perfectdreams.loritta.morenitta.utils.NitroBoostUtils
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -10,7 +11,7 @@ class BoostGuildListener(val loritta: LorittaBot) : ListenerAdapter() {
     val config = loritta.config.loritta.donatorsOstentation
 
     // TODO - DeviousFun
-    /* override fun onGuildMemberUpdateBoostTime(event: GuildMemberUpdateBoostTimeEvent) {
+    override fun onGuildMemberUpdateBoostTime(event: GuildMemberUpdateBoostTimeEvent) {
         val boostAsDonationGuilds = config.boostEnabledGuilds.map { it.id }
         if (event.guild.idLong !in boostAsDonationGuilds)
             return
@@ -33,5 +34,5 @@ class BoostGuildListener(val loritta: LorittaBot) : ListenerAdapter() {
             }
             return
         }
-    } */
+    }
 }

@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.deviousfun.events
 
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 
 abstract class Event(
-    val jda: JDA,
+    val deviousFun: DeviousFun,
     val gateway: DeviousGateway
 )

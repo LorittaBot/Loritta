@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.deviousfun
 
-import dev.kord.common.entity.DiscordPartialMessage
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.json.JsonErrorCode
 import dev.kord.rest.request.KtorRequestException
@@ -9,10 +8,12 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.DeviousEventFactory
+import net.perfectdreams.loritta.deviousfun.events.Event
 import net.perfectdreams.loritta.deviousfun.gateway.GatewayManager
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KFunction2
 
 /**
  * If it looks like JDA, swims like JDA, and quacks like JDA, then it probably is a JDA instance.
@@ -32,12 +33,11 @@ import java.util.concurrent.ConcurrentHashMap
  * * `get`: Will be retrieved from Redis, null if the entity doesn't exist.
  * * `retrieve`: Will be retrieved from Redis, or from Discord's API if not present. Throws exception if the entity does not exist.
  */
-class JDA(val loritta: LorittaBot) {
+class DeviousFun(val loritta: LorittaBot) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    // TODO: Caching
     // TODO: Mutex locking based on the entity ID
     val eventFactory = DeviousEventFactory(this)
     val listeners = mutableListOf<ListenerAdapter>()
@@ -176,6 +176,21 @@ class JDA(val loritta: LorittaBot) {
      */
     suspend fun getGuildCount() = loritta.redisConnection {
         it.hlen(loritta.redisKeys.discordGuilds())
+    }
+
+    /**
+     * Invokes every [ListenerAdapter]'s [method] with [event]
+     *
+     * [Throwable]s are catched and logged, but won't halt subsequent listeners.
+     */
+    fun <T : Event> forEachListeners(event: T, method: KFunction2<ListenerAdapter, T, Unit>) {
+        for (listener in listeners) {
+            try {
+                method.invoke(listener, event)
+            } catch (e: Throwable) {
+                logger.warn(e) { "Something went wrong while sending ${method.name} to $listener!" }
+            }
+        }
     }
 
     private inline fun <T> addContextToException(message: () -> (String), action: () -> (T)): T {

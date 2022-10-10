@@ -2,18 +2,18 @@ package net.perfectdreams.loritta.deviousfun.entities
 
 import dev.kord.common.entity.DiscordPartialEmoji
 import dev.kord.common.entity.Snowflake
-import net.perfectdreams.loritta.deviousfun.JDA
+import net.perfectdreams.loritta.deviousfun.DeviousFun
 
-class ReactionEmote(val jda: JDA, val partialEmoji: DiscordPartialEmoji) : IdentifiableSnowflake {
+class ReactionEmote(val deviousFun: DeviousFun, val partialEmoji: DiscordPartialEmoji) : IdentifiableSnowflake {
     override val idSnowflake: Snowflake
         get() = partialEmoji.id ?: error("This is not a custom emoji!")
     val name: String
         get() = partialEmoji.name ?: error("This data is missing, probably because it was in a reaction emoji object!")
     val emote: Emote
         get() = if (isEmote)
-            GuildEmoteFromReaction(jda, partialEmoji)
+            GuildEmoteFromReaction(deviousFun, partialEmoji)
         else
-            UnicodeEmoteFromReaction(jda, partialEmoji)
+            UnicodeEmoteFromReaction(deviousFun, partialEmoji)
     val isEmote: Boolean
         get() = partialEmoji.id != null
 

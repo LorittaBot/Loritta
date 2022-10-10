@@ -203,51 +203,48 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 											return
 										}
 
-										val guildOwner = guild.owner
+										val guildOwnerId = guild.ownerIdLong
 
-										// Sometimes the guild owner can be null, that's why we need to check if it is null or not!
-										if (guildOwner != null) {
-											val profile = loritta.getLorittaProfile(guildOwner.user.id)
-											val bannedState = profile?.getBannedState(loritta)
-											if (bannedState != null) { // Dono blacklisted
-												// Envie via DM uma mensagem falando sobre a Loritta!
-												val message = locale.getList("website.router.ownerLorittaBanned", guild.owner?.user?.asMention, bannedState[BannedUsers.reason]
-													?: "???").joinToString("\n")
-
-												user.openPrivateChannel().queue {
-													it.sendMessage(message).queue({
-														guild.leave().queue()
-													}, {
-														guild.leave().queue()
-													})
-												}
-												return
-											}
-
+										val profile = loritta.getLorittaProfile(guildOwnerId)
+										val bannedState = profile?.getBannedState(loritta)
+										if (bannedState != null) { // Dono blacklisted
 											// Envie via DM uma mensagem falando sobre a Loritta!
-											val message = locale.getList(
-												"website.router.addedOnServer",
-												user.asMention,
-												guild.name,
-												loritta.config.loritta.website.url + "commands",
-												loritta.config.loritta.website.url + "guild/${guild.id}/configure/",
-												loritta.config.loritta.website.url + "guidelines",
-												loritta.config.loritta.website.url + "donate",
-												loritta.config.loritta.website.url + "support",
-												Emotes.LORI_PAT,
-												Emotes.LORI_NICE,
-												Emotes.LORI_HEART,
-												Emotes.LORI_COFFEE,
-												Emotes.LORI_SMILE,
-												Emotes.LORI_PRAY,
-												Emotes.LORI_BAN_HAMMER,
-												Emotes.LORI_RICH,
-												Emotes.LORI_HEART1.toString() + Emotes.LORI_HEART2.toString()
-											).joinToString("\n")
+											val message = locale.getList("website.router.ownerLorittaBanned", "<@$guildOwnerId>", bannedState[BannedUsers.reason]
+												?: "???").joinToString("\n")
 
 											user.openPrivateChannel().queue {
-												it.sendMessage(message).queue()
+												it.sendMessage(message).queue({
+													guild.leave().queue()
+												}, {
+													guild.leave().queue()
+												})
 											}
+											return
+										}
+
+										// Envie via DM uma mensagem falando sobre a Loritta!
+										val message = locale.getList(
+											"website.router.addedOnServer",
+											user.asMention,
+											guild.name,
+											loritta.config.loritta.website.url + "commands",
+											loritta.config.loritta.website.url + "guild/${guild.id}/configure/",
+											loritta.config.loritta.website.url + "guidelines",
+											loritta.config.loritta.website.url + "donate",
+											loritta.config.loritta.website.url + "support",
+											Emotes.LORI_PAT,
+											Emotes.LORI_NICE,
+											Emotes.LORI_HEART,
+											Emotes.LORI_COFFEE,
+											Emotes.LORI_SMILE,
+											Emotes.LORI_PRAY,
+											Emotes.LORI_BAN_HAMMER,
+											Emotes.LORI_RICH,
+											Emotes.LORI_HEART1.toString() + Emotes.LORI_HEART2.toString()
+										).joinToString("\n")
+
+										user.openPrivateChannel().queue {
+											it.sendMessage(message).queue()
 										}
 									}
 								}

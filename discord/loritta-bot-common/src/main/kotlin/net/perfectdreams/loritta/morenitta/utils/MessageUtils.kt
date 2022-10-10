@@ -154,13 +154,14 @@ object MessageUtils {
 				}
 				if (source is Guild) {
 					val guildSize = source.memberCount.toString()
-					val mentionOwner = source.owner?.asMention ?: "???"
-					val owner = source.owner?.effectiveName ?: "???"
+					// TODO - DeviousFun: Retrieving the owner would require this to be suspendable
+					// val mentionOwner = source.owner?.asMention ?: "???"
+					// val owner = source.owner?.effectiveName ?: "???"
 					tokens["guild"] = source.name
 					tokens["guildsize"] = guildSize
 					tokens["guild-size"] = guildSize
-					tokens["@owner"] = mentionOwner
-					tokens["owner"] = owner
+					// tokens["@owner"] = mentionOwner
+					// tokens["owner"] = owner
 					tokens["guild-icon-url"] = source.iconUrl?.replace("jpg", "png")
 				}
 				if (source is Channel) {

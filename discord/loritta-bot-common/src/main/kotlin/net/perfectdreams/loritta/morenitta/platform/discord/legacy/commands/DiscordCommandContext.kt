@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import dev.kord.common.entity.Permission
-import dev.kord.common.entity.optional.value
 import dev.kord.rest.request.KtorRequestException
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -349,7 +348,7 @@ class DiscordCommandContext(
 
 		val embed = EmbedBuilder()
 			.setColor(Constants.LORITTA_AQUA)
-			.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.config.loritta.website.url}commands", discordMessage.jda.retrieveSelfUser().effectiveAvatarUrl)
+			.setAuthor(locale["commands.explain.clickHereToSeeAllMyCommands"], "${loritta.config.loritta.website.url}commands", discordMessage.deviousFun.retrieveSelfUser().effectiveAvatarUrl)
 			.setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
 			.setFooter("${user.name + "#" + user.discriminator} • ${command.category.getLocalizedName(locale)}", user.effectiveAvatarUrl)
 			.setTimestamp(Instant.now())
