@@ -16,16 +16,18 @@ import kotlin.random.Random
 class ParallelIdentifyRateLimiter(
     private val loritta: LorittaBot,
     private val shardId: Int,
-    private val bucketId: Int
+    val bucketId: Int
 ) : RateLimiter {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     private val random = Random.Default
+    var currentRandomKey: String? = null
 
     override suspend fun consume() {
         val randomKey = random.nextBytes(20).toString(Charsets.UTF_8)
+        this.currentRandomKey = randomKey
 
         val success = loritta.redisConnection {
             it.set(
@@ -33,9 +35,8 @@ class ParallelIdentifyRateLimiter(
                 randomKey,
                 SetParams.setParams()
                     .nx()
-                    // max_concurrency = Number of identify requests allowed per 5 seconds
-                    // So the key must live for 5 seconds
-                    .px(5_000)
+                    // A shard *probably* won't take more than 60s to receive its Ready event, but let's make it expire after 60s to avoid the bucket being blocked if we had any issues while logging in.
+                    .px(60_000)
             )
         } != null
 
@@ -45,7 +46,7 @@ class ParallelIdentifyRateLimiter(
         } else {
             // Couldn't acquire lock, let's wait...
             logger.info { "Couldn't acquire lock for bucket $bucketId (shard $shardId), let's wait and try again later..." }
-            delay(5_000)
+            delay(1_000)
             // And try again!
             return consume()
         }

@@ -32,18 +32,21 @@ class GatewayManager(
 
     init {
         for (shardId in minShards..maxShards) {
+            val identifyRateLimiter = ParallelIdentifyRateLimiter(
+                jda.loritta,
+                shardId,
+                shardId % jda.loritta.config.loritta.discord.maxConcurrency
+            )
+
             val defaultGateway = DeviousGateway(
                 jda,
                 DefaultGateway {
                     // The default reconnectRetry is 10, but let's try reconnecting indefinitely (well, kind of, it will try reconnecting MAX_VALUE times)
                     this.reconnectRetry = LinearRetry(2.seconds, 20.seconds, Int.MAX_VALUE)
 
-                    this.identifyRateLimiter = ParallelIdentifyRateLimiter(
-                        jda.loritta,
-                        shardId,
-                        shardId % jda.loritta.config.loritta.discord.maxConcurrency
-                    )
+                    this.identifyRateLimiter = identifyRateLimiter
                 },
+                identifyRateLimiter,
                 shardId
             )
             _gateways[shardId] = defaultGateway
@@ -98,7 +101,7 @@ class GatewayManager(
                     shard = DiscordShard(shardId, totalShards)
                 }
 
-                if (sessionId != null && resumeGatewayUrl != null && sequence != null) {
+                if (false && sessionId != null && resumeGatewayUrl != null && sequence != null) {
                     logger.info { "Resuming shard $shardId... Hang tight!" }
                     gateway.kordGateway.resume(token, GatewaySession(sessionId, resumeGatewayUrl, sequence), builder)
                 } else {

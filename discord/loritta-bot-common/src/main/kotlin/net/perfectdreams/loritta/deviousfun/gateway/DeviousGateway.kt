@@ -17,6 +17,7 @@ import kotlin.time.Duration
 class DeviousGateway(
     val jda: JDA,
     val kordGateway: DefaultGateway,
+    val identifyRateLimiter: ParallelIdentifyRateLimiter,
     val shardId: Int
 ) {
     val logger = KotlinLogging.logger {}

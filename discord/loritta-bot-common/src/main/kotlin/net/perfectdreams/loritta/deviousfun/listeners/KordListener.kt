@@ -3,11 +3,13 @@ package net.perfectdreams.loritta.deviousfun.listeners
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
+import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.modules.DiscordCacheModule
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildVoiceState
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArray
+import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.deviousfun.JDA
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
 import net.perfectdreams.loritta.deviousfun.entities.Message
@@ -20,9 +22,12 @@ import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.gateway.on
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.cache.decode
 import net.perfectdreams.loritta.morenitta.cache.encode
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
+import redis.clients.jedis.Response
+import kotlin.io.path.readText
 import kotlin.reflect.KFunction2
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTime
@@ -49,10 +54,47 @@ class KordListener(
 
             logger.info { "Shard $shardId is connected and ready!" }
 
+            val currentRandomKey = gateway.identifyRateLimiter.currentRandomKey
+
             m.loritta.redisTransaction {
                 it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sessionId", this.data.sessionId)
                 it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "resumeGatewayUrl", this.data.resumeGatewayUrl)
                 it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sequence", (this.sequence ?: 0).toString())
+            }
+
+            // After it is ready, we will wait 5000ms to release the lock
+            delay(5_000)
+
+            var lockResponse: Any? = null
+            var lockStatus: Long? = null
+
+            logger.info { "Trying to release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)..." }
+            m.loritta.redisConnection {
+                if (currentRandomKey != null) {
+                    lockResponse = it.eval(
+                        LorittaBot::class.getPathFromResources("/redis_delete_lock.lua")!!.readText(),
+                        listOf(m.loritta.redisKeys.discordGatewayConcurrentLogin(gateway.identifyRateLimiter.bucketId)),
+                        listOf(currentRandomKey)
+                    )
+                } else {
+                    logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because the current random key is null! Bug?" }
+                    lockStatus = -1
+                }
+            }
+
+            val response = lockResponse ?: lockStatus ?: error("Unknown lock status!")
+
+            when (response) {
+                1L -> {
+                    logger.info { "Successfully released lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)!" }
+                }
+                0L -> {
+                    logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because our random key does not match!" }
+                }
+                -1L -> {
+                    logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because our random key is null! Bug?" }
+                }
+                else -> error("Unknown Response $response")
             }
         }
 
