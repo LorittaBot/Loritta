@@ -101,7 +101,7 @@ class GatewayManager(
                     shard = DiscordShard(shardId, totalShards)
                 }
 
-                if (false && sessionId != null && resumeGatewayUrl != null && sequence != null) {
+                if (sessionId != null && resumeGatewayUrl != null && sequence != null) {
                     logger.info { "Resuming shard $shardId... Hang tight!" }
                     gateway.kordGateway.resume(token, GatewaySession(sessionId, resumeGatewayUrl, sequence), builder)
                 } else {
