@@ -11,7 +11,6 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.deviousfun.DeviousEmbed
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.awt.Color
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -136,7 +135,7 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
 
                 for (wrapper in validLanguages.filter { it.isSecret }) {
                     // O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
-                    message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
+                    runCatching { message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")) }
                 }
                 return@onReactionAddByAuthor
             }
@@ -162,19 +161,19 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
                 }
             }
 
-            message.delete().queue()
+            runCatching { message.delete() }
             activateLanguage(context, profile, newLanguage
                     ?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel)
         }
 
         for (wrapper in validLanguages.filter { !it.isSecret }) {
             // O "replace" é necessário já que a gente usa emojis personalizados para algumas linguagens
-            message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")).queue()
+            runCatching { message.addReaction(wrapper.emoteName.replace("<", "").replace(">", "")) }
         }
 
-        message.addReaction("lori_ok_hand:426183783008698391").queue()
+        runCatching { message.addReaction("lori_ok_hand:426183783008698391") }
 
-        if (hasPersonalLanguage) message.addReaction(resetPersonalLanguageEmote).queue()
+        runCatching { if (hasPersonalLanguage) message.addReaction(resetPersonalLanguageEmote) }
     }
 
     private suspend fun activateLanguage(context: CommandContext, profile: Profile, newLanguage: LocaleWrapper, isPrivateChannel: Boolean = false) {

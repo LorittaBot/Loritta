@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
@@ -161,7 +160,7 @@ private suspend fun ActionCommandDSL.handle(context: DiscordCommandContext, send
 
 // Adding the "retribute" button
 private suspend fun DiscordCommandContext.addReactionButton(loritta: LorittaBot, dsl: ActionCommandDSL, message: Message, sender: User, receiver: User) {
-    message.addReaction("\uD83D\uDD01").queue()
+    runCatching { message.addReaction("\uD83D\uDD01") }
 
     message.onReactionAdd(this) {
         val user = it.user ?: return@onReactionAdd

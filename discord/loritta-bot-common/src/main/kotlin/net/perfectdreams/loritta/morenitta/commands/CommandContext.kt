@@ -162,7 +162,7 @@ class CommandContext(
 				MessageBuilder(message)
 					.referenceIfPossible(event.message, config, addInlineReply)
 					.build()
-			).await()
+			)
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
@@ -251,7 +251,7 @@ class CommandContext(
 					.addFile(inputStream.readAllBytes(), name)
 					.referenceIfPossible(event.message, config, true)
 					.build()
-			).await()
+			)
 			return sentMessage
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
@@ -343,7 +343,7 @@ class CommandContext(
 		// Ainda nada válido? Quer saber, desisto! Vamos pesquisar as mensagens antigas deste servidor & embeds então para encontrar attachments...
 		if (search > 0 && !this.isPrivateChannel && this.guild.selfMemberHasPermission(this.event.channel, Permission.ReadMessageHistory)) {
 			try {
-				val messages = this.message.channel.history.retrievePast(search).await()
+				val messages = this.message.channel.history.retrievePast(search)
 
 				attach@ for (msg in messages) {
 					for (embed in msg.embeds) {

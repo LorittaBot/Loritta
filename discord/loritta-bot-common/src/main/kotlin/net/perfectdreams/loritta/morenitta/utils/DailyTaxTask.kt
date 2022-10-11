@@ -13,8 +13,6 @@ import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.complete
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
@@ -81,7 +79,7 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 					}
 
 					for ((donationKey, guildId) in soonToBeExpiredMatchingKeys) {
-						val user = loritta.lorittaShards.retrieveUserById(donationKey.userId).complete()
+						val user = loritta.lorittaShards.retrieveUserById(donationKey.userId)
 							?: continue // Ignorar caso o usuário não exista
 						val guild = loritta.lorittaShards.getGuildById(guildId)
 							?: continue // Apenas avise caso a key esteja sendo usada em algum servidor
@@ -123,8 +121,8 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 							}
 						}
 
-						user.openPrivateChannel().queue {
-							it.sendMessage(embed.build()).queue()
+						runCatching {
+							user.openPrivateChannel().sendMessage(embed.build())
 						}
 
 						alreadyPaymentNotifiedUsers.add(user.idLong)
@@ -157,9 +155,7 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 					// Hora de avisar aos usuários que a doação deles irá acabar!
 					for ((index, soonToBeExpiredDonation) in soonToBeExpiredDonations.distinctBy { it.userId }
 						.withIndex()) {
-						val user = loritta.lorittaShards.retrieveUserById(soonToBeExpiredDonation.userId)
-							.complete()
-							?: continue // Ignorar caso o usuário não exista
+						val user = loritta.lorittaShards.retrieveUserById(soonToBeExpiredDonation.userId) ?: continue // Ignorar caso o usuário não exista
 
 						val embed = EmbedBuilder()
 							.setTitle("\uD83D\uDCB8 Faz bastante tempo que você não doa...")
@@ -187,8 +183,9 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 						}
 
 						delay(index.seconds)
-						user.openPrivateChannel().queue {
-							it.sendMessage(embed.build()).queue()
+						runCatching {
+							user.openPrivateChannel()
+								.sendMessage(embed.build())
 						}
 					}
 
@@ -199,14 +196,14 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 					}
 
 					for ((index, document) in documents.withIndex()) {
-						val user = loritta.lorittaShards.retrieveUserById(document.userId.toString()).complete()
+						val user = loritta.lorittaShards.retrieveUserById(document.userId.toString())
 							?: continue
 
 						try {
 							delay(index.seconds)
-							user.openPrivateChannel().queue {
-								it.sendMessage("Atenção! Você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos todos os dias para conseguir manter ele!")
-									.queue()
+							runCatching {
+								user.openPrivateChannel()
+									.sendMessage("Atenção! Você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos até as 19:00 de hoje para você continuar o seu casamento! Casamentos custam caro, e você precisa ter no mínimo $MARRIAGE_DAILY_TAX Sonhos todos os dias para conseguir manter ele!")
 							}
 						} catch (e: Exception) {
 						}
@@ -267,17 +264,16 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 								marriage.user1
 							}.toString()
 
-							val marriedWith = loritta.lorittaShards.retrieveUserById(marriedWithId).complete()
+							val marriedWith = loritta.lorittaShards.retrieveUserById(marriedWithId)
 							val user = loritta.lorittaShards.retrieveUserById(document.userId.toString())
-									.complete()
 
 							// The "queueAfter" is to avoid too many requests at the same time
 							if (user != null) {
 								try {
 									delay(index.seconds)
-									user.openPrivateChannel().queue {
-										it.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
-											.queue()
+									runCatching {
+										user.openPrivateChannel()
+											.sendMessage("Você não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
 									}
 								} catch (e: Exception) {
 								}
@@ -286,9 +282,9 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 							if (marriedWith != null) {
 								try {
 									delay(index.seconds)
-									marriedWith.openPrivateChannel().queue {
-										it.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
-											.queue()
+									runCatching {
+										marriedWith.openPrivateChannel()
+											.sendMessage("Seu parceiro não teve dinheiro suficiente para manter o casamento... Infelizmente você foi divorciado...")
 									}
 								} catch (e: Exception) {
 								}

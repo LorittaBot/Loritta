@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.economy
 
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`.CaraCoroaCommand
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
@@ -28,8 +27,6 @@ import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
@@ -218,7 +215,7 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 				if (it.reactionEmote.name == "✅") {
 					mutex.withLock {
 						if (loritta.messageInteractionCache.containsKey(it.messageIdLong)) {
-							val usersThatReactedToTheMessage = it.reaction.retrieveUsers().await()
+							val usersThatReactedToTheMessage = it.reaction.retrieveUsers()
 
 							if (invitedUser in usersThatReactedToTheMessage && user in usersThatReactedToTheMessage) {
 								message.removeAllFunctions(loritta)
@@ -367,7 +364,7 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 				}
 			}
 
-			message.addReaction("✅").queue()
+			runCatching { message.addReaction("✅") }
 		}
 	}
 }

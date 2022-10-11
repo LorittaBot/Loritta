@@ -26,9 +26,7 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.deviousfun.entities.*
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -109,7 +107,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
 						val isSilent = it.reactionEmote.isEmote("\uD83D\uDE4A")
 
-						message.delete().queue()
+						runCatching { message.delete() }
 
 						for (member in members) {
 							val result = muteUser(context, settings, member, time, locale, member.user, reason, isSilent)
@@ -127,26 +125,26 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					}
 				}
 
-				message.addReaction("✅").queue()
+				runCatching { message.addReaction("✅") }
 				if (hasSilent) {
-					message.addReaction("\uD83D\uDE4A").queue()
+					runCatching { message.addReaction("\uD83D\uDE4A") }
 				}
 			}
 
 			setHour.onResponseByAuthor(context) {
-				setHour.delete().queue()
+				runCatching { setHour.delete() }
 				val time = TimeUtils.convertToMillisRelativeToNow(it.message.contentDisplay)
 				punishUser(time)
 			}
 
 			setHour.onReactionAddByAuthor(context) {
 				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
-					setHour.delete().queue()
+					runCatching { setHour.delete() }
 					punishUser(null)
 				}
 			}
 
-			setHour.addReaction("\uD83D\uDD04").queue()
+			runCatching { setHour.addReaction("\uD83D\uDD04") }
 		} else {
 			this.explain(context)
 		}
@@ -198,7 +196,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 							false
 						)
 
-						user.openPrivateChannel().await().sendMessage(embed.build()).queue()
+						runCatching { user.openPrivateChannel().sendMessage(embed.build()) }
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -230,7 +228,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 						)
 
 						message?.let {
-							textChannel.sendMessage(it).queue()
+							runCatching { textChannel.sendMessage(it) }
 						}
 					}
 				}
@@ -347,7 +345,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			try {
 				val addRole = context.guild.addRoleToMember(member, mutedRole)
 
-				addRole.await()
+				addRole
 
 				context.loritta.pudding.transaction {
 					Mutes.deleteWhere {
@@ -449,7 +447,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 
 				if (mutedRole != null && member != null) {
 					val removeRole = guild.removeRoleFromMember(member, mutedRole)
-					removeRole.queue()
+					runCatching { removeRole }
 				}
 				return
 			}

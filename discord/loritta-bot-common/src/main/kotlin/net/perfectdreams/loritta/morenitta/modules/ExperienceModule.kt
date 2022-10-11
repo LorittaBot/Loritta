@@ -24,8 +24,6 @@ import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.RolesByE
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.ExperienceUtils
 import net.perfectdreams.loritta.common.utils.ServerPremiumPlans
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.levels.LevelUpAnnouncementType
 import net.perfectdreams.loritta.morenitta.utils.levels.RoleGiveType
 import org.jetbrains.exposed.sql.SortOrder
@@ -190,7 +188,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 								receivedNewRoles = true
 								givenNewRoles.add(topRole)
 								guild.modifyMemberRoles(member, memberNewRoleList)
-									.queue()
+								runCatching { 	 }
 							}
 						}
 					} else {
@@ -201,7 +199,7 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 							receivedNewRoles = true
 							givenNewRoles.addAll(missingRoles)
 							guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(missingRoles) })
-								.queue()
+							runCatching { 	 }
 						}
 					}
 				}
@@ -266,9 +264,11 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 						LevelUpAnnouncementType.SAME_CHANNEL -> {
 							logger.info { "Same channel, sending msg" }
 							if (event.channel.canTalk()) {
-								event.channel.sendMessage(
-									message
-								).queue()
+								runCatching {
+									event.channel.sendMessage(
+										message
+									)
+								}
 							}
 						}
 						LevelUpAnnouncementType.DIRECT_MESSAGE -> {
@@ -279,14 +279,14 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 							if (!profileSettings.doNotSendXpNotificationsInDm) {
 								logger.info { "Direct msg, sending msg" }
 								try {
-									val privateChannel = member.user.openPrivateChannel().await()
+									val privateChannel = member.user.openPrivateChannel()
 
-									privateChannel.sendMessage(message).await()
+									privateChannel.sendMessage(message)
 
 									val shouldNotifyThatUserCanDisable = previousLevel % 10
 
 									if (shouldNotifyThatUserCanDisable == 0) {
-										privateChannel.sendMessage(locale["modules.levelUp.howToDisableLevelNotifications", "`${guild.name.stripCodeMarks()}`", "`xpnotifications`", Emotes.LORI_YAY.toString()]).await()
+										privateChannel.sendMessage(locale["modules.levelUp.howToDisableLevelNotifications", "`${guild.name.stripCodeMarks()}`", "`xpnotifications`", Emotes.LORI_YAY.toString()])
 									}
 								} catch (e: Exception) {
 									logger.warn { "Error while sending DM to ${event.author} due to level up ($previousLevel -> $newLevel)"}
@@ -300,9 +300,9 @@ class ExperienceModule(val loritta: LorittaBot) : MessageReceivedModule {
 							if (channelId != null) {
 								val channel = guild.getTextChannelById(channelId)
 
-								channel?.sendMessage(
-									message
-								)?.queue()
+								runCatching {
+									channel?.sendMessage(message)
+								}
 							}
 						}
 					}

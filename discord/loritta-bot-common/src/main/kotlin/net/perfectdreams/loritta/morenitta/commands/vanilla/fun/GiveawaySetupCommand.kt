@@ -13,9 +13,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.deviousfun.entities.Channel
-import net.perfectdreams.loritta.deviousfun.queue
 
 class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
     companion object {
@@ -80,13 +78,13 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         message = locale["$LOCALE_PREFIX.giveaway.giveawayName"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
-        ).await()
+        )
 
         addCancelOption(context, message)
 
         message.onResponseByAuthor(context) {
             builder.name = it.message.contentRaw
-            message.delete().await()
+            message.delete()
             getGiveawayDescription(context, locale, builder)
         }
     }
@@ -97,13 +95,13 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         message = locale["$LOCALE_PREFIX.giveaway.giveawayDescription"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
-        ).await()
+        )
 
         addCancelOption(context, message)
 
         message.onResponseByAuthor(context) {
             builder.description = it.message.contentRaw
-            message.delete().await()
+            message.delete()
             getGiveawayDuration(context, locale, builder)
         }
     }
@@ -114,13 +112,13 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         message = locale["commands.command.giveaway.giveawayDuration"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
-        ).await()
+        )
 
         addCancelOption(context, message)
 
         message.onResponseByAuthor(context) {
             builder.duration = it.message.contentRaw
-            message.delete().await()
+            message.delete()
             getGiveawayReaction(context, locale, builder)
         }
     }
@@ -131,7 +129,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         message = locale["$LOCALE_PREFIX.giveaway.giveawayReaction"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
-        ).await()
+        )
 
         addCancelOption(context, message)
 
@@ -147,7 +145,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
             else
                 UnicodeEmote(it.message.contentRaw)
 
-            message.delete().await()
+            message.delete()
             getGiveawayChannel(context, locale, builder)
         }
     }
@@ -158,7 +156,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         message = locale["$LOCALE_PREFIX.giveaway.giveawayChannel"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
-        ).await()
+        )
 
         addCancelOption(context, message)
 
@@ -245,7 +243,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
 
             builder.channel = channel
 
-            message.delete().await()
+            message.delete()
             getGiveawayWinningRoles(context, locale, builder)
         }
     }
@@ -256,13 +254,13 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         message = locale["$LOCALE_PREFIX.giveaway.giveawayDoYouWantAutomaticRole"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
-        ).await()
+        )
 
-        message.addReaction("✅").queue()
-        message.addReaction("\uD83D\uDE45").queue()
+        runCatching { message.addReaction("✅") }
+        runCatching { message.addReaction("\uD83D\uDE45") }
 
         message.onReactionAddByAuthor(context) {
-            message.delete().await()
+            message.delete()
 
             if (it.reactionEmote.name == "✅") {
                 val message = context.discordMessage.channel.sendMessage(
@@ -270,7 +268,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                                 message = locale["$LOCALE_PREFIX.giveaway.giveawayMentionRoles"],
                                 prefix = "\uD83E\uDD14"
                         ).build(context.getUserMention(true))
-                ).await()
+                )
 
                 addCancelOption(context, message)
 
@@ -325,7 +323,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         }
                     }
 
-                    message.delete().await()
+                    message.delete()
 
                     builder.roleIds = roles.map { it.id }
 
@@ -343,7 +341,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                         message = locale["commands.command.giveaway.giveawayWinnerCount"],
                         prefix = "\uD83E\uDD14"
                 ).build(context.getUserMention(true))
-        ).await()
+        )
 
         addCancelOption(context, message)
 
@@ -370,7 +368,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 return@onResponseByAuthor
             }
 
-            message.delete().await()
+            message.delete()
 
             builder.numberOfWinners = numberOfWinners
 
@@ -385,7 +383,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
 
         builder.numberOfWinners = numberOfWinners
 
-        message.delete().await()
+        message.delete()
 
         loritta.giveawayManager.spawnGiveaway(
                 loritta.localeManager.getLocaleById(context.serverConfig.localeId),
@@ -403,7 +401,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
     suspend fun addCancelOption(context: DiscordCommandContext, message: net.perfectdreams.loritta.deviousfun.entities.Message) {
         message.onReactionAddByAuthor(context) {
             if (it.reactionEmote.idLong == 412585701054611458L) {
-                message.delete().await()
+                message.delete()
                 context.reply(
                         LorittaReply(
                                 context.locale["$LOCALE_PREFIX.giveaway.giveawaySetupCancelled"]
@@ -412,7 +410,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
             }
         }
 
-        message.addReaction("error:412585701054611458").queue()
+        runCatching { message.addReaction("error:412585701054611458") }
     }
 
     class GiveawayBuilder {

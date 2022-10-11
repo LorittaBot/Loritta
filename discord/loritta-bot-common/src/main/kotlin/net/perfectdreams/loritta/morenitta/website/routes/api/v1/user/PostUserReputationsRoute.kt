@@ -37,8 +37,6 @@ import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIDiscordLoginRoute
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
@@ -92,7 +90,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 				if (channel != null) {
 					if (!channel.canTalk()) // Eu não posso falar!
 						return
-					val member = channel.guild.retrieveMemberById(giverId).await()
+					val member = channel.guild.retrieveMemberById(giverId)
 					if (member == null || !channel.canTalk(member)) // O usuário não está no servidor ou não pode falar no chat
 						return
 
@@ -126,7 +124,7 @@ class PostUserReputationsRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRou
 						Emotes.LORI_HEART
 					)
 
-					channel.sendMessage(reply.build()).queue()
+					runCatching { channel.sendMessage(reply.build()) }
 				}
 			}
 		}

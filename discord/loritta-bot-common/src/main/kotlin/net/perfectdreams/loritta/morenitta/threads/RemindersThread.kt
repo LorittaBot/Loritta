@@ -8,7 +8,6 @@ import net.perfectdreams.loritta.morenitta.tables.Reminders
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
 import net.perfectdreams.loritta.deviousfun.entities.Message
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.*
 import org.jetbrains.exposed.sql.deleteWhere
@@ -62,12 +61,13 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                                     "🔹 **|** Click $SNOOZE_EMOTE to snooze for $DEFAULT_SNOOZE_MINUTES minutes, or click $SCHEDULE_EMOTE to choose how long to snooze."
 
                         if (channel != null && channel.canTalk()) {
-                            channel.sendMessage(
-                                MessageBuilder(reminderText)
-                                    .allowMentions(AllowedMentionType.UserMentions)
-                                    .build()
-                            ).queue {
-                                addSnoozeListener(it, reminder)
+                            runCatching {
+                                val message = channel.sendMessage(
+                                    MessageBuilder(reminderText)
+                                        .allowMentions(AllowedMentionType.UserMentions)
+                                        .build()
+                                )
+                                addSnoozeListener(message, reminder)
                             }
 
                             notifiedReminders += reminder
@@ -123,30 +123,31 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                 val minutes = String.format("%02d", calendar[Calendar.MINUTE])
                 val messageContent = loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
 
-                message.editMessage("<@${reminder.userId}> $messageContent").queue()
-                message.clearReactions().queue()
+                runCatching { message.editMessage("<@${reminder.userId}> $messageContent") }
+                runCatching { message.clearReactions() }
             }
 
             if (it.reactionEmote.isEmote(SCHEDULE_EMOTE)) {
                 val remindStr = "$SCHEDULE_EMOTE | <@${reminder.userId}> When do you want me to remind you again? (`1 hour`, `5 minutes`, `12:00 11/08/2018`, etc)"
-                message.channel.sendMessage(remindStr).queue { reply ->
+                runCatching {
+                    val reply = message.channel.sendMessage(remindStr)
                     awaitSchedule(reply, message, reminder)
-                }
 
-                if (message.guild.selfMemberHasPermission(Permission.ManageMessages))
-                    it.user?.let { user -> it.reaction.removeReaction(user).queue() }
+                    if (message.guild.selfMemberHasPermission(Permission.ManageMessages))
+                        runCatching { it.user.let { user -> it.reaction.removeReaction(user) } }
+                }
             }
 
         }
-        message.addReaction(SNOOZE_EMOTE).queue()
-        message.addReaction(SCHEDULE_EMOTE).queue()
+        runCatching { message.addReaction(SNOOZE_EMOTE) }
+        runCatching { message.addReaction(SCHEDULE_EMOTE) }
     }
 
     private suspend fun awaitSchedule(reply: Message, originalMessage: Message, reminder: Reminder) {
         reply.onResponseByAuthor(loritta, reminder.userId, originalMessage.guild.idLong, reminder.channelId) {
             loritta.messageInteractionCache.remove(reply.idLong)
             loritta.messageInteractionCache.remove(originalMessage.idLong)
-            reply.delete().queue()
+            runCatching { reply.delete() }
 
             val inMillis = TimeUtils.convertToMillisRelativeToNow(it.message.contentDisplay)
 
@@ -168,16 +169,16 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
             val minutes = String.format("%02d", calendar[Calendar.MINUTE])
             val messageContent = loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
 
-            reply.channel.sendMessage("<@${reminder.userId}> $messageContent").queue()
+            runCatching { reply.channel.sendMessage("<@${reminder.userId}> $messageContent") }
         }
 
         reply.onReactionAddByAuthor(loritta, reminder.userId) {
             if (it.reactionEmote.isEmote(CANCEL_EMOTE)) {
                 loritta.messageInteractionCache.remove(reply.idLong)
-                reply.delete().queue()
-                reply.channel.sendMessage("\uD83D\uDDD1️| <@${reminder.userId}> Reminder cancelled!").queue()
+                runCatching { reply.delete() }
+                runCatching { reply.channel.sendMessage("\uD83D\uDDD1️| <@${reminder.userId}> Reminder cancelled!") }
             }
         }
-        reply.addReaction(CANCEL_EMOTE).queue()
+        runCatching { reply.addReaction(CANCEL_EMOTE) }
     }
 }

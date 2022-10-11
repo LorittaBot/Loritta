@@ -30,7 +30,6 @@ import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.morenitta.tables.SonhosBundles
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
@@ -53,24 +52,25 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 
 		suspend fun sendPaymentApprovedDirectMessage(loritta: LorittaBot, userId: Long, locale: BaseLocale, supportUrl: String) {
 			val user = loritta.lorittaShards.retrieveUserById(userId)
-			user?.openPrivateChannel()?.queue {
-				val embed = EmbedBuilder()
-						.setTitle("${Emotes.LORI_RICH} ${locale["economy.paymentApprovedNotification.title"]}")
-						.setDescription(
-								locale.getList(
-										"economy.paymentApprovedNotification.description",
-										supportUrl,
-										"${Emotes.LORI_HEART1}${Emotes.LORI_HEART2}",
-										Emotes.LORI_NICE,
-										Emotes.LORI_SMILE
-								).joinToString("\n")
-						)
-						.setImage("https://cdn.discordapp.com/attachments/513405772911345664/811320940335071263/economy_original.png")
-						.setColor(Color(47, 182, 92))
-						.setTimestamp(Instant.now())
-						.build()
+			val embed = EmbedBuilder()
+				.setTitle("${Emotes.LORI_RICH} ${locale["economy.paymentApprovedNotification.title"]}")
+				.setDescription(
+					locale.getList(
+						"economy.paymentApprovedNotification.description",
+						supportUrl,
+						"${Emotes.LORI_HEART1}${Emotes.LORI_HEART2}",
+						Emotes.LORI_NICE,
+						Emotes.LORI_SMILE
+					).joinToString("\n")
+				)
+				.setImage("https://cdn.discordapp.com/attachments/513405772911345664/811320940335071263/economy_original.png")
+				.setColor(Color(47, 182, 92))
+				.setTimestamp(Instant.now())
+				.build()
 
-				it.sendMessage(embed).queue()
+			runCatching {
+				user?.openPrivateChannel()
+					?.sendMessage(embed)
 			}
 		}
 

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.`fun`
 
-import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import net.perfectdreams.loritta.common.locale.BaseLocale
@@ -10,7 +9,6 @@ import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.deviousfun.entities.Message
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
@@ -94,8 +92,8 @@ class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
         val allowBack = item != 0
 
         if ((!allowForward && message.reactions.any { it.reactionEmote.isEmote("⏩") }) || (!allowBack && message.reactions.any { it.reactionEmote.isEmote("⏪") })) { // Remover todas as reações caso seja necessário
-            message.clearReactions().await()
-            message = message.refresh().await() // Precisamos "refrescar", já que o JDA não limpa a lista de reações
+            message.clearReactions()
+            message = message.refresh() // Precisamos "refrescar", já que o JDA não limpa a lista de reações
         }
 
         message.onReactionAddByAuthor(context) {

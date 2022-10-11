@@ -20,8 +20,6 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.*
 import java.math.BigDecimal
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -221,7 +219,7 @@ class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf
 							//
 							// If it isn't, then it means that the message was already processed!
 							if (loritta.messageInteractionCache.containsKey(it.messageIdLong)) {
-								val usersThatReactedToTheMessage = it.reaction.retrieveUsers().await()
+								val usersThatReactedToTheMessage = it.reaction.retrieveUsers()
 
 								if (context.userHandle in usersThatReactedToTheMessage && user in usersThatReactedToTheMessage) {
 									message.removeAllFunctions(loritta)
@@ -270,7 +268,7 @@ class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf
 					}
 				}
 
-				message.addReaction("✅").queue()
+				runCatching { message.addReaction("✅") }
 			} else {
 				val receiverProfile = context.config.getUserData(loritta, user.idLong)
 

@@ -91,7 +91,7 @@ class GiveawayManager(val loritta: LorittaBot) {
 
         val giveawayMessage = createGiveawayMessage(locale, reason, description, reaction, epoch, channel.guild, customMessage)
 
-        val message = channel.sendMessage(giveawayMessage).await()
+        val message = channel.sendMessage(giveawayMessage)
         val messageId = message.idLong
         var validReaction = reaction
 
@@ -104,19 +104,19 @@ class GiveawayManager(val loritta: LorittaBot) {
 
                 // Then use the "reactionEmote" field from our object!
                 // Also, it seems that we don't need to add "a:" to reactions, even if the emote is animated!
-                message.addReaction(discordEmote.reactionCode).await()
+                message.addReaction(discordEmote.reactionCode)
             } else {
                 logger.trace { "Emote $validReaction doesn't look like a valid snowflake..."}
-                message.addReaction(reaction).await()
+                message.addReaction(reaction)
             }
         } catch (e: KtorRequestException) {
             logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)" }
-            message.addReaction("\uD83C\uDF89").await()
+            message.addReaction("\uD83C\uDF89")
             validReaction = "\uD83C\uDF89"
         } catch (e: KtorRequestException) {
             if (e.error?.code == JsonErrorCode.UnknownEmoji) {
                 logger.debug(e) { "Looks like the emote $validReaction doesn't exist, falling back to the default emote (if possible)" }
-                message.addReaction("\uD83C\uDF89").await()
+                message.addReaction("\uD83C\uDF89")
                 validReaction = "\uD83C\uDF89"
             } else {
                 if (e.error?.code == JsonErrorCode.PermissionLack)
@@ -167,7 +167,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         val guild = getGiveawayGuild(giveaway, shouldCancel) ?: return null
         val channel = getGiveawayTextChannel(giveaway, guild, shouldCancel) ?: return null
 
-        val message = channel.retrieveMessageById(giveaway.messageId).await() ?: run {
+        val message = channel.retrieveMessageById(giveaway.messageId) ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
 
             if (shouldCancel)
@@ -364,7 +364,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                 // So we need to use .takeAsync(...) with a big value that would cover all reactions (in this case, we are going to use the reaction count, heh)
                 // Before we did use Int.MAX_VALUE, but that allocates a gigantic array, whoops.
                 // Of course, if a message has A LOT of reactions, that would cause a lot of issues, but I guess that is going to be very rare.
-                .await()
+                
 
             if (users.size == 1 && users[0].id == loritta.config.loritta.discord.applicationId.toString()) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
@@ -439,7 +439,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                         }
 
                         if (rolesToBeGiven.isNotEmpty()) {
-                            message.guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(rolesToBeGiven) }).queue()
+                            runCatching { message.guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(rolesToBeGiven) }) }
                         }
                     }
                 }
@@ -454,7 +454,7 @@ class GiveawayManager(val loritta: LorittaBot) {
             setFooter(locale["commands.command.giveaway.giveawayEnded"], null)
         }
 
-        message.editMessage(embed.build()).await()
+        message.editMessage(embed.build())
     }
 
     suspend fun finishGiveaway(message: Message, giveaway: Giveaway) {

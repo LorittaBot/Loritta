@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.misc
 
-import com.github.kevinsawicki.http.HttpRequest
 import com.github.salomonbrys.kotson.*
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
@@ -17,10 +16,7 @@ import io.ktor.http.userAgent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
-import net.perfectdreams.loritta.morenitta.utils.NetAddressUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.build
 import java.util.concurrent.TimeUnit
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -189,10 +185,10 @@ class PingCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ping", catego
                     )
 			)
 
-			message.editMessage(replies.joinToString(separator = "\n", transform = { it.build(context) })).await()
+			message.editMessage(replies.joinToString(separator = "\n", transform = { it.build(context) }))
 
 			message.onReactionAddByAuthor(context) {
-				message.editMessage("${context.userHandle.asMention} i luv u <:lori_blobnom:412582340272062464>").queue()
+				runCatching { message.editMessage("${context.userHandle.asMention} i luv u <:lori_blobnom:412582340272062464>") }
 			}
 		}
 	}

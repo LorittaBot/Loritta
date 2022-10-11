@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.deviousfun.MessageBuilder
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.deviousfun.queue
 import java.awt.Color
 import java.io.File
 import java.time.Instant
@@ -77,7 +76,7 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 		runBlocking {
 			// Everything is done, change the Unique ID to force all pending requests to be stale
 			raffleRandomUniqueId = UUID.randomUUID()
-			
+
 			buyingOrGivingRewardsMutex.withLock {
 				if (userIds.isEmpty()) {
 					started = System.currentTimeMillis()
@@ -144,9 +143,9 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 								.addFile(File(LorittaBot.ASSETS, "loritta_money_discord.png"), "loritta_money.png")
 								.build()
 
-							user.openPrivateChannel().queue {
-								it.sendMessage(message)
-									.queue()
+							runCatching {
+								user.openPrivateChannel()
+									.sendMessage(message)
 							}
 						} catch (e: Exception) {
 						}

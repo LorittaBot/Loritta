@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.modules
 import kotlinx.coroutines.delay
 import net.perfectdreams.loritta.morenitta.utils.extensions.filterOnlyGiveableRoles
 import net.perfectdreams.loritta.deviousfun.entities.Member
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
@@ -28,14 +27,14 @@ object AutoroleModule {
 
 					guild.addRoleToMember(member, filteredRoles[0], "Autorole")
 				} else
-					guild.addRoleToMember(member, filteredRoles[0], "Autorole").queue()
+					runCatching { guild.addRoleToMember(member, filteredRoles[0], "Autorole") }
 			} else {
 				if (autoroleConfig.giveRolesAfter != null) {
 					delay(autoroleConfig.giveRolesAfter!!.seconds)
 
 					guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(filteredRoles) }, "Autorole")
 				} else
-					guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(filteredRoles) }, "Autorole").queue()
+					runCatching { guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(filteredRoles) }, "Autorole") }
 			}
 		}
 	}

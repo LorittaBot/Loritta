@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.morenitta.dao.Profile
 import mu.KotlinLogging
 import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.deviousfun.entities.Guild
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.BlacklistedGuilds
@@ -23,7 +22,7 @@ object LorittaUtils {
 
 	suspend fun canUploadFiles(context: CommandContext): Boolean {
 		if (!context.isPrivateChannel && !context.guild.selfMemberHasPermission(context.event.channel, Permission.AttachFiles)) {
-			context.message.channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["loritta.imageUploadNoPerm"].f() + " \uD83D\uDE22").queue()
+			runCatching { context.message.channel.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["loritta.imageUploadNoPerm"].f() + " \uD83D\uDE22") }
 			return false
 		}
 		return true
@@ -171,7 +170,7 @@ object LorittaUtils {
 		if (bannedState != null && bannedState[BannedUsers.expiresAt] == null) { // Se o dono está banido e não é um ban temporário...
 			if (!loritta.isOwner(ownerProfile.userId)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o dono ${ownerProfile.userId} está banido de me usar! ᕙ(⇀‸↼‶)ᕗ")
-				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
+				runCatching { guild.leave() } // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}
 		}
@@ -194,7 +193,7 @@ object LorittaUtils {
 		if (blacklisted != null) { // Se o servidor está banido...
 			if (!loritta.isOwner(guild.ownerIdLong)) { // E ele não é o dono do bot!
 				logger.info("Eu estou saindo do servidor ${guild.name} (${guild.id}) já que o servidor está banido de me usar! ᕙ(⇀‸↼‶)ᕗ *${blacklisted[BlacklistedGuilds.reason]}")
-				guild.leave().queue() // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
+				runCatching { guild.leave() } // Então eu irei sair daqui, me recuso a ficar em um servidor que o dono está banido! ᕙ(⇀‸↼‶)ᕗ
 				return true
 			}
 		}

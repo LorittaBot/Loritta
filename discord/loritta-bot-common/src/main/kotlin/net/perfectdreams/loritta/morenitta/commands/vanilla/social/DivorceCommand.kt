@@ -11,8 +11,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import org.jetbrains.exposed.sql.update
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -72,7 +70,7 @@ class DivorceCommand(loritta: LorittaBot) : AbstractCommand(loritta, "divorce", 
 					userMarriage.delete()
 				}
 
-				message.delete().queue()
+				runCatching { message.delete() }
 
 				context.reply(
 						LorittaReply(
@@ -84,20 +82,22 @@ class DivorceCommand(loritta: LorittaBot) : AbstractCommand(loritta, "divorce", 
 					// We don't care if we can't find the user, just exit
 					val partner = loritta.lorittaShards.retrieveUserById(marriagePartner.id) ?: return@onReactionAddByAuthor
 
-					val userPrivateChannel = partner.openPrivateChannel().await()
+					val userPrivateChannel = partner.openPrivateChannel()
 
-					userPrivateChannel.sendMessage(
+					runCatching {
+						userPrivateChannel.sendMessage(
 							EmbedBuilder()
-									.setTitle(locale["$LOCALE_PREFIX.divorcedTitle"])
-									.setDescription(locale["$LOCALE_PREFIX.divorcedDescription", context.userHandle.name])
-									.setThumbnail(DIVORCE_EMBED_URI)
-									.setColor(Constants.LORITTA_AQUA)
-									.build()
-					).queue()
+								.setTitle(locale["$LOCALE_PREFIX.divorcedTitle"])
+								.setDescription(locale["$LOCALE_PREFIX.divorcedDescription", context.userHandle.name])
+								.setThumbnail(DIVORCE_EMBED_URI)
+								.setColor(Constants.LORITTA_AQUA)
+								.build()
+						)
+					}
 				} catch (e: Exception) {}
 			}
 		}
 
-		message.addReaction(DIVORCE_REACTION_EMOJI).queue()
+		runCatching { message.addReaction(DIVORCE_REACTION_EMOJI) }
 	}
 }

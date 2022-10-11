@@ -5,7 +5,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.HostnameUtils
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
@@ -109,13 +108,13 @@ class BotInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "botinfo", 
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.isEmote("loritta")) {
-				message.delete().queue()
+				runCatching { message.delete() }
 
 				showExtendedInfo(context, locale)
 			}
 		}
 
-		message.addReaction("loritta:331179879582269451").queue()
+		runCatching { message.addReaction("loritta:331179879582269451") }
 	}
 
 	suspend fun showExtendedInfo(context: CommandContext, locale: BaseLocale) {

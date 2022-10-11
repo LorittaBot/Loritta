@@ -12,7 +12,6 @@ import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -401,7 +400,7 @@ class VemDeZapCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vemdezap"
 					else -> return@onReactionAddByAuthor
 				}
 
-				message.delete().queue()
+				runCatching { message.delete() }
 
 				val levelMessage = context.reply(
                         LorittaReply(
@@ -442,7 +441,7 @@ class VemDeZapCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vemdezap"
 						return@onReactionAddByAuthor
 					}
 
-					levelMessage.delete().queue()
+					runCatching { levelMessage.delete() }
 
 					val split = input.split(" ")
 
@@ -501,17 +500,17 @@ class VemDeZapCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vemdezap"
 					context.sendMessage("${context.getAsMention(true)} ${output.escapeMentions()}")
 				}
 
-				levelMessage.addReaction("1⃣").queue()
-				levelMessage.addReaction("2⃣").queue()
-				levelMessage.addReaction("3⃣").queue()
-				levelMessage.addReaction("4⃣").queue()
-				levelMessage.addReaction("5⃣").queue()
+				runCatching { levelMessage.addReaction("1⃣") }
+				runCatching { levelMessage.addReaction("2⃣") }
+				runCatching { levelMessage.addReaction("3⃣") }
+				runCatching { levelMessage.addReaction("4⃣") }
+				runCatching { levelMessage.addReaction("5⃣") }
 			}
-			message.addReaction("\uD83D\uDE0A").queue()
-			message.addReaction("\uD83D\uDE21").queue()
-			message.addReaction("\uD83D\uDE0F").queue()
-			message.addReaction("\uD83D\uDE22").queue()
-			message.addReaction("\uD83E\uDD12").queue()
+			runCatching { message.addReaction("\uD83D\uDE0A") }
+			runCatching { message.addReaction("\uD83D\uDE21") }
+			runCatching { message.addReaction("\uD83D\uDE0F") }
+			runCatching { message.addReaction("\uD83D\uDE22") }
+			runCatching { message.addReaction("\uD83E\uDD12") }
 		} else {
 			context.explain()
 		}

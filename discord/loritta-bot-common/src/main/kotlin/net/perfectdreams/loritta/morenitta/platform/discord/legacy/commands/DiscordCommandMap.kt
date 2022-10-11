@@ -38,8 +38,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import java.sql.Connection
@@ -318,7 +316,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 									MessageBuilder(generatedMessage)
 										.referenceIfPossible(ev.message, serverConfig, true)
 										.build()
-								).await()
+								)
 						}
 					}
 					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -441,7 +439,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 									)
 							)
 							if (ev.guild.retrieveSelfMember().hasPermission(Permission.ChangeNickname)) {
-								ev.guild.modifyNickname(ev.guild.retrieveSelfMember(), null).queue()
+								runCatching { ev.guild.modifyNickname(ev.guild.retrieveSelfMember(), null) }
 							} else {
 								return true
 							}
@@ -473,9 +471,10 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 
 				if (!isPrivateChannel && ev.guild != null) {
 					if (ev.guild.retrieveSelfMember().hasPermission(ev.channel, Permission.ManageMessages) && (serverConfig.deleteMessageAfterCommand)) {
-						ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
+						runCatching {
 							// We don't care if we weren't able to delete the message because it was already deleted
-						})
+							ev.message.textChannel.deleteMessageById(ev.messageId)
+						}
 					}
 				}
 
@@ -527,7 +526,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
 							.referenceIfPossible(ev.message, serverConfig, true)
 							.build()
 					)
-						.await()
+						
 
 				return true
 			}

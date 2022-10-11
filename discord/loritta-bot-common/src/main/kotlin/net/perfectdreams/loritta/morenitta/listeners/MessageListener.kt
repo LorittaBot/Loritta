@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageBulkDel
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageDeleteEvent
 import net.perfectdreams.loritta.deviousfun.events.message.update.MessageUpdateEvent
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.AutoroleConfig
@@ -136,7 +135,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 					start = System.nanoTime()
 					if (isMentioningOnlyMe(event.message.contentRaw)) {
 						if (chance(25.0))
-							event.message.addReaction("smol_lori_putassa_ping:397748526362132483").queue()
+							runCatching { event.message.addReaction("smol_lori_putassa_ping:397748526362132483") }
 
 						var response = locale["commands.mention.response", member.asMention, serverConfig.commandPrefix]
 
@@ -182,10 +181,11 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 							.setContent("<:loritta:331179879582269451> **|** $response")
 
 						if (channel.canTalk()) {
-							channel.sendMessage(responseBuilder.build()).queue()
+							runCatching { channel.sendMessage(responseBuilder.build()) }
 						} else {
-							event.author.openPrivateChannel().queue {
-								it.sendMessage(responseBuilder.build()).queue()
+							runCatching {
+								event.author.openPrivateChannel()
+									.sendMessage(responseBuilder.build())
 							}
 						}
 					}
@@ -299,9 +299,10 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 								)
 							}
 
-							channel.sendMessage(list.joinToString("\n") { it.build(JDAUser(event.author)) }).queue {
+							runCatching {
+								val message = channel.sendMessage(list.joinToString("\n") { it.build(JDAUser(event.author)) })
 								delay(5_000)
-								it.delete()
+								message.delete()
 							}
 						}
 					}
@@ -318,7 +319,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 					val channel = event.channel
 
 					if (isMentioningOnlyMe(event.message.contentRaw)) {
-						channel.sendMessage(locale["commands.commandsInDirectMessage", event.message.author.asMention, locale["commands.helpCommandName"]]).queue()
+						runCatching { channel.sendMessage(locale["commands.commandsInDirectMessage", event.message.author.asMention, locale["commands.helpCommandName"]]) }
 						return@launchMessageJob
 					}
 

@@ -34,8 +34,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
@@ -348,7 +346,7 @@ class CommandManager(val loritta: LorittaBot) {
 										MessageBuilder(generatedMessage)
 											.referenceIfPossible(ev.message, serverConfig, true)
 											.build()
-									).await()
+									)
 							}
 						}
 						return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
@@ -401,7 +399,7 @@ class CommandManager(val loritta: LorittaBot) {
 							MessageBuilder(Constants.ERROR + " **|** ${ev.member.asMention} $message")
 								.referenceIfPossible(ev.message, serverConfig, true)
 								.build()
-						).await()
+						)
 						return true
 					}
 				}
@@ -468,7 +466,7 @@ class CommandManager(val loritta: LorittaBot) {
 								)
 							)
 							if (context.guild.retrieveSelfMember().hasPermission(Permission.ChangeNickname)) {
-								context.guild.modifyNickname(context.guild.retrieveSelfMember(), null).queue()
+								runCatching { context.guild.modifyNickname(context.guild.retrieveSelfMember(), null) }
 							} else {
 								return true
 							}
@@ -499,9 +497,10 @@ class CommandManager(val loritta: LorittaBot) {
 
 				if (!isPrivateChannel && ev.guild != null) {
 					if (ev.guild.retrieveSelfMember().hasPermission(ev.channel, Permission.ManageMessages) && (serverConfig.deleteMessageAfterCommand)) {
-						ev.message.textChannel.deleteMessageById(ev.messageId).queue({}, {
+						runCatching {
 							// We don't care if we weren't able to delete the message because it was already deleted
-						})
+							ev.message.textChannel.deleteMessageById(ev.messageId)
+						}
 					}
 				}
 
@@ -544,7 +543,7 @@ class CommandManager(val loritta: LorittaBot) {
 						MessageBuilder(reply)
 							.referenceIfPossible(ev.message, serverConfig, true)
 							.build()
-					).await()
+					)
 				return true
 			}
 		}

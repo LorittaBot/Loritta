@@ -19,7 +19,6 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import dev.kord.common.entity.Permission
-import net.perfectdreams.loritta.deviousfun.queue
 import java.awt.Color
 import java.net.URLEncoder
 import java.time.Instant
@@ -87,15 +86,15 @@ class SpigotMcCommand(loritta: LorittaBot) : AbstractCommand(loritta, "spigotmc"
 						}
 
 						// Criar novo embed!
-						mensagem.editMessage(createResourceEmbed(context, resourceId, context.locale).build()).queue()
+						runCatching { mensagem.editMessage(createResourceEmbed(context, resourceId, context.locale).build()) }
 
 						// Remover todos os reactions
-						mensagem.clearReactions().queue()
+						runCatching { mensagem.clearReactions() }
 					}
 
 					// Adicionar os reactions
 					for (i in 0..Math.min(5, array.size()) - 1) {
-						mensagem.addReaction(Constants.INDEXES[i]).queue()
+						runCatching { mensagem.addReaction(Constants.INDEXES[i]) }
 					}
 				}
 			}

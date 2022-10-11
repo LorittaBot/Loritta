@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.morenitta.utils
 
-import com.github.salomonbrys.kotson.int
 import com.github.salomonbrys.kotson.jsonObject
-import com.github.salomonbrys.kotson.long
 import com.github.salomonbrys.kotson.nullLong
 import com.github.salomonbrys.kotson.obj
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
@@ -10,10 +8,7 @@ import net.perfectdreams.loritta.morenitta.tables.Dailies
 import net.perfectdreams.loritta.morenitta.tables.DonationKeys
 import net.perfectdreams.loritta.morenitta.tables.Profiles
 import net.perfectdreams.loritta.morenitta.tables.ServerConfigs
-import net.perfectdreams.loritta.morenitta.utils.extensions.editMessageIfContentWasChanged
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.EmbedBuilder
@@ -21,7 +16,6 @@ import net.perfectdreams.loritta.deviousfun.entities.Member
 import net.perfectdreams.loritta.morenitta.dao.Payment
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
@@ -279,7 +273,7 @@ object NitroBoostUtils {
 
 		// Fim!
 		try {
-			member.user.openPrivateChannel().await().sendMessage(
+			member.user.openPrivateChannel().sendMessage(
 				EmbedBuilder()
 					.setTitle("Obrigada por ativar o seu boost! ${Emotes.LORI_HAPPY}")
 					.setDescription(
@@ -288,7 +282,7 @@ object NitroBoostUtils {
 					.setImage("https://loritta.website/assets/img/fanarts/Loritta_-_Raspoza.png")
 					.setColor(Constants.LORITTA_AQUA)
 					.build()
-			).await()
+			)
 		} catch (e: Exception) {}
 	}
 

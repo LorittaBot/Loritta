@@ -20,7 +20,6 @@ import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.morenitta.tables.BlacklistedGuilds
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHeader
@@ -193,13 +192,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 											// Envie via DM uma mensagem falando sobre o motivo do ban
 											val message = locale.getList("website.router.blacklistedServer", blacklistedReason)
 
-											user.openPrivateChannel().queue {
-												it.sendMessage(message.joinToString("\n")).queue({
-													guild.leave().queue()
-												}, {
-													guild.leave().queue()
-												})
-											}
+											runCatching { user.openPrivateChannel().sendMessage(message.joinToString("\n")) }
+											runCatching { guild.leave() }
 											return
 										}
 
@@ -212,13 +206,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 											val message = locale.getList("website.router.ownerLorittaBanned", "<@$guildOwnerId>", bannedState[BannedUsers.reason]
 												?: "???").joinToString("\n")
 
-											user.openPrivateChannel().queue {
-												it.sendMessage(message).queue({
-													guild.leave().queue()
-												}, {
-													guild.leave().queue()
-												})
-											}
+											runCatching { user.openPrivateChannel().sendMessage(message) }
+											guild.leave()
 											return
 										}
 
@@ -243,8 +232,8 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
 											Emotes.LORI_HEART1.toString() + Emotes.LORI_HEART2.toString()
 										).joinToString("\n")
 
-										user.openPrivateChannel().queue {
-											it.sendMessage(message).queue()
+										runCatching {
+											user.openPrivateChannel().sendMessage(message)
 										}
 									}
 								}

@@ -10,7 +10,6 @@ import io.ktor.server.application.*
 import io.ktor.http.*
 import io.ktor.server.request.*
 import dev.kord.common.entity.Permission
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
@@ -50,7 +49,7 @@ abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardP
 		val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
 		val id = userIdentification.id
-		val member = jdaGuild.retrieveMemberById(id).await()
+		val member = jdaGuild.retrieveMemberById(id)
 		var canAccessDashboardViaPermission = false
 
 		if (member != null) {

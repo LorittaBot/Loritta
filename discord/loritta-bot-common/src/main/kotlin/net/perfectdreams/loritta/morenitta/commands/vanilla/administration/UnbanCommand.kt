@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.deviousfun.entities.Message
 import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -60,7 +59,7 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 				for (user in users)
 					unban(loritta, settings, context.guild, context.userHandle, locale, user, reason, isSilent)
 
-				message?.delete()?.queue()
+				runCatching { message?.delete() }
 
 				context.reply(
 					LorittaReply(
@@ -85,9 +84,9 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 				return@onReactionAddByAuthor
 			}
 
-			message.addReaction("✅").queue()
+			runCatching { message.addReaction("✅") }
 			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").queue()
+				runCatching { message.addReaction("\uD83D\uDE4A") }
 			}
 		} else {
 			this.explain(context)
@@ -123,7 +122,7 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 						)
 
 						message?.let {
-							textChannel.sendMessage(it).queue()
+							runCatching { textChannel.sendMessage(it) }
 						}
 					}
 				}

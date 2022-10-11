@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.minecraft.MCUtils
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
@@ -82,7 +81,7 @@ class McMoletomCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mcmoleto
 
 			val image = message.attachments.first()
 
-			message.editMessage(str + " " + locale["commands.command.mcsweater.uploadToMojang"] + " <https://minecraft.net/pt-br/profile/skin/remote/?url=${image.url}>").queue()
+			runCatching { message.editMessage(str + " " + locale["commands.command.mcsweater.uploadToMojang"] + " <https://minecraft.net/pt-br/profile/skin/remote/?url=${image.url}>") }
 		} else {
 			context.reply(
                     LorittaReply(

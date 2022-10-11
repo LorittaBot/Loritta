@@ -6,10 +6,8 @@ import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.deviousfun.events.message.react.MessageReactionAddEvent
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter() {
@@ -32,29 +30,30 @@ class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter
 
         if (member.roles.contains(securityRole) || member.roles.contains(adminRole)) {
             GlobalScope.launch {
-                val message = event.channel.retrieveMessageById(event.messageIdLong).await()
-                message.delete().queue()
+                val message = event.channel.retrieveMessageById(event.messageIdLong)
+                runCatching { message.delete() }
 
                 val registry = guild.getTextChannelById(FurryAmino.LOG_REGISTRY_ID)
 
                 // Mandar no registro
-                registry?.sendMessage("${Emotes.LORI_HEART} **Registro de ${message.author.asMention} (`${message.author.name}#${message.author.discriminator}`), aprovado por ${event.user?.asMention}**\n\n${message.contentRaw}")
-                    ?.queue()
+                runCatching {
+                    registry?.sendMessage("${Emotes.LORI_HEART} **Registro de ${message.author.asMention} (`${message.author.name}#${message.author.discriminator}`), aprovado por ${event.user?.asMention}**\n\n${message.contentRaw}")
+                }
 
                 // Remover cargos e tals
                 val furriesRole = guild.getRoleById(FurryAmino.FURRIES_ROLE_ID)!!
 
-                guild.addRoleToMember(message.member!!, furriesRole).queue()
+                runCatching { guild.addRoleToMember(message.member!!, furriesRole) }
 
                 try {
-                    val channel = message.author.openPrivateChannel().await()
+                    val channel = message.author.openPrivateChannel()
 
                     val embed = EmbedBuilder()
                         .setColor(Constants.LORITTA_AQUA)
                         .setDescription("Você foi aprovado no *Furry Amino Português* e agora pode conversar em outros canais.\n\n${Emotes.LORI_TEMMIE} **Quer conversar?** Então acesse o <#646405223916765187> e converse com os outros membros do servidor!\n\n${Emotes.LORI_OWO} **Querendo conversar com outros artistas?** Então acesse o <#643831758563049476> e compartilhe seus work in progress e suas frustrações como artista lá!\n\n${Emotes.LORI_YAY} **Precisando de ajuda artística?** Então veja vários tutoriais em <#643831795506348042> para te ajudar a virar um artista melhor!\n\n${Emotes.LORI_RICH} **Procurando pessoas que fazem comissões ou quer anunciar as suas?** Então veja o canal de <#646392653641941003>!\n\nEspero que você se divirta no servidor! ${Emotes.LORI_PAT}")
                         .setImage("https://loritta.website/assets/img/lori_akira.png")
 
-                    channel.sendMessage(embed.build()).await()
+                    channel.sendMessage(embed.build())
                 } catch (e: Exception) {}
             }
         }

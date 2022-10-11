@@ -6,7 +6,6 @@ import net.perfectdreams.loritta.morenitta.dao.Marriage
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
@@ -113,7 +112,7 @@ class MarryCommand(loritta: LorittaBot) : AbstractCommand(loritta, "marry", list
 
 			message.onReactionAdd(context) {
 				if (it.reactionEmote.isEmote("\uD83D\uDC8D") && it.member?.user?.id == proposeTo.id) {
-					message.delete().queue()
+					runCatching { message.delete() }
 
 					val profile = loritta.getOrCreateLorittaProfile(context.userHandle.id)
 					val proposeToProfile = loritta.getOrCreateLorittaProfile(proposeTo.id)
@@ -218,7 +217,7 @@ class MarryCommand(loritta: LorittaBot) : AbstractCommand(loritta, "marry", list
 				}
 			}
 
-			message.addReaction("\uD83D\uDC8D").queue()
+			runCatching { message.addReaction("\uD83D\uDC8D") }
 		} else {
 			context.explain()
 		}

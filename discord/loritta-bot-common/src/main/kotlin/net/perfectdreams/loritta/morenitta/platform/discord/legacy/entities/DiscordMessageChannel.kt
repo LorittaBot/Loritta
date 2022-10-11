@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities
 
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.api.entities.Message
 import net.perfectdreams.loritta.morenitta.api.entities.MessageChannel
 import net.perfectdreams.loritta.morenitta.messages.LorittaMessage
@@ -10,7 +9,7 @@ class DiscordMessageChannel(handle: net.perfectdreams.loritta.deviousfun.entitie
 	MessageChannel {
 	override suspend fun sendMessage(message: LorittaMessage): Message {
 		return DiscordMessage(
-			handle.sendMessage(message.content).await()
+			handle.sendMessage(message.content)
 		)
 	}
 
@@ -22,7 +21,7 @@ class DiscordMessageChannel(handle: net.perfectdreams.loritta.deviousfun.entitie
 				MessageBuilder(message.content)
 					.addFile(bytes, fileName)
 					.build()
-			).await()
+			)
 		)
 	}
 }

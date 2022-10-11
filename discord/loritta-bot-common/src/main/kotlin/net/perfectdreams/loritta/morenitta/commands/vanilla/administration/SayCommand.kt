@@ -14,8 +14,6 @@ import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.deviousfun.entities.Message
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -57,8 +55,8 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 					val channelId = split.dropLast(1).last()
 
 					editMessage = context.guild.getTextChannelById(channelId)!!
-							.retrieveMessageById(messageId)
-							.await()
+						.retrieveMessageById(messageId)
+						
 					args = args.remove(0) // Removes the "edit"
 					args = args.remove(0) // Removes the message URL
 				} else { return } // TODO: Good message
@@ -88,28 +86,28 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 			if (channel.type == ChannelType.GuildText) { // Caso seja text channel...
 				if (!channel.canTalk()) {
 					context.reply(
-							LorittaReply(
-									context.locale["commands.command.say.iDontHavePermissionToTalkIn", channel.asMention],
-									Constants.ERROR
-							)
+						LorittaReply(
+							context.locale["commands.command.say.iDontHavePermissionToTalkIn", channel.asMention],
+							Constants.ERROR
+						)
 					)
 					return
 				}
 				if (!channel.canTalk(context.handle)) {
 					context.reply(
-							LorittaReply(
-									context.locale["commands.command.say.youDontHavePermissionToTalkIn", channel.asMention],
-									Constants.ERROR
-							)
+						LorittaReply(
+							context.locale["commands.command.say.youDontHavePermissionToTalkIn", channel.asMention],
+							Constants.ERROR
+						)
 					)
 					return
 				}
 				if (context.config.blacklistedChannels.contains(channel.idLong) && !context.lorittaUser.hasPermission(LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
 					context.reply(
-							LorittaReply(
-									context.locale["commands.command.say.cannotBeUsedIn", channel.asMention],
-									Constants.ERROR
-							)
+						LorittaReply(
+							context.locale["commands.command.say.cannotBeUsedIn", channel.asMention],
+							Constants.ERROR
+						)
 					)
 					return
 				}
@@ -123,49 +121,51 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 			// Watermarks the message to "deanonymise" the message, to avoid users reporting Loritta for ToS breaking stuff, even tho it was
 			// a malicious user sending the messages.
 			val watermarkedMessage = MessageUtils.watermarkSayMessage(
-					message,
-					context.userHandle,
-					context.locale["commands.command.say.messageSentBy"]
+				message,
+				context.userHandle,
+				context.locale["commands.command.say.messageSentBy"]
 			)
 
 			val discordMessage = try {
 				MessageUtils.generateMessage(
-						watermarkedMessage,
-						mutableListOf<Any>(context.userHandle)
-								.apply {
-									// If the guild is not null, we add them to the context.
-									// This is needed because "context.event.guild" is null inside a private channel.
-									val guild = context.event.guild
-									if (guild != null)
-										add(guild)
-								},
-						context.event.guild
+					watermarkedMessage,
+					mutableListOf<Any>(context.userHandle)
+						.apply {
+							// If the guild is not null, we add them to the context.
+							// This is needed because "context.event.guild" is null inside a private channel.
+							val guild = context.event.guild
+							if (guild != null)
+								add(guild)
+						},
+					context.event.guild
 				)
 			} catch (e: Exception) {
 				null
 			}
 
-			if (discordMessage != null)
-				(
-						if (isEditMode)
-							editMessage!!.editMessage(discordMessage)
-						else
-							channel.sendMessage(discordMessage)
-						).queue()
-			else
-				(
-						if (isEditMode)
-							editMessage!!.editMessage(message)
-						else
-							channel.sendMessage(message)
-						).queue()
+			runCatching {
+				if (discordMessage != null)
+					(
+							if (isEditMode)
+								editMessage!!.editMessage(discordMessage)
+							else
+								channel.sendMessage(discordMessage)
+							)
+				else
+					(
+							if (isEditMode)
+								editMessage!!.editMessage(message)
+							else
+								channel.sendMessage(message)
+							)
+			}
 
 			if (context.event.channel != channel)
 				context.reply(
-						LorittaReply(
-								context.locale["commands.command.say.messageSuccessfullySent", channel.asMention],
-								"\uD83C\uDF89"
-						)
+					LorittaReply(
+						context.locale["commands.command.say.messageSuccessfullySent", channel.asMention],
+						"\uD83C\uDF89"
+					)
 				)
 
 		} else {

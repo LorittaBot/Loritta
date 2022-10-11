@@ -6,7 +6,6 @@ import dev.kord.common.entity.Permission
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.WebhookType
 import dev.kord.rest.request.KtorRequestException
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.deviousfun.entities.Channel
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -28,7 +27,7 @@ object WebhookUtils {
 			return null
 
 		val selfUser = channel.deviousFun.retrieveSelfUser()
-		val webhookList = textChannel.guild.retrieveWebhooks().await()
+		val webhookList = textChannel.guild.retrieveWebhooks()
 				.filter {
 					// Webhooks created by users or bots are INCOMING and we only want to get webhooks created by Loritta!
 					// See: https://github.com/discord/discord-api-docs/issues/3056
@@ -38,7 +37,7 @@ object WebhookUtils {
 		val webhooks = webhookList.filter { it.channel == textChannel }
 		val webhook = if (webhooks.isEmpty()) {
 			try { // try catch, já que pelo visto a verificação acima falha as vezes
-				textChannel.createWebhook(name).await()
+				textChannel.createWebhook(name)
 			} catch (e: KtorRequestException) {
 				return null
 			}

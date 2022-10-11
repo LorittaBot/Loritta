@@ -251,7 +251,7 @@ class BomDiaECia(private val m: LorittaBot) {
                 embed.setImage(randomImages.random())
                 embed.setColor(Color(74, 39, 138))
 
-                textChannel.sendMessage(embed.build()).queue()
+                runCatching { textChannel.sendMessage(embed.build()) }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -304,10 +304,10 @@ class BomDiaECia(private val m: LorittaBot) {
                                 loritta.messageInteractionCache.remove(it.messageIdLong)
 
                                 val triedToCall = triedToCall.mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it) }
-                                channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!").queue()
+                                runCatching { channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!") }
                             }
                         }
-                        message.addReaction("⁉").queue()
+                        runCatching { message.addReaction("⁉") }
                     }
                 }
             }

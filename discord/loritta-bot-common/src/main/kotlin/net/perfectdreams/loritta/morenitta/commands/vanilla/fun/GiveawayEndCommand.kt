@@ -5,13 +5,11 @@ import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import org.jetbrains.exposed.sql.and
@@ -113,7 +111,7 @@ class GiveawayEndCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 				return@executesDiscord
 			}
 
-			val message = textChannel.retrieveMessageById(messageId).await()
+			val message = textChannel.retrieveMessageById(messageId)
 
 			if (message == null) {
 				context.reply(

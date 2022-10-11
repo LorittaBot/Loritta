@@ -21,7 +21,6 @@ import net.perfectdreams.loritta.common.exposed.dao.CachedDiscordWebhook
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.webhooks.WebhookState
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
@@ -131,7 +130,7 @@ object EventLog {
 				}
 
 				// Try pulling the already created webhooks...
-				val webhooks = channel.retrieveWebhooks().await()
+				val webhooks = channel.retrieveWebhooks()
 
 				// Webhooks created by users or bots are INCOMING and we only want to get webhooks created by Loritta!
 				// See: https://github.com/discord/discord-api-docs/issues/3056
@@ -143,7 +142,7 @@ object EventLog {
 					logger.info { "No available webhooks in $channelId to send the message, creating a new webhook..." }
 
 					val jdaWebhook = channel.createWebhook("Loritta (Event Log)")
-						.await()
+						
 
 					createdWebhook = jdaWebhook
 				}

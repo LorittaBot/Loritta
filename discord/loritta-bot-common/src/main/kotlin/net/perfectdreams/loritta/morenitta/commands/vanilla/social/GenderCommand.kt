@@ -7,7 +7,6 @@ import net.perfectdreams.loritta.morenitta.utils.locale.Gender
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.deviousfun.EmbedBuilder
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -26,12 +25,12 @@ class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", li
 
         val message = context.sendMessage(embed)
 
-        message.addReaction("male:384048518853296128").queue()
-        message.addReaction("female:384048518337265665").queue()
-        message.addReaction("❓").queue()
+        runCatching { message.addReaction("male:384048518853296128") }
+        runCatching { message.addReaction("female:384048518337265665") }
+        runCatching { message.addReaction("❓") }
 
         message.onReactionAddByAuthor(context) {
-            message.delete().queue()
+            runCatching { message.delete() }
 
             if (it.reactionEmote.id == "384048518853296128") {
                 loritta.newSuspendedTransaction {

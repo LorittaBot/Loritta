@@ -4,7 +4,6 @@ import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.deviousfun.entities.Channel
 import net.perfectdreams.loritta.deviousfun.entities.Message
 import org.apache.commons.lang3.exception.ExceptionUtils
@@ -51,6 +50,6 @@ object ParallaxUtils {
 
 		messageBuilder.setEmbed(embedBuilder.build())
 
-		return channel.sendMessage(messageBuilder.build()).await()
+		return channel.sendMessage(messageBuilder.build())
 	}
 }

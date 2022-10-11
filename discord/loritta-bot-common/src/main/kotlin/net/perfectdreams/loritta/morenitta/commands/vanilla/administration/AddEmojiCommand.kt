@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.commands.arguments
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -64,7 +63,7 @@ class AddEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "addemoji"
 
 			if (os != null) {
 				os.use { inputStream ->
-					val emote = context.guild.createEmote(emoteName, inputStream.readAllBytes()).await()
+					val emote = context.guild.createEmote(emoteName, inputStream.readAllBytes())
 					context.reply(
                             LorittaReply(
                                     context.locale["commands.command.addemoji.success"],

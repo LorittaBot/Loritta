@@ -15,7 +15,6 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerCon
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberRemoveEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberJoinEvent
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.apache.commons.io.IOUtils
 import java.nio.charset.Charset
@@ -64,12 +63,14 @@ class WelcomeModule(val loritta: LorittaBot) {
 
 											val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-											textChannel.sendMessage(
-												MessageBuilder()
-													.setContent(locale["modules.welcomer.tooManyUsersJoining", Emotes.LORI_OWO])
-													.addFile(targetStream.readAllBytes(), "join-users.log")
-													.build()
-											).queue()
+											runCatching {
+												textChannel.sendMessage(
+													MessageBuilder()
+														.setContent(locale["modules.welcomer.tooManyUsersJoining", Emotes.LORI_OWO])
+														.addFile(targetStream.readAllBytes(), "join-users.log")
+														.build()
+												)
+											}
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
 										}
 									}
@@ -119,12 +120,14 @@ class WelcomeModule(val loritta: LorittaBot) {
 
 											val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-											textChannel.sendMessage(
-												MessageBuilder()
-													.setContent(locale["modules.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO])
-													.addFile(targetStream.readAllBytes(), "left-users.log")
-													.build()
-											).queue()
+											runCatching {
+												textChannel.sendMessage(
+													MessageBuilder()
+														.setContent(locale["modules.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO])
+														.addFile(targetStream.readAllBytes(), "left-users.log")
+														.build()
+												)
+											}
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
 										}
 									}
@@ -178,10 +181,19 @@ class WelcomeModule(val loritta: LorittaBot) {
 						val deleteJoinMessagesAfter = welcomerConfig.deleteJoinMessagesAfter
 						logger.debug { "Member = ${event.member}, Sending join message \"$msg\" in $textChannel at $guild"}
 
-						textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(guild, event.member), guild, tokens)!!).queue {
+						runCatching {
+							val message = textChannel.sendMessage(
+								MessageUtils.generateMessage(
+									msg,
+									listOf(guild, event.member),
+									guild,
+									tokens
+								)!!
+							)
+
 							if (deleteJoinMessagesAfter != null && deleteJoinMessagesAfter != 0L) {
 								delay(deleteJoinMessagesAfter.seconds)
-								it.delete()
+								message.delete()
 							}
 						}
 					}
@@ -201,20 +213,21 @@ class WelcomeModule(val loritta: LorittaBot) {
 			if (!msg.isNullOrEmpty()) {
 				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-				event.user.openPrivateChannel().queue {
-					it.sendMessage(
-						MessageUtils.generateMessage(
-							MessageUtils.watermarkModuleMessage(
-								msg,
-								locale,
+				runCatching {
+					event.user.openPrivateChannel()
+						.sendMessage(
+							MessageUtils.generateMessage(
+								MessageUtils.watermarkModuleMessage(
+									msg,
+									locale,
+									event.guild,
+									locale["modules.welcomer.moduleDirectMessageJoinType"]
+								),
+								listOf(event.guild, event.member),
 								event.guild,
-								locale["modules.welcomer.moduleDirectMessageJoinType"]
-							),
-							listOf(event.guild, event.member),
-							event.guild,
-							tokens
-						)!!
-					).queue() // Pronto!
+								tokens
+							)!!
+						) // Pronto!
 				}
 			}
 		}
@@ -270,10 +283,19 @@ class WelcomeModule(val loritta: LorittaBot) {
 						val deleteRemoveMessagesAfter = welcomerConfig.deleteRemoveMessagesAfter
 						logger.debug { "User = ${event.user}, Sending quit message \"$msg\" in $textChannel at $guild"}
 
-						textChannel.sendMessage(MessageUtils.generateMessage(msg, listOf(event.guild, event.user), guild, customTokens)!!).queue {
+						runCatching {
+							val message = textChannel.sendMessage(
+								MessageUtils.generateMessage(
+									msg,
+									listOf(event.guild, event.user),
+									guild,
+									customTokens
+								)!!
+							)
+
 							if (deleteRemoveMessagesAfter != null && deleteRemoveMessagesAfter != 0L) {
 								delay(deleteRemoveMessagesAfter.seconds)
-								it.delete()
+								message.delete()
 							}
 						}
 					}

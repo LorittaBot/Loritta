@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.morenitta.utils
 
 import dev.kord.common.entity.Snowflake
+import dev.kord.rest.request.KtorRequestException
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.dao.Profile
@@ -11,7 +12,6 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.deviousfun.entities.Channel
-import net.perfectdreams.loritta.deviousfun.queue
 import org.apache.commons.lang3.ArrayUtils
 import java.awt.Graphics
 import java.awt.Image
@@ -123,11 +123,12 @@ object LorittaUtilsKotlin {
 		).joinToString("\n")
 
 		// Se um usuário está banido...
-		user.openPrivateChannel()
-				.queue (
-						{ it.sendMessage(message).queue() },
-						{ commandChannel.sendMessage(message).queue() }
-				)
+		try {
+			user.openPrivateChannel()
+				.sendMessage(message)
+		} catch (e: KtorRequestException) {
+			commandChannel.sendMessage(message)
+		}
 		return true
 	}
 }

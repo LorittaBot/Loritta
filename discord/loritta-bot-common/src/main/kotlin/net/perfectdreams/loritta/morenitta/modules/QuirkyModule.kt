@@ -10,7 +10,6 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.chance
 import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.common.locale.BaseLocale
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 
@@ -34,13 +33,13 @@ class QuirkyModule(val loritta: LorittaBot) : MessageReceivedModule {
                 // Let = "Vamos apenas pegar se NÃO for nulo", ou seja:
                 // Se o valor na randomReactions.reactions.getOrNull(reactionRandom) NÃO for nulo, nós iremos adicionar a reação
                 // Caso seja nulo, nada irá acontecer.
-                message.addReaction(it).queue()
+                runCatching { message.addReaction(it) }
             }
 
             for (contextAware in config.randomReactions.contextAwareReactions) {
                 if (chance(contextAware.chanceOf)) {
                     if (event.message.contentRaw.matches(Regex(contextAware.match))) {
-                        message.addReaction(contextAware.reactions.random()).queue()
+                        runCatching { message.addReaction(contextAware.reactions.random()) }
                         break
                     }
                 }
@@ -48,13 +47,13 @@ class QuirkyModule(val loritta: LorittaBot) : MessageReceivedModule {
         }
 
         if (config.tioDoPave.enabled && chance(config.tioDoPave.chance))
-            event.channel.sendMessage("${event.author.asMention} ${TioDoPaveCommand.PIADAS.random()} <:lori_ok_hand:426183783008698391>").queue()
+            runCatching { event.channel.sendMessage("${event.author.asMention} ${TioDoPaveCommand.PIADAS.random()} <:lori_ok_hand:426183783008698391>") }
 
         if ((event.message.contentRaw.contains("esta é uma mensagem do criador", true) && event.message.contentRaw.contains("se tornou muito lenta", true) && event.message.contentRaw.contains("que não enviarem essa mensagem dentro de duas semanas", true)) || (event.message.contentRaw.contains("deve fechar", true) && event.message.contentRaw.contains("Vamos enviar esta mensagem para ver se os membros", true) && event.message.contentRaw.contains("isto é de acordo com o criador", true)))
-            event.channel.sendMessage("${event.author.asMention} agora me diga... porque você acha que o Discord ia avisar algo importante assim com uma CORRENTE? Isso daí é fake, se isso fosse verdade, o Discord iria colocar um aviso nas redes sociais e ao iniciar o Discord, apenas ignore tais mensagens... e por favor, pare de espalhar \uD83D\uDD17 correntes \uD83D\uDD17, não quero que aqui vire igual ao WhatsApp. <:smol_lori_putassa:395010059157110785>").queue()
+            runCatching { event.channel.sendMessage("${event.author.asMention} agora me diga... porque você acha que o Discord ia avisar algo importante assim com uma CORRENTE? Isso daí é fake, se isso fosse verdade, o Discord iria colocar um aviso nas redes sociais e ao iniciar o Discord, apenas ignore tais mensagens... e por favor, pare de espalhar \uD83D\uDD17 correntes \uD83D\uDD17, não quero que aqui vire igual ao WhatsApp. <:smol_lori_putassa:395010059157110785>") }
 
         if (event.message.contentRaw.contains("DDoSed", true) && event.message.contentRaw.contains("pedidos de amizade para usuários aleatórios", true) && event.message.contentRaw.contains("tornando uma vítima também", true))
-            event.channel.sendMessage("${event.author.asMention} você acha mesmo que se um usuário tivesse fazendo isto no Discord, ele já não teria sido suspenso em todo o Discord? Antes de compartilhar \uD83D\uDD17 correntes \uD83D\uDD17, pense um pouco sobre elas antes de mandar isto para vários usuários, não quero que aqui vire igual ao WhatsApp. <:smol_lori_putassa:395010059157110785>").queue()
+            runCatching { event.channel.sendMessage("${event.author.asMention} você acha mesmo que se um usuário tivesse fazendo isto no Discord, ele já não teria sido suspenso em todo o Discord? Antes de compartilhar \uD83D\uDD17 correntes \uD83D\uDD17, pense um pouco sobre elas antes de mandar isto para vários usuários, não quero que aqui vire igual ao WhatsApp. <:smol_lori_putassa:395010059157110785>") }
 
         return false
     }

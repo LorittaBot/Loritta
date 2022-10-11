@@ -26,8 +26,6 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
@@ -122,10 +120,10 @@ class EmojiFight(
         }
 
         message.addReaction("✅")
-            .queue()
+           runCatching {   }
 
         message.addReaction("\uD83D\uDC14")
-            .queue()
+           runCatching {   }
     }
 
     private fun getEventEmbed(): DeviousEmbed {
@@ -172,7 +170,7 @@ class EmojiFight(
         val shouldUpdateAgain = updatingMessageMutex.withLock {
             val onStartCount = participatingUsers.size
 
-            message.editMessage(getEventEmbed()).await()
+            message.editMessage(getEventEmbed())
 
             val onEndCount = participatingUsers.size
 

@@ -76,7 +76,7 @@ class DiscordCommandContext(
 				MessageBuilder(message)
 					.referenceIfPossible(discordMessage, serverConfig, true)
 					.build()
-			).await()
+			)
 		} else {
 			throw RuntimeException("Sem permissão para enviar uma mensagem!")
 		}
@@ -89,7 +89,7 @@ class DiscordCommandContext(
 					.addFile(image.toByteArray(), fileName)
 					.referenceIfPossible(discordMessage, serverConfig, true)
 					.build()
-			).await()
+			)
 		)
 	}
 
@@ -116,7 +116,7 @@ class DiscordCommandContext(
 					.addFile(file, fileName)
 					.referenceIfPossible(discordMessage, serverConfig, true)
 					.build()
-			).await()
+			)
 		)
 	}
 
@@ -133,7 +133,7 @@ class DiscordCommandContext(
 					.referenceIfPossible(discordMessage, serverConfig, true)
 					.build()
 			)
-				.await()
+				
 		)
 	}
 
@@ -219,7 +219,7 @@ class DiscordCommandContext(
 			val textChannel = discordMessage.channel
 			try {
 				// TODO - DeviousFun
-				val messages = textChannel.history.retrievePast(searchPreviousMessages).await()
+				val messages = textChannel.history.retrievePast(searchPreviousMessages)
 
 				attach@ for (msg in messages) {
 					for (embed in msg.embeds) {
@@ -496,6 +496,6 @@ class DiscordCommandContext(
 			messageBuilder
 				.referenceIfPossible(discordMessage, serverConfig, true)
 				.build()
-		).await()
+		)
 	}
 }

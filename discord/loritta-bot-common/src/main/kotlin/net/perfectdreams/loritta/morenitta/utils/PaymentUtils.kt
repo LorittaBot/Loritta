@@ -5,7 +5,6 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.SonhosTransaction
 import org.jetbrains.exposed.sql.SortOrder
@@ -123,7 +122,7 @@ object PaymentUtils {
                     try {
                         logger.info { "Notifying ${user.idLong} about $userId chargebacks" }
 
-                        user.openPrivateChannel().await()
+                        user.openPrivateChannel()
                                 .sendMessage(
                                     MessageBuilder(
                                         loritta.localeManager.getLocaleById("default")
@@ -137,7 +136,7 @@ object PaymentUtils {
                                     ).addFile(builder.toString().toByteArray(Charsets.UTF_8), "transactions.txt")
                                         .build()
                                 )
-                                .await()
+                                
 
                         logger.info { "Successfully notified ${user.idLong} about $userId chargebacks" }
                     } catch (e: Exception) {

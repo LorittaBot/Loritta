@@ -21,7 +21,6 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.platform.discord.utils.UserFlagBadgeEmotes.getBadges
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -145,7 +144,7 @@ class UserInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "userinfo"
 			_message.onReactionAddByAuthor(context) {
 				showExtendedInfo(_message, context, user, member)
 			}
-			_message.addReaction("▶").queue()
+			runCatching { _message.addReaction("▶") }
 		}
 		return _message
 	}
@@ -169,7 +168,7 @@ class UserInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "userinfo"
 		_message.onReactionAddByAuthor(context) {
 			showQuickGlanceInfo(_message, context, user, member)
 		}
-		_message.addReaction("◀").queue()
+		runCatching { _message.addReaction("◀") }
 		return _message
 	}
 }

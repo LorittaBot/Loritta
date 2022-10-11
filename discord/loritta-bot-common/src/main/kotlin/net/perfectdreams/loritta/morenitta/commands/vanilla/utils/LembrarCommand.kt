@@ -17,7 +17,6 @@ import net.perfectdreams.loritta.deviousfun.DeviousEmbed
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.deviousfun.queue
 import org.jetbrains.exposed.sql.deleteWhere
 import java.awt.Color
 import java.time.Instant
@@ -42,7 +41,7 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 			val reply = createReply(context, locale)
 			createResponseByAuthor(reply, context, message, locale)
 			createReactionAddByAuthor(reply, context, locale)
-			reply.addReaction("\uD83D\uDE45").queue()
+			runCatching { reply.addReaction("\uD83D\uDE45") }
 		} else {
 			this.explain(context)
 		}
@@ -51,7 +50,7 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 	private fun createReactionAddByAuthor(reply: Message, context: CommandContext, locale: BaseLocale) {
 		reply.onReactionAddByAuthor(context) {
 			loritta.messageInteractionCache.remove(reply.idLong)
-			reply.delete().queue()
+			runCatching { reply.delete() }
 			context.reply(
 					LorittaReply(
 							message = locale["$LOCALE_PREFIX.cancel"],
@@ -64,7 +63,7 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 	private fun createResponseByAuthor(reply: Message, context: CommandContext, message: String, locale: BaseLocale) {
 		reply.onResponseByAuthor(context) {
 			loritta.messageInteractionCache.remove(reply.idLong)
-			reply.delete().queue()
+			runCatching { reply.delete() }
 			val inMillis = TimeUtils.convertToMillisRelativeToNow(it.message.contentDisplay)
 			val instant = Instant.ofEpochMilli(inMillis)
 			val localDateTime = ZonedDateTime.ofInstant(instant, Constants.LORITTA_TIMEZONE)
@@ -129,12 +128,12 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 
 		message.onReactionAddByAuthor(context) {
 			if (it.reactionEmote.isEmote("➡")) {
-				message.delete().queue()
+				runCatching { message.delete() }
 				handleReminderList(context, page + 1, locale)
 				return@onReactionAddByAuthor
 			}
 			if (it.reactionEmote.isEmote("⬅")) {
-				message.delete().queue()
+				runCatching { message.delete() }
 				handleReminderList(context, page - 1, locale)
 				return@onReactionAddByAuthor
 			}
@@ -161,21 +160,21 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 			embedBuilder.appendDescription("**${locale["${LOCALE_PREFIX}.remindInTextChannel"]}** ${textChannel?.asMention ?: "Canal de texto não existe mais..."}")
 			embedBuilder.setColor(Color(255, 179, 43))
 
-			message.clearReactions().queue()
-			message.editMessage(embedBuilder.build()).queue()
-			message.addReaction("⬅️").queue()
+			runCatching { message.clearReactions() }
+			runCatching { message.editMessage(embedBuilder.build()) }
+			runCatching { message.addReaction("⬅️") }
 
 			message.onReactionAddByAuthor(context) {
 
 				if (it.reactionEmote.isEmote("⬅️")) {
 
-					message.delete().queue()
+					runCatching { message.delete() }
 					handleReminderList(context, page, locale)
 					return@onReactionAddByAuthor
 
 				}
 
-				message.delete().queue()
+				runCatching { message.delete() }
 				reminders.remove(reminder)
 				loritta.newSuspendedTransaction {
 					Reminders.deleteWhere { Reminders.id eq reminder.id }
@@ -183,26 +182,26 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 
 				val successMessage = context.sendMessage(locale["${LOCALE_PREFIX}.reminderRemoved"])
 				successMessage.onReactionAddByAuthor(context) {
-					successMessage.delete().queue()
+					runCatching { successMessage.delete() }
 					handleReminderList(context, page, locale)
 				}
-				successMessage.addReaction("⬅️").queue()
+				runCatching { successMessage.addReaction("⬅️") }
 				return@onReactionAddByAuthor
 			}
 
-			message.addReaction("\uD83D\uDDD1").queue()
+			runCatching { message.addReaction("\uD83D\uDDD1") }
 			return@onReactionAddByAuthor
 		}
 
 		if (page != 0)
-			message.addReaction("⬅").queue()
+			runCatching { message.addReaction("⬅") }
 
 		for ((idx, _) in visReminders.withIndex()) {
-			message.addReaction(Constants.INDEXES[idx]).queue()
+			runCatching { message.addReaction(Constants.INDEXES[idx]) }
 		}
 
 		if (((page + 1) * 9) in 0..reminders.size) {
-			message.addReaction("➡").queue()
+			runCatching { message.addReaction("➡") }
 		}
 	}
 

@@ -14,7 +14,6 @@ import net.perfectdreams.loritta.deviousfun.entities.Message
 import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -66,7 +65,7 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 				for (member in members)
 					kick(context, settings, locale, member, member.user, reason, isSilent)
 
-				message?.delete()?.queue()
+				runCatching { message?.delete() }
 
 				AdminUtils.sendSuccessfullyPunishedMessage(context, reason, true)
 			}
@@ -86,9 +85,9 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 				return@onReactionAddByAuthor
 			}
 
-			message.addReaction("✅").queue()
+			runCatching { message.addReaction("✅") }
 			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").queue()
+				runCatching { message.addReaction("\uD83D\uDE4A") }
 			}
 		} else {
 			this.explain(context)
@@ -104,8 +103,8 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 					try {
 						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.kick.punishAction"], reason)
 
-						user.openPrivateChannel().queue {
-							it.sendMessage(embed).queue()
+						runCatching {
+							user.openPrivateChannel().sendMessage(embed)
 						}
 					} catch (e: Exception) {
 						e.printStackTrace()
@@ -136,14 +135,14 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 						)
 
 						message?.let {
-							textChannel.sendMessage(it).queue()
+							runCatching { textChannel.sendMessage(it) }
 						}
 					}
 				}
 			}
 
 			context.guild.kick(member, AdminUtils.generateAuditLogMessage(locale, context.userHandle, reason))
-					.queue()
+				runCatching { 	 }
 		}
 	}
 }

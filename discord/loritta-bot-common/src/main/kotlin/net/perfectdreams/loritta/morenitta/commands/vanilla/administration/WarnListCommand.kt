@@ -127,7 +127,7 @@ class WarnListCommand(loritta: LorittaBot) : AbstractCommand(loritta, "punishmen
 			}
 
 			for (i in 0 until warns.size) {
-				message.addReaction(Constants.INDEXES[i]).queue()
+				runCatching { message.addReaction(Constants.INDEXES[i]) }
 			} */
 		} else {
 			this.explain(context)

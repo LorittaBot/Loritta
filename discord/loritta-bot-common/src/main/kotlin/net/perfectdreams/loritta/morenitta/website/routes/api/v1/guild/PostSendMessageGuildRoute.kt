@@ -17,7 +17,6 @@ import io.ktor.http.*
 import io.ktor.server.request.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import net.perfectdreams.loritta.deviousfun.await
 import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIGuildAuthRoute
@@ -128,7 +127,7 @@ class PostSendMessageGuildRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute
 			)
 
 			try {
-				val message = user.openPrivateChannel().await().sendMessage(message).await()
+				val message = user.openPrivateChannel().sendMessage(message)
 
 				call.respondJson(jsonObject("messageId" to message.id), HttpStatusCode.Created)
 				return

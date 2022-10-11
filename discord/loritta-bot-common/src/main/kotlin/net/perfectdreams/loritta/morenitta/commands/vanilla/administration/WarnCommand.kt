@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.deviousfun.entities.Message
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
@@ -65,8 +64,8 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 							try {
 								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.warn.punishAction"], reason)
 
-								user.openPrivateChannel().queue {
-									it.sendMessage(embed).queue()
+								runCatching {
+									user.openPrivateChannel().sendMessage(embed)
 								}
 							} catch (e: Exception) {
 								e.printStackTrace()
@@ -95,7 +94,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 								)
 
 								message?.let {
-									textChannel.sendMessage(it).queue()
+									runCatching { textChannel.sendMessage(it) }
 								}
 							}
 						}
@@ -133,7 +132,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 					}
 				}
 
-				message?.delete()?.queue()
+				runCatching { message?.delete() }
 
 				AdminUtils.sendSuccessfullyPunishedMessage(context, reason, true)
 			}
@@ -153,9 +152,9 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 				return@onReactionAddByAuthor
 			}
 
-			message.addReaction("✅").queue()
+			runCatching { message.addReaction("✅") }
 			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").queue()
+				runCatching { message.addReaction("\uD83D\uDE4A") }
 			}
 		} else {
 			this.explain(context)

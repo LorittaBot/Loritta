@@ -10,8 +10,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 import org.jetbrains.exposed.sql.and
 
 class GiveawayRerollCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("giveaway reroll", "sorteio reroll"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
@@ -104,7 +102,7 @@ class GiveawayRerollCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lo
 				)
 				return@executesDiscord
 			}
-			val message = textChannel.retrieveMessageById(messageId).await()
+			val message = textChannel.retrieveMessageById(messageId)
 
 			if (message == null) {
 				context.reply(

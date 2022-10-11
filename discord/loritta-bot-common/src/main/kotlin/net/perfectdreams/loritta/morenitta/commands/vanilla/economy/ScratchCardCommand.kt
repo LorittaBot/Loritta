@@ -18,8 +18,6 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.common.utils.Emotes
-import net.perfectdreams.loritta.deviousfun.await
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.GACampaigns
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -237,7 +235,7 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 				boughtScratchCardsInThisMessage = 0
 			}
 
-			val theMessage = message?.edit(MessageBuilder().append(contentWithInvisibleSpoilers).build(), clearReactions = false) ?: context.discordMessage.channel.sendMessage(contentWithInvisibleSpoilers).await()
+			val theMessage = message?.edit(MessageBuilder().append(contentWithInvisibleSpoilers).build(), clearReactions = false) ?: context.discordMessage.channel.sendMessage(contentWithInvisibleSpoilers)
 
 			theMessage?.onReactionByAuthor(context) {
 				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
@@ -250,8 +248,8 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 			}
 
 			if (message == null) {
-				theMessage?.addReaction("lori_rica:593979718919913474")?.queue()
-				theMessage?.addReaction("\uD83D\uDD04")?.queue()
+				runCatching { theMessage?.addReaction("lori_rica:593979718919913474") }
+				runCatching { theMessage?.addReaction("\uD83D\uDD04") }
 			}
 		}
 	}

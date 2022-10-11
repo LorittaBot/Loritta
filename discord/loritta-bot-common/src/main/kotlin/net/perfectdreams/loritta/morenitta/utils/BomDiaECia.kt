@@ -18,7 +18,6 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.Miscellaneo
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.deviousfun.DeviousMessage
 import net.perfectdreams.loritta.deviousfun.entities.Channel
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
@@ -232,7 +231,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 				embed.setColor(Color(74, 39, 138))
 
 				runBlocking {
-					textChannel.sendMessage(embed.build()).queue()
+					runCatching { textChannel.sendMessage(embed.build()) }
 				}
 			} catch (e: Exception) {
 				e.printStackTrace()
@@ -270,20 +269,34 @@ class BomDiaECia(val loritta: LorittaBot) {
 			if (triedToCall.isNotEmpty()) {
 
 				val pronoun = loritta.newSuspendedTransaction {
-					loritta.getOrCreateLorittaProfile(user.idLong).settings.gender.getPronoun(loritta.localeManager.getLocaleById("default"))
+					loritta.getOrCreateLorittaProfile(user.idLong).settings.gender.getPronoun(
+						loritta.localeManager.getLocaleById(
+							"default"
+						)
+					)
 				}
 
-				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
+				runCatching {
+					val message = channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}")
 					if (message.guild.retrieveSelfMember().hasPermission(Permission.AddReactions)) {
 						message.onReactionAddByAuthor(loritta, user.idLong) {
 							if (it.reactionEmote.isEmote("⁉")) {
 								loritta.messageInteractionCache.remove(it.messageIdLong)
 
-								val triedToCall = triedToCall.mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it) }
-								channel.sendMessage("<:yudi:446394608256024597> **|** Pois é, ${triedToCall.joinToString(", ", transform = { "`" + it.name + "`" })} tentaram ligar... mas falharam!").queue()
+								val triedToCall =
+									triedToCall.mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it) }
+								runCatching {
+									channel.sendMessage(
+										"<:yudi:446394608256024597> **|** Pois é, ${
+											triedToCall.joinToString(
+												", ",
+												transform = { "`" + it.name + "`" })
+										} tentaram ligar... mas falharam!"
+									)
+								}
 							}
 						}
-						message.addReaction("⁉").queue()
+						runCatching { message.addReaction("⁉") }
 					}
 				}
 			}

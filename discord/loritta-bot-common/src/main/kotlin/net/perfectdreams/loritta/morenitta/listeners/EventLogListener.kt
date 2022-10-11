@@ -25,7 +25,6 @@ import net.perfectdreams.loritta.common.utils.DateUtils
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageBulkDeleteEvent
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageDeleteEvent
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import org.apache.commons.io.IOUtils
 import org.jetbrains.exposed.sql.and
@@ -385,12 +384,12 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 			if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
 				val relayTo = loritta.lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
 
-				relayTo?.unban(event.user)?.queue()
+				runCatching { relayTo?.unban(event.user)? }
 			}
 			if (event.guild.id == Constants.ENGLISH_SUPPORT_GUILD_ID) {
 				val relayTo = loritta.lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
 
-				relayTo?.unban(event.user)?.queue()
+				runCatching { relayTo?.unban(event.user)? }
 			}
 
 			val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)

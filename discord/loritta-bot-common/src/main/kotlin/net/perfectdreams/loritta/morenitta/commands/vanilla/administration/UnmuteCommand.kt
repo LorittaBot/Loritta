@@ -13,7 +13,6 @@ import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.perfectdreams.loritta.deviousfun.queue
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -56,7 +55,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 				for (user in users)
 					unmute(loritta, settings, context.guild, context.userHandle, locale, user, reason, isSilent)
 
-				message?.delete()?.queue()
+				runCatching { message?.delete() }
 
 				context.reply(
 					LorittaReply(
@@ -81,9 +80,9 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 				return@onReactionAddByAuthor
 			}
 
-			message.addReaction("✅").queue()
+			runCatching { message.addReaction("✅") }
 			if (hasSilent) {
-				message.addReaction("\uD83D\uDE4A").queue()
+				runCatching { message.addReaction("\uD83D\uDE4A") }
 			}
 		} else {
 			this.explain(context)
@@ -117,7 +116,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 						)
 
 						message?.let {
-							textChannel.sendMessage(it).queue()
+							runCatching { textChannel.sendMessage(it) }
 						}
 					}
 				}
@@ -144,7 +143,7 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 			if (member != null) {
 				val mutedRoles = MuteCommand.getMutedRole(loritta, guild, locale)
 				if (mutedRoles != null)
-					guild.removeRoleFromMember(member, mutedRoles).queue()
+					runCatching { guild.removeRoleFromMember(member, mutedRoles) }
 			}
 		}
 	}

@@ -5,11 +5,10 @@ import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permission.*
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.*
-import net.perfectdreams.loritta.deviousfun.await
 
-suspend fun Channel.sendMessageAsync(text: String) = this.sendMessage(text).await()
-suspend fun Channel.sendMessageAsync(message: DeviousMessage) = this.sendMessage(message).await()
-suspend fun Channel.sendMessageAsync(embed: DeviousEmbed) = this.sendMessage(embed).await()
+suspend fun Channel.sendMessageAsync(text: String) = this.sendMessage(text)
+suspend fun Channel.sendMessageAsync(message: DeviousMessage) = this.sendMessage(message)
+suspend fun Channel.sendMessageAsync(embed: DeviousEmbed) = this.sendMessage(embed)
 
 suspend fun Message.edit(message: String, embed: DeviousEmbed, clearReactions: Boolean = true): Message {
     return this.edit(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build(), clearReactions)
@@ -19,14 +18,14 @@ suspend fun Message.edit(content: DeviousMessage, clearReactions: Boolean = true
     if (this.isFromType(ChannelType.DM) || !this.guild.retrieveSelfMember().hasPermission(this.textChannel, Permission.ManageMessages)) {
         // Nós não podemos limpar as reações das mensagens caso a gente esteja em uma DM ou se a Lori não tem permissão para gerenciar mensagens
         // Nestes casos, iremos apenas deletar a mensagem e reenviar
-        this.delete().queue()
-        return this.channel.sendMessage(content).await()
+        runCatching { this.delete() }
+        return this.channel.sendMessage(content)
     }
 
     // Se não, vamos apagar as reações e editar a mensagem atual!
     if (clearReactions)
-        this.clearReactions().await()
-    return this.editMessage(content).await()
+        this.clearReactions()
+    return this.editMessage(content)
 }
 
 /**
@@ -38,7 +37,7 @@ suspend fun Message.editMessageIfContentWasChanged(message: String): Message {
     if (this.contentRaw == message)
         return this
 
-    return this.editMessage(message).await()
+    return this.editMessage(message)
 }
 
 /**
@@ -68,12 +67,12 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
         clearAll = true
 
     if (clearAll) { // Pelo visto tem alguns emojis que não deveriam estar aqui, vamos limpar!
-        this.clearReactions().await() // Vamos limpar todas as reações
-        message = this.refresh().await() // E pegar o novo obj da mensagem
+        this.clearReactions() // Vamos limpar todas as reações
+        message = this.refresh() // E pegar o novo obj da mensagem
 
         emotes.forEach {
             // E agora vamos readicionar os emotes!
-            message.addReaction(it).await()
+            message.addReaction(it)
         }
     }
     return message
