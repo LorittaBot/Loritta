@@ -6,6 +6,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
+import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 
 class SpawnGiveawayTask(val loritta: LorittaBot) : Runnable {
     companion object {
@@ -24,7 +25,7 @@ class SpawnGiveawayTask(val loritta: LorittaBot) : Runnable {
                             return@forEach
                         }
 
-                        if (loritta.giveawayManager.giveawayTasks[it.id.value] == null)
+                        if (loritta.giveawayManager.giveawayTasks[it.id.value] == null && DiscordUtils.getLorittaClusterForGuildId(loritta, it.guildId).id == loritta.clusterId)
                             loritta.giveawayManager.createGiveawayJob(it)
                     } catch (e: Exception) {
                         logger.error(e) { "Error while creating giveaway ${it.id.value} job" }
