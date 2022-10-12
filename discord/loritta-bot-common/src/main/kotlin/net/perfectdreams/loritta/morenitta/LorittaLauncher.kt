@@ -86,12 +86,17 @@ object LorittaLauncher {
 		logger.info { "Started Pudding client!" }
 
 		val jedisPoolConfig = JedisPoolConfig()
-		jedisPoolConfig.maxTotal = 10
+		jedisPoolConfig.maxTotal = 1_000
 
 		val jedisPool = JedisPool(
 			jedisPoolConfig,
 			config.loritta.redis.address.substringBefore(":"),
 			config.loritta.redis.address.substringAfter(":").toIntOrNull() ?: 6379,
+			// The default timeout is 2_000, which, in my experience, was causing issues where connections couldn't be created, or
+			// "Failed to connect to any host resolved for DNS name." .. "Suppressed: java.net.SocketTimeoutException: Connect timed out"
+			// The default timeout may also cause issues when trying to read too many data from Redis (read timeout)
+			// https://gist.github.com/JonCole/925630df72be1351b21440625ff2671f
+			15_000,
 			null,
 			config.loritta.redis.password
 		)
