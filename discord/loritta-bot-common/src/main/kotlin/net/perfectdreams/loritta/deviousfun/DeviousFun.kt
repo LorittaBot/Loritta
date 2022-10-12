@@ -4,6 +4,7 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.rest.json.JsonErrorCode
 import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.Semaphore
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.entities.*
@@ -50,6 +51,13 @@ class DeviousFun(val loritta: LorittaBot) {
         loritta.lorittaCluster.maxShard,
         loritta.config.loritta.discord.maxShards
     )
+
+    /**
+     * To avoid all connections in the connection pool being used by GuildCreate events, we will limit to max `connections in the pool - 5`, with a minimum of one permit GuildCreate in parallel
+     *
+     * This avoids issues where all events stop being processed due to a "explosion" of GuildCreates after a shard restart!
+     */
+    val guildCreateSemaphore = Semaphore((loritta.jedisPool.maxTotal - 5).coerceAtLeast(1))
 
     fun registerListeners(vararg listeners: ListenerAdapter) {
         this.listeners.addAll(listeners)

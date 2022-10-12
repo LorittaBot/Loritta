@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.deviousfun.cache
 
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.value
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -94,74 +95,76 @@ class DeviousCacheManager(val m: DeviousFun) {
 
         val emojisData = convertStuff(data.emojis)
 
-        m.loritta.redisTransaction {
-            it.hset(m.loritta.redisKeys.discordGuilds(), data.id.toString(), Json.encodeToString(deviousGuildData))
+        m.guildCreateSemaphore.withPermit {
+            m.loritta.redisTransaction {
+                it.hset(m.loritta.redisKeys.discordGuilds(), data.id.toString(), Json.encodeToString(deviousGuildData))
 
-            // Upsert roles
-            it.hsetByteArrayOrDelIfMapIsEmpty(
-                m.loritta.redisKeys.discordGuildRoles(deviousGuildData.id),
-                rolesData.map {
-                    it.id.toString() to m.loritta.binaryCacheTransformers.roles.encode(it)
-                }.toMap()
-            )
-
-            if (guildChannels != null) {
-                // Upsert guild channel set
-                // We will use a set indicating what channels are in this guild
-                it.del(m.loritta.redisKeys.discordGuildChannels(deviousGuildData.id))
-                it.sadd(
-                    m.loritta.redisKeys.discordGuildChannels(deviousGuildData.id),
-                    *guildChannels.map { it.id.toString() }.toTypedArray()
+                // Upsert roles
+                it.hsetByteArrayOrDelIfMapIsEmpty(
+                    m.loritta.redisKeys.discordGuildRoles(deviousGuildData.id),
+                    rolesData.map {
+                        it.id.toString() to m.loritta.binaryCacheTransformers.roles.encode(it)
+                    }.toMap()
                 )
 
-                // Delete all channels related to this guild
-                if (channelsOfThisGuild != null)
-                    it.hdel(m.loritta.redisKeys.discordChannels(), *channelsOfThisGuild.toTypedArray())
+                if (guildChannels != null) {
+                    // Upsert guild channel set
+                    // We will use a set indicating what channels are in this guild
+                    it.del(m.loritta.redisKeys.discordGuildChannels(deviousGuildData.id))
+                    it.sadd(
+                        m.loritta.redisKeys.discordGuildChannels(deviousGuildData.id),
+                        *guildChannels.map { it.id.toString() }.toTypedArray()
+                    )
 
-                // Upsert channels
+                    // Delete all channels related to this guild
+                    if (channelsOfThisGuild != null)
+                        it.hdel(m.loritta.redisKeys.discordChannels(), *channelsOfThisGuild.toTypedArray())
+
+                    // Upsert channels
+                    it.hsetByteArrayOrDelIfMapIsEmpty(
+                        m.loritta.redisKeys.discordChannels(),
+                        guildChannels.associate {
+                            it.id.toString() to binaryCacheTransformers.channels.encode(
+                                DeviousChannelData.from(
+                                    data.id,
+                                    it
+                                )
+                            )
+                        }
+                    )
+                }
+
+                // Upsert emojis
+                storeEmojis(
+                    it,
+                    data.id,
+                    emojisData
+                )
+
+                // Insert members
+                for (member in guildMembers) {
+                    it.hsetByteArray(
+                        m.loritta.redisKeys.discordGuildMembers(data.id),
+                        member.user.value!!.id.toString(),
+                        binaryCacheTransformers.members.encode(
+                            DeviousMemberData.from(member)
+                        )
+                    )
+                }
+
+                // Insert voice states
                 it.hsetByteArrayOrDelIfMapIsEmpty(
-                    m.loritta.redisKeys.discordChannels(),
-                    guildChannels.associate {
-                        it.id.toString() to binaryCacheTransformers.channels.encode(
-                            DeviousChannelData.from(
-                                data.id,
-                                it
+                    m.loritta.redisKeys.discordGuildVoiceStates(data.id),
+                    guildVoiceStates.associate {
+                        it.userId.toString() to binaryCacheTransformers.voiceStates.encode(
+                            PuddingGuildVoiceState(
+                                it.channelId!!, // Shouldn't be null because they are in a channel
+                                it.userId
                             )
                         )
                     }
                 )
             }
-
-            // Upsert emojis
-            storeEmojis(
-                it,
-                data.id,
-                emojisData
-            )
-
-            // Insert members
-            for (member in guildMembers) {
-                it.hsetByteArray(
-                    m.loritta.redisKeys.discordGuildMembers(data.id),
-                    member.user.value!!.id.toString(),
-                    binaryCacheTransformers.members.encode(
-                        DeviousMemberData.from(member)
-                    )
-                )
-            }
-
-            // Insert voice states
-            it.hsetByteArrayOrDelIfMapIsEmpty(
-                m.loritta.redisKeys.discordGuildVoiceStates(data.id),
-                guildVoiceStates.associate {
-                    it.userId.toString() to binaryCacheTransformers.voiceStates.encode(
-                        PuddingGuildVoiceState(
-                            it.channelId!!, // Shouldn't be null because they are in a channel
-                            it.userId
-                        )
-                    )
-                }
-            )
         }
 
         val cacheWrapper = Guild.CacheWrapper()
