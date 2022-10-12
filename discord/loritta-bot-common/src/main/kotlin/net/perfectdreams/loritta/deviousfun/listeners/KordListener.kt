@@ -291,10 +291,6 @@ class KordListener(
 
             // Create member instance, this will store the member in cache
             val member = cacheManager.createMember(user, guild, this.member)
-
-            val event = GuildMemberJoinEvent(m, gateway, guild, user, member)
-
-            m.forEachListeners(event, ListenerAdapter::onGuildMemberJoin)
         }
 
         gateway.on<GuildMemberRemove> {
