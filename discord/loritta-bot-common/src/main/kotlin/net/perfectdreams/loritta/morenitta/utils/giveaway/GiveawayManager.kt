@@ -167,7 +167,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         val guild = getGiveawayGuild(giveaway, shouldCancel) ?: return null
         val channel = getGiveawayTextChannel(giveaway, guild, shouldCancel) ?: return null
 
-        val message = channel.retrieveMessageById(giveaway.messageId) ?: run {
+        val message = try { channel.retrieveMessageById(giveaway.messageId) } catch (e: KtorRequestException) { null } ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
 
             if (shouldCancel)
@@ -219,7 +219,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                         return@launch
                     }
 
-                    val guild= getGiveawayGuild(giveaway,true) ?: run {
+                    val guild = getGiveawayGuild(giveaway,false) ?: run {
                         giveawayTasks.remove(giveaway.id.value)
                         return@launch
                     }
