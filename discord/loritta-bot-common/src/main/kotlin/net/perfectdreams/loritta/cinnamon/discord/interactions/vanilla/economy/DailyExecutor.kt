@@ -187,7 +187,7 @@ class DailyExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta)
             }
 
             styled(
-                context.i18nContext.get(DailyCommand.I18N_PREFIX.DailyWarning("${context.loritta.config.loritta.website.urlguidelines")),
+                context.i18nContext.get(DailyCommand.I18N_PREFIX.DailyWarning("${context.loritta.config.loritta.website}guidelines")),
                 Emotes.LoriBanHammer
             )
 
