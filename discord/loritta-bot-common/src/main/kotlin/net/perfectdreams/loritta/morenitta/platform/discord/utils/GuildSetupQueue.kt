@@ -76,9 +76,12 @@ class GuildSetupQueue(val loritta: LorittaBot) {
 
                 // Everything is good? Great! Let's prepare all guilds then!
                 val serverConfigs = loritta.newSuspendedTransaction {
-                    ServerConfig.find {
-                        ServerConfigs.id inList guildIds
-                    }.toList()
+                    // Workaround to avoid "PreparedStatement can have at most 65,535 parameters" issue
+                    guildIds.chunked(65_535).flatMap {
+                        ServerConfig.find {
+                            ServerConfigs.id inList it
+                        }.toList()
+                    }
                 }
 
                 logger.info { "Preparing ${guildIds.size} guilds with ${serverConfigs.size} server configs" }
