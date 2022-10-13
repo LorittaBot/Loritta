@@ -298,7 +298,7 @@ class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
                                     )
 
                                     styled(
-                                        i18nContext.get(I18nKeysData.Modules.InviteBlocker.HowToReEnableLater("<${m.config.loritta.website}guild/${author.id}/configure/permissions>")),
+                                        i18nContext.get(I18nKeysData.Modules.InviteBlocker.HowToReEnableLater("<${m.config.loritta.website.urlguild/${author.id}/configure/permissions>")),
                                         Emotes.LoriHi
                                     )
 

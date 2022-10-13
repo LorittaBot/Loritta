@@ -24,27 +24,27 @@ class HelpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) 
 
                 field(
                     "${Emotes.LoriPat} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.CommandList)}",
-                    "${context.loritta.config.loritta.website}commands"
+                    "${context.loritta.config.loritta.website.urlcommands"
                 )
                 field(
                     "${Emotes.LoriHm} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.SupportServer)}",
-                    "${context.loritta.config.loritta.website}support"
+                    "${context.loritta.config.loritta.website.urlsupport"
                 )
                 field(
                     "${Emotes.LoriYay} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.AddMe)}",
-                    "${context.loritta.config.loritta.website}dashboard"
+                    "${context.loritta.config.loritta.website.urldashboard"
                 )
                 field(
                     "${Emotes.LoriRich} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.Donate)}",
-                    "${context.loritta.config.loritta.website}donate"
+                    "${context.loritta.config.loritta.website.urldonate"
                 )
                 field(
                     "${Emotes.LoriReading} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.Blog)}",
-                    "${context.loritta.config.loritta.website}blog"
+                    "${context.loritta.config.loritta.website.urlblog"
                 )
                 field(
                     "${Emotes.LoriRage} ${context.i18nContext.get(HelpCommand.I18N_PREFIX.Guidelines)}",
-                    "${context.loritta.config.loritta.website}guidelines"
+                    "${context.loritta.config.loritta.website.urlguidelines"
                 )
 
                 thumbnailUrl = context.loritta.config.loritta.website.url + "assets/img/lori_help_short.png"
