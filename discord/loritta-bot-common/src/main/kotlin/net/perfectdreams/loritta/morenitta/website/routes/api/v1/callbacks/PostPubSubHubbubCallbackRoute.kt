@@ -144,10 +144,15 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 
 				// TODO - DeviousFun: We don't need this, later we can make that only the main instance relays stuff
 				// However, for now, because we aren't running the new version on cluster 1 yet, keep it as is
-				if (!DiscordUtils.isCurrentClusterHandlingGuildId(loritta, trackedAccount[TrackedYouTubeAccounts.guildId]))
+				if (!DiscordUtils.isCurrentClusterHandlingGuildId(
+						loritta,
+						trackedAccount[TrackedYouTubeAccounts.guildId]
+					)
+				)
 					continue
 
-				val guild = loritta.lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
+				val guild =
+					loritta.lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
 				val textChannel = guild.getTextChannelById(trackedAccount[TrackedYouTubeAccounts.channelId]) ?: continue
 
 				if (!textChannel.canTalk())
@@ -178,15 +183,17 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			}
 
 			// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
-			val textChannel = loritta.lorittaShards.getTextChannelById(Constants.RELAY_YOUTUBE_VIDEOS_CHANNEL)
+			if (DiscordUtils.isCurrentClusterHandlingGuildId(loritta, Constants.PORTUGUESE_SUPPORT_GUILD_ID.toLong())) {
+				val textChannel = loritta.lorittaShards.getTextChannelById(Constants.RELAY_YOUTUBE_VIDEOS_CHANNEL)
 
-			runCatching {
-				textChannel?.sendMessage(
-					"""${lastVideoTitle.escapeMentions()} — https://youtu.be/$videoId
+				runCatching {
+					textChannel?.sendMessage(
+						"""${lastVideoTitle.escapeMentions()} — https://youtu.be/$videoId
 						|**Enviado em...**
 						|${guildIds.joinToString("\n", transform = { "`$it`" })}
 					    |""".trimMargin()
-				)
+					)
+				}
 			}
 		}
 		call.respondJson(jsonObject())

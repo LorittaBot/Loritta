@@ -54,7 +54,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                     try {
                         val channel = loritta.lorittaShards.getTextChannelById(reminder.channelId.toString()) ?: continue // Channel doesn't exist!
 
-                        if (DiscordUtils.getLorittaClusterForGuildId(loritta, channel.guild.idLong).id != loritta.lorittaCluster.id) {
+                        if (!DiscordUtils.isCurrentClusterHandlingGuildId(loritta, channel.guild.idLong)) {
                             // Not in this cluster, so let's not process this...
                             continue
                         }

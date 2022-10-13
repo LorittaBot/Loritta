@@ -35,6 +35,9 @@ class MutedUsersTask(val loritta: LorittaBot) : Runnable {
 						continue
 					}
 
+					if (!DiscordUtils.isCurrentClusterHandlingGuildId(loritta, mute.guildId))
+						continue
+
 					val guild = loritta.lorittaShards.getGuildById(mute.guildId)
 
 					if (guild == null) {

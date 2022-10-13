@@ -25,7 +25,7 @@ class SpawnGiveawayTask(val loritta: LorittaBot) : Runnable {
                             return@forEach
                         }
 
-                        if (loritta.giveawayManager.giveawayTasks[it.id.value] == null && DiscordUtils.getLorittaClusterForGuildId(loritta, it.guildId).id == loritta.clusterId)
+                        if (loritta.giveawayManager.giveawayTasks[it.id.value] == null && DiscordUtils.isCurrentClusterHandlingGuildId(loritta, it.guildId))
                             loritta.giveawayManager.createGiveawayJob(it)
                     } catch (e: Exception) {
                         logger.error(e) { "Error while creating giveaway ${it.id.value} job" }
