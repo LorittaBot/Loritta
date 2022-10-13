@@ -204,22 +204,20 @@ class LorittaBot(
 	}
 
 	@OptIn(KordUnsafe::class)
-	val rest = RestClient(
-		MetricsKtorRequestHandler(
-			KtorRequestHandler(
-				config.loritta.discord.token,
-				// By default, Kord uses ExclusionRequestRateLimiter, and that suspends all coroutines if a request is ratelimited
-				// So we need to use the ParallelRequestRateLimiter
-				requestRateLimiter = ParallelRequestRateLimiter()
-			).withStackTraceRecovery()
-		)
+	private val ktorRequestHandler = MetricsKtorRequestHandler(
+		KtorRequestHandler(
+			config.loritta.discord.token,
+			// By default, Kord uses ExclusionRequestRateLimiter, and that suspends all coroutines if a request is ratelimited
+			// So we need to use the ParallelRequestRateLimiter
+			requestRateLimiter = ParallelRequestRateLimiter()
+		).withStackTraceRecovery()
 	)
+
+	val rest = RestClient(ktorRequestHandler)
 
 	@OptIn(KordExperimental::class)
 	val kord = Kord.restOnly(config.loritta.discord.token) {
-		requestHandler {
-			StackTraceRecoveringKtorRequestHandler(KtorRequestHandler(it.token))
-		}
+		requestHandler { ktorRequestHandler }
 	}
 
 	val zstdDictionaries = ZstdDictionaries()
