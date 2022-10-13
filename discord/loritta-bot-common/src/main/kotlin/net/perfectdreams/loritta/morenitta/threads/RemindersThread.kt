@@ -52,7 +52,12 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
             for (reminder in reminders) {
                 if (reminder.id.value !in remindersThatFailedToDelete) {
                     try {
-                        val channel = loritta.lorittaShards.getTextChannelById(reminder.channelId.toString())
+                        val channel = loritta.lorittaShards.getTextChannelById(reminder.channelId.toString()) ?: continue // Channel doesn't exist!
+
+                        if (DiscordUtils.getLorittaClusterForGuildId(loritta, channel.guild.idLong).id != loritta.lorittaCluster.id) {
+                            // Not in this cluster, so let's not process this...
+                            continue
+                        }
 
                         val reminderText =
                             "<a:lori_notification:394165039227207710> **|** <@${reminder.userId}> Reminder! `${
