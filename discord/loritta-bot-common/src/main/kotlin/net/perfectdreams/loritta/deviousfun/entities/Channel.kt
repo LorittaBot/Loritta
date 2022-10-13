@@ -14,6 +14,7 @@ import dev.kord.rest.service.patchTextChannel
 import dev.kord.rest.service.patchVoiceChannel
 import io.ktor.client.request.forms.*
 import io.ktor.utils.io.jvm.javaio.*
+import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
@@ -156,6 +157,9 @@ class Channel(
             DeviousMessageFragmentData.from(retrievedMessage)
         )
     }
+
+    // Used in Pebble templates
+    fun canTalkBlocking(): Boolean = runBlocking { canTalk() }
 
     suspend fun canTalk(): Boolean {
         if (type in ALWAYS_CAN_TALK_CHANNEL_TYPES)
