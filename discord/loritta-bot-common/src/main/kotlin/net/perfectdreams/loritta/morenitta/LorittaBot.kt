@@ -602,8 +602,6 @@ class LorittaBot(
 			raffleThread = RaffleThread(this)
 			raffleThread.start()
 		}
-
-		DebugLog.startCommandListenerThread(this)
 	}
 
 	fun initPostgreSql() {
