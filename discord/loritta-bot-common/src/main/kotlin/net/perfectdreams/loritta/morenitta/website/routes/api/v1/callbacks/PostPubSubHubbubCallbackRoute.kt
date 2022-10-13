@@ -3,9 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.callbacks
 import com.github.salomonbrys.kotson.jsonObject
 import com.google.common.cache.CacheBuilder
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.Constants
-import net.perfectdreams.loritta.morenitta.utils.MessageUtils
-import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.extensions.bytesToHex
 import net.perfectdreams.loritta.morenitta.website.LoriWebCode
 import net.perfectdreams.loritta.morenitta.website.WebsiteAPIException
@@ -21,7 +18,7 @@ import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.tables.SentYouTubeVideoIds
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
-import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
+import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
@@ -145,9 +142,12 @@ class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v
 			for (trackedAccount in trackedAccounts) {
 				guildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 
-				val guild =
-					loritta.lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
+				// TODO - DeviousFun: We don't need this, later we can make that only the main instance relays stuff
+				// However, for now, because we aren't running the new version on cluster 1 yet, keep it as is
+				if (!DiscordUtils.isCurrentClusterHandlingGuildId(loritta, trackedAccount[TrackedYouTubeAccounts.guildId]))
+					continue
 
+				val guild = loritta.lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
 				val textChannel = guild.getTextChannelById(trackedAccount[TrackedYouTubeAccounts.channelId]) ?: continue
 
 				if (!textChannel.canTalk())

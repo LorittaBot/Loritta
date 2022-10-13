@@ -16,6 +16,8 @@ object DiscordUtils {
 		return getLorittaClusterForShardId(loritta, shardId)
 	}
 
+	fun isCurrentClusterHandlingGuildId(loritta: LorittaBot, id: Long) = getLorittaClusterForGuildId(loritta, id).id == loritta.lorittaCluster.id
+
 	/**
 	 * Gets a Discord Shard ID from the provided Guild ID
 	 *
