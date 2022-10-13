@@ -86,11 +86,11 @@ object LorittaLauncher {
 		logger.info { "Started Pudding client!" }
 
 		val jedisPoolConfig = JedisPoolConfig()
-		jedisPoolConfig.maxTotal = 1_000
+		jedisPoolConfig.maxTotal = 250
 		// No reason to keep disconnecting and reconnecting from Jedis, let's keep a constant connection pool (like how HikariCP works)
 		jedisPoolConfig.minIdle = jedisPoolConfig.maxTotal
 		jedisPoolConfig.maxIdle = jedisPoolConfig.maxIdle
-		
+
 		val jedisPool = JedisPool(
 			jedisPoolConfig,
 			config.loritta.redis.address.substringBefore(":"),
