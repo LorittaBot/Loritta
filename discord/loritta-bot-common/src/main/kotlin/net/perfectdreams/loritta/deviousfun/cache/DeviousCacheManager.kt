@@ -243,7 +243,6 @@ class DeviousCacheManager(val m: DeviousFun) {
 
         // Let's only cache it if it isn't a webhook
         if (addToCache) {
-            println("Storing user ${user.id} on cache")
             m.loritta.redisConnection {
                 it.hsetByteArray(
                     m.loritta.redisKeys.discordUsers(),
@@ -374,7 +373,6 @@ class DeviousCacheManager(val m: DeviousFun) {
             )
         }?.let { binaryCacheTransformers.channels.decode(it) } ?: return null
 
-        println("getChannel $channelId, guildId is ${data.guildId}")
         val guildData = data.guildId?.let { getGuild(it) ?: return null }
 
         return Channel(m, guildData, data)
@@ -382,7 +380,6 @@ class DeviousCacheManager(val m: DeviousFun) {
 
     suspend fun createChannel(guild: Guild?, data: DiscordChannel): Channel {
         val guildId = guild?.idSnowflake
-        println("Creating channel $data on guild ${guildId}")
         val deviousChannelData = DeviousChannelData.from(guildId, data)
 
         m.loritta.redisTransaction {
