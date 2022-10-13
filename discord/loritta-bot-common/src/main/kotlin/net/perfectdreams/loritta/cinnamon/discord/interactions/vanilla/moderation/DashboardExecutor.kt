@@ -12,12 +12,12 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderatio
 
 class DashboardExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
-        val dashboardUrl = "${loritta.config.loritta.website}dashboard"
+        val dashboardUrl = "${loritta.config.loritta.website.url}dashboard"
         var url = dashboardUrl
 
         // TODO: Get permissions from the interactions itself when Kord implements support for it
         if (context is GuildApplicationCommandContext && context.member.getPermissions().contains(Permission.ManageGuild))
-            url = "${loritta.config.loritta.website}guild/${context.guildId}/configure/"
+            url = "${loritta.config.loritta.website.url}guild/${context.guildId}/configure/"
 
         context.sendEphemeralMessage {
             styled(

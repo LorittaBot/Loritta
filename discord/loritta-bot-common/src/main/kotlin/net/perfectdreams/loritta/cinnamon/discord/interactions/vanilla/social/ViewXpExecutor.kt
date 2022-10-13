@@ -109,7 +109,7 @@ class ViewXpExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
             }
 
             actionRow {
-                linkButton("${loritta.config.loritta.website}extras/faq-loritta/experience") {
+                linkButton("${loritta.config.loritta.website.url}extras/faq-loritta/experience") {
                     label = context.i18nContext.get(XpCommand.XP_VIEW_I18N_PREFIX.LearnAboutXpButton)
                     loriEmoji = Emotes.LoriReading
                 }
