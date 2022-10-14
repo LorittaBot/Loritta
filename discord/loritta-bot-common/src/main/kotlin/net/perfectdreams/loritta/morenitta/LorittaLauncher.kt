@@ -99,7 +99,7 @@ object LorittaLauncher {
 			// "Failed to connect to any host resolved for DNS name." .. "Suppressed: java.net.SocketTimeoutException: Connect timed out"
 			// The default timeout may also cause issues when trying to read too many data from Redis (read timeout)
 			// https://gist.github.com/JonCole/925630df72be1351b21440625ff2671f
-			15_000,
+			60_000,
 			null,
 			config.loritta.redis.password
 		)
