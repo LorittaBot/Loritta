@@ -1,15 +1,19 @@
 package net.perfectdreams.loritta.deviousfun.cache
 
+import com.github.benmanes.caffeine.cache.Cache
+import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.value
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildVoiceState
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArray
 import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArrayOrDelIfMapIsEmpty
+import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent
@@ -17,12 +21,24 @@ import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.cache.decode
 import net.perfectdreams.loritta.morenitta.cache.encode
 import redis.clients.jedis.Transaction
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Manages cache
  */
 class DeviousCacheManager(val m: DeviousFun) {
     private val binaryCacheTransformers = m.loritta.binaryCacheTransformers
+
+    // Serialized Hashes of Entities
+    // Useful to avoid acquiring a Redis connection when there wasn't any changes in the entity itself
+    private val cachedUserHashes = Caffeine.newBuilder()
+        .expireAfterAccess(15L, TimeUnit.MINUTES)
+        .build<Snowflake, Int>()
+    private val cachedMemberHashes = Caffeine.newBuilder()
+        .expireAfterAccess(15L, TimeUnit.MINUTES)
+        .build<Snowflake, Int>()
+
 
     suspend fun getGuild(id: Snowflake): Guild? {
         val cachedGuildData = m.loritta.redisConnection("get guild $id") {
@@ -243,12 +259,14 @@ class DeviousCacheManager(val m: DeviousFun) {
 
         // Let's only cache it if it isn't a webhook
         if (addToCache) {
-            m.loritta.redisConnection("create user ${user.id}") {
-                it.hsetByteArray(
-                    m.loritta.redisKeys.discordUsers(),
-                    user.id.toString(),
-                    binaryCacheTransformers.users.encode(deviousUserData)
-                )
+            doIfNotMatch(cachedUserHashes, user.id, user) {
+                m.loritta.redisConnection("create user ${user.id}") {
+                    it.hsetByteArray(
+                        m.loritta.redisKeys.discordUsers(),
+                        user.id.toString(),
+                        binaryCacheTransformers.users.encode(deviousUserData)
+                    )
+                }
             }
         }
 
@@ -287,12 +305,14 @@ class DeviousCacheManager(val m: DeviousFun) {
         // Let's compare the old member x new member data to trigger events
         val oldMember = getMember(user, guild)
 
-        m.loritta.redisConnection("create member ${user.id} in guild ${guild.id}") {
-            it.hsetByteArray(
-                m.loritta.redisKeys.discordGuildMembers(guild.idSnowflake),
-                user.id,
-                binaryCacheTransformers.members.encode(deviousMemberData)
-            )
+        doIfNotMatch(cachedMemberHashes, user.idSnowflake, deviousMemberData) {
+            m.loritta.redisConnection("create member ${user.id} in guild ${guild.id}") {
+                it.hsetByteArray(
+                    m.loritta.redisKeys.discordGuildMembers(guild.idSnowflake),
+                    user.id,
+                    binaryCacheTransformers.members.encode(deviousMemberData)
+                )
+            }
         }
 
         val newMember = Member(
@@ -417,6 +437,25 @@ class DeviousCacheManager(val m: DeviousFun) {
                     channelId.toString()
                 )
             }
+        }
+    }
+
+    /**
+     * Hashes [value]'s primitives with [Objects.hash] to create a hash that identifies the object.
+     */
+    private inline fun <reified T> hashEntity(value: T): Int {
+        // We use our own custom hash encoder because ProtoBuf can't encode the "Optional" fields, because it can't serialize null values
+        // on a field that isn't marked as null
+        val encoder = HashEncoder()
+        encoder.encodeSerializableValue(serializer(), value)
+        return Objects.hash(*encoder.list.toTypedArray())
+    }
+
+    private inline fun <reified T> doIfNotMatch(cache: Cache<Snowflake, Int>, id: Snowflake, data: T, actionIfNotMatch: () -> (Unit)) {
+        val hashedEntity = hashEntity(data)
+        if (cache.getIfPresent(id) != hashedEntity) {
+            actionIfNotMatch.invoke()
+            cache.put(id, hashedEntity)
         }
     }
 }

@@ -356,17 +356,6 @@ class DiscordCacheService(
         )
     }
 
-    /**
-     * Hashes [value]'s primitives with [Objects.hash] to create a hash that identifies the object.
-     */
-    inline fun <reified T> hashEntity(value: T): Int {
-        // We use our own custom hash encoder because ProtoBuf can't encode the "Optional" fields, because it can't serialize null values
-        // on a field that isn't marked as null
-        val encoder = HashEncoder()
-        encoder.encodeSerializableValue(serializer(), value)
-        return Objects.hash(*encoder.list.toTypedArray())
-    }
-
     // https://stackoverflow.com/a/58310635/7271796
     fun <T> Collection<T>.containsSameElements(other: Collection<T>): Boolean {
         // check collections aren't same
