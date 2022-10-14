@@ -29,6 +29,8 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.datetime.Clock
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -378,6 +380,11 @@ class LorittaBot(
 	val ecbManager = ECBManager()
 
 	private val debugWebServer = DebugWebServer()
+
+	// Used to avoid having a lot of threads being created on the "dispatcher" just to be blocked waiting for a connection, causing thread starvation and an OOM kill
+	private val semaphore = Semaphore(jedisPool.maxTotal)
+	private val cachedDispatcher = createThreadPool("Loritta Redis Executor Thread %d")
+		.asCoroutineDispatcher()
 
 	init {
 		FOLDER = config.loritta.folders.root
@@ -1454,9 +1461,12 @@ class LorittaBot(
 	suspend fun <T> redisConnection(action: (Jedis) -> (T)): T {
 		val redisException = LorittaJedisException()
 		try {
-			return withContext(Dispatchers.IO) {
-				jedisPool.resource.use {
-					action.invoke(it)
+			return semaphore.withPermit {
+				// The cached dispatcher will spawn a new thread for this coroutine
+				withContext(cachedDispatcher) {
+					jedisPool.resource.use {
+						action.invoke(it)
+					}
 				}
 			}
 		} catch (e: JedisException) {
