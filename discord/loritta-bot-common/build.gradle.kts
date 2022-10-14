@@ -62,7 +62,7 @@ dependencies {
     }
     implementation("dev.kord:kord-core") {
         version {
-            strictly(Versions.KORD)
+            strictly("0.8.x-lori-fork-20221014.000427-13")
         }
     }
     implementation("dev.kord:kord-voice:0.8.x-20220720.101712-210")
