@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.redis
 
 import redis.clients.jedis.Jedis
+import redis.clients.jedis.Pipeline
 import redis.clients.jedis.TransactionBase
 
 fun TransactionBase.hsetOrDelIfMapIsEmpty(key: String, map: Map<String, String>) {
@@ -39,3 +40,4 @@ fun TransactionBase.hsetByteArray(key: String, map: Map<String, ByteArray>) = hs
 
 fun Jedis.hgetByteArray(key: String, field: String) = hget(key.toByteArray(Charsets.UTF_8), field.toByteArray(Charsets.UTF_8))
 fun Jedis.hgetAllByteArray(key: String) = hgetAll(key.toByteArray(Charsets.UTF_8)).mapKeys { it.key.toString(Charsets.UTF_8) }
+fun Pipeline.hgetAllByteArray(key: String) = hgetAll(key.toByteArray(Charsets.UTF_8))

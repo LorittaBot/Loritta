@@ -91,6 +91,9 @@ class GuildSetupQueue(val loritta: LorittaBot) {
                 val allJobs = mutableListOf<Deferred<Unit>>()
 
                 for (serverConfig in serverConfigs) {
+                    if (!isActive)
+                        return@launch
+
                     val guild = pendingGuildsClone[serverConfig.id.value]
 
                     if (guild != null)
@@ -98,6 +101,9 @@ class GuildSetupQueue(val loritta: LorittaBot) {
                 }
 
                 allJobs.forEach {
+                    if (!isActive)
+                        return@launch
+
                     try {
                         it.await()
                     } catch (e: Exception) {
