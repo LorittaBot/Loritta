@@ -90,6 +90,9 @@ class Guild(
     suspend fun retrieveOwner() = deviousFun.retrieveMemberById(this, ownerIdSnowflake)
 
     suspend fun retrieveMembers(): List<Member> {
+        // TODO - DeviousFun, optimize this
+        return listOf()
+
         logger.info { "Retrieving members of guild ${guild.id}..." }
 
         // TODO - DeviousFun: Mutex
@@ -133,6 +136,9 @@ class Guild(
     }
 
     suspend fun getMembersWithRoles(vararg roles: Role): List<Member> {
+        // TODO - DeviousFun, optimize this
+        return listOf()
+
         val roleIds = roles.map { it.idSnowflake }
 
         logger.info { "Retrieving members of guild ${guild.id} that have the role ${roles}..." }
