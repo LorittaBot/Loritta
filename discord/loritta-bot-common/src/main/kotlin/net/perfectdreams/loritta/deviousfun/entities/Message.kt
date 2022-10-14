@@ -28,6 +28,7 @@ class Message(
 ) : IdentifiableSnowflake {
     companion object {
         private val DISCORD_EMOJI_REGEX = Regex("<(a)?:([A-z0-9_]+):([0-9]+)>")
+        private val DISCORD_ROLE_REGEX = Regex("<@&([0-9]+)>")
     }
 
     override val idSnowflake: Snowflake
@@ -75,7 +76,10 @@ class Message(
                 Member(deviousFun, DeviousMemberData.from(memberData), guild, User(deviousFun, it.id, DeviousUserData.from(it)))
             }
     val mentionedRoles: List<Role>
-        get() = TODO()
+        get() {
+            val matches = DISCORD_ROLE_REGEX.findAll(contentRaw).map { it.groupValues[1] }
+            return guildOrNull?.roles?.filter { it.id in matches } ?: emptyList()
+        }
     val reactions: List<MessageReaction>
         get() = message.reactions.map {
             MessageReaction(
