@@ -52,7 +52,7 @@ dependencies {
     }
     implementation("dev.kord:kord-rest") {
         version {
-            strictly("kord-rest-0.8.x-lori-fork-20221014.000427-13")
+            strictly("0.8.x-lori-fork-20221014.000427-13")
         }
     }
     implementation("dev.kord:kord-gateway") {
