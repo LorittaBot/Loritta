@@ -334,6 +334,8 @@ class Guild(
         return this.idSnowflake == other.idSnowflake
     }
 
+    override fun hashCode() = this.idSnowflake.hashCode()
+
     /**
      * A cache wrapper for entities that requires the [Guild] instance to be present in the constructor
      */

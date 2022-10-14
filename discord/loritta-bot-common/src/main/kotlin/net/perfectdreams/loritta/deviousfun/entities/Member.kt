@@ -57,4 +57,6 @@ class Member(val deviousFun: DeviousFun, val member: DeviousMemberData, val guil
 
         return this.guild.idSnowflake == other.guild.idSnowflake && this.idSnowflake == other.idSnowflake
     }
+
+    override fun hashCode() = this.idSnowflake.hashCode()
 }

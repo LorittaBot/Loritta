@@ -37,4 +37,6 @@ class Role(val deviousFun: DeviousFun, val guild: Guild, val role: DeviousRoleDa
 
         return this.guild.idSnowflake == other.guild.idSnowflake && this.idSnowflake == other.idSnowflake
     }
+
+    override fun hashCode() = this.idSnowflake.hashCode()
 }

@@ -69,4 +69,6 @@ class User(val deviousFun: DeviousFun, override val idSnowflake: Snowflake, val 
 
         return this.idSnowflake == other.idSnowflake
     }
+
+    override fun hashCode() = this.idSnowflake.hashCode()
 }

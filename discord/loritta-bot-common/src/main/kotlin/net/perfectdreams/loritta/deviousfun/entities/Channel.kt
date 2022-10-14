@@ -231,6 +231,8 @@ class Channel(
         return this.idSnowflake == other.idSnowflake
     }
 
+    override fun hashCode() = this.idSnowflake.hashCode()
+
     class MessageHistory(val channel: Channel) {
         var position = Position.Before(Snowflake.max)
 
