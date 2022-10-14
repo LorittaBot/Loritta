@@ -253,7 +253,7 @@ class Channel(
                     messages.map {
                         val guild = channel.guildOrNull
                         val authorId = it.author.id
-                        val member = guild?.retrieveMemberById(authorId.toLong())
+                        val member = guild?.retrieveMemberOrNullById(authorId.toLong())
 
                         Message(
                             channel.deviousFun,
