@@ -66,7 +66,7 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 		logger.info { "Tickets: ${userIds.size}" }
 
 		runBlocking {
-			loritta.redisConnection {
+			loritta.redisConnection("updating raffle") {
 				it.set(loritta.redisKeys.lorittaRaffle("legacy"), json.toString())
 			}
 		}

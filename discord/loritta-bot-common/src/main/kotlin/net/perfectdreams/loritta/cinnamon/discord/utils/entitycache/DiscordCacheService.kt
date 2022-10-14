@@ -38,7 +38,7 @@ class DiscordCacheService(
     private val pudding = loritta.pudding
 
     suspend fun getDiscordEntitiesOfGuild(guildId: Snowflake): GuildEntities {
-        return loritta.redisConnection {
+        return loritta.redisConnection("get discord entities of guild $guildId") {
             val roles = it.hgetAllByteArray(loritta.redisKeys.discordGuildRoles(guildId))
                 .values
                 .map {
@@ -75,7 +75,7 @@ class DiscordCacheService(
      * Gets role informations of the following [roleIds] in [guildId]
      */
     suspend fun getRoles(guildId: Snowflake, roleIds: Collection<Snowflake>): List<DeviousRoleData> {
-        return loritta.redisConnection {
+        return loritta.redisConnection("get roles of guild $guildId") {
             it.hgetAllByteArray(loritta.redisKeys.discordGuildRoles(guildId))
                 .filterKeys { Snowflake(it.toLong()) in roleIds }
                 .map {
@@ -154,7 +154,7 @@ class DiscordCacheService(
         // Create an empty permissions object
         var permissions = Permissions()
 
-        return loritta.redisConnection {
+        return loritta.redisConnection("get user $userId permissions in guild $guildId") {
             val discordGuildMember = it
                 .hgetByteArray(loritta.redisKeys.discordGuildMembers(guildId), userId.toString())
                 ?: return@redisConnection GuildPermissionsResult( // They aren't in the server, no need to continue then
@@ -206,7 +206,7 @@ class DiscordCacheService(
         // Create an empty permissions object
         var permissions = Permissions()
 
-        return loritta.redisConnection {
+        return loritta.redisConnection("get user $userId permissions in $channelId in $guildId") {
             val discordGuildMember = it
                 .hgetByteArray(loritta.redisKeys.discordGuildMembers(guildId), userId.toString())
                 ?: return@redisConnection GuildChannelPermissionsResult( // They aren't in the server, no need to continue then
@@ -304,7 +304,7 @@ class DiscordCacheService(
      * @return the voice channel ID, if they are connected to a voice channel
      */
     suspend fun getUserConnectedVoiceChannel(guildId: Snowflake, userId: Snowflake): Snowflake? {
-        return loritta.redisConnection {
+        return loritta.redisConnection("get voice channel of $userId in $guildId") {
             it.hgetByteArray(loritta.redisKeys.discordGuildVoiceStates(guildId), userId.toString())
                 ?.let { loritta.binaryCacheTransformers.voiceStates.decode(it) }
                 ?.channelId

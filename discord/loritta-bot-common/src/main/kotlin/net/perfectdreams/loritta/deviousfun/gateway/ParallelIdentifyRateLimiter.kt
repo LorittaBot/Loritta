@@ -29,7 +29,7 @@ class ParallelIdentifyRateLimiter(
         val randomKey = random.nextBytes(20).toString(Charsets.UTF_8)
         this.currentRandomKey = randomKey
 
-        val success = loritta.redisConnection {
+        val success = loritta.redisConnection("locking concurrent login of bucket $bucketId") {
             it.set(
                 loritta.redisKeys.discordGatewayConcurrentLogin(bucketId),
                 randomKey,

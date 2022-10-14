@@ -182,7 +182,7 @@ class DeviousFun(val loritta: LorittaBot) {
     /**
      * Gets how many guilds are cached
      */
-    suspend fun getGuildCount() = loritta.redisConnection {
+    suspend fun getGuildCount() = loritta.redisConnection("get guild count") {
         it.hlen(loritta.redisKeys.discordGuilds())
     }
 

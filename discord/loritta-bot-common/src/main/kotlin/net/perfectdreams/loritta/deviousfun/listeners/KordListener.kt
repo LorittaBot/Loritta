@@ -51,7 +51,7 @@ class KordListener(
 
             val currentRandomKey = gateway.identifyRateLimiter.currentRandomKey
 
-            m.loritta.redisTransaction {
+            m.loritta.redisTransaction("updating session data of shard $shardId") {
                 it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sessionId", this.data.sessionId)
                 it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "resumeGatewayUrl", this.data.resumeGatewayUrl)
                 it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sequence", (this.sequence ?: 0).toString())
@@ -64,7 +64,7 @@ class KordListener(
             var lockStatus: Long? = null
 
             logger.info { "Trying to release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)..." }
-            m.loritta.redisConnection {
+            m.loritta.redisConnection("unlocking bucket ${gateway.identifyRateLimiter.bucketId}") {
                 if (currentRandomKey != null) {
                     lockResponse = it.eval(
                         LorittaBot::class.getPathFromResources("/redis_delete_lock.lua")!!.readText(),
@@ -94,7 +94,7 @@ class KordListener(
         }
 
         gateway.on<DispatchEvent> {
-            m.loritta.redisConnection {
+            m.loritta.redisConnection("updating dispatch event of shard $shardId") {
                 it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sequence", (this.sequence ?: 0).toString())
             }
         }
@@ -107,7 +107,7 @@ class KordListener(
 
             alreadyTriggeredGuildReadyOnStartup = true
 
-            val guildIdsOnThisShard = m.loritta.redisConnection {
+            val guildIdsOnThisShard = m.loritta.redisConnection("getting guild IDs in shard $shardId") {
                 // Get all guilds related to this cluster...
                 it.hkeys(m.loritta.redisKeys.discordGuilds())
                     .filter {
@@ -130,7 +130,7 @@ class KordListener(
         gateway.on<GuildCreate> {
             val (guild, duration) = measureTimedValue {
                 // Is the guild cached?
-                val isGuildCached = m.loritta.redisConnection {
+                val isGuildCached = m.loritta.redisConnection("checking if guild ${this.guild.id} is cached") {
                     it.hexists(m.loritta.redisKeys.discordGuilds(), this.guild.id.toString())
                 }
 
@@ -311,7 +311,7 @@ class KordListener(
             val updatedEmojisData = this.emoji
             val emojis = cacheManager.convertStuff(updatedEmojisData.emojis)
 
-            m.loritta.redisTransaction {
+            m.loritta.redisTransaction("updating emojis of guild ${updatedEmojisData.guildId}") {
                 cacheManager.storeEmojis(
                     it,
                     updatedEmojisData.guildId,
@@ -373,7 +373,7 @@ class KordListener(
             val channelId = this.voiceState.channelId
             val userId = this.voiceState.userId
 
-            val currentVoiceState = m.loritta.redisConnection {
+            val currentVoiceState = m.loritta.redisConnection("getting current voice state of user ${voiceState.userId}") {
                 it.hgetByteArray(m.loritta.redisKeys.discordGuildVoiceStates(guildId), voiceState.userId.toString())
             }?.let { m.loritta.binaryCacheTransformers.voiceStates.decode(it) }
 
@@ -393,7 +393,7 @@ class KordListener(
 
             val voiceState = this.voiceState
 
-            m.loritta.redisConnection {
+            m.loritta.redisConnection("updating voice state of ${voiceState.userId}") {
                 // Channel is null, so let's delete voice states in the guild related to the user
                 if (channelId == null) {
                     it.hdel(m.loritta.redisKeys.discordGuildVoiceStates(guildId), voiceState.userId.toString())

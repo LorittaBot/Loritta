@@ -25,7 +25,7 @@ class DeviousCacheManager(val m: DeviousFun) {
     private val binaryCacheTransformers = m.loritta.binaryCacheTransformers
 
     suspend fun getGuild(id: Snowflake): Guild? {
-        val cachedGuildData = m.loritta.redisConnection {
+        val cachedGuildData = m.loritta.redisConnection("get guild $id") {
             it.hget(m.loritta.redisKeys.discordGuilds(), id.toString())
         } ?: return null
 
@@ -86,7 +86,7 @@ class DeviousCacheManager(val m: DeviousFun) {
         val guildVoiceStates = data.voiceStates.value ?: emptyList()
 
         val channelsOfThisGuild = if (guildChannels != null) {
-            m.loritta.redisConnection {
+            m.loritta.redisConnection("get channel IDs of guild ${data.id}") {
                 it.smembers(m.loritta.redisKeys.discordGuildChannels(data.id))
             }.ifEmpty { null }
         } else null
@@ -96,7 +96,7 @@ class DeviousCacheManager(val m: DeviousFun) {
         val emojisData = convertStuff(data.emojis)
 
         m.guildCreateSemaphore.withPermit {
-            m.loritta.redisTransaction {
+            m.loritta.redisTransaction("create guild ${data.id}") {
                 it.hset(m.loritta.redisKeys.discordGuilds(), data.id.toString(), Json.encodeToString(deviousGuildData))
 
                 // Upsert roles
@@ -194,11 +194,11 @@ class DeviousCacheManager(val m: DeviousFun) {
     }
 
     suspend fun deleteGuild(guildId: Snowflake) {
-        val channelsOfThisGuild = m.loritta.redisConnection {
+        val channelsOfThisGuild = m.loritta.redisConnection("get channel IDs of guild $guildId for deletion") {
             it.smembers(m.loritta.redisKeys.discordGuildChannels(guildId))
         }
 
-        m.loritta.redisTransaction {
+        m.loritta.redisTransaction("delete guild $guildId") {
             it.hdel(m.loritta.redisKeys.discordGuilds(), guildId.toString())
             it.del(m.loritta.redisKeys.discordGuildMembers(guildId))
             it.del(m.loritta.redisKeys.discordGuildRoles(guildId))
@@ -224,7 +224,7 @@ class DeviousCacheManager(val m: DeviousFun) {
     }
 
     suspend fun getUser(id: Snowflake): User? {
-        val data = m.loritta.redisConnection {
+        val data = m.loritta.redisConnection("get user $id") {
             it.hgetByteArray(
                 m.loritta.redisKeys.discordUsers(),
                 id.toString()
@@ -243,7 +243,7 @@ class DeviousCacheManager(val m: DeviousFun) {
 
         // Let's only cache it if it isn't a webhook
         if (addToCache) {
-            m.loritta.redisConnection {
+            m.loritta.redisConnection("create user ${user.id}") {
                 it.hsetByteArray(
                     m.loritta.redisKeys.discordUsers(),
                     user.id.toString(),
@@ -256,7 +256,7 @@ class DeviousCacheManager(val m: DeviousFun) {
     }
 
     suspend fun getMember(user: User, guild: Guild): Member? {
-        val data = m.loritta.redisConnection {
+        val data = m.loritta.redisConnection("get member ${user.id} in guild ${guild.id}") {
             it.hgetByteArray(
                 m.loritta.redisKeys.discordGuildMembers(guild.idSnowflake),
                 user.id
@@ -287,7 +287,7 @@ class DeviousCacheManager(val m: DeviousFun) {
         // Let's compare the old member x new member data to trigger events
         val oldMember = getMember(user, guild)
 
-        m.loritta.redisConnection {
+        m.loritta.redisConnection("create member ${user.id} in guild ${guild.id}") {
             it.hsetByteArray(
                 m.loritta.redisKeys.discordGuildMembers(guild.idSnowflake),
                 user.id,
@@ -328,7 +328,7 @@ class DeviousCacheManager(val m: DeviousFun) {
     }
 
     suspend fun deleteMember(guild: Guild, userId: Snowflake) {
-        m.loritta.redisConnection {
+        m.loritta.redisConnection("delete member $userId in guild ${guild.id}") {
             // It seems that deleting a role does trigger a member update related to the role removal, so we won't need to manually remove it (yay)
             it.hdel(
                 m.loritta.redisKeys.discordGuildMembers(guild.idSnowflake),
@@ -340,7 +340,7 @@ class DeviousCacheManager(val m: DeviousFun) {
     suspend fun createRole(guild: Guild, role: DiscordRole): Role {
         val data = DeviousRoleData.from(role)
 
-        m.loritta.redisConnection {
+        m.loritta.redisConnection("create role ${role.id} in guild ${guild.id}") {
             it.hsetByteArray(
                 m.loritta.redisKeys.discordGuildRoles(guild.idSnowflake),
                 data.id.toString(),
@@ -356,7 +356,7 @@ class DeviousCacheManager(val m: DeviousFun) {
     }
 
     suspend fun deleteRole(guild: Guild, roleId: Snowflake) {
-        m.loritta.redisConnection {
+        m.loritta.redisConnection("delete role ${roleId} in guild ${guild.id}") {
             // It seems that deleting a role does trigger a member update related to the role removal, so we won't need to manually remove it (yay)
             it.hdel(
                 m.loritta.redisKeys.discordGuildRoles(guild.idSnowflake),
@@ -366,7 +366,7 @@ class DeviousCacheManager(val m: DeviousFun) {
     }
 
     suspend fun getChannel(channelId: Snowflake): Channel? {
-        val data = m.loritta.redisConnection {
+        val data = m.loritta.redisConnection("get channel $channelId") {
             it.hgetByteArray(
                 m.loritta.redisKeys.discordChannels(),
                 channelId.toString()
@@ -382,7 +382,7 @@ class DeviousCacheManager(val m: DeviousFun) {
         val guildId = guild?.idSnowflake
         val deviousChannelData = DeviousChannelData.from(guildId, data)
 
-        m.loritta.redisTransaction {
+        m.loritta.redisTransaction("create channel ${data.id} (${data.type}) in guild ${guild?.idSnowflake}") {
             it.hsetByteArray(
                 m.loritta.redisKeys.discordChannels(),
                 deviousChannelData.id.toString(),
@@ -404,7 +404,7 @@ class DeviousCacheManager(val m: DeviousFun) {
     suspend fun deleteChannel(guild: Guild?, channelId: Snowflake) {
         val guildId = guild?.idSnowflake
 
-        m.loritta.redisTransaction {
+        m.loritta.redisTransaction("delete channel $channelId in guild ${guild?.idSnowflake}") {
             it.hdel(
                 m.loritta.redisKeys.discordChannels(),
                 channelId.toString()

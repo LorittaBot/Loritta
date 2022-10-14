@@ -578,7 +578,7 @@ class LorittaBot(
 		if (this.isMainInstance) {
 			logger.info { "Loading raffle..." }
 			val raffleData = runBlocking {
-				redisConnection {
+				redisConnection("loading raffle") {
 					it.get(redisKeys.lorittaRaffle("legacy"))
 				}
 			}
@@ -1458,16 +1458,22 @@ class LorittaBot(
 		return net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage(bytes.inputStream())
 	}
 
-	suspend fun <T> redisConnection(action: (Jedis) -> (T)): T {
+	@OptIn(ExperimentalTime::class)
+	suspend fun <T> redisConnection(reason: String, action: (Jedis) -> (T)): T {
 		val redisException = LorittaJedisException()
 		try {
 			return semaphore.withPermit {
-				// The cached dispatcher will spawn a new thread for this coroutine
-				withContext(cachedDispatcher) {
-					jedisPool.resource.use {
-						action.invoke(it)
+				val (value, duration) = measureTimedValue {
+					// The cached dispatcher will spawn a new thread for this coroutine
+					withContext(cachedDispatcher) {
+						jedisPool.resource.use {
+							action.invoke(it)
+						}
 					}
 				}
+				if (duration >= 15.seconds)
+					logger.warn { "Redis - $reason took too long! $duration" }
+				return@withPermit value
 			}
 		} catch (e: JedisException) {
 			// Stacktrace recovery, because the stacktrace *vanishes* after calling withContext
@@ -1476,7 +1482,7 @@ class LorittaBot(
 		}
 	}
 
-	suspend fun <T> redisTransaction(action: (redis.clients.jedis.Transaction) -> (T)) = redisConnection {
+	suspend fun <T> redisTransaction(reason: String, action: (redis.clients.jedis.Transaction) -> (T)) = redisConnection(reason) {
 		val t = it.multi()
 		try {
 			action.invoke(t)

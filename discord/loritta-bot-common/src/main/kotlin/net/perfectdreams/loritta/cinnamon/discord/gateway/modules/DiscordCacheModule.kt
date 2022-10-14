@@ -92,7 +92,7 @@ class DiscordCacheModule(private val m: LorittaBot) : ProcessDiscordEventsModule
                         guildCreateSemaphore.withPermit {
                             // We are going to do this within a transaction because this needs to be an "atomic" change
                             // Also because Jedis transactions are pipelined, which improves performance (yay)
-                            m.redisTransaction {
+                            m.redisTransaction("creating guild $guildId") {
                                 m.cache.createOrUpdateGuild(
                                     it,
                                     guildId,
@@ -123,7 +123,7 @@ class DiscordCacheModule(private val m: LorittaBot) : ProcessDiscordEventsModule
                     val guildEmojis = event.guild.emojis
 
                     withMutex(guildId) {
-                        m.redisTransaction {
+                        m.redisTransaction("updating guild $guildId") {
                             m.cache.createOrUpdateGuild(
                                 it,
                                 guildId,

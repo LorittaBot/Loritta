@@ -158,7 +158,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
 			null // Null = All emojis are allowed
 		else {
 			// If the user does not have the custom emojis in about me feature, let's allow them to use specific guild's emojis
-			loritta.redisConnection {
+			loritta.redisConnection("getting emojis of free emojis in profile") {
 				FREE_EMOJIS_GUILDS.flatMap { snowflake ->
 					it.hgetAll(loritta.redisKeys.discordGuildEmojis(snowflake))
 						.keys

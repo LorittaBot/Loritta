@@ -90,12 +90,16 @@ class Guild(
     suspend fun retrieveOwner() = deviousFun.retrieveMemberById(this, ownerIdSnowflake)
 
     suspend fun retrieveMembers(): List<Member> {
+        logger.info { "Retrieving members of guild ${guild.id}..." }
+
         // TODO - DeviousFun: Mutex
-        val membersAsString = deviousFun.loritta.redisConnection {
+        val membersAsString = deviousFun.loritta.redisConnection("retrieving members of guild ${guild.id}") {
             it.hgetAll(deviousFun.loritta.redisKeys.discordGuildMembers(idSnowflake).toByteArray(Charsets.UTF_8))
         }.entries // This is required to have a stable key -> value map, if else, things can be shuffled when for eaching over them later on, which won't work!
 
-        val usersAsString = deviousFun.loritta.redisConnection {
+        logger.info { "Retrieving ${membersAsString.size} users of guild ${guild.id}..." }
+
+        val usersAsString = deviousFun.loritta.redisConnection("retrieving ${membersAsString.size} users of guild ${guild.id}") {
             it.hmget(deviousFun.loritta.redisKeys.discordUsers().toByteArray(Charsets.UTF_8), *membersAsString.map { it.key }.toTypedArray())
         }
 
@@ -131,16 +135,20 @@ class Guild(
     suspend fun getMembersWithRoles(vararg roles: Role): List<Member> {
         val roleIds = roles.map { it.idSnowflake }
 
+        logger.info { "Retrieving members of guild ${guild.id} that have the role ${roles}..." }
+
         // TODO - DeviousFun: Mutex
         // Compared to retrieveMembers, this has a smol optimization, where it checks if the role exists before querying users
-        val membersAsString = deviousFun.loritta.redisConnection {
+        val membersAsString = deviousFun.loritta.redisConnection("retrieving members of guild ${guild.id} with roles ${roles.map { it.idSnowflake }}") {
             it.hgetAll(deviousFun.loritta.redisKeys.discordGuildMembers(idSnowflake).toByteArray(Charsets.UTF_8))
         }
             .mapValues { deviousFun.loritta.binaryCacheTransformers.members.decode(it.value) }
             .filter { roleIds.all { id -> id in it.value.roles } }
             .entries // This is required to have a stable key -> value map, if else, things can be shuffled when for eaching over them later on, which won't work!
 
-        val usersAsString = deviousFun.loritta.redisConnection {
+        logger.info { "Retrieving ${membersAsString.size} users of guild ${guild.id} that have the role ${roles}..." }
+
+        val usersAsString = deviousFun.loritta.redisConnection("retrieving ${membersAsString.size} users of guild ${guild.id} with roles ${roles.map { it.idSnowflake }}") {
             it.hmget(deviousFun.loritta.redisKeys.discordUsers().toByteArray(Charsets.UTF_8), *membersAsString.map { it.key }.toTypedArray())
         }
 

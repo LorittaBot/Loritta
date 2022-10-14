@@ -39,7 +39,7 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 
 			if (!fileLoaded) {
 				val youTubeWebhooksData = runBlocking {
-					loritta.redisConnection {
+					loritta.redisConnection("getting youtube webhooks") {
 						it.get(loritta.redisKeys.youTubeWebhooks())
 					}
 				}
@@ -123,7 +123,7 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 					if (index % 50 == 0 && index != 0) { // Do not write the file if index == 0, because it would be a *very* unnecessary write
 						logger.info { "Saving YouTube Webhook File... $index channels were processed" }
 						runBlocking {
-							loritta.redisConnection {
+							loritta.redisConnection("saving youtube webhooks") {
 								it.set(loritta.redisKeys.youTubeWebhooks(), gson.toJson(youtubeWebhooks))
 							}
 						}
@@ -134,7 +134,7 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 
 				if (createdWebhooksCount != 0) {
 					runBlocking {
-						loritta.redisConnection {
+						loritta.redisConnection("saving youtube webhooks") {
 							it.set(loritta.redisKeys.youTubeWebhooks(), gson.toJson(youtubeWebhooks))
 						}
 					}

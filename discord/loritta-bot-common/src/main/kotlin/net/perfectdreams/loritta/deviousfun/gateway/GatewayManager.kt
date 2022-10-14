@@ -60,7 +60,7 @@ class GatewayManager(
                 lateinit var resumeGatewayUrlResponse: Response<String>
                 lateinit var sequenceResponse: Response<String>
 
-                deviousFun.loritta.redisTransaction {
+                deviousFun.loritta.redisTransaction("get session data of shard $shardId") {
                     sessionIdResponse = it.hget(deviousFun.loritta.redisKeys.discordGatewaySessions(shardId), "sessionId")
                     resumeGatewayUrlResponse = it.hget(deviousFun.loritta.redisKeys.discordGatewaySessions(shardId), "resumeGatewayUrl")
                     sequenceResponse = it.hget(deviousFun.loritta.redisKeys.discordGatewaySessions(shardId), "sequence")
