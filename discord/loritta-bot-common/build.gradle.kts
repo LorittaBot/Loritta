@@ -47,17 +47,17 @@ dependencies {
     // We want to use Kord on our project too!
     implementation("dev.kord:kord-common") {
         version {
-            strictly(Versions.KORD)
+            strictly("0.8.x-lori-fork-20221014.000427-14")
         }
     }
     implementation("dev.kord:kord-rest") {
         version {
-            strictly(Versions.KORD)
+            strictly("kord-rest-0.8.x-lori-fork-20221014.000427-13")
         }
     }
     implementation("dev.kord:kord-gateway") {
         version {
-            strictly(Versions.KORD)
+            strictly("0.8.x-lori-fork-20221014.000427-14")
         }
     }
     implementation("dev.kord:kord-core") {
