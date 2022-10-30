@@ -464,7 +464,7 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
                 val nullChannelsData = dirtyChannelsData.filterValues { it == null }
                 val nonNullChannelsData = dirtyChannelsData.filterValues { it != null }
 
-                Channels.deleteWhere { Users.id inList nullChannelsData.map { it.key.value.toLong() } }
+                Channels.deleteWhere { Channels.id inList nullChannelsData.map { it.key.value.toLong() } }
 
                 if (nonNullChannelsData.isNotEmpty())
                     Channels.batchUpsert(nonNullChannelsData.map { it.key to it.value }, Channels.id) { it, data ->
