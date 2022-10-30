@@ -2,10 +2,10 @@ package net.perfectdreams.loritta.deviouscache.server
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.Snowflake
-import io.ktor.network.tls.certificates.*
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
 import io.ktor.server.routing.*
+import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -178,7 +178,9 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
             file = keyStoreFile,
             keyAlias = "sampleAlias",
             keyPassword = keyStorePassword,
-            jksPassword = keyStorePassword
+            jksPassword = keyStorePassword,
+            domains = config.certificateDomains,
+            daysValid = 9999
         )
 
         scheduleCoroutineAtFixedRate(
@@ -233,7 +235,7 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
                     keyStorePassword = { keyStorePassword.toCharArray() },
                     privateKeyPassword = { keyStorePassword.toCharArray() }
                 ) {
-                    host = this@DeviousCache.config.host
+                    host = "0.0.0.0"
                     port = 8080
                 }
 

@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class BaseConfig(
-    val host: String,
-    val persistenceDelay: Long
+    val persistenceDelay: Long,
+    val certificateDomains: List<String>
 )
