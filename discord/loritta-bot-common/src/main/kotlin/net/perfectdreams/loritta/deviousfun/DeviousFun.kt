@@ -60,7 +60,7 @@ class DeviousFun(val loritta: LorittaBot) {
      *
      * This avoids issues where all events stop being processed due to a "explosion" of GuildCreates after a shard restart!
      */
-    val guildCreateSemaphore = Semaphore((rpc.http.engineConfig.threadsCount - 5).coerceAtLeast(1))
+    val guildCreateSemaphore = Semaphore((rpc.maxThreads - 5).coerceAtLeast(1))
 
     fun registerListeners(vararg listeners: ListenerAdapter) {
         this.listeners.addAll(listeners)
