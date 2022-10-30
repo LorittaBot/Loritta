@@ -177,7 +177,9 @@ class DeviousCacheManager(val m: DeviousFun) {
         val deviousUserData = DeviousUserData.from(user)
 
         if (addToCache) {
-            m.rpc.execute(PutUserRequest(user.id, deviousUserData))
+            doIfNotMatch(cachedUserHashes, user.id, user) {
+                m.rpc.execute(PutUserRequest(user.id, deviousUserData))
+            }
         }
 
         return User(m, user.id, deviousUserData)
