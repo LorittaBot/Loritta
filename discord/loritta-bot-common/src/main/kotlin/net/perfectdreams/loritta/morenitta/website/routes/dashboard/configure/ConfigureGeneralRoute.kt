@@ -13,11 +13,18 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class ConfigureGeneralRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		val variables = call.legacyVariables(loritta, locale)
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        val variables = call.legacyVariables(loritta, locale)
 
-		variables["saveType"] = "default"
+        variables["saveType"] = "default"
 
-		call.respondHtml(evaluate("configure_server.html", variables))
-	}
+        call.respondHtml(evaluate("configure_server.html", variables))
+    }
 }

@@ -2,11 +2,10 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.Image
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.*
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
-import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.Rectangle
 import java.awt.geom.Path2D
@@ -46,7 +45,14 @@ object RankingGenerator {
 
         graphics.font = oswaldRegular16
 
-        ImageUtils.drawCenteredString(loritta, graphics, title, Rectangle(0, 0, 268, 37), oswaldRegular16, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+        ImageUtils.drawCenteredString(
+            loritta,
+            graphics,
+            title,
+            Rectangle(0, 0, 268, 37),
+            oswaldRegular16,
+            ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
+        )
 
         var idx = 0
         var currentY = 37
@@ -61,8 +67,10 @@ object RankingGenerator {
             if (member != null) {
                 val puddingUserProfile = loritta.pudding.users.getOrCreateUserProfile(member.id)
                 val rankBackground = loritta.getUserProfileBackground(puddingUserProfile)
-                graphics.drawImage(rankBackground.getResizedInstance(400, 300, InterpolationType.BILINEAR)
-                    .getSubimage(0, idx * 52, 400, 53), 0, currentY, null)
+                graphics.drawImage(
+                    rankBackground.getResizedInstance(400, 300, InterpolationType.BILINEAR)
+                        .getSubimage(0, idx * 52, 400, 53), 0, currentY, null
+                )
 
                 graphics.color = Color(0, 0, 0, 127)
                 graphics.fillRect(0, currentY, 400, 53)
@@ -71,20 +79,42 @@ object RankingGenerator {
 
                 graphics.font = oswaldRegular20
 
-                ImageUtils.drawString(loritta, graphics, "#${currentPosition + idx + 1} ${member.name}", 143, currentY + 21, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+                ImageUtils.drawString(
+                    loritta,
+                    graphics,
+                    "#${currentPosition + idx + 1} ${member.name}",
+                    143,
+                    currentY + 21,
+                    ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
+                )
 
                 graphics.font = oswaldRegular16
 
                 if (profile.subtitle != null)
-                    ImageUtils.drawString(loritta, graphics, profile.subtitle, 144, currentY + 38, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+                    ImageUtils.drawString(
+                        loritta,
+                        graphics,
+                        profile.subtitle,
+                        144,
+                        currentY + 38,
+                        ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES
+                    )
 
                 graphics.font = oswaldRegular10
 
                 // Show the user's ID in the subsubtitle
-                ImageUtils.drawString(loritta, graphics, (profile.subsubtitle?.let { "$it // " } ?: "") + "ID: ${profile.userId}", 145, currentY + 48, ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
+                ImageUtils.drawString(
+                    loritta,
+                    graphics,
+                    (profile.subsubtitle?.let { "$it // " } ?: "") + "ID: ${profile.userId}",
+                    145,
+                    currentY + 48,
+                    ImageUtils.ALLOWED_UNICODE_DRAWABLE_TYPES)
 
-                val userAvatar = DiscordUserAvatar(loritta.kord, Snowflake(member.id.value), member.discriminator, member.avatarId)
-                val avatar = (ImageUtils.downloadImage(userAvatar.cdnUrl.toUrl { format = Image.Format.PNG }) ?: ImageUtils.DEFAULT_DISCORD_AVATAR).getResizedInstance(143, 143, InterpolationType.BILINEAR)
+                val userAvatar =
+                    DiscordUserAvatar(loritta.kord, Snowflake(member.id.value), member.discriminator, member.avatarId)
+                val avatar = (ImageUtils.downloadImage(userAvatar.cdnUrl.toUrl { format = Image.Format.PNG })
+                    ?: ImageUtils.DEFAULT_DISCORD_AVATAR).getResizedInstance(143, 143, InterpolationType.BILINEAR)
 
                 var editedAvatar = BufferedImage(143, 143, BufferedImage.TYPE_INT_ARGB)
                 val avatarGraphics = editedAvatar.graphics as Graphics2D

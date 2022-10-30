@@ -41,7 +41,9 @@ class TransferSonhosButtonExecutor(
             decodedGenericInteractionData: StoredGenericInteractionData
         ) {
             val result = loritta.pudding.transaction {
-                val dataFromDatabase = loritta.pudding.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId) ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
+                val dataFromDatabase =
+                    loritta.pudding.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId)
+                        ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
 
                 val decoded = Json.decodeFromJsonElement<TransferSonhosData>(dataFromDatabase)
                 if (decoded.userId != acceptedUserId)
@@ -104,8 +106,14 @@ class TransferSonhosButtonExecutor(
                 val updatedReceiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.userId))
                 val updatedGiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.sourceId))
 
-                val receiverRanking = if (updatedReceiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(updatedReceiverProfile.money) else null
-                val giverRanking = if (updatedGiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(updatedGiverProfile.money) else null
+                val receiverRanking =
+                    if (updatedReceiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
+                        updatedReceiverProfile.money
+                    ) else null
+                val giverRanking =
+                    if (updatedGiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
+                        updatedGiverProfile.money
+                    ) else null
 
                 return@transaction Result.Success(
                     decoded.userId,
@@ -134,7 +142,13 @@ class TransferSonhosButtonExecutor(
 
                     context.sendMessage {
                         styled(
-                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SuccessfullyTransferred(mentionUser(acceptedUserId), result.howMuch)),
+                            context.i18nContext.get(
+                                SonhosCommand.PAY_I18N_PREFIX.SuccessfullyTransferred(
+                                    mentionUser(
+                                        acceptedUserId
+                                    ), result.howMuch
+                                )
+                            ),
                             Emotes.Handshake
                         )
 
@@ -144,28 +158,59 @@ class TransferSonhosButtonExecutor(
 
                         if (result.giverRanking != null) {
                             styled(
-                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(mentionUser(result.giverId), SonhosUtils.getSonhosEmojiOfQuantity(result.giverQuantity), result.giverQuantity, result.giverRanking)),
+                                context.i18nContext.get(
+                                    SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(
+                                        mentionUser(result.giverId),
+                                        SonhosUtils.getSonhosEmojiOfQuantity(result.giverQuantity),
+                                        result.giverQuantity,
+                                        result.giverRanking
+                                    )
+                                ),
                                 user1Emote
                             )
                         } else {
                             styled(
-                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(mentionUser(result.giverId), SonhosUtils.getSonhosEmojiOfQuantity(result.giverQuantity), result.giverQuantity)),
+                                context.i18nContext.get(
+                                    SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(
+                                        mentionUser(
+                                            result.giverId
+                                        ),
+                                        SonhosUtils.getSonhosEmojiOfQuantity(result.giverQuantity),
+                                        result.giverQuantity
+                                    )
+                                ),
                                 user1Emote
                             )
                         }
                         if (result.receiverRanking != null) {
                             styled(
-                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(mentionUser(result.receiverId), SonhosUtils.getSonhosEmojiOfQuantity(result.receiverQuantity), result.receiverQuantity, result.receiverRanking)),
+                                context.i18nContext.get(
+                                    SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(
+                                        mentionUser(result.receiverId),
+                                        SonhosUtils.getSonhosEmojiOfQuantity(result.receiverQuantity),
+                                        result.receiverQuantity,
+                                        result.receiverRanking
+                                    )
+                                ),
                                 user2Emote
                             )
                         } else {
                             styled(
-                                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(mentionUser(result.receiverId), SonhosUtils.getSonhosEmojiOfQuantity(result.receiverQuantity), result.receiverQuantity)),
+                                context.i18nContext.get(
+                                    SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(
+                                        mentionUser(
+                                            result.receiverId
+                                        ),
+                                        SonhosUtils.getSonhosEmojiOfQuantity(result.receiverQuantity),
+                                        result.receiverQuantity
+                                    )
+                                ),
                                 user2Emote
                             )
                         }
                     }
                 }
+
                 is Result.NotTheUser -> {
                     context.failEphemerally {
                         styled(
@@ -178,6 +223,7 @@ class TransferSonhosButtonExecutor(
                         )
                     }
                 }
+
                 Result.DataIsNotPresent -> {
                     transactionRequestMessage.editMessage {
                         actionRow {
@@ -190,6 +236,7 @@ class TransferSonhosButtonExecutor(
                         }
                     }
                 }
+
                 Result.GiverDoesNotHaveSufficientFunds -> {
                     transactionRequestMessage.editMessage {
                         actionRow {
@@ -230,6 +277,7 @@ class TransferSonhosButtonExecutor(
             val giverQuantity: Long,
             val giverRanking: Long?
         ) : Result()
+
         class NotTheUser(val targetId: Snowflake) : Result()
         object DataIsNotPresent : Result()
         object GiverDoesNotHaveSufficientFunds : Result()

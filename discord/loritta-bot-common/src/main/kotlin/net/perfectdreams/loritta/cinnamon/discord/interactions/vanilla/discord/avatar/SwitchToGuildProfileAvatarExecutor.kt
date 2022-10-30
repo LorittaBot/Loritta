@@ -2,17 +2,19 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class SwitchToGuildProfileAvatarExecutor(loritta: LorittaBot, val lorittaId: Snowflake) : CinnamonButtonExecutor(loritta) {
+class SwitchToGuildProfileAvatarExecutor(loritta: LorittaBot, val lorittaId: Snowflake) :
+    CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.SWITCH_TO_GUILD_PROFILE_AVATAR_EXECUTOR)
 
     override suspend fun onClick(user: User, context: ComponentContext) {
-        val decodedInteractionData = context.decodeDataFromComponentAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>()
+        val decodedInteractionData =
+            context.decodeDataFromComponentAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>()
         val data = UserDataUtils.getInteractionDataOrRetrieveViaRestIfItDoesNotExist(
             loritta,
             decodedInteractionData,
@@ -38,9 +40,11 @@ class SwitchToGuildProfileAvatarExecutor(loritta: LorittaBot, val lorittaId: Sno
             MessageTargetType.SEND_MESSAGE_PUBLIC -> context.sendMessage {
                 message()
             }
+
             MessageTargetType.SEND_MESSAGE_EPHEMERAL -> context.sendEphemeralMessage {
                 message()
             }
+
             MessageTargetType.EDIT_MESSAGE -> context.updateMessage {
                 message()
             }

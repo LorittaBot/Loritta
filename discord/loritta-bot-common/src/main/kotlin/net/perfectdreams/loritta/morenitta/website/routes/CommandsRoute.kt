@@ -6,9 +6,9 @@ import io.ktor.server.response.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class CommandsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/commands") {
-	override val isMainClusterOnlyRoute = true
+    override val isMainClusterOnlyRoute = true
 
-	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
-		call.respondText("Se você está vendo isso, quer dizer que alguma configuração deu problema!")
-	}
+    override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+        call.respondText("Se você está vendo isso, quer dizer que alguma configuração deu problema!")
+    }
 }

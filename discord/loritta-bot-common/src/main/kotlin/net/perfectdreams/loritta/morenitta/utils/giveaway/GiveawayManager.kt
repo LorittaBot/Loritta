@@ -38,7 +38,15 @@ class GiveawayManager(val loritta: LorittaBot) {
         return reaction
     }
 
-    fun createGiveawayMessage(locale: BaseLocale, reason: String, description: String, reaction: String, epoch: Long, guild: Guild, customMessage: String?): DeviousMessage {
+    fun createGiveawayMessage(
+        locale: BaseLocale,
+        reason: String,
+        description: String,
+        reaction: String,
+        epoch: Long,
+        guild: Guild,
+        customMessage: String?
+    ): DeviousMessage {
         val diff = epoch - System.currentTimeMillis()
         val diffSeconds = diff / 1000 % 60
         val diffMinutes = diff / (60 * 1000) % 60
@@ -86,10 +94,21 @@ class GiveawayManager(val loritta: LorittaBot) {
         return builder.build()
     }
 
-    suspend fun spawnGiveaway(locale: BaseLocale, channel: Channel, reason: String, description: String, reaction: String, epoch: Long, numberOfWinners: Int, customMessage: String?, roleIds: List<String>?): Giveaway {
+    suspend fun spawnGiveaway(
+        locale: BaseLocale,
+        channel: Channel,
+        reason: String,
+        description: String,
+        reaction: String,
+        epoch: Long,
+        numberOfWinners: Int,
+        customMessage: String?,
+        roleIds: List<String>?
+    ): Giveaway {
         logger.debug { "Spawning Giveaway! locale = $locale, channel = $channel, reason = $reason, description = $description, reason = $reason, epoch = $epoch, numberOfWinners = $numberOfWinners, customMessage = $customMessage, roleIds = $roleIds" }
 
-        val giveawayMessage = createGiveawayMessage(locale, reason, description, reaction, epoch, channel.guild, customMessage)
+        val giveawayMessage =
+            createGiveawayMessage(locale, reason, description, reaction, epoch, channel.guild, customMessage)
 
         val message = channel.sendMessage(giveawayMessage)
         val messageId = message.idLong
@@ -106,7 +125,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                 // Also, it seems that we don't need to add "a:" to reactions, even if the emote is animated!
                 message.addReaction(discordEmote.reactionCode)
             } else {
-                logger.trace { "Emote $validReaction doesn't look like a valid snowflake..."}
+                logger.trace { "Emote $validReaction doesn't look like a valid snowflake..." }
                 message.addReaction(reaction)
             }
         } catch (e: KtorRequestException) {
@@ -167,7 +186,11 @@ class GiveawayManager(val loritta: LorittaBot) {
         val guild = getGiveawayGuild(giveaway, shouldCancel) ?: return null
         val channel = getGiveawayTextChannel(giveaway, guild, shouldCancel) ?: return null
 
-        val message = try { channel.retrieveMessageById(giveaway.messageId) } catch (e: KtorRequestException) { null } ?: run {
+        val message = try {
+            channel.retrieveMessageById(giveaway.messageId)
+        } catch (e: KtorRequestException) {
+            null
+        } ?: run {
             logger.warn { "Cancelling giveaway ${giveaway.id.value}, message doesn't exist!" }
 
             if (shouldCancel)
@@ -219,7 +242,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                         return@launch
                     }
 
-                    val guild = getGiveawayGuild(giveaway,false) ?: run {
+                    val guild = getGiveawayGuild(giveaway, false) ?: run {
                         giveawayTasks.remove(giveaway.id.value)
                         return@launch
                     }
@@ -253,18 +276,22 @@ class GiveawayManager(val loritta: LorittaBot) {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 1000ms (will be finished in less than 5s!) - Giveaway will be finished in ${diff}ms" }
                             delay(1_000) // a cada 1 segundo
                         }
+
                         15_000 >= diff -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 2500ms (will be finished in less than 15s!) - Giveaway will be finished in ${diff}ms" }
                             delay(2_500) // a cada 2.5 segundos
                         }
+
                         30_000 >= diff -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 10000ms (will be finished in less than 30s!) - Giveaway will be finished in ${diff}ms" }
                             delay(10_000) // a cada 10 segundos
                         }
+
                         60_000 >= diff -> {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for 15000ms (will be finished in less than 60s!) - Giveaway will be finished in ${diff}ms" }
                             delay(15_000) // a cada 15 segundos
                         }
+
                         3_600_000 >= diff -> {
                             // Vamos "alinhar" o update para que seja atualizado exatamente quando passar o minuto (para ficar mais fofis! ...e bom)
                             // Ou seja, se for 15:30:30, o delay será apenas de 30 segundos!
@@ -273,6 +300,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                             logger.info { "Delaying giveaway ${giveaway.id.value} for ${delay}ms (minute) - Giveaway will be finished in ${diff}ms" }
                             delay(60_000 - (System.currentTimeMillis() % 60_000))
                         }
+
                         else -> {
                             // Para evitar rate limits, vamos apenas atualizar a embed a cada *hora* (já que só vai ter que atualizar o giveaway a cada hora mesmo, né)
                             // Mesma coisa dos minutos, "vamos alinhar, wow!"
@@ -311,14 +339,14 @@ class GiveawayManager(val loritta: LorittaBot) {
     }
 
     fun cancelGiveaway(giveaway: Giveaway, deleteFromDatabase: Boolean, forceDelete: Boolean = false) {
-        logger.info { "Canceling giveaway ${giveaway.id.value}, deleteFromDatabase = $deleteFromDatabase, forceDelete = $forceDelete"}
+        logger.info { "Canceling giveaway ${giveaway.id.value}, deleteFromDatabase = $deleteFromDatabase, forceDelete = $forceDelete" }
 
         giveawayTasks[giveaway.id.value]?.cancel()
         giveawayTasks.remove(giveaway.id.value)
 
         if (deleteFromDatabase || forceDelete) {
             if (forceDelete || System.currentTimeMillis() - Constants.ONE_WEEK_IN_MILLISECONDS >= giveaway.finishAt) { // Já se passaram uma semana?
-                logger.info { "Deleting giveaway ${giveaway.id.value} from database, one week of failures so the server maybe doesn't exist anymore"}
+                logger.info { "Deleting giveaway ${giveaway.id.value} from database, one week of failures so the server maybe doesn't exist anymore" }
                 runBlocking {
                     loritta.pudding.transaction {
                         giveaway.delete()
@@ -360,11 +388,11 @@ class GiveawayManager(val loritta: LorittaBot) {
         if (messageReaction != null) {
             logger.info { "Retrieving reactions for the giveaway ${giveaway.id.value}, using ${messageReaction.count} (total reaction count) for the takeAsync(...)" }
             val users = messageReaction.retrieveUsers(messageReaction.count)
-                // "retrieveUsers()" uses pagination, and we want to get all the users that reacted in the giveaway
-                // So we need to use .takeAsync(...) with a big value that would cover all reactions (in this case, we are going to use the reaction count, heh)
-                // Before we did use Int.MAX_VALUE, but that allocates a gigantic array, whoops.
-                // Of course, if a message has A LOT of reactions, that would cause a lot of issues, but I guess that is going to be very rare.
-                
+            // "retrieveUsers()" uses pagination, and we want to get all the users that reacted in the giveaway
+            // So we need to use .takeAsync(...) with a big value that would cover all reactions (in this case, we are going to use the reaction count, heh)
+            // Before we did use Int.MAX_VALUE, but that allocates a gigantic array, whoops.
+            // Of course, if a message has A LOT of reactions, that would cause a lot of issues, but I guess that is going to be very rare.
+
 
             if (users.size == 1 && users[0].id == loritta.config.loritta.discord.applicationId.toString()) { // Ninguém participou do giveaway! (Só a Lori, mas ela não conta)
                 message.channel.sendMessageAsync("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.noWinner"]} ${Emotes.LORI_TEMMIE}")
@@ -400,7 +428,8 @@ class GiveawayManager(val loritta: LorittaBot) {
                         .setContent("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
                     message.channel.sendMessageAsync(messageBuilder.build())
                 } else { // Mais de um ganhador
-                    val replies = mutableListOf("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
+                    val replies =
+                        mutableListOf("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.multipleWinners", "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
 
                     repeat(giveaway.numberOfWinners) {
                         val user = winners.getOrNull(it)
@@ -420,7 +449,8 @@ class GiveawayManager(val loritta: LorittaBot) {
                     // This can be increased to 2000 when the bug is fixed, to check if it is fixed, copy this message and copy into chat and see if the last
                     // entries era displayed correctly.
                     // https://gist.github.com/MrPowerGamerBR/078a4f3ad44c8541e3b5241c9823335e
-                    val chunkedResponse = StringUtils.chunkedLines(fullString, 1_000, forceSplit = true, forceSplitOnSpaces = true)
+                    val chunkedResponse =
+                        StringUtils.chunkedLines(fullString, 1_000, forceSplit = true, forceSplitOnSpaces = true)
                     chunkedResponse.forEach {
                         messageBuilder
                             .setAllowedMentions(listOf(AllowedMentionType.UserMentions))
@@ -439,7 +469,11 @@ class GiveawayManager(val loritta: LorittaBot) {
                         }
 
                         if (rolesToBeGiven.isNotEmpty()) {
-                            runCatching { message.guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(rolesToBeGiven) }) }
+                            runCatching {
+                                message.guild.modifyMemberRoles(
+                                    member,
+                                    member.roles.toMutableList().apply { this.addAll(rolesToBeGiven) })
+                            }
                         }
                     }
                 }

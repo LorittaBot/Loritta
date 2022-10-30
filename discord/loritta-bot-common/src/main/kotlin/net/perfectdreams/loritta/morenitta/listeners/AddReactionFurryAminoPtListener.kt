@@ -22,7 +22,8 @@ class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter
         val member = event.member ?: return
 
         if (!event.reactionEmote.isEmote
-            || event.reactionEmote.idLong != 593161404937404416L)
+            || event.reactionEmote.idLong != 593161404937404416L
+        )
             return
 
         val securityRole = guild.getRoleById(FurryAmino.SECURITY_ROLE_ID)
@@ -54,7 +55,8 @@ class AddReactionFurryAminoPtListener(val loritta: LorittaBot) : ListenerAdapter
                         .setImage("https://loritta.website/assets/img/lori_akira.png")
 
                     channel.sendMessage(embed.build())
-                } catch (e: Exception) {}
+                } catch (e: Exception) {
+                }
             }
         }
     }

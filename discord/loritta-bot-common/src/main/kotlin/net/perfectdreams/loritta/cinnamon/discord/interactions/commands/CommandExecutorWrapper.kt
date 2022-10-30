@@ -81,15 +81,21 @@ interface CommandExecutorWrapper {
         }
     }
 
-    suspend fun getGuildServerConfigOrLoadDefaultConfig(loritta: LorittaBot, guildId: Snowflake?) = if (guildId != null) {
-        // TODO: Fix this workaround, while this does work, it isn't that good
-        loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: NonGuildServerConfigRoot
-    } else {
-        // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
-        NonGuildServerConfigRoot
-    }
+    suspend fun getGuildServerConfigOrLoadDefaultConfig(loritta: LorittaBot, guildId: Snowflake?) =
+        if (guildId != null) {
+            // TODO: Fix this workaround, while this does work, it isn't that good
+            loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: NonGuildServerConfigRoot
+        } else {
+            // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
+            NonGuildServerConfigRoot
+        }
 
-    fun convertInteraKTionsContextToCinnamonContext(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext, locale: BaseLocale) = if (context is InteraKTionsGuildApplicationCommandContext) {
+    fun convertInteraKTionsContextToCinnamonContext(
+        loritta: LorittaBot,
+        context: InteraKTionsApplicationCommandContext,
+        i18nContext: I18nContext,
+        locale: BaseLocale
+    ) = if (context is InteraKTionsGuildApplicationCommandContext) {
         GuildApplicationCommandContext(
             loritta,
             i18nContext,
@@ -110,7 +116,11 @@ interface CommandExecutorWrapper {
     }
 
     // TODO: Don't use GlobalScope!
-    fun launchUserInfoCacheUpdater(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, args: net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments? = null) = GlobalScope.launch {
+    fun launchUserInfoCacheUpdater(
+        loritta: LorittaBot,
+        context: InteraKTionsApplicationCommandContext,
+        args: net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments? = null
+    ) = GlobalScope.launch {
         // Update the cached Discord users
         // Updating in a separate task to avoid delaying the command processing too much
         val users = mutableSetOf(context.sender)
@@ -138,7 +148,11 @@ interface CommandExecutorWrapper {
      * Additional messages that must be sent after the command sends at least one message
      */
     // TODO: Don't use GlobalScope!
-    fun launchAdditionalNotificationsCheckerAndSender(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext) = GlobalScope.launch {
+    fun launchAdditionalNotificationsCheckerAndSender(
+        loritta: LorittaBot,
+        context: InteraKTionsApplicationCommandContext,
+        i18nContext: I18nContext
+    ) = GlobalScope.launch {
         var state = context.bridge.state.value
 
         try {
@@ -183,7 +197,14 @@ interface CommandExecutorWrapper {
         }
     }
 
-    suspend fun convertThrowableToCommandExecutionResult(loritta: LorittaBot, context: InteraKTionsApplicationCommandContext, i18nContext: I18nContext?, rootDeclarationClazzName: String, executorClazzName: String, e: Throwable): CommandExecutionResult {
+    suspend fun convertThrowableToCommandExecutionResult(
+        loritta: LorittaBot,
+        context: InteraKTionsApplicationCommandContext,
+        i18nContext: I18nContext?,
+        rootDeclarationClazzName: String,
+        executorClazzName: String,
+        e: Throwable
+    ): CommandExecutionResult {
         if (e is SilentCommandException)
             return CommandExecutionSuccess // SilentCommandExceptions should be ignored
 
@@ -200,7 +221,8 @@ interface CommandExecutorWrapper {
         logger.warn(e) { "Something went wrong while executing $rootDeclarationClazzName $executorClazzName" }
 
         // If the i18nContext is not present, we will default to the default language provided
-        val i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
+        val i18nContext =
+            i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
 
         // Tell the user that something went *really* wrong
         // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context
@@ -210,11 +232,11 @@ interface CommandExecutorWrapper {
                 loriSob = Emotes.LoriSob,
                 // To avoid leaking important things (example: Interaction Webhook URL when a request to Discord timeouts), let's not send errors to everyone
                 stacktrace = if (context.sender.id == Snowflake(123170274651668480)) {// TODO: Stop hardcoding this
-                        if (!e.message.isNullOrEmpty())
-                            " `${e.message}`" // TODO: Sanitize
-                        else
-                            " `${e::class.simpleName}`"
-                    } else ""
+                    if (!e.message.isNullOrEmpty())
+                        " `${e.message}`" // TODO: Sanitize
+                    else
+                        " `${e::class.simpleName}`"
+                } else ""
             )
         )
 

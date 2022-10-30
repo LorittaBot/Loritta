@@ -13,36 +13,44 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import kotlin.collections.set
 
-class ConfigureModerationRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/moderation") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
+class ConfigureModerationRoute(loritta: LorittaBot) :
+    RequiresGuildAuthLocalizedRoute(loritta, "/configure/moderation") {
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        loritta as LorittaBot
 
-		val moderationConfig = loritta.newSuspendedTransaction {
-			serverConfig.moderationConfig
-		}
+        val moderationConfig = loritta.newSuspendedTransaction {
+            serverConfig.moderationConfig
+        }
 
-		val variables = call.legacyVariables(loritta, locale)
+        val variables = call.legacyVariables(loritta, locale)
 
-		variables["saveType"] = "moderation"
-		variables["serverConfig"] = FakeServerConfig(
-				FakeServerConfig.FakeModerationConfig(
-						moderationConfig?.sendPunishmentViaDm ?: false,
-						moderationConfig?.sendPunishmentToPunishLog ?: false,
-						moderationConfig?.punishLogMessage ?: ""
-				)
-		)
+        variables["saveType"] = "moderation"
+        variables["serverConfig"] = FakeServerConfig(
+            FakeServerConfig.FakeModerationConfig(
+                moderationConfig?.sendPunishmentViaDm ?: false,
+                moderationConfig?.sendPunishmentToPunishLog ?: false,
+                moderationConfig?.punishLogMessage ?: ""
+            )
+        )
 
-		call.respondHtml(evaluate("configure_moderation.html", variables))
-	}
+        call.respondHtml(evaluate("configure_moderation.html", variables))
+    }
 
-	/**
-	 * Fake Server Config for Pebble, in the future this will be removed
-	 */
-	private class FakeServerConfig(val moderationConfig: FakeModerationConfig) {
-		class FakeModerationConfig(
-				val sendPunishmentViaDm: Boolean,
-				val sendToPunishLog: Boolean,
-				val punishmentLogMessage: String
-		)
-	}
+    /**
+     * Fake Server Config for Pebble, in the future this will be removed
+     */
+    private class FakeServerConfig(val moderationConfig: FakeModerationConfig) {
+        class FakeModerationConfig(
+            val sendPunishmentViaDm: Boolean,
+            val sendToPunishLog: Boolean,
+            val punishmentLogMessage: String
+        )
+    }
 }

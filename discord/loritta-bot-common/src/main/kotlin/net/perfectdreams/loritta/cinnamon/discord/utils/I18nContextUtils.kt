@@ -12,7 +12,11 @@ object I18nContextUtils {
      * @param defaultLocale the default locale used when creating the slash commands, this won't be present in the map.
      * @param i18nKey the key
      */
-    fun createLocalizedStringMapExcludingDefaultLocale(languageManager: LanguageManager, defaultLocale: I18nContext, i18nKey: StringI18nData) = mutableMapOf<Locale, String>().apply {
+    fun createLocalizedStringMapExcludingDefaultLocale(
+        languageManager: LanguageManager,
+        defaultLocale: I18nContext,
+        i18nKey: StringI18nData
+    ) = mutableMapOf<Locale, String>().apply {
         // We will ignore the default i18nContext because that would be redundant
         for ((languageId, i18nContext) in languageManager.languageContexts.filter { it.value != defaultLocale }) {
             if (i18nContext.language.textBundle.strings.containsKey(i18nKey.key.key)) {

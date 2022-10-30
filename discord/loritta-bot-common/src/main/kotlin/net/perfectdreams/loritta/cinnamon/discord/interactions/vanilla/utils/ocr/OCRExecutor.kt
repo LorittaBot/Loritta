@@ -6,7 +6,6 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButtonWithHybridData
@@ -16,6 +15,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.google.Language
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 interface OCRExecutor {
     companion object {
@@ -83,9 +83,11 @@ interface OCRExecutor {
 
         val ocrText = textAnnotations.description
         val detectedOcrLanguageGoogle = textAnnotations.locale?.let { Language.fromLanguageCode(it) }
-        val detectedOcrLanguageKord = LOCALE_TO_LANGUAGE_MAP.entries.firstOrNull { it.value == detectedOcrLanguageGoogle }
-            ?.key
-        val userLocale = context.interaKTionsContext.discordInteraction.locale.value ?: context.interaKTionsContext.discordInteraction.guildLocale.value
+        val detectedOcrLanguageKord =
+            LOCALE_TO_LANGUAGE_MAP.entries.firstOrNull { it.value == detectedOcrLanguageGoogle }
+                ?.key
+        val userLocale = context.interaKTionsContext.discordInteraction.locale.value
+            ?: context.interaKTionsContext.discordInteraction.guildLocale.value
 
         val message: suspend MessageCreateBuilder.() -> (Unit) = {
             embed {
@@ -97,7 +99,15 @@ interface OCRExecutor {
                 color = LorittaColors.LorittaAqua.toKordColor()
 
                 if (detectedOcrLanguageGoogle != null)
-                    footer(context.i18nContext.get(OCRCommand.I18N_PREFIX.LanguageDetected(context.i18nContext.get(detectedOcrLanguageGoogle.languageNameI18nKey))))
+                    footer(
+                        context.i18nContext.get(
+                            OCRCommand.I18N_PREFIX.LanguageDetected(
+                                context.i18nContext.get(
+                                    detectedOcrLanguageGoogle.languageNameI18nKey
+                                )
+                            )
+                        )
+                    )
             }
 
             if (detectedOcrLanguageGoogle != null && userLocale != null && detectedOcrLanguageKord != null && detectedOcrLanguageKord != userLocale) {
@@ -117,7 +127,11 @@ interface OCRExecutor {
                         )
                     ) {
                         loriEmoji = Emotes.Map
-                        label = context.i18nContext.get(OCRCommand.I18N_PREFIX.TranslateToLanguage(context.i18nContext.get(userGoogleLocale.languageNameI18nKey)))
+                        label = context.i18nContext.get(
+                            OCRCommand.I18N_PREFIX.TranslateToLanguage(
+                                context.i18nContext.get(userGoogleLocale.languageNameI18nKey)
+                            )
+                        )
                     }
                 }
             }

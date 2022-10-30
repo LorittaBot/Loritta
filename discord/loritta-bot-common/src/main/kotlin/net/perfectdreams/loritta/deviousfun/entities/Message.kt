@@ -11,10 +11,10 @@ import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.deviouscache.data.DeviousUserData
 import net.perfectdreams.loritta.deviousfun.*
-import net.perfectdreams.loritta.deviousfun.cache.DeviousMemberData
+import net.perfectdreams.loritta.deviouscache.data.DeviousMemberData
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
-import net.perfectdreams.loritta.deviousfun.cache.DeviousUserData
 import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
 import net.perfectdreams.loritta.morenitta.utils.MarkdownSanitizer
 
@@ -43,6 +43,7 @@ class Message(
         }
     val contentRaw: String
         get() = message.content
+
     // TODO - DeviousFun
     val contentDisplay: String
         get() = contentRaw
@@ -61,6 +62,7 @@ class Message(
                     it.groupValues[1] == "a"
                 )
             }.toList()
+
     // TODO - DeviousFun
     val embeds: List<MessageEmbed>
         get() = emptyList()
@@ -73,7 +75,12 @@ class Message(
             .mapNotNull {
                 val memberData = it.member.value ?: return@mapNotNull null
 
-                Member(deviousFun, DeviousMemberData.from(memberData), guild, User(deviousFun, it.id, DeviousUserData.from(it)))
+                Member(
+                    deviousFun,
+                    DeviousMemberData.from(memberData),
+                    guild,
+                    User(deviousFun, it.id, DeviousUserData.from(it))
+                )
             }
     val mentionedRoles: List<Role>
         get() {
@@ -119,7 +126,10 @@ class Message(
         val fragmentData = message.referencedMessage ?: return null
 
         val retrievedMessage = deviousFun.loritta.rest.channel.getMessage(channel.idSnowflake, Snowflake(id))
-        val user = deviousFun.cacheManager.createUser(retrievedMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage))
+        val user = deviousFun.cacheManager.createUser(
+            retrievedMessage.author,
+            !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage)
+        )
         // The member seems to be null in a message reference
         val member = guildOrNull?.let { deviousFun.retrieveMemberById(it, retrievedMessage.author.id) }
 
@@ -222,7 +232,12 @@ class Message(
             author,
             memberOrNull,
             guildOrNull,
-            DeviousMessageFragmentData.from(deviousFun.loritta.rest.channel.getMessage(channel.idSnowflake, idSnowflake))
+            DeviousMessageFragmentData.from(
+                deviousFun.loritta.rest.channel.getMessage(
+                    channel.idSnowflake,
+                    idSnowflake
+                )
+            )
         )
     }
 }

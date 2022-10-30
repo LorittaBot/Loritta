@@ -1,19 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations
 
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.*
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextClapExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextLowercaseExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextMockExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextQualityExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextUppercaseExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextVaporQualityExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextVaporwaveExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.texttransform.TextVemDeZapExecutor
 
 class TextTransformCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {

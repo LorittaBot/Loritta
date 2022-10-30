@@ -13,22 +13,21 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.JsonObject
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
-import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.InterpolationType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.getResizedInstance
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jsoup.Jsoup
-import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.net.URL
@@ -57,7 +56,8 @@ class RobloxUserExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSl
             )
 
         val userId = userProfileRequest.request.url.toString().split("/").getOrNull(4)
-            ?.toLongOrNull() ?: error("Couldn't find the User ID") // This should never happen unless if Roblox changes where the ID is in the URL
+            ?.toLongOrNull()
+            ?: error("Couldn't find the User ID") // This should never happen unless if Roblox changes where the ID is in the URL
 
         val body = userProfileRequest.bodyAsText()
 
@@ -66,7 +66,8 @@ class RobloxUserExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSl
         // Yes this is correct, it can be null, but for some reason it complains that it can never be not null
         val isRobloxPremium = userProfileDocument.select(".header-title .icon-premium-medium").isNotEmpty()
         // The favoriteGamesContainer *can* be null if the user doesn't has favorite games
-        val favoriteGamesContainer = userProfileDocument.select(".favorite-games-container").firstOrNull() // If null, then the user doesn't have Premium (oof)
+        val favoriteGamesContainer = userProfileDocument.select(".favorite-games-container")
+            .firstOrNull() // If null, then the user doesn't have Premium (oof)
         val profileHeader = userProfileDocument.select("[profile-header-data]").first()!!
 
         val friendsCount = profileHeader.attr("data-friendscount")
@@ -140,7 +141,8 @@ class RobloxUserExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSl
                 val realY = y
 
                 val async = GlobalScope.async {
-                    val thumbnail = ImageIO.read(URL(it.thumbnail.url)).getResizedInstance(55, 55, InterpolationType.BILINEAR)
+                    val thumbnail =
+                        ImageIO.read(URL(it.thumbnail.url)).getResizedInstance(55, 55, InterpolationType.BILINEAR)
                     graphics.drawImage(thumbnail, realX, realY, null)
                 }
 
@@ -165,7 +167,8 @@ class RobloxUserExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSl
                 val realY = y
 
                 val async = GlobalScope.async {
-                    val thumbnail = ImageIO.read(URL(it.imageUrl)).getResizedInstance(55, 55, InterpolationType.BILINEAR)
+                    val thumbnail =
+                        ImageIO.read(URL(it.imageUrl)).getResizedInstance(55, 55, InterpolationType.BILINEAR)
                     graphics.drawImage(thumbnail, realX, realY, null)
                 }
 
@@ -190,7 +193,8 @@ class RobloxUserExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSl
                 val realY = y
 
                 val async = GlobalScope.async {
-                    val thumbnail = ImageIO.read(URL(it.thumbnail.url)).getResizedInstance(55, 55, InterpolationType.BILINEAR)
+                    val thumbnail =
+                        ImageIO.read(URL(it.thumbnail.url)).getResizedInstance(55, 55, InterpolationType.BILINEAR)
                     graphics.drawImage(thumbnail, realX, realY, null)
                 }
 
@@ -224,8 +228,16 @@ class RobloxUserExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSl
                     description = userData.description
                 }
 
-                field("${Emotes.LoriId} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.UserId)}", "`$userId`", true)
-                field("${Emotes.LoriCalendar} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.JoinDate)}", "<t:${userData.created.epochSeconds}:F>", true)
+                field(
+                    "${Emotes.LoriId} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.UserId)}",
+                    "`$userId`",
+                    true
+                )
+                field(
+                    "${Emotes.LoriCalendar} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.JoinDate)}",
+                    "<t:${userData.created.epochSeconds}:F>",
+                    true
+                )
                 field(
                     "\uD83D\uDE4B ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.Social)}",
                     """🐾 **${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.Following)}:** $followingsCount
@@ -255,7 +267,11 @@ class RobloxUserExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSl
 
                     // The user may not have any favorite games!
                     if (builder.isNotBlank())
-                        field("\uD83D\uDD79️ ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.FavoriteGames)}", builder, false)
+                        field(
+                            "\uD83D\uDD79️ ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.User.FavoriteGames)}",
+                            builder,
+                            false
+                        )
                 }
 
 

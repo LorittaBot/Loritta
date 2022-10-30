@@ -11,7 +11,11 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 
-class DiscordBotListTopCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("dbl top"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class DiscordBotListTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("dbl top"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MISC
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.dbltop"
     }

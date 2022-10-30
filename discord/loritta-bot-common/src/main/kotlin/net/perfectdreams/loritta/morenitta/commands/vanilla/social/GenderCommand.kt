@@ -11,16 +11,21 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", listOf("gênero", "genero"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class GenderCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "gender",
+    listOf("gênero", "genero"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL
+) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.gender.description")
 
     override suspend fun run(context: CommandContext, locale: BaseLocale) {
         OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "gender")
 
         val embed = EmbedBuilder()
-                .setTitle(locale["commands.command.gender.whatAreYou"])
-                .setDescription(locale["commands.command.gender.whyShouldYouSelect"])
-                .build()
+            .setTitle(locale["commands.command.gender.whatAreYou"])
+            .setDescription(locale["commands.command.gender.whyShouldYouSelect"])
+            .build()
 
 
         val message = context.sendMessage(embed)
@@ -38,11 +43,11 @@ class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", li
                 }
 
                 context.reply(
-						LorittaReply(
-								locale["commands.command.gender.successfullyChanged"],
-								"\uD83C\uDF89"
-						)
-				)
+                    LorittaReply(
+                        locale["commands.command.gender.successfullyChanged"],
+                        "\uD83C\uDF89"
+                    )
+                )
             }
 
 
@@ -52,11 +57,11 @@ class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", li
                 }
 
                 context.reply(
-						LorittaReply(
-								locale["commands.command.gender.successfullyChanged"],
-								"\uD83C\uDF89"
-						)
-				)
+                    LorittaReply(
+                        locale["commands.command.gender.successfullyChanged"],
+                        "\uD83C\uDF89"
+                    )
+                )
             }
 
             if (it.reactionEmote.isEmote("❓")) {
@@ -65,11 +70,11 @@ class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", li
                 }
 
                 context.reply(
-						LorittaReply(
-								locale["commands.command.gender.successfullyChanged"],
-								"\uD83C\uDF89"
-						)
-				)
+                    LorittaReply(
+                        locale["commands.command.gender.successfullyChanged"],
+                        "\uD83C\uDF89"
+                    )
+                )
             }
         }
     }

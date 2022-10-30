@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.p
 
 import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.modals.components.textInput
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class ChangeAboutMeButtonExecutor(loritta: LorittaBot) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.CHANGE_ABOUT_ME_BUTTON_EXECUTOR)
@@ -26,7 +26,10 @@ class ChangeAboutMeButtonExecutor(loritta: LorittaBot) : CinnamonButtonExecutor(
             context.i18nContext.get(I18nKeysData.Commands.Command.Profileview.ChangeAboutMe)
         ) {
             actionRow {
-                textInput(ChangeAboutMeModalExecutor.options.aboutMe, context.i18nContext.get(I18nKeysData.Profiles.AboutMe)) {
+                textInput(
+                    ChangeAboutMeModalExecutor.options.aboutMe,
+                    context.i18nContext.get(I18nKeysData.Profiles.AboutMe)
+                ) {
                     this.value = data.currentAboutMe
                 }
             }

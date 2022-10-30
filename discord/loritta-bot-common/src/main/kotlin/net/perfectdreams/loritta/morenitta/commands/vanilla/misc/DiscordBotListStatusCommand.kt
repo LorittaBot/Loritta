@@ -6,7 +6,11 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.tables.BotVotes
 import org.jetbrains.exposed.sql.select
 
-class DiscordBotListStatusCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("dbl status", "upvote status"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class DiscordBotListStatusCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("dbl status", "upvote status"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MISC
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.dblstatus"
     }

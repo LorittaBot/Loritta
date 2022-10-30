@@ -12,5 +12,6 @@ class GraphicsFonts {
     val bebasNeueRegular = loadFont("bebas-neue-regular.ttf")
     val komikaHand = loadFont("komika.ttf")
 
-    private fun loadFont(name: String) = Font.createFont(Font.TRUETYPE_FONT, LorittaBot::class.java.getResourceAsStream("/fonts/$name"))
+    private fun loadFont(name: String) =
+        Font.createFont(Font.TRUETYPE_FONT, LorittaBot::class.java.getResourceAsStream("/fonts/$name"))
 }

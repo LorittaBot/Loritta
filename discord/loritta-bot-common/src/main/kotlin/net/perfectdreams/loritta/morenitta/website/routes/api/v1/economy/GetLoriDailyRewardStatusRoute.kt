@@ -9,20 +9,25 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.trueIp
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class GetLoriDailyRewardStatusRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/daily-reward-status") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		loritta as LorittaBot
-		val ip = call.request.trueIp
+class GetLoriDailyRewardStatusRoute(loritta: LorittaBot) :
+    RequiresAPIDiscordLoginRoute(loritta, "/api/v1/economy/daily-reward-status") {
+    override suspend fun onAuthenticatedRequest(
+        call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification
+    ) {
+        loritta as LorittaBot
+        val ip = call.request.trueIp
 
-		val userIdentification = discordAuth.getUserIdentification()
+        val userIdentification = discordAuth.getUserIdentification()
 
-		GetLoriDailyRewardRoute.verifyIfAccountAndIpAreSafe(loritta, userIdentification, ip)
-		val receivedDailyWithSameIp = GetLoriDailyRewardRoute.checkIfUserCanPayout(loritta, userIdentification, ip)
+        GetLoriDailyRewardRoute.verifyIfAccountAndIpAreSafe(loritta, userIdentification, ip)
+        val receivedDailyWithSameIp = GetLoriDailyRewardRoute.checkIfUserCanPayout(loritta, userIdentification, ip)
 
-		val payload = jsonObject(
-				"receivedDailyWithSameIp" to receivedDailyWithSameIp
-		)
+        val payload = jsonObject(
+            "receivedDailyWithSameIp" to receivedDailyWithSameIp
+        )
 
-		call.respondJson(payload)
-	}
+        call.respondJson(payload)
+    }
 }

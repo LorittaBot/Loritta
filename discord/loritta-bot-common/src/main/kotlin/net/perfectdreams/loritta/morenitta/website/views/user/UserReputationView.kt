@@ -22,8 +22,8 @@ class UserReputationView(
     val channelId: Long?,
     val backgroundUrl: String
 ) : BaseView(
-        locale,
-        path
+    locale,
+    path
 ) {
     override fun getTitle() = "Reputações para ${user?.name}"
 
@@ -40,16 +40,19 @@ class UserReputationView(
 
             script {
                 unsafe {
-                    raw("""
+                    raw(
+                        """
     function recaptchaCallback(response) {
         this['spicy-morenitta'].net.perfectdreams.spicymorenitta.routes.ReputationRoute.Companion.recaptchaCallback(response)
-    }""")
+    }"""
+                    )
                 }
             }
 
             style {
                 unsafe {
-                    raw("""
+                    raw(
+                        """
     .centralize-on-screen {
         position: fixed;
         top: 50%;
@@ -219,7 +222,8 @@ class UserReputationView(
         100%{color: blue;}
         100%{color: orange;}
     }
-                    """)
+                    """
+                    )
                 }
             }
 
@@ -265,10 +269,16 @@ class UserReputationView(
                                         redirectUrl += "?guild=$guildId&channel=$channelId"
 
                                     val state = jsonObject(
-                                            "redirectUrl" to redirectUrl
+                                        "redirectUrl" to redirectUrl
                                     )
 
-                                    a(classes = "button-discord button-discord-info pure-button g-recaptcha reputation-button", href = (loritta.config.loritta.discord.authorizationUrl + "&state=${java.util.Base64.getEncoder().encodeToString(state.toString().toByteArray()).encodeToUrl()}")) {
+                                    a(
+                                        classes = "button-discord button-discord-info pure-button g-recaptcha reputation-button",
+                                        href = (loritta.config.loritta.discord.authorizationUrl + "&state=${
+                                            java.util.Base64.getEncoder().encodeToString(state.toString().toByteArray())
+                                                .encodeToUrl()
+                                        }")
+                                    ) {
                                         id = "reputation-button"
                                         attributes["data-need-login"] = "true"
 
@@ -303,7 +313,8 @@ class UserReputationView(
                 }
 
                 unsafe {
-                    raw("""
+                    raw(
+                        """
     <!-- Loritta Reputation Page -->
     <ins class="adsbygoogle"
         style="display:block"
@@ -311,7 +322,8 @@ class UserReputationView(
         data-ad-slot="6685706043"
         data-ad-format="auto"
         data-full-width-responsive="true"></ins>
-    """)
+    """
+                    )
                 }
 
             }
@@ -321,9 +333,11 @@ class UserReputationView(
     override fun HEAD.generateMeta() {
         meta("theme-color", "#00c1df")
         meta(content = locale["website.lorittaWebsite"]) { attributes["property"] = "og:site_name" }
-        meta(content = "Reputações servem para você agradecer outro usuário por algo que ele fez. ${user?.name} te ajudou em algo? ${user?.name} contou uma piada e você caiu no chão de tanto rir? Então dê uma reputação para agradecer! Atualmente ${user?.name} possui ${reputations.size} reputações!") { attributes["property"] = "og:description" }
+        meta(content = "Reputações servem para você agradecer outro usuário por algo que ele fez. ${user?.name} te ajudou em algo? ${user?.name} contou uma piada e você caiu no chão de tanto rir? Então dê uma reputação para agradecer! Atualmente ${user?.name} possui ${reputations.size} reputações!") {
+            attributes["property"] = "og:description"
+        }
         meta(content = getTitle()) { attributes["property"] = "og:title" }
         meta(content = "600") { attributes["property"] = "og:ttl" }
-        meta(content = user?.effectiveAvatarUrl) { attributes["property"] = "og:image"}
+        meta(content = user?.effectiveAvatarUrl) { attributes["property"] = "og:image" }
     }
 }

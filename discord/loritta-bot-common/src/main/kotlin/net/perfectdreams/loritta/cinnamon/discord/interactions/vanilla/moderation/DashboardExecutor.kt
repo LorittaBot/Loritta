@@ -16,7 +16,9 @@ class DashboardExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
         var url = dashboardUrl
 
         // TODO: Get permissions from the interactions itself when Kord implements support for it
-        if (context is GuildApplicationCommandContext && context.member.getPermissions().contains(Permission.ManageGuild))
+        if (context is GuildApplicationCommandContext && context.member.getPermissions()
+                .contains(Permission.ManageGuild)
+        )
             url = "${loritta.config.loritta.website.url}guild/${context.guildId}/configure/"
 
         context.sendEphemeralMessage {

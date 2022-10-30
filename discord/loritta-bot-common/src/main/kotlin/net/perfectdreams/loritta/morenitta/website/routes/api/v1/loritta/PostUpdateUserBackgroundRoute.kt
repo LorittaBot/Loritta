@@ -15,25 +15,26 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import java.io.File
 import java.util.*
 
-class PostUpdateUserBackgroundRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/users/{userId}/background") {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-	}
+class PostUpdateUserBackgroundRoute(loritta: LorittaBot) :
+    RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/users/{userId}/background") {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val userId = call.parameters["userId"]
-		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
+        val userId = call.parameters["userId"]
+        val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 
-		val type = json["type"].string
+        val type = json["type"].string
 
-		if (type == "custom") {
-			logger.info { "Updating $userId background with custom data..." }
-			val data = json["data"].string
+        if (type == "custom") {
+            logger.info { "Updating $userId background with custom data..." }
+            val data = json["data"].string
 
-			File(loritta.config.loritta.folders.website, "static/assets/img/backgrounds/${userId}.png")
-					.writeBytes(Base64.getDecoder().decode(data))
-		}
+            File(loritta.config.loritta.folders.website, "static/assets/img/backgrounds/${userId}.png")
+                .writeBytes(Base64.getDecoder().decode(data))
+        }
 
-		call.respondJson(jsonObject())
-	}
+        call.respondJson(jsonObject())
+    }
 }

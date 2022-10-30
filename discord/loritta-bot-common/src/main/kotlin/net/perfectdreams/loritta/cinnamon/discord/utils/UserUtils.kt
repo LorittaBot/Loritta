@@ -15,20 +15,19 @@ import mu.KotlinLogging
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.GACampaigns
-import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.servers.GuildProfiles
-import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.util.*
@@ -36,8 +35,8 @@ import java.util.*
 object UserUtils {
     private val logger = KotlinLogging.logger {}
 
-    suspend fun handleIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, user: User)
-            = handleIfUserIsBanned(loritta, context, user.id)
+    suspend fun handleIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, user: User) =
+        handleIfUserIsBanned(loritta, context, user.id)
 
     suspend fun handleIfUserIsBanned(loritta: LorittaBot, context: InteractionContext, userId: Snowflake): Boolean {
         // Check if the user is banned from using Loritta
@@ -88,7 +87,8 @@ object UserUtils {
      * @param avatar        the user's avatar hash
      * @param discriminator the user's discriminator
      */
-    fun createUserAvatarOrDefaultUserAvatar(kord: Kord, userId: Snowflake, avatar: String?, discriminator: String) = createUserAvatarOrDefaultUserAvatar(kord, userId, avatar, discriminator.toInt())
+    fun createUserAvatarOrDefaultUserAvatar(kord: Kord, userId: Snowflake, avatar: String?, discriminator: String) =
+        createUserAvatarOrDefaultUserAvatar(kord, userId, avatar, discriminator.toInt())
 
     /**
      * Creates a [Icon.UserAvatar] from the [userId] and [avatar]. If the [avatar] is null, a [Icon.DefaultUserAvatar] is created based on the [discriminator].
@@ -97,15 +97,16 @@ object UserUtils {
      * @param avatar        the user's avatar hash
      * @param discriminator the user's discriminator
      */
-    fun createUserAvatarOrDefaultUserAvatar(kord: Kord, userId: Snowflake, avatar: String?, discriminator: Int) = if (avatar != null) {
-        Icon.UserAvatar(
-            userId,
-            avatar,
-            kord
-        )
-    } else {
-        Icon.DefaultUserAvatar(discriminator, kord)
-    }
+    fun createUserAvatarOrDefaultUserAvatar(kord: Kord, userId: Snowflake, avatar: String?, discriminator: Int) =
+        if (avatar != null) {
+            Icon.UserAvatar(
+                userId,
+                avatar,
+                kord
+            )
+        } else {
+            Icon.DefaultUserAvatar(discriminator, kord)
+        }
 
     /**
      * Sends the [builder] message to the [userId] via the user's direct message channel.
@@ -281,13 +282,15 @@ object UserUtils {
                     // First we will get non bot users, because users love complaining that "but I don't want to have bots on my sad reality meme!! bwaaa!!"
                     while (usersToBeFilled.filterNotNull().size != targetSize && uniqueNonBotUsers.isNotEmpty()) {
                         val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
-                        usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(uniqueNonBotUsers.poll()), context.loritta.kord)
+                        usersToBeFilled[indexOfFirstNullEntry] =
+                            User(UserData.from(uniqueNonBotUsers.poll()), context.loritta.kord)
                     }
 
                     // If we still haven't found it, we will query bot users so the user can at least have a sad reality instead of a "couldn't find enough users" message
                     while (usersToBeFilled.filterNotNull().size != targetSize && uniqueBotUsers.isNotEmpty()) {
                         val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
-                        usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(uniqueBotUsers.poll()), context.loritta.kord)
+                        usersToBeFilled[indexOfFirstNullEntry] =
+                            User(UserData.from(uniqueBotUsers.poll()), context.loritta.kord)
                     }
                 } catch (e: KtorRequestException) {
                     // No permission to query!
@@ -338,7 +341,8 @@ object UserUtils {
                 while (usersToBeFilled.filterNotNull().size != targetSize && members.isNotEmpty()) {
                     val indexOfFirstNullEntry = usersToBeFilled.indexOf(null)
                     // The user shouldn't be null here... well, I hope so
-                    usersToBeFilled[indexOfFirstNullEntry] = User(UserData.from(members.poll().user.value!!), context.loritta.kord)
+                    usersToBeFilled[indexOfFirstNullEntry] =
+                        User(UserData.from(members.poll().user.value!!), context.loritta.kord)
                 }
             }
         }

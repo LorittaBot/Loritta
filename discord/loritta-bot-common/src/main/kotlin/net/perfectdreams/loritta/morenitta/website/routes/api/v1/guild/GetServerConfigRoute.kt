@@ -11,16 +11,23 @@ import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class GetServerConfigRoute(loritta: LorittaBot, val website: LorittaWebsite) : RequiresAPIGuildAuthRoute(loritta, "/config") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		val serverConfigJson = WebsiteUtils.transformToDashboardConfigurationJson(
-			loritta,
-			website.configTransformers,
-			userIdentification,
-			guild,
-			serverConfig
-		)
+class GetServerConfigRoute(loritta: LorittaBot, val website: LorittaWebsite) :
+    RequiresAPIGuildAuthRoute(loritta, "/config") {
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        val serverConfigJson = WebsiteUtils.transformToDashboardConfigurationJson(
+            loritta,
+            website.configTransformers,
+            userIdentification,
+            guild,
+            serverConfig
+        )
 
-		call.respondJson(serverConfigJson)
-	}
+        call.respondJson(serverConfigJson)
+    }
 }

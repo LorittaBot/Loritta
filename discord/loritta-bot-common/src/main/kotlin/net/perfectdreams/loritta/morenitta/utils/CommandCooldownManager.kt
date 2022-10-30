@@ -18,20 +18,20 @@ class CommandCooldownManager(val loritta: LorittaBot) {
     }
 
     private val userCooldown = Caffeine.newBuilder()
-            .expireAfterAccess(15L, TimeUnit.MINUTES)
-            .maximumSize(1_000)
-            .build<Long, Long>()
-            .asMap()
+        .expireAfterAccess(15L, TimeUnit.MINUTES)
+        .maximumSize(1_000)
+        .build<Long, Long>()
+        .asMap()
     private val lastRatelimitMessageForUser = Caffeine.newBuilder()
-            .expireAfterAccess(15L, TimeUnit.MINUTES)
-            .maximumSize(1_000)
-            .build<Long, Long>()
-            .asMap()
+        .expireAfterAccess(15L, TimeUnit.MINUTES)
+        .maximumSize(1_000)
+        .build<Long, Long>()
+        .asMap()
     private val growingRatelimitUsers = Caffeine.newBuilder()
-            .expireAfterAccess(15L, TimeUnit.MINUTES)
-            .maximumSize(1_000)
-            .build<Long, Int>()
-            .asMap()
+        .expireAfterAccess(15L, TimeUnit.MINUTES)
+        .maximumSize(1_000)
+        .build<Long, Int>()
+        .asMap()
 
     suspend fun checkCooldown(ev: LorittaMessageEvent, commandCooldown: Int): CooldownResponse {
         val cooldownTriggeredAt = userCooldown.getOrDefault(ev.author.idLong, 0L)
@@ -85,14 +85,15 @@ class CommandCooldownManager(val loritta: LorittaBot) {
                             it[bannedBy] = null
                             it[valid] = true
                             it[expiresAt] = System.currentTimeMillis() + (Constants.ONE_DAY_IN_MILLISECONDS * 3)
-                            it[reason] = "Spamming too many messages during command cooldown! (Macro/Selfbot/Userbot) Guild ID: ${ev.guild?.idLong}; Channel ID: ${ev.message.channel.idLong}"
+                            it[reason] =
+                                "Spamming too many messages during command cooldown! (Macro/Selfbot/Userbot) Guild ID: ${ev.guild?.idLong}; Channel ID: ${ev.message.channel.idLong}"
                         }
                     }
 
                     return CooldownResponse(
-                            CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT,
-                            cooldownTriggeredAt,
-                            correctedCooldownMultiplied
+                        CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT,
+                        cooldownTriggeredAt,
+                        correctedCooldownMultiplied
                     )
                 }
 
@@ -114,18 +115,18 @@ class CommandCooldownManager(val loritta: LorittaBot) {
 
 
                 return CooldownResponse(
-                        CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT,
-                        cooldownTriggeredAt,
-                        correctedCooldownMultiplied
+                    CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT,
+                    cooldownTriggeredAt,
+                    correctedCooldownMultiplied
                 )
             }
 
             lastRatelimitMessageForUser[ev.author.idLong] = System.currentTimeMillis()
 
             return CooldownResponse(
-                    CooldownStatus.RATE_LIMITED_SEND_MESSAGE,
-                    cooldownTriggeredAt,
-                    correctedCooldownMultiplied
+                CooldownStatus.RATE_LIMITED_SEND_MESSAGE,
+                cooldownTriggeredAt,
+                correctedCooldownMultiplied
             )
         } else {
             lastRatelimitMessageForUser.remove(ev.author.idLong)
@@ -135,30 +136,31 @@ class CommandCooldownManager(val loritta: LorittaBot) {
         userCooldown[ev.author.idLong] = System.currentTimeMillis()
 
         return CooldownResponse(
-                CooldownStatus.OK,
-                cooldownTriggeredAt,
-                commandCooldownMultiplied
+            CooldownStatus.OK,
+            cooldownTriggeredAt,
+            commandCooldownMultiplied
         )
     }
 
     fun removeUserCooldown(user: User) = growingRatelimitUsers.remove(user.idLong)
 
-    private fun getUserCommandCooldown(user: User, commandCooldown: Int) = getUserCommandCooldown(user.idLong, commandCooldown)
+    private fun getUserCommandCooldown(user: User, commandCooldown: Int) =
+        getUserCommandCooldown(user.idLong, commandCooldown)
 
     private fun getUserCommandCooldown(userId: Long, commandCooldown: Int) = commandCooldown *
             Math.max(
-                    1,
-                    (
-                            growingRatelimitUsers.getOrDefault(
-                                    userId, 1
-                            )
-                            )
+                1,
+                (
+                        growingRatelimitUsers.getOrDefault(
+                            userId, 1
+                        )
+                        )
             )
 
     data class CooldownResponse(
-            val status: CooldownStatus,
-            val cooldownTriggeredAt: Long,
-            val commandCooldown: Int
+        val status: CooldownStatus,
+        val cooldownTriggeredAt: Long,
+        val commandCooldown: Int
     )
 
     enum class CooldownStatus(val sendMessage: Boolean) {

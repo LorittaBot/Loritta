@@ -62,7 +62,10 @@ class CortesFlowCommand(
                             locale["commands.command.cortesflow.commandExample", serverConfig.commandPrefix]
                         ).joinToString("\n")
                     )
-                    .setFooter(locale["commands.command.cortesflow.findOutThumbnailSource"], "https://yt3.ggpht.com/a/AATXAJwhhX5JXoYvdDwDI56fQfTDinfs21vzivC-DBW6=s88-c-k-c0x00ffffff-no-rj")
+                    .setFooter(
+                        locale["commands.command.cortesflow.findOutThumbnailSource"],
+                        "https://yt3.ggpht.com/a/AATXAJwhhX5JXoYvdDwDI56fQfTDinfs21vzivC-DBW6=s88-c-k-c0x00ffffff-no-rj"
+                    )
                     .setColor(Color.BLACK)
 
                 for ((_, value) in availableGroupedBy) {

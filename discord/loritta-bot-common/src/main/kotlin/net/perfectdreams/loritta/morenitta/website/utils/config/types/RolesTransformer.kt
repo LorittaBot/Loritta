@@ -18,13 +18,13 @@ object RolesTransformer : ConfigTransformer {
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         return guild.roles.map {
             jsonObject(
-                    "id" to it.id,
-                    "name" to it.name,
-                    "colorRaw" to it.colorRaw,
-                    "canInteract" to guild.retrieveSelfMember().canInteract(it),
-                    "isHoisted" to it.isHoisted,
-                    "isManaged" to it.isManaged,
-                    "isPublicRole" to it.isPublicRole
+                "id" to it.id,
+                "name" to it.name,
+                "colorRaw" to it.colorRaw,
+                "canInteract" to guild.retrieveSelfMember().canInteract(it),
+                "isHoisted" to it.isHoisted,
+                "isManaged" to it.isManaged,
+                "isPublicRole" to it.isPublicRole
             )
         }.toJsonArray()
     }

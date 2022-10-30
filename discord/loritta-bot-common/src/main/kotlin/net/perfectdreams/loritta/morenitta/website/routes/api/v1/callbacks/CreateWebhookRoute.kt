@@ -9,23 +9,23 @@ import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class CreateWebhookRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/discord-webhook") {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-	}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-	override suspend fun onRequest(call: ApplicationCall) {
-		val hostHeader = call.request.hostFromHeader()
-		val code = call.parameters["code"]
+    override suspend fun onRequest(call: ApplicationCall) {
+        val hostHeader = call.request.hostFromHeader()
+        val code = call.parameters["code"]
 
-		val auth = TemmieDiscordAuth(
-			loritta.config.loritta.discord.applicationId.toString(),
-			loritta.config.loritta.discord.clientSecret,
-			code,
-			"https://$hostHeader/api/v1/callbacks/discord-webhook",
-			listOf("webhook.incoming")
-		)
+        val auth = TemmieDiscordAuth(
+            loritta.config.loritta.discord.applicationId.toString(),
+            loritta.config.loritta.discord.clientSecret,
+            code,
+            "https://$hostHeader/api/v1/callbacks/discord-webhook",
+            listOf("webhook.incoming")
+        )
 
-		val authExchangePayload = auth.doTokenExchange()
-		call.respondJson(authExchangePayload["webhook"])
-	}
+        val authExchangePayload = auth.doTokenExchange()
+        call.respondJson(authExchangePayload["webhook"])
+    }
 }

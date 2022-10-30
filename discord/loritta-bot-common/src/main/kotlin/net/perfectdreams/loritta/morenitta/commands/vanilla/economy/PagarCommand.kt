@@ -24,329 +24,342 @@ import net.perfectdreams.loritta.morenitta.utils.*
 import java.math.BigDecimal
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf("pagar"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
-	companion object {
-		private val mutex = Mutex()
-	}
+class PagarCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "pay",
+    listOf("pagar"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
+) {
+    companion object {
+        private val mutex = Mutex()
+    }
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.pay.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.command.pay.examples")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.pay.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.command.pay.examples")
 
-	// TODO: Fix Usage
+    // TODO: Fix Usage
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.rawArgs.size >= 2) {
-			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "sonhos pay")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        if (context.rawArgs.size >= 2) {
+            OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "sonhos pay")
 
-			var economySource = "global"
-			var currentIdx = 0
+            var economySource = "global"
+            var currentIdx = 0
 
-			val payerProfile = context.config.getUserData(loritta, context.userHandle.idLong)
+            val payerProfile = context.config.getUserData(loritta, context.userHandle.idLong)
 
-			val economyConfig = loritta.pudding.transaction {
-				loritta.getOrCreateServerConfig(context.guild.idLong).economyConfig
-			}
+            val economyConfig = loritta.pudding.transaction {
+                loritta.getOrCreateServerConfig(context.guild.idLong).economyConfig
+            }
 
-			val localEconomyEnabled = economyConfig?.enabled == true
+            val localEconomyEnabled = economyConfig?.enabled == true
 
-			if (localEconomyEnabled && economyConfig != null) {
-				val arg0 = context.rawArgs.getOrNull(currentIdx++)
+            if (localEconomyEnabled && economyConfig != null) {
+                val arg0 = context.rawArgs.getOrNull(currentIdx++)
 
-				if (arg0?.equals("global", true) == true || arg0?.equals("local", true) == true) {
-					economySource = arg0
-				} else {
-					val strippedArgs = context.strippedArgs.toMutableList()
+                if (arg0?.equals("global", true) == true || arg0?.equals("local", true) == true) {
+                    economySource = arg0
+                } else {
+                    val strippedArgs = context.strippedArgs.toMutableList()
 
-					var display = strippedArgs.joinToString(" ")
+                    var display = strippedArgs.joinToString(" ")
 
-					if (context.rawArgs.isEmpty()) {
-						display = "usuário quantia"
-					}
+                    if (context.rawArgs.isEmpty()) {
+                        display = "usuário quantia"
+                    }
 
-					// Fonte não encontrada!
-					context.reply(
-							LorittaReply(
-									"Você precisa especificar qual será a forma de pagamento!",
-									Constants.ERROR
-							),
-							LorittaReply(
-									"`${context.config.commandPrefix}pay global $display` — Forma de pagamento: Sonhos (Você possui **${context.lorittaUser.profile.money} Sonhos**!)",
-									prefix = "<:loritta:331179879582269451>",
-									mentionUser = false
-							),
-							LorittaReply(
-									"`${context.config.commandPrefix}pay local $display` — Forma de pagamento: ${economyConfig.economyNamePlural} (Você possui **${payerProfile.money} ${economyConfig.economyNamePlural}**!)",
-									prefix = "\uD83D\uDCB5",
-									mentionUser = false
-							)
-					)
-					return
-				}
-			}
+                    // Fonte não encontrada!
+                    context.reply(
+                        LorittaReply(
+                            "Você precisa especificar qual será a forma de pagamento!",
+                            Constants.ERROR
+                        ),
+                        LorittaReply(
+                            "`${context.config.commandPrefix}pay global $display` — Forma de pagamento: Sonhos (Você possui **${context.lorittaUser.profile.money} Sonhos**!)",
+                            prefix = "<:loritta:331179879582269451>",
+                            mentionUser = false
+                        ),
+                        LorittaReply(
+                            "`${context.config.commandPrefix}pay local $display` — Forma de pagamento: ${economyConfig.economyNamePlural} (Você possui **${payerProfile.money} ${economyConfig.economyNamePlural}**!)",
+                            prefix = "\uD83D\uDCB5",
+                            mentionUser = false
+                        )
+                    )
+                    return
+                }
+            }
 
-			val user = context.getUserAt(currentIdx++)
-			val arg1 = context.rawArgs.getOrNull(currentIdx++) ?: run {
-				explain(context)
-				return
-			}
+            val user = context.getUserAt(currentIdx++)
+            val arg1 = context.rawArgs.getOrNull(currentIdx++) ?: run {
+                explain(context)
+                return
+            }
 
-			if (user == null || context.userHandle == user) {
-				context.reply(
-						LorittaReply(
-								locale["commands.userDoesNotExist", context.rawArgs[0].stripCodeMarks()],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+            if (user == null || context.userHandle == user) {
+                context.reply(
+                    LorittaReply(
+                        locale["commands.userDoesNotExist", context.rawArgs[0].stripCodeMarks()],
+                        Constants.ERROR
+                    )
+                )
+                return
+            }
 
-			val howMuch = NumberUtils.convertShortenedNumberToLong(arg1)
+            val howMuch = NumberUtils.convertShortenedNumberToLong(arg1)
 
-			if (howMuch == null) {
-				context.reply(
-						LorittaReply(
-								locale["commands.invalidNumber", arg1],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+            if (howMuch == null) {
+                context.reply(
+                    LorittaReply(
+                        locale["commands.invalidNumber", arg1],
+                        Constants.ERROR
+                    )
+                )
+                return
+            }
 
-			if (1 > howMuch) {
-				context.reply(
-						LorittaReply(
-								locale["commands.invalidNumber", context.rawArgs[1]],
-								Constants.ERROR
-						)
-				)
-				return
-			}
+            if (1 > howMuch) {
+                context.reply(
+                    LorittaReply(
+                        locale["commands.invalidNumber", context.rawArgs[1]],
+                        Constants.ERROR
+                    )
+                )
+                return
+            }
 
-			// Se o servidor tem uma economia local...
-			val balanceQuantity = if (economySource == "global") {
-				BigDecimal(context.lorittaUser.profile.money)
-			} else {
-				payerProfile.money
-			}
+            // Se o servidor tem uma economia local...
+            val balanceQuantity = if (economySource == "global") {
+                BigDecimal(context.lorittaUser.profile.money)
+            } else {
+                payerProfile.money
+            }
 
-			if (howMuch.toBigDecimal() > balanceQuantity) {
-				context.reply(
-					LorittaReply(
-						locale["commands.command.pay.insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
-						Constants.ERROR
-					),
-					LorittaReply(
-						GACampaigns.sonhosBundlesUpsellDiscordMessage(
-							"https://loritta.website/", // Hardcoded, woo
-							"pay-legacy",
-							"transfer-not-enough-sonhos"
-						),
-						prefix = Emotes.LORI_RICH.asMention,
-						mentionUser = false
-					)
-				)
-				return
-			}
+            if (howMuch.toBigDecimal() > balanceQuantity) {
+                context.reply(
+                    LorittaReply(
+                        locale["commands.command.pay.insufficientFunds", if (economySource == "global") locale["economy.currency.name.plural"] else economyConfig?.economyNamePlural],
+                        Constants.ERROR
+                    ),
+                    LorittaReply(
+                        GACampaigns.sonhosBundlesUpsellDiscordMessage(
+                            "https://loritta.website/", // Hardcoded, woo
+                            "pay-legacy",
+                            "transfer-not-enough-sonhos"
+                        ),
+                        prefix = Emotes.LORI_RICH.asMention,
+                        mentionUser = false
+                    )
+                )
+                return
+            }
 
-			// Hora de transferir!
-			if (economySource == "global") {
-				// User checks
-				if (!checkIfSelfAccountIsOldEnough(context))
-					return
-				if (!checkIfOtherAccountIsOldEnough(context, user))
-					return
-				if (!checkIfSelfAccountGotDailyRecently(context))
-					return
+            // Hora de transferir!
+            if (economySource == "global") {
+                // User checks
+                if (!checkIfSelfAccountIsOldEnough(context))
+                    return
+                if (!checkIfOtherAccountIsOldEnough(context, user))
+                    return
+                if (!checkIfSelfAccountGotDailyRecently(context))
+                    return
 
-				var tellUserLorittaIsGrateful = false
-				val userProfile = loritta.getOrCreateLorittaProfile(user.idLong)
+                var tellUserLorittaIsGrateful = false
+                val userProfile = loritta.getOrCreateLorittaProfile(user.idLong)
 
-				if (user.idLong == loritta.config.loritta.discord.applicationId.toString().toLong()) {
-					// If it is Loritta, she doesn't want to *feel* that she is poor if she is rich
-					// So, to do that, the check is dynamic
-					// If she has 1_000_000 sonhos, she will want *at least* 100_000 sonhos
-					//
-					// To do that is *easy*, just multiply how much sonhos she has by 0.1 and, if the value is below the threshold, deny the sonhos.
-					val threshold = userProfile.money * 0.1
+                if (user.idLong == loritta.config.loritta.discord.applicationId.toString().toLong()) {
+                    // If it is Loritta, she doesn't want to *feel* that she is poor if she is rich
+                    // So, to do that, the check is dynamic
+                    // If she has 1_000_000 sonhos, she will want *at least* 100_000 sonhos
+                    //
+                    // To do that is *easy*, just multiply how much sonhos she has by 0.1 and, if the value is below the threshold, deny the sonhos.
+                    val threshold = userProfile.money * 0.1
 
-					if (25_000 >= userProfile.money) {
-						// If Loritta has almost no sonhos (less than 25k), Loritta will tell the user that she is very grateful for the donation!
-						tellUserLorittaIsGrateful = true
-					} else if (threshold > howMuch) {
-						// If the user is trying to give not enough sonhos, Loritta will think that the user thinks she is poor and will
-						// reject the sonhos
-						context.reply(
-								LorittaReply(
-										context.locale["commands.command.pay.doYouThinkImPoor"],
-										Emotes.LORI_BAN_HAMMER
-								)
-						)
-						return
-					}
-				} else {
-					if (AccountUtils.checkAndSendMessageIfUserIsBanned(context, userProfile))
-						return
-				}
+                    if (25_000 >= userProfile.money) {
+                        // If Loritta has almost no sonhos (less than 25k), Loritta will tell the user that she is very grateful for the donation!
+                        tellUserLorittaIsGrateful = true
+                    } else if (threshold > howMuch) {
+                        // If the user is trying to give not enough sonhos, Loritta will think that the user thinks she is poor and will
+                        // reject the sonhos
+                        context.reply(
+                            LorittaReply(
+                                context.locale["commands.command.pay.doYouThinkImPoor"],
+                                Emotes.LORI_BAN_HAMMER
+                            )
+                        )
+                        return
+                    }
+                } else {
+                    if (AccountUtils.checkAndSendMessageIfUserIsBanned(context, userProfile))
+                        return
+                }
 
-				val quirkyMessage = when {
-					howMuch >= 500_000 -> " ${context.locale.getList("commands.command.pay.randomQuirkyRichMessages").random()}"
-					tellUserLorittaIsGrateful -> " ${context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()}"
-					else -> ""
-				}
+                val quirkyMessage = when {
+                    howMuch >= 500_000 -> " ${
+                        context.locale.getList("commands.command.pay.randomQuirkyRichMessages").random()
+                    }"
 
-				val message = context.reply(
-						LorittaReply(
-								context.locale["commands.command.pay.youAreGoingToTransfer", howMuch, user.asMention, quirkyMessage],
-								Emotes.LORI_RICH
-						),
-						LorittaReply(
-								context.locale["commands.command.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
-								"🤝",
-								mentionUser = false
-						),
-						LorittaReply(
-								context.locale["commands.command.pay.sellDisallowedWarning", "${loritta.config.loritta.website.url}guidelines"],
-								Emotes.LORI_BAN_HAMMER,
-								mentionUser = false
-						)
-				)
+                    tellUserLorittaIsGrateful -> " ${
+                        context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()
+                    }"
 
-				message.onReactionAdd(context) {
-					if (it.reactionEmote.name == "✅") {
-						mutex.withLock {
-							// Multiple users can click on the message at the same time, so inside the mutex we need to check if the
-							// message is still in the interaction cache.
-							//
-							// If it isn't, then it means that the message was already processed!
-							if (loritta.messageInteractionCache.containsKey(it.messageIdLong)) {
-								val usersThatReactedToTheMessage = it.reaction.retrieveUsers()
+                    else -> ""
+                }
 
-								if (context.userHandle in usersThatReactedToTheMessage && user in usersThatReactedToTheMessage) {
-									message.removeAllFunctions(loritta)
+                val message = context.reply(
+                    LorittaReply(
+                        context.locale["commands.command.pay.youAreGoingToTransfer", howMuch, user.asMention, quirkyMessage],
+                        Emotes.LORI_RICH
+                    ),
+                    LorittaReply(
+                        context.locale["commands.command.pay.clickToAcceptTheTransaction", user.asMention, "✅"],
+                        "🤝",
+                        mentionUser = false
+                    ),
+                    LorittaReply(
+                        context.locale["commands.command.pay.sellDisallowedWarning", "${loritta.config.loritta.website.url}guidelines"],
+                        Emotes.LORI_BAN_HAMMER,
+                        mentionUser = false
+                    )
+                )
 
-									logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
-									val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
+                message.onReactionAdd(context) {
+                    if (it.reactionEmote.name == "✅") {
+                        mutex.withLock {
+                            // Multiple users can click on the message at the same time, so inside the mutex we need to check if the
+                            // message is still in the interaction cache.
+                            //
+                            // If it isn't, then it means that the message was already processed!
+                            if (loritta.messageInteractionCache.containsKey(it.messageIdLong)) {
+                                val usersThatReactedToTheMessage = it.reaction.retrieveUsers()
 
-									val body = HttpRequest.post("https://${shard.getUrl(loritta)}/api/v1/loritta/transfer-balance")
-											.userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-											.header("Authorization", loritta.lorittaInternalApiKey.name)
-											.connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
-											.readTimeout(loritta.config.loritta.clusterReadTimeout)
-											.send(
-													gson.toJson(
-															jsonObject(
-																	"giverId" to context.userHandle.idLong,
-																	"receiverId" to user.idLong,
-																	"howMuch" to howMuch
-															)
-													)
-											)
-											.body()
+                                if (context.userHandle in usersThatReactedToTheMessage && user in usersThatReactedToTheMessage) {
+                                    message.removeAllFunctions(loritta)
 
-									val result = JsonParser.parseString(
-											body
-									).obj
+                                    logger.info { "Sending request to transfer sonhos between ${context.userHandle.id} and ${user.id}, $howMuch sonhos will be transferred. Is mutex locked? ${mutex.isLocked}" }
+                                    val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }
 
-									val status = PayStatus.valueOf(result["status"].string)
+                                    val body =
+                                        HttpRequest.post("https://${shard.getUrl(loritta)}/api/v1/loritta/transfer-balance")
+                                            .userAgent(loritta.lorittaCluster.getUserAgent(loritta))
+                                            .header("Authorization", loritta.lorittaInternalApiKey.name)
+                                            .connectTimeout(loritta.config.loritta.clusterConnectionTimeout)
+                                            .readTimeout(loritta.config.loritta.clusterReadTimeout)
+                                            .send(
+                                                gson.toJson(
+                                                    jsonObject(
+                                                        "giverId" to context.userHandle.idLong,
+                                                        "receiverId" to user.idLong,
+                                                        "howMuch" to howMuch
+                                                    )
+                                                )
+                                            )
+                                            .body()
 
-									if (status == PayStatus.SUCCESS) {
-										val finalMoney = result["finalMoney"].double
-										context.reply(
-												LorittaReply(
-														locale["commands.command.pay.transitionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
-															locale["economy.currency.name.singular"]
-														} else {
-															locale["economy.currency.name.plural"]
-														}],
-														"\uD83D\uDCB8"
-												)
-										)
-									}
-								}
-							}
-						}
-					}
-				}
+                                    val result = JsonParser.parseString(
+                                        body
+                                    ).obj
 
-				runCatching { message.addReaction("✅") }
-			} else {
-				val receiverProfile = context.config.getUserData(loritta, user.idLong)
+                                    val status = PayStatus.valueOf(result["status"].string)
 
-				val beforeGiver = payerProfile.money
-				val beforeReceiver = receiverProfile.money
+                                    if (status == PayStatus.SUCCESS) {
+                                        val finalMoney = result["finalMoney"].double
+                                        context.reply(
+                                            LorittaReply(
+                                                locale["commands.command.pay.transitionComplete", user.asMention, finalMoney, if (finalMoney == 1.0) {
+                                                    locale["economy.currency.name.singular"]
+                                                } else {
+                                                    locale["economy.currency.name.plural"]
+                                                }],
+                                                "\uD83D\uDCB8"
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
 
-				loritta.pudding.transaction {
-					payerProfile.money -= howMuch.toBigDecimal()
-					receiverProfile.money += howMuch.toBigDecimal()
-				}
+                runCatching { message.addReaction("✅") }
+            } else {
+                val receiverProfile = context.config.getUserData(loritta, user.idLong)
 
-				logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} economia local) transferiu ${howMuch} economia local para ${receiverProfile.userId} (antes possuia ${beforeReceiver} economia local)")
+                val beforeGiver = payerProfile.money
+                val beforeReceiver = receiverProfile.money
 
-				context.reply(
-						LorittaReply(
-								locale["commands.command.pay.transitionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) {
-									economyConfig?.economyName
-								} else {
-									economyConfig?.economyNamePlural
-								}],
-								"\uD83D\uDCB8"
-						)
-				)
-			}
-		} else {
-			context.explain()
-		}
-	}
+                loritta.pudding.transaction {
+                    payerProfile.money -= howMuch.toBigDecimal()
+                    receiverProfile.money += howMuch.toBigDecimal()
+                }
 
-	private suspend fun checkIfSelfAccountGotDailyRecently(context: CommandContext): Boolean {
-		// Check if the user got daily in the last 14 days before allowing a transaction
-		val dailyRewardInTheLastXDays = AccountUtils.getUserDailyRewardInTheLastXDays(loritta, context.lorittaUser.profile, 14)
+                logger.info("${context.userHandle.id} (antes possuia ${beforeGiver} economia local) transferiu ${howMuch} economia local para ${receiverProfile.userId} (antes possuia ${beforeReceiver} economia local)")
 
-		if (dailyRewardInTheLastXDays == null) {
-			context.reply(
-					LorittaReply(
-							context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
-							Constants.ERROR
-					)
-			)
-			return false
-		}
-		return true
-	}
+                context.reply(
+                    LorittaReply(
+                        locale["commands.command.pay.transitionComplete", user.asMention, howMuch, if (howMuch.toLong() == 1L) {
+                            economyConfig?.economyName
+                        } else {
+                            economyConfig?.economyNamePlural
+                        }],
+                        "\uD83D\uDCB8"
+                    )
+                )
+            }
+        } else {
+            context.explain()
+        }
+    }
 
-	private suspend fun checkIfSelfAccountIsOldEnough(context: CommandContext): Boolean {
-		val epochMillis = context.userHandle.timeCreated.toEpochSecond() * 1000
+    private suspend fun checkIfSelfAccountGotDailyRecently(context: CommandContext): Boolean {
+        // Check if the user got daily in the last 14 days before allowing a transaction
+        val dailyRewardInTheLastXDays =
+            AccountUtils.getUserDailyRewardInTheLastXDays(loritta, context.lorittaUser.profile, 14)
 
-		if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) { // 14 dias
-			context.reply(
-					LorittaReply(
-							context.locale["commands.command.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
-							Constants.ERROR
-					)
-			)
-			return false
-		}
-		return true
-	}
+        if (dailyRewardInTheLastXDays == null) {
+            context.reply(
+                LorittaReply(
+                    context.locale["commands.youNeedToGetDailyRewardBeforeDoingThisAction", context.config.commandPrefix],
+                    Constants.ERROR
+                )
+            )
+            return false
+        }
+        return true
+    }
 
-	private suspend fun checkIfOtherAccountIsOldEnough(context: CommandContext, target: User): Boolean {
-		val epochMillis = target.timeCreated.toEpochSecond() * 1000
+    private suspend fun checkIfSelfAccountIsOldEnough(context: CommandContext): Boolean {
+        val epochMillis = context.userHandle.timeCreated.toEpochSecond() * 1000
 
-		if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 14 dias
-			context.reply(
-					LorittaReply(
-							context.locale["commands.command.pay.otherAccountIsTooNew", target.asMention, 14] + " ${Emotes.LORI_CRYING}",
-							Constants.ERROR
-					)
-			)
-			return false
-		}
-		return true
-	}
+        if (epochMillis + (Constants.ONE_WEEK_IN_MILLISECONDS * 2) > System.currentTimeMillis()) { // 14 dias
+            context.reply(
+                LorittaReply(
+                    context.locale["commands.command.pay.selfAccountIsTooNew", 14] + " ${Emotes.LORI_CRYING}",
+                    Constants.ERROR
+                )
+            )
+            return false
+        }
+        return true
+    }
 
-	enum class PayStatus {
-		INVALID_MONEY_STATUS,
-		NOT_ENOUGH_MONEY,
-		SUCCESS
-	}
+    private suspend fun checkIfOtherAccountIsOldEnough(context: CommandContext, target: User): Boolean {
+        val epochMillis = target.timeCreated.toEpochSecond() * 1000
+
+        if (epochMillis + Constants.ONE_WEEK_IN_MILLISECONDS > System.currentTimeMillis()) { // 14 dias
+            context.reply(
+                LorittaReply(
+                    context.locale["commands.command.pay.otherAccountIsTooNew", target.asMention, 14] + " ${Emotes.LORI_CRYING}",
+                    Constants.ERROR
+                )
+            )
+            return false
+        }
+        return true
+    }
+
+    enum class PayStatus {
+        INVALID_MONEY_STATUS,
+        NOT_ENOUGH_MONEY,
+        SUCCESS
+    }
 }

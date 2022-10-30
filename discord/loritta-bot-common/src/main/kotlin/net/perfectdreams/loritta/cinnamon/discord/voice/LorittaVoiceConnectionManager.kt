@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.cinnamon.discord.voice
 import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
-import dev.kord.gateway.Gateway
 import dev.kord.voice.VoiceConnection
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.channels.Channel
@@ -11,9 +10,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -37,7 +36,8 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
     suspend fun getOrCreateVoiceConnection(
         guildId: Snowflake,
         channelId: Snowflake
-    ): LorittaVoiceConnection = getOrCreateVoiceConnection(loritta.gatewayManager.getGatewayForGuild(guildId), guildId, channelId)
+    ): LorittaVoiceConnection =
+        getOrCreateVoiceConnection(loritta.gatewayManager.getGatewayForGuild(guildId), guildId, channelId)
 
     /**
      * Gets or creates a [LorittaVoiceConnection] on the [guildId] and [channelId]
@@ -116,10 +116,17 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
      * Validates Loritta's voice state in [guildId] for [userId]
      */
     suspend fun validateVoiceState(guildId: Snowflake, userId: Snowflake): VoiceStateValidationResult {
-        val userConnectedVoiceChannelId = loritta.cache.getUserConnectedVoiceChannel(guildId, userId) ?: return VoiceStateValidationResult.UserNotConnectedToAVoiceChannel
+        val userConnectedVoiceChannelId = loritta.cache.getUserConnectedVoiceChannel(guildId, userId)
+            ?: return VoiceStateValidationResult.UserNotConnectedToAVoiceChannel
 
         // Can we talk there?
-        if (!loritta.cache.lorittaHasPermission(guildId, userConnectedVoiceChannelId, Permission.Connect, Permission.Speak))
+        if (!loritta.cache.lorittaHasPermission(
+                guildId,
+                userConnectedVoiceChannelId,
+                Permission.Connect,
+                Permission.Speak
+            )
+        )
             return VoiceStateValidationResult.LorittaDoesntHavePermissionToTalkOnChannel(userConnectedVoiceChannelId) // Looks like we can't...
 
         // Are we already playing something in another channel already?
@@ -141,11 +148,14 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
 
     sealed class VoiceStateValidationResult {
         object UserNotConnectedToAVoiceChannel : VoiceStateValidationResult()
-        class LorittaDoesntHavePermissionToTalkOnChannel(val userConnectedVoiceChannel: Snowflake) : VoiceStateValidationResult()
+        class LorittaDoesntHavePermissionToTalkOnChannel(val userConnectedVoiceChannel: Snowflake) :
+            VoiceStateValidationResult()
+
         class AlreadyPlayingInAnotherChannel(
             val userConnectedVoiceChannel: Snowflake,
             val lorittaConnectedVoiceChannel: Snowflake
         ) : VoiceStateValidationResult()
+
         data class VoiceStateValidationData(
             val userConnectedVoiceChannel: Snowflake,
             val lorittaConnectedVoiceChannel: Snowflake?

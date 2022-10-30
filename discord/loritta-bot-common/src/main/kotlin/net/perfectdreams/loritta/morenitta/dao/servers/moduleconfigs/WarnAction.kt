@@ -6,10 +6,10 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
 class WarnAction(id: EntityID<Long>) : Entity<Long>(id) {
-	companion object : EntityClass<Long, WarnAction>(WarnActions)
+    companion object : EntityClass<Long, WarnAction>(WarnActions)
 
-	var config by WarnActions.config
-	var punishmentAction by WarnActions.punishmentAction
-	var warnCount by WarnActions.warnCount
-	var metadata by WarnActions.metadata
+    var config by WarnActions.config
+    var punishmentAction by WarnActions.punishmentAction
+    var warnCount by WarnActions.warnCount
+    var metadata by WarnActions.metadata
 }

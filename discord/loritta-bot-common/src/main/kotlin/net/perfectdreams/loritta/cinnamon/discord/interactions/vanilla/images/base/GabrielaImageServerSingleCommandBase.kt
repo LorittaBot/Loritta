@@ -4,10 +4,10 @@ import net.perfectdreams.discordinteraktions.common.commands.options.SlashComman
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.SingleImageRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 open class GabrielaImageServerSingleCommandBase(
     loritta: LorittaBot,

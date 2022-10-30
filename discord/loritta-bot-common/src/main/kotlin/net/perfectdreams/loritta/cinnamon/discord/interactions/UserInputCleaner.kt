@@ -18,7 +18,15 @@ suspend fun cleanUpForOutput(
     stripInvites: Boolean = true
 ): String {
     val gContext = context as? GuildApplicationCommandContext
-    return cleanUpForOutput(context.loritta, gContext?.guildId, gContext?.member?.roleIds, input, escapeMentions, stripCodeBackticks, stripInvites)
+    return cleanUpForOutput(
+        context.loritta,
+        gContext?.guildId,
+        gContext?.member?.roleIds,
+        input,
+        escapeMentions,
+        stripCodeBackticks,
+        stripInvites
+    )
 }
 
 /**
@@ -34,7 +42,11 @@ suspend fun cleanUpForOutput(
     stripInvites: Boolean = true
 ): String {
     val canBypassInviteBlocker = if (guildId != null && memberRoleIds != null)
-        loritta.pudding.serverConfigs.hasLorittaPermission(guildId.value, memberRoleIds.map { it.value }, LorittaPermission.ALLOW_INVITES)
+        loritta.pudding.serverConfigs.hasLorittaPermission(
+            guildId.value,
+            memberRoleIds.map { it.value },
+            LorittaPermission.ALLOW_INVITES
+        )
     else
         true // This is in a DM then, so let's allow the user to bypass the check
 

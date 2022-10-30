@@ -16,10 +16,17 @@ object DateUtils {
         }
     }
 
-    fun formatDateDiff(i18nContext: I18nContext, fromEpochMilli: Long, toEpochMilli: Long, maxParts: Int = Int.MAX_VALUE): String {
+    fun formatDateDiff(
+        i18nContext: I18nContext,
+        fromEpochMilli: Long,
+        toEpochMilli: Long,
+        maxParts: Int = Int.MAX_VALUE
+    ): String {
         // https://stackoverflow.com/a/59119149/7271796
-        val argumentFromDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(fromEpochMilli), ZoneId.of("America/Sao_Paulo"))
-        val argumentToDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(toEpochMilli), ZoneId.of("America/Sao_Paulo"))
+        val argumentFromDateTime =
+            LocalDateTime.ofInstant(Instant.ofEpochMilli(fromEpochMilli), ZoneId.of("America/Sao_Paulo"))
+        val argumentToDateTime =
+            LocalDateTime.ofInstant(Instant.ofEpochMilli(toEpochMilli), ZoneId.of("America/Sao_Paulo"))
 
         val fromDateTime: LocalDateTime
         val toDateTime: LocalDateTime

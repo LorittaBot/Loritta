@@ -30,6 +30,7 @@ object SparklyPowerLSXSonhosTransactionTransformer : SonhosTransactionTransforme
                     )
                 )
             }
+
             SparklyPowerLSXTransactionEntryAction.EXCHANGED_FROM_SPARKLYPOWER -> {
                 appendMoneyEarnedEmoji()
                 append(

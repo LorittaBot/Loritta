@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.colorinfo
 
 import java.awt.Color
-import java.util.ArrayList
 
 /**
  * Java Code to get a color name from rgb/hex value/awt color
@@ -207,8 +206,10 @@ object ColorUtils {
     }
 
     fun getColorNameFromColor(color: Color): String {
-        return getColorNameFromRgb(color.red, color.green,
-            color.blue)
+        return getColorNameFromRgb(
+            color.red, color.green,
+            color.blue
+        )
     }
 
     /**

@@ -9,35 +9,40 @@ import net.perfectdreams.loritta.morenitta.tables.BannedUsers
 import org.jetbrains.exposed.sql.deleteWhere
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LorittaUnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lorittaunban", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC, onlyOwner = true) {
-	override fun getDescription(locale: BaseLocale): String {
-		return "Desbanir usuários de usar a Loritta"
-	}
+class LorittaUnbanCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "lorittaunban",
+    category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC,
+    onlyOwner = true
+) {
+    override fun getDescription(locale: BaseLocale): String {
+        return "Desbanir usuários de usar a Loritta"
+    }
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.size >= 1) {
-			val monster = context.args[0].toLowerCase() // ID
-			val profile = loritta.getLorittaProfile(monster)
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        if (context.args.size >= 1) {
+            val monster = context.args[0].toLowerCase() // ID
+            val profile = loritta.getLorittaProfile(monster)
 
-			if (profile == null) {
-				context.reply(
-                        LorittaReply(
-                                "Usuário não possui perfil na Loritta!",
-                                Constants.ERROR
-                        )
-				)
-				return
-			}
+            if (profile == null) {
+                context.reply(
+                    LorittaReply(
+                        "Usuário não possui perfil na Loritta!",
+                        Constants.ERROR
+                    )
+                )
+                return
+            }
 
-			loritta.pudding.transaction {
-				BannedUsers.deleteWhere {
-					BannedUsers.userId eq profile.userId
-				}
-			}
+            loritta.pudding.transaction {
+                BannedUsers.deleteWhere {
+                    BannedUsers.userId eq profile.userId
+                }
+            }
 
-			context.sendMessage(context.getAsMention(true) + "Usuário desbanido com sucesso!")
-		} else {
-			this.explain(context)
-		}
-	}
+            context.sendMessage(context.getAsMention(true) + "Usuário desbanido com sucesso!")
+        } else {
+            this.explain(context)
+        }
+    }
 }

@@ -35,8 +35,9 @@ abstract class CinnamonSlashCommandExecutor(val loritta: LorittaBot) : SlashComm
         context: ApplicationCommandContext,
         args: SlashCommandArguments
     ) {
-        val rootDeclarationClazzName = (context.applicationCommandDeclaration as CinnamonSlashCommandDeclaration).declarationWrapper::class
-            .simpleName ?: "UnknownCommand"
+        val rootDeclarationClazzName =
+            (context.applicationCommandDeclaration as CinnamonSlashCommandDeclaration).declarationWrapper::class
+                .simpleName ?: "UnknownCommand"
 
         val stringifiedArgumentNames = stringifyArgumentNames(args.types)
 

@@ -11,52 +11,56 @@ import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.selectAll
 
-class SonhosTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("sonhos top", "atm top"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
-	override fun command() = create {
-		localizedDescription("commands.command.sonhostop.description")
+class SonhosTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("sonhos top", "atm top"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
+) {
+    override fun command() = create {
+        localizedDescription("commands.command.sonhostop.description")
 
-		executesDiscord {
-			OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "sonhos rank")
+        executesDiscord {
+            OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "sonhos rank")
 
-			var page = args.getOrNull(0)?.toLongOrNull()
+            var page = args.getOrNull(0)?.toLongOrNull()
 
-			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
-				reply(
-					LorittaReply(
-						locale["commands.invalidRankingPage"],
-						Constants.ERROR
-					)
-				)
-				return@executesDiscord
-			}
+            if (page != null && !RankingGenerator.isValidRankingPage(page)) {
+                reply(
+                    LorittaReply(
+                        locale["commands.invalidRankingPage"],
+                        Constants.ERROR
+                    )
+                )
+                return@executesDiscord
+            }
 
-			if (page != null)
-				page -= 1
+            if (page != null)
+                page -= 1
 
-			if (page == null)
-				page = 0
+            if (page == null)
+                page = 0
 
-			val userData = loritta.newSuspendedTransaction {
-				Profiles.selectAll().orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
-					.toList()
-			}
+            val userData = loritta.newSuspendedTransaction {
+                Profiles.selectAll().orderBy(Profiles.money, SortOrder.DESC).limit(5, page * 5)
+                    .toList()
+            }
 
-			sendImage(
-				JVMImage(
-					RankingGenerator.generateRanking(
-						loritta,
-						"Ranking Global",
-						null,
-						userData.map {
-							RankingGenerator.UserRankInformation(
-								it[Profiles.id].value,
-								"${it[Profiles.money]} sonhos"
-							)
-						}
-					)
-				),
-				"rank.png"
-			)
-		}
-	}
+            sendImage(
+                JVMImage(
+                    RankingGenerator.generateRanking(
+                        loritta,
+                        "Ranking Global",
+                        null,
+                        userData.map {
+                            RankingGenerator.UserRankInformation(
+                                it[Profiles.id].value,
+                                "${it[Profiles.money]} sonhos"
+                            )
+                        }
+                    )
+                ),
+                "rank.png"
+            )
+        }
+    }
 }

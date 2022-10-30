@@ -17,120 +17,130 @@ import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class WarnListCommand(loritta: LorittaBot) : AbstractCommand(loritta, "punishmentlist", listOf("listadeavisos", "modlog", "modlogs", "infractions", "warnlist", "warns"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
-	companion object {
-		private val LOCALE_PREFIX = "commands.command"
-	}
+class WarnListCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "punishmentlist",
+    listOf("listadeavisos", "modlog", "modlogs", "infractions", "warnlist", "warns"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
+    companion object {
+        private val LOCALE_PREFIX = "commands.command"
+    }
 
-	override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.warnlist.description")
-	override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.warnlist.examples")
+    override fun getDescriptionKey() = LocaleKeyData("$LOCALE_PREFIX.warnlist.description")
+    override fun getExamplesKey() = LocaleKeyData("$LOCALE_PREFIX.warnlist.examples")
 
-	override fun getUsage(): CommandArguments {
-		return arguments {
-			argument(ArgumentType.USER) {
-				optional = false
-			}
-		}
-	}
+    override fun getUsage(): CommandArguments {
+        return arguments {
+            argument(ArgumentType.USER) {
+                optional = false
+            }
+        }
+    }
 
-	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.KickMembers)
-	}
+    override fun getDiscordPermissions(): List<Permission> {
+        return listOf(Permission.KickMembers)
+    }
 
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
+    override fun canUseInPrivateChannel(): Boolean {
+        return false
+    }
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
-		val user = context.getUserAt(0)
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        val user = context.getUserAt(0)
 
-		if (user != null) {
-			val warns = loritta.newSuspendedTransaction {
-				Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.sortedBy { it.receivedAt } .toMutableList()
-			}
+        if (user != null) {
+            val warns = loritta.newSuspendedTransaction {
+                Warn.find { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }
+                    .sortedBy { it.receivedAt }.toMutableList()
+            }
 
-			if (warns.isEmpty()) {
-				context.reply(
-						context.locale["$LOCALE_PREFIX.warnlist.userDoesntHaveWarns", user.asMention],
-						Constants.ERROR
-				)
-				return
-			}
+            if (warns.isEmpty()) {
+                context.reply(
+                    context.locale["$LOCALE_PREFIX.warnlist.userDoesntHaveWarns", user.asMention],
+                    Constants.ERROR
+                )
+                return
+            }
 
-			val warnPunishments = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
+            val warnPunishments = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
 
-			val embed = EmbedBuilder().apply {
-				setColor(Constants.DISCORD_BLURPLE)
-				setAuthor(user.name, null, user.effectiveAvatarUrl)
-				setTitle("\uD83D\uDE94 ${context.locale["$LOCALE_PREFIX.warnlist.title"]}")
+            val embed = EmbedBuilder().apply {
+                setColor(Constants.DISCORD_BLURPLE)
+                setAuthor(user.name, null, user.effectiveAvatarUrl)
+                setTitle("\uD83D\uDE94 ${context.locale["$LOCALE_PREFIX.warnlist.title"]}")
 
-				val warn = warns.size
-				val nextPunishment = warnPunishments.firstOrNull { it.warnCount == warn + 1 }
+                val warn = warns.size
+                val nextPunishment = warnPunishments.firstOrNull { it.warnCount == warn + 1 }
 
-				if (nextPunishment != null) {
-					val type = when (nextPunishment.punishmentAction) {
-						PunishmentAction.BAN -> context.locale["$LOCALE_PREFIX.ban.punishAction"]
-						PunishmentAction.KICK -> context.locale["$LOCALE_PREFIX.kick.punishAction"]
-						PunishmentAction.MUTE -> context.locale["$LOCALE_PREFIX.mute.punishAction"]
-						else -> throw RuntimeException("Punishment $nextPunishment is not supported")
-					}.toLowerCase()
-					setFooter(context.locale["$LOCALE_PREFIX.warnlist.nextPunishment", type], null)
-				}
+                if (nextPunishment != null) {
+                    val type = when (nextPunishment.punishmentAction) {
+                        PunishmentAction.BAN -> context.locale["$LOCALE_PREFIX.ban.punishAction"]
+                        PunishmentAction.KICK -> context.locale["$LOCALE_PREFIX.kick.punishAction"]
+                        PunishmentAction.MUTE -> context.locale["$LOCALE_PREFIX.mute.punishAction"]
+                        else -> throw RuntimeException("Punishment $nextPunishment is not supported")
+                    }.toLowerCase()
+                    setFooter(context.locale["$LOCALE_PREFIX.warnlist.nextPunishment", type], null)
+                }
 
-				warns.forEachIndexed({ idx, warn -> 
-					addField(
-							context.locale["$LOCALE_PREFIX.warn.punishAction"],
-							"""**${context.locale["$LOCALE_PREFIX.warnlist.common"]} #${idx + 1}**
+                warns.forEachIndexed({ idx, warn ->
+                    addField(
+                        context.locale["$LOCALE_PREFIX.warn.punishAction"],
+                        """**${context.locale["$LOCALE_PREFIX.warnlist.common"]} #${idx + 1}**
 								|**${context.locale["$LOCALE_PREFIX.ban.punishedBy"]}:** <@${warn.punishedById}>
 								|**${context.locale["$LOCALE_PREFIX.ban.punishmentReason"]}:** ${warn.content}
-								|**${context.locale["$LOCALE_PREFIX.warnlist.date"]}:** ${warn.receivedAt.humanize(locale)}
+								|**${context.locale["$LOCALE_PREFIX.warnlist.date"]}:** ${
+                            warn.receivedAt.humanize(
+                                locale
+                            )
+                        }
 							""".trimMargin(),
-							false
-					)
-				})
-			}
+                        false
+                    )
+                })
+            }
 
-			val message = context.sendMessage(context.getAsMention(true), embed.build())
+            val message = context.sendMessage(context.getAsMention(true), embed.build())
 
-			/* message.onReactionAddByAuthor(context) {
-				val idx = Constants.INDEXES.indexOf(it.reactionEmote.name)
+            /* message.onReactionAddByAuthor(context) {
+                val idx = Constants.INDEXES.indexOf(it.reactionEmote.name)
 
-				val warn = warns.getOrNull(idx)
+                val warn = warns.getOrNull(idx)
 
-				if (warn != null) {
-					val punisher = loritta.lorittaShards.getUserById(warn.punishedById)
-					val embed = EmbedBuilder().apply {
-						setColor(Constants.DISCORD_BLURPLE)
-						setAuthor(user.name, null, user.effectiveAvatarUrl)
-						setTitle("\uD83D\uDE94 Aviso")
-						if (punisher != null)
-							setThumbnail(punisher.effectiveAvatarUrl)
-						addField(
-								locale["BAN_PunishedBy"],
-								"<@${warn.punishedById}>",
-								true
-						)
-						addField(
-								locale["BAN_PunishmentReason"],
-								"${warn.content}",
-								true
-						)
-						addField(
-								locale["KYM_DATE"],
-								warn.receivedAt.humanize(locale),
-								true
-						)
-					}
+                if (warn != null) {
+                    val punisher = loritta.lorittaShards.getUserById(warn.punishedById)
+                    val embed = EmbedBuilder().apply {
+                        setColor(Constants.DISCORD_BLURPLE)
+                        setAuthor(user.name, null, user.effectiveAvatarUrl)
+                        setTitle("\uD83D\uDE94 Aviso")
+                        if (punisher != null)
+                            setThumbnail(punisher.effectiveAvatarUrl)
+                        addField(
+                                locale["BAN_PunishedBy"],
+                                "<@${warn.punishedById}>",
+                                true
+                        )
+                        addField(
+                                locale["BAN_PunishmentReason"],
+                                "${warn.content}",
+                                true
+                        )
+                        addField(
+                                locale["KYM_DATE"],
+                                warn.receivedAt.humanize(locale),
+                                true
+                        )
+                    }
 
-					val _message = message.edit(context.getAsMention(true), embed.build())
-				}
-			}
+                    val _message = message.edit(context.getAsMention(true), embed.build())
+                }
+            }
 
-			for (i in 0 until warns.size) {
-				runCatching { message.addReaction(Constants.INDEXES[i]) }
-			} */
-		} else {
-			this.explain(context)
-		}
-	}
+            for (i in 0 until warns.size) {
+                runCatching { message.addReaction(Constants.INDEXES[i]) }
+            } */
+        } else {
+            this.explain(context)
+        }
+    }
 }

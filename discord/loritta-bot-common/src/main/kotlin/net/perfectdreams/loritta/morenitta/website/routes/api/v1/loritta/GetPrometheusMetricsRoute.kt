@@ -11,17 +11,17 @@ import net.perfectdreams.sequins.ktor.BaseRoute
 import java.io.StringWriter
 
 class GetPrometheusMetricsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/metrics") {
-	override suspend fun onRequest(call: ApplicationCall) {
-		val writer = StringWriter()
+    override suspend fun onRequest(call: ApplicationCall) {
+        val writer = StringWriter()
 
-		withContext(Dispatchers.IO) {
-			// Gets all registered Prometheus Metrics and writes to the StringWriter
-			TextFormat.write004(
-					writer,
-					CollectorRegistry.defaultRegistry.metricFamilySamples()
-			)
-		}
+        withContext(Dispatchers.IO) {
+            // Gets all registered Prometheus Metrics and writes to the StringWriter
+            TextFormat.write004(
+                writer,
+                CollectorRegistry.defaultRegistry.metricFamilySamples()
+            )
+        }
 
-		call.respondText(writer.toString())
-	}
+        call.respondText(writer.toString())
+    }
 }

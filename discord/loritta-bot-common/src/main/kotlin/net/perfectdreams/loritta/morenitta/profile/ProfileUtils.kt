@@ -46,9 +46,10 @@ object ProfileUtils {
      * @param  userInfo the user's information
      * @return the reputation count
      */
-    suspend fun getReputationCount(loritta: LorittaBot, userInfo: ProfileUserInfoData) = loritta.newSuspendedTransaction {
-        Reputations.select { Reputations.receivedById eq userInfo.id.toLong() }.count()
-    }
+    suspend fun getReputationCount(loritta: LorittaBot, userInfo: ProfileUserInfoData) =
+        loritta.newSuspendedTransaction {
+            Reputations.select { Reputations.receivedById eq userInfo.id.toLong() }.count()
+        }
 
     /**
      * Gets the user's global position in the experience ranking
@@ -82,9 +83,11 @@ object ProfileUtils {
      * @param  userInfo the user's information
      * @return the user's current local position in the experience ranking
      */
-    suspend fun getLocalProfile(loritta: LorittaBot, guild: ProfileGuildInfoData, userInfo: ProfileUserInfoData) = loritta.newSuspendedTransaction {
-        GuildProfile.find { (GuildProfiles.guildId eq guild.id.toLong()) and (GuildProfiles.userId eq userInfo.id.toLong()) }.firstOrNull()
-    }
+    suspend fun getLocalProfile(loritta: LorittaBot, guild: ProfileGuildInfoData, userInfo: ProfileUserInfoData) =
+        loritta.newSuspendedTransaction {
+            GuildProfile.find { (GuildProfiles.guildId eq guild.id.toLong()) and (GuildProfiles.userId eq userInfo.id.toLong()) }
+                .firstOrNull()
+        }
 
     /**
      * Gets the user's local position in the experience ranking
@@ -92,14 +95,16 @@ object ProfileUtils {
      * @param  localProfile the user's local profile
      * @return the user's current local position in the experience ranking
      */
-    suspend fun getLocalExperiencePosition(loritta: LorittaBot, localProfile: GuildProfile?) = if (localProfile != null && localProfile.xp != 0L) {
-        // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any local XP, we just return null! :3
-        loritta.newSuspendedTransaction {
-            GuildProfiles.select { (GuildProfiles.guildId eq localProfile.guildId) and (GuildProfiles.xp greaterEq localProfile.xp) }.count()
+    suspend fun getLocalExperiencePosition(loritta: LorittaBot, localProfile: GuildProfile?) =
+        if (localProfile != null && localProfile.xp != 0L) {
+            // This is a optimization: Querying the user's position if he has 0 takes too long, if the user does *not* have any local XP, we just return null! :3
+            loritta.newSuspendedTransaction {
+                GuildProfiles.select { (GuildProfiles.guildId eq localProfile.guildId) and (GuildProfiles.xp greaterEq localProfile.xp) }
+                    .count()
+            }
+        } else {
+            null
         }
-    } else {
-        null
-    }
 
     data class MarriageInfo(
         val marriage: Marriage,

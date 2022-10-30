@@ -8,7 +8,11 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.Constants
 
-class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("renamechannel", "renomearcanal"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("renamechannel", "renomearcanal"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }
@@ -49,10 +53,10 @@ class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
 
             val newNameArguments = args.drop(1)
             val toRename = newNameArguments.joinToString(" ")
-                    .trim()
-                    .replace("(\\s\\|\\s|\\|)".toRegex(), "│")
-                    .replace("(\\s&\\s|&)".toRegex(), "＆")
-                    .replace("[\\s]".toRegex(), "-")
+                .trim()
+                .replace("(\\s\\|\\s|\\|)".toRegex(), "│")
+                .replace("(\\s&\\s|&)".toRegex(), "＆")
+                .replace("[\\s]".toRegex(), "-")
             try {
                 if (textChannel != null) {
                     textChannel.modifyTextChannel {
@@ -60,10 +64,10 @@ class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
                     }
 
                     context.reply(
-                            LorittaReply(
-                                    context.locale["$LOCALE_PREFIX.renamechannel.successfullyRenamed"],
-                                    "\uD83C\uDF89"
-                            )
+                        LorittaReply(
+                            context.locale["$LOCALE_PREFIX.renamechannel.successfullyRenamed"],
+                            "\uD83C\uDF89"
+                        )
                     )
                 } else if (voiceChannel != null) {
                     voiceChannel.modifyVoiceChannel {
@@ -71,25 +75,25 @@ class RenameChannelCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lor
                     }
 
                     context.reply(
-                            LorittaReply(
-                                    context.locale["$LOCALE_PREFIX.renamechannel.successfullyRenamed"],
-                                    "\uD83C\uDF89"
-                            )
+                        LorittaReply(
+                            context.locale["$LOCALE_PREFIX.renamechannel.successfullyRenamed"],
+                            "\uD83C\uDF89"
+                        )
                     )
                 } else {
                     context.reply(
-                            LorittaReply(
-                                    context.locale["$LOCALE_PREFIX.renamechannel.channelConflict"],
-                                    Constants.ERROR
-                            )
+                        LorittaReply(
+                            context.locale["$LOCALE_PREFIX.renamechannel.channelConflict"],
+                            Constants.ERROR
+                        )
                     )
                 }
-        } catch (e: Exception) {
+            } catch (e: Exception) {
                 context.reply(
-                        LorittaReply(
-                                locale["commands.command.renamechannel.cantRename"],
-                                Constants.ERROR
-                        )
+                    LorittaReply(
+                        locale["commands.command.renamechannel.cantRename"],
+                        Constants.ERROR
+                    )
                 )
             }
         }

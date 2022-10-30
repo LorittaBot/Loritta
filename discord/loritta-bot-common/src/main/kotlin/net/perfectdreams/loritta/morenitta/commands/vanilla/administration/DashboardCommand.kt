@@ -9,7 +9,11 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
-class DashboardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("dashboard", "painel", "configurar", "config"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class DashboardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("dashboard", "painel", "configurar", "config"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
     override fun command() = create {
         localizedDescription("commands.command.dashboard.description")
         localizedExamples("commands.command.dashboard.examples")
@@ -36,20 +40,23 @@ class DashboardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
             dê o url do dashboard diretamente pro servidor.
             */
 
-            if (args.getOrNull(0) != "\uD83D\uDE45" && !isPrivateChannel && (lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD) || member?.hasPermission(Permission.ManageGuild) == true)) {
+            if (args.getOrNull(0) != "\uD83D\uDE45" && !isPrivateChannel && (lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD) || member?.hasPermission(
+                    Permission.ManageGuild
+                ) == true)
+            ) {
                 reply(
-                        LorittaReply(
-                                "Dashboard: $url",
-                                "<:wumplus:388417805126467594>"
-                        )
+                    LorittaReply(
+                        "Dashboard: $url",
+                        "<:wumplus:388417805126467594>"
+                    )
                 )
             } else {
                 // Se o comando for executando em mensagem privada dê o negócio pra selecionar o servidor
                 reply(
-                        LorittaReply(
-                                "Dashboard: $dashboardUrl",
-                                "<:wumplus:388417805126467594>"
-                        )
+                    LorittaReply(
+                        "Dashboard: $dashboardUrl",
+                        "<:wumplus:388417805126467594>"
+                    )
                 )
             }
         }

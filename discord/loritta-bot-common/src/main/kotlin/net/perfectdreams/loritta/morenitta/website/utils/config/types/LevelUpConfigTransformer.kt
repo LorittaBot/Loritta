@@ -107,12 +107,12 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
             val announcementArray = jsonArray()
             for (announcement in announcements) {
                 announcementArray.add(
-                        jsonObject(
-                                "type" to announcement[LevelAnnouncementConfigs.type].toString(),
-                                "channelId" to announcement[LevelAnnouncementConfigs.channelId]?.toString(),
-                                "onlyIfUserReceivedRoles" to announcement[LevelAnnouncementConfigs.onlyIfUserReceivedRoles],
-                                "message" to announcement[LevelAnnouncementConfigs.message].toString()
-                        )
+                    jsonObject(
+                        "type" to announcement[LevelAnnouncementConfigs.type].toString(),
+                        "channelId" to announcement[LevelAnnouncementConfigs.channelId]?.toString(),
+                        "onlyIfUserReceivedRoles" to announcement[LevelAnnouncementConfigs.onlyIfUserReceivedRoles],
+                        "message" to announcement[LevelAnnouncementConfigs.message].toString()
+                    )
                 )
             }
 
@@ -122,10 +122,11 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
             val rolesByExperienceArray = jsonArray()
             for (roleByExperience in rolesByExperience) {
                 rolesByExperienceArray.add(
-                        jsonObject(
-                                "requiredExperience" to roleByExperience[RolesByExperience.requiredExperience].toString(),
-                                "roles" to roleByExperience[RolesByExperience.roles].map { it.toString() }.toList().toJsonArray()
-                        )
+                    jsonObject(
+                        "requiredExperience" to roleByExperience[RolesByExperience.requiredExperience].toString(),
+                        "roles" to roleByExperience[RolesByExperience.roles].map { it.toString() }.toList()
+                            .toJsonArray()
+                    )
                 )
             }
 
@@ -135,20 +136,20 @@ class LevelUpConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
             val experienceRoleRatesArray = jsonArray()
             for (experienceRoleRate in experienceRoleRates) {
                 experienceRoleRatesArray.add(
-                        jsonObject(
-                                "role" to experienceRoleRate[ExperienceRoleRates.role].toString(),
-                                "rate" to experienceRoleRate[ExperienceRoleRates.rate].toDouble()
-                        )
+                    jsonObject(
+                        "role" to experienceRoleRate[ExperienceRoleRates.role].toString(),
+                        "rate" to experienceRoleRate[ExperienceRoleRates.rate].toDouble()
+                    )
                 )
             }
 
             jsonObject(
-                    "roleGiveType" to (levelConfig?.roleGiveType ?: RoleGiveType.STACK).toString(),
-                    "noXpChannels" to (levelConfig?.noXpChannels?.toList()?.toJsonArray() ?: jsonArray()),
-                    "noXpRoles" to (levelConfig?.noXpRoles?.toList()?.toJsonArray() ?: jsonArray()),
-                    "announcements" to announcementArray,
-                    "rolesByExperience" to rolesByExperienceArray,
-                    "experienceRoleRates" to experienceRoleRatesArray
+                "roleGiveType" to (levelConfig?.roleGiveType ?: RoleGiveType.STACK).toString(),
+                "noXpChannels" to (levelConfig?.noXpChannels?.toList()?.toJsonArray() ?: jsonArray()),
+                "noXpRoles" to (levelConfig?.noXpRoles?.toList()?.toJsonArray() ?: jsonArray()),
+                "announcements" to announcementArray,
+                "rolesByExperience" to rolesByExperienceArray,
+                "experienceRoleRates" to experienceRoleRatesArray
             )
         }
     }

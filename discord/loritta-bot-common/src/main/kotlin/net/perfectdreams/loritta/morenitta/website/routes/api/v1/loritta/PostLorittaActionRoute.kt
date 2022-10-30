@@ -13,19 +13,20 @@ import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class PostLorittaActionRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/action/{actionType}") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val body = withContext(Dispatchers.IO) { call.receiveText() }
-		val actionType = call.parameters["actionType"]
+class PostLorittaActionRoute(loritta: LorittaBot) :
+    RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/action/{actionType}") {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
+        val body = withContext(Dispatchers.IO) { call.receiveText() }
+        val actionType = call.parameters["actionType"]
 
-		val json = JsonParser.parseString(body)
+        val json = JsonParser.parseString(body)
 
-		when (actionType) {
-			"economy" -> {
-				PaymentUtils.economyEnabled = json["enabled"].bool
-			}
-		}
+        when (actionType) {
+            "economy" -> {
+                PaymentUtils.economyEnabled = json["enabled"].bool
+            }
+        }
 
-		call.respondJson(jsonObject())
-	}
+        call.respondJson(jsonObject())
+    }
 }

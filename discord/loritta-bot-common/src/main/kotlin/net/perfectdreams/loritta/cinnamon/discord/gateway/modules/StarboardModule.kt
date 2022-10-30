@@ -26,17 +26,17 @@ import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.ContentTypeUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.StarboardConfig
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingServerConfigRoot
 import net.perfectdreams.loritta.cinnamon.pudding.tables.StarboardMessages
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
@@ -73,6 +73,7 @@ class StarboardModule(private val m: LorittaBot) : ProcessDiscordEventsModule() 
                     event.reaction.emoji.name
                 )
             }
+
             is MessageReactionRemove -> {
                 handleStarboardReaction(
                     event.reaction.guildId.value ?: return ModuleResult.Continue,
@@ -81,6 +82,7 @@ class StarboardModule(private val m: LorittaBot) : ProcessDiscordEventsModule() 
                     event.reaction.emoji.name
                 )
             }
+
             is MessageReactionRemoveEmoji -> {
                 handleStarboardReaction(
                     event.reaction.guildId,
@@ -89,6 +91,7 @@ class StarboardModule(private val m: LorittaBot) : ProcessDiscordEventsModule() 
                     event.reaction.emoji.name
                 )
             }
+
             is MessageReactionRemoveAll -> {
                 handleStarboardReaction(
                     event.reactions.guildId.value ?: return ModuleResult.Continue,
@@ -97,6 +100,7 @@ class StarboardModule(private val m: LorittaBot) : ProcessDiscordEventsModule() 
                     STAR_REACTION // We only want the code to check if it should be removed from the starboard
                 )
             }
+
             else -> {}
         }
 
@@ -113,8 +117,9 @@ class StarboardModule(private val m: LorittaBot) : ProcessDiscordEventsModule() 
         if (emojiName != STAR_REACTION)
             return
 
-        val lockKey = UUID.nameUUIDFromBytes("starboard-message:$guildId:$channelId:$messageId".toByteArray(Charsets.UTF_8))
-            .mostSignificantBits
+        val lockKey =
+            UUID.nameUUIDFromBytes("starboard-message:$guildId:$channelId:$messageId".toByteArray(Charsets.UTF_8))
+                .mostSignificantBits
 
         logger.info { "Creating lock $lockKey for Starboard Message ${messageId}..." }
 
@@ -242,7 +247,8 @@ class StarboardModule(private val m: LorittaBot) : ProcessDiscordEventsModule() 
         return m.pudding.transaction {
             val serverConfig = m.pudding.serverConfigs.getServerConfigRoot(guildId.value)
                 ?: return@transaction StarboardMessageDatabaseResult.ServerConfigDoesNotExist
-            val starboardConfig = serverConfig.getStarboardConfig() ?: return@transaction StarboardMessageDatabaseResult.StarboardConfigDoesNotExist
+            val starboardConfig = serverConfig.getStarboardConfig()
+                ?: return@transaction StarboardMessageDatabaseResult.StarboardConfigDoesNotExist
 
             val starboardId = starboardConfig.starboardChannelId
             // Ignore if someone is trying to be "haha i'm so funni" trying to add stars to the starboard channel
@@ -354,12 +360,15 @@ class StarboardModule(private val m: LorittaBot) : ProcessDiscordEventsModule() 
         description = message.content.shortenWithEllipsis(2048)
 
         // Set the embed's image to the first attachment in the message
-        image = message.attachments.firstOrNull { it.contentType.value in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES }?.url
+        image =
+            message.attachments.firstOrNull { it.contentType.value in ContentTypeUtils.COMMON_IMAGE_CONTENT_TYPES }?.url
 
-        thumbnailUrl = message.stickers.value?.firstOrNull { it.formatType == MessageStickerType.PNG || it.formatType == MessageStickerType.APNG }?.let {
-            // TODO: Move this to Discord InteraKTions' Icon class
-            "https://cdn.discordapp.com/stickers/${it.id}.png"
-        }
+        thumbnailUrl =
+            message.stickers.value?.firstOrNull { it.formatType == MessageStickerType.PNG || it.formatType == MessageStickerType.APNG }
+                ?.let {
+                    // TODO: Move this to Discord InteraKTions' Icon class
+                    "https://cdn.discordapp.com/stickers/${it.id}.png"
+                }
 
         color = Color(255, 255, (255 - (count * 15)).coerceAtLeast(0))
         timestamp = message.timestamp

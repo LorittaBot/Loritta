@@ -17,7 +17,7 @@ class DebugWebServer {
     @OptIn(ExperimentalCoroutinesApi::class)
     fun start() {
         // 3003 = 30/03, Loritta's birthday!
-        val server = embeddedServer(Netty, 3003) {
+        val server = embeddedServer(Netty, 3004) {
             routing {
                 get("/coroutines") {
                     val os = ByteArrayOutputStream()

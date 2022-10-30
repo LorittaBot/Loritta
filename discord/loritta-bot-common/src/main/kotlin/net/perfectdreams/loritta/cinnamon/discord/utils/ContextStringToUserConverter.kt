@@ -16,7 +16,8 @@ object ContextStringToUserConverter {
                 .removeSuffix(">")
                 .toLongOrNull() ?: return null // If the input is not a long, then return the input
 
-            val user = context.interaKTionsContext.interactionData.resolved?.users?.get(Snowflake(userId)) ?: return null // If there isn't any matching user, then return null
+            val user = context.interaKTionsContext.interactionData.resolved?.users?.get(Snowflake(userId))
+                ?: return null // If there isn't any matching user, then return null
             return user
         }
 

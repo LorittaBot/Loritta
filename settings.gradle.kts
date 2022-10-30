@@ -80,3 +80,7 @@ include(":web:dashboard:spicy-frontend")
 // ===[ MISC ]===
 include(":temmie-discord-auth")
 include(":shard-controller")
+
+// ===[ DEVIOUS CACHE ]===
+include(":devious-cache:devious-data")
+include(":devious-cache:devious-server")

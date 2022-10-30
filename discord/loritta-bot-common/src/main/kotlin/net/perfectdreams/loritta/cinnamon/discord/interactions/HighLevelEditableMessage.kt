@@ -12,13 +12,15 @@ interface HighLevelEditableMessage {
 }
 
 class ComponentContextHighLevelEditableMessage(private val context: ComponentContext) : HighLevelEditableMessage {
-    override suspend fun editMessage(message: InteractionOrFollowupMessageModifyBuilder) = context.interaKTionsContext.updateMessage(message)
+    override suspend fun editMessage(message: InteractionOrFollowupMessageModifyBuilder) =
+        context.interaKTionsContext.updateMessage(message)
 }
 
 class SlashContextHighLevelEditableMessage(private val originalMessage: EditableMessage) : HighLevelEditableMessage {
-    override suspend fun editMessage(message: InteractionOrFollowupMessageModifyBuilder) = originalMessage.editMessage(message)
+    override suspend fun editMessage(message: InteractionOrFollowupMessageModifyBuilder) =
+        originalMessage.editMessage(message)
 }
 
 // This isn't in the interface because we want this to be inline, allowing users to use suspendable functions within the builder
-suspend inline fun HighLevelEditableMessage.editMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit))
-        = editMessage(InteractionOrFollowupMessageModifyBuilder().apply(block))
+suspend inline fun HighLevelEditableMessage.editMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit)) =
+    editMessage(InteractionOrFollowupMessageModifyBuilder().apply(block))

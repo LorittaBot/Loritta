@@ -25,9 +25,9 @@ class CustomCommandsConfigTransformer(val loritta: LorittaBot) : ConfigTransform
                 CustomGuildCommands.guild eq serverConfig.id.value
             }.map {
                 CustomCommand(
-                        it[CustomGuildCommands.label],
-                        it[CustomGuildCommands.codeType],
-                        it[CustomGuildCommands.code]
+                    it[CustomGuildCommands.label],
+                    it[CustomGuildCommands.codeType],
+                    it[CustomGuildCommands.code]
                 )
             }
         }
@@ -43,7 +43,8 @@ class CustomCommandsConfigTransformer(val loritta: LorittaBot) : ConfigTransform
             }
 
             // And now we reinsert the new commands
-            val entries = Json.decodeFromString(ListSerializer(CustomCommand.serializer()), payload["entries"].array.toString())
+            val entries =
+                Json.decodeFromString(ListSerializer(CustomCommand.serializer()), payload["entries"].array.toString())
 
             for (entry in entries) {
                 CustomGuildCommands.insert {

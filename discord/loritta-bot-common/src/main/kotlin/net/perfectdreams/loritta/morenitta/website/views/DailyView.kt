@@ -33,7 +33,8 @@ class DailyView(
     override fun DIV.generateContent() {
         style {
             unsafe {
-                raw("""
+                raw(
+                    """
     .scene {
     width: 100px;
     height: 100px;
@@ -104,7 +105,8 @@ class DailyView(
     50% {transform: rotateY(180deg); }
     100% {transform: rotateY(360deg); }
     }
-    """)
+    """
+                )
             }
         }
         div(classes = "odd-wrapper") {
@@ -130,24 +132,24 @@ class DailyView(
                     p {
                         style = "color: #f04747;"
                         b {
-                            + "Atenção: "
+                            +"Atenção: "
                         }
-                        + "Compra e venda de sonhos com terceiros não são responsabilidade da equipe da Loritta! Se você for roubado (scamming), nós não iremos recuperar seus sonhos e se você reclamar com a equipe da Loritta você será banido, pois resolver problemas de roubos fora da Loritta não é nosso trabalho. Se você comprar/vender sonhos ou outros produtos com valores monetários (por exemplo: Discord Nitro) com terceiros, você e o seu comprador/vendedor correm risco de serem banidos caso sejam denunciados para a equipe. Muitos \"vendedores\" usam cartões clonados para vender tais produtos, logo você está correndo risco de estar cometendo um ato ilegal ao comprar com terceiros. Dar sonhos como recompensa por entrarem em um servidor também é proibido e é contra os termos de uso do Discord."
-                        + " "
-                        + "Leia mais sobre as regras da Loritta "
+                        +"Compra e venda de sonhos com terceiros não são responsabilidade da equipe da Loritta! Se você for roubado (scamming), nós não iremos recuperar seus sonhos e se você reclamar com a equipe da Loritta você será banido, pois resolver problemas de roubos fora da Loritta não é nosso trabalho. Se você comprar/vender sonhos ou outros produtos com valores monetários (por exemplo: Discord Nitro) com terceiros, você e o seu comprador/vendedor correm risco de serem banidos caso sejam denunciados para a equipe. Muitos \"vendedores\" usam cartões clonados para vender tais produtos, logo você está correndo risco de estar cometendo um ato ilegal ao comprar com terceiros. Dar sonhos como recompensa por entrarem em um servidor também é proibido e é contra os termos de uso do Discord."
+                        +" "
+                        +"Leia mais sobre as regras da Loritta "
                         a(href = "/guidelines") {
-                            + "clicando aqui"
+                            +"clicando aqui"
                         }
-                        + "."
+                        +"."
                     }
 
                     p {
                         style = "color: #f04747;"
-                        + "Se você deseja comprar sonhos de uma forma segura que ainda por cima ajuda a Loritta ficar online, visite a nossa loja de sonhos "
+                        +"Se você deseja comprar sonhos de uma forma segura que ainda por cima ajuda a Loritta ficar online, visite a nossa loja de sonhos "
                         a(href = "/user/@me/dashboard/bundles") {
-                            + "clicando aqui"
+                            +"clicando aqui"
                         }
-                        + "!"
+                        +"!"
                     }
                 }
             }
@@ -155,7 +157,7 @@ class DailyView(
             div(classes = "media") {
                 div(classes = "media-body") {
                     h1 {
-                        + "Prêmio Diário"
+                        +"Prêmio Diário"
                     }
 
                     div {
@@ -205,7 +207,7 @@ class DailyView(
                             }
 
                             p {
-                                + "Pegue o seu prêmio diário para conseguir sonhos!"
+                                +"Pegue o seu prêmio diário para conseguir sonhos!"
                             }
 
                             div {
@@ -219,7 +221,7 @@ class DailyView(
 
                                     i(classes = "fas fa-gift") {}
 
-                                    + " Pegar Prêmio"
+                                    +" Pegar Prêmio"
                                 }
                             }
                         }
@@ -253,23 +255,23 @@ class DailyView(
             div(classes = "media") {
                 div(classes = "media-body") {
                     h1 {
-                        + "Mas... o que são sonhos?"
+                        +"Mas... o que são sonhos?"
                     }
 
                     p {
-                        + "Sonhos são a moeda que você pode utilizar na Loritta. Você pode usar sonhos para apostar na Lorifa, comprar novos designs para o perfil, casar, comprar raspadinhas e muito mais!"
+                        +"Sonhos são a moeda que você pode utilizar na Loritta. Você pode usar sonhos para apostar na Lorifa, comprar novos designs para o perfil, casar, comprar raspadinhas e muito mais!"
                     }
                     p {
-                        + "Para apostar na rifa, use `+rifa`!"
+                        +"Para apostar na rifa, use `+rifa`!"
                     }
                     p {
-                        + "Você pode casar com a pessoa que você tanto ama com `+casar`!"
+                        +"Você pode casar com a pessoa que você tanto ama com `+casar`!"
                     }
                     p {
-                        + "Envie sonhos para seus amigos e amigas com `+pay`!"
+                        +"Envie sonhos para seus amigos e amigas com `+pay`!"
                     }
                     p {
-                        + "Você pode comprar novos designs para o seu perfil no `+profile shop`!"
+                        +"Você pode comprar novos designs para o seu perfil no `+profile shop`!"
                     }
                 }
                 div(classes = "media-figure") {
@@ -280,10 +282,12 @@ class DailyView(
 
         script {
             unsafe {
-                raw("""
+                raw(
+                    """
     function recaptchaCallback(response) {
         this['spicy-morenitta'].net.perfectdreams.spicymorenitta.routes.DailyRoute.Companion.recaptchaCallback(response)
-    }""")
+    }"""
+                )
             }
         }
     }

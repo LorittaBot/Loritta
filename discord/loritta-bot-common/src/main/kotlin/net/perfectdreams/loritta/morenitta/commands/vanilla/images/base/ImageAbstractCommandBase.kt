@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
  * should extend this class!
  */
 abstract class ImageAbstractCommandBase(loritta: LorittaBot, labels: List<String>) : LorittaAbstractCommandBase(
-		loritta,
-		labels,
-		CommandCategory.IMAGES
+    loritta,
+    labels,
+    CommandCategory.IMAGES
 )

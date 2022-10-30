@@ -7,9 +7,9 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import net.perfectdreams.gabrielaimageserver.exceptions.ContentLengthTooLargeException
 import net.perfectdreams.gabrielaimageserver.exceptions.ImageTooLargeException
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.UnicodeEmojiManager
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.*
 import java.awt.geom.RoundRectangle2D
 import java.awt.image.BufferedImage
@@ -101,6 +101,7 @@ object ImageUtils {
                     val emoteId = matchResult.groupValues[3]
                     sections.add(DrawableDiscordEmote(Snowflake(emoteId), animated))
                 }
+
                 is UnicodeEmoteRegexMatch -> {
                     sections.add(DrawableUnicodeEmote(matchResult.value))
                 }
@@ -161,7 +162,8 @@ object ImageUtils {
         for (section in sections) {
             when (section) {
                 is DrawableText -> {
-                    val split = section.text.split("((?<= )|(?= ))".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() // Nós precisamos deixar os espaços entre os splits!
+                    val split = section.text.split("((?<= )|(?= ))".toRegex()).dropLastWhile { it.isEmpty() }
+                        .toTypedArray() // Nós precisamos deixar os espaços entre os splits!
                     for (str in split) {
                         var width = fontMetrics.stringWidth(str) // Width do texto que nós queremos colocar
                         for (c in str.toCharArray()) { // E agora nós iremos printar todos os chars
@@ -173,6 +175,7 @@ object ImageUtils {
                         }
                     }
                 }
+
                 is DrawableDiscordEmote -> {
                     val emoteImage = emojiImageCache.getDiscordEmoji(section.emoteId, dev.kord.rest.Image.Size.Size64)
 
@@ -187,6 +190,7 @@ object ImageUtils {
                         currentX += emojiWidth
                     }
                 }
+
                 is DrawableUnicodeEmote -> {
                     val emoteImage = emojiImageCache.getTwitterEmoji(section.emoji.codePoints().toList())
 
@@ -205,7 +209,13 @@ object ImageUtils {
         }
     }
 
-    fun drawStringAndShortenWithEllipsisIfOverflow(graphics: Graphics, text: String, x: Int, y: Int, maxX: Int? = null) {
+    fun drawStringAndShortenWithEllipsisIfOverflow(
+        graphics: Graphics,
+        text: String,
+        x: Int,
+        y: Int,
+        maxX: Int? = null
+    ) {
         val fontMetrics = graphics.fontMetrics
         val font = graphics.font
 
@@ -264,13 +274,22 @@ object ImageUtils {
      * @param graphics Graphics usado para escrever a imagem
      * @return Y final
      */
-    fun drawStringWrapSpaces(text: String, startX: Int, startY: Int, endX: Int, endY: Int, fontMetrics: FontMetrics, graphics: Graphics): Int {
+    fun drawStringWrapSpaces(
+        text: String,
+        startX: Int,
+        startY: Int,
+        endX: Int,
+        endY: Int,
+        fontMetrics: FontMetrics,
+        graphics: Graphics
+    ): Int {
         val lineHeight = fontMetrics.height // Aqui é a altura da nossa fonte
 
         var currentX = startX // X atual
         var currentY = startY // Y atual
 
-        val split = text.split("((?<= )|(?= ))".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() // Nós precisamos deixar os espaços entre os splits!
+        val split = text.split("((?<= )|(?= ))".toRegex()).dropLastWhile { it.isEmpty() }
+            .toTypedArray() // Nós precisamos deixar os espaços entre os splits!
         for (str in split) {
             var width = fontMetrics.stringWidth(str) // Width do texto que nós queremos colocar
             if (currentX + width > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
@@ -340,7 +359,14 @@ object ImageUtils {
      * @param outlineColor the color of the outline
      * @param power        the thickness of the outline
      */
-    fun drawStringWithOutline(graphics: Graphics, text: String, x: Int, y: Int, outlineColor: Color = Color.BLACK, power: Int = 2) {
+    fun drawStringWithOutline(
+        graphics: Graphics,
+        text: String,
+        x: Int,
+        y: Int,
+        outlineColor: Color = Color.BLACK,
+        power: Int = 2
+    ) {
         val originalColor = graphics.color
         graphics.color = outlineColor
         for (powerX in -power..power) {
@@ -369,7 +395,16 @@ object ImageUtils {
         g2.composite = AlphaComposite.Src
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
         g2.color = Color.WHITE
-        g2.fill(RoundRectangle2D.Float(0f, 0f, w.toFloat(), h.toFloat(), cornerRadius.toFloat(), cornerRadius.toFloat()))
+        g2.fill(
+            RoundRectangle2D.Float(
+                0f,
+                0f,
+                w.toFloat(),
+                h.toFloat(),
+                cornerRadius.toFloat(),
+                cornerRadius.toFloat()
+            )
+        )
 
         // ... then compositing the image on top,
         // using the white shape from above as alpha source
@@ -397,7 +432,16 @@ object ImageUtils {
      * @return the image as a BufferedImage or null, if the image is considered unsafe
      */
     @JvmOverloads
-    suspend fun downloadImage(url: String, connectTimeout: Int = 10, readTimeout: Int = 60, maxSize: Int = 8_388_608 /* 8mib */, overrideTimeoutsForSafeDomains: Boolean = false, maxWidth: Int = 2_500, maxHeight: Int = 2_500, bypassSafety: Boolean = false): BufferedImage? {
+    suspend fun downloadImage(
+        url: String,
+        connectTimeout: Int = 10,
+        readTimeout: Int = 60,
+        maxSize: Int = 8_388_608 /* 8mib */,
+        overrideTimeoutsForSafeDomains: Boolean = false,
+        maxWidth: Int = 2_500,
+        maxHeight: Int = 2_500,
+        bypassSafety: Boolean = false
+    ): BufferedImage? {
         val imageUrl = URL(url)
         val connection = imageUrl.openConnection() as HttpURLConnection
 
@@ -409,7 +453,14 @@ object ImageUtils {
         val contentLength = connection.getHeaderFieldInt("Content-Length", 0)
 
         if (contentLength > maxSize) {
-            logger.warn { "Image $url exceeds the maximum allowed Content-Length! ${connection.getHeaderFieldInt("Content-Length", 0)} > $maxSize"}
+            logger.warn {
+                "Image $url exceeds the maximum allowed Content-Length! ${
+                    connection.getHeaderFieldInt(
+                        "Content-Length",
+                        0
+                    )
+                } > $maxSize"
+            }
             throw ContentLengthTooLargeException()
         }
 
@@ -421,7 +472,7 @@ object ImageUtils {
             connection.readTimeout = readTimeout
         }
 
-        logger.debug { "Reading image $url; connectTimeout = $connectTimeout; readTimeout = $readTimeout; maxSize = $maxSize bytes; overrideTimeoutsForSafeDomains = $overrideTimeoutsForSafeDomains; maxWidth = $maxWidth; maxHeight = $maxHeight"}
+        logger.debug { "Reading image $url; connectTimeout = $connectTimeout; readTimeout = $readTimeout; maxSize = $maxSize bytes; overrideTimeoutsForSafeDomains = $overrideTimeoutsForSafeDomains; maxWidth = $maxWidth; maxHeight = $maxHeight" }
 
         val imageBytes = try {
             withContext(Dispatchers.IO) {
@@ -440,10 +491,10 @@ object ImageUtils {
 
         val imageInfo = SimpleImageInfo(imageBytes)
 
-        logger.debug { "Image $url was successfully downloaded! width = ${imageInfo.width}; height = ${imageInfo.height}; mimeType = ${imageInfo.mimeType}"}
+        logger.debug { "Image $url was successfully downloaded! width = ${imageInfo.width}; height = ${imageInfo.height}; mimeType = ${imageInfo.mimeType}" }
 
         if (imageInfo.width > maxWidth || imageInfo.height > maxHeight) {
-            logger.warn { "Image $url exceeds the maximum allowed width/height! ${imageInfo.width} > $maxWidth; ${imageInfo.height} > $maxHeight"}
+            logger.warn { "Image $url exceeds the maximum allowed width/height! ${imageInfo.width} > $maxWidth; ${imageInfo.height} > $maxHeight" }
             throw ImageTooLargeException()
         }
 

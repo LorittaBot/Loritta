@@ -17,7 +17,8 @@ object EmojiFightBetSonhosTransactionTransformer : SonhosTransactionTransformer<
         transaction: EmojiFightBetSonhosTransaction
     ): suspend StringBuilder.() -> (Unit) = {
         val wonTheBet = transaction.user == transaction.winner
-        val winnerUserInfo = cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
+        val winnerUserInfo =
+            cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
         // We don't store the loser because there may be multiple losers, so we only check that if the user isn't the "winner", then they are the loser
         val loserUserInfo = cachedUserInfo.id
 

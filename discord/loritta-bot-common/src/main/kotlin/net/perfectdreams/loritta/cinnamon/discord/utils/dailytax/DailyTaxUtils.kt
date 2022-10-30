@@ -3,13 +3,13 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.dailytax
 import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
+import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
+import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds
 import net.perfectdreams.loritta.common.utils.DailyTaxThresholds.THRESHOLDS
 import net.perfectdreams.loritta.common.utils.PendingImportantNotificationState
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.cinnamon.pudding.tables.DailyTaxUsersToSkipDirectMessages
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Payments
-import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.sum
@@ -28,7 +28,11 @@ object DailyTaxUtils {
      * @param dayOffset offsets (plusDays) the current day by [dayOffset]
      * @param block     block that will be executed when a inactive daily user is found
      */
-    fun getAndProcessInactiveDailyUsers(lorittaId: Snowflake, dayOffset: Long, block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)) {
+    fun getAndProcessInactiveDailyUsers(
+        lorittaId: Snowflake,
+        dayOffset: Long,
+        block: (threshold: DailyTaxThresholds.DailyTaxThreshold, inactiveDailyUser: InactiveDailyUser) -> (Unit)
+    ) {
         val lorittaId = lorittaId.toLong()
         val moneySum = Payments.money.sum()
 

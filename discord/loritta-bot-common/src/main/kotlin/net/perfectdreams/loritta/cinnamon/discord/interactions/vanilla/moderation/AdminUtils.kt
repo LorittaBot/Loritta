@@ -35,10 +35,17 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 object AdminUtils {
     private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
 
-    suspend fun appendCheckResultReason(loritta: LorittaBot, i18nContext: I18nContext, punisherMember: Member, builder: MessageBuilder, check: InteractionCheck) {
+    suspend fun appendCheckResultReason(
+        loritta: LorittaBot,
+        i18nContext: I18nContext,
+        punisherMember: Member,
+        builder: MessageBuilder,
+        check: InteractionCheck
+    ) {
         val (issuer, target, result) = check
 
-        val punisherMemberPermissions = punisherMember.getPermissions() // TODO: Get permissions from the interaction itself
+        val punisherMemberPermissions =
+            punisherMember.getPermissions() // TODO: Get permissions from the interaction itself
 
         builder.apply {
             when (result) {
@@ -48,6 +55,7 @@ object AdminUtils {
                         Emotes.LoriBonk
                     )
                 }
+
                 InteractionCheckResult.TARGET_ROLE_POSITION_HIGHER_OR_EQUAL_TO_ISSUER -> {
                     if (issuer.id == loritta.config.loritta.discord.applicationId) {
                         styled(
@@ -63,7 +71,11 @@ object AdminUtils {
                         }
                     } else {
                         styled(
-                            i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.PunisherRoleTooLow(target.mention)),
+                            i18nContext.get(
+                                BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.PunisherRoleTooLow(
+                                    target.mention
+                                )
+                            ),
                             Emotes.LoriBonk
                         )
 
@@ -75,6 +87,7 @@ object AdminUtils {
                         }
                     }
                 }
+
                 InteractionCheckResult.TRYING_TO_INTERACT_WITH_SELF -> {
                     if (issuer.id == loritta.config.loritta.discord.applicationId) {
                         styled(
@@ -83,11 +96,16 @@ object AdminUtils {
                         )
                     } else {
                         styled(
-                            i18nContext.get(BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.TargetIsSelf(issuer.mention)),
+                            i18nContext.get(
+                                BanCommand.CATEGORY_I18N_PREFIX.PunishmentInteractFailures.TargetIsSelf(
+                                    issuer.mention
+                                )
+                            ),
                             Emotes.LoriBonk
                         )
                     }
                 }
+
                 InteractionCheckResult.SUCCESS -> {
                     error("This should never happen!")
                 }
@@ -135,7 +153,8 @@ object AdminUtils {
 
             if (sendPunishmentToPunishmentLog && punishmentLogChannelId != null && punishmentMessageForType != null) {
                 if (canTalkInPunishmentLogChannel == null) {
-                    val cachedLorittaPermissions = loritta.cache.getLazyCachedLorittaPermissions(guild.id, punishmentLogChannelId)
+                    val cachedLorittaPermissions =
+                        loritta.cache.getLazyCachedLorittaPermissions(guild.id, punishmentLogChannelId)
                     canTalkInPunishmentLogChannel = cachedLorittaPermissions.canTalk()
                 }
 
@@ -176,7 +195,12 @@ object AdminUtils {
             guild.ban(
                 user.id
             ) {
-                this.reason = i18nContext.get(I18nKeysData.Commands.Category.Moderation.AuditLogPunishmentLog(punisher.tag, reason))
+                this.reason = i18nContext.get(
+                    I18nKeysData.Commands.Category.Moderation.AuditLogPunishmentLog(
+                        punisher.tag,
+                        reason
+                    )
+                )
                     .shortenWithEllipsis(512) // Max audit log entry size
             }
         }
@@ -191,8 +215,16 @@ object AdminUtils {
         embed {
             author(punisher.tag, null, punisher.effectiveAvatar.url)
             title = "\uD83D\uDEAB ${i18nContext.get(I18nKeysData.Commands.Command.Ban.YouGotPunished(guild.name))}"
-            field(i18nContext.get(I18nKeysData.Commands.Category.Moderation.PunishedBy), "${punisher.username}#${punisher.discriminator}", false)
-            field(i18nContext.get(I18nKeysData.Commands.Category.Moderation.Reason), reason.shortenWithEllipsis(1024), false)
+            field(
+                i18nContext.get(I18nKeysData.Commands.Category.Moderation.PunishedBy),
+                "${punisher.username}#${punisher.discriminator}",
+                false
+            )
+            field(
+                i18nContext.get(I18nKeysData.Commands.Category.Moderation.Reason),
+                reason.shortenWithEllipsis(1024),
+                false
+            )
             color = Color(221, 0, 0)
             timestamp = Clock.System.now()
         }
@@ -302,7 +334,10 @@ object AdminUtils {
         return interactionChecks
     }
 
-    suspend fun checkAndRetrieveAllValidUsersFromString(context: ApplicationCommandContext, usersAsString: String): List<UserQueryResult> {
+    suspend fun checkAndRetrieveAllValidUsersFromString(
+        context: ApplicationCommandContext,
+        usersAsString: String
+    ): List<UserQueryResult> {
         val users = retrieveAllValidUsersFromString(context, usersAsString)
 
         if (users.isEmpty())
@@ -313,7 +348,10 @@ object AdminUtils {
         return users
     }
 
-    suspend fun retrieveAllValidUsersFromString(context: ApplicationCommandContext, usersAsString: String): List<UserQueryResult> {
+    suspend fun retrieveAllValidUsersFromString(
+        context: ApplicationCommandContext,
+        usersAsString: String
+    ): List<UserQueryResult> {
         val users = mutableListOf<UserQueryResult>()
 
         // First, we will get all the mentioned users in the usersAsString, as long as they are ResolvedObjects map
@@ -321,7 +359,8 @@ object AdminUtils {
             .mapNotNull { it.groupValues[1].toLongOrNull() }
             .map { Snowflake(it) }
             .mapNotNull {
-                val user = context.interaKTionsContext.interactionData.resolved?.users?.get(it) ?: return@mapNotNull null
+                val user =
+                    context.interaKTionsContext.interactionData.resolved?.users?.get(it) ?: return@mapNotNull null
                 val member = context.interaKTionsContext.interactionData.resolved?.members?.get(it)
 
                 // We are sure that the member doesn't exist because it wasn't resolved, so we will indicate to the UserQueryResult

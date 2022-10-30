@@ -5,17 +5,14 @@ import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.CorreiosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
@@ -25,7 +22,10 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.Correi
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.eventTypeWithStatus
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.exceptions.InvalidTrackingIdException
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class TrackPackageExecutor(loritta: LorittaBot, val client: CorreiosClient) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
@@ -42,7 +42,8 @@ class TrackPackageExecutor(loritta: LorittaBot, val client: CorreiosClient) : Ci
             embed {
                 title = "${Emotes.Correios} `${trackingId}` (${obj.nome})"
                 if (wouldHaveOverflown)
-                    description = i18nContext.get(PackageCommand.I18N_PREFIX.Track.TooManyEventsFiltered(DiscordResourceLimits.Embed.FieldsPerEmbed))
+                    description =
+                        i18nContext.get(PackageCommand.I18N_PREFIX.Track.TooManyEventsFiltered(DiscordResourceLimits.Embed.FieldsPerEmbed))
 
                 for (event in packageEvents) {
                     val eventTypeWithStatus = event.eventTypeWithStatus

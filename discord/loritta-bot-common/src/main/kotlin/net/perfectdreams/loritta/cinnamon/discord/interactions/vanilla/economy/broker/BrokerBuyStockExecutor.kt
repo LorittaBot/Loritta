@@ -37,13 +37,20 @@ class BrokerBuyStockExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
-            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
-
-        val quantity = NumberUtils.convertShortenedNumberToLong(context.i18nContext, quantityAsString) ?: context.failEphemerally(
-            context.i18nContext.get(
-                I18nKeysData.Commands.InvalidNumber(quantityAsString)
+            context.failEphemerally(
+                context.i18nContext.get(
+                    BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(
+                        loritta.commandMentions.brokerInfo
+                    )
+                )
             )
-        )
+
+        val quantity =
+            NumberUtils.convertShortenedNumberToLong(context.i18nContext, quantityAsString) ?: context.failEphemerally(
+                context.i18nContext.get(
+                    I18nKeysData.Commands.InvalidNumber(quantityAsString)
+                )
+            )
 
         val (_, boughtQuantity, value) = try {
             context.loritta.pudding.bovespaBroker.buyStockShares(

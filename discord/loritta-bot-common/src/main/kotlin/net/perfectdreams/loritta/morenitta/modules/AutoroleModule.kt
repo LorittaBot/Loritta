@@ -8,34 +8,44 @@ import java.util.concurrent.TimeUnit
 import kotlin.time.Duration.Companion.seconds
 
 object AutoroleModule {
-	suspend fun giveRoles(member: Member, autoroleConfig: AutoroleConfig) {
-		val guild = member.guild
-		// Transform all role IDs to a role list
-		val roles = autoroleConfig.roles
-			.asSequence()
-			.mapNotNull { guild.getRoleById(it) }
-			.distinct()
-			.filterOnlyGiveableRoles()
-			.toList()
+    suspend fun giveRoles(member: Member, autoroleConfig: AutoroleConfig) {
+        val guild = member.guild
+        // Transform all role IDs to a role list
+        val roles = autoroleConfig.roles
+            .asSequence()
+            .mapNotNull { guild.getRoleById(it) }
+            .distinct()
+            .filterOnlyGiveableRoles()
+            .toList()
 
-		val filteredRoles = roles.filter { !member.roles.contains(it) }
+        val filteredRoles = roles.filter { !member.roles.contains(it) }
 
-		if (filteredRoles.isNotEmpty()) {
-			if (filteredRoles.size == 1) {
-				if (autoroleConfig.giveRolesAfter != null) {
-					delay(autoroleConfig.giveRolesAfter!!.seconds)
+        if (filteredRoles.isNotEmpty()) {
+            if (filteredRoles.size == 1) {
+                if (autoroleConfig.giveRolesAfter != null) {
+                    delay(autoroleConfig.giveRolesAfter!!.seconds)
 
-					guild.addRoleToMember(member, filteredRoles[0], "Autorole")
-				} else
-					runCatching { guild.addRoleToMember(member, filteredRoles[0], "Autorole") }
-			} else {
-				if (autoroleConfig.giveRolesAfter != null) {
-					delay(autoroleConfig.giveRolesAfter!!.seconds)
+                    guild.addRoleToMember(member, filteredRoles[0], "Autorole")
+                } else
+                    runCatching { guild.addRoleToMember(member, filteredRoles[0], "Autorole") }
+            } else {
+                if (autoroleConfig.giveRolesAfter != null) {
+                    delay(autoroleConfig.giveRolesAfter!!.seconds)
 
-					guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(filteredRoles) }, "Autorole")
-				} else
-					runCatching { guild.modifyMemberRoles(member, member.roles.toMutableList().apply { this.addAll(filteredRoles) }, "Autorole") }
-			}
-		}
-	}
+                    guild.modifyMemberRoles(
+                        member,
+                        member.roles.toMutableList().apply { this.addAll(filteredRoles) },
+                        "Autorole"
+                    )
+                } else
+                    runCatching {
+                        guild.modifyMemberRoles(
+                            member,
+                            member.roles.toMutableList().apply { this.addAll(filteredRoles) },
+                            "Autorole"
+                        )
+                    }
+            }
+        }
+    }
 }

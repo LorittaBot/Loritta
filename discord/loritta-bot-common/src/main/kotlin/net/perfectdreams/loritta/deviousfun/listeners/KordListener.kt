@@ -5,10 +5,13 @@ import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
-import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.PuddingGuildVoiceState
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetByteArray
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArray
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
+import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
+import net.perfectdreams.loritta.deviouscache.requests.*
+import net.perfectdreams.loritta.deviouscache.responses.GetGuildIdsOfShardResponse
+import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
+import net.perfectdreams.loritta.deviouscache.responses.OkResponse
+import net.perfectdreams.loritta.deviouscache.responses.UnlockConflictConcurrentLoginResponse
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
 import net.perfectdreams.loritta.deviousfun.entities.Message
@@ -51,88 +54,65 @@ class KordListener(
 
             val currentRandomKey = gateway.identifyRateLimiter.currentRandomKey
 
-            m.loritta.redisTransaction("updating session data of shard $shardId") {
-                it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sessionId", this.data.sessionId)
-                it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "resumeGatewayUrl", this.data.resumeGatewayUrl)
-                it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sequence", (this.sequence ?: 0).toString())
-            }
+            m.rpc.execute(
+                PutGatewaySessionRequest(
+                    shardId,
+                    this.data.sessionId,
+                    this.data.resumeGatewayUrl,
+                    this.sequence ?: 0
+                )
+            )
 
             // After it is ready, we will wait 5000ms to release the lock
             delay(5_000)
 
-            var lockResponse: Any? = null
-            var lockStatus: Long? = null
-
             logger.info { "Trying to release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)..." }
-            m.loritta.redisConnection("unlocking bucket ${gateway.identifyRateLimiter.bucketId}") {
-                if (currentRandomKey != null) {
-                    lockResponse = it.eval(
-                        LorittaBot::class.getPathFromResources("/redis_delete_lock.lua")!!.readText(),
-                        listOf(m.loritta.redisKeys.discordGatewayConcurrentLogin(gateway.identifyRateLimiter.bucketId)),
-                        listOf(currentRandomKey)
-                    )
-                } else {
-                    logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because the current random key is null! Bug?" }
-                    lockStatus = -1
-                }
-            }
+            if (currentRandomKey != null) {
+                val response =
+                    m.rpc.execute(UnlockConcurrentLoginRequest(gateway.identifyRateLimiter.bucketId, currentRandomKey))
 
-            val response = lockResponse ?: lockStatus ?: error("Unknown lock status!")
-
-            when (response) {
-                1L -> {
-                    logger.info { "Successfully released lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)!" }
+                when (response) {
+                    is UnlockConflictConcurrentLoginResponse -> logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because our random key does not match!" }
+                    is OkResponse -> logger.info { "Successfully released lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)!" }
+                    else -> m.rpc.unknownResponse(response)
                 }
-                0L -> {
-                    logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because our random key does not match!" }
-                }
-                -1L -> {
-                    logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because our random key is null! Bug?" }
-                }
-                else -> error("Unknown Response $response")
+            } else {
+                logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because the current random key is null! Bug?" }
             }
         }
 
         gateway.on<DispatchEvent> {
-            m.loritta.redisConnection("updating dispatch event of shard $shardId") {
-                it.hset(m.loritta.redisKeys.discordGatewaySessions(shardId), "sequence", (this.sequence ?: 0).toString())
-            }
+            m.rpc.execute(PutGatewaySequenceRequest(shardId, this.sequence ?: 0))
         }
 
         gateway.on<Resumed> {
-            logger.info { "Shard $shardId resumed!" }
+            logger.info { "Shard $shardId resumed! alreadyTriggeredGuildReadyOnStartup? $alreadyTriggeredGuildReadyOnStartup" }
 
-            if (!alreadyTriggeredGuildReadyOnStartup)
+            // If we already triggered the guild ready on this instance, then we wouldn't trigger it again
+            if (alreadyTriggeredGuildReadyOnStartup)
                 return@on
 
             alreadyTriggeredGuildReadyOnStartup = true
 
-            val guildIdsOnThisShard = m.loritta.redisConnection("getting guild IDs in shard $shardId") {
-                // Get all guilds related to this cluster...
-                it.hkeys(m.loritta.redisKeys.discordGuilds())
-                    .filter {
-                        DiscordUtils.getShardIdFromGuildId(
-                            it.toLong(),
-                            m.loritta.config.loritta.discord.maxShards
-                        ) == shardId
+            when (val response =
+                m.rpc.execute(GetGuildIdsOfShardRequest(shardId, m.loritta.config.loritta.discord.maxShards))) {
+                is GetGuildIdsOfShardResponse -> {
+                    for (guildId in response.guildIds) {
+                        val guild = cacheManager.getGuild(guildId)
+                            ?: continue // Should NOT be null, but if it is, then let's just pretend that it doesn't exist
+                        val event = GuildReadyEvent(m, gateway, guild)
+                        m.forEachListeners(event, ListenerAdapter::onGuildReady)
                     }
-                    .map { Snowflake(it) }
-            }
+                }
 
-            for (guildId in guildIdsOnThisShard) {
-                val guild = cacheManager.getGuild(guildId)
-                    ?: continue // Should NOT be null, but if it is, then let's just pretend that it doesn't exist
-                val event = GuildReadyEvent(m, gateway, guild)
-                m.forEachListeners(event, ListenerAdapter::onGuildReady)
+                else -> m.rpc.unknownResponse(response)
             }
         }
 
         gateway.on<GuildCreate> {
             val (guild, duration) = measureTimedValue {
                 // Is the guild cached?
-                val isGuildCached = m.loritta.redisConnection("checking if guild ${this.guild.id} is cached") {
-                    it.hexists(m.loritta.redisKeys.discordGuilds(), this.guild.id.toString())
-                }
+                val isGuildCached = m.rpc.execute(GetIfGuildExistsRequest(this.guild.id)) is OkResponse
 
                 // Even if it is cached, we will create a guild entity here to update the guild on the cache
                 val guild = cacheManager.createGuild(this.guild, this.guild.channels.value)
@@ -218,7 +198,12 @@ class KordListener(
             val member = if (isWebhook)
                 null
             else
-                guild?.let { m.retrieveMemberById(guild, author.idSnowflake) } // The member data is not present when updating a message
+                guild?.let {
+                    m.retrieveMemberById(
+                        guild,
+                        author.idSnowflake
+                    )
+                } // The member data is not present when updating a message
 
             val message = Message(
                 m,
@@ -308,16 +293,7 @@ class KordListener(
         }
 
         gateway.on<GuildEmojisUpdate> {
-            val updatedEmojisData = this.emoji
-            val emojis = cacheManager.convertStuff(updatedEmojisData.emojis)
-
-            m.loritta.redisTransaction("updating emojis of guild ${updatedEmojisData.guildId}") {
-                cacheManager.storeEmojis(
-                    it,
-                    updatedEmojisData.guildId,
-                    emojis
-                )
-            }
+            m.cacheManager.storeEmojis(this.emoji.guildId, this.emoji.emojis.map { DeviousGuildEmojiData.from(it) })
         }
 
         gateway.on<GuildRoleCreate> {
@@ -373,9 +349,9 @@ class KordListener(
             val channelId = this.voiceState.channelId
             val userId = this.voiceState.userId
 
-            val currentVoiceState = m.loritta.redisConnection("getting current voice state of user ${voiceState.userId}") {
+            /* val currentVoiceState = m.loritta.redisConnection("getting current voice state of user ${voiceState.userId}") {
                 it.hgetByteArray(m.loritta.redisKeys.discordGuildVoiceStates(guildId), voiceState.userId.toString())
-            }?.let { m.loritta.binaryCacheTransformers.voiceStates.decode(it) }
+            }?.let { m.loritta.binaryCacheTransformers.voiceStates.decode(it) } */
 
             if (userId == m.loritta.config.loritta.discord.applicationId) {
                 // Wait... that's us! omg omg omg
@@ -391,26 +367,7 @@ class KordListener(
                 }
             }
 
-            val voiceState = this.voiceState
-
-            m.loritta.redisConnection("updating voice state of ${voiceState.userId}") {
-                // Channel is null, so let's delete voice states in the guild related to the user
-                if (channelId == null) {
-                    it.hdel(m.loritta.redisKeys.discordGuildVoiceStates(guildId), voiceState.userId.toString())
-                } else {
-                    // Channel is not null, let's upsert
-                    it.hsetByteArray(
-                        m.loritta.redisKeys.discordGuildVoiceStates(guildId),
-                        userId.toString(),
-                        m.loritta.binaryCacheTransformers.voiceStates.encode(
-                            PuddingGuildVoiceState(
-                                channelId,
-                                userId
-                            )
-                        )
-                    )
-                }
-            }
+            m.rpc.execute(PutVoiceStateRequest(guildId, userId, channelId))
 
             // TODO: Voice events
         }

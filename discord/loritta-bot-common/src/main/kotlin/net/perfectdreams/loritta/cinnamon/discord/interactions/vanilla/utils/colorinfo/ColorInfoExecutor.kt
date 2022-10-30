@@ -3,15 +3,14 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.co
 import dev.kord.common.kColor
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.ColorInfoCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageFormatType
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.images.ImageUtils.toByteArray
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
-import java.awt.Font
 import java.awt.Graphics
 import java.awt.image.BufferedImage
 
@@ -70,11 +69,27 @@ abstract class ColorInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExec
                 field("Hexadecimal", "`$hex`", true)
                 field("Decimal", "`${color.rgb}`", true)
                 field("HSB", "`${hue.toInt()}°, ${saturation.toInt()}%, ${brightness.toInt()}%`", true)
-                field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Shades), joinColorsToHex(shadesColors), false)
+                field(
+                    context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Shades),
+                    joinColorsToHex(shadesColors),
+                    false
+                )
                 field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Tints), joinColorsToHex(tintsColors), false)
-                field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Triadic), joinColorsToHex(listOf(triadColor1, triadColor2)), false)
-                field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Analogous), joinColorsToHex(listOf(analogousColor1, analogousColor2)), false)
-                field(context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Complementary), joinColorsToHex(listOf(complementaryColor)), false)
+                field(
+                    context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Triadic),
+                    joinColorsToHex(listOf(triadColor1, triadColor2)),
+                    false
+                )
+                field(
+                    context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Analogous),
+                    joinColorsToHex(listOf(analogousColor1, analogousColor2)),
+                    false
+                )
+                field(
+                    context.i18nContext.get(ColorInfoCommand.I18N_PREFIX.Complementary),
+                    joinColorsToHex(listOf(complementaryColor)),
+                    false
+                )
 
                 this.image = "attachment://color.png"
             }
@@ -205,5 +220,6 @@ abstract class ColorInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExec
         }
     }
 
-    fun joinColorsToHex(colors: List<Color>) = colors.joinToString(", ") { "`${String.format("#%02x%02x%02x", it.red, it.green, it.blue)}`" }
+    fun joinColorsToHex(colors: List<Color>) =
+        colors.joinToString(", ") { "`${String.format("#%02x%02x%02x", it.red, it.green, it.blue)}`" }
 }

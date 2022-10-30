@@ -197,6 +197,7 @@ var SelectOptionBuilder.loriEmoji: Emote
                 value.name,
                 value.animated.optional()
             )
+
             is UnicodeEmote -> DiscordPartialEmoji(
                 name = value.name
             )
@@ -215,6 +216,7 @@ var ButtonBuilder.loriEmoji: Emote
                 value.name,
                 value.animated.optional()
             )
+
             is UnicodeEmote -> DiscordPartialEmoji(
                 name = value.name
             )

@@ -3,8 +3,8 @@ package net.perfectdreams.loritta.cinnamon.discord.gateway.modules
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.MessageCreate
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class BomDiaECiaModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
     companion object {
@@ -26,6 +26,7 @@ class BomDiaECiaModule(private val m: LorittaBot) : ProcessDiscordEventsModule()
                     )
                 }
             }
+
             else -> {}
         }
         return ModuleResult.Continue

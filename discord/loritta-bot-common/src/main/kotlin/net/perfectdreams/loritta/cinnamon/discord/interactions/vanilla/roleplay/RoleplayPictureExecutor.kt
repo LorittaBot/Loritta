@@ -50,7 +50,11 @@ abstract class RoleplayPictureExecutor(
         }
 
         // Easter Egg: Small chance for Loritta to retribute the action (1%)
-        val shouldLorittaRetribute = receiver.id == context.loritta.config.loritta.discord.applicationId && attributes in RoleplayUtils.RETRIBUTABLE_ACTIONS_BY_LORITTA_EASTER_EGG && context.loritta.random.nextInt(0, 100) == 0
+        val shouldLorittaRetribute =
+            receiver.id == context.loritta.config.loritta.discord.applicationId && attributes in RoleplayUtils.RETRIBUTABLE_ACTIONS_BY_LORITTA_EASTER_EGG && context.loritta.random.nextInt(
+                0,
+                100
+            ) == 0
 
         if (shouldLorittaRetribute) {
             // Wait 5s just so it feels more "natural"

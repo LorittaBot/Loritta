@@ -12,25 +12,33 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariab
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-open class GenericConfigurationRoute(loritta: LorittaBot, path: String, val type: String, val file: String) : RequiresGuildAuthLocalizedRoute(loritta, path) {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
-		val variables = call.legacyVariables(loritta, locale)
-		variables["saveType"] = type
+open class GenericConfigurationRoute(loritta: LorittaBot, path: String, val type: String, val file: String) :
+    RequiresGuildAuthLocalizedRoute(loritta, path) {
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        loritta as LorittaBot
+        val variables = call.legacyVariables(loritta, locale)
+        variables["saveType"] = type
 
-		if (type == "miscellaneous") {
-			val miscellaneousConfig = loritta.newSuspendedTransaction {
-				serverConfig.miscellaneousConfig
-			}
+        if (type == "miscellaneous") {
+            val miscellaneousConfig = loritta.newSuspendedTransaction {
+                serverConfig.miscellaneousConfig
+            }
 
-			variables["serverConfig"] = ConfigureMiscellaneousRoute.FakeServerConfig(
-					ConfigureMiscellaneousRoute.FakeServerConfig.FakeMiscellaneousConfig(
-							miscellaneousConfig?.enableBomDiaECia ?: false,
-							miscellaneousConfig?.enableQuirky ?: false
-					)
-			)
-		}
+            variables["serverConfig"] = ConfigureMiscellaneousRoute.FakeServerConfig(
+                ConfigureMiscellaneousRoute.FakeServerConfig.FakeMiscellaneousConfig(
+                    miscellaneousConfig?.enableBomDiaECia ?: false,
+                    miscellaneousConfig?.enableQuirky ?: false
+                )
+            )
+        }
 
-		call.respondHtml(evaluate(file, variables))
-	}
+        call.respondHtml(evaluate(file, variables))
+    }
 }

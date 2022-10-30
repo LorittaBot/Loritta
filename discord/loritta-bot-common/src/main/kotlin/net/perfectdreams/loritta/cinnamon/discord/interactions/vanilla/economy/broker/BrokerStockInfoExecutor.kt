@@ -14,9 +14,10 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.
 class BrokerStockInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val ticker = string("ticker", BrokerCommand.I18N_PREFIX.Stock.Options.Ticker.Text) {
-            LorittaBovespaBrokerUtils.trackedTickerCodes.map { Pair(it.ticker, it.name) }.forEach { (tickerId, tickerTitle) ->
-                choice("$tickerTitle ($tickerId)", tickerId.lowercase())
-            }
+            LorittaBovespaBrokerUtils.trackedTickerCodes.map { Pair(it.ticker, it.name) }
+                .forEach { (tickerId, tickerTitle) ->
+                    choice("$tickerTitle ($tickerId)", tickerId.lowercase())
+                }
         }
     }
 
@@ -29,10 +30,22 @@ class BrokerStockInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
-            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
+            context.failEphemerally(
+                context.i18nContext.get(
+                    BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(
+                        loritta.commandMentions.brokerInfo
+                    )
+                )
+            )
 
         val stockInformation = context.loritta.pudding.bovespaBroker.getTicker(tickerId)
-            ?: context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
+            ?: context.failEphemerally(
+                context.i18nContext.get(
+                    BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(
+                        loritta.commandMentions.brokerInfo
+                    )
+                )
+            )
 
         val stockAsset = context.loritta.pudding.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
             .firstOrNull { it.ticker == tickerId }
@@ -45,7 +58,8 @@ class BrokerStockInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
                 // There is two alternatives however: If the user has stock, the output will be the same as the "/broker portfolio" command
                 // If not, it will be just the buy/sell price
                 val tickerInformation = stockInformation
-                val tickerName = LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == tickerInformation.ticker }.name
+                val tickerName =
+                    LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == tickerInformation.ticker }.name
                 val currentPrice = LorittaBovespaBrokerUtils.convertReaisToSonhos(tickerInformation.value)
                 val buyingPrice = LorittaBovespaBrokerUtils.convertToBuyingPrice(currentPrice) // Buying price
                 val sellingPrice = LorittaBovespaBrokerUtils.convertToSellingPrice(currentPrice) // Selling price
@@ -84,7 +98,13 @@ class BrokerStockInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
                     if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(tickerInformation.status)) {
                         field(
                             "$emojiStatus$emojiProfit `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-                            """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))}
+                            """${
+                                context.i18nContext.get(
+                                    BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(
+                                        currentPrice
+                                    )
+                                )
+                            }
                                 |$youHaveSharesInThisTickerMessage
                             """.trimMargin()
                         )
@@ -100,7 +120,11 @@ class BrokerStockInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
                     if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(tickerInformation.status)) {
                         field(
                             "$emojiStatus `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-                            context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))
+                            context.i18nContext.get(
+                                BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(
+                                    currentPrice
+                                )
+                            )
                                 .trimMargin()
                         )
                     } else {

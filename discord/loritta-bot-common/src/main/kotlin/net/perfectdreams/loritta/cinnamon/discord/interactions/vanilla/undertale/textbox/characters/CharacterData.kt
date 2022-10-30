@@ -7,7 +7,12 @@ import net.perfectdreams.i18nhelper.core.I18nContext
 sealed class CharacterData {
     abstract fun menuOptions(i18nContext: I18nContext, activePortrait: String, builder: SelectMenuBuilder)
 
-    fun SelectMenuBuilder.optionAndAutomaticallySetDefault(label: String, value: String, activePortrait: String, builder: SelectOptionBuilder.() -> Unit = {}) {
+    fun SelectMenuBuilder.optionAndAutomaticallySetDefault(
+        label: String,
+        value: String,
+        activePortrait: String,
+        builder: SelectOptionBuilder.() -> Unit = {}
+    ) {
         option(label, value) {
             default = value == activePortrait
             apply(builder)

@@ -26,12 +26,12 @@ class DonateView(
                 style = "text-align: center;"
                 h1(classes = "sectionHeader") {
                     style = "font-size: 50px;"
-                    + locale["website.donate.needYourHelp"]
+                    +locale["website.donate.needYourHelp"]
                 }
 
                 h2(classes = "sectionHeader") {
                     style = "font-size: 30px;"
-                    + locale["website.donate.stayAwesome"]
+                    +locale["website.donate.stayAwesome"]
                 }
             }
 
@@ -50,13 +50,13 @@ class DonateView(
 
                 div(classes = "media-body") {
                     h2(classes = "sectionHeader") {
-                        + locale["website.donate.title"]
+                        +locale["website.donate.title"]
                     }
 
                     for (text in locale.getList("website.donate.introDonate")) {
                         p {
                             unsafe {
-                                + text
+                                +text
                             }
                         }
                     }
@@ -79,7 +79,7 @@ class DonateView(
                                 style = "font-size: 1.5em;"
 
                                 i(classes = "fas fa-sync-alt") {}
-                                + " ${locale["website.donate.renewPlan"]}"
+                                +" ${locale["website.donate.renewPlan"]}"
                             }
                         }
                     }
@@ -91,10 +91,11 @@ class DonateView(
                             controls = true
                             width = "400"
                             source {
-                                src = "https://cdn.discordapp.com/attachments/510601125221761054/534473346642083851/Lorisemdinheiro.mp4"
+                                src =
+                                    "https://cdn.discordapp.com/attachments/510601125221761054/534473346642083851/Lorisemdinheiro.mp4"
                                 type = "video/mp4"
                             }
-                            + "Your browser does not support HTML5 video."
+                            +"Your browser does not support HTML5 video."
                         }
                     }
                 }
@@ -109,16 +110,16 @@ class DonateView(
                         div {
                             style = "text-align: center;"
                             h2(classes = "sectionHeader") {
-                                + locale["website.donate.donationBenefits"]
+                                +locale["website.donate.donationBenefits"]
                             }
 
                             p {
-                                + locale["website.donate.benefitsExplain"]
+                                +locale["website.donate.benefitsExplain"]
                             }
 
                             p {
                                 a(href = "/sponsors", target = "_blank") {
-                                    + locale["website.donate.benefitsSponsor"]
+                                    +locale["website.donate.benefitsSponsor"]
                                 }
                             }
                         }
@@ -127,7 +128,7 @@ class DonateView(
                             div {
                                 style = "text-align: center;"
                                 h2(classes = "sectionHeader") {
-                                    + "Nossos Planos"
+                                    +"Nossos Planos"
                                 }
                             }
                         }
@@ -149,7 +150,7 @@ class DonateView(
                     style = "text-align: center;"
 
                     h2(classes = "sectionHeader") {
-                        + locale["website.donate.thanksToEveryone"]
+                        +locale["website.donate.thanksToEveryone"]
                     }
 
                     /* img(src = "https://loritta.website/assets/img/loritta_pudim.png", alt = "Loritta com um pudim na mão", classes = "animate-on-scroll-up is-invisible") {
@@ -164,7 +165,7 @@ class DonateView(
             style = "display: none;"
 
             unsafe {
-                + keys.toString()
+                +keys.toString()
             }
         }
     }

@@ -9,77 +9,83 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.util.*
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class RoleIdCommand(loritta: LorittaBot) : AbstractCommand(loritta, "roleid", listOf("cargoid", "iddocargo"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.roleid.description")
+class RoleIdCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "roleid",
+    listOf("cargoid", "iddocargo"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.roleid.description")
 
-	// TODO: Fix getUsage
+    // TODO: Fix getUsage
 
-	override fun getExamples(): List<String> {
-		return Arrays.asList("Moderadores")
-	}
+    override fun getExamples(): List<String> {
+        return Arrays.asList("Moderadores")
+    }
 
-	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.ManageRoles)
-	}
+    override fun getDiscordPermissions(): List<Permission> {
+        return listOf(Permission.ManageRoles)
+    }
 
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
+    override fun canUseInPrivateChannel(): Boolean {
+        return false
+    }
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.rawArgs.isNotEmpty()) {
-			var argument = context.rawArgs.joinToString(" ")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        if (context.rawArgs.isNotEmpty()) {
+            var argument = context.rawArgs.joinToString(" ")
 
-			val mentionedRoles = context.message.mentionedRoles // Se o usuário mencionar o cargo, vamos mostrar o ID dos cargos mencionados
+            val mentionedRoles =
+                context.message.mentionedRoles // Se o usuário mencionar o cargo, vamos mostrar o ID dos cargos mencionados
 
-			val list = mutableListOf<LorittaReply>()
+            val list = mutableListOf<LorittaReply>()
 
-			if (mentionedRoles.isNotEmpty()) {
+            if (mentionedRoles.isNotEmpty()) {
 
-				list.add(
+                list.add(
                     LorittaReply(
                         message = locale["commands.command.roleid.identifiers", argument],
                         prefix = "\uD83D\uDCBC"
-                )
-                )
-
-				mentionedRoles.mapTo(list) {
-                    LorittaReply(
-                            message = "*${it.name}* - `${it.id}`",
-                            mentionUser = false
                     )
-				}
-			} else {
-				val roles = context.guild.roles.filter { it.name.contains(argument, true) }
+                )
 
-				list.add(
+                mentionedRoles.mapTo(list) {
+                    LorittaReply(
+                        message = "*${it.name}* - `${it.id}`",
+                        mentionUser = false
+                    )
+                }
+            } else {
+                val roles = context.guild.roles.filter { it.name.contains(argument, true) }
+
+                list.add(
                     LorittaReply(
                         message = locale["commands.command.roleid.rolesThatContains", argument],
                         prefix = "\uD83D\uDCBC"
-                )
+                    )
                 )
 
-				if (roles.isEmpty()) {
-					list.add(
-                            LorittaReply(
-                                    message = "*${locale["commands.command.roleid.emptyRoles"]}*",
-                                    mentionUser = false,
-                                    prefix = "\uD83D\uDE22"
-                            )
-					)
-				} else {
-					roles.mapTo(list) {
+                if (roles.isEmpty()) {
+                    list.add(
                         LorittaReply(
-                                message = "*${it.name}* - `${it.id}`",
-                                mentionUser = false
+                            message = "*${locale["commands.command.roleid.emptyRoles"]}*",
+                            mentionUser = false,
+                            prefix = "\uD83D\uDE22"
                         )
-					}
-				}
+                    )
+                } else {
+                    roles.mapTo(list) {
+                        LorittaReply(
+                            message = "*${it.name}* - `${it.id}`",
+                            mentionUser = false
+                        )
+                    }
+                }
 
-			}
-			context.reply(*list.toTypedArray())
-		} else {
-			context.explain()
-		}
-	}
+            }
+            context.reply(*list.toTypedArray())
+        } else {
+            context.explain()
+        }
+    }
 }

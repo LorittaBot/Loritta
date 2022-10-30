@@ -25,7 +25,8 @@ import java.io.File
 typealias ActionCommandScope = ActionCommandDSL.() -> Unit
 typealias ActionCommandContext = (BaseLocale, User, User) -> String
 
-abstract class ActionCommand(loritta: LorittaBot, labels: List<String>): DiscordAbstractCommandBase(loritta, labels, CommandCategory.ROLEPLAY) {
+abstract class ActionCommand(loritta: LorittaBot, labels: List<String>) :
+    DiscordAbstractCommandBase(loritta, labels, CommandCategory.ROLEPLAY) {
 
     abstract fun create(): ActionCommandDSL
 
@@ -65,4 +66,4 @@ class ActionCommandDSL(val command: ActionCommand) {
 }
 
 fun ActionCommand.action(block: ActionCommandScope) =
-        ActionCommandDSL(this).apply(block)
+    ActionCommandDSL(this).apply(block)

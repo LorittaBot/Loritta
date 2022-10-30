@@ -1,26 +1,25 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker
 
 import dev.kord.common.entity.ButtonStyle
+import dev.kord.core.entity.User
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import dev.kord.core.entity.User
 import net.perfectdreams.discordinteraktions.common.utils.field
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.BarebonesSingleUserComponentData
-import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.CorreiosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosEvento
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.eventTypeWithStatus
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class SelectPackageSelectMenuExecutor(
     loritta: LorittaBot
@@ -39,7 +38,8 @@ class SelectPackageSelectMenuExecutor(
         val packageEvents = context.loritta.pudding.packagesTracking.getCorreiosPackageEvents(viewingTrackingId)
             .map { Json.decodeFromString<CorreiosEvento>(it) }
 
-        val trackingIdsTrackedByUser = context.loritta.pudding.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
+        val trackingIdsTrackedByUser =
+            context.loritta.pudding.packagesTracking.getTrackedCorreiosPackagesByUser(UserId(context.user.id.value))
 
         val lastEvent = packageEvents.maxByOrNull { it.criacao }
 

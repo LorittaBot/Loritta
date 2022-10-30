@@ -29,6 +29,7 @@ object BrokerSonhosTransactionTransformer : SonhosTransactionTransformer<BrokerS
                     )
                 )
             }
+
             LorittaBovespaBrokerUtils.BrokerSonhosTransactionsEntryAction.SOLD_SHARES -> {
                 appendMoneyEarnedEmoji()
                 append(

@@ -21,11 +21,11 @@ import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.deviouscache.data.DeviousChannelData
 import net.perfectdreams.loritta.deviousfun.DeviousEmbed
 import net.perfectdreams.loritta.deviousfun.DeviousMessage
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
-import net.perfectdreams.loritta.deviousfun.cache.DeviousChannelData
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
 import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
 import kotlin.math.ceil
@@ -70,7 +70,8 @@ class Channel(
 
     fun getPermissionOverride(role: Role) = permissionOverwrites.firstOrNull { it.id == role.idSnowflake }
 
-    suspend fun createPermissionOverride(role: Role, builder: ChannelPermissionModifyBuilder.() -> Unit) = deviousFun.loritta.rest.channel.editRolePermission(channel.id, role.idSnowflake, builder)
+    suspend fun createPermissionOverride(role: Role, builder: ChannelPermissionModifyBuilder.() -> Unit) =
+        deviousFun.loritta.rest.channel.editRolePermission(channel.id, role.idSnowflake, builder)
 
     suspend fun modifyTextChannel(builder: TextChannelModifyBuilder.() -> (Unit)) {
         deviousFun.loritta.rest.channel.patchTextChannel(channel.id, builder)
@@ -129,7 +130,10 @@ class Channel(
         // Yes, it needs to be from the channel, the ID from the newMessage is null
         // The author ID isn't null however
         val authorId = newMessage.author.id
-        val user = deviousFun.cacheManager.createUser(newMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(newMessage))
+        val user = deviousFun.cacheManager.createUser(
+            newMessage.author,
+            !DeviousUserUtils.isSenderWebhookOrSpecial(newMessage)
+        )
         val member = guildOrNull?.let { deviousFun.retrieveMemberById(it, authorId) }
 
         return Message(
@@ -145,7 +149,10 @@ class Channel(
     suspend fun retrieveMessageById(id: String): Message = retrieveMessageById(id.toLong())
     suspend fun retrieveMessageById(id: Long): Message {
         val retrievedMessage = deviousFun.loritta.rest.channel.getMessage(channel.id, Snowflake(id))
-        val user = deviousFun.cacheManager.createUser(retrievedMessage.author, !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage))
+        val user = deviousFun.cacheManager.createUser(
+            retrievedMessage.author,
+            !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage)
+        )
         val member = guildOrNull?.let { deviousFun.retrieveMemberById(it, retrievedMessage.author.id) }
 
         return Message(
@@ -178,13 +185,15 @@ class Channel(
 
         val guild = guildOrNull ?: error("Can't check if the bot can talk in a channel that has a null guild!")
 
-        val lazyLoadedPermissions = deviousFun.loritta.cache.getLazyCachedPermissions(guild.idSnowflake, channel.id, member.idSnowflake)
+        val lazyLoadedPermissions =
+            deviousFun.loritta.cache.getLazyCachedPermissions(guild.idSnowflake, channel.id, member.idSnowflake)
         return lazyLoadedPermissions.canTalk()
     }
 
     suspend fun deleteMessageById(id: String) {
         deviousFun.loritta.rest.channel.deleteMessage(channel.id, Snowflake(id))
     }
+
     suspend fun deleteMessageById(id: Long) {
         deviousFun.loritta.rest.channel.deleteMessage(channel.id, Snowflake(id))
     }

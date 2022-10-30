@@ -15,6 +15,7 @@ class MessageBuilder {
     var content: String? = null
     var replies = mutableListOf<LorittaReply>()
     var embed: LorittaEmbed? = null
+
     // There isn't a multiplatform input stream (sad)
     var files = mutableMapOf<String, ByteArray>()
     var isEphemeral = false
@@ -26,7 +27,7 @@ class MessageBuilder {
      *
      * @param embed a embed builder
      */
-    fun embed(embed: EmbedBuilder.() -> Unit){
+    fun embed(embed: EmbedBuilder.() -> Unit) {
         this.embed = net.perfectdreams.loritta.common.utils.embed.embed(embed).build()
     }
 
@@ -54,7 +55,8 @@ class MessageBuilder {
      * @param inReplyToUser     the user that is within the context of this reply
      * @param mentionSenderHint if the user should be mentioned in the reply, implementations may decide to not add the mention if it isn't needed.
      */
-    fun styled(content: String, prefix: Emote, inReplyToUser: User? = null, mentionSenderHint: Boolean = false) = styled(content, prefix.asMention, inReplyToUser, mentionSenderHint)
+    fun styled(content: String, prefix: Emote, inReplyToUser: User? = null, mentionSenderHint: Boolean = false) =
+        styled(content, prefix.asMention, inReplyToUser, mentionSenderHint)
 
     /**
      * Appends a Loritta-styled formatted message to this builder
@@ -68,7 +70,12 @@ class MessageBuilder {
      * @param inReplyToUser     the user that is within the context of this reply
      * @param mentionSenderHint if the user should be mentioned in the reply, implementations may decide to not add the mention if it isn't needed.
      */
-    fun styled(content: String, prefix: String = Emotes.defaultStyledPrefix.asMention, inReplyToUser: User? = null, mentionSenderHint: Boolean = false) = styled(LorittaReply(content, prefix, inReplyToUser, mentionSenderHint))
+    fun styled(
+        content: String,
+        prefix: String = Emotes.defaultStyledPrefix.asMention,
+        inReplyToUser: User? = null,
+        mentionSenderHint: Boolean = false
+    ) = styled(LorittaReply(content, prefix, inReplyToUser, mentionSenderHint))
 
     /**
      * Appends a Loritta-styled formatted message to this builder

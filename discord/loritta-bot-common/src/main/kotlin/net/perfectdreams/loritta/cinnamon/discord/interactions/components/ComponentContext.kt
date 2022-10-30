@@ -40,7 +40,8 @@ open class ComponentContext(
 
     suspend fun deferUpdateMessage() = interaKTionsContext.deferUpdateMessage()
 
-    suspend inline fun updateMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit)) = interaKTionsContext.updateMessage(block)
+    suspend inline fun updateMessage(block: InteractionOrFollowupMessageModifyBuilder.() -> (Unit)) =
+        interaKTionsContext.updateMessage(block)
 
     /**
      * Checks if the [user] has the same user ID present in the [data].
@@ -261,6 +262,7 @@ open class ComponentContext(
                                         emoji = it.emoji.value
                                 }
                             }
+
                             ComponentType.SelectMenu -> {
                                 selectMenu(generateDisabledComponentId()) {
                                     val minValues = it.minValues.value ?: 1
@@ -272,7 +274,10 @@ open class ComponentContext(
                                         if (optionList != null) {
                                             if (minValues == 1 && maxValues == 1) {
                                                 // We will use our own custom "Loading" option, sweet!
-                                                option(i18nContext.get(I18nKeysData.Website.Dashboard.Loading), "loading_psst_hey_u_are_cute_uwu") { // heh easter egg
+                                                option(
+                                                    i18nContext.get(I18nKeysData.Website.Dashboard.Loading),
+                                                    "loading_psst_hey_u_are_cute_uwu"
+                                                ) { // heh easter egg
                                                     this.emoji = DiscordPartialEmoji(
                                                         Snowflake(loadingEmoji.id),
                                                         loadingEmoji.name,
@@ -288,7 +293,9 @@ open class ComponentContext(
                                                         runIfNotMissing(it.emoji) { this.emoji = it }
                                                         // We need to get the current values list from the interaction itself, to avoid the user changing the select menu value, then when Loritta updates the message
                                                         // the selection is *gone*
-                                                        this.default = it.value in (interaKTionsContext.discordInteraction.data.values.value ?: emptyList())
+                                                        this.default =
+                                                            it.value in (interaKTionsContext.discordInteraction.data.values.value
+                                                                ?: emptyList())
                                                     }
                                                 }
                                             }
@@ -298,6 +305,7 @@ open class ComponentContext(
                                     this.allowedValues = minValues..maxValues
                                 }
                             }
+
                             ComponentType.TextInput -> error("This shouldn't exist here!")
                             is ComponentType.Unknown -> error("This shouldn't exist here!")
                         }
@@ -332,6 +340,7 @@ open class ComponentContext(
                                     emoji = it.emoji.value
                                 }
                             }
+
                             ComponentType.SelectMenu -> {
                                 selectMenu(generateDisabledComponentId()) {
                                     val minValues = it.minValues.value ?: 1
@@ -346,7 +355,9 @@ open class ComponentContext(
                                                 runIfNotMissing(it.emoji) { this.emoji = it }
                                                 // We need to get the current values list from the interaction itself, to avoid the user changing the select menu value, then when Loritta updates the message
                                                 // the selection is *gone*
-                                                this.default = it.value in (interaKTionsContext.discordInteraction.data.values.value ?: emptyList())
+                                                this.default =
+                                                    it.value in (interaKTionsContext.discordInteraction.data.values.value
+                                                        ?: emptyList())
                                             }
                                         }
                                     }
@@ -354,6 +365,7 @@ open class ComponentContext(
                                     this.allowedValues = minValues..maxValues
                                 }
                             }
+
                             ComponentType.TextInput -> error("This shouldn't exist here!")
                             is ComponentType.Unknown -> error("This shouldn't exist here!")
                         }

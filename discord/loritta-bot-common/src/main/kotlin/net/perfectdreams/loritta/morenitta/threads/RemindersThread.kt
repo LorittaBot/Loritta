@@ -52,7 +52,8 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
             for (reminder in reminders) {
                 if (reminder.id.value !in remindersThatFailedToDelete) {
                     try {
-                        val channel = loritta.lorittaShards.getTextChannelById(reminder.channelId.toString()) ?: continue // Channel doesn't exist!
+                        val channel = loritta.lorittaShards.getTextChannelById(reminder.channelId.toString())
+                            ?: continue // Channel doesn't exist!
 
                         if (!DiscordUtils.isCurrentClusterHandlingGuildId(loritta, channel.guild.idLong)) {
                             // Not in this cluster, so let's not process this...
@@ -109,7 +110,8 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
             if (it.reactionEmote.isEmote(SNOOZE_EMOTE)) {
                 loritta.messageInteractionCache.remove(message.idLong)
 
-                val newReminderTime = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE)).timeInMillis + (Constants.ONE_MINUTE_IN_MILLISECONDS * DEFAULT_SNOOZE_MINUTES)
+                val newReminderTime =
+                    Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE)).timeInMillis + (Constants.ONE_MINUTE_IN_MILLISECONDS * DEFAULT_SNOOZE_MINUTES)
                 loritta.newSuspendedTransaction {
                     Reminder.new {
                         userId = reminder.userId
@@ -126,14 +128,16 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                 val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
                 val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
                 val minutes = String.format("%02d", calendar[Calendar.MINUTE])
-                val messageContent = loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
+                val messageContent =
+                    loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
 
                 runCatching { message.editMessage("<@${reminder.userId}> $messageContent") }
                 runCatching { message.clearReactions() }
             }
 
             if (it.reactionEmote.isEmote(SCHEDULE_EMOTE)) {
-                val remindStr = "$SCHEDULE_EMOTE | <@${reminder.userId}> When do you want me to remind you again? (`1 hour`, `5 minutes`, `12:00 11/08/2018`, etc)"
+                val remindStr =
+                    "$SCHEDULE_EMOTE | <@${reminder.userId}> When do you want me to remind you again? (`1 hour`, `5 minutes`, `12:00 11/08/2018`, etc)"
                 runCatching {
                     val reply = message.channel.sendMessage(remindStr)
                     awaitSchedule(reply, message, reminder)
@@ -172,7 +176,8 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
             val month = String.format("%02d", calendar[Calendar.MONTH] + 1)
             val hours = String.format("%02d", calendar[Calendar.HOUR_OF_DAY])
             val minutes = String.format("%02d", calendar[Calendar.MINUTE])
-            val messageContent = loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
+            val messageContent =
+                loritta.localeManager.getLocaleById("default")["commands.command.remindme.success", dayOfMonth, month, calendar[Calendar.YEAR], hours, minutes]
 
             runCatching { reply.channel.sendMessage("<@${reminder.userId}> $messageContent") }
         }

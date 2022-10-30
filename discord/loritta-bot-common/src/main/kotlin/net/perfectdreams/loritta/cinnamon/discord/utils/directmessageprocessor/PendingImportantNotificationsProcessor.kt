@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor
 
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.NotificationUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
@@ -10,6 +9,7 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.toKordUserMessageCreateB
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.tables.PendingImportantNotifications
 import net.perfectdreams.loritta.common.utils.PendingImportantNotificationState
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class PendingImportantNotificationsProcessor(val loritta: LorittaBot) : RunnableCoroutine {
     companion object {
@@ -25,7 +25,8 @@ class PendingImportantNotificationsProcessor(val loritta: LorittaBot) : Runnable
 
             val connection = loritta.pudding.hikariDataSource.connection
             connection.use {
-                val selectStatement = it.prepareStatement("""SELECT id, "user", state, notification FROM ${PendingImportantNotifications.tableName} WHERE state = '${PendingImportantNotificationState.PENDING.name}' ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 10;""")
+                val selectStatement =
+                    it.prepareStatement("""SELECT id, "user", state, notification FROM ${PendingImportantNotifications.tableName} WHERE state = '${PendingImportantNotificationState.PENDING.name}' ORDER BY id FOR UPDATE SKIP LOCKED LIMIT 10;""")
                 val rs = selectStatement.executeQuery()
 
                 var count = 0
@@ -67,7 +68,8 @@ class PendingImportantNotificationsProcessor(val loritta: LorittaBot) : Runnable
                     logger.info { "Sent direct message to $userId! Success? $messageWasSuccessfullySent" }
 
                     // https://www.gotoquiz.com/web-coding/programming/java-programming/convert-between-java-enums-and-postgresql-enums/
-                    val updateStatement = it.prepareStatement("UPDATE ${PendingImportantNotifications.tableName} SET state = CAST(? AS ${PendingImportantNotificationState::class.simpleName!!.lowercase()}) WHERE id = ?;")
+                    val updateStatement =
+                        it.prepareStatement("UPDATE ${PendingImportantNotifications.tableName} SET state = CAST(? AS ${PendingImportantNotificationState::class.simpleName!!.lowercase()}) WHERE id = ?;")
                     updateStatement.setObject(
                         1,
                         (if (messageWasSuccessfullySent) PendingImportantNotificationState.SUCCESSFULLY_SENT_VIA_DIRECT_MESSAGE else PendingImportantNotificationState.FAILED_TO_SEND_VIA_DIRECT_MESSAGE).name

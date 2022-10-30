@@ -5,19 +5,16 @@ import dev.kord.common.entity.*
 import dev.kord.common.entity.optional.Optional
 import dev.kord.core.cache.data.MemberData
 import dev.kord.core.cache.data.UserData
-import dev.kord.gateway.*
+import dev.kord.gateway.InviteCreate
+import dev.kord.gateway.InviteDelete
+import dev.kord.gateway.MessageCreate
+import dev.kord.gateway.MessageUpdate
 import dev.kord.rest.builder.message.create.actionRow
 import dev.kord.rest.builder.message.create.allowedMentions
 import dev.kord.rest.request.KtorRequestException
 import io.ktor.http.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.LorittaPermission
-import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
-import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
@@ -26,15 +23,22 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.inviteblocker.Act
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.MessageUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.hasLorittaPermission
+import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.UserTokenSource
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.utils.LorittaPermission
+import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
     companion object {
-        private val URL_PATTERN = Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
+        private val URL_PATTERN =
+            Pattern.compile("[-a-zA-Z0-9@:%._+~#=]{2,256}\\.[A-z]{2,7}\\b([-a-zA-Z0-9@:%_+.~#?&/=]*)")
         private val logger = KotlinLogging.logger {}
     }
 
@@ -60,13 +64,16 @@ class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
                     event.message.embeds
                 )
             }
+
             is MessageUpdate -> {
                 val author = event.message.author.value ?: return ModuleResult.Continue // Where's the user?
                 val guildId = event.message.guildId.value ?: return ModuleResult.Continue // Not in a guild
                 val member = event.message.member.value ?: return ModuleResult.Continue // The member isn't in the guild
                 val channelId = event.message.channelId
-                val content = event.message.content.value ?: return ModuleResult.Continue // Where's the message content?
-                val embeds = event.message.embeds.value ?: return ModuleResult.Continue // Where's the embeds? (This is an empty list even if the message doesn't have any embeds)
+                val content =
+                    event.message.content.value ?: return ModuleResult.Continue // Where's the message content?
+                val embeds = event.message.embeds.value
+                    ?: return ModuleResult.Continue // Where's the embeds? (This is an empty list even if the message doesn't have any embeds)
 
                 return handleMessage(
                     guildId,
@@ -201,7 +208,8 @@ class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
                     }
 
                     logger.info { "Querying guild $guildId normal invites..." }
-                    val invites = m.rest.guild.getGuildInvites(guildId) // This endpoint does not return the vanity invite
+                    val invites =
+                        m.rest.guild.getGuildInvites(guildId) // This endpoint does not return the vanity invite
                     val codes = invites.map { it.code }
                     guildInviteLinks.addAll(codes)
                 } else {

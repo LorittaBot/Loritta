@@ -11,21 +11,22 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class CepoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "cepo", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.cepo.description")
-	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
-	// TODO: Fix Usage
+class CepoCommand(loritta: LorittaBot) :
+    AbstractCommand(loritta, "cepo", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.cepo.description")
+    override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
+    // TODO: Fix Usage
 
-	override fun needsToUploadFiles() = true
+    override fun needsToUploadFiles() = true
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "brmemes cepo")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "brmemes cepo")
 
-		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val file = CepoDeMadeiraGIF.getGIF(contextImage)
+        val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+        val file = CepoDeMadeiraGIF.getGIF(contextImage)
 
-		loritta.gifsicle.optimizeGIF(file)
-		context.sendFile(file, "cepo.gif", context.getAsMention(true))
-		file.delete()
-	}
+        loritta.gifsicle.optimizeGIF(file)
+        context.sendFile(file, "cepo.gif", context.getAsMention(true))
+        file.delete()
+    }
 }

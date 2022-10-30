@@ -15,9 +15,17 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.utils.config.FanArt
 import net.perfectdreams.loritta.morenitta.utils.config.FanArtArtist
 
-class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("fanarts", "fanart"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("fanarts", "fanart"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MISC
+) {
     override fun command() = create {
-        localizedDescription("commands.command.fanarts.description", "<a:lori_blobheartseyes:393914347706908683>", "<a:lori_blobheartseyes:393914347706908683>")
+        localizedDescription(
+            "commands.command.fanarts.description",
+            "<a:lori_blobheartseyes:393914347706908683>",
+            "<a:lori_blobheartseyes:393914347706908683>"
+        )
 
         arguments {
             argument(ArgumentType.NUMBER) {
@@ -43,7 +51,13 @@ class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
         }
     }
 
-    suspend fun sendFanArtEmbed(context: DiscordCommandContext, locale: BaseLocale, list: List<FanArt>, item: Int, currentMessage: Message?) {
+    suspend fun sendFanArtEmbed(
+        context: DiscordCommandContext,
+        locale: BaseLocale,
+        list: List<FanArt>,
+        item: Int,
+        currentMessage: Message?
+    ) {
         val fanArt = list[item]
         val index = list.indexOf(fanArt) + 1
 
@@ -86,12 +100,17 @@ class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
             setColor(Constants.LORITTA_AQUA)
         }
 
-        var message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), embed.build())
+        var message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false)
+            ?: context.sendMessage(context.getUserMention(true), embed.build())
 
         val allowForward = list.size > item + 1
         val allowBack = item != 0
 
-        if ((!allowForward && message.reactions.any { it.reactionEmote.isEmote("⏩") }) || (!allowBack && message.reactions.any { it.reactionEmote.isEmote("⏪") })) { // Remover todas as reações caso seja necessário
+        if ((!allowForward && message.reactions.any { it.reactionEmote.isEmote("⏩") }) || (!allowBack && message.reactions.any {
+                it.reactionEmote.isEmote(
+                    "⏪"
+                )
+            })) { // Remover todas as reações caso seja necessário
             message.clearReactions()
             message = message.refresh() // Precisamos "refrescar", já que o JDA não limpa a lista de reações
         }

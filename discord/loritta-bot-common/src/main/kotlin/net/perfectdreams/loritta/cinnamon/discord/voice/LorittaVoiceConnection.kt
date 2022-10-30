@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.cinnamon.discord.voice
 
 import dev.kord.common.annotation.KordVoice
 import dev.kord.common.entity.Snowflake
-import dev.kord.gateway.Gateway
 import dev.kord.gateway.UpdateVoiceStatus
 import dev.kord.voice.VoiceConnection
 import kotlinx.atomicfu.atomic
@@ -66,7 +65,8 @@ data class LorittaVoiceConnection(
                 shutdown() // Technically the connection will be cleaned up from the voice connections map after the voice connection is shutdown...
             }
 
-            val audioClipInfo = audioClips.receive() // This will suspend if there isn't any request audio clips in the channel
+            val audioClipInfo =
+                audioClips.receive() // This will suspend if there isn't any request audio clips in the channel
             detachJob?.cancel()
 
             if (channelId != audioClipInfo.channelId)

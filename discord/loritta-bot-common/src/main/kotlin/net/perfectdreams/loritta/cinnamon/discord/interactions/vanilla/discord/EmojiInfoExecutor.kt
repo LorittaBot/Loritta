@@ -1,23 +1,22 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord
 
 import com.vdurmont.emoji.EmojiManager
-import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.EmojiCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordRegexes
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import kotlin.streams.toList
 
 class EmojiInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
@@ -57,7 +56,8 @@ class EmojiInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
 
                     if (names.isNotEmpty())
                         field {
-                            name = "${Emotes.BookMark} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiName)
+                            name =
+                                "${Emotes.BookMark} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.EmojiName)
                             value = "`${names.joinToString(" + ")}`"
 
                             inline = true
@@ -143,7 +143,8 @@ class EmojiInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
                     }
 
                     field {
-                        name = "${Emotes.LoriCalendar} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.CreatedAt)
+                        name =
+                            "${Emotes.LoriCalendar} " + context.i18nContext.get(EmojiCommand.I18N_PREFIX.Info.CreatedAt)
                         value = "<t:${emojiIdAsSnowflake.timestamp.toEpochMilliseconds() / 1000}:D>"
 
                         inline = true

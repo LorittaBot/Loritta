@@ -21,7 +21,8 @@ abstract class LorittaDiscordGatewayManager(val totalShards: Int) {
      * @param guildId the guild's ID
      * @return a proxied gateway connection, or null if this instance does not handle the [guildId]
      */
-    fun getGatewayForGuild(guildId: Snowflake) = getGatewayForGuildOrNull(guildId) ?: error("This instance does not handle $guildId!")
+    fun getGatewayForGuild(guildId: Snowflake) =
+        getGatewayForGuildOrNull(guildId) ?: error("This instance does not handle $guildId!")
 
     /**
      * Gets a Gateway connection for the [shardId]
@@ -37,7 +38,8 @@ abstract class LorittaDiscordGatewayManager(val totalShards: Int) {
      * @param shardId the shard's ID
      * @return a proxied gateway connection, or null if this instance does not handle the [shardId]
      */
-    fun getGatewayForShard(shardId: Int) = getGatewayForShardOrNull(shardId) ?: error("This instance does not handle shard $shardId!")
+    fun getGatewayForShard(shardId: Int) =
+        getGatewayForShardOrNull(shardId) ?: error("This instance does not handle shard $shardId!")
 
     /**
      * Gets a Discord Shard ID from the provided Guild ID

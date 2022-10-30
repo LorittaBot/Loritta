@@ -14,80 +14,83 @@ import java.util.concurrent.TimeUnit
  * Classe de utilidades relacionadas ao Minecraft (como UUID query)
  */
 object MCUtils {
-	val username2uuid = Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).maximumSize(10000).build<String, String>().asMap()
-	val uuid2profile = Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures>().asMap()
+    val username2uuid =
+        Caffeine.newBuilder().expireAfterWrite(30L, TimeUnit.MINUTES).maximumSize(10000).build<String, String>().asMap()
+    val uuid2profile =
+        Caffeine.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).maximumSize(10000).build<String, MCTextures>()
+            .asMap()
 
-	fun getUniqueId(player: String): String? {
-		val lowercase = player.toLowerCase()
-		if (username2uuid.contains(lowercase)) {
-			return username2uuid[lowercase]
-		}
+    fun getUniqueId(player: String): String? {
+        val lowercase = player.toLowerCase()
+        if (username2uuid.contains(lowercase)) {
+            return username2uuid[lowercase]
+        }
 
-		if (player.isBlank())
-			return null
+        if (player.isBlank())
+            return null
 
-		val payload = JsonArray()
-		payload.add(player)
+        val payload = JsonArray()
+        payload.add(player)
 
-		val connection = HttpRequest.post("https://api.mojang.com/profiles/minecraft")
-				.contentType("application/json")
-				.send(payload.toString())
+        val connection = HttpRequest.post("https://api.mojang.com/profiles/minecraft")
+            .contentType("application/json")
+            .send(payload.toString())
 
-		if (!connection.success())
-			return null
+        if (!connection.success())
+            return null
 
-		val profile = connection.body()
-		val array = JsonParser.parseString(profile).array
+        val profile = connection.body()
+        val array = JsonParser.parseString(profile).array
 
-		array.forEach {
-			username2uuid[it["name"].string.toLowerCase()] = it["id"].string
-		}
+        array.forEach {
+            username2uuid[it["name"].string.toLowerCase()] = it["id"].string
+        }
 
-		return username2uuid[lowercase]
-	}
+        return username2uuid[lowercase]
+    }
 
-	fun getUserProfileFromName(username: String): MCTextures?  {
-		val uuid = getUniqueId(username) ?: return null
-		return getUserProfile(uuid)
-	}
+    fun getUserProfileFromName(username: String): MCTextures? {
+        val uuid = getUniqueId(username) ?: return null
+        return getUserProfile(uuid)
+    }
 
-	fun getUserProfile(uuid: String): MCTextures? {
-		if (uuid2profile.contains(uuid))
-			return uuid2profile[uuid]
+    fun getUserProfile(uuid: String): MCTextures? {
+        if (uuid2profile.contains(uuid))
+            return uuid2profile[uuid]
 
-		val connection = HttpRequest.get("https://sessionserver.mojang.com/session/minecraft/profile/$uuid")
-				.contentType("application/json")
+        val connection = HttpRequest.get("https://sessionserver.mojang.com/session/minecraft/profile/$uuid")
+            .contentType("application/json")
 
-		if (!connection.success())
-			return null
+        if (!connection.success())
+            return null
 
-		val rawJson = connection.body()
-		val profile = JsonParser.parseString(rawJson).obj
+        val rawJson = connection.body()
+        val profile = JsonParser.parseString(rawJson).obj
 
-		val textureValue = profile["properties"].array.firstOrNull { it["name"].nullString == "textures" }
+        val textureValue = profile["properties"].array.firstOrNull { it["name"].nullString == "textures" }
 
-		if (textureValue == null) {
-			uuid2profile[uuid] = null
-			return null
-		}
+        if (textureValue == null) {
+            uuid2profile[uuid] = null
+            return null
+        }
 
-		val str = textureValue["value"].string
+        val str = textureValue["value"].string
 
-		val json = String(Base64.getDecoder().decode(str))
+        val json = String(Base64.getDecoder().decode(str))
 
-		uuid2profile[uuid] = GSON.fromJson(json)
-		return uuid2profile[uuid]
-	}
+        uuid2profile[uuid] = GSON.fromJson(json)
+        return uuid2profile[uuid]
+    }
 
-	class MCTextures(
-			val timestamp: Long,
-			val profileId: String,
-			val profileName: String,
-			val signatureRequired: Boolean?,
-			val textures: Map<String, TextureValue>
-	)
+    class MCTextures(
+        val timestamp: Long,
+        val profileId: String,
+        val profileName: String,
+        val signatureRequired: Boolean?,
+        val textures: Map<String, TextureValue>
+    )
 
-	class TextureValue(
-			val url: String
-	)
+    class TextureValue(
+        val url: String
+    )
 }

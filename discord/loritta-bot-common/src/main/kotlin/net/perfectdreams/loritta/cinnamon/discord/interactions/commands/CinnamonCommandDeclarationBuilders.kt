@@ -34,19 +34,41 @@ class CinnamonSlashCommandDeclarationBuilder(
     val category: CommandCategory
 ) {
     var executor: ((LorittaBot) -> SlashCommandExecutor)? = null
+
     // var executor: SlashCommandExecutor? = null
     val subcommands = mutableListOf<CinnamonSlashCommandDeclarationBuilder>()
     val subcommandGroups = mutableListOf<CinnamonSlashCommandGroupDeclarationBuilder>()
+
     // Only root commands can have permissions and dmPermission
     var defaultMemberPermissions: Permissions? = null
     var dmPermission: Boolean? = null
 
-    fun subcommand(name: StringI18nData, description: StringI18nData, block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit)) {
-        subcommands += CinnamonSlashCommandDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
+    fun subcommand(
+        name: StringI18nData,
+        description: StringI18nData,
+        block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit)
+    ) {
+        subcommands += CinnamonSlashCommandDeclarationBuilder(
+            declarationWrapper,
+            languageManager,
+            name,
+            description,
+            category
+        ).apply(block)
     }
 
-    fun subcommandGroup(name: StringI18nData, description: StringI18nData, block: CinnamonSlashCommandGroupDeclarationBuilder.() -> (Unit)) {
-        subcommandGroups += CinnamonSlashCommandGroupDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
+    fun subcommandGroup(
+        name: StringI18nData,
+        description: StringI18nData,
+        block: CinnamonSlashCommandGroupDeclarationBuilder.() -> (Unit)
+    ) {
+        subcommandGroups += CinnamonSlashCommandGroupDeclarationBuilder(
+            declarationWrapper,
+            languageManager,
+            name,
+            description,
+            category
+        ).apply(block)
     }
 
     fun build(loritta: LorittaBot): SlashCommandDeclaration {
@@ -76,8 +98,18 @@ class CinnamonSlashCommandGroupDeclarationBuilder(
     // Groups can't have executors!
     val subcommands = mutableListOf<CinnamonSlashCommandDeclarationBuilder>()
 
-    fun subcommand(name: StringI18nData, description: StringI18nData, block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit)) {
-        subcommands += CinnamonSlashCommandDeclarationBuilder(declarationWrapper, languageManager, name, description, category).apply(block)
+    fun subcommand(
+        name: StringI18nData,
+        description: StringI18nData,
+        block: CinnamonSlashCommandDeclarationBuilder.() -> (Unit)
+    ) {
+        subcommands += CinnamonSlashCommandDeclarationBuilder(
+            declarationWrapper,
+            languageManager,
+            name,
+            description,
+            category
+        ).apply(block)
     }
 
     fun build(loritta: LorittaBot): SlashCommandGroupDeclaration {

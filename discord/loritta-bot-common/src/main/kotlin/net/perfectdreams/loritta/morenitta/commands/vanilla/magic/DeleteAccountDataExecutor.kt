@@ -6,20 +6,20 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostDeleteDataRoute
 
 object DeleteAccountDataExecutor : LoriToolsCommand.LoriToolsExecutor {
-	override val args = "delete_account_data <id>"
+    override val args = "delete_account_data <id>"
 
-	override fun executes(): suspend CommandContext.() -> Boolean = task@{
-		if (args.getOrNull(0) != "delete_account_data")
-			return@task false
-		val userId = args[1].toLong()
+    override fun executes(): suspend CommandContext.() -> Boolean = task@{
+        if (args.getOrNull(0) != "delete_account_data")
+            return@task false
+        val userId = args[1].toLong()
 
-		PostDeleteDataRoute.deleteAccountData(loritta, userId)
+        PostDeleteDataRoute.deleteAccountData(loritta, userId)
 
-		reply(
-				LorittaReply(
-						"Dados da conta de $userId foram deletados!"
-				)
-		)
-		return@task true
-	}
+        reply(
+            LorittaReply(
+                "Dados da conta de $userId foram deletados!"
+            )
+        )
+        return@task true
+    }
 }

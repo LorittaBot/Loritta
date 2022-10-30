@@ -1,26 +1,20 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import dev.kord.common.entity.DiscordChannel
-import dev.kord.common.entity.DiscordEmoji
-import dev.kord.common.entity.DiscordRole
 import dev.kord.common.entity.Snowflake
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.buildJsonArray
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
+import kotlinx.serialization.json.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.parallax.ParallaxMessage
 import net.perfectdreams.loritta.cinnamon.discord.utils.sources.TokenSource
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.common.utils.LorittaPlaceholder
-import net.perfectdreams.loritta.deviousfun.cache.DeviousChannelData
-import net.perfectdreams.loritta.deviousfun.cache.DeviousGuildEmojiData
-import net.perfectdreams.loritta.deviousfun.cache.DeviousRoleData
+import net.perfectdreams.loritta.deviouscache.data.DeviousChannelData
+import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
+import net.perfectdreams.loritta.deviouscache.data.DeviousRoleData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 object MessageUtils {
     private val CHAT_EMOJI_REGEX = Regex("(?<!<a?):([A-z0-9_]+):")
+
     // TODO: Proper i18n
     private val INVALID_MESSAGE_CONFIGURED = ParallaxMessage("*Invalid Message Configured* ${Emotes.LoriSob}", listOf())
 
@@ -137,7 +131,10 @@ object MessageUtils {
         roles: List<DeviousRoleData>,
         channels: List<DeviousChannelData>,
         emojis: List<DeviousGuildEmojiData>
-    ) = replaceLorittaTokens(replaceDiscordEntities(text, roles, channels, emojis), tokens) // First the Discord Entities, then our user tokens
+    ) = replaceLorittaTokens(
+        replaceDiscordEntities(text, roles, channels, emojis),
+        tokens
+    ) // First the Discord Entities, then our user tokens
 
     private fun replaceDiscordEntities(
         text: String,

@@ -7,28 +7,28 @@ import net.perfectdreams.discordinteraktions.common.BarebonesInteractionContext
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.allowedMentions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.CoinFlipCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.CoinFlipCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.AchievementUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.BetsService
+import net.perfectdreams.loritta.common.utils.GACampaigns
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import kotlin.time.Duration.Companion.hours
 
 class CoinFlipBetGlobalExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
@@ -80,6 +80,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
                             Emotes.LoriRich
                         )
                     }
+
                     is BetsService.AlreadyInQueueResult -> context.sendEphemeralMessage {
                         styled(
                             context.i18nContext.get(
@@ -88,6 +89,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
                             Emotes.LoriRage
                         )
                     }
+
                     is BetsService.CoinFlipResult -> {
                         val winnerCachedUserInfo = context.loritta.getCachedUserInfo(result.winner)
                         val loserCachedUserInfo = context.loritta.getCachedUserInfo(result.loser)
@@ -150,6 +152,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
 
                         otherUserContext.sendEphemeralMessage(otherUserMessage)
                     }
+
                     is BetsService.AnotherUserRemovedFromMatchmakingQueueResult -> {
                         val otherUserContext = BarebonesInteractionContext(
                             context.loritta.interaKTions.kord,
@@ -203,6 +206,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
                             )
                         }
                     }
+
                     is BetsService.OtherUserAchievementResult -> {
                         val otherUserContext = BarebonesInteractionContext(
                             context.loritta.interaKTions.kord,
@@ -222,6 +226,7 @@ class CoinFlipBetGlobalExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
                             result.achievementType
                         )
                     }
+
                     is BetsService.SelfUserAchievementResult -> {
                         context.giveAchievementAndNotify(result.achievementType)
                     }

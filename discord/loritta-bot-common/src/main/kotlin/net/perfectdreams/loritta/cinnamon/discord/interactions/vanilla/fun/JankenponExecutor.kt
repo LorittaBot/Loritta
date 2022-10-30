@@ -1,13 +1,15 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 
-import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.common.emotes.Emote
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.JankenponCommand
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
+import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.JankenponCommand
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.emotes.Emote
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class JankenponExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -36,10 +38,12 @@ class JankenponExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
                         append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Win)} ")
                         append(Emotes.LoriWow.asMention + "**")
                     }
+
                     Jankenpon.JankenponStatus.LOSE -> {
                         append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Lose)} ")
                         append(Emotes.LoriPat.asMention + "**")
                     }
+
                     Jankenpon.JankenponStatus.DRAW -> {
                         append("**${context.i18nContext.get(JankenponCommand.I18N_PREFIX.Draw)} ")
                         append(Emotes.LoriSmile.asMention + "**")
@@ -56,14 +60,20 @@ class JankenponExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
             context.sendMessage {
                 styled(
                     prefix = jankenPrefix,
-                    content = context.i18nContext.get(JankenponCommand.I18N_PREFIX.Chosen(janken.getEmoji(), opponent.getEmoji()))
+                    content = context.i18nContext.get(
+                        JankenponCommand.I18N_PREFIX.Chosen(
+                            janken.getEmoji(),
+                            opponent.getEmoji()
+                        )
+                    )
                 )
 
                 styled(fancy)
             }
         } else {
             if (argument.equals("jesus", ignoreCase = true)) {
-                val jesus = "${Emotes.Jesus} *${context.i18nContext.get(JankenponCommand.I18N_PREFIX.JesusChrist)}* ${Emotes.Jesus}"
+                val jesus =
+                    "${Emotes.Jesus} *${context.i18nContext.get(JankenponCommand.I18N_PREFIX.JesusChrist)}* ${Emotes.Jesus}"
 
                 context.sendMessage {
                     styled(

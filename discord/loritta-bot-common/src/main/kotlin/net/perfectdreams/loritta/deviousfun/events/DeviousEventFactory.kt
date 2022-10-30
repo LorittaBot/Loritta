@@ -32,7 +32,13 @@ class DeviousEventFactory(val m: DeviousFun) {
         val member = if (isWebhook)
             null
         else
-            guild?.let { m.cacheManager.createMember(author, guild, event.message.member.value!!) } // Should not be null in a guild
+            guild?.let {
+                m.cacheManager.createMember(
+                    author,
+                    guild,
+                    event.message.member.value!!
+                )
+            } // Should not be null in a guild
 
         val message = Message(
             m,
@@ -140,7 +146,11 @@ class DeviousEventFactory(val m: DeviousFun) {
         )
     }
 
-    suspend fun createGuildLeaveEvent(gateway: DeviousGateway, guild: Guild, guildDelete: GuildDelete): GuildLeaveEvent {
+    suspend fun createGuildLeaveEvent(
+        gateway: DeviousGateway,
+        guild: Guild,
+        guildDelete: GuildDelete
+    ): GuildLeaveEvent {
         return GuildLeaveEvent(
             m,
             gateway,

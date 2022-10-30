@@ -24,7 +24,11 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuE
 
     private val executorClazzName = this::class.simpleName ?: "UnknownExecutor"
 
-    abstract suspend fun onSelect(user: User, context: net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext, values: List<String>)
+    abstract suspend fun onSelect(
+        user: User,
+        context: net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext,
+        values: List<String>
+    )
 
     override suspend fun onSelect(user: User, context: ComponentContext, values: List<String>) {
         val rootDeclarationClazzName = context.componentExecutorDeclaration::class.simpleName ?: "UnknownDeclaration"
@@ -38,13 +42,15 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuE
         // These variables are used in the catch { ... } block, to make our lives easier
         var i18nContext: I18nContext? = null
         var cinnamonContext: net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext? = null
-        val guildId = (context as? net.perfectdreams.discordinteraktions.common.components.GuildComponentContext)?.guildId
+        val guildId =
+            (context as? net.perfectdreams.discordinteraktions.common.components.GuildComponentContext)?.guildId
         var stacktrace: String? = null
 
         try {
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
-                loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: CommandExecutorWrapper.NonGuildServerConfigRoot
+                loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data
+                    ?: CommandExecutorWrapper.NonGuildServerConfigRoot
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
                 CommandExecutorWrapper.NonGuildServerConfigRoot
@@ -101,7 +107,8 @@ abstract class CinnamonSelectMenuExecutor(val loritta: LorittaBot) : SelectMenuE
             logger.warn(e) { "Something went wrong while executing this executor!" } // TODO: Better logs
 
             // If the i18nContext is not present, we will default to the default language provided
-            i18nContext = i18nContext ?: loritta.languageManager.getI18nContextByLegacyLocaleId(loritta.languageManager.defaultLanguageId)
+            i18nContext = i18nContext
+                ?: loritta.languageManager.getI18nContextByLegacyLocaleId(loritta.languageManager.defaultLanguageId)
 
             // Tell the user that something went *really* wrong
             // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context

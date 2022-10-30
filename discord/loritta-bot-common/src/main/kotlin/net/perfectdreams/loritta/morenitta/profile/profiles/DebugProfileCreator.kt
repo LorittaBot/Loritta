@@ -13,7 +13,7 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 
 class DebugProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "debug") {
-	override suspend fun create(
+    override suspend fun create(
         sender: ProfileUserInfoData,
         user: ProfileUserInfoData,
         userProfile: Profile,
@@ -24,18 +24,18 @@ class DebugProfileCreator(loritta: LorittaBot) : StaticProfileCreator(loritta, "
         background: BufferedImage,
         aboutMe: String,
         allowedDiscordEmojis: List<Snowflake>?
-	): BufferedImage {
-		val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
-		val graphics = base.graphics.enableFontAntiAliasing()
+    ): BufferedImage {
+        val base = BufferedImage(800, 600, BufferedImage.TYPE_INT_ARGB) // Base
+        val graphics = base.graphics.enableFontAntiAliasing()
 
-		graphics.color = Color.WHITE
+        graphics.color = Color.WHITE
 
-		graphics.fillRect(0, 0, 800, 600)
-		graphics.color = Color.BLACK
+        graphics.fillRect(0, 0, 800, 600)
+        graphics.color = Color.BLACK
 
-		graphics.drawString("Perfil de $user", 20, 20)
-		graphics.drawString("Apenas para Testes!!!", 400, 400)
+        graphics.drawString("Perfil de $user", 20, 20)
+        graphics.drawString("Apenas para Testes!!!", 400, 400)
 
-		return base.makeRoundedCorners(15)
-	}
+        return base.makeRoundedCorners(15)
+    }
 }

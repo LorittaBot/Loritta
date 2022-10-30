@@ -13,40 +13,40 @@ import net.perfectdreams.sequins.ktor.BaseRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
 class GetTwitchInfoRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/twitch/channel") {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-	}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-	override suspend fun onRequest(call: ApplicationCall) {
-		val id = call.parameters["id"]?.toLongOrNull()
-		val login = call.parameters["login"]
-		
-		if (id != null) {
-			val payload = loritta.twitch.getUserLoginById(id)
-					?: throw WebsiteAPIException(
-							HttpStatusCode.NotFound,
-							WebsiteUtils.createErrorPayload(
-									loritta,
-									LoriWebCode.ITEM_NOT_FOUND,
-									"Streamer not found"
-							)
-					)
+    override suspend fun onRequest(call: ApplicationCall) {
+        val id = call.parameters["id"]?.toLongOrNull()
+        val login = call.parameters["login"]
 
-			call.respondJson(gson.toJsonTree(payload))
-		} else if (login != null) {
-			val payload = loritta.twitch.getUserLogin(login)
-					?: throw WebsiteAPIException(
-					HttpStatusCode.NotFound,
-					WebsiteUtils.createErrorPayload(
-							loritta,
-							LoriWebCode.ITEM_NOT_FOUND,
-							"Streamer not found"
-					)
-			)
+        if (id != null) {
+            val payload = loritta.twitch.getUserLoginById(id)
+                ?: throw WebsiteAPIException(
+                    HttpStatusCode.NotFound,
+                    WebsiteUtils.createErrorPayload(
+                        loritta,
+                        LoriWebCode.ITEM_NOT_FOUND,
+                        "Streamer not found"
+                    )
+                )
 
-			call.respondJson(gson.toJsonTree(payload))
-		} else {
-			call.respondJson(jsonObject(), HttpStatusCode.NotImplemented)
-		}
-	}
+            call.respondJson(gson.toJsonTree(payload))
+        } else if (login != null) {
+            val payload = loritta.twitch.getUserLogin(login)
+                ?: throw WebsiteAPIException(
+                    HttpStatusCode.NotFound,
+                    WebsiteUtils.createErrorPayload(
+                        loritta,
+                        LoriWebCode.ITEM_NOT_FOUND,
+                        "Streamer not found"
+                    )
+                )
+
+            call.respondJson(gson.toJsonTree(payload))
+        } else {
+            call.respondJson(jsonObject(), HttpStatusCode.NotImplemented)
+        }
+    }
 }

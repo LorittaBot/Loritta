@@ -25,7 +25,8 @@ abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String)
      * @param  userProfile the user's profile
      * @return the user's current global position in the economy ranking
      */
-    suspend fun getGlobalEconomyPosition(userProfile: Profile) = ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
+    suspend fun getGlobalEconomyPosition(userProfile: Profile) =
+        ProfileUtils.getGlobalEconomyPosition(loritta, userProfile)
 
     /**
      * Gets the user's local position in the experience ranking
@@ -33,7 +34,8 @@ abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String)
      * @param  localProfile the user's local profile
      * @return the user's current local position in the experience ranking
      */
-    suspend fun getLocalExperiencePosition(localProfile: GuildProfile?) = ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
+    suspend fun getLocalExperiencePosition(localProfile: GuildProfile?) =
+        ProfileUtils.getLocalExperiencePosition(loritta, localProfile)
 
     /**
      * Draws the user's about me
@@ -69,7 +71,8 @@ abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String)
         for (section in sections) {
             when (section) {
                 is ImageUtils.DrawableText -> {
-                    val split = section.text.split("((?<= )|(?= ))".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray() // Nós precisamos deixar os espaços entre os splits!
+                    val split = section.text.split("((?<= )|(?= ))".toRegex()).dropLastWhile { it.isEmpty() }
+                        .toTypedArray() // Nós precisamos deixar os espaços entre os splits!
                     for (str in split) {
                         var width = fontMetrics.stringWidth(str) // Width do texto que nós queremos colocar
                         if (currentX + width > endX) { // Se o currentX é maior que o endX... (Nós usamos currentX + width para verificar "ahead of time")
@@ -90,6 +93,7 @@ abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String)
                         }
                     }
                 }
+
                 is ImageUtils.DrawableDiscordEmote -> {
                     if (allowedDiscordEmojis == null || section.emoteId in allowedDiscordEmojis) {
                         val emoteImage = loritta.emojiImageCache.getDiscordEmoji(section.emoteId, Image.Size.Size64)
@@ -111,6 +115,7 @@ abstract class ProfileCreator(val loritta: LorittaBot, val internalName: String)
                         }
                     }
                 }
+
                 is ImageUtils.DrawableUnicodeEmote -> {
                     val emoteImage = loritta.emojiImageCache.getTwitterEmoji(section.emoji.codePoints().toList())
 

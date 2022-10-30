@@ -18,7 +18,7 @@ class ReplyBuilder {
      * @param reply The reply that will be appended
      */
     fun append(reply: LorittaReply) =
-            replies.add(reply)
+        replies.add(reply)
 
     /**
      * Appends a reply without using DSL, it's good for
@@ -29,8 +29,14 @@ class ReplyBuilder {
      * @param hasPadding If [prefix] is null and this value is set to true, the prefix will be the blue diamond emoji (🔹)
      * @param mentionUser If set to true, we'll mention the user on the reply
      */
-    fun append(message: String = " ", prefix: String? = null, forceMention: Boolean = false, hasPadding: Boolean = true, mentionUser: Boolean = true) =
-            append(LorittaReply(message, prefix, forceMention, hasPadding, mentionUser))
+    fun append(
+        message: String = " ",
+        prefix: String? = null,
+        forceMention: Boolean = false,
+        hasPadding: Boolean = true,
+        mentionUser: Boolean = true
+    ) =
+        append(LorittaReply(message, prefix, forceMention, hasPadding, mentionUser))
 
     /**
      * Appends a new reply with the provided data
@@ -39,7 +45,7 @@ class ReplyBuilder {
      * @param reply The reply data/message
      */
     inline fun append(reply: StyledReplyWrapper.() -> Unit) =
-            append(StyledReplyWrapper().apply(reply).asLorittaReply())
+        append(StyledReplyWrapper().apply(reply).asLorittaReply())
 
     /**
      * If the [condition] is true, we'll append the provided
@@ -68,11 +74,11 @@ class ReplyBuilder {
  * @param mentionUser If set to true, we'll mention the user on the reply
  */
 data class StyledReplyWrapper(
-        var message: String = " ",
-        var prefix: String? = null,
-        var forceMention: Boolean = false,
-        var hasPadding: Boolean = true,
-        var mentionUser: Boolean = true
+    var message: String = " ",
+    var prefix: String? = null,
+    var forceMention: Boolean = false,
+    var hasPadding: Boolean = true,
+    var mentionUser: Boolean = true
 ) {
 
     /**
@@ -92,7 +98,7 @@ data class StyledReplyWrapper(
  * @param builder The reply builder
  */
 suspend fun CommandContext.sendStyledReply(builder: ReplyBuilder.() -> Unit) =
-        reply(buildStyledReply(builder))
+    reply(buildStyledReply(builder))
 
 /**
  * Just creates a [MutableList<LorittaReply>] of all the
@@ -102,4 +108,4 @@ suspend fun CommandContext.sendStyledReply(builder: ReplyBuilder.() -> Unit) =
  * @return All the provided replies inside the [builder] scope
  */
 fun buildStyledReply(builder: ReplyBuilder.() -> Unit) =
-        ReplyBuilder().apply(builder).build()
+    ReplyBuilder().apply(builder).build()

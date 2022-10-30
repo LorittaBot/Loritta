@@ -14,11 +14,20 @@ interface ConfigTransformer {
         throw NotImplementedError()
     }
 
-    suspend fun fromJson(userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, payload: JsonObject) = fromJson(guild, serverConfig, payload)
+    suspend fun fromJson(
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig,
+        payload: JsonObject
+    ) = fromJson(guild, serverConfig, payload)
 
     suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         throw NotImplementedError()
     }
 
-    suspend fun toJson(userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonElement = toJson(guild, serverConfig)
+    suspend fun toJson(
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ): JsonElement = toJson(guild, serverConfig)
 }

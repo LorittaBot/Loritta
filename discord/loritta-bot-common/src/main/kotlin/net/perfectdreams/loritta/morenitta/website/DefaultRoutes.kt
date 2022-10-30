@@ -88,120 +88,120 @@ import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.Profile
 import net.perfectdreams.loritta.morenitta.website.routes.user.dashboard.ShipEffectsRoute
 
 object DefaultRoutes {
-	fun defaultRoutes(loritta: LorittaBot, website: LorittaWebsite) = listOf(
-		// ===[ USER ROUTES ]===
-		CommunityGuidelinesRoute(loritta),
-		FanArtsArtistRoute(loritta),
-		FanArtsRoute(loritta),
-		SponsorsRoute(loritta),
-		SponsorsRedirectRoute(loritta),
-		TermsOfServiceRoute(loritta),
-		DailyRoute(loritta),
-		DonateRoute(loritta),
+    fun defaultRoutes(loritta: LorittaBot, website: LorittaWebsite) = listOf(
+        // ===[ USER ROUTES ]===
+        CommunityGuidelinesRoute(loritta),
+        FanArtsArtistRoute(loritta),
+        FanArtsRoute(loritta),
+        SponsorsRoute(loritta),
+        SponsorsRedirectRoute(loritta),
+        TermsOfServiceRoute(loritta),
+        DailyRoute(loritta),
+        DonateRoute(loritta),
 
-		// Dashboard
-		DashboardRoute(loritta),
-		ConfigureGeneralRoute(loritta),
-		AuditLogRoute(loritta),
-		ConfigureAutoroleRoute(loritta),
-		ConfigureCommandsRoute(loritta),
-		ConfigureCustomBadgeRoute(loritta),
-		ConfigureDailyMultiplierRoute(loritta),
-		ConfigureEconomyRoute(loritta),
-		ConfigureEventLogRoute(loritta),
-		ConfigureInviteBlockerRoute(loritta),
-		ConfigureLevelUpRoute(loritta),
-		ConfigureTwitchRoute(loritta),
-		ConfigureMemberCounterRoute(loritta),
-		ConfigureMiscellaneousRoute(loritta),
-		ConfigureModerationRoute(loritta),
-		ConfigurePermissionsRoute(loritta),
-		ConfigurePremiumKeyRoute(loritta),
-		ConfigureStarboardRoute(loritta),
-		ConfigureTrackedTwitterAccountsRoute(loritta),
-		ConfigureWelcomerRoute(loritta),
-		ConfigureYouTubeRoute(loritta),
-		ConfigureNashornCommandsRoute(loritta),
-		ConfigureCustomCommandsRoute(loritta),
+        // Dashboard
+        DashboardRoute(loritta),
+        ConfigureGeneralRoute(loritta),
+        AuditLogRoute(loritta),
+        ConfigureAutoroleRoute(loritta),
+        ConfigureCommandsRoute(loritta),
+        ConfigureCustomBadgeRoute(loritta),
+        ConfigureDailyMultiplierRoute(loritta),
+        ConfigureEconomyRoute(loritta),
+        ConfigureEventLogRoute(loritta),
+        ConfigureInviteBlockerRoute(loritta),
+        ConfigureLevelUpRoute(loritta),
+        ConfigureTwitchRoute(loritta),
+        ConfigureMemberCounterRoute(loritta),
+        ConfigureMiscellaneousRoute(loritta),
+        ConfigureModerationRoute(loritta),
+        ConfigurePermissionsRoute(loritta),
+        ConfigurePremiumKeyRoute(loritta),
+        ConfigureStarboardRoute(loritta),
+        ConfigureTrackedTwitterAccountsRoute(loritta),
+        ConfigureWelcomerRoute(loritta),
+        ConfigureYouTubeRoute(loritta),
+        ConfigureNashornCommandsRoute(loritta),
+        ConfigureCustomCommandsRoute(loritta),
 
-		// Reps
-		UserReputationRoute(loritta),
+        // Reps
+        UserReputationRoute(loritta),
 
-		// Profiles
-		UserDashboardRoute(loritta),
-		ProfileListRoute(loritta),
-		ShipEffectsRoute(loritta),
-		AvailableBundlesRoute(loritta),
-		BackgroundsListRoute(loritta),
-		AllBackgroundsListRoute(loritta),
-		DailyShopRoute(loritta),
+        // Profiles
+        UserDashboardRoute(loritta),
+        ProfileListRoute(loritta),
+        ShipEffectsRoute(loritta),
+        AvailableBundlesRoute(loritta),
+        BackgroundsListRoute(loritta),
+        AllBackgroundsListRoute(loritta),
+        DailyShopRoute(loritta),
 
-		// ===[ API ROUTES ]===
-		// Callbacks
-		GetPubSubHubbubCallbackRoute(loritta),
-		PostDiscordBotsCallbackRoute(loritta),
-		PostPubSubHubbubCallbackRoute(loritta),
-		PostPerfectPaymentsCallbackRoute(loritta),
-		CreateWebhookRoute(loritta),
+        // ===[ API ROUTES ]===
+        // Callbacks
+        GetPubSubHubbubCallbackRoute(loritta),
+        PostDiscordBotsCallbackRoute(loritta),
+        PostPubSubHubbubCallbackRoute(loritta),
+        PostPerfectPaymentsCallbackRoute(loritta),
+        CreateWebhookRoute(loritta),
 
-		// Economy
-		GetLoriDailyRewardRoute(loritta),
-		GetLoriDailyRewardStatusRoute(loritta),
-		PostTransferBalanceExternalRoute(loritta),
-		GetBundlesRoute(loritta),
-		PostBundlesRoute(loritta),
-		GetDailyShopRoute(loritta),
-		PostBuyDailyShopItemRoute(loritta),
+        // Economy
+        GetLoriDailyRewardRoute(loritta),
+        GetLoriDailyRewardStatusRoute(loritta),
+        PostTransferBalanceExternalRoute(loritta),
+        GetBundlesRoute(loritta),
+        PostBundlesRoute(loritta),
+        GetDailyShopRoute(loritta),
+        PostBuyDailyShopItemRoute(loritta),
 
-		// Guild
-		GetGuildWebAuditLogRoute(loritta),
-		GetMembersWithRolesInGuildRoute(loritta),
-		GetServerConfigRoute(loritta, website),
-		PatchServerConfigRoute(loritta, website),
-		PostObsoleteServerConfigRoute(loritta),
-		PostSendMessageGuildRoute(loritta),
-		GetServerConfigSectionRoute(loritta, website),
+        // Guild
+        GetGuildWebAuditLogRoute(loritta),
+        GetMembersWithRolesInGuildRoute(loritta),
+        GetServerConfigRoute(loritta, website),
+        PatchServerConfigRoute(loritta, website),
+        PostObsoleteServerConfigRoute(loritta),
+        PostSendMessageGuildRoute(loritta),
+        GetServerConfigSectionRoute(loritta, website),
 
-		// Loritta
-		GetCommandsRoute(loritta),
-		GetFanArtsController(loritta),
-		GetLocaleRoute(loritta),
-		GetLorittaActionRoute(loritta),
-		GetRaffleStatusRoute(loritta),
-		GetStatusRoute(loritta),
-		GetPrometheusMetricsRoute(loritta),
-		GetAvailableBackgroundsRoute(loritta),
-		GetAvailableProfileDesignsRoute(loritta),
-		GetSelfUserProfileRoute(loritta),
-		PostLorittaActionRoute(loritta),
-		PostRaffleStatusRoute(loritta),
-		PostReputationMessageRoute(loritta),
-		PostTransferBalanceRoute(loritta),
-		PostUpdateUserBackgroundRoute(loritta),
-		PostErrorRoute(loritta),
+        // Loritta
+        GetCommandsRoute(loritta),
+        GetFanArtsController(loritta),
+        GetLocaleRoute(loritta),
+        GetLorittaActionRoute(loritta),
+        GetRaffleStatusRoute(loritta),
+        GetStatusRoute(loritta),
+        GetPrometheusMetricsRoute(loritta),
+        GetAvailableBackgroundsRoute(loritta),
+        GetAvailableProfileDesignsRoute(loritta),
+        GetSelfUserProfileRoute(loritta),
+        PostLorittaActionRoute(loritta),
+        PostRaffleStatusRoute(loritta),
+        PostReputationMessageRoute(loritta),
+        PostTransferBalanceRoute(loritta),
+        PostUpdateUserBackgroundRoute(loritta),
+        PostErrorRoute(loritta),
 
-		// Twitch
-		GetTwitchInfoRoute(loritta),
+        // Twitch
+        GetTwitchInfoRoute(loritta),
 
-		// Twitter
-		GetShowTwitterUserRoute(loritta),
+        // Twitter
+        GetShowTwitterUserRoute(loritta),
 
-		// User
-		GetSelfInfoRoute(loritta),
-		GetUserReputationsRoute(loritta),
-		PatchProfileRoute(loritta),
-		PostDonationPaymentRoute(loritta),
-		PostUserReputationsRoute(loritta),
-		PostLogoutRoute(loritta),
-		PostDeleteDataRoute(loritta),
+        // User
+        GetSelfInfoRoute(loritta),
+        GetUserReputationsRoute(loritta),
+        PatchProfileRoute(loritta),
+        PostDonationPaymentRoute(loritta),
+        PostUserReputationsRoute(loritta),
+        PostLogoutRoute(loritta),
+        PostDeleteDataRoute(loritta),
 
-		// Twitch
-		GetTwitchInfoRoute(loritta),
+        // Twitch
+        GetTwitchInfoRoute(loritta),
 
-		// YouTube
-		GetChannelInfoRoute(loritta),
+        // YouTube
+        GetChannelInfoRoute(loritta),
 
-		// ===[ MISC ]===
-		AdsTxtRoute(loritta)
-	)
+        // ===[ MISC ]===
+        AdsTxtRoute(loritta)
+    )
 }

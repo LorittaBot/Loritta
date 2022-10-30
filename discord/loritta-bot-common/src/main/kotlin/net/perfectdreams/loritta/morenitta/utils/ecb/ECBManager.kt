@@ -17,8 +17,9 @@ class ECBManager {
 
         if (diff >= Duration.hours(1).inWholeMilliseconds) {
             job = GlobalScope.async {
-                val jsoup = Jsoup.connect("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml?${System.currentTimeMillis()}")
-                    .get()
+                val jsoup =
+                    Jsoup.connect("https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml?${System.currentTimeMillis()}")
+                        .get()
 
                 val exchangeRates = jsoup.select("Cube")
                     .toList()

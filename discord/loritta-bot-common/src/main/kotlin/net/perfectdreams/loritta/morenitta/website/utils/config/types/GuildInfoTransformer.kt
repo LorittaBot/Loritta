@@ -10,11 +10,15 @@ object GuildInfoTransformer : ConfigTransformer {
     override val payloadType: String = "guildinfo"
     override val configKey: String = "guildInfo"
 
-    override suspend fun toJson(userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig): JsonElement {
+    override suspend fun toJson(
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ): JsonElement {
         return jsonObject(
-                "id" to guild.idLong,
-                "name" to guild.name,
-                "iconUrl" to guild.iconUrl
+            "id" to guild.idLong,
+            "name" to guild.name,
+            "iconUrl" to guild.iconUrl
         )
     }
 }

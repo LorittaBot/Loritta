@@ -14,75 +14,79 @@ import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.sum
 
-class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("scratchcard top", "raspadinha top"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
-	companion object {
-		private const val LOCALE_PREFIX = "commands.command"
-	}
+class ScratchCardTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("scratchcard top", "raspadinha top"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
+) {
+    companion object {
+        private const val LOCALE_PREFIX = "commands.command"
+    }
 
-	override fun command() = create {
-		localizedDescription("$LOCALE_PREFIX.scratchcardtop.description")
+    override fun command() = create {
+        localizedDescription("$LOCALE_PREFIX.scratchcardtop.description")
 
-		usage {
-			arguments {
-				argument(ArgumentType.NUMBER) {
-					optional = true
-				}
-			}
-		}
+        usage {
+            arguments {
+                argument(ArgumentType.NUMBER) {
+                    optional = true
+                }
+            }
+        }
 
-		executesDiscord {
-			val context = this
+        executesDiscord {
+            val context = this
 
-			var page = context.args.getOrNull(0)?.toLongOrNull()
+            var page = context.args.getOrNull(0)?.toLongOrNull()
 
-			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
-				context.reply(
-					LorittaReply(
-						locale["commands.invalidRankingPage"],
-						Constants.ERROR
-					)
-				)
-				return@executesDiscord
-			}
+            if (page != null && !RankingGenerator.isValidRankingPage(page)) {
+                context.reply(
+                    LorittaReply(
+                        locale["commands.invalidRankingPage"],
+                        Constants.ERROR
+                    )
+                )
+                return@executesDiscord
+            }
 
-			if (page != null)
-				page -= 1
+            if (page != null)
+                page -= 1
 
-			if (page == null)
-				page = 0
+            if (page == null)
+                page = 0
 
-			val userId = Raspadinhas.receivedById
-			val ticketCount = Raspadinhas.receivedById.count()
-			val moneySum = Raspadinhas.value.sum()
+            val userId = Raspadinhas.receivedById
+            val ticketCount = Raspadinhas.receivedById.count()
+            val moneySum = Raspadinhas.value.sum()
 
-			val userData = loritta.pudding.transaction {
-				Raspadinhas.slice(userId, ticketCount, moneySum)
-					.selectAll()
-					.groupBy(userId)
-					.having {
-						moneySum.isNotNull()
-					}
-					.orderBy(moneySum, SortOrder.DESC)
-					.limit(5, page * 5)
-					.toMutableList()
-			}
+            val userData = loritta.pudding.transaction {
+                Raspadinhas.slice(userId, ticketCount, moneySum)
+                    .selectAll()
+                    .groupBy(userId)
+                    .having {
+                        moneySum.isNotNull()
+                    }
+                    .orderBy(moneySum, SortOrder.DESC)
+                    .limit(5, page * 5)
+                    .toMutableList()
+            }
 
-			context.sendImage(
-				JVMImage(
-					RankingGenerator.generateRanking(
-						loritta,
-						"Ranking Global",
-						null,
-						userData.map {
-							RankingGenerator.UserRankInformation(
-								it[userId],
-								locale["$LOCALE_PREFIX.scratchcardtop.wonTickets", it[moneySum].toString(), it[ticketCount].toString()]
-							)
-						}
-					)),
-				"rank.png",
-				context.getUserMention(true)
-			)
-		}
-	}
+            context.sendImage(
+                JVMImage(
+                    RankingGenerator.generateRanking(
+                        loritta,
+                        "Ranking Global",
+                        null,
+                        userData.map {
+                            RankingGenerator.UserRankInformation(
+                                it[userId],
+                                locale["$LOCALE_PREFIX.scratchcardtop.wonTickets", it[moneySum].toString(), it[ticketCount].toString()]
+                            )
+                        }
+                    )),
+                "rank.png",
+                context.getUserMention(true)
+            )
+        }
+    }
 }

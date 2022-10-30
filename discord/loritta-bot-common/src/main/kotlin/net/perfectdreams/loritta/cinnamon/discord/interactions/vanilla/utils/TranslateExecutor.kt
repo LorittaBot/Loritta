@@ -3,40 +3,42 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.i18nhelper.core.keys.StringI18nKey
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.TranslateCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.google.HackyGoogleTranslateClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.Language
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.common.utils.text.TextUtils
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class TranslateExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
-    val cinnamonAutocomplete: (AutocompleteContext, FocusedCommandOption, Boolean) -> (Map<String, String>) = { autocompleteContext, focusedCommandOption, includeAuto ->
-        val value = focusedCommandOption.value
+    val cinnamonAutocomplete: (AutocompleteContext, FocusedCommandOption, Boolean) -> (Map<String, String>) =
+        { autocompleteContext, focusedCommandOption, includeAuto ->
+            val value = focusedCommandOption.value
 
-        Language.values()
-            .asSequence()
-            .filter {
-                if (!includeAuto) it != Language.AUTO_DETECT else true
-            }
-            .filter {
-                autocompleteContext.i18nContext.get(it.languageNameI18nKey).startsWith(value, true)
-            }
-            .take(25)
-            .associate {
-                autocompleteContext.i18nContext.get(TranslateCommand.I18N_PREFIX.LanguageFormat(it.languageNameI18nKey, it.code)) to it.code
-            }
-    }
+            Language.values()
+                .asSequence()
+                .filter {
+                    if (!includeAuto) it != Language.AUTO_DETECT else true
+                }
+                .filter {
+                    autocompleteContext.i18nContext.get(it.languageNameI18nKey).startsWith(value, true)
+                }
+                .take(25)
+                .associate {
+                    autocompleteContext.i18nContext.get(
+                        TranslateCommand.I18N_PREFIX.LanguageFormat(
+                            it.languageNameI18nKey,
+                            it.code
+                        )
+                    ) to it.code
+                }
+        }
 
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val from = string("from", TranslateCommand.I18N_PREFIX.Options.From.Text) {
@@ -107,7 +109,14 @@ class TranslateExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
 
         context.sendMessage {
             embed {
-                title = "${Emotes.Map} ${context.i18nContext.get(I18nKeysData.Commands.Command.Translate.TranslatedFromLanguageToLanguage(translated.sourceLanguage.languageNameI18nKey, to.languageNameI18nKey))}"
+                title = "${Emotes.Map} ${
+                    context.i18nContext.get(
+                        I18nKeysData.Commands.Command.Translate.TranslatedFromLanguageToLanguage(
+                            translated.sourceLanguage.languageNameI18nKey,
+                            to.languageNameI18nKey
+                        )
+                    )
+                }"
 
                 description = translated.output
 

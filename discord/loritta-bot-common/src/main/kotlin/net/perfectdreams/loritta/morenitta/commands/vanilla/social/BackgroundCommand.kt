@@ -8,20 +8,25 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class BackgroundCommand(loritta: LorittaBot) : AbstractCommand(loritta, "background", listOf("papeldeparede"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.background.description")
+class BackgroundCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "background",
+    listOf("papeldeparede"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL
+) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.background.description")
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		context.reply(
-                LorittaReply(
-                        "Altere o background e embeleze o seu perfil aqui! <${loritta.config.loritta.website.url}user/@me/dashboard/backgrounds>",
-                        Emotes.LORI_WOW
-                ),
-                LorittaReply(
-                        "Você pode comprar mais backgrounds para o seu perfil na nossa loja diária! <${loritta.config.loritta.website.url}user/@me/dashboard/daily-shop>",
-                        Emotes.LORI_WOW,
-                        mentionUser = false
-                )
-		)
-	}
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        context.reply(
+            LorittaReply(
+                "Altere o background e embeleze o seu perfil aqui! <${loritta.config.loritta.website.url}user/@me/dashboard/backgrounds>",
+                Emotes.LORI_WOW
+            ),
+            LorittaReply(
+                "Você pode comprar mais backgrounds para o seu perfil na nossa loja diária! <${loritta.config.loritta.website.url}user/@me/dashboard/daily-shop>",
+                Emotes.LORI_WOW,
+                mentionUser = false
+            )
+        )
+    }
 }

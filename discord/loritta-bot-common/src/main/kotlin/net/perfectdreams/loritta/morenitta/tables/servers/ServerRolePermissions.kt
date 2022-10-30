@@ -5,8 +5,8 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaPermission
 import org.jetbrains.exposed.dao.id.LongIdTable
 
 object ServerRolePermissions : LongIdTable() {
-	val guild = reference("guild", ServerConfigs).index()
-	val roleId = long("role").index()
+    val guild = reference("guild", ServerConfigs).index()
+    val roleId = long("role").index()
 
-	val permission = enumeration("permission", LorittaPermission::class)
+    val permission = enumeration("permission", LorittaPermission::class)
 }

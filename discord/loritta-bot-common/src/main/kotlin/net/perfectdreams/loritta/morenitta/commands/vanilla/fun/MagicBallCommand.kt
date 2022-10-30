@@ -12,35 +12,44 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class MagicBallCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vieirinha", listOf("8ball", "magicball", "eightball"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.vieirinha.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.command.vieirinha.examples")
+class MagicBallCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "vieirinha",
+    listOf("8ball", "magicball", "eightball"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.FUN
+) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.vieirinha.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.command.vieirinha.examples")
 
-	override fun getUsage(): CommandArguments {
-		return arguments {
-			argument(ArgumentType.TEXT) {
-				optional = false
-			}
-		}
-	}
+    override fun getUsage(): CommandArguments {
+        return arguments {
+            argument(ArgumentType.TEXT) {
+                optional = false
+            }
+        }
+    }
 
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
+    override fun canUseInPrivateChannel(): Boolean {
+        return false
+    }
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "vieirinha")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "vieirinha")
 
-		if (context.args.isNotEmpty()) {
-			val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.channel, "Vieirinha")
+        if (context.args.isNotEmpty()) {
+            val temmie = WebhookUtils.getOrCreateWebhook(loritta, context.event.channel, "Vieirinha")
 
-			context.sendMessage(temmie, WebhookMessageBuilder()
-					.setUsername("Vieirinha")
-					.setContent(context.getAsMention(true) + locale.getList("commands.command.vieirinha.responses").random())
-					.setAvatarUrl("http://i.imgur.com/rRtHdti.png")
-					.build())
-		} else {
-			context.explain()
-		}
-	}
+            context.sendMessage(
+                temmie, WebhookMessageBuilder()
+                    .setUsername("Vieirinha")
+                    .setContent(
+                        context.getAsMention(true) + locale.getList("commands.command.vieirinha.responses").random()
+                    )
+                    .setAvatarUrl("http://i.imgur.com/rRtHdti.png")
+                    .build()
+            )
+        } else {
+            context.explain()
+        }
+    }
 }

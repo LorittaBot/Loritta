@@ -48,6 +48,11 @@ class MessageReaction(
     }
 
     suspend fun removeReaction(user: User) {
-        deviousFun.loritta.rest.channel.deleteReaction(channelIdSnowflake, messageIdSnowflake, user.idSnowflake, reactionEmote.name)
+        deviousFun.loritta.rest.channel.deleteReaction(
+            channelIdSnowflake,
+            messageIdSnowflake,
+            user.idSnowflake,
+            reactionEmote.name
+        )
     }
 }

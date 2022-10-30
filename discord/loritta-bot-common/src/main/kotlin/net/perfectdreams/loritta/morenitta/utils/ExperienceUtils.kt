@@ -17,7 +17,11 @@ object ExperienceUtils {
         return getLevelExperience(lvl) - currentExperience
     }
 
-    suspend fun getExperienceCustomTokens(loritta: LorittaBot, config: ServerConfig, member: Member): Map<String, String> {
+    suspend fun getExperienceCustomTokens(
+        loritta: LorittaBot,
+        config: ServerConfig,
+        member: Member
+    ): Map<String, String> {
         val customTokens = mutableMapOf<String, String>()
 
         // Load tokens for experience/level/xp

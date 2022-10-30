@@ -18,65 +18,65 @@ import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import java.util.concurrent.TimeUnit
 
 class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-		private val mutexes = Caffeine.newBuilder()
-				.expireAfterAccess(60, TimeUnit.SECONDS)
-				.build<Long, Mutex>()
-				.asMap()
-	}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+        private val mutexes = Caffeine.newBuilder()
+            .expireAfterAccess(60, TimeUnit.SECONDS)
+            .build<Long, Mutex>()
+            .asMap()
+    }
 
-	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
-		if (DebugLog.cancelAllEvents)
-			return
+    override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
+        if (DebugLog.cancelAllEvents)
+            return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
+        if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+            return
 
-		onVoiceChannelConnect(event.member, event.channelJoined)
-	}
+        onVoiceChannelConnect(event.member, event.channelJoined)
+    }
 
-	override fun onGuildVoiceMove(event: GuildVoiceMoveEvent) {
-		if (DebugLog.cancelAllEvents)
-			return
+    override fun onGuildVoiceMove(event: GuildVoiceMoveEvent) {
+        if (DebugLog.cancelAllEvents)
+            return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
+        if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+            return
 
-		onVoiceChannelLeave(event.member, event.channelLeft)
-		onVoiceChannelConnect(event.member, event.channelJoined)
-	}
+        onVoiceChannelLeave(event.member, event.channelLeft)
+        onVoiceChannelConnect(event.member, event.channelJoined)
+    }
 
-	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
-		if (DebugLog.cancelAllEvents)
-			return
+    override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
+        if (DebugLog.cancelAllEvents)
+            return
 
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
+        if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
+            return
 
-		onVoiceChannelLeave(event.member, event.channelLeft)
-	}
+        onVoiceChannelLeave(event.member, event.channelLeft)
+    }
 
-	fun onVoiceChannelConnect(member: Member, channelJoined: Channel) {
-		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val mutex = mutexes.getOrPut(channelJoined.idLong) { Mutex() }
+    fun onVoiceChannelConnect(member: Member, channelJoined: Channel) {
+        GlobalScope.launch(loritta.coroutineDispatcher) {
+            val mutex = mutexes.getOrPut(channelJoined.idLong) { Mutex() }
 
-			mutex.withLock {
-				// Carregar a configuração do servidor
-				val serverConfig = loritta.getOrCreateServerConfig(channelJoined.guild.idLong)
-				EventLog.onVoiceJoin(loritta, serverConfig, member, channelJoined)
-			}
-		}
-	}
+            mutex.withLock {
+                // Carregar a configuração do servidor
+                val serverConfig = loritta.getOrCreateServerConfig(channelJoined.guild.idLong)
+                EventLog.onVoiceJoin(loritta, serverConfig, member, channelJoined)
+            }
+        }
+    }
 
-	fun onVoiceChannelLeave(member: Member, channelLeft: Channel) {
-		GlobalScope.launch(loritta.coroutineDispatcher) {
-			val mutex = mutexes.getOrPut(channelLeft.idLong) { Mutex() }
+    fun onVoiceChannelLeave(member: Member, channelLeft: Channel) {
+        GlobalScope.launch(loritta.coroutineDispatcher) {
+            val mutex = mutexes.getOrPut(channelLeft.idLong) { Mutex() }
 
-			mutex.withLock {
-				val serverConfig = loritta.getOrCreateServerConfig(channelLeft.guild.idLong)
-				EventLog.onVoiceLeave(loritta, serverConfig, member, channelLeft)
-			}
-		}
-	}
+            mutex.withLock {
+                val serverConfig = loritta.getOrCreateServerConfig(channelLeft.guild.idLong)
+                EventLog.onVoiceLeave(loritta, serverConfig, member, channelLeft)
+            }
+        }
+    }
 }

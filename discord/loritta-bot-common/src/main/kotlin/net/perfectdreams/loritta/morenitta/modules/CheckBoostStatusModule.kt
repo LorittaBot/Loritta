@@ -15,45 +15,57 @@ import net.perfectdreams.loritta.morenitta.utils.payments.PaymentGateway
 import org.jetbrains.exposed.sql.and
 
 class CheckBoostStatusModule(val loritta: LorittaBot) : MessageReceivedModule {
-	val config = loritta.config.loritta.donatorsOstentation
+    val config = loritta.config.loritta.donatorsOstentation
 
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		val guildId = event.guild?.idLong ?: return false
+    override suspend fun matches(
+        event: LorittaMessageEvent,
+        lorittaUser: LorittaUser,
+        lorittaProfile: Profile?,
+        serverConfig: ServerConfig,
+        locale: BaseLocale
+    ): Boolean {
+        val guildId = event.guild?.idLong ?: return false
 
-		if (!config.boostEnabledGuilds.any { it.id == guildId })
-			return false
+        if (!config.boostEnabledGuilds.any { it.id == guildId })
+            return false
 
-		if (event.member?.timeBoosted == null)
-			return false
+        if (event.member?.timeBoosted == null)
+            return false
 
-		if (event.guild.boostCount > config.boostMax)
-			return false
+        if (event.guild.boostCount > config.boostMax)
+            return false
 
-		return true
-	}
+        return true
+    }
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		val donations = loritta.pudding.transaction {
-			Payment.find {
-				(Payments.gateway eq PaymentGateway.NITRO_BOOST) and (Payments.userId eq event.author.idLong)
-			}.toList()
-		}
+    override suspend fun handle(
+        event: LorittaMessageEvent,
+        lorittaUser: LorittaUser,
+        lorittaProfile: Profile?,
+        serverConfig: ServerConfig,
+        locale: BaseLocale
+    ): Boolean {
+        val donations = loritta.pudding.transaction {
+            Payment.find {
+                (Payments.gateway eq PaymentGateway.NITRO_BOOST) and (Payments.userId eq event.author.idLong)
+            }.toList()
+        }
 
-		var hasPaymentHere = false
+        var hasPaymentHere = false
 
-		for (nitroBoostPayment in donations) {
-			val metadata = nitroBoostPayment.metadata
-			val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == event.guild!!.idLong
+        for (nitroBoostPayment in donations) {
+            val metadata = nitroBoostPayment.metadata
+            val isFromThisGuild = metadata != null && metadata.obj["guildId"].nullLong == event.guild!!.idLong
 
-			if (isFromThisGuild) {
-				hasPaymentHere = true
-				break
-			}
-		}
+            if (isFromThisGuild) {
+                hasPaymentHere = true
+                break
+            }
+        }
 
-		if (!hasPaymentHere)
-			NitroBoostUtils.onBoostActivate(loritta, event.member!!)
+        if (!hasPaymentHere)
+            NitroBoostUtils.onBoostActivate(loritta, event.member!!)
 
-		return false
-	}
+        return false
+    }
 }

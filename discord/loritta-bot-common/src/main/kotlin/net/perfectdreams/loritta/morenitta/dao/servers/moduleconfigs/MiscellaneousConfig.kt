@@ -6,8 +6,8 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
 class MiscellaneousConfig(id: EntityID<Long>) : Entity<Long>(id) {
-	companion object : EntityClass<Long, MiscellaneousConfig>(MiscellaneousConfigs)
+    companion object : EntityClass<Long, MiscellaneousConfig>(MiscellaneousConfigs)
 
-	var enableBomDiaECia by MiscellaneousConfigs.enableBomDiaECia
-	var enableQuirky by MiscellaneousConfigs.enableQuirky
+    var enableBomDiaECia by MiscellaneousConfigs.enableBomDiaECia
+    var enableQuirky by MiscellaneousConfigs.enableQuirky
 }

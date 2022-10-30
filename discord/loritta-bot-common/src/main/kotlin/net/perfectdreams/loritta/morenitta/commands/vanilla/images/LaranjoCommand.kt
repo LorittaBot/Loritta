@@ -12,34 +12,35 @@ import java.awt.Color
 import java.awt.Font
 import java.io.File
 
-class LaranjoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "laranjo", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.laranjo.description")
+class LaranjoCommand(loritta: LorittaBot) :
+    AbstractCommand(loritta, "laranjo", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.laranjo.description")
 
-	override fun getExamples(): List<String> {
-		return listOf("ei ademin bane o cara ai pfv")
-	}
+    override fun getExamples(): List<String> {
+        return listOf("ei ademin bane o cara ai pfv")
+    }
 
-	// TODO: Fix Usage
+    // TODO: Fix Usage
 
-	override fun needsToUploadFiles(): Boolean {
-		return true
-	}
+    override fun needsToUploadFiles(): Boolean {
+        return true
+    }
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.isNotEmpty()) {
-			val template = readImage(File(LorittaBot.ASSETS + "laranjo.png")) // Template
-			val texto = context.args.joinToString(" ")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        if (context.args.isNotEmpty()) {
+            val template = readImage(File(LorittaBot.ASSETS + "laranjo.png")) // Template
+            val texto = context.args.joinToString(" ")
 
-			var graphics = template.graphics.enableFontAntiAliasing()
-			graphics.color = Color.BLACK
+            var graphics = template.graphics.enableFontAntiAliasing()
+            graphics.color = Color.BLACK
 
-			var font = Font.createFont(0, File(LorittaBot.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F)
-			graphics.font = font
-			ImageUtils.drawTextWrapSpaces(loritta, texto, 2, 40, 334, 9999, graphics.fontMetrics, graphics)
+            var font = Font.createFont(0, File(LorittaBot.ASSETS + "mavenpro-bold.ttf")).deriveFont(24F)
+            graphics.font = font
+            ImageUtils.drawTextWrapSpaces(loritta, texto, 2, 40, 334, 9999, graphics.fontMetrics, graphics)
 
-			context.sendFile(template, "laranjo.png", context.getAsMention(true))
-		} else {
-			context.explain()
-		}
-	}
+            context.sendFile(template, "laranjo.png", context.getAsMention(true))
+        } else {
+            context.explain()
+        }
+    }
 }

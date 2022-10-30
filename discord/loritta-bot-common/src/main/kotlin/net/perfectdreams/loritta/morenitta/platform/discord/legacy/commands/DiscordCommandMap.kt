@@ -44,493 +44,551 @@ import java.sql.Connection
 import java.util.concurrent.CancellationException
 
 class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandContext>> {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-	}
-
-	val commands = mutableListOf<Command<CommandContext>>()
-
-	init {
-		registerAll(
-			// ===[ MAGIC ]===
-			LoriToolsCommand(loritta),
-
-			// ===[ ROLEPLAY ]===
-			AttackCommand(loritta),
-			DanceCommand(loritta),
-			HeadPatCommand(loritta),
-			HighFiveCommand(loritta),
-			HugCommand(loritta),
-			KissCommand(loritta),
-			SlapCommand(loritta),
-
-			// ===[ ECONOMY ]===
-			SonhosTopCommand(loritta),
-			SonhosTopLocalCommand(loritta),
-			TransactionsCommand(loritta),
-			BrokerCommand(loritta),
-			BrokerBuyStockCommand(loritta),
-			BrokerSellStockCommand(loritta),
-			BrokerPortfolioCommand(loritta),
-			GuessNumberCommand(loritta),
-			ScratchCardCommand(loritta),
-			ScratchCardTopCommand(loritta),
-			CoinFlipBetCommand(loritta),
-			EmojiFightCommand(loritta),
-			EmojiFightBetCommand(loritta),
-
-			// ===[ SOCIAL ]===
-			BomDiaECiaStatusCommand(loritta),
-			BomDiaECiaTopCommand(loritta),
-			BomDiaECiaTopLocalCommand(loritta),
-			RepTopCommand(loritta),
-			XpNotificationsCommand(loritta),
-			RepListCommand(loritta),
-			DashboardCommand(loritta),
-			RenameChannelCommand(loritta),
-			RenameEmojiCommand(loritta),
-
-			// ===[ ADMIN ]===
-			BanInfoCommand(loritta),
-			ClearCommand(loritta),
-			UnwarnCommand(loritta),
-
-			// ===[ MISC ]===
-			FanArtsCommand(loritta),
-			DiscordBotListCommand(loritta),
-			DiscordBotListStatusCommand(loritta),
-			DiscordBotListTopCommand(loritta),
-			DiscordBotListTopLocalCommand(loritta),
-
-			// ===[ DISCORD ]===
-			ChannelInfoCommand(loritta),
-			GuildBannerCommand(loritta),
-			RoleInfoCommand(loritta),
-
-			// ===[ FUN ]===
-			GiveawayCommand(loritta),
-			GiveawayEndCommand(loritta),
-			GiveawayRerollCommand(loritta),
-			GiveawaySetupCommand(loritta),
-			CancelledCommand(loritta),
-			HungerGamesCommand(loritta),
-
-			// ===[ IMAGES ]===
-			ArtCommand(loritta),
-			AtaCommand(loritta),
-			BobBurningPaperCommand(loritta),
-			BolsoDrakeCommand(loritta),
-			BolsoFrameCommand(loritta),
-			Bolsonaro2Command(loritta),
-			BolsonaroCommand(loritta),
-			BriggsCoverCommand(loritta),
-			BuckShirtCommand(loritta),
-			CanellaDvdCommand(loritta),
-			ChicoAtaCommand(loritta),
-			DrakeCommand(loritta),
-			GessyAtaCommand(loritta),
-			LoriAtaCommand(loritta),
-			LoriDrakeCommand(loritta),
-			LoriSignCommand(loritta),
-			PassingPaperCommand(loritta),
-			PepeDreamCommand(loritta),
-			QuadroCommand(loritta),
-			RomeroBrittoCommand(loritta),
-			SAMCommand(loritta),
-			StudiopolisTvCommand(loritta),
-			SustoCommand(loritta),
-			CarlyAaahCommand(loritta),
-			PetPetCommand(loritta),
-			EdnaldoTvCommand(loritta),
-			EdnaldoBandeiraCommand(loritta),
-			RipTvCommand(loritta),
-			AttackOnHeartCommand(loritta),
-			ToBeContinuedCommand(loritta),
-			TerminatorCommand(loritta),
-			MorrePragaCommand(loritta),
-			CortesFlowCommand(loritta),
-			CocieloChavesCommand(loritta),
-			AsciiCommand(loritta),
-			AtendenteCommand(loritta),
-			DrawnWordCommand(loritta),
-			EmojiMashupCommand(loritta),
-			TristeRealidadeCommand(loritta),
-
-			// ===[ ROBLOX ]===
-			RbUserCommand(loritta),
-			RbGameCommand(loritta)
-		)
-	}
-
-	override fun register(command: Command<CommandContext>) {
-		logger.info { "Registering $command with ${command.labels}" }
-		commands.add(command)
-	}
-
-	override fun unregister(command: Command<CommandContext>) {
-		logger.info { "Unregistering $command..." }
-		commands.remove(command)
-	}
-
-	suspend fun dispatch(ev: LorittaMessageEvent, rawArguments: List<String>, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
-		// We order by more spaces in the first label -> less spaces, to avoid other commands taking precedence over other commands
-		// I don't like how this works, we should create a command tree instead of doing this
-		for (command in commands.sortedByDescending { it.labels.first().count { it.isWhitespace() }}) {
-			val shouldBeProcessed = if (command is DiscordCommand)
-				command.commandCheckFilter?.invoke(ev, rawArguments, serverConfig, locale, lorittaUser) ?: true
-			else true
-
-			if (shouldBeProcessed && dispatch(command, rawArguments, ev, serverConfig, locale, i18nContext, lorittaUser))
-				return true
-		}
-
-		return false
-	}
-
-	suspend fun dispatch(command: Command<CommandContext>, rawArguments: List<String>, ev: LorittaMessageEvent, serverConfig: ServerConfig, locale: BaseLocale, i18nContext: I18nContext, lorittaUser: LorittaUser): Boolean {
-		val message = ev.message.contentDisplay
-		val user = ev.author
-
-		val labels = command.labels.toMutableList()
-
-		// Comandos com espaços na label, yeah!
-		var valid = false
-		var validLabel: String? = null
-
-		val checkArguments = rawArguments.toMutableList()
-		var removeArgumentCount = 0
-
-		for (label in labels) {
-			val subLabels = label.split(" ")
-
-			removeArgumentCount = 0
-			var validLabelCount = 0
-
-			for ((index, subLabel) in subLabels.withIndex()) {
-				val rawArgumentAt = checkArguments.getOrNull(index) ?: break
-
-				if (rawArgumentAt.equals(subLabel, true)) { // ignoreCase = true ~ Permite usar "+cOmAnDo"
-					validLabelCount++
-					removeArgumentCount++
-				}
-			}
-
-			if (validLabelCount == subLabels.size) {
-				valid = true
-				validLabel = subLabels.joinToString(" ")
-				break
-			}
-		}
-
-		if (valid && validLabel != null) {
-			val isPrivateChannel = ev.isFromType(ChannelType.DM)
-			val start = System.currentTimeMillis()
-
-			val rawArgs = rawArguments.joinToString(" ").stripCodeMarks()
-				.split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
-				.drop(removeArgumentCount)
-				.toMutableList()
-
-			val strippedArgs = MarkdownSanitizer.sanitize(rawArgs.joinToString(" ")).split(" ").toTypedArray()
-			val args = strippedArgs
-
-			val context = DiscordCommandContext(
-				loritta,
-				command,
-				rawArgs,
-				ev.message,
-				locale,
-				i18nContext,
-				serverConfig,
-				lorittaUser,
-				validLabel
-			)
-
-			CommandUtils.logMessageEvent(ev, logger)
-
-			try {
-				// Check if user is banned
-				if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
-					return true
-
-				// Cooldown
-				var commandCooldown = command.cooldown
-				val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
-				val guildId = ev.guild?.idLong
-				val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
-
-				val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
-
-				if (plan.lessCooldown) {
-					commandCooldown /= 2
-				}
-
-				val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
-					ev,
-					commandCooldown
-				)
-
-				if (cooldownStatus.sendMessage) {
-					val fancy = DateUtils.formatDateDiff(cooldown + cooldownTriggeredAt, locale)
-
-					val key = when (cooldownStatus) {
-						CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE ->
-							LocaleKeyData(
-								"commands.pleaseWaitCooldown",
-								listOf(
-									LocaleStringData(fancy),
-									LocaleStringData("\uD83D\uDE45")
-								)
-							)
-						CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE_REPEATED ->
-							LocaleKeyData(
-								"commands.pleaseWaitCooldownRepeated",
-								listOf(
-									LocaleStringData(fancy),
-									LocaleStringData(Emotes.LORI_HMPF.toString())
-								)
-							)
-						else -> throw IllegalArgumentException("Invalid Cooldown Status $cooldownStatus, marked as send but there isn't any locale keys related to it!")
-					}
-
-					context.reply(
-						LorittaReply(
-							locale[key],
-							"\uD83D\uDD25"
-						)
-					)
-					return true
-				} else if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT) return true
-
-				if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(
-						LorittaPermission.BYPASS_COMMAND_BLACKLIST)) {
-					if (serverConfig.warnIfBlacklisted) {
-						if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.channel != null) {
-							val generatedMessage = MessageUtils.generateMessage(
-								serverConfig.blacklistedWarning ?: "???",
-								listOf(ev.member, ev.channel),
-								ev.guild
-							)
-							if (generatedMessage != null)
-								ev.channel.sendMessage(
-									MessageBuilder(generatedMessage)
-										.referenceIfPossible(ev.message, serverConfig, true)
-										.build()
-								)
-						}
-					}
-					return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
-				}
-
-				if (!isPrivateChannel && ev.guild != null && ev.member != null) {
-					// Verificar se o comando está ativado na guild atual
-					if (CommandUtils.checkIfCommandIsDisabledInGuild(loritta, serverConfig, locale, ev.channel, ev.member, command.commandName))
-						return true
-				}
-
-				// Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
-				if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.channel != null && command is DiscordCommand) {
-					// Verificar se a Loritta possui todas as permissões necessárias
-					val botPermissions = command.botRequiredPermissions.toMutableList()
-					botPermissions.add(Permission.EmbedLinks)
-					botPermissions.add(Permission.UseExternalEmojis)
-					botPermissions.add(Permission.AddReactions)
-					botPermissions.add(Permission.ReadMessageHistory)
-					val missingPermissions = ArrayList<Permission>(botPermissions.filterNot { ev.guild.retrieveSelfMember().hasPermission(ev.channel, it) })
-
-					if (missingPermissions.isNotEmpty()) {
-						// oh no
-						val required = missingPermissions.toSet().toLocalized()?.joinToString(", ", transform = { "`" + i18nContext.get(it) + "`" })
-						context.reply(
-							LorittaReply(
-								locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
-								Constants.ERROR
-							)
-						)
-						return true
-					}
-				}
-
-				if (!isPrivateChannel && ev.member != null && ev.channel != null && command is DiscordCommand) {
-					val missingPermissions = command.userRequiredLorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
-
-					if (missingPermissions.isNotEmpty()) {
-						// oh no
-						val required = missingPermissions.joinToString(", ", transform = { "`" + locale["commands.loriPermission${it.name}"] + "`"})
-						var message = locale["commands.loriMissingPermission", required]
-
-						if (ev.member.hasPermission(Permission.Administrator) || ev.member.hasPermission(Permission.ManageGuild)) {
-							message += " ${locale["commands.loriMissingPermissionCanConfigure", loritta.config.loritta.website.url]}"
-						}
-						context.reply(
-							LorittaReply(
-								message,
-								Constants.ERROR
-							)
-						)
-						return true
-					}
-				}
-
-				if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
-					context.explain()
-					return true
-				}
-
-				if (command.onlyOwner && !loritta.isOwner(user.id)) {
-					context.reply(
-						LorittaReply(
-							locale["commands.commandOnlyForOwner"],
-							Constants.ERROR
-						)
-					)
-					return true
-				}
-
-				if (command is DiscordCommand) {
-					val missingRequiredPermissions = command.userRequiredPermissions.filterNot { ev.message.member!!.hasPermission(ev.message.textChannel, it) }
-
-					if (missingRequiredPermissions.isNotEmpty()) {
-						val required = missingRequiredPermissions.toSet().toLocalized()?.joinToString(", ", transform = { "`" + i18nContext.get(it) + "`" })
-						context.reply(
-							LorittaReply(
-								locale["commands.userDoesntHavePermissionDiscord", required],
-								Constants.ERROR
-							)
-						)
-						return true
-					}
-				}
-
-				if (context.isPrivateChannel && !command.canUseInPrivateChannel) {
-					context.reply(
-						LorittaReply(
-							message = locale["commands.cantUseInPrivate"],
-							prefix = Constants.ERROR
-						)
-					)
-					return true
-				}
-
-				/* if (command.needsToUploadFiles()) {
-					if (!LorittaUtils.canUploadFiles(context)) {
-						return true
-					}
-				}
-				*/
-
-				// Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
-				/* DonateUtils.getRandomDonationMessage(
-						locale,
-						lorittaUser.profile,
-						donatorPaid,
-						guildPaid
-				)?.let { context.reply(it) }
-				if (!context.isPrivateChannel && ev.guild != null) {
-					val nickname = ev.guild.retrieveSelfMember().nickname
-					if (nickname != null) {
-						// #LoritaTambémTemSentimentos
-						val hasBadNickname = MiscUtils.hasInappropriateWords(nickname)
-						if (hasBadNickname) {
-							context.reply(
-									LoriReply(
-											legacyLocale["LORITTA_BadNickname"],
-											"<:lori_triste:370344565967814659>"
-									)
-							)
-							if (ev.guild.retrieveSelfMember().hasPermission(Permission.ChangeNickname)) {
-								runCatching { ev.guild.modifyNickname(ev.guild.retrieveSelfMember(), null) }
-							} else {
-								return true
-							}
-						}
-					}
-				} */
-
-				if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(loritta, lorittaUser._profile, ev.guild) || LorittaUtils.isGuildBanned(loritta, ev.guild)))
-					return true
-
-				// We don't care about locking the row just to update the sent at field
-				loritta.newSuspendedTransaction(transactionIsolation = Connection.TRANSACTION_READ_UNCOMMITTED) {
-					lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
-				}
-
-				CommandUtils.trackCommandToDatabase(loritta, ev, command.commandName)
-
-				loritta.newSuspendedTransaction {
-					val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
-
-					if (profile != null && !profile.isInGuild)
-						profile.isInGuild = true
-				}
-
-				loritta.lorittaShards.updateCachedUserData(user)
-
-				logger.info { "Executor Callback: ${command.executor}" }
-				command.executor.invoke(context)
-
-				if (!isPrivateChannel && ev.guild != null) {
-					if (ev.guild.retrieveSelfMember().hasPermission(ev.channel, Permission.ManageMessages) && (serverConfig.deleteMessageAfterCommand)) {
-						runCatching {
-							// We don't care if we weren't able to delete the message because it was already deleted
-							ev.message.textChannel.deleteMessageById(ev.messageId)
-						}
-					}
-				}
-
-				val end = System.currentTimeMillis()
-				val commandLatency = end - start
-				Prometheus.COMMAND_LATENCY.labels(command.commandName).observe(commandLatency.toDouble())
-
-				CommandUtils.logMessageEventComplete(ev, logger, commandLatency)
-				return true
-			} catch (e: Exception) {
-				if (e is CancellationException) {
-					logger.error(e) { "RestAction in command ${command.commandName} has been cancelled" }
-					return true
-				}
-
-				if (e is KtorRequestException) {
-					if (e.error?.code == JsonErrorCode.RequestEntityTooLarge) { // Request entity too large
-						if (ev.isFromType(ChannelType.DM) || (ev.isFromType(ChannelType.GuildText) && ev.channel != null && ev.channel.canTalk()))
-							context.reply(
-								LorittaReply(
-									locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
-									"\uD83E\uDD37"
-								)
-							)
-						return true
-					}
-				}
-
-				if (e is SilentCommandException)
-					return true
-
-				if (e is CommandException) {
-					context.reply(e.reply)
-					return true
-				}
-
-				logger.error("Exception ao executar comando ${command.commandName}", e)
-
-				// Avisar ao usuário que algo deu muito errado
-				val mention = "${ev.author.asMention} "
-				var reply = "\uD83E\uDD37 **|** " + mention + locale["commands.errorWhileExecutingCommand", Emotes.LORI_RAGE, Emotes.LORI_CRYING]
-
-				if (!e.message.isNullOrEmpty())
-					reply += " `${e.message!!.escapeMentions()}`"
-
-				if (ev.isFromType(ChannelType.DM) || (ev.isFromType(ChannelType.GuildText) && ev.channel != null && ev.channel.canTalk()))
-					ev.channel.sendMessage(
-						MessageBuilder(reply)
-							.referenceIfPossible(ev.message, serverConfig, true)
-							.build()
-					)
-						
-
-				return true
-			}
-		}
-		return false
-	}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
+    val commands = mutableListOf<Command<CommandContext>>()
+
+    init {
+        registerAll(
+            // ===[ MAGIC ]===
+            LoriToolsCommand(loritta),
+
+            // ===[ ROLEPLAY ]===
+            AttackCommand(loritta),
+            DanceCommand(loritta),
+            HeadPatCommand(loritta),
+            HighFiveCommand(loritta),
+            HugCommand(loritta),
+            KissCommand(loritta),
+            SlapCommand(loritta),
+
+            // ===[ ECONOMY ]===
+            SonhosTopCommand(loritta),
+            SonhosTopLocalCommand(loritta),
+            TransactionsCommand(loritta),
+            BrokerCommand(loritta),
+            BrokerBuyStockCommand(loritta),
+            BrokerSellStockCommand(loritta),
+            BrokerPortfolioCommand(loritta),
+            GuessNumberCommand(loritta),
+            ScratchCardCommand(loritta),
+            ScratchCardTopCommand(loritta),
+            CoinFlipBetCommand(loritta),
+            EmojiFightCommand(loritta),
+            EmojiFightBetCommand(loritta),
+
+            // ===[ SOCIAL ]===
+            BomDiaECiaStatusCommand(loritta),
+            BomDiaECiaTopCommand(loritta),
+            BomDiaECiaTopLocalCommand(loritta),
+            RepTopCommand(loritta),
+            XpNotificationsCommand(loritta),
+            RepListCommand(loritta),
+            DashboardCommand(loritta),
+            RenameChannelCommand(loritta),
+            RenameEmojiCommand(loritta),
+
+            // ===[ ADMIN ]===
+            BanInfoCommand(loritta),
+            ClearCommand(loritta),
+            UnwarnCommand(loritta),
+
+            // ===[ MISC ]===
+            FanArtsCommand(loritta),
+            DiscordBotListCommand(loritta),
+            DiscordBotListStatusCommand(loritta),
+            DiscordBotListTopCommand(loritta),
+            DiscordBotListTopLocalCommand(loritta),
+
+            // ===[ DISCORD ]===
+            ChannelInfoCommand(loritta),
+            GuildBannerCommand(loritta),
+            RoleInfoCommand(loritta),
+
+            // ===[ FUN ]===
+            GiveawayCommand(loritta),
+            GiveawayEndCommand(loritta),
+            GiveawayRerollCommand(loritta),
+            GiveawaySetupCommand(loritta),
+            CancelledCommand(loritta),
+            HungerGamesCommand(loritta),
+
+            // ===[ IMAGES ]===
+            ArtCommand(loritta),
+            AtaCommand(loritta),
+            BobBurningPaperCommand(loritta),
+            BolsoDrakeCommand(loritta),
+            BolsoFrameCommand(loritta),
+            Bolsonaro2Command(loritta),
+            BolsonaroCommand(loritta),
+            BriggsCoverCommand(loritta),
+            BuckShirtCommand(loritta),
+            CanellaDvdCommand(loritta),
+            ChicoAtaCommand(loritta),
+            DrakeCommand(loritta),
+            GessyAtaCommand(loritta),
+            LoriAtaCommand(loritta),
+            LoriDrakeCommand(loritta),
+            LoriSignCommand(loritta),
+            PassingPaperCommand(loritta),
+            PepeDreamCommand(loritta),
+            QuadroCommand(loritta),
+            RomeroBrittoCommand(loritta),
+            SAMCommand(loritta),
+            StudiopolisTvCommand(loritta),
+            SustoCommand(loritta),
+            CarlyAaahCommand(loritta),
+            PetPetCommand(loritta),
+            EdnaldoTvCommand(loritta),
+            EdnaldoBandeiraCommand(loritta),
+            RipTvCommand(loritta),
+            AttackOnHeartCommand(loritta),
+            ToBeContinuedCommand(loritta),
+            TerminatorCommand(loritta),
+            MorrePragaCommand(loritta),
+            CortesFlowCommand(loritta),
+            CocieloChavesCommand(loritta),
+            AsciiCommand(loritta),
+            AtendenteCommand(loritta),
+            DrawnWordCommand(loritta),
+            EmojiMashupCommand(loritta),
+            TristeRealidadeCommand(loritta),
+
+            // ===[ ROBLOX ]===
+            RbUserCommand(loritta),
+            RbGameCommand(loritta)
+        )
+    }
+
+    override fun register(command: Command<CommandContext>) {
+        logger.info { "Registering $command with ${command.labels}" }
+        commands.add(command)
+    }
+
+    override fun unregister(command: Command<CommandContext>) {
+        logger.info { "Unregistering $command..." }
+        commands.remove(command)
+    }
+
+    suspend fun dispatch(
+        ev: LorittaMessageEvent,
+        rawArguments: List<String>,
+        serverConfig: ServerConfig,
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        lorittaUser: LorittaUser
+    ): Boolean {
+        // We order by more spaces in the first label -> less spaces, to avoid other commands taking precedence over other commands
+        // I don't like how this works, we should create a command tree instead of doing this
+        for (command in commands.sortedByDescending { it.labels.first().count { it.isWhitespace() } }) {
+            val shouldBeProcessed = if (command is DiscordCommand)
+                command.commandCheckFilter?.invoke(ev, rawArguments, serverConfig, locale, lorittaUser) ?: true
+            else true
+
+            if (shouldBeProcessed && dispatch(
+                    command,
+                    rawArguments,
+                    ev,
+                    serverConfig,
+                    locale,
+                    i18nContext,
+                    lorittaUser
+                )
+            )
+                return true
+        }
+
+        return false
+    }
+
+    suspend fun dispatch(
+        command: Command<CommandContext>,
+        rawArguments: List<String>,
+        ev: LorittaMessageEvent,
+        serverConfig: ServerConfig,
+        locale: BaseLocale,
+        i18nContext: I18nContext,
+        lorittaUser: LorittaUser
+    ): Boolean {
+        val message = ev.message.contentDisplay
+        val user = ev.author
+
+        val labels = command.labels.toMutableList()
+
+        // Comandos com espaços na label, yeah!
+        var valid = false
+        var validLabel: String? = null
+
+        val checkArguments = rawArguments.toMutableList()
+        var removeArgumentCount = 0
+
+        for (label in labels) {
+            val subLabels = label.split(" ")
+
+            removeArgumentCount = 0
+            var validLabelCount = 0
+
+            for ((index, subLabel) in subLabels.withIndex()) {
+                val rawArgumentAt = checkArguments.getOrNull(index) ?: break
+
+                if (rawArgumentAt.equals(subLabel, true)) { // ignoreCase = true ~ Permite usar "+cOmAnDo"
+                    validLabelCount++
+                    removeArgumentCount++
+                }
+            }
+
+            if (validLabelCount == subLabels.size) {
+                valid = true
+                validLabel = subLabels.joinToString(" ")
+                break
+            }
+        }
+
+        if (valid && validLabel != null) {
+            val isPrivateChannel = ev.isFromType(ChannelType.DM)
+            val start = System.currentTimeMillis()
+
+            val rawArgs = rawArguments.joinToString(" ").stripCodeMarks()
+                .split(Constants.WHITE_SPACE_MULTIPLE_REGEX)
+                .drop(removeArgumentCount)
+                .toMutableList()
+
+            val strippedArgs = MarkdownSanitizer.sanitize(rawArgs.joinToString(" ")).split(" ").toTypedArray()
+            val args = strippedArgs
+
+            val context = DiscordCommandContext(
+                loritta,
+                command,
+                rawArgs,
+                ev.message,
+                locale,
+                i18nContext,
+                serverConfig,
+                lorittaUser,
+                validLabel
+            )
+
+            CommandUtils.logMessageEvent(ev, logger)
+
+            try {
+                // Check if user is banned
+                if (LorittaUtilsKotlin.handleIfBanned(context, lorittaUser.profile))
+                    return true
+
+                // Cooldown
+                var commandCooldown = command.cooldown
+                val donatorPaid = loritta.getActiveMoneyFromDonationsAsync(ev.author.idLong)
+                val guildId = ev.guild?.idLong
+                val guildPaid = guildId?.let { serverConfig.getActiveDonationKeysValue(loritta) } ?: 0.0
+
+                val plan = UserPremiumPlans.getPlanFromValue(donatorPaid)
+
+                if (plan.lessCooldown) {
+                    commandCooldown /= 2
+                }
+
+                val (cooldownStatus, cooldownTriggeredAt, cooldown) = loritta.commandCooldownManager.checkCooldown(
+                    ev,
+                    commandCooldown
+                )
+
+                if (cooldownStatus.sendMessage) {
+                    val fancy = DateUtils.formatDateDiff(cooldown + cooldownTriggeredAt, locale)
+
+                    val key = when (cooldownStatus) {
+                        CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE ->
+                            LocaleKeyData(
+                                "commands.pleaseWaitCooldown",
+                                listOf(
+                                    LocaleStringData(fancy),
+                                    LocaleStringData("\uD83D\uDE45")
+                                )
+                            )
+
+                        CommandCooldownManager.CooldownStatus.RATE_LIMITED_SEND_MESSAGE_REPEATED ->
+                            LocaleKeyData(
+                                "commands.pleaseWaitCooldownRepeated",
+                                listOf(
+                                    LocaleStringData(fancy),
+                                    LocaleStringData(Emotes.LORI_HMPF.toString())
+                                )
+                            )
+
+                        else -> throw IllegalArgumentException("Invalid Cooldown Status $cooldownStatus, marked as send but there isn't any locale keys related to it!")
+                    }
+
+                    context.reply(
+                        LorittaReply(
+                            locale[key],
+                            "\uD83D\uDD25"
+                        )
+                    )
+                    return true
+                } else if (cooldownStatus == CommandCooldownManager.CooldownStatus.RATE_LIMITED_MESSAGE_ALREADY_SENT) return true
+
+                if (serverConfig.blacklistedChannels.contains(ev.channel.idLong) && !lorittaUser.hasPermission(
+                        LorittaPermission.BYPASS_COMMAND_BLACKLIST
+                    )
+                ) {
+                    if (serverConfig.warnIfBlacklisted) {
+                        if (serverConfig.blacklistedChannels.isNotEmpty() && ev.guild != null && ev.member != null && ev.channel != null) {
+                            val generatedMessage = MessageUtils.generateMessage(
+                                serverConfig.blacklistedWarning ?: "???",
+                                listOf(ev.member, ev.channel),
+                                ev.guild
+                            )
+                            if (generatedMessage != null)
+                                ev.channel.sendMessage(
+                                    MessageBuilder(generatedMessage)
+                                        .referenceIfPossible(ev.message, serverConfig, true)
+                                        .build()
+                                )
+                        }
+                    }
+                    return true // Ignorar canais bloqueados (return true = fast break, se está bloqueado o canal no primeiro comando que for executado, os outros obviamente também estarão)
+                }
+
+                if (!isPrivateChannel && ev.guild != null && ev.member != null) {
+                    // Verificar se o comando está ativado na guild atual
+                    if (CommandUtils.checkIfCommandIsDisabledInGuild(
+                            loritta,
+                            serverConfig,
+                            locale,
+                            ev.channel,
+                            ev.member,
+                            command.commandName
+                        )
+                    )
+                        return true
+                }
+
+                // Se estamos dentro de uma guild... (Já que mensagens privadas não possuem permissões)
+                if (!isPrivateChannel && ev.guild != null && ev.member != null && ev.channel != null && command is DiscordCommand) {
+                    // Verificar se a Loritta possui todas as permissões necessárias
+                    val botPermissions = command.botRequiredPermissions.toMutableList()
+                    botPermissions.add(Permission.EmbedLinks)
+                    botPermissions.add(Permission.UseExternalEmojis)
+                    botPermissions.add(Permission.AddReactions)
+                    botPermissions.add(Permission.ReadMessageHistory)
+                    val missingPermissions = ArrayList<Permission>(botPermissions.filterNot {
+                        ev.guild.retrieveSelfMember().hasPermission(ev.channel, it)
+                    })
+
+                    if (missingPermissions.isNotEmpty()) {
+                        // oh no
+                        val required = missingPermissions.toSet().toLocalized()
+                            ?.joinToString(", ", transform = { "`" + i18nContext.get(it) + "`" })
+                        context.reply(
+                            LorittaReply(
+                                locale["commands.loriDoesntHavePermissionDiscord", required, "\uD83D\uDE22", "\uD83D\uDE42"],
+                                Constants.ERROR
+                            )
+                        )
+                        return true
+                    }
+                }
+
+                if (!isPrivateChannel && ev.member != null && ev.channel != null && command is DiscordCommand) {
+                    val missingPermissions =
+                        command.userRequiredLorittaPermissions.filterNot { lorittaUser.hasPermission(it) }
+
+                    if (missingPermissions.isNotEmpty()) {
+                        // oh no
+                        val required = missingPermissions.joinToString(
+                            ", ",
+                            transform = { "`" + locale["commands.loriPermission${it.name}"] + "`" })
+                        var message = locale["commands.loriMissingPermission", required]
+
+                        if (ev.member.hasPermission(Permission.Administrator) || ev.member.hasPermission(Permission.ManageGuild)) {
+                            message += " ${locale["commands.loriMissingPermissionCanConfigure", loritta.config.loritta.website.url]}"
+                        }
+                        context.reply(
+                            LorittaReply(
+                                message,
+                                Constants.ERROR
+                            )
+                        )
+                        return true
+                    }
+                }
+
+                if (args.isNotEmpty() && args[0] == "🤷") { // Usar a ajuda caso 🤷 seja usado
+                    context.explain()
+                    return true
+                }
+
+                if (command.onlyOwner && !loritta.isOwner(user.id)) {
+                    context.reply(
+                        LorittaReply(
+                            locale["commands.commandOnlyForOwner"],
+                            Constants.ERROR
+                        )
+                    )
+                    return true
+                }
+
+                if (command is DiscordCommand) {
+                    val missingRequiredPermissions = command.userRequiredPermissions.filterNot {
+                        ev.message.member!!.hasPermission(
+                            ev.message.textChannel,
+                            it
+                        )
+                    }
+
+                    if (missingRequiredPermissions.isNotEmpty()) {
+                        val required = missingRequiredPermissions.toSet().toLocalized()
+                            ?.joinToString(", ", transform = { "`" + i18nContext.get(it) + "`" })
+                        context.reply(
+                            LorittaReply(
+                                locale["commands.userDoesntHavePermissionDiscord", required],
+                                Constants.ERROR
+                            )
+                        )
+                        return true
+                    }
+                }
+
+                if (context.isPrivateChannel && !command.canUseInPrivateChannel) {
+                    context.reply(
+                        LorittaReply(
+                            message = locale["commands.cantUseInPrivate"],
+                            prefix = Constants.ERROR
+                        )
+                    )
+                    return true
+                }
+
+                /* if (command.needsToUploadFiles()) {
+                    if (!LorittaUtils.canUploadFiles(context)) {
+                        return true
+                    }
+                }
+                */
+
+                // Vamos pegar uma mensagem aleatória de doação, se não for nula, iremos enviar ela :3
+                /* DonateUtils.getRandomDonationMessage(
+                        locale,
+                        lorittaUser.profile,
+                        donatorPaid,
+                        guildPaid
+                )?.let { context.reply(it) }
+                if (!context.isPrivateChannel && ev.guild != null) {
+                    val nickname = ev.guild.retrieveSelfMember().nickname
+                    if (nickname != null) {
+                        // #LoritaTambémTemSentimentos
+                        val hasBadNickname = MiscUtils.hasInappropriateWords(nickname)
+                        if (hasBadNickname) {
+                            context.reply(
+                                    LoriReply(
+                                            legacyLocale["LORITTA_BadNickname"],
+                                            "<:lori_triste:370344565967814659>"
+                                    )
+                            )
+                            if (ev.guild.retrieveSelfMember().hasPermission(Permission.ChangeNickname)) {
+                                runCatching { ev.guild.modifyNickname(ev.guild.retrieveSelfMember(), null) }
+                            } else {
+                                return true
+                            }
+                        }
+                    }
+                } */
+
+                if (ev.guild != null && (LorittaUtils.isGuildOwnerBanned(
+                        loritta,
+                        lorittaUser._profile,
+                        ev.guild
+                    ) || LorittaUtils.isGuildBanned(loritta, ev.guild))
+                )
+                    return true
+
+                // We don't care about locking the row just to update the sent at field
+                loritta.newSuspendedTransaction(transactionIsolation = Connection.TRANSACTION_READ_UNCOMMITTED) {
+                    lorittaUser.profile.lastCommandSentAt = System.currentTimeMillis()
+                }
+
+                CommandUtils.trackCommandToDatabase(loritta, ev, command.commandName)
+
+                loritta.newSuspendedTransaction {
+                    val profile = serverConfig.getUserDataIfExistsNested(lorittaUser.profile.userId)
+
+                    if (profile != null && !profile.isInGuild)
+                        profile.isInGuild = true
+                }
+
+                loritta.lorittaShards.updateCachedUserData(user)
+
+                logger.info { "Executor Callback: ${command.executor}" }
+                command.executor.invoke(context)
+
+                if (!isPrivateChannel && ev.guild != null) {
+                    if (ev.guild.retrieveSelfMember().hasPermission(
+                            ev.channel,
+                            Permission.ManageMessages
+                        ) && (serverConfig.deleteMessageAfterCommand)
+                    ) {
+                        runCatching {
+                            // We don't care if we weren't able to delete the message because it was already deleted
+                            ev.message.textChannel.deleteMessageById(ev.messageId)
+                        }
+                    }
+                }
+
+                val end = System.currentTimeMillis()
+                val commandLatency = end - start
+                Prometheus.COMMAND_LATENCY.labels(command.commandName).observe(commandLatency.toDouble())
+
+                CommandUtils.logMessageEventComplete(ev, logger, commandLatency)
+                return true
+            } catch (e: Exception) {
+                if (e is CancellationException) {
+                    logger.error(e) { "RestAction in command ${command.commandName} has been cancelled" }
+                    return true
+                }
+
+                if (e is KtorRequestException) {
+                    if (e.error?.code == JsonErrorCode.RequestEntityTooLarge) { // Request entity too large
+                        if (ev.isFromType(ChannelType.DM) || (ev.isFromType(ChannelType.GuildText) && ev.channel != null && ev.channel.canTalk()))
+                            context.reply(
+                                LorittaReply(
+                                    locale["commands.imageTooLarge", "8MB", Emotes.LORI_TEMMIE],
+                                    "\uD83E\uDD37"
+                                )
+                            )
+                        return true
+                    }
+                }
+
+                if (e is SilentCommandException)
+                    return true
+
+                if (e is CommandException) {
+                    context.reply(e.reply)
+                    return true
+                }
+
+                logger.error("Exception ao executar comando ${command.commandName}", e)
+
+                // Avisar ao usuário que algo deu muito errado
+                val mention = "${ev.author.asMention} "
+                var reply =
+                    "\uD83E\uDD37 **|** " + mention + locale["commands.errorWhileExecutingCommand", Emotes.LORI_RAGE, Emotes.LORI_CRYING]
+
+                if (!e.message.isNullOrEmpty())
+                    reply += " `${e.message!!.escapeMentions()}`"
+
+                if (ev.isFromType(ChannelType.DM) || (ev.isFromType(ChannelType.GuildText) && ev.channel != null && ev.channel.canTalk()))
+                    ev.channel.sendMessage(
+                        MessageBuilder(reply)
+                            .referenceIfPossible(ev.message, serverConfig, true)
+                            .build()
+                    )
+
+
+                return true
+            }
+        }
+        return false
+    }
 }

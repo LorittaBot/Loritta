@@ -5,7 +5,6 @@ import kotlinx.datetime.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosFoundObjeto
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosUnknownObjeto
@@ -17,6 +16,7 @@ import net.perfectdreams.loritta.cinnamon.pudding.tables.UsersFollowingCorreiosP
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.CorreiosPackageUpdateUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
 import net.perfectdreams.loritta.common.utils.PendingImportantNotificationState
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.*
 import java.time.Instant
 import java.time.LocalDateTime
@@ -33,8 +33,9 @@ class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
 
         try {
             m.pudding.transaction {
-                val trackedPackages = TrackedCorreiosPackages.select { TrackedCorreiosPackages.delivered eq false and (TrackedCorreiosPackages.unknownPackage eq false ) }
-                    .map { it[TrackedCorreiosPackages.trackingId] }
+                val trackedPackages =
+                    TrackedCorreiosPackages.select { TrackedCorreiosPackages.delivered eq false and (TrackedCorreiosPackages.unknownPackage eq false) }
+                        .map { it[TrackedCorreiosPackages.trackingId] }
 
                 if (trackedPackages.isEmpty()) {
                     logger.info { "No packages need to be tracked, skipping..." }
@@ -82,8 +83,9 @@ class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
                                 .forEach { event ->
                                     val packageEventId = TrackedCorreiosPackagesEvents.insertAndGetId {
                                         it[TrackedCorreiosPackagesEvents.trackingId] = correiosPackage.numero
-                                        it[TrackedCorreiosPackagesEvents.triggeredAt] = event.criacao.toInstant(KTX_DATETIME_CORREIOS_OFFSET)
-                                            .toJavaInstant()
+                                        it[TrackedCorreiosPackagesEvents.triggeredAt] =
+                                            event.criacao.toInstant(KTX_DATETIME_CORREIOS_OFFSET)
+                                                .toJavaInstant()
                                         it[TrackedCorreiosPackagesEvents.event] = Json.encodeToString(event)
                                     }
 
@@ -101,14 +103,17 @@ class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
                                             }
 
                                             CorreiosPackageUpdateUserNotifications.insert {
-                                                it[CorreiosPackageUpdateUserNotifications.timestampLog] = userNotificationId
-                                                it[CorreiosPackageUpdateUserNotifications.trackingId] = correiosPackage.numero
+                                                it[CorreiosPackageUpdateUserNotifications.timestampLog] =
+                                                    userNotificationId
+                                                it[CorreiosPackageUpdateUserNotifications.trackingId] =
+                                                    correiosPackage.numero
                                                 it[CorreiosPackageUpdateUserNotifications.packageEvent] = packageEventId
                                             }
 
                                             PendingImportantNotifications.insert {
                                                 it[PendingImportantNotifications.userId] = user.value
-                                                it[PendingImportantNotifications.state] = PendingImportantNotificationState.PENDING
+                                                it[PendingImportantNotifications.state] =
+                                                    PendingImportantNotificationState.PENDING
                                                 it[PendingImportantNotifications.notification] = userNotificationId
                                                 it[PendingImportantNotifications.submittedAt] = Instant.now()
                                             }
@@ -124,6 +129,7 @@ class CorreiosPackageInfoUpdater(val m: LorittaBot) : RunnableCoroutine {
                                     }
                                 }
                         }
+
                         is CorreiosUnknownObjeto -> {
                             logger.info { "Package ${correiosPackage.numero} is unknown! Updating its status in our database..." }
                             TrackedCorreiosPackages.update({ TrackedCorreiosPackages.trackingId eq correiosPackage.numero }) {

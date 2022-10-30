@@ -8,19 +8,15 @@ import dev.kord.rest.json.request.WebhookEditMessageRequest
 import dev.kord.rest.json.request.WebhookExecuteRequest
 import dev.kord.rest.request.RestRequestException
 import dev.kord.rest.service.ChannelService
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.buildJsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.putJsonArray
+import kotlinx.serialization.json.*
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.URLUtils
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.WebhookUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.utils.URLUtils
 
 object WebhookCommandUtils {
     suspend fun sendMessageViaWebhook(
@@ -79,8 +75,11 @@ object WebhookCommandUtils {
         messageId: Long,
         requestBuilder: () -> (WebhookEditMessageRequest)
     ) {
-        val matchResult = WebhookUtils.webhookRegex.find(webhookUrl) ?: context.failEphemerally(context.i18nContext.get(
-            WebhookCommand.I18N_PREFIX.InvalidWebhookUrl))
+        val matchResult = WebhookUtils.webhookRegex.find(webhookUrl) ?: context.failEphemerally(
+            context.i18nContext.get(
+                WebhookCommand.I18N_PREFIX.InvalidWebhookUrl
+            )
+        )
 
         val webhookId = Snowflake(matchResult.groupValues[1].toULong())
         val webhookToken = matchResult.groupValues[2]
@@ -147,13 +146,19 @@ object WebhookCommandUtils {
      * * The command fails ephemerally
      */
     fun getRawMessageIdOrFromURLOrFail(context: ApplicationCommandContext, input: String): Long {
-        return input.toLongOrNull() ?: messageUrlRegex.find(input)?.groupValues?.get(3)?.toLongOrNull() ?: context.failEphemerally("a")
+        return input.toLongOrNull() ?: messageUrlRegex.find(input)?.groupValues?.get(3)?.toLongOrNull()
+        ?: context.failEphemerally("a")
     }
 
     /**
      * Gets a message or, if it doesn't exists, fails ephemerally
      */
-    suspend fun getMessageOrFail(context: ApplicationCommandContext, service: ChannelService, channelId: Snowflake, messageId: Snowflake) = try {
+    suspend fun getMessageOrFail(
+        context: ApplicationCommandContext,
+        service: ChannelService,
+        channelId: Snowflake,
+        messageId: Snowflake
+    ) = try {
         service.getMessage(channelId, messageId)
     } catch (e: RestRequestException) {
         if (e.status.code == 404)
@@ -182,7 +187,14 @@ object WebhookCommandUtils {
         } catch (e: Exception) {
             // Invalid message
             if (!input.startsWith("{")) // Doesn't seem to be a valid JSON, maybe they would prefer using "/webhook send simple"?
-                context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidJsonMessageNoCurlyBraces(context.loritta.commandMentions.webhookSendSimple, context.loritta.commandMentions.webhookSendRepost)))
+                context.failEphemerally(
+                    context.i18nContext.get(
+                        WebhookCommand.I18N_PREFIX.InvalidJsonMessageNoCurlyBraces(
+                            context.loritta.commandMentions.webhookSendSimple,
+                            context.loritta.commandMentions.webhookSendRepost
+                        )
+                    )
+                )
             else
                 context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidJsonMessage))
         }
@@ -191,10 +203,13 @@ object WebhookCommandUtils {
     private fun validateMessageLength(context: ApplicationCommandContext, optionalContent: Optional<String?>) {
         optionalContent.value?.length?.let {
             if (it > DiscordResourceLimits.Message.Length)
-                context.failEphemerally(context.i18nContext.get(
-                    WebhookCommand.I18N_PREFIX.MessageTooBig(
-                        DiscordResourceLimits.Message.Length
-                    )))
+                context.failEphemerally(
+                    context.i18nContext.get(
+                        WebhookCommand.I18N_PREFIX.MessageTooBig(
+                            DiscordResourceLimits.Message.Length
+                        )
+                    )
+                )
         }
     }
 
@@ -303,8 +318,16 @@ object WebhookCommandUtils {
                     )
 
                 // Images
-                validateURLAsHttpOrHttps(context, embed.image.value?.url, WebhookCommand.I18N_PREFIX.InvalidEmbedImageUrl)
-                validateURLAsHttpOrHttps(context, embed.thumbnail.value?.url, WebhookCommand.I18N_PREFIX.InvalidEmbedThumbnailUrl)
+                validateURLAsHttpOrHttps(
+                    context,
+                    embed.image.value?.url,
+                    WebhookCommand.I18N_PREFIX.InvalidEmbedImageUrl
+                )
+                validateURLAsHttpOrHttps(
+                    context,
+                    embed.thumbnail.value?.url,
+                    WebhookCommand.I18N_PREFIX.InvalidEmbedThumbnailUrl
+                )
 
                 totalEmbedLength += authorLength ?: 0
             }
@@ -328,7 +351,11 @@ object WebhookCommandUtils {
             context.failEphemerally(context.i18nContext.get(message))
     }
 
-    private suspend fun sendWebhookSuccessMessage(context: ApplicationCommandContext, messageId: Long?, message: StringI18nData) = context.sendEphemeralMessage {
+    private suspend fun sendWebhookSuccessMessage(
+        context: ApplicationCommandContext,
+        messageId: Long?,
+        message: StringI18nData
+    ) = context.sendEphemeralMessage {
         styled(
             "**${context.i18nContext.get(message)}**",
             Emotes.LoriYay

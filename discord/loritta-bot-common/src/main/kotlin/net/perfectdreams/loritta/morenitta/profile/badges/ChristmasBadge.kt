@@ -8,11 +8,15 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import org.jetbrains.exposed.sql.select
 
 class ChristmasBadge(val loritta: LorittaBot) : Badge("christmas2019_badge.png", 100) {
-	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
-		return loritta.pudding.transaction {
-			CollectedChristmas2019Points.select {
-				CollectedChristmas2019Points.user eq profile.id
-			}.count() >= 400
-		}
-	}
+    override suspend fun checkIfUserDeservesBadge(
+        user: ProfileUserInfoData,
+        profile: Profile,
+        mutualGuilds: Set<Long>
+    ): Boolean {
+        return loritta.pudding.transaction {
+            CollectedChristmas2019Points.select {
+                CollectedChristmas2019Points.user eq profile.id
+            }.count() >= 400
+        }
+    }
 }

@@ -10,11 +10,7 @@ import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.descriptors.SerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
-import kotlinx.serialization.json.JsonContentPolymorphicSerializer
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.*
 
 @Serializable
 data class CorreiosResponse(
@@ -233,6 +229,7 @@ public sealed class EventType(public val value: String) {
     public object IssuesInPackageDelivery : EventType("FC") {
         // Objeto em correção de rota
         object PackageInRouteCorrection : StatusType(3)
+
         // Objeto não entregue - endereço incorreto
         object PackageNotDeliveredIncorrectAddress : StatusType(4)
 
@@ -250,14 +247,19 @@ public sealed class EventType(public val value: String) {
     public object ExternalPackageUpdate : EventType("PAR") {
         // Objeto recebido na unidade de exportação no país de origem
         object PackageReceivedInTheExportFacility : StatusType(18)
+
         // Objeto recebido pelos Correios do Brasil
         object PackageReceivedByCorreiosBrasil : StatusType(16)
+
         // Encaminhado para fiscalização aduaneira
         object ForwardedForCustomsInspection : StatusType(21)
+
         // Aguardando pagamento
         object WaitingForPayment : StatusType(17)
+
         // Pagamento confirmado
         object PaymentConfirmed : StatusType(31)
+
         // Fiscalização aduaneira finalizada
         object CustomsInspectionFinished : StatusType(10)
 
@@ -304,7 +306,11 @@ private object LocalDateSerializer : KSerializer<LocalDate> {
     override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("LocalDateSerializer", PrimitiveKind.STRING)
 
     override fun serialize(encoder: Encoder, value: LocalDate) {
-        encoder.encodeString("${value.dayOfMonth.toString().padStart(2, '0')}/${value.monthNumber.toString().padStart(2, '0')}/${value.year}")
+        encoder.encodeString(
+            "${value.dayOfMonth.toString().padStart(2, '0')}/${
+                value.monthNumber.toString().padStart(2, '0')
+            }/${value.year}"
+        )
     }
 
     override fun deserialize(decoder: Decoder): LocalDate {
@@ -327,12 +333,19 @@ private object LocalTimeSerializer : KSerializer<LocalTime> {
 }
 
 private object CorreiosCreationDateSerializer : KSerializer<LocalDateTime> {
-    override val descriptor: SerialDescriptor = PrimitiveSerialDescriptor("CorreiosCreationDateSerializer", PrimitiveKind.STRING)
+    override val descriptor: SerialDescriptor =
+        PrimitiveSerialDescriptor("CorreiosCreationDateSerializer", PrimitiveKind.STRING)
 
     // Example: 24012022124519
 
     override fun serialize(encoder: Encoder, value: LocalDateTime) {
-        encoder.encodeString("${value.dayOfMonth.toString().padStart(2, '0')}${value.monthNumber.toString().padStart(2, '0')}${value.year}${value.hour.toString().padStart(2, '0')}${value.minute.toString().padStart(2, '0')}${value.second.toString().padStart(2, '0')}")
+        encoder.encodeString(
+            "${value.dayOfMonth.toString().padStart(2, '0')}${
+                value.monthNumber.toString().padStart(2, '0')
+            }${value.year}${value.hour.toString().padStart(2, '0')}${
+                value.minute.toString().padStart(2, '0')
+            }${value.second.toString().padStart(2, '0')}"
+        )
     }
 
     override fun deserialize(decoder: Decoder): LocalDateTime {

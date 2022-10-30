@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.deviousfun.entities
 
 import dev.kord.common.entity.Permission
+import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
 import net.perfectdreams.loritta.deviousfun.DeviousFun
-import net.perfectdreams.loritta.deviousfun.cache.DeviousGuildEmojiData
 
 class DiscordGuildEmote(
     override val deviousFun: DeviousFun,

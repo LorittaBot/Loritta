@@ -8,17 +8,17 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.SponsorRedirectView
 
 class SponsorsRedirectRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/sponsor/{sponsorSlug}") {
-	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
-		val sponsorSlug = call.parameters["sponsorSlug"]
+    override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+        val sponsorSlug = call.parameters["sponsorSlug"]
 
-		val sponsor = loritta.sponsors.firstOrNull { it.slug == sponsorSlug } ?: return
+        val sponsor = loritta.sponsors.firstOrNull { it.slug == sponsorSlug } ?: return
 
-		call.respondHtml(
-			SponsorRedirectView(
-				locale,
-				getPathWithoutLocale(call),
-				sponsor
-			).generateHtml()
-		)
-	}
+        call.respondHtml(
+            SponsorRedirectView(
+                locale,
+                getPathWithoutLocale(call),
+                sponsor
+            ).generateHtml()
+        )
+    }
 }

@@ -11,13 +11,17 @@ import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 
 // TODO: Switch this to long when Discord finally rolls out React Native for all Android devices
 class ShortenedToLongSonhosAutocompleteExecutor(loritta: LorittaBot) : CinnamonAutocompleteHandler<String>(loritta) {
-    override suspend fun handle(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
+    override suspend fun handle(
+        context: AutocompleteContext,
+        focusedOption: FocusedCommandOption
+    ): Map<String, String> {
         val currentInput = focusedOption.value
 
         val quantity = NumberUtils.convertShortenedNumberToLong(context.i18nContext, currentInput) ?: return mapOf()
 
         return mapOf(
-            context.i18nContext.get(I18nKeysData.Commands.SonhosWithQuantity(quantity)).shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length) to quantity.toString()
+            context.i18nContext.get(I18nKeysData.Commands.SonhosWithQuantity(quantity))
+                .shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length) to quantity.toString()
         )
     }
 }

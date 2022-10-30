@@ -39,26 +39,31 @@ open class BarebonesInteractionContext(
         }
     }
 
-    suspend inline fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) = interaKTionsContext.sendMessage {
-        // Disable ALL mentions, to avoid a "@everyone 3.0" moment
-        allowedMentions {
-            repliedUser = true
+    suspend inline fun sendMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) =
+        interaKTionsContext.sendMessage {
+            // Disable ALL mentions, to avoid a "@everyone 3.0" moment
+            allowedMentions {
+                repliedUser = true
+            }
+
+            block()
         }
 
-        block()
-    }
+    suspend inline fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) =
+        interaKTionsContext.sendEphemeralMessage {
+            // Disable ALL mentions, to avoid a "@everyone 3.0" moment
+            allowedMentions {
+                repliedUser = true
+            }
 
-    suspend inline fun sendEphemeralMessage(block: InteractionOrFollowupMessageCreateBuilder.() -> (Unit)) = interaKTionsContext.sendEphemeralMessage {
-        // Disable ALL mentions, to avoid a "@everyone 3.0" moment
-        allowedMentions {
-            repliedUser = true
+            apply(block)
         }
 
-        apply(block)
-    }
+    suspend inline fun sendMessage(builder: InteractionOrFollowupMessageCreateBuilder) =
+        interaKTionsContext.sendPublicMessage(builder)
 
-    suspend inline fun sendMessage(builder: InteractionOrFollowupMessageCreateBuilder) = interaKTionsContext.sendPublicMessage(builder)
-    suspend inline fun sendEphemeralMessage(builder: InteractionOrFollowupMessageCreateBuilder) = interaKTionsContext.sendEphemeralMessage(builder)
+    suspend inline fun sendEphemeralMessage(builder: InteractionOrFollowupMessageCreateBuilder) =
+        interaKTionsContext.sendEphemeralMessage(builder)
 
     suspend fun sendEmbed(message: String = "", embed: EmbedBuilder.() -> Unit) {
         sendMessage(message, EmbedBuilder().apply(embed))
@@ -74,7 +79,11 @@ open class BarebonesInteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendReply(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
+    suspend fun sendReply(
+        content: String,
+        prefix: Emote,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ) = sendMessage {
         styled(content, prefix)
 
         apply(block)
@@ -90,7 +99,11 @@ open class BarebonesInteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendReply(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
+    suspend fun sendReply(
+        content: String,
+        prefix: String = Emotes.DefaultStyledPrefix.asMention,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ) = sendMessage {
         styled(content, prefix)
 
         apply(block)
@@ -105,11 +118,12 @@ open class BarebonesInteractionContext(
      *
      * @param reply the already built LorittaReply
      */
-    suspend fun sendReply(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendMessage {
-        styled(reply)
+    suspend fun sendReply(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) =
+        sendMessage {
+            styled(reply)
 
-        apply(block)
-    }
+            apply(block)
+        }
 
     /**
      * Sends a Loritta-styled formatted ephemeral message
@@ -121,7 +135,11 @@ open class BarebonesInteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendEphemeralReply(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+    suspend fun sendEphemeralReply(
+        content: String,
+        prefix: Emote,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ) = sendEphemeralMessage {
         styled(content, prefix)
 
         apply(block)
@@ -137,7 +155,11 @@ open class BarebonesInteractionContext(
      * @param content the content of the message
      * @param prefix  the prefix of the message
      */
-    suspend fun sendEphemeralReply(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+    suspend fun sendEphemeralReply(
+        content: String,
+        prefix: String = Emotes.DefaultStyledPrefix.asMention,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ) = sendEphemeralMessage {
         styled(content, prefix)
 
         apply(block)
@@ -152,7 +174,10 @@ open class BarebonesInteractionContext(
      *
      * @param reply the already built LorittaReply
      */
-    suspend fun sendEphemeralReply(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}) = sendEphemeralMessage {
+    suspend fun sendEphemeralReply(
+        reply: LorittaReply,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ) = sendEphemeralMessage {
         styled(reply)
 
         apply(block)
@@ -167,7 +192,11 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun fail(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
+    inline fun fail(
+        content: String,
+        prefix: Emote,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ): Nothing = fail(
         LorittaReply(
             content, prefix.asMention
         ),
@@ -182,7 +211,11 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun fail(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail(
+    inline fun fail(
+        content: String,
+        prefix: String = Emotes.DefaultStyledPrefix.asMention,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ): Nothing = fail(
         LorittaReply(
             content, prefix
         ),
@@ -197,10 +230,11 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun fail(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = fail {
-        styled(reply)
-        apply(block)
-    }
+    inline fun fail(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing =
+        fail {
+            styled(reply)
+            apply(block)
+        }
 
     /**
      * Throws a [CommandException] with a specific message [block], halting command execution
@@ -229,7 +263,11 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun failEphemerally(content: String, prefix: Emote, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
+    inline fun failEphemerally(
+        content: String,
+        prefix: Emote,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ): Nothing = failEphemerally(
         LorittaReply(
             content, prefix.asMention
         ),
@@ -244,7 +282,11 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun failEphemerally(content: String, prefix: String = Emotes.DefaultStyledPrefix.asMention, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally(
+    inline fun failEphemerally(
+        content: String,
+        prefix: String = Emotes.DefaultStyledPrefix.asMention,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ): Nothing = failEphemerally(
         LorittaReply(
             content, prefix
         ),
@@ -259,7 +301,10 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun failEphemerally(reply: LorittaReply, block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = failEphemerally {
+    inline fun failEphemerally(
+        reply: LorittaReply,
+        block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}
+    ): Nothing = failEphemerally {
         styled(reply)
         apply(block)
     }
@@ -271,17 +316,28 @@ open class BarebonesInteractionContext(
      * @see fail
      * @see CommandException
      */
-    inline fun failEphemerally(block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing = throw EphemeralCommandException(
-        InteractionOrFollowupMessageCreateBuilder(true).apply {
-            // Disable ALL mentions, to avoid a "@everyone 3.0" moment
-            allowedMentions {
-                repliedUser = true
+    inline fun failEphemerally(block: InteractionOrFollowupMessageCreateBuilder.() -> Unit = {}): Nothing =
+        throw EphemeralCommandException(
+            InteractionOrFollowupMessageCreateBuilder(true).apply {
+                // Disable ALL mentions, to avoid a "@everyone 3.0" moment
+                allowedMentions {
+                    repliedUser = true
+                }
+
+                apply(block)
             }
+        )
 
-            apply(block)
-        }
-    )
+    suspend fun sendModal(
+        declaration: CinnamonModalExecutorDeclaration,
+        title: String,
+        builder: ModalBuilder.() -> (Unit)
+    ) = interaKTionsContext.sendModal(declaration.id, title, builder)
 
-    suspend fun sendModal(declaration: CinnamonModalExecutorDeclaration, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, title, builder)
-    suspend fun sendModal(declaration: CinnamonModalExecutorDeclaration, data: String, title: String, builder: ModalBuilder.() -> (Unit)) = interaKTionsContext.sendModal(declaration.id, data, title, builder)
+    suspend fun sendModal(
+        declaration: CinnamonModalExecutorDeclaration,
+        data: String,
+        title: String,
+        builder: ModalBuilder.() -> (Unit)
+    ) = interaKTionsContext.sendModal(declaration.id, data, title, builder)
 }

@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar
 
-import dev.kord.common.Color
 import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.DiscordGuildMember
 import dev.kord.common.entity.Snowflake
@@ -19,8 +18,6 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.SingleUserComponentData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
@@ -28,6 +25,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.NotableUserIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import kotlin.time.Duration.Companion.minutes
 
 object UserDataUtils {
@@ -36,7 +35,8 @@ object UserDataUtils {
         decodedInteractionData: SwitchAvatarInteractionIdData,
         isLookingGuildProfileAvatar: Boolean
     ): ViewingUserAvatarData {
-        val storedInteractionData = loritta.pudding.interactionsData.getInteractionData(decodedInteractionData.interactionDataId)
+        val storedInteractionData =
+            loritta.pudding.interactionsData.getInteractionData(decodedInteractionData.interactionDataId)
 
         if (storedInteractionData == null) {
             // ID is not present, try pulling the user data via REST
@@ -106,6 +106,7 @@ object UserDataUtils {
                     loritta.interaKTions.kord
                 )
             }
+
             is ViewingGlobalUserAvatarData -> {
                 avatarHash = data.userAvatarId
                 userAvatar = UserUtils.createUserAvatarOrDefaultUserAvatar(
@@ -177,7 +178,8 @@ object UserDataUtils {
                     linkButton(
                         url = imageUrl
                     ) {
-                        label = i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.OpenAvatarInBrowser)
+                        label =
+                            i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.OpenAvatarInBrowser)
                     }
 
                     // Additional avatar switch buttons, if needed
@@ -205,7 +207,8 @@ object UserDataUtils {
                                     .copy(interactionDataId = id)
                             )
                         ) {
-                            label = i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGlobalAvatar)
+                            label =
+                                i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGlobalAvatar)
                         }
                     } else if (memberAvatarId != null) {
                         // If the user is currently viewing the user's avatar, and the user has a guild profile avatar, add a button to switch to the guild profile avatar
@@ -230,7 +233,8 @@ object UserDataUtils {
                                     .copy(interactionDataId = id)
                             )
                         ) {
-                            label = i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGuildProfileAvatar)
+                            label =
+                                i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGuildProfileAvatar)
                         }
                     }
                 }

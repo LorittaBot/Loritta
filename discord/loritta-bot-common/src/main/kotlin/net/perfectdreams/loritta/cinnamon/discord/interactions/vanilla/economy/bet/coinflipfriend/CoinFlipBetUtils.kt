@@ -9,7 +9,6 @@ import kotlinx.datetime.toJavaInstant
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.HighLevelEditableMessage
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.SlashContextHighLevelEditableMessage
@@ -26,12 +25,13 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.dec
 import net.perfectdreams.loritta.cinnamon.discord.utils.*
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.pudding.tables.CoinFlipBetMatchmakingResults
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Profiles
 import net.perfectdreams.loritta.cinnamon.pudding.tables.SonhosTransactionsLog
 import net.perfectdreams.loritta.cinnamon.pudding.tables.transactions.CoinFlipBetSonhosTransactionsLog
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
@@ -84,7 +84,14 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
             // Receiver does not have enough sonhos
             context.fail {
                 styled(
-                    context.i18nContext.get(BetCommand.COINFLIP_FRIEND_I18N_PREFIX.InsufficientFundsInvited(mentionUser(receiverId, notifyUser = false), howMuch, howMuch - (receiverProfile?.money ?: 0L))),
+                    context.i18nContext.get(
+                        BetCommand.COINFLIP_FRIEND_I18N_PREFIX.InsufficientFundsInvited(
+                            mentionUser(
+                                receiverId,
+                                notifyUser = false
+                            ), howMuch, howMuch - (receiverProfile?.money ?: 0L)
+                        )
+                    ),
                     Emotes.LoriSob
                 )
             }
@@ -122,7 +129,8 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
             whoHasTheNoTaxReward = null
             hasNoTax = false
             plan = UserPremiumPlans.Essential
-            taxPercentage = (1.0.toBigDecimal() - selfPlan.totalCoinFlipReward.toBigDecimal()).toDouble() // Avoid rounding errors
+            taxPercentage =
+                (1.0.toBigDecimal() - selfPlan.totalCoinFlipReward.toBigDecimal()).toDouble() // Avoid rounding errors
             tax = (howMuch * taxPercentage).toLong()
             money = howMuch - tax
         }
@@ -182,8 +190,13 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
             }
 
             styled(
-                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.ConfirmTheTransaction(mentionUser(receiverId), nowPlusTimeToLive.toMessageFormat(
-                    DiscordTimestampStyle.LongDateTime), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.RelativeTime))),
+                context.i18nContext.get(
+                    SonhosCommand.PAY_I18N_PREFIX.ConfirmTheTransaction(
+                        mentionUser(receiverId), nowPlusTimeToLive.toMessageFormat(
+                            DiscordTimestampStyle.LongDateTime
+                        ), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.RelativeTime)
+                    )
+                ),
                 Emotes.LoriZap
             )
 
@@ -231,7 +244,9 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
         decodedGenericInteractionData: StoredGenericInteractionData
     ) {
         val result = loritta.pudding.transaction {
-            val dataFromDatabase = loritta.pudding.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId) ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
+            val dataFromDatabase =
+                loritta.pudding.interactionsData.getInteractionData(decodedGenericInteractionData.interactionDataId)
+                    ?: return@transaction Result.DataIsNotPresent // Data is not present! Maybe it expired or it was already processed
 
             val decoded = Json.decodeFromJsonElement<AcceptCoinFlipBetFriendData>(dataFromDatabase)
             if (decoded.userId != acceptedUserId)
@@ -313,8 +328,14 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
             val updatedReceiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.userId))
             val updatedGiverProfile = loritta.pudding.users.getOrCreateUserProfile(UserId(decoded.sourceId))
 
-            val receiverRanking = if (updatedReceiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(updatedReceiverProfile.money) else null
-            val giverRanking = if (updatedGiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(updatedGiverProfile.money) else null
+            val receiverRanking =
+                if (updatedReceiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
+                    updatedReceiverProfile.money
+                ) else null
+            val giverRanking =
+                if (updatedGiverProfile.money != 0L) loritta.pudding.sonhos.getSonhosRankPositionBySonhos(
+                    updatedGiverProfile.money
+                ) else null
 
             return@transaction Result.Success(
                 winnerId,
@@ -385,23 +406,49 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
 
                     if (result.giverRanking != null) {
                         styled(
-                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(mentionUser(result.giverId), SonhosUtils.getSonhosEmojiOfQuantity(result.giverQuantity), result.giverQuantity, result.giverRanking)),
+                            context.i18nContext.get(
+                                SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(
+                                    mentionUser(result.giverId),
+                                    SonhosUtils.getSonhosEmojiOfQuantity(result.giverQuantity),
+                                    result.giverQuantity,
+                                    result.giverRanking
+                                )
+                            ),
                             Emotes.LoriSunglasses
                         )
                     } else {
                         styled(
-                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(mentionUser(result.giverId), SonhosUtils.getSonhosEmojiOfQuantity(result.giverQuantity), result.giverQuantity)),
+                            context.i18nContext.get(
+                                SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(
+                                    mentionUser(result.giverId),
+                                    SonhosUtils.getSonhosEmojiOfQuantity(result.giverQuantity),
+                                    result.giverQuantity
+                                )
+                            ),
                             Emotes.LoriSunglasses
                         )
                     }
                     if (result.receiverRanking != null) {
                         styled(
-                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(mentionUser(result.receiverId), SonhosUtils.getSonhosEmojiOfQuantity(result.receiverQuantity), result.receiverQuantity, result.receiverRanking)),
+                            context.i18nContext.get(
+                                SonhosCommand.PAY_I18N_PREFIX.TransferredSonhosWithRanking(
+                                    mentionUser(result.receiverId),
+                                    SonhosUtils.getSonhosEmojiOfQuantity(result.receiverQuantity),
+                                    result.receiverQuantity,
+                                    result.receiverRanking
+                                )
+                            ),
                             Emotes.LoriBonk
                         )
                     } else {
                         styled(
-                            context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(mentionUser(result.receiverId), SonhosUtils.getSonhosEmojiOfQuantity(result.receiverQuantity), result.receiverQuantity)),
+                            context.i18nContext.get(
+                                SonhosCommand.PAY_I18N_PREFIX.TransferredSonhos(
+                                    mentionUser(result.receiverId),
+                                    SonhosUtils.getSonhosEmojiOfQuantity(result.receiverQuantity),
+                                    result.receiverQuantity
+                                )
+                            ),
                             Emotes.LoriBonk
                         )
                     }
@@ -423,6 +470,7 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
                     }
                 }
             }
+
             is Result.NotTheUser -> {
                 context.failEphemerally {
                     styled(
@@ -435,6 +483,7 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
                     )
                 }
             }
+
             Result.DataIsNotPresent -> {
                 betRequestMessage.editMessage {
                     actionRow {
@@ -447,6 +496,7 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
                     }
                 }
             }
+
             Result.GiverDoesNotHaveSufficientFunds, Result.ReceiverDoesNotHaveSufficientFunds -> {
                 betRequestMessage.editMessage {
                     actionRow {
@@ -485,8 +535,13 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
 
         if (allowedAfterTimestamp > now) // 14 dias
             context.failEphemerally(
-                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SelfAccountIsTooNew(allowedAfterTimestamp.toMessageFormat(
-                    DiscordTimestampStyle.LongDateTime), allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.RelativeTime))),
+                context.i18nContext.get(
+                    SonhosCommand.PAY_I18N_PREFIX.SelfAccountIsTooNew(
+                        allowedAfterTimestamp.toMessageFormat(
+                            DiscordTimestampStyle.LongDateTime
+                        ), allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.RelativeTime)
+                    )
+                ),
                 Emotes.LoriSob
             )
     }
@@ -526,6 +581,7 @@ class CoinFlipBetUtils(val loritta: LorittaBot) {
             val giverRanking: Long?,
             val combo: Int
         ) : Result()
+
         class NotTheUser(val targetId: Snowflake) : Result()
         object DataIsNotPresent : Result()
         object GiverDoesNotHaveSufficientFunds : Result()

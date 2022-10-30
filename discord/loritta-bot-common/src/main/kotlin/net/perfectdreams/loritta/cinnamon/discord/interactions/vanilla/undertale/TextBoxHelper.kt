@@ -11,9 +11,13 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 
 object TextBoxHelper {
-    fun LocalizedApplicationCommandOptions.textBoxTextOption() = string("text", UndertaleCommand.I18N_TEXTBOX_PREFIX.Options.Text)
+    fun LocalizedApplicationCommandOptions.textBoxTextOption() =
+        string("text", UndertaleCommand.I18N_TEXTBOX_PREFIX.Options.Text)
 
-    suspend fun getInteractionDataAndFailIfItDoesNotExist(context: ComponentContext, interactionDataId: Long): TextBoxOptionsData {
+    suspend fun getInteractionDataAndFailIfItDoesNotExist(
+        context: ComponentContext,
+        interactionDataId: Long
+    ): TextBoxOptionsData {
         return Json.decodeFromJsonElement<TextBoxOptionsData>(
             context.loritta.pudding.interactionsData.getInteractionData(interactionDataId)
                 ?: context.fail {

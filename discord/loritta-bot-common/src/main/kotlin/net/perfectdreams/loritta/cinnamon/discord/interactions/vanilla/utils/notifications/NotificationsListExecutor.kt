@@ -1,12 +1,10 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.notifications
 
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.field
-import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.NotificationsCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
@@ -14,6 +12,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.CorreiosPackageUpdateUser
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
 import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownUserNotification
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class NotificationsListExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
 
@@ -30,12 +30,13 @@ class NotificationsListExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
                 for (notification in notifications) {
                     field(
                         "[${notification.id}] ${
-                        when (notification) {
-                            is DailyTaxTaxedUserNotification -> context.i18nContext.get(NotificationsCommand.I18N_PREFIX.DailyTaxTaxedUserNotification)
-                            is DailyTaxWarnUserNotification -> context.i18nContext.get(NotificationsCommand.I18N_PREFIX.DailyTaxWarnUserNotification)
-                            is CorreiosPackageUpdateUserNotification -> context.i18nContext.get(NotificationsCommand.I18N_PREFIX.CorreiosPackageUpdate)
-                            is UnknownUserNotification -> context.i18nContext.get(NotificationsCommand.I18N_PREFIX.UnknownNotification)
-                        }}",
+                            when (notification) {
+                                is DailyTaxTaxedUserNotification -> context.i18nContext.get(NotificationsCommand.I18N_PREFIX.DailyTaxTaxedUserNotification)
+                                is DailyTaxWarnUserNotification -> context.i18nContext.get(NotificationsCommand.I18N_PREFIX.DailyTaxWarnUserNotification)
+                                is CorreiosPackageUpdateUserNotification -> context.i18nContext.get(NotificationsCommand.I18N_PREFIX.CorreiosPackageUpdate)
+                                is UnknownUserNotification -> context.i18nContext.get(NotificationsCommand.I18N_PREFIX.UnknownNotification)
+                            }
+                        }",
                         "<t:${notification.timestamp.epochSeconds}:d> <t:${notification.timestamp.epochSeconds}:t> | <t:${notification.timestamp.epochSeconds}:R>",
                         false
                     )

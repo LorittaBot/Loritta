@@ -47,7 +47,8 @@ import java.io.InputStream
 import kotlin.time.Duration
 import kotlin.time.ExperimentalTime
 
-class TextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
+class TextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient) :
+    CinnamonSlashCommandExecutor(loritta) {
     companion object {
         @OptIn(ExperimentalTime::class)
         suspend fun createMessage(
@@ -79,7 +80,10 @@ class TextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient
             }
 
             return {
-                styled(i18nContext.get(UndertaleCommand.I18N_TEXTBOX_PREFIX.CustomizeYourMessage), savePointBasedOnTheDialogBoxStyleType)
+                styled(
+                    i18nContext.get(UndertaleCommand.I18N_TEXTBOX_PREFIX.CustomizeYourMessage),
+                    savePointBasedOnTheDialogBoxStyleType
+                )
 
                 // ===[ UNIVERSE ]===
                 if (data is TextBoxWithUniverseOptionsData) {
@@ -229,6 +233,7 @@ class TextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient
                         )
                     )
                 }
+
                 is TextBoxWithCustomPortraitOptionsData -> {
                     client.images.tobyTextBox(
                         TobyTextBoxRequest(
@@ -239,6 +244,7 @@ class TextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient
                         )
                     )
                 }
+
                 is TextBoxWithNoPortraitOptionsData -> {
                     client.images.tobyTextBox(
                         TobyTextBoxRequest(

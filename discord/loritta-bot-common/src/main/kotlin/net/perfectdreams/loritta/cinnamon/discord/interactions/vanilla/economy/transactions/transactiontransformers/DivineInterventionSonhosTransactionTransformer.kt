@@ -8,7 +8,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.DivineInterventionSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
-object DivineInterventionSonhosTransactionTransformer : SonhosTransactionTransformer<DivineInterventionSonhosTransaction> {
+object DivineInterventionSonhosTransactionTransformer :
+    SonhosTransactionTransformer<DivineInterventionSonhosTransaction> {
     override suspend fun transform(
         loritta: LorittaBot,
         i18nContext: I18nContext,
@@ -25,6 +26,7 @@ object DivineInterventionSonhosTransactionTransformer : SonhosTransactionTransfo
                     )
                 )
             }
+
             DivineInterventionTransactionEntryAction.REMOVED_SONHOS -> {
                 appendMoneyLostEmoji()
                 append(

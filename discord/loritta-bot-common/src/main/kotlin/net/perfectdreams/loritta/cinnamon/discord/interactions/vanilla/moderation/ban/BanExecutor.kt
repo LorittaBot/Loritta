@@ -33,26 +33,33 @@ class BanExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
             allowedLength = 0..512
         }
 
-        val predefinedReason = optionalString("predefined_reason", BanCommand.CATEGORY_I18N_PREFIX.Options.PredefinedReason.Text) {
-            cinnamonAutocomplete { autocompleteContext, focusedCommandOption ->
-                val interaKTionsContext = autocompleteContext.interaKTionsContext as? GuildAutocompleteContext ?: return@cinnamonAutocomplete emptyMap()
+        val predefinedReason =
+            optionalString("predefined_reason", BanCommand.CATEGORY_I18N_PREFIX.Options.PredefinedReason.Text) {
+                cinnamonAutocomplete { autocompleteContext, focusedCommandOption ->
+                    val interaKTionsContext = autocompleteContext.interaKTionsContext as? GuildAutocompleteContext
+                        ?: return@cinnamonAutocomplete emptyMap()
 
-                loritta.pudding.serverConfigs.getPredefinedPunishmentMessagesByGuildId(
-                    interaKTionsContext.guildId.value
-                ).filter {
-                    it.short.startsWith(focusedCommandOption.value, true)
-                }.associate {
-                    "[${it.short}] ${it.message}".shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length) to it.short
+                    loritta.pudding.serverConfigs.getPredefinedPunishmentMessagesByGuildId(
+                        interaKTionsContext.guildId.value
+                    ).filter {
+                        it.short.startsWith(focusedCommandOption.value, true)
+                    }.associate {
+                        "[${it.short}] ${it.message}".shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length) to it.short
+                    }
                 }
+
+                allowedLength = 0..512
             }
 
-            allowedLength = 0..512
-        }
-
         // TODO: Delete days
-        val skipConfirmation = optionalBoolean("skip_confirmation", BanCommand.CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
-        val sendViaDirectMessage = optionalBoolean("send_via_direct_message", BanCommand.CATEGORY_I18N_PREFIX.Options.SendViaDirectMessage.Text)
-        val sendToPunishmentLog = optionalBoolean("send_to_punishment_log", BanCommand.CATEGORY_I18N_PREFIX.Options.SendToPunishmentLog.Text)
+        val skipConfirmation =
+            optionalBoolean("skip_confirmation", BanCommand.CATEGORY_I18N_PREFIX.Options.SkipConfirmation.Text)
+        val sendViaDirectMessage = optionalBoolean(
+            "send_via_direct_message",
+            BanCommand.CATEGORY_I18N_PREFIX.Options.SendViaDirectMessage.Text
+        )
+        val sendToPunishmentLog =
+            optionalBoolean("send_to_punishment_log", BanCommand.CATEGORY_I18N_PREFIX.Options.SendToPunishmentLog.Text)
     }
 
     override val options = Options()
@@ -66,9 +73,11 @@ class BanExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
         if (Permission.BanMembers !in context.interaKTionsContext.appPermissions)
             context.failEphemerally {
                 styled(
-                    context.i18nContext.get(I18nKeysData.Commands.LoriDoesntHavePermissionDiscord(
-                        context.i18nContext.get(I18nKeysData.Permissions.BanMembers)
-                    )),
+                    context.i18nContext.get(
+                        I18nKeysData.Commands.LoriDoesntHavePermissionDiscord(
+                            context.i18nContext.get(I18nKeysData.Permissions.BanMembers)
+                        )
+                    ),
                     Emotes.LoriSob
                 )
             }
@@ -99,7 +108,8 @@ class BanExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
             users.map { it.queryMember(guild.id) ?: it.user }
         )
 
-        val nonInteractableUsers = interactResults.filterValues { it.any { it.result != AdminUtils.InteractionCheckResult.SUCCESS } }
+        val nonInteractableUsers =
+            interactResults.filterValues { it.any { it.result != AdminUtils.InteractionCheckResult.SUCCESS } }
         val interactableUsers = interactResults - nonInteractableUsers.keys
 
         if (interactableUsers.isEmpty()) {
@@ -126,8 +136,10 @@ class BanExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
 
         val moderationConfig = loritta.pudding.serverConfigs.getModerationConfigByGuildId(guild.id.value)
 
-        val sendPunishmentViaDirectMessage = args[options.sendViaDirectMessage] ?: moderationConfig?.sentPunishmentViaDm ?: false
-        val sendPunishmentToPunishLog = args[options.sendToPunishmentLog] ?: moderationConfig?.sendPunishmentToPunishLog ?: false
+        val sendPunishmentViaDirectMessage =
+            args[options.sendViaDirectMessage] ?: moderationConfig?.sentPunishmentViaDm ?: false
+        val sendPunishmentToPunishLog =
+            args[options.sendToPunishmentLog] ?: moderationConfig?.sendPunishmentToPunishLog ?: false
 
         // Time to get the proper reason
         // If the user set a predefined reason, we will use it
@@ -206,7 +218,8 @@ class BanExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
                 }
 
                 for (nonInteractableUser in nonInteractableUsers) {
-                    val whyTheyArentGoingToBePunished = nonInteractableUser.value.first { it.result != AdminUtils.InteractionCheckResult.SUCCESS }
+                    val whyTheyArentGoingToBePunished =
+                        nonInteractableUser.value.first { it.result != AdminUtils.InteractionCheckResult.SUCCESS }
 
                     AdminUtils.appendCheckResultReason(
                         loritta,

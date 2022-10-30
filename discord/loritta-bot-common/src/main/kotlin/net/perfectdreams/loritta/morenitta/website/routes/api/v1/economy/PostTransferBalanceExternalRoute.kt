@@ -16,36 +16,37 @@ import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class PostTransferBalanceExternalRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/economy/transfer/garticos") {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-	}
+class PostTransferBalanceExternalRoute(loritta: LorittaBot) :
+    RequiresAPIAuthenticationRoute(loritta, "/api/v1/economy/transfer/garticos") {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val body = withContext(Dispatchers.IO) { call.receiveText() }
-		val json = JsonParser.parseString(body)
-		val receiverId = json["receiverId"].string
-		val garticos = json["garticos"].long
-		val transferRate = json["transferRate"].double
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
+        val body = withContext(Dispatchers.IO) { call.receiveText() }
+        val json = JsonParser.parseString(body)
+        val receiverId = json["receiverId"].string
+        val garticos = json["garticos"].long
+        val transferRate = json["transferRate"].double
 
-		val profile = loritta.getOrCreateLorittaProfile(receiverId)
+        val profile = loritta.getOrCreateLorittaProfile(receiverId)
 
-		logger.info { "$receiverId (has ${profile.money} dreams) is transferring $garticos garticos to Loritta with transfer rate is $transferRate" }
-		val finalMoney = (garticos * transferRate)
+        logger.info { "$receiverId (has ${profile.money} dreams) is transferring $garticos garticos to Loritta with transfer rate is $transferRate" }
+        val finalMoney = (garticos * transferRate)
 
-		loritta.newSuspendedTransaction {
-			profile.addSonhosAndAddToTransactionLogNested(
-				finalMoney.toLong(),
-				SonhosPaymentReason.GARTICOS_TRANSFER
-			)
-		}
+        loritta.newSuspendedTransaction {
+            profile.addSonhosAndAddToTransactionLogNested(
+                finalMoney.toLong(),
+                SonhosPaymentReason.GARTICOS_TRANSFER
+            )
+        }
 
-		logger.info { "$receiverId (now has ${profile.money} dreams) transferred $garticos garticos to Loritta with transfer rate is $transferRate" }
+        logger.info { "$receiverId (now has ${profile.money} dreams) transferred $garticos garticos to Loritta with transfer rate is $transferRate" }
 
-		call.respondJson(
-				jsonObject(
-						"balance" to profile.money
-				)
-		)
-	}
+        call.respondJson(
+            jsonObject(
+                "balance" to profile.money
+            )
+        )
+    }
 }

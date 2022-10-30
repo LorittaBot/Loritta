@@ -14,27 +14,27 @@ import net.perfectdreams.sequins.ktor.BaseRoute
 import org.jetbrains.exposed.sql.select
 
 class GetAvailableBackgroundsRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/backgrounds") {
-	override suspend fun onRequest(call: ApplicationCall) {
-		val response = loritta.newSuspendedTransaction {
-			Backgrounds.select {
-				Backgrounds.enabled eq true
-			}.toList()
-		}.map {
-			BackgroundWithVariations(
-				Background.fromRow(it),
-				loritta.pudding.backgrounds.getBackgroundVariations(it[Backgrounds.internalName])
-			)
-		}
-			.let {
-				Json.encodeToString(
-					BackgroundListResponse(
-						loritta.dreamStorageService.baseUrl,
-						loritta.dreamStorageService.getCachedNamespaceOrRetrieve(),
-						it
-					)
-				)
-			}
+    override suspend fun onRequest(call: ApplicationCall) {
+        val response = loritta.newSuspendedTransaction {
+            Backgrounds.select {
+                Backgrounds.enabled eq true
+            }.toList()
+        }.map {
+            BackgroundWithVariations(
+                Background.fromRow(it),
+                loritta.pudding.backgrounds.getBackgroundVariations(it[Backgrounds.internalName])
+            )
+        }
+            .let {
+                Json.encodeToString(
+                    BackgroundListResponse(
+                        loritta.dreamStorageService.baseUrl,
+                        loritta.dreamStorageService.getCachedNamespaceOrRetrieve(),
+                        it
+                    )
+                )
+            }
 
-		call.respondJson(response)
-	}
+        call.respondJson(response)
+    }
 }

@@ -7,15 +7,14 @@ import dev.kord.rest.json.request.EmbedImageRequest
 import dev.kord.rest.json.request.EmbedRequest
 import dev.kord.rest.json.request.EmbedThumbnailRequest
 import dev.kord.rest.json.request.WebhookEditMessageRequest
-import dev.kord.rest.service.RestClient
-import net.perfectdreams.loritta.common.utils.Color
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.WebhookCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.common.utils.Color
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class WebhookEditRepostExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -27,11 +26,13 @@ class WebhookEditRepostExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
 
         val embedTitle = optionalString("embed_title", WebhookCommand.I18N_PREFIX.Options.EmbedTitle.Text)
 
-        val embedDescription = optionalString("embed_description", WebhookCommand.I18N_PREFIX.Options.EmbedDescription.Text)
+        val embedDescription =
+            optionalString("embed_description", WebhookCommand.I18N_PREFIX.Options.EmbedDescription.Text)
 
         val embedImageUrl = optionalString("embed_image_url", WebhookCommand.I18N_PREFIX.Options.EmbedImageUrl.Text)
 
-        val embedThumbnailUrl = optionalString("embed_thumbnail_url", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
+        val embedThumbnailUrl =
+            optionalString("embed_thumbnail_url", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
 
         val embedColor = optionalString("embed_color", WebhookCommand.I18N_PREFIX.Options.EmbedThumbnailUrl.Text)
     }
@@ -50,7 +51,8 @@ class WebhookEditRepostExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
                 WebhookCommand.I18N_PREFIX.InvalidMessageUrl
             )
         )
-        val retrievedMessage = WebhookCommandUtils.getMessageOrFail(context, rest.channel,
+        val retrievedMessage = WebhookCommandUtils.getMessageOrFail(
+            context, rest.channel,
             Snowflake(matcher.groupValues[2].toLong()),
             Snowflake(matcher.groupValues[3].toLong())
         )
@@ -63,21 +65,22 @@ class WebhookEditRepostExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
         val embedColor = args[options.embedColor]
 
         WebhookCommandUtils.editMessageViaWebhook(context, webhookUrl, messageId) {
-            val embed = if (embedTitle != null || embedDescription != null || embedImageUrl != null || embedThumbnailUrl != null) {
-                EmbedRequest(
-                    title = embedTitle?.optional() ?: Optional(),
-                    description = embedDescription?.optional() ?: Optional(),
-                    image = embedImageUrl?.let { EmbedImageRequest(it) }?.optional() ?: Optional(),
-                    thumbnail = embedThumbnailUrl?.let { EmbedThumbnailRequest(it) }?.optional() ?: Optional(),
-                    color = embedColor?.let {
-                        try {
-                            Color.fromString(it)
-                        } catch (e: IllegalArgumentException) {
-                            context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidEmbedColor))
-                        }
-                    }?.toKordColor()?.optional() ?: Optional()
-                )
-            } else null
+            val embed =
+                if (embedTitle != null || embedDescription != null || embedImageUrl != null || embedThumbnailUrl != null) {
+                    EmbedRequest(
+                        title = embedTitle?.optional() ?: Optional(),
+                        description = embedDescription?.optional() ?: Optional(),
+                        image = embedImageUrl?.let { EmbedImageRequest(it) }?.optional() ?: Optional(),
+                        thumbnail = embedThumbnailUrl?.let { EmbedThumbnailRequest(it) }?.optional() ?: Optional(),
+                        color = embedColor?.let {
+                            try {
+                                Color.fromString(it)
+                            } catch (e: IllegalArgumentException) {
+                                context.failEphemerally(context.i18nContext.get(WebhookCommand.I18N_PREFIX.InvalidEmbedColor))
+                            }
+                        }?.toKordColor()?.optional() ?: Optional()
+                    )
+                } else null
 
             WebhookEditMessageRequest(
                 WebhookCommandUtils.cleanUpRetrievedMessageContent(retrievedMessage).optional(),

@@ -1,14 +1,14 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos
 
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.FansExplainingRequest
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.videos.declarations.FansExplainingCommand
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class FansExplainingExecutor(
     loritta: LorittaBot,
@@ -53,7 +53,18 @@ class FansExplainingExecutor(
 
         val result = client.handleExceptions(context) {
             client.videos.fansExplaining(
-                FansExplainingRequest(section1Line1, section1Line2, section2Line1, section2Line2, section3Line1, section3Line2, section4Line1, section4Line2, section5Line1, section5Line2)
+                FansExplainingRequest(
+                    section1Line1,
+                    section1Line2,
+                    section2Line1,
+                    section2Line2,
+                    section3Line1,
+                    section3Line2,
+                    section4Line1,
+                    section4Line2,
+                    section5Line1,
+                    section5Line2
+                )
             )
         }
 

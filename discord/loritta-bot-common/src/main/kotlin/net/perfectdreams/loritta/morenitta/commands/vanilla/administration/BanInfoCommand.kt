@@ -15,7 +15,11 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.Emotes
 
-class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("baninfo", "infoban", "checkban"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
     override fun command() = create {
         localizedDescription("commands.command.baninfo.description")
         localizedExamples("commands.command.baninfo.examples")
@@ -34,27 +38,35 @@ class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
 
             if (!userId.isValidSnowflake())
                 fail(locale["commands.userDoesNotExist", userId.stripCodeMarks()])
-            
+
             try {
                 val banInformation = userId.let { guild.retrieveBanById(it.toLong()) }
                 val banReason = banInformation.reason ?: locale["commands.command.baninfo.noReasonSpecified"]
                 val embed = EmbedBuilder()
-                        .setTitle("${Emotes.LORI_COFFEE} ${locale["commands.command.baninfo.title"]}")
-                        .setThumbnail(banInformation.user.avatarUrl)
-                        .addField("${Emotes.LORI_TEMMIE} ${locale["commands.command.baninfo.user"]}", "`${banInformation.user.asTag}`", false)
-                        .addField("${Emotes.LORI_BAN_HAMMER} ${locale["commands.command.baninfo.reason"]}", "`${banReason}`", false)
-                        .setColor(Constants.DISCORD_BLURPLE)
-                        .setFooter("Se você deseja desbanir este usuário, aperte no ⚒️!")
+                    .setTitle("${Emotes.LORI_COFFEE} ${locale["commands.command.baninfo.title"]}")
+                    .setThumbnail(banInformation.user.avatarUrl)
+                    .addField(
+                        "${Emotes.LORI_TEMMIE} ${locale["commands.command.baninfo.user"]}",
+                        "`${banInformation.user.asTag}`",
+                        false
+                    )
+                    .addField(
+                        "${Emotes.LORI_BAN_HAMMER} ${locale["commands.command.baninfo.reason"]}",
+                        "`${banReason}`",
+                        false
+                    )
+                    .setColor(Constants.DISCORD_BLURPLE)
+                    .setFooter("Se você deseja desbanir este usuário, aperte no ⚒️!")
                 discordMessage.channel.sendMessage(embed.build()).also {
                     runCatching { it.addReaction("⚒") }
                 }.onReactionAddByAuthor(this) {
                     if (it.reactionEmote.name == "⚒") {
                         runCatching { guild.unban(userId) }
                         reply(
-                                LorittaReply(
-                                        locale["commands.command.unban.successfullyUnbanned"],
-                                        Emotes.LORI_BAN_HAMMER
-                                )
+                            LorittaReply(
+                                locale["commands.command.unban.successfullyUnbanned"],
+                                Emotes.LORI_BAN_HAMMER
+                            )
                         )
                     }
                     return@onReactionAddByAuthor

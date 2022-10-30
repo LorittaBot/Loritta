@@ -4,9 +4,10 @@ import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.InteractionOrFollowupMessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 
-fun (MessageCreateBuilder.() -> Unit).toKordUserMessageCreateBuilder() = InteractionOrFollowupMessageCreateBuilder(false)
-    .apply(this@toKordUserMessageCreateBuilder)
-    .toKordUserMessageCreateBuilder()
+fun (MessageCreateBuilder.() -> Unit).toKordUserMessageCreateBuilder() =
+    InteractionOrFollowupMessageCreateBuilder(false)
+        .apply(this@toKordUserMessageCreateBuilder)
+        .toKordUserMessageCreateBuilder()
 
 fun MessageCreateBuilder.toKordUserMessageCreateBuilder(): UserMessageCreateBuilder.() -> Unit = {
     // This is a hack! Maybe implement this in Discord InteraKTions somehow?

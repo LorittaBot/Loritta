@@ -12,8 +12,10 @@ import kotlin.jvm.optionals.getOrNull
  * Caches emoji images, used for graphics drawing
  */
 class EmojiImageCache {
-    private val twitterEmojis = Caffeine.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, Optional<BufferedImage>>().asMap()
-    private val discordEmojis = Caffeine.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, Optional<BufferedImage>>().asMap()
+    private val twitterEmojis =
+        Caffeine.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, Optional<BufferedImage>>().asMap()
+    private val discordEmojis =
+        Caffeine.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).build<String, Optional<BufferedImage>>().asMap()
 
     @OptIn(ExperimentalStdlibApi::class)
     suspend fun getDiscordEmoji(emojiId: Snowflake, size: Image.Size): BufferedImage? {

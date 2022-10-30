@@ -35,7 +35,13 @@ class BrokerSellStockExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
 
         // This should *never* happen because the values are validated on Discord side BUT who knows
         if (tickerId !in LorittaBovespaBrokerUtils.validStocksCodes)
-            context.failEphemerally(context.i18nContext.get(BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(loritta.commandMentions.brokerInfo)))
+            context.failEphemerally(
+                context.i18nContext.get(
+                    BrokerCommand.I18N_PREFIX.ThatIsNotAnValidStockTicker(
+                        loritta.commandMentions.brokerInfo
+                    )
+                )
+            )
 
         val quantity = if (quantityAsString == "all") {
             context.loritta.pudding.bovespaBroker.getUserBoughtStocks(context.user.id.value.toLong())
@@ -107,6 +113,7 @@ class BrokerSellStockExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
                                 BrokerCommand.I18N_PREFIX.Sell.SuccessfullySoldNeutral
                             )
                         }
+
                         isPositiveProfit -> {
                             context.i18nContext.get(
                                 BrokerCommand.I18N_PREFIX.Sell.SuccessfullySoldProfit(
@@ -115,6 +122,7 @@ class BrokerSellStockExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
                                 )
                             )
                         }
+
                         else -> {
                             context.i18nContext.get(
                                 BrokerCommand.I18N_PREFIX.Sell.SuccessfullySoldLoss(

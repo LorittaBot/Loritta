@@ -17,8 +17,16 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
 import kotlin.collections.set
 
-class ConfigureNashornCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/nashorn") {
-    override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
+class ConfigureNashornCommandsRoute(loritta: LorittaBot) :
+    RequiresGuildAuthLocalizedRoute(loritta, "/configure/nashorn") {
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
         loritta as LorittaBot
 
         val nashornCommands = loritta.newSuspendedTransaction {
@@ -34,10 +42,10 @@ class ConfigureNashornCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLoca
         val feeds = JsonArray()
         nashornCommands.forEach {
             feeds.add(
-                    jsonObject(
-                            "jsLabel" to it[CustomGuildCommands.label],
-                            "javaScript" to it[CustomGuildCommands.code]
-                    )
+                jsonObject(
+                    "jsLabel" to it[CustomGuildCommands.label],
+                    "javaScript" to it[CustomGuildCommands.code]
+                )
             )
         }
 

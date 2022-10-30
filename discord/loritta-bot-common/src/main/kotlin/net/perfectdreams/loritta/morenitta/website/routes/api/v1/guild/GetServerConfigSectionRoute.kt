@@ -13,21 +13,27 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class GetServerConfigSectionRoute(
-	loritta: LorittaBot,
-	val website: LorittaWebsite
+    loritta: LorittaBot,
+    val website: LorittaWebsite
 ) : RequiresAPIGuildAuthRoute(loritta, "/config/{sections}") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		val sections = call.parameters["sections"]!!.split(",").toSet()
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        val sections = call.parameters["sections"]!!.split(",").toSet()
 
-		val payload = jsonObject()
+        val payload = jsonObject()
 
-		for (section in sections) {
-			val transformer = website.configTransformers.firstOrNull { it.payloadType == section }
+        for (section in sections) {
+            val transformer = website.configTransformers.firstOrNull { it.payloadType == section }
 
-			if (transformer != null)
-				payload[transformer.configKey] = transformer.toJson(userIdentification, guild, serverConfig)
-		}
+            if (transformer != null)
+                payload[transformer.configKey] = transformer.toJson(userIdentification, guild, serverConfig)
+        }
 
-		call.respondJson(payload)
-	}
+        call.respondJson(payload)
+    }
 }

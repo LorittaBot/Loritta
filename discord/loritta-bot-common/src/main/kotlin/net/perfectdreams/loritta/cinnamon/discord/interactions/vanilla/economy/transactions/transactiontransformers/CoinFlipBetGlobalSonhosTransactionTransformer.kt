@@ -8,7 +8,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.CoinFlipBetGlobalSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
-object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransformer<CoinFlipBetGlobalSonhosTransaction> {
+object CoinFlipBetGlobalSonhosTransactionTransformer :
+    SonhosTransactionTransformer<CoinFlipBetGlobalSonhosTransaction> {
     override suspend fun transform(
         loritta: LorittaBot,
         i18nContext: I18nContext,
@@ -17,7 +18,8 @@ object CoinFlipBetGlobalSonhosTransactionTransformer : SonhosTransactionTransfor
         transaction: CoinFlipBetGlobalSonhosTransaction
     ): suspend StringBuilder.() -> (Unit) = {
         val wonTheBet = transaction.user == transaction.winner
-        val winnerUserInfo = cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
+        val winnerUserInfo =
+            cachedUserInfos.getOrPut(transaction.winner) { loritta.getCachedUserInfo(transaction.winner) }
         val loserUserInfo = cachedUserInfos.getOrPut(transaction.loser) { loritta.getCachedUserInfo(transaction.loser) }
 
         if (transaction.tax != null && transaction.taxPercentage != null) {

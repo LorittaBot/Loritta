@@ -21,73 +21,77 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class PostDonationPaymentRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/donate") {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-	}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		// This is a security measure, to avoid "high risk" purchases.
-		// We will require that users need to verify their account + have MFA enabled.
-		val refreshedUserIdentification = discordAuth.getUserIdentification()
-		if (!WebsiteUtils.checkIfAccountHasMFAEnabled(loritta, refreshedUserIdentification))
-			return
+    override suspend fun onAuthenticatedRequest(
+        call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification
+    ) {
+        // This is a security measure, to avoid "high risk" purchases.
+        // We will require that users need to verify their account + have MFA enabled.
+        val refreshedUserIdentification = discordAuth.getUserIdentification()
+        if (!WebsiteUtils.checkIfAccountHasMFAEnabled(loritta, refreshedUserIdentification))
+            return
 
-		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
+        val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
-		val whoDonated = "${userIdentification.username}#${userIdentification.discriminator}"
+        val whoDonated = "${userIdentification.username}#${userIdentification.discriminator}"
 
-		logger.info { "User $whoDonated (${userIdentification.id}) wants to buy premium!" }
+        logger.info { "User $whoDonated (${userIdentification.id}) wants to buy premium!" }
 
-		var grana = payload["money"].double
-		val keyId = payload["keyId"].nullLong
+        var grana = payload["money"].double
+        val keyId = payload["keyId"].nullLong
 
-		val donationKey = if (keyId != null) {
-			loritta.newSuspendedTransaction {
-				val key = DonationKey.findById(keyId)
+        val donationKey = if (keyId != null) {
+            loritta.newSuspendedTransaction {
+                val key = DonationKey.findById(keyId)
 
-				if (key?.userId == userIdentification.id.toLong())
-					return@newSuspendedTransaction key
-				else
-					return@newSuspendedTransaction null
-			}
-		} else {
-			null
-		}
+                if (key?.userId == userIdentification.id.toLong())
+                    return@newSuspendedTransaction key
+                else
+                    return@newSuspendedTransaction null
+            }
+        } else {
+            null
+        }
 
-		grana = Math.max(0.99, grana)
-		grana = Math.min(1000.0, grana)
+        grana = Math.max(0.99, grana)
+        grana = Math.min(1000.0, grana)
 
-		val realValue = if (donationKey != null) {
-			(donationKey.value * 0.8).toFloat()
-		} else {
-			grana.toFloat()
-		}
+        val realValue = if (donationKey != null) {
+            (donationKey.value * 0.8).toFloat()
+        } else {
+            grana.toFloat()
+        }
 
-		val storedAmount = if (donationKey != null) {
-			donationKey.value.toFloat()
-		} else {
-			grana.toFloat()
-		}
+        val storedAmount = if (donationKey != null) {
+            donationKey.value.toFloat()
+        } else {
+            grana.toFloat()
+        }
 
-		var discount: Double? = null
-		var metadata: JsonObject? = null
-		if (donationKey != null) {
-			discount = 0.2
-			metadata = jsonObject("renewKey" to donationKey.id.value)
-		}
+        var discount: Double? = null
+        var metadata: JsonObject? = null
+        if (donationKey != null) {
+            discount = 0.2
+            metadata = jsonObject("renewKey" to donationKey.id.value)
+        }
 
-		val paymentUrl = loritta.perfectPaymentsClient.createPayment(
-				loritta,
-				userIdentification.id.toLong(),
-				"Loritta Premium - $whoDonated",
-				(realValue * 100).toLong(),
-				(storedAmount * 100).toLong(),
-				PaymentReason.DONATION,
-				"LORITTA-PREMIUM-%d",
-				discount,
-				metadata
-		)
+        val paymentUrl = loritta.perfectPaymentsClient.createPayment(
+            loritta,
+            userIdentification.id.toLong(),
+            "Loritta Premium - $whoDonated",
+            (realValue * 100).toLong(),
+            (storedAmount * 100).toLong(),
+            PaymentReason.DONATION,
+            "LORITTA-PREMIUM-%d",
+            discount,
+            metadata
+        )
 
-		call.respondJson(jsonObject("redirectUrl" to paymentUrl))
-	}
+        call.respondJson(jsonObject("redirectUrl" to paymentUrl))
+    }
 }

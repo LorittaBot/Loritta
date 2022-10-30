@@ -1,10 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.ocr
 
 import dev.kord.core.entity.User
-import dev.kord.rest.builder.message.create.embed
 import net.perfectdreams.discordinteraktions.common.builder.message.create.MessageCreateBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
@@ -13,8 +11,9 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.dec
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class OCRTranslateButtonExecutor(loritta: LorittaBot) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(ComponentExecutorIds.OCR_TRANSLATE_BUTTON_EXECUTOR)

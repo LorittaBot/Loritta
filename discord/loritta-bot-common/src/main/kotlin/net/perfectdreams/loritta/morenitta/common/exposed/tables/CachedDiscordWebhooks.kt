@@ -5,7 +5,7 @@ import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IdTable
 import org.jetbrains.exposed.sql.Column
 
-object CachedDiscordWebhooks : IdTable<Long>("")  {
+object CachedDiscordWebhooks : IdTable<Long>("") {
     override val id: Column<EntityID<Long>> = long("channel").entityId()
     override val primaryKey by lazy { super.primaryKey ?: PrimaryKey(id) }
 

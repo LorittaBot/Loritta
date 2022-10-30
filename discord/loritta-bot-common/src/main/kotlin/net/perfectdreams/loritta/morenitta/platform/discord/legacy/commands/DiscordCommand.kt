@@ -19,27 +19,38 @@ class DiscordCommand(
     category: net.perfectdreams.loritta.common.commands.CommandCategory,
     descriptionKey: LocaleKeyData = MISSING_DESCRIPTION_KEY,
     description: ((BaseLocale) -> (String)) = {
-			it.get(descriptionKey)
-		},
+        it.get(descriptionKey)
+    },
     usage: CommandArguments,
     examplesKey: LocaleKeyData?,
     executor: suspend CommandContext.() -> Unit
-) : Command<CommandContext>(lorittaDiscord, labels, commandName, category, descriptionKey, description, usage, examplesKey, executor) {
-	var userRequiredPermissions = listOf<Permission>()
-	var botRequiredPermissions = listOf<Permission>()
-	var userRequiredLorittaPermissions = listOf<LorittaPermission>()
-	var commandCheckFilter: (suspend (LorittaMessageEvent, List<String>, ServerConfig, BaseLocale, LorittaUser) -> (Boolean))? = null
+) : Command<CommandContext>(
+    lorittaDiscord,
+    labels,
+    commandName,
+    category,
+    descriptionKey,
+    description,
+    usage,
+    examplesKey,
+    executor
+) {
+    var userRequiredPermissions = listOf<Permission>()
+    var botRequiredPermissions = listOf<Permission>()
+    var userRequiredLorittaPermissions = listOf<LorittaPermission>()
+    var commandCheckFilter: (suspend (LorittaMessageEvent, List<String>, ServerConfig, BaseLocale, LorittaUser) -> (Boolean))? =
+        null
 
-	override val cooldown: Int
-		get() {
-			val customCooldown = lorittaDiscord.config.loritta.commands.commandsCooldown[this::class.simpleName]
+    override val cooldown: Int
+        get() {
+            val customCooldown = lorittaDiscord.config.loritta.commands.commandsCooldown[this::class.simpleName]
 
-			if (customCooldown != null)
-				return customCooldown
+            if (customCooldown != null)
+                return customCooldown
 
-			return if (needsToUploadFiles)
-				lorittaDiscord.config.loritta.commands.imageCooldown
-			else
-				lorittaDiscord.config.loritta.commands.cooldown
-		}
+            return if (needsToUploadFiles)
+                lorittaDiscord.config.loritta.commands.imageCooldown
+            else
+                lorittaDiscord.config.loritta.commands.cooldown
+        }
 }

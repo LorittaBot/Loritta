@@ -13,7 +13,11 @@ import net.perfectdreams.loritta.morenitta.utils.locale.PersonalPronoun
 import java.awt.*
 import java.awt.image.BufferedImage
 
-class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("sadreality", "tristerealidade"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("sadreality", "tristerealidade"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }
@@ -31,7 +35,11 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
             var x = 0
             var y = 0
 
-            val base = BufferedImage(384, 256, BufferedImage.TYPE_INT_ARGB) // Iremos criar uma imagem 384x256 (tamanho do template)
+            val base = BufferedImage(
+                384,
+                256,
+                BufferedImage.TYPE_INT_ARGB
+            ) // Iremos criar uma imagem 384x256 (tamanho do template)
             val baseGraph = base.graphics.enableFontAntiAliasing()
 
             val users = mutableListOf<User>()
@@ -56,7 +64,10 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
                 val member = if (members.isNotEmpty()) {
                     members[LorittaBot.RANDOM.nextInt(members.size)]
                 } else {
-                    throw CommandException("Não existem membros suficientes para fazer uma triste realidade, sorry ;w;", Constants.ERROR)
+                    throw CommandException(
+                        "Não existem membros suficientes para fazer uma triste realidade, sorry ;w;",
+                        Constants.ERROR
+                    )
                 }
 
                 users.add(JDAUser(member.user))
@@ -125,7 +136,11 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
 
                     drawCentralizedTextOutlined(
                         baseGraph,
-                        locale["$LOCALE_PREFIX.tristerealidade.slot.$slot.${gender.name}", lovedGender.getPossessivePronoun(locale, PersonalPronoun.THIRD_PERSON, member.name)],
+                        locale["$LOCALE_PREFIX.tristerealidade.slot.$slot.${gender.name}", lovedGender.getPossessivePronoun(
+                            locale,
+                            PersonalPronoun.THIRD_PERSON,
+                            member.name
+                        )],
                         Rectangle(x, y + 80, 128, 42),
                         Color.WHITE,
                         Color.BLACK,
@@ -146,7 +161,15 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
             context.sendImage(JVMImage(base), "sad_reality.png", context.getUserMention(true))
         }
     }
-    private fun drawCentralizedTextOutlined(graphics: Graphics, text: String, rectangle: Rectangle, fontColor: Color, strokeColor: Color, strokeSize: Int) {
+
+    private fun drawCentralizedTextOutlined(
+        graphics: Graphics,
+        text: String,
+        rectangle: Rectangle,
+        fontColor: Color,
+        strokeColor: Color,
+        strokeSize: Int
+    ) {
         val font = graphics.font
         graphics.font = font
         val fontMetrics = graphics.fontMetrics
@@ -188,13 +211,25 @@ class TristeRealidadeCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(l
         var y = (rectangle.height / 2) - ((skipHeight - 4) * (lines.size - 1))
         for (line in lines) {
             graphics.color = strokeColor
-            for (strokeX in rectangle.x - strokeSize .. rectangle.x + strokeSize) {
-                for (strokeY in rectangle.y + y - strokeSize .. rectangle.y + y + strokeSize) {
-                    ImageUtils.drawCenteredStringEmoji(loritta, graphics, line, Rectangle(strokeX, strokeY, rectangle.width, 24), font)
+            for (strokeX in rectangle.x - strokeSize..rectangle.x + strokeSize) {
+                for (strokeY in rectangle.y + y - strokeSize..rectangle.y + y + strokeSize) {
+                    ImageUtils.drawCenteredStringEmoji(
+                        loritta,
+                        graphics,
+                        line,
+                        Rectangle(strokeX, strokeY, rectangle.width, 24),
+                        font
+                    )
                 }
             }
             graphics.color = fontColor
-            ImageUtils.drawCenteredStringEmoji(loritta, graphics, line, Rectangle(rectangle.x, rectangle.y + y, rectangle.width, 24), font)
+            ImageUtils.drawCenteredStringEmoji(
+                loritta,
+                graphics,
+                line,
+                Rectangle(rectangle.x, rectangle.y + y, rectangle.width, 24),
+                font
+            )
             y += skipHeight
         }
     }

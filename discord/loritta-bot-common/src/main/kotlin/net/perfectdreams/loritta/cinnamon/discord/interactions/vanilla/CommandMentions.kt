@@ -35,7 +35,8 @@ class CommandMentions(private val registeredCommands: List<DiscordApplicationCom
     private fun commandMention(path: String): String {
         val rootCommandLabel = path.substringBefore(" ")
 
-        val registeredCommand = registeredCommands.firstOrNull { it.name == rootCommandLabel } ?: error("Couldn't find a command with label $rootCommandLabel!")
+        val registeredCommand = registeredCommands.firstOrNull { it.name == rootCommandLabel }
+            ?: error("Couldn't find a command with label $rootCommandLabel!")
 
         return "</${path}:${registeredCommand.id}>"
     }

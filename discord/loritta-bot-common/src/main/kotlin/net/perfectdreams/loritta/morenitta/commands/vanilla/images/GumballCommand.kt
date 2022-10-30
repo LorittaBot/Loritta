@@ -10,19 +10,20 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class GumballCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gumball", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.gumballliftup.description")
-	override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
+class GumballCommand(loritta: LorittaBot) :
+    AbstractCommand(loritta, "gumball", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.gumballliftup.description")
+    override fun getExamplesKey() = Command.SINGLE_IMAGE_EXAMPLES_KEY
 
-	// TODO: Fix Usage
+    // TODO: Fix Usage
 
-	override fun needsToUploadFiles() = true
+    override fun needsToUploadFiles() = true
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
-		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val file = GumballGIF.getGIF(contextImage, locale)
-		loritta.gifsicle.optimizeGIF(file)
-		context.sendFile(file, "gumball.gif", context.getAsMention(true))
-		file.delete()
-	}
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+        val file = GumballGIF.getGIF(contextImage, locale)
+        loritta.gifsicle.optimizeGIF(file)
+        context.sendFile(file, "gumball.gif", context.getAsMention(true))
+        file.delete()
+    }
 }

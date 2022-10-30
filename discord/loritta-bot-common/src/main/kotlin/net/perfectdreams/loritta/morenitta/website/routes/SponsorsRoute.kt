@@ -7,15 +7,15 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.SponsorsView
 
 class SponsorsRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/sponsors") {
-	override val isMainClusterOnlyRoute = true
+    override val isMainClusterOnlyRoute = true
 
-	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
-		call.respondHtml(
-			SponsorsView(
-				loritta,
-				locale,
-				getPathWithoutLocale(call),
-			).generateHtml()
-		)
-	}
+    override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+        call.respondHtml(
+            SponsorsView(
+                loritta,
+                locale,
+                getPathWithoutLocale(call),
+            ).generateHtml()
+        )
+    }
 }

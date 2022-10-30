@@ -1,55 +1,39 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.declarations
 
-import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.*
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BolsoFrameExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.Bolsonaro2Executor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BolsonaroExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.BriggsCoverExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.CanellaDvdExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.CepoDeMadeiraExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.ChicoAtaExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.CortesFlowExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.EdnaldoBandeiraExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.EdnaldoTvExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.GessyAtaExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.LoriAtaExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.MonicaAtaExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.RomeroBrittoExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.SAMExecutor
 
 class BRMemesCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
-   companion object {
-       val I18N_PREFIX = I18nKeysData.Commands.Command.Brmemes
-       const val I18N_CORTESFLOW_KEY_PREFIX = "commands.command.brmemes.cortesflow"
-       val cortesFlowThumbnails = listOf(
-           "arthur-benozzati-smile",
-           "douglas-laughing",
-           "douglas-pointing",
-           "douglas-pray",
-           "gaules-sad",
-           "igor-angry",
-           "igor-naked",
-           "igor-pointing",
-           "julio-cocielo-eyes",
-           "lucas-inutilismo-exalted",
-           "metaforando-badge",
-           "metaforando-surprised",
-           "mitico-succ",
-           "monark-discussion",
-           "monark-smoking",
-           "monark-stop",
-           "peter-jordan-action-figure",
-           "poladoful-discussion",
-           "rato-borrachudo-disappointed",
-           "rato-borrachudo-no-glasses"
-       )
-   }
+    companion object {
+        val I18N_PREFIX = I18nKeysData.Commands.Command.Brmemes
+        const val I18N_CORTESFLOW_KEY_PREFIX = "commands.command.brmemes.cortesflow"
+        val cortesFlowThumbnails = listOf(
+            "arthur-benozzati-smile",
+            "douglas-laughing",
+            "douglas-pointing",
+            "douglas-pray",
+            "gaules-sad",
+            "igor-angry",
+            "igor-naked",
+            "igor-pointing",
+            "julio-cocielo-eyes",
+            "lucas-inutilismo-exalted",
+            "metaforando-badge",
+            "metaforando-surprised",
+            "mitico-succ",
+            "monark-discussion",
+            "monark-smoking",
+            "monark-stop",
+            "peter-jordan-action-figure",
+            "poladoful-discussion",
+            "rato-borrachudo-disappointed",
+            "rato-borrachudo-no-glasses"
+        )
+    }
 
     override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.IMAGES, TodoFixThisData) {
         subcommandGroup(I18N_PREFIX.Bolsonaro.Label, I18N_PREFIX.Bolsonaro.Description) {

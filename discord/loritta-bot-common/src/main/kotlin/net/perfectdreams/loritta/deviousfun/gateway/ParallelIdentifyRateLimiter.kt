@@ -3,8 +3,9 @@ package net.perfectdreams.loritta.deviousfun.gateway
 import dev.kord.common.ratelimit.RateLimiter
 import kotlinx.coroutines.delay
 import mu.KotlinLogging
+import net.perfectdreams.loritta.deviouscache.requests.LockConcurrentLoginRequest
+import net.perfectdreams.loritta.deviouscache.responses.LockSuccessfulConcurrentLoginResponse
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import redis.clients.jedis.params.SetParams
 import kotlin.random.Random
 
 /**
@@ -26,22 +27,13 @@ class ParallelIdentifyRateLimiter(
     var currentRandomKey: String? = null
 
     override suspend fun consume() {
-        val randomKey = random.nextBytes(20).toString(Charsets.UTF_8)
-        this.currentRandomKey = randomKey
+        val randomKey =
+            (loritta.deviousFun.rpc.execute(LockConcurrentLoginRequest(bucketId)) as? LockSuccessfulConcurrentLoginResponse)?.key
 
-        val success = loritta.redisConnection("locking concurrent login of bucket $bucketId") {
-            it.set(
-                loritta.redisKeys.discordGatewayConcurrentLogin(bucketId),
-                randomKey,
-                SetParams.setParams()
-                    .nx()
-                    // A shard *probably* won't take more than 60s to receive its Ready event, but let's make it expire after 60s to avoid the bucket being blocked if we had any issues while logging in.
-                    .px(60_000)
-            )
-        } != null
-
-        if (success) {
+        if (randomKey != null) {
             // Acquired lock! We can login, yay!! :3
+            this.currentRandomKey = randomKey
+
             logger.info { "Successfully acquired lock for bucket $bucketId (shard $shardId)!" }
         } else {
             // Couldn't acquire lock, let's wait...

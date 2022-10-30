@@ -11,115 +11,121 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class LorittaDailyShopUpdateTask(val loritta: LorittaBot) : Runnable {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-		// How many new items should be shown in the shop on every shop rotation?
-		// This exists to avoid Lori always selecting previously sold items instead of selecting never seen before items
-		private const val NEW_ITEMS_TARGET = 2
-		private const val DAILY_PROFILE_DESIGNS_TARGET = 4
-		private const val DAILY_BACKGROUNDS_TARGET = 10
+    companion object {
+        private val logger = KotlinLogging.logger {}
 
-		fun generate(loritta: LorittaBot) {
-			logger.info { "Generating a new daily shop..." }
+        // How many new items should be shown in the shop on every shop rotation?
+        // This exists to avoid Lori always selecting previously sold items instead of selecting never seen before items
+        private const val NEW_ITEMS_TARGET = 2
+        private const val DAILY_PROFILE_DESIGNS_TARGET = 4
+        private const val DAILY_BACKGROUNDS_TARGET = 10
 
-			runBlocking {
-				loritta.pudding.transaction {
-					val newShop = DailyShops.insertAndGetId {
-						it[generatedAt] = System.currentTimeMillis()
-					}
+        fun generate(loritta: LorittaBot) {
+            logger.info { "Generating a new daily shop..." }
 
-					getAndAddRandomBackgroundsToShop(newShop)
-					getAndAddRandomProfileDesignsToShop(newShop)
-				}
-			}
-		}
-		
-		private fun getAndAddRandomBackgroundsToShop(shopId: EntityID<Long>) {
-			val allBackgrounds = Backgrounds.select {
-				Backgrounds.enabled eq true and (Backgrounds.availableToBuyViaDreams eq true)
-			}.toMutableList()
+            runBlocking {
+                loritta.pudding.transaction {
+                    val newShop = DailyShops.insertAndGetId {
+                        it[generatedAt] = System.currentTimeMillis()
+                    }
 
-			val selectedBackgrounds = mutableListOf<ResultRow>()
+                    getAndAddRandomBackgroundsToShop(newShop)
+                    getAndAddRandomProfileDesignsToShop(newShop)
+                }
+            }
+        }
 
-			// We will try to at least have two new items every single day, to avoid showing already sold backgrounds every day
-			val neverSoldBeforeBackgrounds = allBackgrounds.filter {
-				DailyShopItems.select {
-					DailyShopItems.item eq it[Backgrounds.id]
-				}.count() == 0L
-			}.toMutableList()
+        private fun getAndAddRandomBackgroundsToShop(shopId: EntityID<Long>) {
+            val allBackgrounds = Backgrounds.select {
+                Backgrounds.enabled eq true and (Backgrounds.availableToBuyViaDreams eq true)
+            }.toMutableList()
 
-			repeat(Math.min(NEW_ITEMS_TARGET, neverSoldBeforeBackgrounds.size)) {
-				if (neverSoldBeforeBackgrounds.isNotEmpty()) { // Because we repeat multiple times and remove the background from the list, we need to check if the list is empty inside the repeat
-					val randomBackground = neverSoldBeforeBackgrounds.random()
+            val selectedBackgrounds = mutableListOf<ResultRow>()
 
-					allBackgrounds.remove(randomBackground)
-					neverSoldBeforeBackgrounds.remove(randomBackground)
-					selectedBackgrounds.add(randomBackground)
-				}
-			}
+            // We will try to at least have two new items every single day, to avoid showing already sold backgrounds every day
+            val neverSoldBeforeBackgrounds = allBackgrounds.filter {
+                DailyShopItems.select {
+                    DailyShopItems.item eq it[Backgrounds.id]
+                }.count() == 0L
+            }.toMutableList()
 
-			repeat(DAILY_BACKGROUNDS_TARGET - selectedBackgrounds.size) {
-				val randomBackground = allBackgrounds.random()
-				allBackgrounds.remove(randomBackground)
-				selectedBackgrounds.add(randomBackground)
-			}
+            repeat(Math.min(NEW_ITEMS_TARGET, neverSoldBeforeBackgrounds.size)) {
+                if (neverSoldBeforeBackgrounds.isNotEmpty()) { // Because we repeat multiple times and remove the background from the list, we need to check if the list is empty inside the repeat
+                    val randomBackground = neverSoldBeforeBackgrounds.random()
 
-			for (background in selectedBackgrounds) {
-				DailyShopItems.insert {
-					it[shop] = shopId
-					it[item] = background[Backgrounds.id]
-					it[tag] = if (DailyShopItems.select { item eq background[Backgrounds.id] }.count() == 0L) { "website.dailyShop.new" } else null
-				}
-			}
-		}
+                    allBackgrounds.remove(randomBackground)
+                    neverSoldBeforeBackgrounds.remove(randomBackground)
+                    selectedBackgrounds.add(randomBackground)
+                }
+            }
 
-		private fun getAndAddRandomProfileDesignsToShop(shopId: EntityID<Long>) {
-			val allProfileDesigns = ProfileDesigns.select {
-				ProfileDesigns.enabled eq true and (ProfileDesigns.availableToBuyViaDreams eq true)
-			}.toMutableList()
+            repeat(DAILY_BACKGROUNDS_TARGET - selectedBackgrounds.size) {
+                val randomBackground = allBackgrounds.random()
+                allBackgrounds.remove(randomBackground)
+                selectedBackgrounds.add(randomBackground)
+            }
 
-			val selectedProfileDesigns = mutableListOf<ResultRow>()
+            for (background in selectedBackgrounds) {
+                DailyShopItems.insert {
+                    it[shop] = shopId
+                    it[item] = background[Backgrounds.id]
+                    it[tag] = if (DailyShopItems.select { item eq background[Backgrounds.id] }.count() == 0L) {
+                        "website.dailyShop.new"
+                    } else null
+                }
+            }
+        }
 
-			// We will try to at least have two new items every single day, to avoid showing already sold backgrounds every day
-			val neverSoldBeforeProfileDesigns = allProfileDesigns.filter {
-				DailyProfileShopItems.select {
-					DailyProfileShopItems.item eq it[ProfileDesigns.id]
-				}.count() == 0L
-			}.toMutableList()
+        private fun getAndAddRandomProfileDesignsToShop(shopId: EntityID<Long>) {
+            val allProfileDesigns = ProfileDesigns.select {
+                ProfileDesigns.enabled eq true and (ProfileDesigns.availableToBuyViaDreams eq true)
+            }.toMutableList()
 
-			repeat(Math.min(NEW_ITEMS_TARGET, neverSoldBeforeProfileDesigns.size)) {
-				if (neverSoldBeforeProfileDesigns.isNotEmpty()) { // Because we repeat multiple times and remove the background from the list, we need to check if the list is empty inside the repeat
-					val randomBackground = neverSoldBeforeProfileDesigns.random()
+            val selectedProfileDesigns = mutableListOf<ResultRow>()
 
-					allProfileDesigns.remove(randomBackground)
-					neverSoldBeforeProfileDesigns.remove(randomBackground)
-					selectedProfileDesigns.add(randomBackground)
-				}
-			}
+            // We will try to at least have two new items every single day, to avoid showing already sold backgrounds every day
+            val neverSoldBeforeProfileDesigns = allProfileDesigns.filter {
+                DailyProfileShopItems.select {
+                    DailyProfileShopItems.item eq it[ProfileDesigns.id]
+                }.count() == 0L
+            }.toMutableList()
 
-			repeat(DAILY_PROFILE_DESIGNS_TARGET - selectedProfileDesigns.size) {
-				val randomBackground = allProfileDesigns.random()
-				allProfileDesigns.remove(randomBackground)
-				selectedProfileDesigns.add(randomBackground)
-			}
+            repeat(Math.min(NEW_ITEMS_TARGET, neverSoldBeforeProfileDesigns.size)) {
+                if (neverSoldBeforeProfileDesigns.isNotEmpty()) { // Because we repeat multiple times and remove the background from the list, we need to check if the list is empty inside the repeat
+                    val randomBackground = neverSoldBeforeProfileDesigns.random()
 
-			for (background in selectedProfileDesigns) {
-				DailyProfileShopItems.insert {
-					it[shop] = shopId
-					it[item] = background[ProfileDesigns.id]
-					it[tag] = if (DailyProfileShopItems.select { item eq background[ProfileDesigns.id] }.count() == 0L) { "website.dailyShop.new" } else null
-				}
-			}
-		}
-	}
+                    allProfileDesigns.remove(randomBackground)
+                    neverSoldBeforeProfileDesigns.remove(randomBackground)
+                    selectedProfileDesigns.add(randomBackground)
+                }
+            }
 
-	override fun run() {
-		logger.info { "Automatically updating the daily shop!" }
-		try {
-			generate(loritta)
-			logger.info { "Successfully updated the daily shop!" }
-		} catch (e: Exception) {
-			logger.warn(e) { "Something went wrong while updating the daily shop..." }
-		}
-	}
+            repeat(DAILY_PROFILE_DESIGNS_TARGET - selectedProfileDesigns.size) {
+                val randomBackground = allProfileDesigns.random()
+                allProfileDesigns.remove(randomBackground)
+                selectedProfileDesigns.add(randomBackground)
+            }
+
+            for (background in selectedProfileDesigns) {
+                DailyProfileShopItems.insert {
+                    it[shop] = shopId
+                    it[item] = background[ProfileDesigns.id]
+                    it[tag] =
+                        if (DailyProfileShopItems.select { item eq background[ProfileDesigns.id] }.count() == 0L) {
+                            "website.dailyShop.new"
+                        } else null
+                }
+            }
+        }
+    }
+
+    override fun run() {
+        logger.info { "Automatically updating the daily shop!" }
+        try {
+            generate(loritta)
+            logger.info { "Successfully updated the daily shop!" }
+        } catch (e: Exception) {
+            logger.warn(e) { "Something went wrong while updating the daily shop..." }
+        }
+    }
 }

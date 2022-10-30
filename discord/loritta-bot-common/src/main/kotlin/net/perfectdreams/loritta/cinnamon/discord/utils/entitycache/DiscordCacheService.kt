@@ -1,25 +1,16 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils.entitycache
 
-import dev.kord.common.entity.DiscordChannel
-import dev.kord.common.entity.DiscordEmoji
-import dev.kord.common.entity.DiscordGuildMember
-import dev.kord.common.entity.DiscordRole
-import dev.kord.common.entity.OverwriteType
-import dev.kord.common.entity.Permission
-import dev.kord.common.entity.Permissions
-import dev.kord.common.entity.Snowflake
+import dev.kord.common.entity.*
 import kotlinx.serialization.*
 import mu.KotlinLogging
+import net.perfectdreams.loritta.deviouscache.data.DeviousChannelData
+import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
+import net.perfectdreams.loritta.deviouscache.data.DeviousRoleData
+import net.perfectdreams.loritta.deviouscache.requests.GetGuildMemberRequest
+import net.perfectdreams.loritta.deviouscache.requests.GetVoiceStateRequest
+import net.perfectdreams.loritta.deviouscache.responses.GetGuildMemberResponse
+import net.perfectdreams.loritta.deviouscache.responses.GetVoiceStateResponse
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetAllByteArray
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hgetByteArray
-import net.perfectdreams.loritta.cinnamon.discord.utils.redis.hsetByteArrayOrDelIfMapIsEmpty
-import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
-import net.perfectdreams.loritta.deviousfun.cache.DeviousChannelData
-import net.perfectdreams.loritta.deviousfun.cache.DeviousGuildEmojiData
-import net.perfectdreams.loritta.deviousfun.cache.DeviousRoleData
-import net.perfectdreams.loritta.morenitta.cache.decode
-import net.perfectdreams.loritta.morenitta.cache.encode
 import org.jetbrains.exposed.sql.*
 import java.util.*
 
@@ -38,32 +29,13 @@ class DiscordCacheService(
     private val pudding = loritta.pudding
 
     suspend fun getDiscordEntitiesOfGuild(guildId: Snowflake): GuildEntities {
-        return loritta.redisConnection("get discord entities of guild $guildId") {
-            val roles = it.hgetAllByteArray(loritta.redisKeys.discordGuildRoles(guildId))
-                .values
-                .map {
-                    loritta.binaryCacheTransformers.roles.decode(it)
-                }
+        val guild = loritta.deviousFun.getGuildById(guildId)
 
-            val channelIds = it.smembers(loritta.redisKeys.discordGuildChannels(guildId))
-            val channels = it.hmget(loritta.redisKeys.discordChannels().toByteArray(Charsets.UTF_8), *channelIds.map { it.toByteArray(Charsets.UTF_8) }.toTypedArray())
-                .filterNotNull()
-                .map {
-                    loritta.binaryCacheTransformers.channels.decode(it)
-                }
-
-            val emojis = it.hgetAllByteArray(loritta.redisKeys.discordGuildEmojis(guildId))
-                .values
-                .map {
-                    loritta.binaryCacheTransformers.emojis.decode(it)
-                }
-
-            return@redisConnection GuildEntities(
-                roles,
-                channels,
-                emojis
-            )
-        }
+        return GuildEntities(
+            guild?.roles?.map { it.role } ?: emptyList(),
+            guild?.channels?.map { it.channel } ?: emptyList(),
+            guild?.emotes?.map { it.emoji } ?: emptyList()
+        )
     }
 
     /**
@@ -75,13 +47,7 @@ class DiscordCacheService(
      * Gets role informations of the following [roleIds] in [guildId]
      */
     suspend fun getRoles(guildId: Snowflake, roleIds: Collection<Snowflake>): List<DeviousRoleData> {
-        return loritta.redisConnection("get roles of guild $guildId") {
-            it.hgetAllByteArray(loritta.redisKeys.discordGuildRoles(guildId))
-                .filterKeys { Snowflake(it.toLong()) in roleIds }
-                .map {
-                    loritta.binaryCacheTransformers.roles.decode(it.value)
-                }
-        }
+        return loritta.deviousFun.getGuildById(guildId)?.roles?.map { it.role } ?: emptyList()
     }
 
     /**
@@ -91,7 +57,8 @@ class DiscordCacheService(
      *
      * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
      */
-    fun getLazyCachedLorittaPermissions(guildId: Snowflake): LazyCachedPermissions = GuildLazyCachedPermissions(rest, loritta, this, guildId, lorittaDiscordConfig.applicationId)
+    fun getLazyCachedLorittaPermissions(guildId: Snowflake): LazyCachedPermissions =
+        GuildLazyCachedPermissions(rest, loritta, this, guildId, lorittaDiscordConfig.applicationId)
 
     /**
      * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
@@ -100,7 +67,8 @@ class DiscordCacheService(
      *
      * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
      */
-    fun getLazyCachedPermissions(guildId: Snowflake, userId: Snowflake): LazyCachedPermissions = GuildLazyCachedPermissions(rest, loritta, this, guildId, userId)
+    fun getLazyCachedPermissions(guildId: Snowflake, userId: Snowflake): LazyCachedPermissions =
+        GuildLazyCachedPermissions(rest, loritta, this, guildId, userId)
 
     /**
      * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and with Loritta's user ID.
@@ -109,7 +77,8 @@ class DiscordCacheService(
      *
      * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
      */
-    fun getLazyCachedLorittaPermissions(guildId: Snowflake, channelId: Snowflake): LazyCachedPermissions = GuildChannelLazyCachedPermissions(rest, loritta, this, guildId, channelId, lorittaDiscordConfig.applicationId)
+    fun getLazyCachedLorittaPermissions(guildId: Snowflake, channelId: Snowflake): LazyCachedPermissions =
+        GuildChannelLazyCachedPermissions(rest, loritta, this, guildId, channelId, lorittaDiscordConfig.applicationId)
 
     /**
      * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
@@ -118,7 +87,8 @@ class DiscordCacheService(
      *
      * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
      */
-    fun getLazyCachedPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake): LazyCachedPermissions = GuildChannelLazyCachedPermissions(rest, loritta, this, guildId, channelId, userId)
+    fun getLazyCachedPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake): LazyCachedPermissions =
+        GuildChannelLazyCachedPermissions(rest, loritta, this, guildId, channelId, userId)
 
     /**
      * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
@@ -127,7 +97,8 @@ class DiscordCacheService(
      *
      * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
      */
-    suspend fun lorittaHasPermission(guildId: Snowflake, channelId: Snowflake, vararg permissions: Permission) = getLazyCachedLorittaPermissions(guildId, channelId).hasPermission(*permissions)
+    suspend fun lorittaHasPermission(guildId: Snowflake, channelId: Snowflake, vararg permissions: Permission) =
+        getLazyCachedLorittaPermissions(guildId, channelId).hasPermission(*permissions)
 
     /**
      * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
@@ -136,14 +107,20 @@ class DiscordCacheService(
      *
      * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
      */
-    suspend fun hasPermission(guildId: Snowflake, channelId: Snowflake, userId: Snowflake, vararg permissions: Permission) = getLazyCachedPermissions(guildId, channelId, userId).hasPermission(*permissions)
+    suspend fun hasPermission(
+        guildId: Snowflake,
+        channelId: Snowflake,
+        userId: Snowflake,
+        vararg permissions: Permission
+    ) = getLazyCachedPermissions(guildId, channelId, userId).hasPermission(*permissions)
 
     /**
      * Gets Loritta's permissions in [channelId] on [guildId].
      *
      * @see getPermissions
      */
-    suspend fun getLorittaPermissions(guildId: Snowflake, channelId: Snowflake) = getPermissions(guildId, channelId, lorittaDiscordConfig.applicationId)
+    suspend fun getLorittaPermissions(guildId: Snowflake, channelId: Snowflake) =
+        getPermissions(guildId, channelId, lorittaDiscordConfig.applicationId)
 
     /**
      * Gets [userId]'s permissions on [guildId].
@@ -154,47 +131,51 @@ class DiscordCacheService(
         // Create an empty permissions object
         var permissions = Permissions()
 
-        return loritta.redisConnection("get user $userId permissions in guild $guildId") {
-            val discordGuildMember = it
-                .hgetByteArray(loritta.redisKeys.discordGuildMembers(guildId), userId.toString())
-                ?: return@redisConnection GuildPermissionsResult( // They aren't in the server, no need to continue then
+        val memberData =
+            (loritta.deviousFun.rpc.execute(GetGuildMemberRequest(guildId, userId)) as? GetGuildMemberResponse)?.member
+                ?: return GuildPermissionsResult(
+                    // They aren't in the server, no need to continue then
                     permissions,
                     userNotInGuild = true,
                     missingRoles = false, // This is actually "Unknown"
                 )
 
-            val userRoleIds = loritta.binaryCacheTransformers.members.decode(discordGuildMember).roles
+        val userRoleIds = memberData.roles
 
-            val userRoles = userRoleIds.mapNotNull { snowflake ->
-                it.hgetByteArray(loritta.redisKeys.discordGuildRoles(guildId), snowflake.toString())
-            }.map { loritta.binaryCacheTransformers.roles.decode(it) }
+        val guild = loritta.deviousFun.getGuildById(guildId) ?: return GuildPermissionsResult(
+            // The guild doesn't exist
+            permissions,
+            userNotInGuild = true,
+            missingRoles = false, // This is actually "Unknown"
+        )
 
-            var missingRoles = false
+        val userRoles = guild.roles.filter { it.idSnowflake in userRoleIds }
 
-            // We are going to validate if there are any missing roles
-            for (userRoleId in userRoleIds) {
-                if (!userRoles.any { it.id == userRoleId }) {
-                    logger.warn { "Missing role $userRoleId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
-                    missingRoles = true
-                }
+        var missingRoles = false
+
+        // We are going to validate if there are any missing roles
+        for (userRoleId in userRoleIds) {
+            if (!userRoles.any { it.idSnowflake == userRoleId }) {
+                logger.warn { "Missing role $userRoleId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
+                missingRoles = true
+            }
+        }
+
+        // The order of the roles doesn't matter!
+        userRoles
+            .forEach {
+                // Keep "plus"'ing the permissions!
+                permissions = permissions.plus(it.permissions)
             }
 
-            // The order of the roles doesn't matter!
-            userRoles
-                .forEach {
-                    // Keep "plus"'ing the permissions!
-                    permissions = permissions.plus(it.permissions)
-                }
+        val entityIds = mutableSetOf(userId)
+        entityIds.addAll(userRoleIds.map { it })
 
-            val entityIds = mutableSetOf(userId)
-            entityIds.addAll(userRoleIds.map { it })
-
-            return@redisConnection GuildPermissionsResult(
-                permissions,
-                userNotInGuild = false,
-                missingRoles = missingRoles
-            )
-        }
+        return GuildPermissionsResult(
+            permissions,
+            userNotInGuild = false,
+            missingRoles = missingRoles
+        )
     }
 
     /**
@@ -202,98 +183,103 @@ class DiscordCacheService(
      *
      * @see getLorittaPermissions
      */
-    suspend fun getPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake): GuildChannelPermissionsResult {
+    suspend fun getPermissions(
+        guildId: Snowflake,
+        channelId: Snowflake,
+        userId: Snowflake
+    ): GuildChannelPermissionsResult {
         // Create an empty permissions object
         var permissions = Permissions()
 
-        return loritta.redisConnection("get user $userId permissions in $channelId in $guildId") {
-            val discordGuildMember = it
-                .hgetByteArray(loritta.redisKeys.discordGuildMembers(guildId), userId.toString())
-                ?: return@redisConnection GuildChannelPermissionsResult( // They aren't in the server, no need to continue then
+        val memberData =
+            (loritta.deviousFun.rpc.execute(GetGuildMemberRequest(guildId, userId)) as? GetGuildMemberResponse)?.member
+                ?: return GuildChannelPermissionsResult( // They aren't in the server, no need to continue then
                     permissions,
                     userNotInGuild = true,
                     missingRoles = false, // This is actually "Unknown"
-                    missingChannels = false // This is also "Unknown"
+                    missingChannels = false // This is actually "Unknown"
                 )
 
-            val userRoleIds = loritta.binaryCacheTransformers.members.decode(discordGuildMember).roles
+        val userRoleIds = memberData.roles
 
-            val userRoles = userRoleIds.mapNotNull { snowflake ->
-                it.hgetByteArray(loritta.redisKeys.discordGuildRoles(guildId), snowflake.toString())
-            }.map { loritta.binaryCacheTransformers.roles.decode(it) }
-
-            var missingRoles = false
-            var missingChannels = false
-
-            val guildChannel = it.hgetByteArray(loritta.redisKeys.discordChannels(), channelId.toString())
-                ?.let {
-                    loritta.binaryCacheTransformers.channels.decode(it)
-                }
-
-            // We are going to validate if there are any missing roles
-            for (userRoleId in userRoleIds) {
-                if (!userRoles.any { it.id == userRoleId }) {
-                    logger.warn { "Missing role $userRoleId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
-                    missingRoles = true
-                }
-            }
-
-            // And also validate if the channel is null
-            if (guildChannel == null) {
-                logger.warn { "Missing channel $channelId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
-                missingChannels = true
-            }
-
-            // The order of the roles doesn't matter!
-            userRoles
-                .forEach {
-                    // Keep "plus"'ing the permissions!
-                    permissions = permissions.plus(it.permissions)
-                }
-
-            val entityIds = mutableSetOf(userId)
-            entityIds.addAll(userRoleIds.map { it })
-
-            // Now we will get permission overwrites
-            val permissionOverwrites = guildChannel?.permissionOverwrites
-
-            // https://discord.com/developers/docs/topics/permissions#permission-overwrites
-            if (permissionOverwrites != null) {
-                // First, the "@everyone" role permission overwrite
-                val everyonePermissionOverwrite = permissionOverwrites.firstOrNull { it.id == guildId }
-                if (everyonePermissionOverwrite != null) {
-                    permissions = permissions.minus(everyonePermissionOverwrite.deny)
-                    permissions = permissions.plus(everyonePermissionOverwrite.allow)
-                }
-
-                // Then, permission overwrites for specific roles
-                val rolePermissionOverwrites = permissionOverwrites.filter {
-                    it.type == OverwriteType.Role
-                }.filter { it.id in entityIds }
-
-                for (permissionOverwrite in rolePermissionOverwrites) {
-                    permissions = permissions.minus(permissionOverwrite.deny)
-                    permissions = permissions.plus(permissionOverwrite.allow)
-                }
-
-                // And finally, permission overwrites for specific members
-                val memberPermissionOverwrites = permissionOverwrites.filter {
-                    it.type == OverwriteType.Member
-                }.filter { it.id in entityIds }
-
-                for (permissionOverwrite in memberPermissionOverwrites) {
-                    permissions = permissions.minus(permissionOverwrite.deny)
-                    permissions = permissions.plus(permissionOverwrite.allow)
-                }
-            }
-
-            return@redisConnection GuildChannelPermissionsResult(
+        val guild =
+            loritta.deviousFun.getGuildById(guildId) ?: return GuildChannelPermissionsResult( // The guild doesn't exist
                 permissions,
-                userNotInGuild = false,
-                missingRoles = missingRoles,
-                missingChannels = missingChannels
+                userNotInGuild = true,
+                missingRoles = false, // This is actually "Unknown"
+                missingChannels = false // This is actually "Unknown"
             )
+
+        val userRoles = guild.roles.filter { it.idSnowflake in userRoleIds }
+
+        var missingRoles = false
+        var missingChannels = false
+
+        val guildChannel = guild.channels.firstOrNull { it.idSnowflake == channelId }
+
+        // We are going to validate if there are any missing roles
+        for (userRoleId in userRoleIds) {
+            if (!userRoles.any { it.idSnowflake == userRoleId }) {
+                logger.warn { "Missing role $userRoleId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
+                missingRoles = true
+            }
         }
+
+        // And also validate if the channel is null
+        if (guildChannel == null) {
+            logger.warn { "Missing channel $channelId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
+            missingChannels = true
+        }
+
+        // The order of the roles doesn't matter!
+        userRoles
+            .forEach {
+                // Keep "plus"'ing the permissions!
+                permissions = permissions.plus(it.permissions)
+            }
+
+        val entityIds = mutableSetOf(userId)
+        entityIds.addAll(userRoleIds.map { it })
+
+        // Now we will get permission overwrites
+        val permissionOverwrites = guildChannel?.permissionOverwrites
+
+        // https://discord.com/developers/docs/topics/permissions#permission-overwrites
+        if (permissionOverwrites != null) {
+            // First, the "@everyone" role permission overwrite
+            val everyonePermissionOverwrite = permissionOverwrites.firstOrNull { it.id == guildId }
+            if (everyonePermissionOverwrite != null) {
+                permissions = permissions.minus(everyonePermissionOverwrite.deny)
+                permissions = permissions.plus(everyonePermissionOverwrite.allow)
+            }
+
+            // Then, permission overwrites for specific roles
+            val rolePermissionOverwrites = permissionOverwrites.filter {
+                it.type == OverwriteType.Role
+            }.filter { it.id in entityIds }
+
+            for (permissionOverwrite in rolePermissionOverwrites) {
+                permissions = permissions.minus(permissionOverwrite.deny)
+                permissions = permissions.plus(permissionOverwrite.allow)
+            }
+
+            // And finally, permission overwrites for specific members
+            val memberPermissionOverwrites = permissionOverwrites.filter {
+                it.type == OverwriteType.Member
+            }.filter { it.id in entityIds }
+
+            for (permissionOverwrite in memberPermissionOverwrites) {
+                permissions = permissions.minus(permissionOverwrite.deny)
+                permissions = permissions.plus(permissionOverwrite.allow)
+            }
+        }
+
+        return GuildChannelPermissionsResult(
+            permissions,
+            userNotInGuild = false,
+            missingRoles = missingRoles,
+            missingChannels = missingChannels
+        )
     }
 
     /**
@@ -304,72 +290,12 @@ class DiscordCacheService(
      * @return the voice channel ID, if they are connected to a voice channel
      */
     suspend fun getUserConnectedVoiceChannel(guildId: Snowflake, userId: Snowflake): Snowflake? {
-        return loritta.redisConnection("get voice channel of $userId in $guildId") {
-            it.hgetByteArray(loritta.redisKeys.discordGuildVoiceStates(guildId), userId.toString())
-                ?.let { loritta.binaryCacheTransformers.voiceStates.decode(it) }
-                ?.channelId
-        }
-    }
-
-    fun createOrUpdateGuild(
-        redisTransaction: redis.clients.jedis.Transaction,
-        guildId: Snowflake,
-        guildName: String,
-        guildIcon: String?,
-        guildOwnerId: Snowflake,
-        guildRoles: List<DiscordRole>,
-        guildChannels: List<DiscordChannel>?,
-        guildEmojis: List<DiscordEmoji>
-    ) {
-        // TODO: Where to store general info about the guild?
-        // Does not exist, let's insert it
-        /* DiscordGuilds.upsert(DiscordGuilds.id) {
-            it[DiscordGuilds.id] = guildIdAsLong
-            it[DiscordGuilds.name] = guildName
-            it[DiscordGuilds.icon] = guildIcon
-            it[DiscordGuilds.ownerId] = guildOwnerId.toLong()
-        } */
-
-        // Delete all because we want to upsert everything
-        redisTransaction.hsetByteArrayOrDelIfMapIsEmpty(
-            loritta.redisKeys.discordGuildRoles(guildId),
-            guildRoles.associate {
-                it.id.toString() to loritta.binaryCacheTransformers.roles.encode(DeviousRoleData.from(it))
-            }
-        )
-
-        if (guildChannels != null) {
-            redisTransaction.hsetByteArrayOrDelIfMapIsEmpty(
-                loritta.redisKeys.discordGuildChannels(guildId),
-                guildChannels.associate {
-                    it.id.toString() to loritta.binaryCacheTransformers.channels.encode(DeviousChannelData.from(guildId, it))
-                }
+        return (loritta.deviousFun.rpc.execute(
+            GetVoiceStateRequest(
+                guildId,
+                userId
             )
-        }
-
-        redisTransaction.hsetByteArrayOrDelIfMapIsEmpty(
-            loritta.redisKeys.discordGuildEmojis(guildId),
-            guildEmojis.associate {
-                // Guild Emojis always have an ID
-                it.id!!.toString() to loritta.binaryCacheTransformers.emojis.encode(DeviousGuildEmojiData.from(it))
-            }
-        )
-    }
-
-    // https://stackoverflow.com/a/58310635/7271796
-    fun <T> Collection<T>.containsSameElements(other: Collection<T>): Boolean {
-        // check collections aren't same
-        if (this !== other) {
-            // fast check of sizes
-            if (this.size != other.size) return false
-
-            // check other contains next element from this
-            // all "it" must be in "other", if there isn't, then it should return false
-            // (Kotlin fast fails in the "all" check!)
-            return this.all { it in other }
-        }
-        // collections are same or they contain the same elements
-        return true
+        ) as? GetVoiceStateResponse)?.channelId
     }
 
     data class GuildPermissionsResult(

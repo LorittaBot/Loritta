@@ -13,13 +13,13 @@ class GeneralConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
 
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         return jsonObject(
-                "localeId" to serverConfig.localeId,
-                "commandPrefix" to serverConfig.commandPrefix,
-                "deleteMessageAfterCommand" to serverConfig.deleteMessageAfterCommand,
-                "warnOnUnknownCommand" to serverConfig.warnOnUnknownCommand,
-                "blacklistedChannels" to serverConfig.blacklistedChannels.toList().toJsonArray(),
-                "warnIfBlacklisted" to serverConfig.warnIfBlacklisted,
-                "blacklistedWarning" to serverConfig.blacklistedWarning
+            "localeId" to serverConfig.localeId,
+            "commandPrefix" to serverConfig.commandPrefix,
+            "deleteMessageAfterCommand" to serverConfig.deleteMessageAfterCommand,
+            "warnOnUnknownCommand" to serverConfig.warnOnUnknownCommand,
+            "blacklistedChannels" to serverConfig.blacklistedChannels.toList().toJsonArray(),
+            "warnIfBlacklisted" to serverConfig.warnIfBlacklisted,
+            "blacklistedWarning" to serverConfig.blacklistedWarning
         )
     }
 

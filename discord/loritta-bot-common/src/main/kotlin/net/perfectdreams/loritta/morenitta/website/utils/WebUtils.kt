@@ -42,7 +42,15 @@ fun DIV.adWrapper(callback: DIV.() -> Unit) {
     }
 }
 
-fun DIV.imgSrcSet(path: String, fileName: String, sizes: String, max: Int, min: Int, stepInt: Int, block : IMG.() -> Unit = {}) {
+fun DIV.imgSrcSet(
+    path: String,
+    fileName: String,
+    sizes: String,
+    max: Int,
+    min: Int,
+    stepInt: Int,
+    block: IMG.() -> Unit = {}
+) {
     val srcsets = mutableListOf<String>()
     val split = fileName.split(".")
     val ext = split.last()
@@ -62,7 +70,7 @@ fun DIV.imgSrcSet(path: String, fileName: String, sizes: String, max: Int, min: 
     )
 }
 
-fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block : IMG.() -> Unit = {})  {
+fun DIV.imgSrcSet(filePath: String, sizes: String, srcset: String, block: IMG.() -> Unit = {}) {
     img(src = filePath) {
         style = "width: auto;"
         attributes["sizes"] = sizes
@@ -157,10 +165,23 @@ fun DIV.generateNitroPayAd(adSlot: String, displayTypes: List<NitroPayAdDisplay>
     }
 }
 
-fun DIV.generateNitroPayVideoAdOrSponsor(loritta: LorittaBot, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
-        = generateNitroPayVideoAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
+fun DIV.generateNitroPayVideoAdOrSponsor(
+    loritta: LorittaBot,
+    sponsorId: Int,
+    adSlot: String,
+    adName: String? = null,
+    showIfSponsorIsMissing: Boolean = true,
+    showOnMobile: Boolean = true
+) = generateNitroPayVideoAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
 
-fun DIV.generateNitroPayVideoAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
+fun DIV.generateNitroPayVideoAdOrSponsor(
+    sponsors: List<Sponsor>,
+    sponsorId: Int,
+    adSlot: String,
+    adName: String? = null,
+    showIfSponsorIsMissing: Boolean = true,
+    showOnMobile: Boolean = true
+) {
     val sponsor = sponsors.getOrNull(sponsorId)
 
     if (sponsor != null) {
@@ -170,10 +191,23 @@ fun DIV.generateNitroPayVideoAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int
     }
 }
 
-fun DIV.generateAdOrSponsor(loritta: LorittaBot, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true)
-        = generateAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
+fun DIV.generateAdOrSponsor(
+    loritta: LorittaBot,
+    sponsorId: Int,
+    adSlot: String,
+    adName: String? = null,
+    showIfSponsorIsMissing: Boolean = true,
+    showOnMobile: Boolean = true
+) = generateAdOrSponsor(loritta.sponsors, sponsorId, adSlot, adName, showIfSponsorIsMissing)
 
-fun DIV.generateAdOrSponsor(sponsors: List<Sponsor>, sponsorId: Int, adSlot: String, adName: String? = null, showIfSponsorIsMissing: Boolean = true, showOnMobile: Boolean = true) {
+fun DIV.generateAdOrSponsor(
+    sponsors: List<Sponsor>,
+    sponsorId: Int,
+    adSlot: String,
+    adName: String? = null,
+    showIfSponsorIsMissing: Boolean = true,
+    showOnMobile: Boolean = true
+) {
     val sponsor = sponsors.getOrNull(sponsorId)
 
     if (sponsor != null) {
@@ -205,10 +239,10 @@ fun DIV.generateHowToSponsorButton(locale: BaseLocale) {
         style = "justify-content: end;"
         div {
             style = "font-size: 0.8em; margin: 8px;"
-            + (locale["website.sponsors.wantYourServerHere"] + " ")
+            +(locale["website.sponsors.wantYourServerHere"] + " ")
             a(href = "/sponsors") {
                 span(classes = "sponsor-button") {
-                    + "Premium Slots"
+                    +"Premium Slots"
                 }
             }
         }

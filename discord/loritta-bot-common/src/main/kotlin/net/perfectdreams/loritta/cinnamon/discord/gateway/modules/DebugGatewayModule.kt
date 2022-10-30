@@ -4,10 +4,10 @@ import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.MessageCreate
 import kotlinx.datetime.Clock
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.HostnameUtils
-import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class DebugGatewayModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
     companion object {
@@ -20,6 +20,7 @@ class DebugGatewayModule(private val m: LorittaBot) : ProcessDiscordEventsModule
             is MessageCreate -> {
                 handleDebugGateway(context, event)
             }
+
             else -> {}
         }
         return ModuleResult.Continue

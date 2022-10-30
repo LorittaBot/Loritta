@@ -15,7 +15,11 @@ import java.awt.Rectangle
 import java.awt.image.BufferedImage
 import java.io.File
 
-class AtendenteCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("atendente"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class AtendenteCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("atendente"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.atendente"
     }

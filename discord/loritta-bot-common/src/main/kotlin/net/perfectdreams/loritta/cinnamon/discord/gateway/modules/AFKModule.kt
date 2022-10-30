@@ -6,14 +6,13 @@ import dev.kord.rest.builder.message.create.allowedMentions
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class AFKModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
     override suspend fun processEvent(context: GatewayEventContext): ModuleResult {
@@ -22,6 +21,7 @@ class AFKModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
             is MessageCreate -> {
                 handleAFK(context.event)
             }
+
             else -> {}
         }
 
@@ -86,7 +86,18 @@ class AFKModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
                             if (afkReason != null) {
                                 append(" ")
                                 // To make things simpler, we will use empty set
-                                append(i18nContext.get(I18nKeysData.Modules.Afk.AfkReason(cleanUpForOutput(m, guildId, emptySet(), afkReason))))
+                                append(
+                                    i18nContext.get(
+                                        I18nKeysData.Modules.Afk.AfkReason(
+                                            cleanUpForOutput(
+                                                m,
+                                                guildId,
+                                                emptySet(),
+                                                afkReason
+                                            )
+                                        )
+                                    )
+                                )
                             }
                         },
                         Emotes.LoriSleeping

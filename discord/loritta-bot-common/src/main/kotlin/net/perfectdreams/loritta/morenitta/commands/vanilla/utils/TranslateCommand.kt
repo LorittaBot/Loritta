@@ -9,32 +9,37 @@ import net.perfectdreams.loritta.morenitta.utils.translate.GoogleTranslateUtils
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class TranslateCommand(loritta: LorittaBot) : AbstractCommand(loritta, "traduzir", listOf("translate"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.translate.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.command.translate.examples")
+class TranslateCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "traduzir",
+    listOf("translate"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.UTILS
+) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.translate.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.command.translate.examples")
 
-	// TODO: Fix Usage
+    // TODO: Fix Usage
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
-		if (context.args.size >= 2) {
-			val strLang = context.args[0]
-			context.args[0] = "" // Super workaround
-			val text = context.args.joinToString(" ")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        if (context.args.size >= 2) {
+            val strLang = context.args[0]
+            context.args[0] = "" // Super workaround
+            val text = context.args.joinToString(" ")
 
-			try {
-				val translatedText = GoogleTranslateUtils.translate(text, "auto", strLang)
+            try {
+                val translatedText = GoogleTranslateUtils.translate(text, "auto", strLang)
 
-				context.reply(
-                        LorittaReply(
-                                translatedText!!.escapeMentions(),
-                                "\uD83D\uDDFA"
-                        )
-				)
-			} catch (e: Exception) {
-				logger.warn(e) { "Error while translating $text to $strLang!" }
-			}
-		} else {
-			context.explain()
-		}
-	}
+                context.reply(
+                    LorittaReply(
+                        translatedText!!.escapeMentions(),
+                        "\uD83D\uDDFA"
+                    )
+                )
+            } catch (e: Exception) {
+                logger.warn(e) { "Error while translating $text to $strLang!" }
+            }
+        } else {
+            context.explain()
+        }
+    }
 }

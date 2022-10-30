@@ -17,29 +17,37 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import java.util.*
 import kotlin.collections.set
 
-class ConfigurePermissionsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/permissions") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
+class ConfigurePermissionsRoute(loritta: LorittaBot) :
+    RequiresGuildAuthLocalizedRoute(loritta, "/configure/permissions") {
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        loritta as LorittaBot
 
-		val variables = call.legacyVariables(loritta, locale)
+        val variables = call.legacyVariables(loritta, locale)
 
-		variables["saveType"] = "permissions"
-		val roleConfig = mutableMapOf<Role, MutableMap<String, Boolean>>()
-		val rolePermissions = LorittaUser.loadGuildRolesLorittaPermissions(loritta, serverConfig, guild)
+        variables["saveType"] = "permissions"
+        val roleConfig = mutableMapOf<Role, MutableMap<String, Boolean>>()
+        val rolePermissions = LorittaUser.loadGuildRolesLorittaPermissions(loritta, serverConfig, guild)
 
-		for (role in guild.roles) {
-			val permissions = rolePermissions[role.idLong] ?: EnumSet.noneOf(LorittaPermission::class.java)
-			val permissionMap = mutableMapOf<String, Boolean>()
+        for (role in guild.roles) {
+            val permissions = rolePermissions[role.idLong] ?: EnumSet.noneOf(LorittaPermission::class.java)
+            val permissionMap = mutableMapOf<String, Boolean>()
 
-			for (permission in LorittaPermission.values()) {
-				permissionMap[permission.internalName] = permissions.contains(permission)
-			}
+            for (permission in LorittaPermission.values()) {
+                permissionMap[permission.internalName] = permissions.contains(permission)
+            }
 
-			roleConfig[role] = permissionMap
-		}
+            roleConfig[role] = permissionMap
+        }
 
-		variables["roleConfigs"] = roleConfig
+        variables["roleConfigs"] = roleConfig
 
-		call.respondHtml(evaluate("permissions.html", variables))
-	}
+        call.respondHtml(evaluate("permissions.html", variables))
+    }
 }

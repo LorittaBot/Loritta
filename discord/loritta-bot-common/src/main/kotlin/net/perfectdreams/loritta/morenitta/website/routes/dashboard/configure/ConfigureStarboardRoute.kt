@@ -14,35 +14,42 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import kotlin.collections.set
 
 class ConfigureStarboardRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/starboard") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        loritta as LorittaBot
 
-		val starboardConfig = loritta.newSuspendedTransaction {
-			serverConfig.starboardConfig
-		}
+        val starboardConfig = loritta.newSuspendedTransaction {
+            serverConfig.starboardConfig
+        }
 
-		val variables = call.legacyVariables(loritta, locale)
+        val variables = call.legacyVariables(loritta, locale)
 
-		variables["saveType"] = "starboard"
-		variables["serverConfig"] = FakeServerConfig(
-				FakeServerConfig.FakeStarboardConfig(
-						starboardConfig?.enabled ?: false,
-						starboardConfig?.starboardChannelId?.toString(),
-						starboardConfig?.requiredStars ?: 1
-				)
-		)
+        variables["saveType"] = "starboard"
+        variables["serverConfig"] = FakeServerConfig(
+            FakeServerConfig.FakeStarboardConfig(
+                starboardConfig?.enabled ?: false,
+                starboardConfig?.starboardChannelId?.toString(),
+                starboardConfig?.requiredStars ?: 1
+            )
+        )
 
-		call.respondHtml(evaluate("starboard.html", variables))
-	}
+        call.respondHtml(evaluate("starboard.html", variables))
+    }
 
-	/**
-	 * Fake Server Config for Pebble, in the future this will be removed
-	 */
-	private class FakeServerConfig(val starboardConfig: FakeStarboardConfig) {
-		class FakeStarboardConfig(
-				val isEnabled: Boolean,
-				val starboardId: String?,
-				val requiredStars: Int
-		)
-	}
+    /**
+     * Fake Server Config for Pebble, in the future this will be removed
+     */
+    private class FakeServerConfig(val starboardConfig: FakeStarboardConfig) {
+        class FakeStarboardConfig(
+            val isEnabled: Boolean,
+            val starboardId: String?,
+            val requiredStars: Int
+        )
+    }
 }

@@ -11,30 +11,30 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object SponsorManager {
-	fun retrieveActiveSponsorsFromDatabase(loritta: LorittaBot): List<Sponsor> {
-		val activeSponsors = runBlocking {
-			loritta.pudding.transaction {
-				getActiveSponsors()
-			}
-		}
+    fun retrieveActiveSponsorsFromDatabase(loritta: LorittaBot): List<Sponsor> {
+        val activeSponsors = runBlocking {
+            loritta.pudding.transaction {
+                getActiveSponsors()
+            }
+        }
 
-		return activeSponsors.map {
-			Sponsor(
-					it[Sponsors.name],
-					it[Sponsors.slug],
-					it[Payments.money],
-					it[Sponsors.link],
-					it[Sponsors.banners]
-			)
-		}
-	}
+        return activeSponsors.map {
+            Sponsor(
+                it[Sponsors.name],
+                it[Sponsors.slug],
+                it[Payments.money],
+                it[Sponsors.link],
+                it[Sponsors.banners]
+            )
+        }
+    }
 
-	fun getActiveSponsors(): List<ResultRow> {
-		return (Sponsors innerJoin Payments)
-				.select {
-					Payments.expiresAt greaterEq System.currentTimeMillis() and (Sponsors.enabled eq true)
-				}
-				.orderBy(Payments.money, SortOrder.DESC)
-				.toMutableList()
-	}
+    fun getActiveSponsors(): List<ResultRow> {
+        return (Sponsors innerJoin Payments)
+            .select {
+                Payments.expiresAt greaterEq System.currentTimeMillis() and (Sponsors.enabled eq true)
+            }
+            .orderBy(Payments.money, SortOrder.DESC)
+            .toMutableList()
+    }
 }

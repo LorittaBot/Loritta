@@ -14,20 +14,29 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuth
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.user.PostUserReputationsRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class PostReputationMessageRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/send-reputation-message") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
+class PostReputationMessageRoute(loritta: LorittaBot) :
+    RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/send-reputation-message") {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
+        val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()) }
 
-		val guildId = json["guildId"].string
-		val channelId = json["channelId"].string
-		val giverId = json["giverId"].string
-		val receiverId = json["receiverId"].string
-		val reputationCount = json["reputationCount"].int
+        val guildId = json["guildId"].string
+        val channelId = json["channelId"].string
+        val giverId = json["giverId"].string
+        val receiverId = json["receiverId"].string
+        val reputationCount = json["reputationCount"].int
 
-		val profile = loritta.getOrCreateLorittaProfile(giverId)
+        val profile = loritta.getOrCreateLorittaProfile(giverId)
 
-		PostUserReputationsRoute.sendReputationReceivedMessage(loritta, guildId, channelId, giverId, profile, receiverId, reputationCount)
+        PostUserReputationsRoute.sendReputationReceivedMessage(
+            loritta,
+            guildId,
+            channelId,
+            giverId,
+            profile,
+            receiverId,
+            reputationCount
+        )
 
-		call.respondJson(jsonObject())
-	}
+        call.respondJson(jsonObject())
+    }
 }

@@ -10,56 +10,56 @@ import net.perfectdreams.sequins.ktor.BaseRoute
 import java.lang.management.ManagementFactory
 
 class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/status") {
-	override suspend fun onRequest(call: ApplicationCall) {
-		val currentShard = loritta.lorittaCluster
+    override suspend fun onRequest(call: ApplicationCall) {
+        val currentShard = loritta.lorittaCluster
 
-		val mb = 1024 * 1024
-		val runtime = Runtime.getRuntime()
-		val usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / mb
-		val freeMemory = runtime.freeMemory() / mb
-		val maxMemory = runtime.maxMemory() / mb
-		val totalMemory = runtime.totalMemory() / mb
+        val mb = 1024 * 1024
+        val runtime = Runtime.getRuntime()
+        val usedMemory = (runtime.totalMemory() - runtime.freeMemory()) / mb
+        val freeMemory = runtime.freeMemory() / mb
+        val maxMemory = runtime.maxMemory() / mb
+        val totalMemory = runtime.totalMemory() / mb
 
-		val jsonObject = jsonObject(
-			"id" to currentShard.id,
-			"name" to currentShard.name,
-			"versions" to jsonObject(
-				"kotlin" to KotlinVersion.CURRENT.toString(),
-				"java" to System.getProperty("java.version")
-			),
-			"memory" to jsonObject(
-				"used" to usedMemory,
-				"free" to freeMemory,
-				"max" to maxMemory,
-				"total" to totalMemory
-			),
-			"threadCount" to ManagementFactory.getThreadMXBean().threadCount,
-			// TODO - DeviousFun
-			// "globalRateLimitHits" to loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute(),
-			"isIgnoringRequests" to loritta.rateLimitChecker.checkIfRequestShouldBeIgnored(),
-			"pendingMessages" to loritta.pendingMessages.size,
-			"minShard" to currentShard.minShard,
-			"maxShard" to currentShard.maxShard,
-			"uptime" to ManagementFactory.getRuntimeMXBean().uptime
-		)
+        val jsonObject = jsonObject(
+            "id" to currentShard.id,
+            "name" to currentShard.name,
+            "versions" to jsonObject(
+                "kotlin" to KotlinVersion.CURRENT.toString(),
+                "java" to System.getProperty("java.version")
+            ),
+            "memory" to jsonObject(
+                "used" to usedMemory,
+                "free" to freeMemory,
+                "max" to maxMemory,
+                "total" to totalMemory
+            ),
+            "threadCount" to ManagementFactory.getThreadMXBean().threadCount,
+            // TODO - DeviousFun
+            // "globalRateLimitHits" to loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute(),
+            "isIgnoringRequests" to loritta.rateLimitChecker.checkIfRequestShouldBeIgnored(),
+            "pendingMessages" to loritta.pendingMessages.size,
+            "minShard" to currentShard.minShard,
+            "maxShard" to currentShard.maxShard,
+            "uptime" to ManagementFactory.getRuntimeMXBean().uptime
+        )
 
-		val array = jsonArray()
+        val array = jsonArray()
 
-		// TODO - DeviousFun
-		for (shard in loritta.lorittaShards.getShards()) {
-			array.add(
-				jsonObject(
-					"id" to shard.shardId,
-					"ping" to shard.ping.value?.inWholeMilliseconds,
-					// "status" to shard.status.toString(),
-					// "guildCount" to shard.guildCache.size(),
-					// "userCount" to shard.userCache.size()
-				)
-			)
-		}
+        // TODO - DeviousFun
+        for (shard in loritta.lorittaShards.getShards()) {
+            array.add(
+                jsonObject(
+                    "id" to shard.shardId,
+                    "ping" to shard.ping.value?.inWholeMilliseconds,
+                    // "status" to shard.status.toString(),
+                    // "guildCount" to shard.guildCache.size(),
+                    // "userCount" to shard.userCache.size()
+                )
+            )
+        }
 
-		jsonObject["shards"] = array
+        jsonObject["shards"] = array
 
-		call.respondJson(jsonObject)
-	}
+        call.respondJson(jsonObject)
+    }
 }

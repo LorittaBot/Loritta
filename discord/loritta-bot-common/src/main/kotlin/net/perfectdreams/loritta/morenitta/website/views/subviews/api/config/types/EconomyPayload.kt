@@ -6,7 +6,12 @@ import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 
 class EconomyPayload : ConfigPayloadType("economy") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
-		// applyReflection(payload.economyConfig)
-	}
+    override fun process(
+        payload: JsonObject,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        serverConfig: ServerConfig,
+        guild: Guild
+    ) {
+        // applyReflection(payload.economyConfig)
+    }
 }

@@ -12,10 +12,15 @@ import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.*
 
-class BomDiaECiaTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top local", "bd&c top local", "bdc top local"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class BomDiaECiaTopLocalCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("bomdiaecia top local", "bd&c top local", "bdc top local"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.bomdiaeciatoplocal"
     }
+
     override fun command() = create {
         localizedDescription("$LOCALE_PREFIX.description")
 

@@ -25,7 +25,10 @@ class TwitterConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                 TrackedTwitterAccounts.guildId eq guild.idLong
             }
 
-            val accounts = Json.decodeFromString(ListSerializer(TrackedTwitterAccount.serializer()), payload["accounts"].array.toString())
+            val accounts = Json.decodeFromString(
+                ListSerializer(TrackedTwitterAccount.serializer()),
+                payload["accounts"].array.toString()
+            )
 
             for (account in accounts) {
                 TrackedTwitterAccounts.insert {
@@ -44,14 +47,14 @@ class TwitterConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                 TrackedTwitterAccounts.guildId eq guild.idLong
             }.map {
                 TrackedTwitterAccount(
-                        it[TrackedTwitterAccounts.channelId],
-                        it[TrackedTwitterAccounts.twitterAccountId],
-                        it[TrackedTwitterAccounts.message]
+                    it[TrackedTwitterAccounts.channelId],
+                    it[TrackedTwitterAccounts.twitterAccountId],
+                    it[TrackedTwitterAccounts.message]
                 )
             }
 
             JsonParser.parseString(
-                    Json.encodeToString(ListSerializer(TrackedTwitterAccount.serializer()), trackedTwitterAccounts)
+                Json.encodeToString(ListSerializer(TrackedTwitterAccount.serializer()), trackedTwitterAccounts)
             )
         }
     }

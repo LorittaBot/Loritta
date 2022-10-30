@@ -4,19 +4,18 @@ import dev.kord.common.Color
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.optional.value
 import dev.kord.rest.request.KtorRequestException
-import dev.kord.rest.service.RestClient
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeys
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 
 class ChannelInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -111,6 +110,7 @@ class ChannelInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lo
                             inline = true
                         }
                 }
+
                 ChannelType.PublicGuildThread, ChannelType.PrivateThread -> {
                     field {
                         name = "${Emotes.PageFacingUp} " + context.i18nContext.get(
@@ -162,6 +162,7 @@ class ChannelInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lo
                         }
                     }
                 }
+
                 else -> {} // For now let's ignore them
             }
 
@@ -183,14 +184,16 @@ class ChannelInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lo
 
             if (channel.position.value != null)
                 field {
-                    name = "${Emotes.Trophy} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.Position)
+                    name =
+                        "${Emotes.Trophy} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.Position)
                     value = "${channel.position.value.toString()}º"
 
                     inline = true
                 }
 
             field {
-                name = "${Emotes.LoriCalendar} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.CreatedAt)
+                name =
+                    "${Emotes.LoriCalendar} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Channel.Info.CreatedAt)
                 value = "<t:${channel.id.timestamp.toEpochMilliseconds() / 1000}:D>"
 
                 inline = true

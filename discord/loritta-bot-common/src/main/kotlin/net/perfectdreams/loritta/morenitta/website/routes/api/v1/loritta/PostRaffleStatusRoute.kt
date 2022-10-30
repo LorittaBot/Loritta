@@ -20,82 +20,82 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuth
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
 class PostRaffleStatusRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/raffle") {
-	companion object {
-		val logger = KotlinLogging.logger {}
-	}
+    companion object {
+        val logger = KotlinLogging.logger {}
+    }
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
+        val json = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
-		val userId = json["userId"].long
-		val quantity = json["quantity"].int
-		val localeId = json["localeId"].string
-		val currentUniqueId = RaffleThread.raffleRandomUniqueId
+        val userId = json["userId"].long
+        val quantity = json["quantity"].int
+        val localeId = json["localeId"].string
+        val currentUniqueId = RaffleThread.raffleRandomUniqueId
 
-		RaffleThread.buyingOrGivingRewardsMutex.withLock {
-			if (currentUniqueId != RaffleThread.raffleRandomUniqueId || !RaffleThread.isReady) {
-				call.respondJson(
-					jsonObject(
-						"status" to LoraffleCommand.BuyRaffleTicketStatus.STALE_RAFFLE_DATA.toString()
-					)
-				)
-				return@withLock
-			}
+        RaffleThread.buyingOrGivingRewardsMutex.withLock {
+            if (currentUniqueId != RaffleThread.raffleRandomUniqueId || !RaffleThread.isReady) {
+                call.respondJson(
+                    jsonObject(
+                        "status" to LoraffleCommand.BuyRaffleTicketStatus.STALE_RAFFLE_DATA.toString()
+                    )
+                )
+                return@withLock
+            }
 
-			val currentUserTicketQuantity = RaffleThread.userIds.count { it == userId }
+            val currentUserTicketQuantity = RaffleThread.userIds.count { it == userId }
 
-			if (currentUserTicketQuantity + quantity > LoraffleCommand.MAX_TICKETS_BY_USER_PER_ROUND) {
-				if (currentUserTicketQuantity == LoraffleCommand.MAX_TICKETS_BY_USER_PER_ROUND) {
-					call.respondJson(
-						jsonObject(
-							"status" to LoraffleCommand.BuyRaffleTicketStatus.THRESHOLD_EXCEEDED.toString()
-						)
-					)
-				} else {
-					call.respondJson(
-						jsonObject(
-							"status" to LoraffleCommand.BuyRaffleTicketStatus.TOO_MANY_TICKETS.toString(),
-							"ticketCount" to currentUserTicketQuantity
-						)
-					)
-				}
-				return
-			}
+            if (currentUserTicketQuantity + quantity > LoraffleCommand.MAX_TICKETS_BY_USER_PER_ROUND) {
+                if (currentUserTicketQuantity == LoraffleCommand.MAX_TICKETS_BY_USER_PER_ROUND) {
+                    call.respondJson(
+                        jsonObject(
+                            "status" to LoraffleCommand.BuyRaffleTicketStatus.THRESHOLD_EXCEEDED.toString()
+                        )
+                    )
+                } else {
+                    call.respondJson(
+                        jsonObject(
+                            "status" to LoraffleCommand.BuyRaffleTicketStatus.TOO_MANY_TICKETS.toString(),
+                            "ticketCount" to currentUserTicketQuantity
+                        )
+                    )
+                }
+                return
+            }
 
-			val requiredCount = quantity.toLong() * 250
-			logger.info("$userId irá comprar $quantity tickets por ${requiredCount}!")
+            val requiredCount = quantity.toLong() * 250
+            logger.info("$userId irá comprar $quantity tickets por ${requiredCount}!")
 
-			val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
+            val lorittaProfile = loritta.getOrCreateLorittaProfile(userId)
 
-			if (lorittaProfile.money >= requiredCount) {
-				loritta.newSuspendedTransaction {
-					lorittaProfile.takeSonhosAndAddToTransactionLogNested(
-						requiredCount,
-						SonhosPaymentReason.RAFFLE
-					)
-				}
+            if (lorittaProfile.money >= requiredCount) {
+                loritta.newSuspendedTransaction {
+                    lorittaProfile.takeSonhosAndAddToTransactionLogNested(
+                        requiredCount,
+                        SonhosPaymentReason.RAFFLE
+                    )
+                }
 
-				for (i in 0 until quantity) {
-					RaffleThread.userIds.add(userId)
-				}
+                for (i in 0 until quantity) {
+                    RaffleThread.userIds.add(userId)
+                }
 
-				RaffleThread.logger.info("${userId} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.money + requiredCount}) sonhos!")
+                RaffleThread.logger.info("${userId} comprou $quantity tickets por ${requiredCount}! (Antes ele possuia ${lorittaProfile.money + requiredCount}) sonhos!")
 
-				loritta.raffleThread.save()
+                loritta.raffleThread.save()
 
-				call.respondJson(
-					jsonObject(
-						"status" to LoraffleCommand.BuyRaffleTicketStatus.SUCCESS.toString()
-					)
-				)
-			} else {
-				call.respondJson(
-					jsonObject(
-						"status" to LoraffleCommand.BuyRaffleTicketStatus.NOT_ENOUGH_MONEY.toString(),
-						"canOnlyPay" to requiredCount - lorittaProfile.money
-					)
-				)
-			}
-		}
-	}
+                call.respondJson(
+                    jsonObject(
+                        "status" to LoraffleCommand.BuyRaffleTicketStatus.SUCCESS.toString()
+                    )
+                )
+            } else {
+                call.respondJson(
+                    jsonObject(
+                        "status" to LoraffleCommand.BuyRaffleTicketStatus.NOT_ENOUGH_MONEY.toString(),
+                        "canOnlyPay" to requiredCount - lorittaProfile.money
+                    )
+                )
+            }
+        }
+    }
 }

@@ -133,8 +133,12 @@ abstract class LocalizedApplicationCommandOptions(val loritta: LorittaBot) : App
         name: StringI18nData,
         value: ChoiceableType,
         block: CommandChoiceBuilder<ChoiceableType>.() -> (Unit) = {}
-    ) = choice(languageManager.defaultI18nContext.get(name).shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length), value) {
-        nameLocalizations = SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, name)
+    ) = choice(
+        languageManager.defaultI18nContext.get(name)
+            .shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length), value
+    ) {
+        nameLocalizations =
+            SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, name)
         block.invoke(this)
     }
 
@@ -190,9 +194,11 @@ abstract class LocalizedApplicationCommandOptions(val loritta: LorittaBot) : App
             register(it)
         }
 
-    fun <T, ChoiceableType> ChoiceableCommandOptionBuilder<T, ChoiceableType>.autocomplete(loritta: LorittaBot, block: suspend (AutocompleteContext, FocusedCommandOption) -> (Map<String, ChoiceableType>))
-            = autocomplete(
-        object: CinnamonAutocompleteHandler<ChoiceableType>(loritta) {
+    fun <T, ChoiceableType> ChoiceableCommandOptionBuilder<T, ChoiceableType>.autocomplete(
+        loritta: LorittaBot,
+        block: suspend (AutocompleteContext, FocusedCommandOption) -> (Map<String, ChoiceableType>)
+    ) = autocomplete(
+        object : CinnamonAutocompleteHandler<ChoiceableType>(loritta) {
             override suspend fun handle(
                 context: AutocompleteContext,
                 focusedOption: FocusedCommandOption
@@ -202,15 +208,15 @@ abstract class LocalizedApplicationCommandOptions(val loritta: LorittaBot) : App
         }
     )
 
-    fun <T, ChoiceableType> ChoiceableCommandOptionBuilder<T, ChoiceableType>.cinnamonAutocomplete(block: suspend (AutocompleteContext, FocusedCommandOption) -> (Map<String, ChoiceableType>))
-            = autocomplete(
-        object: CinnamonAutocompleteHandler<ChoiceableType>(loritta) {
-            override suspend fun handle(
-                context: AutocompleteContext,
-                focusedOption: FocusedCommandOption
-            ): Map<String, ChoiceableType> {
-                return block.invoke(context, focusedOption)
+    fun <T, ChoiceableType> ChoiceableCommandOptionBuilder<T, ChoiceableType>.cinnamonAutocomplete(block: suspend (AutocompleteContext, FocusedCommandOption) -> (Map<String, ChoiceableType>)) =
+        autocomplete(
+            object : CinnamonAutocompleteHandler<ChoiceableType>(loritta) {
+                override suspend fun handle(
+                    context: AutocompleteContext,
+                    focusedOption: FocusedCommandOption
+                ): Map<String, ChoiceableType> {
+                    return block.invoke(context, focusedOption)
+                }
             }
-        }
-    )
+        )
 }

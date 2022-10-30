@@ -8,7 +8,8 @@ import net.perfectdreams.loritta.cinnamon.pudding.data.CachedUserInfo
 import net.perfectdreams.loritta.cinnamon.pudding.data.SonhosBundlePurchaseSonhosTransaction
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 
-object SonhosBundlePurchaseSonhosTransactionTransformer : SonhosTransactionTransformer<SonhosBundlePurchaseSonhosTransaction> {
+object SonhosBundlePurchaseSonhosTransactionTransformer :
+    SonhosTransactionTransformer<SonhosBundlePurchaseSonhosTransaction> {
     override suspend fun transform(
         loritta: LorittaBot,
         i18nContext: I18nContext,

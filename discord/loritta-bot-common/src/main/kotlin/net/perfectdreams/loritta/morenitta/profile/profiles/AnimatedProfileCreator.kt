@@ -9,7 +9,8 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileGuildInfoData
 import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import java.awt.image.BufferedImage
 
-abstract class AnimatedProfileCreator(loritta: LorittaBot, internalName: String) : ProfileCreator(loritta, internalName) {
+abstract class AnimatedProfileCreator(loritta: LorittaBot, internalName: String) :
+    ProfileCreator(loritta, internalName) {
     abstract suspend fun create(
         sender: ProfileUserInfoData,
         user: ProfileUserInfoData,

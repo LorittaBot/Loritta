@@ -7,7 +7,11 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
-class RbUserCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta,listOf("rbuser", "rbplayer"), net.perfectdreams.loritta.common.commands.CommandCategory.ROBLOX) {
+class RbUserCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("rbuser", "rbplayer"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.ROBLOX
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.rbuser"
         private val json = Json {
@@ -37,8 +41,8 @@ class RbUserCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta,lis
 
     override fun command() = create {
         localizedDescription("$LOCALE_PREFIX.description")
-		
-		localizedExamples("$LOCALE_PREFIX.examples")
+
+        localizedExamples("$LOCALE_PREFIX.examples")
 
         usage {
             argument(ArgumentType.TEXT) {

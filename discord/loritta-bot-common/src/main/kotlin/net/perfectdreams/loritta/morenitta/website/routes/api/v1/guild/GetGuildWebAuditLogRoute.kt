@@ -16,44 +16,50 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 
 class GetGuildWebAuditLogRoute(loritta: LorittaBot) : RequiresAPIGuildAuthRoute(loritta, "/audit-log") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		val guildId = guild.idLong
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        val guildId = guild.idLong
 
-		val wrapper = jsonObject()
-		val users = jsonArray()
-		val entries = jsonArray()
+        val wrapper = jsonObject()
+        val users = jsonArray()
+        val entries = jsonArray()
 
-		val auditEntries = loritta.newSuspendedTransaction {
-			AuditLog.select {
-				AuditLog.guildId eq guildId
-			}.orderBy(AuditLog.executedAt, SortOrder.DESC)
-					.toMutableList()
-		}
+        val auditEntries = loritta.newSuspendedTransaction {
+            AuditLog.select {
+                AuditLog.guildId eq guildId
+            }.orderBy(AuditLog.executedAt, SortOrder.DESC)
+                .toMutableList()
+        }
 
-		for (entry in auditEntries) {
-			entries.add(
-					jsonObject(
-							"id" to entry[AuditLog.userId],
-							"executedAt" to entry[AuditLog.executedAt],
-							"type" to entry[AuditLog.actionType].toString(),
-							"params" to entry[AuditLog.params]
-					)
-			)
-		}
+        for (entry in auditEntries) {
+            entries.add(
+                jsonObject(
+                    "id" to entry[AuditLog.userId],
+                    "executedAt" to entry[AuditLog.executedAt],
+                    "type" to entry[AuditLog.actionType].toString(),
+                    "params" to entry[AuditLog.params]
+                )
+            )
+        }
 
-		val usersInAuditLog = auditEntries.map { it[AuditLog.userId] }.distinct()
+        val usersInAuditLog = auditEntries.map { it[AuditLog.userId] }.distinct()
 
-		for (userId in usersInAuditLog) {
-			val user = loritta.lorittaShards.retrieveUserInfoById(userId) ?: continue
+        for (userId in usersInAuditLog) {
+            val user = loritta.lorittaShards.retrieveUserInfoById(userId) ?: continue
 
-			users.add(
-					net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils.transformToJson(user)
-			)
-		}
+            users.add(
+                net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils.transformToJson(user)
+            )
+        }
 
-		wrapper["users"] = users
-		wrapper["entries"] = entries
+        wrapper["users"] = users
+        wrapper["entries"] = entries
 
-		call.respondJson(wrapper)
-	}
+        call.respondJson(wrapper)
+    }
 }

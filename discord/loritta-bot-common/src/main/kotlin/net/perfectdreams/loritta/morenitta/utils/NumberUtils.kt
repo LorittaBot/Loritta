@@ -13,9 +13,15 @@ object NumberUtils {
         val inputAsLowerCase = input.toLowerCase()
 
         return when {
-            inputAsLowerCase.endsWith("m") -> inputAsLowerCase.removeSuffix("m").toDoubleOrNull()?.times(1_000_000)?.toLong()
-            inputAsLowerCase.endsWith("kk") -> inputAsLowerCase.removeSuffix("kk").toDoubleOrNull()?.times(1_000_000)?.toLong()
-            inputAsLowerCase.endsWith("k") -> inputAsLowerCase.removeSuffix("k").toDoubleOrNull()?.times(1_000)?.toLong()
+            inputAsLowerCase.endsWith("m") -> inputAsLowerCase.removeSuffix("m").toDoubleOrNull()?.times(1_000_000)
+                ?.toLong()
+
+            inputAsLowerCase.endsWith("kk") -> inputAsLowerCase.removeSuffix("kk").toDoubleOrNull()?.times(1_000_000)
+                ?.toLong()
+
+            inputAsLowerCase.endsWith("k") -> inputAsLowerCase.removeSuffix("k").toDoubleOrNull()?.times(1_000)
+                ?.toLong()
+
             else -> inputAsLowerCase.toLongOrNull()
         }
     }

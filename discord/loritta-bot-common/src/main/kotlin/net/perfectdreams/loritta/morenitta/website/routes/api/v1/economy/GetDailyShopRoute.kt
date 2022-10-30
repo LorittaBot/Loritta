@@ -21,54 +21,54 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 
 class GetDailyShopRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/economy/daily-shop") {
-	override suspend fun onRequest(call: ApplicationCall) {
-		val generatedAt: Long?
+    override suspend fun onRequest(call: ApplicationCall) {
+        val generatedAt: Long?
 
-		val shop = loritta.newSuspendedTransaction {
-			DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
-		}
+        val shop = loritta.newSuspendedTransaction {
+            DailyShops.selectAll().orderBy(DailyShops.generatedAt, SortOrder.DESC).limit(1).first()
+        }
 
-		generatedAt = shop[DailyShops.generatedAt]
+        generatedAt = shop[DailyShops.generatedAt]
 
-		val backgroundsInShopResults = loritta.newSuspendedTransaction {
-			(DailyShopItems innerJoin Backgrounds)
-				.select {
-					DailyShopItems.shop eq shop[DailyShops.id]
-				}
-				.toList()
-		}
+        val backgroundsInShopResults = loritta.newSuspendedTransaction {
+            (DailyShopItems innerJoin Backgrounds)
+                .select {
+                    DailyShopItems.shop eq shop[DailyShops.id]
+                }
+                .toList()
+        }
 
-		val backgroundsInShop = backgroundsInShopResults.map {
-			DailyShopBackgroundEntry(
-				BackgroundWithVariations(
-					Background.fromRow(it),
-					loritta.pudding.backgrounds.getBackgroundVariations(it[Backgrounds.internalName])
-				),
-				it[DailyShopItems.tag]
-			)
-		}
+        val backgroundsInShop = backgroundsInShopResults.map {
+            DailyShopBackgroundEntry(
+                BackgroundWithVariations(
+                    Background.fromRow(it),
+                    loritta.pudding.backgrounds.getBackgroundVariations(it[Backgrounds.internalName])
+                ),
+                it[DailyShopItems.tag]
+            )
+        }
 
-		val profileDesignsInShop = loritta.pudding.transaction {
-			(DailyProfileShopItems innerJoin ProfileDesigns)
-				.select {
-					DailyProfileShopItems.shop eq shop[DailyShops.id]
-				}
-				.map {
-					WebsiteUtils.fromProfileDesignToSerializable(loritta, it).also { profile ->
-						profile.tag = it[DailyProfileShopItems.tag]
-					}
-				}
-				.toList()
-		}
+        val profileDesignsInShop = loritta.pudding.transaction {
+            (DailyProfileShopItems innerJoin ProfileDesigns)
+                .select {
+                    DailyProfileShopItems.shop eq shop[DailyShops.id]
+                }
+                .map {
+                    WebsiteUtils.fromProfileDesignToSerializable(loritta, it).also { profile ->
+                        profile.tag = it[DailyProfileShopItems.tag]
+                    }
+                }
+                .toList()
+        }
 
-		val shopPayload = DailyShopResult(
-			loritta.dreamStorageService.baseUrl,
-			loritta.dreamStorageService.getCachedNamespaceOrRetrieve(),
-			backgroundsInShop,
-			profileDesignsInShop,
-			generatedAt ?: -1L
-		)
+        val shopPayload = DailyShopResult(
+            loritta.dreamStorageService.baseUrl,
+            loritta.dreamStorageService.getCachedNamespaceOrRetrieve(),
+            backgroundsInShop,
+            profileDesignsInShop,
+            generatedAt ?: -1L
+        )
 
-		call.respondJson(Json.encodeToString(DailyShopResult.serializer(), shopPayload))
-	}
+        call.respondJson(Json.encodeToString(DailyShopResult.serializer(), shopPayload))
+    }
 }

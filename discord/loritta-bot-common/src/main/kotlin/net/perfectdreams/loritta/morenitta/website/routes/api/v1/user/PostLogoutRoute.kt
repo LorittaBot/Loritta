@@ -10,8 +10,8 @@ import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
 class PostLogoutRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/users/@me/logout") {
-	override suspend fun onRequest(call: ApplicationCall) {
-		call.sessions.clear<LorittaJsonWebSession>()
-		call.respondJson(jsonObject())
-	}
+    override suspend fun onRequest(call: ApplicationCall) {
+        call.sessions.clear<LorittaJsonWebSession>()
+        call.respondJson(jsonObject())
+    }
 }

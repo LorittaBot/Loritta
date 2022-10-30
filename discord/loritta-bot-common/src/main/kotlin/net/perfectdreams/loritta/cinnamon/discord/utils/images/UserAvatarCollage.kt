@@ -6,11 +6,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingProfileSettings
 import net.perfectdreams.loritta.common.utils.Gender
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
 import java.awt.image.BufferedImage
 

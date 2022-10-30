@@ -12,43 +12,53 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariab
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class ConfigureInviteBlockerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/invite-blocker") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
+class ConfigureInviteBlockerRoute(loritta: LorittaBot) :
+    RequiresGuildAuthLocalizedRoute(loritta, "/configure/invite-blocker") {
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        loritta as LorittaBot
 
-		val inviteBlockerConfig = loritta.newSuspendedTransaction {
-			serverConfig.inviteBlockerConfig
-		}
+        val inviteBlockerConfig = loritta.newSuspendedTransaction {
+            serverConfig.inviteBlockerConfig
+        }
 
-		val variables = call.legacyVariables(loritta, locale)
+        val variables = call.legacyVariables(loritta, locale)
 
-		variables["saveType"] = "invite_blocker"
-		variables["whitelistedChannels"] = (inviteBlockerConfig?.whitelistedChannels?.filter { guild.getTextChannelById(it) != null } ?: listOf()).joinToString(separator = ";")
-		variables["serverConfig"] = FakeServerConfig(
-				FakeServerConfig.FakeInviteBlockerConfig(
-						inviteBlockerConfig?.enabled ?: false,
-						inviteBlockerConfig?.whitelistServerInvites ?: false,
-						inviteBlockerConfig?.deleteMessage ?: false,
-						inviteBlockerConfig?.tellUser ?: false,
-						inviteBlockerConfig?.warnMessage ?: "{@user} Você não pode enviar convites de outros servidores aqui!",
-						inviteBlockerConfig?.whitelistedChannels ?: arrayOf()
-				)
-		)
+        variables["saveType"] = "invite_blocker"
+        variables["whitelistedChannels"] =
+            (inviteBlockerConfig?.whitelistedChannels?.filter { guild.getTextChannelById(it) != null }
+                ?: listOf()).joinToString(separator = ";")
+        variables["serverConfig"] = FakeServerConfig(
+            FakeServerConfig.FakeInviteBlockerConfig(
+                inviteBlockerConfig?.enabled ?: false,
+                inviteBlockerConfig?.whitelistServerInvites ?: false,
+                inviteBlockerConfig?.deleteMessage ?: false,
+                inviteBlockerConfig?.tellUser ?: false,
+                inviteBlockerConfig?.warnMessage ?: "{@user} Você não pode enviar convites de outros servidores aqui!",
+                inviteBlockerConfig?.whitelistedChannels ?: arrayOf()
+            )
+        )
 
-		call.respondHtml(evaluate("invite_blocker.html", variables))
-	}
+        call.respondHtml(evaluate("invite_blocker.html", variables))
+    }
 
-	/**
-	 * Fake Server Config for Pebble, in the future this will be removed
-	 */
-	private class FakeServerConfig(val inviteBlockerConfig: FakeInviteBlockerConfig) {
-		class FakeInviteBlockerConfig(
-				val isEnabled: Boolean,
-				val whitelistServerInvites: Boolean,
-				val deleteMessage: Boolean,
-				val tellUser: Boolean,
-				val warnMessage: String,
-				val whitelistedChannels: Array<Long>
-		)
-	}
+    /**
+     * Fake Server Config for Pebble, in the future this will be removed
+     */
+    private class FakeServerConfig(val inviteBlockerConfig: FakeInviteBlockerConfig) {
+        class FakeInviteBlockerConfig(
+            val isEnabled: Boolean,
+            val whitelistServerInvites: Boolean,
+            val deleteMessage: Boolean,
+            val tellUser: Boolean,
+            val warnMessage: String,
+            val whitelistedChannels: Array<Long>
+        )
+    }
 }

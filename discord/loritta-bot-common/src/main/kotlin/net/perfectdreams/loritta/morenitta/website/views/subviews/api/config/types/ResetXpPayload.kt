@@ -13,21 +13,26 @@ import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.update
 
 class ResetXpPayload(val loritta: LorittaBot) : ConfigPayloadType("level") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
-		runBlocking {
-			loritta.pudding.transaction {
-				GuildProfiles.update({ GuildProfiles.guildId eq guild.idLong }) {
-					it[xp] = 0
-				}
-			}
-		}
+    override fun process(
+        payload: JsonObject,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        serverConfig: ServerConfig,
+        guild: Guild
+    ) {
+        runBlocking {
+            loritta.pudding.transaction {
+                GuildProfiles.update({ GuildProfiles.guildId eq guild.idLong }) {
+                    it[xp] = 0
+                }
+            }
+        }
 
-		WebAuditLogUtils.addEntry(
-			loritta,
-			guild.idLong,
-			userIdentification.id.toLong(),
-			ActionType.RESET_XP,
-			jsonObject()
-		)
-	}
+        WebAuditLogUtils.addEntry(
+            loritta,
+            guild.idLong,
+            userIdentification.id.toLong(),
+            ActionType.RESET_XP,
+            jsonObject()
+        )
+    }
 }

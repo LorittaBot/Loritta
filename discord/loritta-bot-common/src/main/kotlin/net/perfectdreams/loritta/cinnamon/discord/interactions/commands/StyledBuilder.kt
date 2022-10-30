@@ -129,4 +129,5 @@ fun createStyledContent(content: String, prefix: String = Emotes.DefaultStyledPr
  *
  * @param reply the already built LorittaReply
  */
-fun createStyledContent(reply: net.perfectdreams.loritta.cinnamon.entities.LorittaReply) = "${reply.prefix} **|** ${reply.content}"
+fun createStyledContent(reply: net.perfectdreams.loritta.cinnamon.entities.LorittaReply) =
+    "${reply.prefix} **|** ${reply.content}"

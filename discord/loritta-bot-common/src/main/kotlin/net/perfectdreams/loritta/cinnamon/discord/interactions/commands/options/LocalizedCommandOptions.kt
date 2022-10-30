@@ -17,8 +17,10 @@ abstract class LocalizedCommandOption<T>(
     val languageManager: LanguageManager,
     val descriptionI18n: StringI18nData,
 ) : NameableCommandOption<T> {
-    override val description = languageManager.defaultI18nContext.get(descriptionI18n).shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length)
-    override val descriptionLocalizations = SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, descriptionI18n)
+    override val description = languageManager.defaultI18nContext.get(descriptionI18n)
+        .shortenWithEllipsis(DiscordResourceLimits.Command.Options.Description.Length)
+    override val descriptionLocalizations =
+        SlashTextUtils.createShortenedLocalizedStringMapExcludingDefaultLocale(languageManager, descriptionI18n)
     override val nameLocalizations: Map<Locale, String> = emptyMap()
 }
 

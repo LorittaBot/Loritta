@@ -15,7 +15,12 @@ class Overwrite(val deviousFun: DeviousFun, val channel: Channel, val overwrite:
     suspend fun edit(builder: ChannelPermissionModifyBuilder.() -> (Unit)) {
         when (overwrite.type) {
             OverwriteType.Member -> TODO()
-            OverwriteType.Role -> deviousFun.loritta.rest.channel.editRolePermission(channel.idSnowflake, overwrite.id, builder)
+            OverwriteType.Role -> deviousFun.loritta.rest.channel.editRolePermission(
+                channel.idSnowflake,
+                overwrite.id,
+                builder
+            )
+
             is OverwriteType.Unknown -> TODO()
         }
     }

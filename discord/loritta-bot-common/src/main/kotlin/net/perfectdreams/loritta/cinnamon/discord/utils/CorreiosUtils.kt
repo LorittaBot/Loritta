@@ -2,12 +2,8 @@ package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.toInstant
+import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.*
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosEvento
-import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosUnidadeBrasil
-import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosUnidadeExterior
-import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.EventType
-import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.EventTypeWithStatus
 
 object CorreiosUtils {
     fun getEmoji(eventTypeWithStatus: EventTypeWithStatus) = when (eventTypeWithStatus.event) {
@@ -18,6 +14,7 @@ object CorreiosUtils {
                 else -> Emotes.BrasilTorcida
             }
         }
+
         EventType.IssuesInPackageDelivery -> Emotes.LoriBonk
         EventType.PackageDeliveredToRecipient -> Emotes.LoriSmile
         EventType.PackageInDeliveryRouteToRecipient -> Emotes.Dash
@@ -35,6 +32,7 @@ object CorreiosUtils {
                 else -> null
             }
         }
+
         EventType.IssuesInPackageDelivery -> null
         EventType.PackageDeliveredToRecipient -> "https://cdn.discordapp.com/attachments/890603988607701055/957312937964474388/lori_entregando_pacote.png"
         EventType.PackageInDeliveryRouteToRecipient -> "https://cdn.discordapp.com/attachments/890603988607701055/957311357416513536/devious_delivery.png"

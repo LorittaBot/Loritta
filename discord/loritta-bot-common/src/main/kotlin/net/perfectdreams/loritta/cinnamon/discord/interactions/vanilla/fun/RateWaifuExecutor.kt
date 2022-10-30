@@ -3,15 +3,15 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 import kotlinx.datetime.Clock
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
-import net.perfectdreams.loritta.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.RateCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.RateCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.ContextStringToUserNameConverter
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.achievements.AchievementType
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import kotlin.random.Random
 
 class RateWaifuExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
@@ -28,11 +28,17 @@ class RateWaifuExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
          * @param typeSingular the singular type of the category that is being scored
          * @param typePlural   the plural type of the category that is being scored
          */
-        suspend fun executeGeneric(input: String, context: ApplicationCommandContext, typeSingular: String, typePlural: String) {
+        suspend fun executeGeneric(
+            input: String,
+            context: ApplicationCommandContext,
+            typeSingular: String,
+            typePlural: String
+        ) {
             val waifuLowerCase = input.lowercase()
 
             // Always use the same seed for the random generator, but change it every day
-            val random = Random(Clock.System.now().toLocalDateTime(TimeZone.UTC).dayOfYear + waifuLowerCase.hashCode().toLong())
+            val random =
+                Random(Clock.System.now().toLocalDateTime(TimeZone.UTC).dayOfYear + waifuLowerCase.hashCode().toLong())
             val score = random.nextInt(0, 11)
 
             val scoreReason = context.i18nContext.get(
@@ -62,36 +68,42 @@ class RateWaifuExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
                     ).random() + " ${Emotes.LoriYay}"
                     isLoritta = true
                 }
+
                 "pantufa" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScorePantufa
                     ).random() + " ${Emotes.LoriHeart}"
                 }
+
                 "wumpus" -> {
                     strScore = "∞"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreWumpus
                     ).random()
                 }
+
                 "erisly" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreErisly
                     ).random()
                 }
+
                 "dank memer" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreDankMemer(typeSingular)
                     ).random() + " ${Emotes.LoriCoffee}"
                 }
+
                 "carl-bot" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreCarlbot
                     ).random() + " ${Emotes.LoriPat}"
                 }
+
                 "kuraminha" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
@@ -100,60 +112,70 @@ class RateWaifuExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
                         )
                     ).random() + " ${Emotes.LoriHm}"
                 }
+
                 "pollux" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScorePollux
                     ).random() + " ${Emotes.LoriYay}"
                 }
+
                 "tatsumaki" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreTatsumaki(RateCommand.WAIFU_SINGULAR)
                     ).random()
                 }
+
                 "mee6" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreMee6(RateCommand.WAIFU_SINGULAR)
                     ).random()
                 }
+
                 "mantaro" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreMantaro
                     ).random()
                 }
+
                 "dyno" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreDyno(RateCommand.WAIFU_SINGULAR)
                     ).random()
                 }
+
                 "mudae" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreMudae
                     ).random()
                 }
+
                 "nadeko" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreNadeko(RateCommand.WAIFU_SINGULAR)
                     ).random()
                 }
+
                 "unbelievaboat" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreUnbelievaBoat
                     ).random()
                 }
+
                 "chino kafuu" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
                         RateCommand.I18N_PREFIX.WaifuHusbando.ScoreChinoKafuu
                     ).random()
                 }
+
                 "groovy" -> {
                     strScore = "10"
                     reason = context.i18nContext.get(
@@ -161,6 +183,7 @@ class RateWaifuExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
                     ).random()
                     isGroovy = true
                 }
+
                 "lorita", "lorrita" -> {
                     strScore = "-∞"
                     reason = context.i18nContext.get(

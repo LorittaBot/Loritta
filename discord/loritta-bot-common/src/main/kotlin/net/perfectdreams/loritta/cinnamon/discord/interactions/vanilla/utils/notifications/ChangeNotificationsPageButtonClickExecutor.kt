@@ -1,11 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.notifications
 
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class ChangeNotificationsPageButtonClickExecutor(
     loritta: LorittaBot

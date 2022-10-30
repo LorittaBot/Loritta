@@ -10,9 +10,9 @@ abstract class LorittaAbstractCommandBase(
 ) : AbstractCommandBase<CommandContext, CommandBuilder<CommandContext>>(labels, category) {
     final override fun create(builder: CommandBuilder<CommandContext>.() -> Unit): Command<CommandContext> {
         val cmd = command(
-                loritta,
-                labels,
-                category
+            loritta,
+            labels,
+            category
         ) {
             builder.invoke(this)
         }

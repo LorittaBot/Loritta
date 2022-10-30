@@ -61,8 +61,8 @@ object WebhookUtils {
         return call(Route.ExecuteWebhookPost, requestHandlerWithoutToken) {
             keys[Route.WebhookId] = webhookId
             keys[Route.WebhookToken] = token
-            if(wait != null) parameter("wait", "$wait")
-            if(threadId != null) parameter("thread_id", threadId.toString())
+            if (wait != null) parameter("wait", "$wait")
+            if (threadId != null) parameter("thread_id", threadId.toString())
             body(WebhookExecuteRequest.serializer(), request)
         }
     }
@@ -86,7 +86,11 @@ object WebhookUtils {
 
     @OptIn(ExperimentalContracts::class)
     @PublishedApi
-    internal suspend inline fun <T> call(route: Route<T>, requestHandler: RequestHandler, builder: RequestBuilder<T>.() -> Unit = {}): T {
+    internal suspend inline fun <T> call(
+        route: Route<T>,
+        requestHandler: RequestHandler,
+        builder: RequestBuilder<T>.() -> Unit = {}
+    ): T {
         contract {
             callsInPlace(builder, InvocationKind.EXACTLY_ONCE)
         }

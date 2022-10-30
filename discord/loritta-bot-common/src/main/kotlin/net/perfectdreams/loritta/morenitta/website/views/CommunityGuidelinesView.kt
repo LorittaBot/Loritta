@@ -42,13 +42,13 @@ class CommunityGuidelinesView(
                         div {
                             style = "text-align: center;"
                             h2 {
-                                + locale["website.guidelines.intro.title"]
+                                +locale["website.guidelines.intro.title"]
                             }
                         }
 
                         for (str in locale.getList("website.guidelines.intro.description")) {
                             p {
-                                + str
+                                +str
                             }
                         }
                     }
@@ -64,14 +64,14 @@ class CommunityGuidelinesView(
                         div {
                             style = "text-align: center;"
                             h2 {
-                                + locale["website.guidelines.whatYouCanDo.title"]
+                                +locale["website.guidelines.whatYouCanDo.title"]
                             }
                         }
 
                         for (str in locale.getList("website.guidelines.whatYouCanDo.description")) {
                             ul {
                                 li {
-                                    + str.replace(" %platforms%", "")
+                                    +str.replace(" %platforms%", "")
                                 }
 
                                 if (str.endsWith("%platforms%")) {
@@ -79,11 +79,11 @@ class CommunityGuidelinesView(
                                         for ((platform, link) in otherGuidelines) {
                                             li {
                                                 strong {
-                                                    + "${platform}: "
+                                                    +"${platform}: "
                                                 }
 
                                                 a(href = link) {
-                                                    + link
+                                                    +link
                                                 }
                                             }
                                         }
@@ -110,14 +110,14 @@ class CommunityGuidelinesView(
                         div {
                             style = "text-align: center;"
                             h2 {
-                                + locale["website.guidelines.prohibited.title"]
+                                +locale["website.guidelines.prohibited.title"]
                             }
                         }
 
                         for (str in locale.getList("website.guidelines.prohibited.description")) {
                             ul {
                                 li {
-                                    + str.replace(" %platforms%", "")
+                                    +str.replace(" %platforms%", "")
                                         .replace(" %disrespect%", "")
                                         .replace(" %breaking%", "")
                                         .replace(" %beyourself%", "")
@@ -127,7 +127,7 @@ class CommunityGuidelinesView(
                                     ul {
                                         for (str in locale.getList("website.guidelines.prohibited.onPlatformBreak")) {
                                             li {
-                                                + str
+                                                +str
                                             }
                                         }
                                     }
@@ -137,7 +137,7 @@ class CommunityGuidelinesView(
                                     ul {
                                         for (str in locale.getList("website.guidelines.prohibited.disrespect")) {
                                             li {
-                                                + str
+                                                +str
                                             }
                                         }
                                     }
@@ -147,7 +147,7 @@ class CommunityGuidelinesView(
                                     ul {
                                         for (str in locale.getList("website.guidelines.prohibited.breaking")) {
                                             li {
-                                                + str
+                                                +str
                                             }
                                         }
                                     }
@@ -157,14 +157,14 @@ class CommunityGuidelinesView(
                                     ul {
                                         for (str in locale.getList("website.guidelines.prohibited.beYourself")) {
                                             li {
-                                                + str.replace(" %fanarts%", "").replace(" %notjoke%", "")
+                                                +str.replace(" %fanarts%", "").replace(" %notjoke%", "")
                                             }
 
                                             if (str.endsWith("%fanarts%")) {
                                                 ul {
                                                     for (str in locale.getList("website.guidelines.prohibited.useFanArts")) {
                                                         li {
-                                                            + str
+                                                            +str
                                                         }
                                                     }
                                                 }
@@ -174,7 +174,7 @@ class CommunityGuidelinesView(
                                                 ul {
                                                     for (str in locale.getList("website.guidelines.prohibited.notJoke")) {
                                                         li {
-                                                            + str
+                                                            +str
                                                         }
                                                     }
                                                 }
@@ -197,25 +197,25 @@ class CommunityGuidelinesView(
                         div {
                             style = "text-align: center;"
                             h2 {
-                                + locale["website.guidelines.whatWillHappenIf.title"]
+                                +locale["website.guidelines.whatWillHappenIf.title"]
                             }
                         }
 
                         p {
-                            + locale["website.guidelines.whatWillHappenIf.ifYouBreak"]
+                            +locale["website.guidelines.whatWillHappenIf.ifYouBreak"]
                         }
 
                         ul {
                             for (str in locale.getList("website.guidelines.whatWillHappenIf.punishments")) {
                                 li {
-                                    + str
+                                    +str
                                 }
                             }
                         }
 
                         for (str in locale.getList("website.guidelines.whatWillHappenIf.description")) {
                             p {
-                                + str
+                                +str
                             }
                         }
                     }

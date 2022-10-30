@@ -12,21 +12,25 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileUserInfoData
 import org.jetbrains.exposed.sql.select
 
 class GabrielaBadge(val loritta: LorittaBot) : Badge("badges/birthday2020_gabriela.png", 100) {
-	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
-		val playerResult = loritta.pudding.transaction {
-			Birthday2020Players.select { Birthday2020Players.user eq profile.id }
-					.firstOrNull()
-		} ?: return false
+    override suspend fun checkIfUserDeservesBadge(
+        user: ProfileUserInfoData,
+        profile: Profile,
+        mutualGuilds: Set<Long>
+    ): Boolean {
+        val playerResult = loritta.pudding.transaction {
+            Birthday2020Players.select { Birthday2020Players.user eq profile.id }
+                .firstOrNull()
+        } ?: return false
 
-		if (playerResult[Birthday2020Players.team] != BirthdayTeam.GABRIELA)
-			return false
+        if (playerResult[Birthday2020Players.team] != BirthdayTeam.GABRIELA)
+            return false
 
-		val count = loritta.pudding.transaction {
-			CollectedBirthday2020Points.select {
-				CollectedBirthday2020Points.user eq user.id.toLong()
-			}.count()
-		}
+        val count = loritta.pudding.transaction {
+            CollectedBirthday2020Points.select {
+                CollectedBirthday2020Points.user eq user.id.toLong()
+            }.count()
+        }
 
-		return count >= 100
-	}
+        return count >= 100
+    }
 }

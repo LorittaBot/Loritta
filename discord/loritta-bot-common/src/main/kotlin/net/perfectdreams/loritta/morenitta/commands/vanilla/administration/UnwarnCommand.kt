@@ -12,7 +12,11 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 
-class UnwarnCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("unwarn", "desavisar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class UnwarnCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("unwarn", "desavisar"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
     companion object {
         const val LOCALE_PREFIX = "commands.command.unwarn"
     }
@@ -40,8 +44,7 @@ class UnwarnCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, li
             if (args.isEmpty())
                 return@executesDiscord explain()
 
-            val user = AdminUtils.checkUser(this) ?:
-                return@executesDiscord
+            val user = AdminUtils.checkUser(this) ?: return@executesDiscord
             val member = guild.retrieveMemberOrNull(user.handle)
 
             if (member != null) {

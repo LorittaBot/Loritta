@@ -4,10 +4,10 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.toJavaInstant
 import kotlinx.datetime.toKotlinInstant
 import mu.KotlinLogging
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.utils.RunnableCoroutine
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.DailyTaxWarnUserNotifications
 import net.perfectdreams.loritta.cinnamon.pudding.tables.notifications.UserNotifications
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.sql.Connection
@@ -40,7 +40,10 @@ class DailyTaxWarner(val m: LorittaBot) : RunnableCoroutine {
             // We need to use Read Commited to avoid "Could not serialize access due to concurrent update"
             // This is more "unsafe" because we may make someone be in the negative sonhos, but there isn't another good alterative, so yeah...
             m.pudding.transaction(transactionIsolation = Connection.TRANSACTION_READ_COMMITTED) {
-                DailyTaxUtils.getAndProcessInactiveDailyUsers(m.config.loritta.discord.applicationId, 0) { threshold, inactiveDailyUser ->
+                DailyTaxUtils.getAndProcessInactiveDailyUsers(
+                    m.config.loritta.discord.applicationId,
+                    0
+                ) { threshold, inactiveDailyUser ->
                     logger.info { "Adding important notification to ${inactiveDailyUser.id} about daily tax warn" }
 
                     val userNotificationId = UserNotifications.insertAndGetId {
@@ -50,7 +53,8 @@ class DailyTaxWarner(val m: LorittaBot) : RunnableCoroutine {
 
                     DailyTaxWarnUserNotifications.insert {
                         it[DailyTaxWarnUserNotifications.timestampLog] = userNotificationId
-                        it[DailyTaxWarnUserNotifications.inactivityTaxTimeWillBeTriggeredAt] = tomorrowAtMidnight.toJavaInstant()
+                        it[DailyTaxWarnUserNotifications.inactivityTaxTimeWillBeTriggeredAt] =
+                            tomorrowAtMidnight.toJavaInstant()
                         it[DailyTaxWarnUserNotifications.currentSonhos] = inactiveDailyUser.money
                         it[DailyTaxWarnUserNotifications.howMuchWasRemoved] = inactiveDailyUser.moneyToBeRemoved
                         it[DailyTaxWarnUserNotifications.maxDayThreshold] = threshold.maxDayThreshold

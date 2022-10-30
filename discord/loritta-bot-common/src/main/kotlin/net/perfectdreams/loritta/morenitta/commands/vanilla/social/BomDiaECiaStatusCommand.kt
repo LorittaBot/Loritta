@@ -6,7 +6,11 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.tables.BomDiaECiaWinners
 import org.jetbrains.exposed.sql.select
 
-class BomDiaECiaStatusCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia status", "bd&c status", "bdc status"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
+class BomDiaECiaStatusCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("bomdiaecia status", "bd&c status", "bdc status"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.bomdiaeciastatus"
     }

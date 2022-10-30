@@ -1,12 +1,11 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations
 
-import net.perfectdreams.loritta.common.locale.LanguageManager
-import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.RobloxGameExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.RobloxUserExecutor
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.LanguageManager
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 class RobloxCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
@@ -14,7 +13,11 @@ class RobloxCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val I18N_CATEGORY_PREFIX = I18nKeysData.Commands.Category.Roblox
     }
 
-    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.ROBLOX, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */) {
+    override fun declaration() = slashCommand(
+        I18N_PREFIX.Label,
+        CommandCategory.ROBLOX,
+        I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */
+    ) {
         subcommand(I18N_PREFIX.User.Label, I18N_PREFIX.User.Description) {
             executor = { RobloxUserExecutor(it, it.http) }
         }

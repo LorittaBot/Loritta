@@ -34,12 +34,12 @@ class Error404View(
                         }
 
                         h1 {
-                            + locale["website.error404.title"]
+                            +locale["website.error404.title"]
                         }
 
                         for (str in locale.getList("website.error404.description")) {
                             p {
-                                + str
+                                +str
                             }
                         }
                     }

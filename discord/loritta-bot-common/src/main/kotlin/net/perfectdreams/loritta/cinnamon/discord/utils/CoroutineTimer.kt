@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlin.time.Duration
@@ -8,7 +10,12 @@ import kotlin.time.Duration
 /**
  * Schedules [action] to be executed on [scope] every [period] with a [initialDelay]
  */
-fun scheduleCoroutineAtFixedRate(scope: CoroutineScope, period: Duration, initialDelay: Duration = Duration.ZERO, action: RunnableCoroutine) {
+fun scheduleCoroutineAtFixedRate(
+    scope: CoroutineScope,
+    period: Duration,
+    initialDelay: Duration = Duration.ZERO,
+    action: RunnableCoroutine
+) {
     scope.launch {
         delay(initialDelay)
 

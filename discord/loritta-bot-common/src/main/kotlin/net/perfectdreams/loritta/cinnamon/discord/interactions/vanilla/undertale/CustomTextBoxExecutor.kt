@@ -12,7 +12,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.DialogBoxType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.undertale.textbox.TextBoxWithCustomPortraitOptionsData
 
-class CustomTextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient) : CinnamonSlashCommandExecutor(loritta) {
+class CustomTextBoxExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient) :
+    CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val text = textBoxTextOption()
 

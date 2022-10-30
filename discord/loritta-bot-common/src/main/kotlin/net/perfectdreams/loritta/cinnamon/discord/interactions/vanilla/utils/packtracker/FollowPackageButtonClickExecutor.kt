@@ -1,23 +1,23 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.packtracker
 
 import dev.kord.common.entity.ButtonStyle
-import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
+import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.PackageCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.CorreiosClient
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosFoundObjeto
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosUnknownObjeto
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.EventType
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
 import net.perfectdreams.loritta.cinnamon.pudding.services.PackagesTrackingService
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class FollowPackageButtonClickExecutor(
     loritta: LorittaBot,
@@ -62,7 +62,12 @@ class FollowPackageButtonClickExecutor(
                     }
 
                     context.sendEphemeralReply(
-                        context.i18nContext.get(PackageCommand.I18N_PREFIX.Track.FollowPackage.YouAreNowFollowingThePackage(decoded.trackingId, loritta.commandMentions.packageList)),
+                        context.i18nContext.get(
+                            PackageCommand.I18N_PREFIX.Track.FollowPackage.YouAreNowFollowingThePackage(
+                                decoded.trackingId,
+                                loritta.commandMentions.packageList
+                            )
+                        ),
                         Emotes.LoriSunglasses
                     )
                 } catch (e: PackagesTrackingService.UserIsAlreadyTrackingPackageException) {

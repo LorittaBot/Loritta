@@ -6,17 +6,17 @@ import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class RoleInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -80,7 +80,8 @@ class RoleInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lorit
                 }
 
                 field {
-                    name = "${Emotes.LoriPing} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Mentionable)
+                    name =
+                        "${Emotes.LoriPing} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Mentionable)
                     value = context.i18nContext.get(role.mentionable.toLocalized())
 
                     inline = true
@@ -96,7 +97,8 @@ class RoleInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lorit
                 }
 
                 field {
-                    name = "${Emotes.LoriCalendar} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.CreatedAt)
+                    name =
+                        "${Emotes.LoriCalendar} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.CreatedAt)
                     value = "<t:${role.id.timestamp.toEpochMilliseconds() / 1000}:D>"
 
                     inline = true
@@ -108,8 +110,10 @@ class RoleInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lorit
                 )
 
                 field {
-                    name = "${Emotes.Shield} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Permissions)
-                    value = rolePermissionsLocalized ?: context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.NoPermissions)
+                    name =
+                        "${Emotes.Shield} " + context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.Permissions)
+                    value = rolePermissionsLocalized
+                        ?: context.i18nContext.get(ServerCommand.I18N_PREFIX.Role.Info.NoPermissions)
                 }
             }
 

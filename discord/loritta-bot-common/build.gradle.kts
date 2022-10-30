@@ -17,6 +17,7 @@ dependencies {
     implementation(project(":loritta-serializable-commons"))
     implementation(project(":pudding:client"))
     implementation(project(":temmie-discord-auth"))
+    implementation(project(":devious-cache:devious-data"))
 
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
@@ -76,7 +77,6 @@ dependencies {
     api(libs.exposed.dao)
     implementation("net.perfectdreams.exposedpowerutils:postgres-java-time:1.1.0")
     implementation("pw.forst:exposed-upsert:1.1.0")
-    implementation("redis.clients:jedis:4.3.0-m1")
 
     // DreamStorageService
     implementation("net.perfectdreams.dreamstorageservice:client:2.0.2")
@@ -93,6 +93,7 @@ dependencies {
     implementation("io.ktor:ktor-websockets:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-apache:${Versions.KTOR}")
+    implementation("io.ktor:ktor-client-java:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-status-pages:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-caching-headers:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-sessions:${Versions.KTOR}")

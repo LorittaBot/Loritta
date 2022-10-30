@@ -6,27 +6,26 @@ import kotlinx.serialization.Serializable
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.inlineField
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.SingleUserComponentData
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.cinnamon.discord.utils.getUserAchievements
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 import net.perfectdreams.loritta.common.achievements.AchievementCategory
 import net.perfectdreams.loritta.common.achievements.AchievementType
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations.AchievementsCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.data.SingleUserComponentData
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.*
-import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.getUserAchievements
-import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingAchievement
 
 class AchievementsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     companion object {
@@ -64,9 +63,11 @@ class AchievementsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                     val description = StringBuilder()
 
                     if (category == null)
-                        title = "${Emotes.Sparkles} ${i18nContext.get(I18nKeysData.Achievements.Category.All.Title)} [$userAchievementsInCurrentCategoryCount/$totalAchievementsInCurrentCategoryCount]"
+                        title =
+                            "${Emotes.Sparkles} ${i18nContext.get(I18nKeysData.Achievements.Category.All.Title)} [$userAchievementsInCurrentCategoryCount/$totalAchievementsInCurrentCategoryCount]"
                     else {
-                        title = "${category.emote} ${i18nContext.get(category.title)} [$userAchievementsInCurrentCategoryCount/$totalAchievementsInCurrentCategoryCount]"
+                        title =
+                            "${category.emote} ${i18nContext.get(category.title)} [$userAchievementsInCurrentCategoryCount/$totalAchievementsInCurrentCategoryCount]"
                         description.append(i18nContext.get(category.description))
                         // We add new lines here because of the "You don't have any achievements..." text down below
                         description.append("\n\n")
@@ -103,7 +104,8 @@ class AchievementsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                         ComponentDataUtils.encode(data)
                     ) {
                         fun insertOption(optionCategory: AchievementCategory) {
-                            val userAchievementsInCategoryCount = achievements.count { it.type.category == optionCategory }
+                            val userAchievementsInCategoryCount =
+                                achievements.count { it.type.category == optionCategory }
                             val totalAchievementsInCategoryCount = AchievementType.values()
                                 .count { it.category == optionCategory }
 
@@ -125,7 +127,8 @@ class AchievementsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                             "ALL"
                         ) {
                             if (category == null)
-                                default = true // Set "ALL" as the default if the category is null (which means... "all categories")
+                                default =
+                                    true // Set "ALL" as the default if the category is null (which means... "all categories")
 
                             loriEmoji = Emotes.Sparkles
                         }

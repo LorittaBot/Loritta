@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.cinnamon.discord.gateway
 
 import dev.kord.gateway.Event
-import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys

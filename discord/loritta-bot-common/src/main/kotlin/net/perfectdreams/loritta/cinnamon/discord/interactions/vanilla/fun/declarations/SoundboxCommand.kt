@@ -2,12 +2,12 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.de
 
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Permissions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox.FalatronExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox.SoundboardBoardExecutor
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.common.commands.CommandCategory
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox.SoundboardBoardExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.soundbox.FalatronExecutor
 
 class SoundboxCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {
@@ -16,7 +16,7 @@ class SoundboxCommand(languageManager: LanguageManager) : CinnamonSlashCommandDe
 
     override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.FUN, I18N_PREFIX.Description) {
         defaultMemberPermissions = Permissions {
-            + Permission.MoveMembers
+            +Permission.MoveMembers
         }
         dmPermission = false
 

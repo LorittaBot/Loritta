@@ -2,16 +2,20 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 
 import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.autocomplete.FocusedCommandOption
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.CinnamonAutocompleteHandler
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import kotlin.time.Duration.Companion.minutes
 
-class CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta: LorittaBot) : CinnamonAutocompleteHandler<String>(loritta) {
-    override suspend fun handle(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
+class CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta: LorittaBot) :
+    CinnamonAutocompleteHandler<String>(loritta) {
+    override suspend fun handle(
+        context: AutocompleteContext,
+        focusedOption: FocusedCommandOption
+    ): Map<String, String> {
         val currentInput = focusedOption.value
 
         val trueNumber = NumberUtils.convertShortenedNumberToLong(
@@ -86,13 +90,15 @@ class CoinFlipBetGlobalSonhosQuantityAutocompleteExecutor(loritta: LorittaBot) :
 
                                 val averageTimeOnQueue = mmStat.averageTimeOnQueue
                                 if (averageTimeOnQueue != null) {
-                                    append(" (${
-                                        context.i18nContext.get(
-                                            BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.AverageTimeInSeconds(
-                                                averageTimeOnQueue.toMillis().toDouble() / 1_000
+                                    append(
+                                        " (${
+                                            context.i18nContext.get(
+                                                BetCommand.COINFLIP_GLOBAL_I18N_PREFIX.Options.Quantity.Choice.AverageTimeInSeconds(
+                                                    averageTimeOnQueue.toMillis().toDouble() / 1_000
+                                                )
                                             )
-                                        )
-                                    })")
+                                        })"
+                                    )
                                 }
                                 append(" ")
                                 append("[")

@@ -5,14 +5,14 @@ import kotlinx.datetime.toInstant
 import kotlinx.datetime.toKotlinLocalDateTime
 import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuilder
 import net.perfectdreams.i18nhelper.core.I18nContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.cinnamon.pudding.entities.PuddingUserProfile
 import java.time.LocalDateTime
 import java.time.ZoneId
 
@@ -24,8 +24,11 @@ object SonhosUtils {
         Emotes.PowerHanglooseRight
     )
 
-    fun insufficientSonhos(profile: PuddingUserProfile?, howMuch: Long) = insufficientSonhos(profile?.money ?: 0L, howMuch)
-    fun insufficientSonhos(sonhos: Long, howMuch: Long) = I18nKeysData.Commands.InsufficientFunds(howMuch, howMuch - sonhos)
+    fun insufficientSonhos(profile: PuddingUserProfile?, howMuch: Long) =
+        insufficientSonhos(profile?.money ?: 0L, howMuch)
+
+    fun insufficientSonhos(sonhos: Long, howMuch: Long) =
+        I18nKeysData.Commands.InsufficientFunds(howMuch, howMuch - sonhos)
 
     suspend fun MessageBuilder.appendUserHaventGotDailyTodayOrUpsellSonhosBundles(
         loritta: LorittaBot,
@@ -47,7 +50,7 @@ object SonhosUtils {
         )
 
         if (todayDailyReward != null) {
-             // Already got their daily reward today, show our sonhos bundles!
+            // Already got their daily reward today, show our sonhos bundles!
             styled(
                 i18nContext.get(
                     GACampaigns.sonhosBundlesUpsellDiscordMessage(

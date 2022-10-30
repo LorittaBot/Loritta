@@ -14,7 +14,10 @@ abstract class CinnamonAutocompleteHandler<T>(val loritta: LorittaBot) : Autocom
         private val logger = KotlinLogging.logger {}
     }
 
-    abstract suspend fun handle(context: net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, T>
+    abstract suspend fun handle(
+        context: net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.AutocompleteContext,
+        focusedOption: FocusedCommandOption
+    ): Map<String, T>
 
     override suspend fun handle(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, T> {
         logger.info { "(${context.sender.id.value}) $this" }
@@ -28,7 +31,8 @@ abstract class CinnamonAutocompleteHandler<T>(val loritta: LorittaBot) : Autocom
 
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
-                loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: CommandExecutorWrapper.NonGuildServerConfigRoot
+                loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data
+                    ?: CommandExecutorWrapper.NonGuildServerConfigRoot
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
                 CommandExecutorWrapper.NonGuildServerConfigRoot

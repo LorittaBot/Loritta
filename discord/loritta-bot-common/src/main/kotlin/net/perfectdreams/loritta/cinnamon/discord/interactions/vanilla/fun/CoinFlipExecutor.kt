@@ -1,13 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.i18nhelper.core.keydata.StringI18nData
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.CoinFlipCommand
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import kotlin.random.Random
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class CoinFlipExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {

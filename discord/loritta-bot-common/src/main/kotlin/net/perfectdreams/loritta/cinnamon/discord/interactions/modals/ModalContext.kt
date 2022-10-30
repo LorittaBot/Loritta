@@ -2,9 +2,9 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.modals
 
 import dev.kord.core.entity.User
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
 import net.perfectdreams.loritta.common.locale.BaseLocale
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 open class ModalContext(
     loritta: LorittaBot,

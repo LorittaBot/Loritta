@@ -43,12 +43,12 @@ class TwitchConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                 TrackedTwitchAccounts.guildId eq guild.idLong
             }.forEach {
                 array.add(
-                        jsonObject(
-                                "channelId" to it[TrackedTwitchAccounts.channelId],
-                                "twitchUserId" to it[TrackedTwitchAccounts.twitchUserId],
-                                "message" to it[TrackedTwitchAccounts.message],
-                                "webhookUrl" to it[TrackedTwitchAccounts.webhookUrl]
-                        )
+                    jsonObject(
+                        "channelId" to it[TrackedTwitchAccounts.channelId],
+                        "twitchUserId" to it[TrackedTwitchAccounts.twitchUserId],
+                        "message" to it[TrackedTwitchAccounts.message],
+                        "webhookUrl" to it[TrackedTwitchAccounts.webhookUrl]
+                    )
                 )
             }
 

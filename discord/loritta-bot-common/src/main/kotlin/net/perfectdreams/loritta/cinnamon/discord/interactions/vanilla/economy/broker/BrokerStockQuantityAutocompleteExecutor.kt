@@ -12,8 +12,12 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.autocomplete.Cinn
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordResourceLimits
 import net.perfectdreams.loritta.cinnamon.discord.utils.NumberUtils
 
-class BrokerStockQuantityAutocompleteExecutor(loritta: LorittaBot, val tickerOption: OptionReference<String>) : CinnamonAutocompleteHandler<String>(loritta) {
-    override suspend fun handle(context: AutocompleteContext, focusedOption: FocusedCommandOption): Map<String, String> {
+class BrokerStockQuantityAutocompleteExecutor(loritta: LorittaBot, val tickerOption: OptionReference<String>) :
+    CinnamonAutocompleteHandler<String>(loritta) {
+    override suspend fun handle(
+        context: AutocompleteContext,
+        focusedOption: FocusedCommandOption
+    ): Map<String, String> {
         val currentInput = focusedOption.value
 
         val ticker = context.getArgument(tickerOption) ?: return mapOf()

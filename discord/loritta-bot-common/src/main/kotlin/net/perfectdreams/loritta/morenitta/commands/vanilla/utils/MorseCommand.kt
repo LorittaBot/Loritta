@@ -7,13 +7,14 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class MorseCommand(loritta: LorittaBot) : AbstractCommand(loritta, "morse", category = net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
-	// TODO: Fix Usage
+class MorseCommand(loritta: LorittaBot) :
+    AbstractCommand(loritta, "morse", category = net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
+    // TODO: Fix Usage
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.morse.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.command.morse.examples")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.morse.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.command.morse.examples")
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "morse")
-	}
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "morse")
+    }
 }

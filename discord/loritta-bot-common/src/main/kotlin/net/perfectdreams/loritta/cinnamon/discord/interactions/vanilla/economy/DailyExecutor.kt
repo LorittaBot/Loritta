@@ -54,7 +54,13 @@ class DailyExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta)
         if (todayDailyReward != null) {
             context.sendEphemeralMessage {
                 styled(
-                    context.i18nContext.get(DailyCommand.I18N_PREFIX.PleaseWait("<t:${tomorrowAtMidnight.toInstant().toEpochMilli() / 1000}:R>")),
+                    context.i18nContext.get(
+                        DailyCommand.I18N_PREFIX.PleaseWait(
+                            "<t:${
+                                tomorrowAtMidnight.toInstant().toEpochMilli() / 1000
+                            }:R>"
+                        )
+                    ),
                     Emotes.Error
                 )
 
@@ -73,7 +79,8 @@ class DailyExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta)
         var currentUserThreshold: DailyTaxThresholds.DailyTaxThreshold? = null
         var userLastDailyReward: Daily? = null
         if (profile != null) {
-            currentUserThreshold = DailyTaxThresholds.THRESHOLDS.firstOrNull { profile.money >= it.minimumSonhosForTrigger }
+            currentUserThreshold =
+                DailyTaxThresholds.THRESHOLDS.firstOrNull { profile.money >= it.minimumSonhosForTrigger }
             if (currentUserThreshold != null) {
                 userLastDailyReward = context.loritta.pudding.sonhos.getUserLastDailyRewardReceived(
                     userId,
@@ -97,7 +104,12 @@ class DailyExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta)
 
         context.sendEphemeralMessage {
             styled(
-                context.i18nContext.get(DailyCommand.I18N_PREFIX.DailyLink(url, "<t:${tomorrowAtMidnight.toInstant().toEpochMilli() / 1000}:t>")),
+                context.i18nContext.get(
+                    DailyCommand.I18N_PREFIX.DailyLink(
+                        url,
+                        "<t:${tomorrowAtMidnight.toInstant().toEpochMilli() / 1000}:t>"
+                    )
+                ),
                 Emotes.LoriRich
             )
 
@@ -111,7 +123,8 @@ class DailyExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta)
 
             // Check if the user is in a daily tax bracket and, if yes, tell to the user about it
             if (currentUserThreshold != null) {
-                val activeUserPayments = context.loritta.pudding.payments.getActiveMoneyFromDonations(UserId(context.user.id.value))
+                val activeUserPayments =
+                    context.loritta.pudding.payments.getActiveMoneyFromDonations(UserId(context.user.id.value))
                 val activeUserPremiumPlan = UserPremiumPlans.getPlanFromValue(activeUserPayments)
 
                 if (activeUserPremiumPlan.hasDailyInactivityTax) {
@@ -141,7 +154,8 @@ class DailyExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta)
                             )
                         } else {
                             // User will lose sonhos in the future
-                            val whenYouAreGoingToStartToLoseSonhosEpoch = whenYouAreGoingToStartToLoseSonhos.toEpochSecond()
+                            val whenYouAreGoingToStartToLoseSonhosEpoch =
+                                whenYouAreGoingToStartToLoseSonhos.toEpochSecond()
                             styled(
                                 context.i18nContext.get(
                                     DailyCommand.I18N_PREFIX.DailyTaxBracketInfo.UserWillLoseSonhosInTheFuture(

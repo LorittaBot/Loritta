@@ -25,7 +25,7 @@ class SponsorsView(loritta: LorittaBot, locale: BaseLocale, path: String) : Navb
                         style = "text-align: center;"
 
                         h1 {
-                            + "Patrocinadores"
+                            +"Patrocinadores"
                         }
 
                         loritta.sponsors.forEach {
@@ -48,39 +48,39 @@ class SponsorsView(loritta: LorittaBot, locale: BaseLocale, path: String) : Navb
                         div {
                             style = "text-align: center;"
                             h2 {
-                                + "Para que servem os patrocinadores?"
+                                +"Para que servem os patrocinadores?"
                             }
                         }
 
 
                         p {
-                            + "Patrocinadores são pessoas incríveis que querem divulgar seus servidores e projetos na Loritta, divulgando para mais de cinco mil pessoas diferentes todos os dias!"
+                            +"Patrocinadores são pessoas incríveis que querem divulgar seus servidores e projetos na Loritta, divulgando para mais de cinco mil pessoas diferentes todos os dias!"
                         }
 
                         h3 {
-                            + "A cada mês, donos de servidores podem colocar os seus servidores..."
+                            +"A cada mês, donos de servidores podem colocar os seus servidores..."
                         }
 
                         ul {
                             li {
-                                + "Na \"Quarta Patrocinada\" no Servidor de Suporte da Loritta!"
+                                +"Na \"Quarta Patrocinada\" no Servidor de Suporte da Loritta!"
                             }
                             li {
-                                + "Na home page e na página de daily da Loritta"
+                                +"Na home page e na página de daily da Loritta"
                             }
                             li {
-                                + "No status de \"Jogando\" da Loritta"
+                                +"No status de \"Jogando\" da Loritta"
                             }
                             li {
-                                + "E aqui, na página de patrocinadores da Loritta!"
+                                +"E aqui, na página de patrocinadores da Loritta!"
                             }
                         }
 
                         h3 {
-                            + "Se interessou?"
+                            +"Se interessou?"
                         }
                         p {
-                            + "Então veja o canal de slots premiums no servidor de suporte da Loritta para saber mais sobre os requisitos, formas de pagamento, como funciona e muito mais!"
+                            +"Então veja o canal de slots premiums no servidor de suporte da Loritta para saber mais sobre os requisitos, formas de pagamento, como funciona e muito mais!"
                         }
                     }
                 }

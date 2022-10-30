@@ -44,7 +44,8 @@ class PredefinedReasonsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
             ModerationPredefinedPunishmentMessages.insert {
                 it[guild] = context.guildId.toLong()
                 it[short] = "divdm"
-                it[message] = "Enviar conteúdo (não solicitado!) via mensagem direta, fazer spam (ou seja, mandar conteúdo indesejado para outras pessoas) é contra as regras do servidor da Loritta e dos termos de uso do Discord e, caso continuar, você poderá ser suspenso do Discord e irá perder a sua conta!"
+                it[message] =
+                    "Enviar conteúdo (não solicitado!) via mensagem direta, fazer spam (ou seja, mandar conteúdo indesejado para outras pessoas) é contra as regras do servidor da Loritta e dos termos de uso do Discord e, caso continuar, você poderá ser suspenso do Discord e irá perder a sua conta!"
             }
             ModerationPredefinedPunishmentMessages.insert {
                 it[guild] = context.guildId.toLong()
@@ -54,17 +55,20 @@ class PredefinedReasonsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
             ModerationPredefinedPunishmentMessages.insert {
                 it[guild] = context.guildId.toLong()
                 it[short] = "spam"
-                it[message] = "Floodar/spammar (Enviar várias mensagens repetidas, enviar uma mensagem com caracteres aletórios, adicionar reações aleatórias, etc) nos canais de texto."
+                it[message] =
+                    "Floodar/spammar (Enviar várias mensagens repetidas, enviar uma mensagem com caracteres aletórios, adicionar reações aleatórias, etc) nos canais de texto."
             }
             ModerationPredefinedPunishmentMessages.insert {
                 it[guild] = context.guildId.toLong()
                 it[short] = "nsfw"
-                it[message] = "É proibido compartilhar conteúdo NSFW (coisas obscenas como pornografia, gore e coisas relacionadas), conteúdo sugestivo, jumpscares, conteúdo de ódio, racismo, assédio, links com conteúdo ilegal e links falsos. Será punido até se passar via mensagem direta, até mesmo se a outra pessoa pedir."
+                it[message] =
+                    "É proibido compartilhar conteúdo NSFW (coisas obscenas como pornografia, gore e coisas relacionadas), conteúdo sugestivo, jumpscares, conteúdo de ódio, racismo, assédio, links com conteúdo ilegal e links falsos. Será punido até se passar via mensagem direta, até mesmo se a outra pessoa pedir."
             }
             ModerationPredefinedPunishmentMessages.insert {
                 it[guild] = context.guildId.toLong()
                 it[short] = "toxic"
-                it[message] = "Ser tóxico (irritar e desrespeitar) com outros membros do servidor. Aprenda a respeitar e conviver com outras pessoas!"
+                it[message] =
+                    "Ser tóxico (irritar e desrespeitar) com outros membros do servidor. Aprenda a respeitar e conviver com outras pessoas!"
             }
             ModerationPredefinedPunishmentMessages.insert {
                 it[guild] = context.guildId.toLong()
@@ -79,7 +83,8 @@ class PredefinedReasonsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecu
             ModerationPredefinedPunishmentMessages.insert {
                 it[guild] = context.guildId.toLong()
                 it[short] = "selfbot"
-                it[message] = "Não é permitido o uso de selfbot no nosso servidor, caso continue, a conta poderá ser suspensa da plataforma e inutilizada."
+                it[message] =
+                    "Não é permitido o uso de selfbot no nosso servidor, caso continue, a conta poderá ser suspensa da plataforma e inutilizada."
             }
         }
 

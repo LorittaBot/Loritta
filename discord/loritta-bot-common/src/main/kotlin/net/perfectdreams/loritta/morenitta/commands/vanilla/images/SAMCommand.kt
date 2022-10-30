@@ -9,35 +9,36 @@ import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import kotlin.math.max
 
 class SAMCommand(m: LorittaBot) : ImageAbstractCommandBase(
-		m,
-		listOf("sam", "southamericamemes")
+    m,
+    listOf("sam", "southamericamemes")
 ) {
-	override fun command() = create {
-		localizedDescription("commands.command.sam.description")
-		localizedExamples(Command.SINGLE_IMAGE_EXAMPLES_KEY)
+    override fun command() = create {
+        localizedDescription("commands.command.sam.description")
+        localizedExamples(Command.SINGLE_IMAGE_EXAMPLES_KEY)
 
-		usage {
-			argument(ArgumentType.IMAGE) {}
-		}
+        usage {
+            argument(ArgumentType.IMAGE) {}
+        }
 
-		needsToUploadFiles = true
+        needsToUploadFiles = true
 
-		executes {
-			OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "brmemes sam")
+        executes {
+            OutdatedCommandUtils.sendOutdatedCommandMessage(this, locale, "brmemes sam")
 
-			val div = 1.5
+            val div = 1.5
 
-			val image = validate(image(0))
+            val image = validate(image(0))
 
-			val height = (image.height / div).toInt() // Baseando na altura
-			val seloSouthAmericaMemes = loritta.assets.loadImage("selo_sam.png", loadFromCache = true).getScaledInstance(height, height, Image.ScaleType.SMOOTH)
+            val height = (image.height / div).toInt() // Baseando na altura
+            val seloSouthAmericaMemes = loritta.assets.loadImage("selo_sam.png", loadFromCache = true)
+                .getScaledInstance(height, height, Image.ScaleType.SMOOTH)
 
-			val x = loritta.random.nextInt(0, max(1, image.width - seloSouthAmericaMemes.width))
-			val y = loritta.random.nextInt(0, max(1, image.height - seloSouthAmericaMemes.height))
+            val x = loritta.random.nextInt(0, max(1, image.width - seloSouthAmericaMemes.width))
+            val y = loritta.random.nextInt(0, max(1, image.height - seloSouthAmericaMemes.height))
 
-			image.createGraphics().drawImage(seloSouthAmericaMemes, x, y)
+            image.createGraphics().drawImage(seloSouthAmericaMemes, x, y)
 
-			sendImage(image, "south_america_memes.png")
-		}
-	}
+            sendImage(image, "south_america_memes.png")
+        }
+    }
 }

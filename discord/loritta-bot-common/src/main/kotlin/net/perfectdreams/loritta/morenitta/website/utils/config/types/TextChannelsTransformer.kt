@@ -18,10 +18,10 @@ object TextChannelsTransformer : ConfigTransformer {
     override suspend fun toJson(guild: Guild, serverConfig: ServerConfig): JsonElement {
         return guild.textChannels.map {
             jsonObject(
-                    "id" to it.idLong,
-                    "canTalk" to it.canTalk(),
-                    "name" to it.name,
-                    "topic" to it.topic
+                "id" to it.idLong,
+                "canTalk" to it.canTalk(),
+                "name" to it.name,
+                "topic" to it.topic
             )
         }.toJsonArray()
     }

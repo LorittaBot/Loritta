@@ -9,15 +9,11 @@ import net.perfectdreams.discordinteraktions.common.builder.message.MessageBuild
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosEvento
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.eventTypeWithStatus
-import net.perfectdreams.loritta.cinnamon.pudding.data.CorreiosPackageUpdateUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxTaxedUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.DailyTaxWarnUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.UnknownUserNotification
-import net.perfectdreams.loritta.cinnamon.pudding.data.UserNotification
+import net.perfectdreams.loritta.cinnamon.pudding.data.*
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 object NotificationUtils {
     private val KTX_DATETIME_CORREIOS_OFFSET = UtcOffset(-3)
@@ -37,6 +33,7 @@ object NotificationUtils {
                     notification
                 )
             }
+
             is DailyTaxWarnUserNotification -> {
                 return UserUtils.buildDailyTaxMessage(
                     i18nContext,
@@ -45,13 +42,15 @@ object NotificationUtils {
                     notification
                 )
             }
+
             is CorreiosPackageUpdateUserNotification -> {
                 val event = Json.decodeFromJsonElement<CorreiosEvento>(notification.event)
 
                 return {
                     embed {
                         // Package ID here
-                        title = i18nContext.get(I18nKeysData.Commands.Command.Package.PackageUpdate(notification.trackingId))
+                        title =
+                            i18nContext.get(I18nKeysData.Commands.Command.Package.PackageUpdate(notification.trackingId))
 
                         val eventTypeWithStatus = event.eventTypeWithStatus
 
@@ -67,6 +66,7 @@ object NotificationUtils {
                     }
                 }
             }
+
             is UnknownUserNotification -> TODO()
         }
     }

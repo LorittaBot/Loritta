@@ -13,11 +13,18 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class AuditLogRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/audit-log") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		val variables = call.legacyVariables(loritta, locale)
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        val variables = call.legacyVariables(loritta, locale)
 
-		variables["saveType"] = "audit_log"
+        variables["saveType"] = "audit_log"
 
-		call.respondHtml(evaluate("configure_audit_log.html", variables))
-	}
+        call.respondHtml(evaluate("configure_audit_log.html", variables))
+    }
 }

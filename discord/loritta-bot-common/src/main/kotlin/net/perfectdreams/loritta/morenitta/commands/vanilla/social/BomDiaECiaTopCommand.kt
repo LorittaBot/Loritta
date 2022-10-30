@@ -13,64 +13,68 @@ import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.count
 import org.jetbrains.exposed.sql.selectAll
 
-class BomDiaECiaTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("bomdiaecia top", "bd&c top", "bdc top"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
-	override fun command() = create {
-		localizedDescription("commands.command.bomdiaeciatop.description")
+class BomDiaECiaTopCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("bomdiaecia top", "bd&c top", "bdc top"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL
+) {
+    override fun command() = create {
+        localizedDescription("commands.command.bomdiaeciatop.description")
 
-		arguments {
-			argument(ArgumentType.NUMBER) {
-				optional = true
-			}
-		}
+        arguments {
+            argument(ArgumentType.NUMBER) {
+                optional = true
+            }
+        }
 
-		executesDiscord {
-			var page = args.getOrNull(0)?.toLongOrNull()
+        executesDiscord {
+            var page = args.getOrNull(0)?.toLongOrNull()
 
-			if (page != null && !RankingGenerator.isValidRankingPage(page)) {
-				reply(
-					LorittaReply(
-						locale["commands.invalidRankingPage"],
-						Constants.ERROR
-					)
-				)
-				return@executesDiscord
-			}
+            if (page != null && !RankingGenerator.isValidRankingPage(page)) {
+                reply(
+                    LorittaReply(
+                        locale["commands.invalidRankingPage"],
+                        Constants.ERROR
+                    )
+                )
+                return@executesDiscord
+            }
 
-			if (page != null)
-				page -= 1
+            if (page != null)
+                page -= 1
 
-			if (page == null)
-				page = 0
+            if (page == null)
+                page = 0
 
-			val userId = BomDiaECiaWinners.userId
-			val userIdCount = BomDiaECiaWinners.userId.count()
+            val userId = BomDiaECiaWinners.userId
+            val userIdCount = BomDiaECiaWinners.userId.count()
 
-			val userData = loritta.newSuspendedTransaction {
-				BomDiaECiaWinners.slice(userId, userIdCount)
-					.selectAll()
-					.groupBy(userId)
-					.orderBy(userIdCount, SortOrder.DESC)
-					.limit(5, page * 5)
-					.toMutableList()
-			}
+            val userData = loritta.newSuspendedTransaction {
+                BomDiaECiaWinners.slice(userId, userIdCount)
+                    .selectAll()
+                    .groupBy(userId)
+                    .orderBy(userIdCount, SortOrder.DESC)
+                    .limit(5, page * 5)
+                    .toMutableList()
+            }
 
-			sendImage(
-				JVMImage(
-					RankingGenerator.generateRanking(
-						loritta,
-						"Ranking Global",
-						null,
-						userData.map {
-							RankingGenerator.UserRankInformation(
-								it[userId],
-								locale["commands.command.bomdiaeciatop.wonMatches", it[userIdCount]]
-							)
-						}
-					)
-				),
-				"rank.png",
-				getUserMention(true)
-			)
-		}
-	}
+            sendImage(
+                JVMImage(
+                    RankingGenerator.generateRanking(
+                        loritta,
+                        "Ranking Global",
+                        null,
+                        userData.map {
+                            RankingGenerator.UserRankInformation(
+                                it[userId],
+                                locale["commands.command.bomdiaeciatop.wonMatches", it[userIdCount]]
+                            )
+                        }
+                    )
+                ),
+                "rank.png",
+                getUserMention(true)
+            )
+        }
+    }
 }

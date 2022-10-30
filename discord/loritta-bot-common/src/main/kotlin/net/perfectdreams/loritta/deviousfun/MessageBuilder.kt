@@ -132,7 +132,9 @@ class MessageBuilder {
      * @return Updated MessageAction for chaining convenience
      */
     suspend fun referenceIfPossible(message: Message): MessageBuilder {
-        if (message.isFromGuild && !message.guild.retrieveSelfMember().hasPermission(message.textChannel, Permission.ReadMessageHistory))
+        if (message.isFromGuild && !message.guild.retrieveSelfMember()
+                .hasPermission(message.textChannel, Permission.ReadMessageHistory)
+        )
             return this
         return this.reference(message.idSnowflake)
     }
@@ -146,7 +148,11 @@ class MessageBuilder {
      *
      * @return Updated MessageAction for chaining convenience
      */
-    suspend fun referenceIfPossible(message: Message, serverConfig: ServerConfig, addInlineReply: Boolean = true): MessageBuilder {
+    suspend fun referenceIfPossible(
+        message: Message,
+        serverConfig: ServerConfig,
+        addInlineReply: Boolean = true
+    ): MessageBuilder {
         // We check if deleteMessageAfterCommand is true because it doesn't matter trying to reply to a message that's going to be deleted.
         if (!addInlineReply || serverConfig.deleteMessageAfterCommand)
             return this

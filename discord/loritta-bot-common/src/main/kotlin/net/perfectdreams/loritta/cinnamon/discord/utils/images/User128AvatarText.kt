@@ -103,13 +103,25 @@ object User128AvatarText {
         var y = (rectangle.height / 2) - ((skipHeight - 4) * (lines.size - 1))
         for (line in lines) {
             graphics.color = strokeColor
-            for (strokeX in rectangle.x - strokeSize .. rectangle.x + strokeSize) {
-                for (strokeY in rectangle.y + y - strokeSize .. rectangle.y + y + strokeSize) {
-                    ImageUtils.drawCenteredString(loritta, graphics, line, Rectangle(strokeX, strokeY, rectangle.width, 24), allowedDrawableTypes = listOf(ImageUtils.DrawableType.TEXT))
+            for (strokeX in rectangle.x - strokeSize..rectangle.x + strokeSize) {
+                for (strokeY in rectangle.y + y - strokeSize..rectangle.y + y + strokeSize) {
+                    ImageUtils.drawCenteredString(
+                        loritta,
+                        graphics,
+                        line,
+                        Rectangle(strokeX, strokeY, rectangle.width, 24),
+                        allowedDrawableTypes = listOf(ImageUtils.DrawableType.TEXT)
+                    )
                 }
             }
             graphics.color = fontColor
-            ImageUtils.drawCenteredString(loritta, graphics, line, Rectangle(rectangle.x, rectangle.y + y, rectangle.width, 24), allowedDrawableTypes = listOf(ImageUtils.DrawableType.TEXT))
+            ImageUtils.drawCenteredString(
+                loritta,
+                graphics,
+                line,
+                Rectangle(rectangle.x, rectangle.y + y, rectangle.width, 24),
+                allowedDrawableTypes = listOf(ImageUtils.DrawableType.TEXT)
+            )
             y += skipHeight
         }
     }

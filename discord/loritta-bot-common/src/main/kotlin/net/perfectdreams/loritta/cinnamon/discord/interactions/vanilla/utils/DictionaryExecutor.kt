@@ -6,15 +6,15 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.footer
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.utils.declarations.DictionaryCommand
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jsoup.Jsoup
 import java.net.URLEncoder
 
@@ -112,7 +112,8 @@ class DictionaryExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSl
             embed {
                 color = Color(25, 89, 132)  // TODO: Move this to a object
 
-                title = "${Emotes.BlueBook} ${context.i18nContext.get(DictionaryCommand.I18N_PREFIX.MeaningOf(word.text()))}"
+                title =
+                    "${Emotes.BlueBook} ${context.i18nContext.get(DictionaryCommand.I18N_PREFIX.MeaningOf(word.text()))}"
 
                 this.description = buildString {
                     append("*${type.text()}*")

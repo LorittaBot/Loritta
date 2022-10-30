@@ -21,101 +21,125 @@ import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import kotlin.streams.toList
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinfo", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.emojiinfo.description")
+class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "emojiinfo",
+    category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD
+) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.emojiinfo.description")
 
-	override fun getUsage(): CommandArguments {
-		return arguments {
-			argument(ArgumentType.EMOTE) {}
-		}
-	}
+    override fun getUsage(): CommandArguments {
+        return arguments {
+            argument(ArgumentType.EMOTE) {}
+        }
+    }
 
-	override suspend fun run(context: CommandContext, locale: BaseLocale) {
-		if (context.rawArgs.isNotEmpty()) {
-			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "emoji info")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        if (context.rawArgs.isNotEmpty()) {
+            OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "emoji info")
 
-			val arg0 = context.rawArgs[0]
-			val firstEmote = context.message.emotes.firstOrNull()
-			if (firstEmote != null) {
-				// Emoji do Discord (via menção)
-				showDiscordEmoteInfo(context, firstEmote)
-				return
-			}
+            val arg0 = context.rawArgs[0]
+            val firstEmote = context.message.emotes.firstOrNull()
+            if (firstEmote != null) {
+                // Emoji do Discord (via menção)
+                showDiscordEmoteInfo(context, firstEmote)
+                return
+            }
 
-			if (arg0.isValidSnowflake()) {
-				val emote = context.guildOrNull?.getEmoteById(arg0)
-				if (emote != null) {
-					// Emoji do Discord (via ID)
-					showDiscordEmoteInfo(context, emote)
-					return
-				} else {
-					context.reply(
-                            LorittaReply(
-                                    locale["commands.command.emoji.notFoundId", "`$arg0`"],
-                                    Constants.ERROR
-                            )
-					)
-					return
-				}
-			}
+            if (arg0.isValidSnowflake()) {
+                val emote = context.guildOrNull?.getEmoteById(arg0)
+                if (emote != null) {
+                    // Emoji do Discord (via ID)
+                    showDiscordEmoteInfo(context, emote)
+                    return
+                } else {
+                    context.reply(
+                        LorittaReply(
+                            locale["commands.command.emoji.notFoundId", "`$arg0`"],
+                            Constants.ERROR
+                        )
+                    )
+                    return
+                }
+            }
 
-			val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(arg0).find()
+            val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(arg0).find()
 
-			if (isUnicodeEmoji) {
-				val codePoints = arg0.codePoints().toList().map { LorittaUtils.toUnicode(it).substring(2) }
+            if (isUnicodeEmoji) {
+                val codePoints = arg0.codePoints().toList().map { LorittaUtils.toUnicode(it).substring(2) }
 
-				val value = codePoints.joinToString(separator = "-")
-				val emojiUrl = "https://twemoji.maxcdn.com/2/72x72/$value.png"
+                val value = codePoints.joinToString(separator = "-")
+                val emojiUrl = "https://twemoji.maxcdn.com/2/72x72/$value.png"
 
-				val embed = EmbedBuilder()
-				embed.setColor(Constants.DISCORD_BLURPLE)
-				embed.setTitle("$arg0 ${context.locale["commands.command.emojiinfo.aboutEmoji"]}")
-				embed.setThumbnail(emojiUrl)
+                val embed = EmbedBuilder()
+                embed.setColor(Constants.DISCORD_BLURPLE)
+                embed.setTitle("$arg0 ${context.locale["commands.command.emojiinfo.aboutEmoji"]}")
+                embed.setThumbnail(emojiUrl)
 
-				val names = mutableListOf<String>()
-				arg0.codePoints().forEach {
-					val name = Character.getName(it)
-					if (name != null)
-						names.add(name)
-				}
+                val names = mutableListOf<String>()
+                arg0.codePoints().forEach {
+                    val name = Character.getName(it)
+                    if (name != null)
+                        names.add(name)
+                }
 
-				if (names.isNotEmpty())
-					embed.addField("\uD83D\uDD16 ${context.locale["commands.command.emojiinfo.emojiName"]}", "`${names.joinToString(" + ")}`", true)
+                if (names.isNotEmpty())
+                    embed.addField(
+                        "\uD83D\uDD16 ${context.locale["commands.command.emojiinfo.emojiName"]}",
+                        "`${names.joinToString(" + ")}`",
+                        true
+                    )
 
-				embed.addField("\uD83D\uDC40 ${context.locale["commands.command.emojiinfo.mention"]}", "`$arg0`", true)
-				embed.addField("\uD83D\uDCBB Unicode", "`${codePoints.map { "\\$it" }.joinToString("")}`", true)
-				embed.addField("⛓ Link", emojiUrl, true)
+                embed.addField("\uD83D\uDC40 ${context.locale["commands.command.emojiinfo.mention"]}", "`$arg0`", true)
+                embed.addField("\uD83D\uDCBB Unicode", "`${codePoints.map { "\\$it" }.joinToString("")}`", true)
+                embed.addField("⛓ Link", emojiUrl, true)
 
-				context.sendMessage(context.getAsMention(true), embed.build())
-			} else {
-				context.explain()
-			}
-		} else {
-			context.explain()
-		}
-	}
+                context.sendMessage(context.getAsMention(true), embed.build())
+            } else {
+                context.explain()
+            }
+        } else {
+            context.explain()
+        }
+    }
 
-	suspend fun showDiscordEmoteInfo(context: CommandContext, emote: DiscordEmote) {
-		context.sendMessage(context.getAsMention(true), getDiscordEmoteInfoEmbed(context, emote))
-	}
+    suspend fun showDiscordEmoteInfo(context: CommandContext, emote: DiscordEmote) {
+        context.sendMessage(context.getAsMention(true), getDiscordEmoteInfoEmbed(context, emote))
+    }
 
-	companion object {
-		fun getDiscordEmoteInfoEmbed(context: CommandContext, emote: DiscordEmote): DeviousEmbed {
-			val canUse = context.guildOrNull?.getEmoteById(emote.id) != null
-			val emoteTitle = if (canUse)
-				emote.asMention
-			else
-				"✨"
-			val embed = EmbedBuilder()
-			embed.setColor(Constants.DISCORD_BLURPLE)
-			embed.setTitle("$emoteTitle ${context.locale["commands.command.emojiinfo.aboutEmoji"]}")
-			embed.setThumbnail(emote.imageUrl)
-			embed.addField("\uD83D\uDD16 ${context.locale["commands.command.emojiinfo.emojiName"]}", "`${emote.name}`", true)
-			embed.addField("\uD83D\uDCBB ${context.locale["commands.command.emojiinfo.emojiId"]}", "`${emote.id}`", true)
-			embed.addField("\uD83D\uDC40 ${context.locale["commands.command.emojiinfo.mention"]}", "`${emote.asMention}`", true)
-			embed.addField("\uD83D\uDCC5 ${context.locale["commands.command.emojiinfo.emojiCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(emote.timeCreated, context.locale), true)
-			embed.addField("⛓ Link", emote.imageUrl + "?size=2048", true)
-			return embed.build()
-		}
-	}
+    companion object {
+        fun getDiscordEmoteInfoEmbed(context: CommandContext, emote: DiscordEmote): DeviousEmbed {
+            val canUse = context.guildOrNull?.getEmoteById(emote.id) != null
+            val emoteTitle = if (canUse)
+                emote.asMention
+            else
+                "✨"
+            val embed = EmbedBuilder()
+            embed.setColor(Constants.DISCORD_BLURPLE)
+            embed.setTitle("$emoteTitle ${context.locale["commands.command.emojiinfo.aboutEmoji"]}")
+            embed.setThumbnail(emote.imageUrl)
+            embed.addField(
+                "\uD83D\uDD16 ${context.locale["commands.command.emojiinfo.emojiName"]}",
+                "`${emote.name}`",
+                true
+            )
+            embed.addField(
+                "\uD83D\uDCBB ${context.locale["commands.command.emojiinfo.emojiId"]}",
+                "`${emote.id}`",
+                true
+            )
+            embed.addField(
+                "\uD83D\uDC40 ${context.locale["commands.command.emojiinfo.mention"]}",
+                "`${emote.asMention}`",
+                true
+            )
+            embed.addField(
+                "\uD83D\uDCC5 ${context.locale["commands.command.emojiinfo.emojiCreated"]}",
+                DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(emote.timeCreated, context.locale),
+                true
+            )
+            embed.addField("⛓ Link", emote.imageUrl + "?size=2048", true)
+            return embed.build()
+        }
+    }
 }

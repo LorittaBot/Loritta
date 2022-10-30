@@ -3,27 +3,28 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.so
 import dev.kord.common.Color
 import dev.kord.common.entity.Permission
 import io.ktor.client.plugins.*
-import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.entities.messages.editMessage
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.SoundboxCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`.declarations.SoundboxCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
 import net.perfectdreams.loritta.cinnamon.discord.voice.LorittaVoiceConnection
-import net.perfectdreams.loritta.cinnamon.pudding.data.notifications.*
-import java.util.*
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import kotlin.concurrent.thread
 
-class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: FalatronModelsManager) : CinnamonSlashCommandExecutor(loritta) {
+class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: FalatronModelsManager) :
+    CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val voice = string("voice", SoundboxCommand.I18N_PREFIX.Falatron.Options.Voice.Text) {
             cinnamonAutocomplete { _, focused ->
@@ -67,13 +68,20 @@ class FalatronExecutor(loritta: LorittaBot, private val falatronModelsManager: F
         // TODO: Reenable de defer after we remove the warning above
         // context.deferChannelMessage()
 
-        val userConnectedVoiceChannelId = loritta.cache.getUserConnectedVoiceChannel(guildId, context.user.id) ?: context.fail {
-            // Not in a voice channel
-            content = "Você precisa estar conectado em um canal de voz para usar o Falatron!"
-        }
+        val userConnectedVoiceChannelId =
+            loritta.cache.getUserConnectedVoiceChannel(guildId, context.user.id) ?: context.fail {
+                // Not in a voice channel
+                content = "Você precisa estar conectado em um canal de voz para usar o Falatron!"
+            }
 
         // Can we talk there?
-        if (!loritta.cache.lorittaHasPermission(context.guildId, userConnectedVoiceChannelId, Permission.Connect, Permission.Speak))
+        if (!loritta.cache.lorittaHasPermission(
+                context.guildId,
+                userConnectedVoiceChannelId,
+                Permission.Connect,
+                Permission.Speak
+            )
+        )
             context.fail {
                 // Looks like we can't...
                 content = "Desculpe, mas eu não tenho permissão para falar no canal <#${userConnectedVoiceChannelId}>!"

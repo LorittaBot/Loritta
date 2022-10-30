@@ -18,146 +18,182 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf("aviso"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
-	companion object {
-		private val LOCALE_PREFIX = "commands.command"
-	}
+class WarnCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "warn",
+    listOf("aviso"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
+    companion object {
+        private val LOCALE_PREFIX = "commands.command"
+    }
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.warn.description")
-	override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
-	override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.warn.description")
+    override fun getExamplesKey() = AdminUtils.PUNISHMENT_EXAMPLES_KEY
+    override fun getUsage() = AdminUtils.PUNISHMENT_USAGES
 
-	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.KickMembers)
-	}
+    override fun getDiscordPermissions(): List<Permission> {
+        return listOf(Permission.KickMembers)
+    }
 
-	override fun canUseInPrivateChannel(): Boolean {
-		return false
-	}
+    override fun canUseInPrivateChannel(): Boolean {
+        return false
+    }
 
-	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.KickMembers, Permission.BanMembers)
-	}
+    override fun getBotPermissions(): List<Permission> {
+        return listOf(Permission.KickMembers, Permission.BanMembers)
+    }
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.isNotEmpty()) {
-			val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        if (context.args.isNotEmpty()) {
+            val (users, rawReason) = AdminUtils.checkAndRetrieveAllValidUsersFromMessages(context) ?: return
 
-			for (user in users) {
-				val member = context.guild.retrieveMemberOrNull(user)
+            for (user in users) {
+                val member = context.guild.retrieveMemberOrNull(user)
 
-				if (member != null) {
-					if (!AdminUtils.checkForPermissions(context, member))
-						return
-				}
-			}
+                if (member != null) {
+                    if (!AdminUtils.checkForPermissions(context, member))
+                        return
+                }
+            }
 
-			val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
-			val punishmentActions = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
-			val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
+            val settings = AdminUtils.retrieveModerationInfo(loritta, context.config)
+            val punishmentActions = AdminUtils.retrieveWarnPunishmentActions(loritta, context.config)
+            val (reason, skipConfirmation, silent, delDays) = AdminUtils.getOptions(context, rawReason) ?: return
 
-			val warnCallback: (suspend (Message?, Boolean) -> Unit) = { message, isSilent ->
-				for (user in users) {
-					val member = context.guild.retrieveMemberOrNull(user)
-					if (!isSilent) {
-						if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
-							try {
-								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.warn.punishAction"], reason)
+            val warnCallback: (suspend (Message?, Boolean) -> Unit) = { message, isSilent ->
+                for (user in users) {
+                    val member = context.guild.retrieveMemberOrNull(user)
+                    if (!isSilent) {
+                        if (settings.sendPunishmentViaDm && context.guild.isMember(user)) {
+                            try {
+                                val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(
+                                    context.guild,
+                                    locale,
+                                    context.userHandle,
+                                    locale["commands.command.warn.punishAction"],
+                                    reason
+                                )
 
-								runCatching {
-									user.openPrivateChannel().sendMessage(embed)
-								}
-							} catch (e: Exception) {
-								e.printStackTrace()
-							}
-						}
+                                runCatching {
+                                    user.openPrivateChannel().sendMessage(embed)
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
 
-						val punishLogMessage = AdminUtils.getPunishmentForMessage(
-							context.loritta,
-							settings,
-							context.guild,
-							PunishmentAction.WARN
-						)
+                        val punishLogMessage = AdminUtils.getPunishmentForMessage(
+                            context.loritta,
+                            settings,
+                            context.guild,
+                            PunishmentAction.WARN
+                        )
 
-						if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
-							val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
+                        if (settings.sendPunishmentToPunishLog && settings.punishLogChannelId != null && punishLogMessage != null) {
+                            val textChannel = context.guild.getTextChannelById(settings.punishLogChannelId)
 
-							if (textChannel != null && textChannel.canTalk()) {
-								val message = MessageUtils.generateMessage(
-									punishLogMessage,
-									listOf(user, context.guild),
-									context.guild,
-									mutableMapOf(
-										"duration" to locale["$LOCALE_PREFIX.mute.forever"]
-									) + AdminUtils.getStaffCustomTokens(context.userHandle)
-											+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.warn")
-								)
+                            if (textChannel != null && textChannel.canTalk()) {
+                                val message = MessageUtils.generateMessage(
+                                    punishLogMessage,
+                                    listOf(user, context.guild),
+                                    context.guild,
+                                    mutableMapOf(
+                                        "duration" to locale["$LOCALE_PREFIX.mute.forever"]
+                                    ) + AdminUtils.getStaffCustomTokens(context.userHandle)
+                                            + AdminUtils.getPunishmentCustomTokens(
+                                        locale,
+                                        reason,
+                                        "$LOCALE_PREFIX.warn"
+                                    )
+                                )
 
-								message?.let {
-									runCatching { textChannel.sendMessage(it) }
-								}
-							}
-						}
-					}
+                                message?.let {
+                                    runCatching { textChannel.sendMessage(it) }
+                                }
+                            }
+                        }
+                    }
 
-					val warnCount = (
-							loritta.newSuspendedTransaction {
-								Warns.select { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }.count()
-							} + 1
-							).toInt()
+                    val warnCount = (
+                            loritta.newSuspendedTransaction {
+                                Warns.select { (Warns.guildId eq context.guild.idLong) and (Warns.userId eq user.idLong) }
+                                    .count()
+                            } + 1
+                            ).toInt()
 
-					val punishments = punishmentActions.filter { it.warnCount == warnCount }
+                    val punishments = punishmentActions.filter { it.warnCount == warnCount }
 
-					loop@ for (punishment in punishments) {
-						when {
-							punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(loritta, settings, context.guild, context.userHandle, locale, user, reason, isSilent, 0)
-							member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(context, settings, locale, member, user, reason, isSilent)
-							member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
-								val metadata = punishment.metadata ?: continue@loop
-								val obj = metadata.obj
-								val time = obj["time"].nullString?.let { TimeUtils.convertToMillisRelativeToNow(it) }
-								MuteCommand.muteUser(context, settings, member, time, locale, user, reason, isSilent)
-							}
-						}
-					}
+                    loop@ for (punishment in punishments) {
+                        when {
+                            punishment.punishmentAction == PunishmentAction.BAN -> BanCommand.ban(
+                                loritta,
+                                settings,
+                                context.guild,
+                                context.userHandle,
+                                locale,
+                                user,
+                                reason,
+                                isSilent,
+                                0
+                            )
 
-					loritta.newSuspendedTransaction {
-						Warn.new {
-							this.guildId = context.guild.idLong
-							this.userId = user.idLong
-							this.receivedAt = System.currentTimeMillis()
-							this.punishedById = context.userHandle.idLong
-							this.content = reason
-						}
-					}
-				}
+                            member != null && punishment.punishmentAction == PunishmentAction.KICK -> KickCommand.kick(
+                                context,
+                                settings,
+                                locale,
+                                member,
+                                user,
+                                reason,
+                                isSilent
+                            )
 
-				runCatching { message?.delete() }
+                            member != null && punishment.punishmentAction == PunishmentAction.MUTE -> {
+                                val metadata = punishment.metadata ?: continue@loop
+                                val obj = metadata.obj
+                                val time = obj["time"].nullString?.let { TimeUtils.convertToMillisRelativeToNow(it) }
+                                MuteCommand.muteUser(context, settings, member, time, locale, user, reason, isSilent)
+                            }
+                        }
+                    }
 
-				AdminUtils.sendSuccessfullyPunishedMessage(context, reason, true)
-			}
+                    loritta.newSuspendedTransaction {
+                        Warn.new {
+                            this.guildId = context.guild.idLong
+                            this.userId = user.idLong
+                            this.receivedAt = System.currentTimeMillis()
+                            this.punishedById = context.userHandle.idLong
+                            this.content = reason
+                        }
+                    }
+                }
 
-			if (skipConfirmation) {
-				warnCallback.invoke(null, silent)
-				return
-			}
+                runCatching { message?.delete() }
 
-			val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
-			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "warn")
+                AdminUtils.sendSuccessfullyPunishedMessage(context, reason, true)
+            }
 
-			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-					warnCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
-				}
-				return@onReactionAddByAuthor
-			}
+            if (skipConfirmation) {
+                warnCallback.invoke(null, silent)
+                return
+            }
 
-			runCatching { message.addReaction("✅") }
-			if (hasSilent) {
-				runCatching { message.addReaction("\uD83D\uDE4A") }
-			}
-		} else {
-			this.explain(context)
-		}
-	}
+            val hasSilent = settings.sendPunishmentViaDm || settings.sendPunishmentToPunishLog
+            val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "warn")
+
+            message.onReactionAddByAuthor(context) {
+                if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
+                    warnCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
+                }
+                return@onReactionAddByAuthor
+            }
+
+            runCatching { message.addReaction("✅") }
+            if (hasSilent) {
+                runCatching { message.addReaction("\uD83D\uDE4A") }
+            }
+        } else {
+            this.explain(context)
+        }
+    }
 }

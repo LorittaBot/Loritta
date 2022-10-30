@@ -10,7 +10,11 @@ import net.perfectdreams.loritta.morenitta.tables.BotVotes
 import net.perfectdreams.loritta.morenitta.utils.RankingGenerator
 import org.jetbrains.exposed.sql.*
 
-class DiscordBotListTopLocalCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("dbl top local"), net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class DiscordBotListTopLocalCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("dbl top local"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MISC
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command.dbltoplocal"
     }

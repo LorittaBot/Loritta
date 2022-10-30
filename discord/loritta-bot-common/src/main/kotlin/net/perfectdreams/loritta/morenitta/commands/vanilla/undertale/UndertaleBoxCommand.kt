@@ -18,78 +18,94 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 
-class UndertaleBoxCommand(loritta: LorittaBot) : AbstractCommand(loritta, "utbox", listOf("undertalebox"), net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.utbox.description")
+class UndertaleBoxCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "utbox",
+    listOf("undertalebox"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE
+) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.utbox.description")
 
-	override fun getExamples(): List<String> {
-		return listOf("@Loritta Legendary being made of every SOUL in the underground.")
-	}
+    override fun getExamples(): List<String> {
+        return listOf("@Loritta Legendary being made of every SOUL in the underground.")
+    }
 
-	// TODO: Fix Usage
+    // TODO: Fix Usage
 
-	override fun needsToUploadFiles(): Boolean {
-		return true
-	}
+    override fun needsToUploadFiles(): Boolean {
+        return true
+    }
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "undertale textbox")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "undertale textbox")
 
-		try {
-			if (context.args.size >= 1) {
-				var user = context.userHandle
-				val mentionedUser = context.getUserAt(0)
-				var str = context.args.joinToString(" ") // Primeiro nós juntamos tudo
+        try {
+            if (context.args.size >= 1) {
+                var user = context.userHandle
+                val mentionedUser = context.getUserAt(0)
+                var str = context.args.joinToString(" ") // Primeiro nós juntamos tudo
 
-				if (mentionedUser != null) {
-					user = mentionedUser
-					str = str.drop(1) // Remover a menção detectada
-				}
+                if (mentionedUser != null) {
+                    user = mentionedUser
+                    str = str.drop(1) // Remover a menção detectada
+                }
 
-				// Mas ok, ainda tem uma coisa chamada "nome do usuário mencionado"
-				// Sabe o que a gente faz com ele? Gambiarra!
-				// TODO: Menos gambiarra
-				val bi = readImage(File(LorittaBot.ASSETS + "undertale_dialogbox.png"))
-				val graph = bi.graphics
+                // Mas ok, ainda tem uma coisa chamada "nome do usuário mencionado"
+                // Sabe o que a gente faz com ele? Gambiarra!
+                // TODO: Menos gambiarra
+                val bi = readImage(File(LorittaBot.ASSETS + "undertale_dialogbox.png"))
+                val graph = bi.graphics
 
-				val determinationMono = Constants.DETERMINATION_MONO
-				graph.font = determinationMono.deriveFont(Font.PLAIN, 27f)
-				graph.color = Color.WHITE
+                val determinationMono = Constants.DETERMINATION_MONO
+                graph.font = determinationMono.deriveFont(Font.PLAIN, 27f)
+                graph.color = Color.WHITE
 
-				// graph.getFontMetrics(determinationMono) tem problemas, a width do char é sempre 1 (bug?)
-				ImageUtils.drawTextWrap(loritta, str, 180, 56 + determinationMono.size, 578, 0, graph.fontMetrics, graph)
+                // graph.getFontMetrics(determinationMono) tem problemas, a width do char é sempre 1 (bug?)
+                ImageUtils.drawTextWrap(
+                    loritta,
+                    str,
+                    180,
+                    56 + determinationMono.size,
+                    578,
+                    0,
+                    graph.fontMetrics,
+                    graph
+                )
 
-				val avatarImg = LorittaUtils.downloadImage(loritta, user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))!!.getScaledInstance(128, 128, Image.SCALE_SMOOTH)
+                val avatarImg = LorittaUtils.downloadImage(loritta, user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))!!
+                    .getScaledInstance(128, 128, Image.SCALE_SMOOTH)
 
-				val blackWhite = BufferedImage(avatarImg.getWidth(null), avatarImg.getHeight(null), BufferedImage.TYPE_BYTE_GRAY)
-				val g2d = blackWhite.createGraphics()
-				g2d.drawImage(avatarImg, 0, 0, null)
-				blackWhite.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
+                val blackWhite =
+                    BufferedImage(avatarImg.getWidth(null), avatarImg.getHeight(null), BufferedImage.TYPE_BYTE_GRAY)
+                val g2d = blackWhite.createGraphics()
+                g2d.drawImage(avatarImg, 0, 0, null)
+                blackWhite.getScaledInstance(128, 128, BufferedImage.SCALE_SMOOTH)
 
-				if (true) {
-					// TODO: This
-					// graph.font = Constants.MINECRAFTIA.deriveFont(Font.PLAIN, 8f)
+                if (true) {
+                    // TODO: This
+                    // graph.font = Constants.MINECRAFTIA.deriveFont(Font.PLAIN, 8f)
 
-					val x = 0
-					val y = 166
-					graph.color = Color.BLACK
-					graph.drawString(user.name + "#" + user.discriminator, x + 1, y + 12)
-					graph.drawString(user.name + "#" + user.discriminator, x + 1, y + 14)
-					graph.drawString(user.name + "#" + user.discriminator, x, y + 13)
-					graph.drawString(user.name + "#" + user.discriminator, x + 2, y + 13)
-					graph.color = Color.WHITE
-					graph.drawString(user.name + "#" + user.discriminator, x + 1, y + 13)
-				}
+                    val x = 0
+                    val y = 166
+                    graph.color = Color.BLACK
+                    graph.drawString(user.name + "#" + user.discriminator, x + 1, y + 12)
+                    graph.drawString(user.name + "#" + user.discriminator, x + 1, y + 14)
+                    graph.drawString(user.name + "#" + user.discriminator, x, y + 13)
+                    graph.drawString(user.name + "#" + user.discriminator, x + 2, y + 13)
+                    graph.color = Color.WHITE
+                    graph.drawString(user.name + "#" + user.discriminator, x + 1, y + 13)
+                }
 
-				graph.drawImage(blackWhite, 20, 22, null)
+                graph.drawImage(blackWhite, 20, 22, null)
 
-				context.sendFile(bi, "undertale_box.png", context.getAsMention(true))
-			} else {
-				context.explain()
-			}
-		} catch (e: IOException) {
-			// TODO Auto-generated catch block
-			e.printStackTrace()
-		}
+                context.sendFile(bi, "undertale_box.png", context.getAsMention(true))
+            } else {
+                context.explain()
+            }
+        } catch (e: IOException) {
+            // TODO Auto-generated catch block
+            e.printStackTrace()
+        }
 
-	}
+    }
 }

@@ -22,7 +22,11 @@ class MinecraftCommand(languageManager: LanguageManager) : CinnamonSlashCommandD
         val I18N_CATEGORY_PREFIX = I18nKeysData.Commands.Category.Minecraft
     }
 
-    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.MINECRAFT, I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */) {
+    override fun declaration() = slashCommand(
+        I18N_PREFIX.Label,
+        CommandCategory.MINECRAFT,
+        I18N_CATEGORY_PREFIX.Name /* TODO: Use the category description */
+    ) {
         subcommandGroup(I18N_PREFIX.Player.Label, I18N_PREFIX.Player.Description) {
             subcommand(I18N_PREFIX.Player.Skin.Label, I18N_PREFIX.Player.Skin.Description) {
                 executor = { McSkinExecutor(it, it.mojangApi) }

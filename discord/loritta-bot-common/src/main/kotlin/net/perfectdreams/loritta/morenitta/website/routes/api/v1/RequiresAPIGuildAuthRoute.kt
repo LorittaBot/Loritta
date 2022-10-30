@@ -20,56 +20,72 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.urlQueryString
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardPath: String) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/guilds/{guildId}$originalDashboardPath") {
-	abstract suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig)
+abstract class RequiresAPIGuildAuthRoute(loritta: LorittaBot, originalDashboardPath: String) :
+    RequiresAPIDiscordLoginRoute(loritta, "/api/v1/guilds/{guildId}$originalDashboardPath") {
+    abstract suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    )
 
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val guildId = call.parameters["guildId"] ?: return
+    override suspend fun onAuthenticatedRequest(
+        call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification
+    ) {
+        val guildId = call.parameters["guildId"] ?: return
 
-		val shardId = DiscordUtils.getShardIdFromGuildId(loritta, guildId.toLong())
+        val shardId = DiscordUtils.getShardIdFromGuildId(loritta, guildId.toLong())
 
-		val host = call.request.hostFromHeader()
+        val host = call.request.hostFromHeader()
 
-		val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
-		val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loritta, loriShardId)
+        val loriShardId = DiscordUtils.getLorittaClusterIdForShardId(loritta, shardId)
+        val theNewUrl = DiscordUtils.getUrlForLorittaClusterId(loritta, loriShardId)
 
-		if (host != theNewUrl)
-			redirect("https://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
+        if (host != theNewUrl)
+            redirect("https://$theNewUrl${call.request.path()}${call.request.urlQueryString}", false)
 
-		val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
-				?: throw WebsiteAPIException(
-						HttpStatusCode.BadRequest,
-						WebsiteUtils.createErrorPayload(
-								loritta,
-								LoriWebCode.UNKNOWN_GUILD,
-								"Guild $guildId doesn't exist or it isn't loaded yet"
-						)
-				)
+        val jdaGuild = loritta.lorittaShards.getGuildById(guildId)
+            ?: throw WebsiteAPIException(
+                HttpStatusCode.BadRequest,
+                WebsiteUtils.createErrorPayload(
+                    loritta,
+                    LoriWebCode.UNKNOWN_GUILD,
+                    "Guild $guildId doesn't exist or it isn't loaded yet"
+                )
+            )
 
-		val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
+        val serverConfig = loritta.getOrCreateServerConfig(guildId.toLong()) // get server config for guild
 
-		val id = userIdentification.id
-		val member = jdaGuild.retrieveMemberById(id)
-		var canAccessDashboardViaPermission = false
+        val id = userIdentification.id
+        val member = jdaGuild.retrieveMemberById(id)
+        var canAccessDashboardViaPermission = false
 
-		if (member != null) {
-			val lorittaUser = GuildLorittaUser(loritta, member, LorittaUser.loadMemberLorittaPermissions(loritta, serverConfig, member), loritta.getOrCreateLorittaProfile(id.toLong()))
+        if (member != null) {
+            val lorittaUser = GuildLorittaUser(
+                loritta,
+                member,
+                LorittaUser.loadMemberLorittaPermissions(loritta, serverConfig, member),
+                loritta.getOrCreateLorittaProfile(id.toLong())
+            )
 
-			canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
-		}
+            canAccessDashboardViaPermission = lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
+        }
 
-		val canBypass = loritta.isOwner(userIdentification.id) || canAccessDashboardViaPermission
-		if (!canBypass && !(member?.hasPermission(Permission.Administrator) == true || member?.hasPermission(Permission.ManageGuild) == true || jdaGuild.ownerId == userIdentification.id)) {
-			throw WebsiteAPIException(
-					HttpStatusCode.Forbidden,
-					WebsiteUtils.createErrorPayload(
-							loritta,
-							LoriWebCode.FORBIDDEN,
-							"User ${member?.user?.id} doesn't have permission to edit ${guildId}'s config"
-					)
-			)
-		}
+        val canBypass = loritta.isOwner(userIdentification.id) || canAccessDashboardViaPermission
+        if (!canBypass && !(member?.hasPermission(Permission.Administrator) == true || member?.hasPermission(Permission.ManageGuild) == true || jdaGuild.ownerId == userIdentification.id)) {
+            throw WebsiteAPIException(
+                HttpStatusCode.Forbidden,
+                WebsiteUtils.createErrorPayload(
+                    loritta,
+                    LoriWebCode.FORBIDDEN,
+                    "User ${member?.user?.id} doesn't have permission to edit ${guildId}'s config"
+                )
+            )
+        }
 
-		return onGuildAuthenticatedRequest(call, discordAuth, userIdentification, jdaGuild, serverConfig)
-	}
+        return onGuildAuthenticatedRequest(call, discordAuth, userIdentification, jdaGuild, serverConfig)
+    }
 }

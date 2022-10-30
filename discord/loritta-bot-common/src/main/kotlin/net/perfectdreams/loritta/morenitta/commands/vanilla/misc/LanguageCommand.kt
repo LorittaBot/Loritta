@@ -15,14 +15,19 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.awt.Color
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language", listOf("linguagem", "speak", "lang"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
+class LanguageCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "language",
+    listOf("linguagem", "speak", "lang"),
+    category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC
+) {
     private val resetPersonalLanguageEmote = "\uD83D\uDE45"
 
     override fun getDescriptionKey() = LocaleKeyData(
-            "commands.command.language.description",
-            listOf(
-                    LocaleStringData("\uD83D\uDE0A")
-            )
+        "commands.command.language.description",
+        listOf(
+            LocaleStringData("\uD83D\uDE0A")
+        )
     )
 
     override fun getDiscordPermissions(): List<Permission> {
@@ -32,105 +37,106 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
     override suspend fun run(context: CommandContext, locale: BaseLocale) {
         val profile = loritta.getOrCreateLorittaProfile(context.userHandle.idLong)
 
-        val hasPersonalLanguage = loritta.newSuspendedTransaction { profile.settings.language != null && context.isPrivateChannel }
+        val hasPersonalLanguage =
+            loritta.newSuspendedTransaction { profile.settings.language != null && context.isPrivateChannel }
 
         val embed = EmbedBuilder()
         embed.setColor(Color(0, 193, 223))
 
         val validLanguages = listOf(
-                LocaleWrapper(
-                        "Português-Brasil",
-                        loritta.localeManager.getLocaleById("default"),
-                        "\uD83C\uDDE7\uD83C\uDDF7",
-                        false
-                ),
-                /* LocaleWrapper(
-                        "Português-Portugal",
-                        loritta.localeManager.getLocaleById("pt-pt"),
-                        loritta.getLegacyLocaleById("pt-pt"),
-                        "\uD83C\uDDF5\uD83C\uDDF9"
-                ), */
-                LocaleWrapper(
-                        "English (United States)",
-                        loritta.localeManager.getLocaleById("en-us"),
-                        "\uD83C\uDDFA\uD83C\uDDF8",
-                        false
-                ),
-                LocaleWrapper(
-                        "Español",
-                        loritta.localeManager.getLocaleById("es"),
-                        "\uD83C\uDDEA\uD83C\uDDF8",
-                        false
-                ),
-                LocaleWrapper(
-                        "Português-Funk",
-                        loritta.localeManager.getLocaleById("pt-funk"),
-                        "<:loritta_quebrada:338679008210190336>",
-                        true
-                ),
-                LocaleWrapper(
-                        "Português-Furry",
-                        loritta.localeManager.getLocaleById("pt-furry"),
-                        "\uD83D\uDC3E",
-                        true
-                ),
-                LocaleWrapper(
-                        "English-Furry",
-                        loritta.localeManager.getLocaleById("en-furry"),
-                        "\uD83D\uDC31",
-                        true
-                )
+            LocaleWrapper(
+                "Português-Brasil",
+                loritta.localeManager.getLocaleById("default"),
+                "\uD83C\uDDE7\uD83C\uDDF7",
+                false
+            ),
+            /* LocaleWrapper(
+                    "Português-Portugal",
+                    loritta.localeManager.getLocaleById("pt-pt"),
+                    loritta.getLegacyLocaleById("pt-pt"),
+                    "\uD83C\uDDF5\uD83C\uDDF9"
+            ), */
+            LocaleWrapper(
+                "English (United States)",
+                loritta.localeManager.getLocaleById("en-us"),
+                "\uD83C\uDDFA\uD83C\uDDF8",
+                false
+            ),
+            LocaleWrapper(
+                "Español",
+                loritta.localeManager.getLocaleById("es"),
+                "\uD83C\uDDEA\uD83C\uDDF8",
+                false
+            ),
+            LocaleWrapper(
+                "Português-Funk",
+                loritta.localeManager.getLocaleById("pt-funk"),
+                "<:loritta_quebrada:338679008210190336>",
+                true
+            ),
+            LocaleWrapper(
+                "Português-Furry",
+                loritta.localeManager.getLocaleById("pt-furry"),
+                "\uD83D\uDC3E",
+                true
+            ),
+            LocaleWrapper(
+                "English-Furry",
+                loritta.localeManager.getLocaleById("en-furry"),
+                "\uD83D\uDC31",
+                true
+            )
         )
 
         if (context.rawArgs.getOrNull(0) == "br-debug") {
             activateLanguage(
-                    context,
-                    profile,
-                    LocaleWrapper(
-                            "Auto-PT-BR-Debug",
-                            loritta.localeManager.getLocaleById("br-debug"),
-                            "\uD83D\uDC31",
-                            true
-                    )
+                context,
+                profile,
+                LocaleWrapper(
+                    "Auto-PT-BR-Debug",
+                    loritta.localeManager.getLocaleById("br-debug"),
+                    "\uD83D\uDC31",
+                    true
+                )
             )
             return
         }
 
         if (context.rawArgs.getOrNull(0) == "en-debug") {
             activateLanguage(
-                    context,
-                    profile,
-                    LocaleWrapper(
-                            "Auto-EN-Debug",
-                            loritta.localeManager.getLocaleById("en-debug"),
-                            "\uD83D\uDC31",
-                            true
-                    )
+                context,
+                profile,
+                LocaleWrapper(
+                    "Auto-EN-Debug",
+                    loritta.localeManager.getLocaleById("en-debug"),
+                    "\uD83D\uDC31",
+                    true
+                )
             )
             return
         }
 
         val message = context.sendMessage(
-                context.getAsMention(true),
-                buildLanguageEmbed(
-                        locale,
-                        validLanguages.filter { !it.isSecret },
-                        context.isPrivateChannel,
-                        hasPersonalLanguage
-                )
+            context.getAsMention(true),
+            buildLanguageEmbed(
+                locale,
+                validLanguages.filter { !it.isSecret },
+                context.isPrivateChannel,
+                hasPersonalLanguage
+            )
         )
 
         message.onReactionAddByAuthor(context) {
             if (it.reactionEmote.isEmote("426183783008698391")) {
                 message.edit(
-                        " ",
-                        buildLanguageEmbed(
-                                locale,
-                                validLanguages.filter { it.isSecret },
-                                context.isPrivateChannel,
-                                hasPersonalLanguage
-                        ),
-                        true
+                    " ",
+                    buildLanguageEmbed(
+                        locale,
+                        validLanguages.filter { it.isSecret },
+                        context.isPrivateChannel,
+                        hasPersonalLanguage
+                    ),
+                    true
                 )
 
                 for (wrapper in validLanguages.filter { it.isSecret }) {
@@ -146,9 +152,9 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
                     profile.settings.language = null
                 }
                 context.reply(
-                        LorittaReply(
-                                locale["commands.command.language.removedPersonalLanguage"]
-                        )
+                    LorittaReply(
+                        locale["commands.command.language.removedPersonalLanguage"]
+                    )
                 )
                 return@onReactionAddByAuthor
             }
@@ -163,7 +169,8 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
 
             runCatching { message.delete() }
             activateLanguage(context, profile, newLanguage
-                    ?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel)
+                ?: validLanguages.first { it.locale.id == "default" }, context.isPrivateChannel
+            )
         }
 
         for (wrapper in validLanguages.filter { !it.isSecret }) {
@@ -176,7 +183,12 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
         runCatching { if (hasPersonalLanguage) message.addReaction(resetPersonalLanguageEmote) }
     }
 
-    private suspend fun activateLanguage(context: CommandContext, profile: Profile, newLanguage: LocaleWrapper, isPrivateChannel: Boolean = false) {
+    private suspend fun activateLanguage(
+        context: CommandContext,
+        profile: Profile,
+        newLanguage: LocaleWrapper,
+        isPrivateChannel: Boolean = false
+    ) {
         var localeId = newLanguage.locale.id
 
         loritta.newSuspendedTransaction {
@@ -197,7 +209,12 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
             context.reply(newLocale["commands.command.language.serverLanguageChanged", "`${localeId}`"], "\uD83C\uDFA4")
     }
 
-    private suspend fun buildLanguageEmbed(locale: BaseLocale, languages: List<LocaleWrapper>, isPrivateChannel: Boolean, hasPersonalLanguage: Boolean): DeviousEmbed {
+    private suspend fun buildLanguageEmbed(
+        locale: BaseLocale,
+        languages: List<LocaleWrapper>,
+        isPrivateChannel: Boolean,
+        hasPersonalLanguage: Boolean
+    ): DeviousEmbed {
         val embed = EmbedBuilder()
         embed.setColor(Color(0, 193, 223))
         embed.setTitle("\uD83C\uDF0E " + locale["commands.command.language.pleaseSelectYourLanguage"])
@@ -213,18 +230,19 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
             embed.setFooter(locale["commands.command.language.personalLanguageRemovalTip", resetPersonalLanguageEmote])
 
         for (wrapper in languages) {
-            val translators = wrapper.locale.getList("loritta.translationAuthors").mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it.toLong()) }
+            val translators = wrapper.locale.getList("loritta.translationAuthors")
+                .mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it.toLong()) }
 
             embed.addField(
-                    wrapper.emoteName + " " + wrapper.name,
-                    "**${locale["commands.command.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
-                    true
+                wrapper.emoteName + " " + wrapper.name,
+                "**${locale["commands.command.language.translatedBy"]}:** ${translators.joinToString(transform = { "`${it.name}`" })}",
+                true
             )
         }
         embed.addField(
-                locale["commands.command.language.helpUsTranslate"],
-                loritta.config.loritta.crowdin.url,
-                false
+            locale["commands.command.language.helpUsTranslate"],
+            loritta.config.loritta.crowdin.url,
+            false
         )
         return embed.build()
     }

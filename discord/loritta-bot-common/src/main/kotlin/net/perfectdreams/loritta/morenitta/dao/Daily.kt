@@ -6,11 +6,11 @@ import org.jetbrains.exposed.dao.LongEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
 class Daily(id: EntityID<Long>) : LongEntity(id) {
-	companion object : LongEntityClass<Daily>(Dailies)
+    companion object : LongEntityClass<Daily>(Dailies)
 
-	var receivedById by Dailies.receivedById
-	var receivedAt by Dailies.receivedAt
-	var ip by Dailies.ip
-	var email by Dailies.email
-	var userAgent by Dailies.userAgent
+    var receivedById by Dailies.receivedById
+    var receivedAt by Dailies.receivedAt
+    var ip by Dailies.ip
+    var email by Dailies.email
+    var userAgent by Dailies.userAgent
 }

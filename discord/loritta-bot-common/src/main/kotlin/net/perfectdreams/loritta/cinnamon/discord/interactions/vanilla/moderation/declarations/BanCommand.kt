@@ -18,7 +18,7 @@ class BanCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclara
     override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.MODERATION, I18N_PREFIX.Description) {
         dmPermission = false
         defaultMemberPermissions = Permissions {
-            + Permission.BanMembers
+            +Permission.BanMembers
         }
 
         executor = { BanExecutor(it) }

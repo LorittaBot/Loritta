@@ -26,7 +26,10 @@ class BetCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclara
             }
         }
 
-        subcommand(COINFLIP_GLOBAL_I18N_PREFIX.DiscordOldDiscordAppWorkaroundLabel, COINFLIP_GLOBAL_I18N_PREFIX.Description) {
+        subcommand(
+            COINFLIP_GLOBAL_I18N_PREFIX.DiscordOldDiscordAppWorkaroundLabel,
+            COINFLIP_GLOBAL_I18N_PREFIX.Description
+        ) {
             executor = { CoinFlipBetGlobalExecutor(it) }
         }
     }

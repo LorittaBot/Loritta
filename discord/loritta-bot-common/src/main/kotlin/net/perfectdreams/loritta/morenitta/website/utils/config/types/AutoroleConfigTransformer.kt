@@ -18,10 +18,10 @@ class AutoroleConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
         }
 
         return jsonObject(
-                "enabled" to (autoroleConfig?.enabled ?: false),
-                "roles" to (autoroleConfig?.roles ?: arrayOf()).toList().toJsonArray(),
-                "giveRolesAfter" to (autoroleConfig?.giveRolesAfter),
-                "giveOnlyAfterMessageWasSent" to (autoroleConfig?.giveOnlyAfterMessageWasSent ?: false)
+            "enabled" to (autoroleConfig?.enabled ?: false),
+            "roles" to (autoroleConfig?.roles ?: arrayOf()).toList().toJsonArray(),
+            "giveRolesAfter" to (autoroleConfig?.giveRolesAfter),
+            "giveOnlyAfterMessageWasSent" to (autoroleConfig?.giveOnlyAfterMessageWasSent ?: false)
         )
     }
 

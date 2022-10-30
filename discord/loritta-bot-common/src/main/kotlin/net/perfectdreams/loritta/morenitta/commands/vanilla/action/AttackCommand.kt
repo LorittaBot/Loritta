@@ -4,7 +4,7 @@ import net.perfectdreams.loritta.morenitta.LorittaLauncher
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.awt.Color
 
-class AttackCommand(loritta: LorittaBot): ActionCommand(loritta, listOf("attack", "atacar")) {
+class AttackCommand(loritta: LorittaBot) : ActionCommand(loritta, listOf("attack", "atacar")) {
     override fun create(): ActionCommandDSL = action {
         emoji = "\uD83E\uDD4A"
         color = Color(244, 67, 54)

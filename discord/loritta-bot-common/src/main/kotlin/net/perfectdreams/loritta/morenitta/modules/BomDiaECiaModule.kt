@@ -10,17 +10,35 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 
 class BomDiaECiaModule(val loritta: LorittaBot) : MessageReceivedModule {
-	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
-		return miscellaneousConfig?.enableBomDiaECia ?: false
-	}
+    override suspend fun matches(
+        event: LorittaMessageEvent,
+        lorittaUser: LorittaUser,
+        lorittaProfile: Profile?,
+        serverConfig: ServerConfig,
+        locale: BaseLocale
+    ): Boolean {
+        val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(
+            loritta,
+            ServerConfig::miscellaneousConfig
+        )
+        return miscellaneousConfig?.enableBomDiaECia ?: false
+    }
 
-	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		val activeTextChannelInfo = loritta.bomDiaECia.activeTextChannels.getOrDefault(event.channel.id, BomDiaECia.YudiTextChannelInfo(serverConfig.commandPrefix))
-		activeTextChannelInfo.lastMessageSent = System.currentTimeMillis()
-		activeTextChannelInfo.users.add(event.author)
-		loritta.bomDiaECia.activeTextChannels[event.channel.id] = activeTextChannelInfo
+    override suspend fun handle(
+        event: LorittaMessageEvent,
+        lorittaUser: LorittaUser,
+        lorittaProfile: Profile?,
+        serverConfig: ServerConfig,
+        locale: BaseLocale
+    ): Boolean {
+        val activeTextChannelInfo = loritta.bomDiaECia.activeTextChannels.getOrDefault(
+            event.channel.id,
+            BomDiaECia.YudiTextChannelInfo(serverConfig.commandPrefix)
+        )
+        activeTextChannelInfo.lastMessageSent = System.currentTimeMillis()
+        activeTextChannelInfo.users.add(event.author)
+        loritta.bomDiaECia.activeTextChannels[event.channel.id] = activeTextChannelInfo
 
-		return false
-	}
+        return false
+    }
 }

@@ -14,7 +14,8 @@ class ImageToAsciiConverter(private val loritta: LorittaBot, private vararg val 
     }
 
     fun imgToAsciiImg(oldImage: BufferedImage): BufferedImage {
-        val resizedImage = resizeImg(oldImage, (oldImage.width / 6.5).roundToInt(), (oldImage.height / 6.5).roundToInt())
+        val resizedImage =
+            resizeImg(oldImage, (oldImage.width / 6.5).roundToInt(), (oldImage.height / 6.5).roundToInt())
         val asciiArt = imgToAscii(resizedImage)
 
         val asciiSplit = asciiArt.split("\n")
@@ -29,7 +30,9 @@ class ImageToAsciiConverter(private val loritta: LorittaBot, private vararg val 
         newImageGraph.color = Color(54, 57, 63)
         newImageGraph.fillRect(0, 0, width, height)
         newImageGraph.color = Color.BLACK
-        newImageGraph.font = Font.createFont(Font.PLAIN, File(loritta.config.loritta.folders.assets, "MorePerfectDOSVGA.ttf")).deriveFont(18f)
+        newImageGraph.font =
+            Font.createFont(Font.PLAIN, File(loritta.config.loritta.folders.assets, "MorePerfectDOSVGA.ttf"))
+                .deriveFont(18f)
 
         val fontMetrics = newImageGraph.fontMetrics
         var x = 0
@@ -68,14 +71,16 @@ class ImageToAsciiConverter(private val loritta: LorittaBot, private vararg val 
                     pixelColor.alpha == 0 -> ' '
 
                     AsciiOptions.DITHER in options -> {
-                        val gValue = pixelColor.red.toDouble() * 0.2989 + pixelColor.blue.toDouble() * 0.5870 + pixelColor.green.toDouble() * 0.1140
+                        val gValue =
+                            pixelColor.red.toDouble() * 0.2989 + pixelColor.blue.toDouble() * 0.5870 + pixelColor.green.toDouble() * 0.1140
                         strCharDither(gValue)
                     }
 
                     AsciiOptions.COLORIZE in options -> '@'
 
                     else -> {
-                        val gValue = pixelColor.red.toDouble() * 0.2989 + pixelColor.blue.toDouble() * 0.5870 + pixelColor.green.toDouble() * 0.1140
+                        val gValue =
+                            pixelColor.red.toDouble() * 0.2989 + pixelColor.blue.toDouble() * 0.5870 + pixelColor.green.toDouble() * 0.1140
                         strChar(gValue)
                     }
                 }

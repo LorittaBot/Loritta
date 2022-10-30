@@ -6,6 +6,8 @@ import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
 import mu.KotlinLogging
+import net.perfectdreams.loritta.deviouscache.requests.GetGuildCountRequest
+import net.perfectdreams.loritta.deviouscache.responses.GetGuildCountResponse
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.DeviousEventFactory
@@ -51,13 +53,14 @@ class DeviousFun(val loritta: LorittaBot) {
         loritta.lorittaCluster.maxShard,
         loritta.config.loritta.discord.maxShards
     )
+    val rpc = DeviousCacheRPCClient(loritta.config.loritta.deviousCache.url)
 
     /**
      * To avoid all connections in the connection pool being used by GuildCreate events, we will limit to max `connections in the pool - 5`, with a minimum of one permit GuildCreate in parallel
      *
      * This avoids issues where all events stop being processed due to a "explosion" of GuildCreates after a shard restart!
      */
-    val guildCreateSemaphore = Semaphore((loritta.jedisPool.maxTotal - 5).coerceAtLeast(1))
+    val guildCreateSemaphore = Semaphore((rpc.http.engineConfig.threadsCount - 5).coerceAtLeast(1))
 
     fun registerListeners(vararg listeners: ListenerAdapter) {
         this.listeners.addAll(listeners)
@@ -182,9 +185,8 @@ class DeviousFun(val loritta: LorittaBot) {
     /**
      * Gets how many guilds are cached
      */
-    suspend fun getGuildCount() = loritta.redisConnection("get guild count") {
-        it.hlen(loritta.redisKeys.discordGuilds())
-    }
+    suspend fun getGuildCount() = (rpc.execute(GetGuildCountRequest) as? GetGuildCountResponse)?.count
+        ?: error("Received unknown request when getting the guild count!")
 
     /**
      * Invokes every [ListenerAdapter]'s [method] with [event]

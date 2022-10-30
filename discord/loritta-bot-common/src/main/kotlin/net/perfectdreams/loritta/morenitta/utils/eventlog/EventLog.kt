@@ -38,394 +38,466 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.toDuration
 
 object EventLog {
-	@OptIn(ExperimentalTime::class)
-	private val MISSING_PERMISSIONS_COOLDOWN = 15.0.toDuration(DurationUnit.MINUTES)
+    @OptIn(ExperimentalTime::class)
+    private val MISSING_PERMISSIONS_COOLDOWN = 15.0.toDuration(DurationUnit.MINUTES)
 
-	@OptIn(ExperimentalTime::class)
-	private val UNKNOWN_WEBHOOK_PHASE_2_COOLDOWN = 15.0.toDuration(DurationUnit.MINUTES)
+    @OptIn(ExperimentalTime::class)
+    private val UNKNOWN_WEBHOOK_PHASE_2_COOLDOWN = 15.0.toDuration(DurationUnit.MINUTES)
 
-	val logger = KotlinLogging.logger {}
-	// This is used to avoid spamming Discord with the same webhook creation request, so we synchronize access to the method
-	private val webhookRetrievalMutex = Caffeine.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build<Long, Mutex>()
-		.asMap()
+    val logger = KotlinLogging.logger {}
 
-	/**
-	 * Sends the [message] to the [channelId] via a webhook, the webhook may be created or pulled from the guild if it is needed
-	 *
-	 * @param applicationId used as a webhook filter, will only get webhooks created by the application ID
-	 * @param channelId     where the message will be sent
-	 * @param message       the message that will be sent
-	 * @return if the message was successfully sent
-	 */
-	@OptIn(ExperimentalTime::class)
-	suspend fun sendMessageInEventLogViaWebhook(loritta: LorittaBot, message: WebhookMessage, guild: Guild, eventLogConfig: EventLogConfig): Boolean {
-		// From SocialRelayer, changed a bit to use JDA
-		val channel = guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return false
-		val channelId = channel.idLong
+    // This is used to avoid spamming Discord with the same webhook creation request, so we synchronize access to the method
+    private val webhookRetrievalMutex =
+        Caffeine.newBuilder().expireAfterAccess(1, TimeUnit.MINUTES).build<Long, Mutex>()
+            .asMap()
 
-		val mutex = webhookRetrievalMutex.getOrPut(channelId) { Mutex() }
-		logger.info { "Retrieving webhook to be used in $channelId, is mutex locked? ${mutex.isLocked}" }
-		return mutex.withLock {
-			_sendMessageInEventLogViaWebhook(loritta, message, guild, channel)
-		}
-	}
+    /**
+     * Sends the [message] to the [channelId] via a webhook, the webhook may be created or pulled from the guild if it is needed
+     *
+     * @param applicationId used as a webhook filter, will only get webhooks created by the application ID
+     * @param channelId     where the message will be sent
+     * @param message       the message that will be sent
+     * @return if the message was successfully sent
+     */
+    @OptIn(ExperimentalTime::class)
+    suspend fun sendMessageInEventLogViaWebhook(
+        loritta: LorittaBot,
+        message: WebhookMessage,
+        guild: Guild,
+        eventLogConfig: EventLogConfig
+    ): Boolean {
+        // From SocialRelayer, changed a bit to use JDA
+        val channel = guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return false
+        val channelId = channel.idLong
 
-	/**
-	 * Sends the [message] to the [channelId] via a webhook, the webhook may be created or pulled from the guild if it is needed
-	 *
-	 * @param applicationId used as a webhook filter, will only get webhooks created by the application ID
-	 * @param channelId where the message will be sent
-	 * @param message   the message that will be sent
-	 * @return if the message was successfully sent
-	 */
-	@OptIn(ExperimentalTime::class)
-	// This is doesn't wrap in a mutex, that's why it is private
-	// The reason it starts with a underscore is because it is a private method and I can't find another good name for it
-	// The reason this is a separate method is to avoid deadlocking due to accessing an already locked mutex when trying to retrieve the webhook
-	private suspend fun _sendMessageInEventLogViaWebhook(loritta: LorittaBot, message: WebhookMessage, guild: Guild, channel: Channel): Boolean {
-		// From SocialRelayer, changed a bit to use JDA
-		val channelId = channel.idLong
+        val mutex = webhookRetrievalMutex.getOrPut(channelId) { Mutex() }
+        logger.info { "Retrieving webhook to be used in $channelId, is mutex locked? ${mutex.isLocked}" }
+        return mutex.withLock {
+            _sendMessageInEventLogViaWebhook(loritta, message, guild, channel)
+        }
+    }
 
-		logger.info { "Trying to retrieve a webhook to be used in $channelId" }
+    /**
+     * Sends the [message] to the [channelId] via a webhook, the webhook may be created or pulled from the guild if it is needed
+     *
+     * @param applicationId used as a webhook filter, will only get webhooks created by the application ID
+     * @param channelId where the message will be sent
+     * @param message   the message that will be sent
+     * @return if the message was successfully sent
+     */
+    @OptIn(ExperimentalTime::class)
+    // This is doesn't wrap in a mutex, that's why it is private
+    // The reason it starts with a underscore is because it is a private method and I can't find another good name for it
+    // The reason this is a separate method is to avoid deadlocking due to accessing an already locked mutex when trying to retrieve the webhook
+    private suspend fun _sendMessageInEventLogViaWebhook(
+        loritta: LorittaBot,
+        message: WebhookMessage,
+        guild: Guild,
+        channel: Channel
+    ): Boolean {
+        // From SocialRelayer, changed a bit to use JDA
+        val channelId = channel.idLong
 
-		val alreadyCachedWebhookFromDatabase = withContext(Dispatchers.IO) {
-			loritta.pudding.transaction {
-				CachedDiscordWebhook.findById(channelId)
-			}
-		}
+        logger.info { "Trying to retrieve a webhook to be used in $channelId" }
 
-		if (alreadyCachedWebhookFromDatabase != null) {
-			val shouldIgnoreDueToUnknownChannel = alreadyCachedWebhookFromDatabase.state == WebhookState.UNKNOWN_CHANNEL
-			val shouldIgnoreDueToMissingPermissions = alreadyCachedWebhookFromDatabase.state == WebhookState.MISSING_PERMISSION && MISSING_PERMISSIONS_COOLDOWN.toLong(DurationUnit.MILLISECONDS) >= (System.currentTimeMillis() - alreadyCachedWebhookFromDatabase.updatedAt)
-			val shouldIgnoreDueToUnknownWebhookPhaseTwo = alreadyCachedWebhookFromDatabase.state == WebhookState.UNKNOWN_WEBHOOK_PHASE_2 && UNKNOWN_WEBHOOK_PHASE_2_COOLDOWN.toLong(DurationUnit.MILLISECONDS) >= (System.currentTimeMillis() - alreadyCachedWebhookFromDatabase.updatedAt)
-			val shouldIgnore = shouldIgnoreDueToUnknownChannel || shouldIgnoreDueToMissingPermissions || shouldIgnoreDueToUnknownWebhookPhaseTwo
+        val alreadyCachedWebhookFromDatabase = withContext(Dispatchers.IO) {
+            loritta.pudding.transaction {
+                CachedDiscordWebhook.findById(channelId)
+            }
+        }
 
-			if (shouldIgnore) {
-				logger.warn { "Ignoring webhook retrieval for $channelId because I wasn't able to create a webhook for it before... Webhook State: ${alreadyCachedWebhookFromDatabase.state}" }
-				return false
-			}
-		}
+        if (alreadyCachedWebhookFromDatabase != null) {
+            val shouldIgnoreDueToUnknownChannel = alreadyCachedWebhookFromDatabase.state == WebhookState.UNKNOWN_CHANNEL
+            val shouldIgnoreDueToMissingPermissions =
+                alreadyCachedWebhookFromDatabase.state == WebhookState.MISSING_PERMISSION && MISSING_PERMISSIONS_COOLDOWN.toLong(
+                    DurationUnit.MILLISECONDS
+                ) >= (System.currentTimeMillis() - alreadyCachedWebhookFromDatabase.updatedAt)
+            val shouldIgnoreDueToUnknownWebhookPhaseTwo =
+                alreadyCachedWebhookFromDatabase.state == WebhookState.UNKNOWN_WEBHOOK_PHASE_2 && UNKNOWN_WEBHOOK_PHASE_2_COOLDOWN.toLong(
+                    DurationUnit.MILLISECONDS
+                ) >= (System.currentTimeMillis() - alreadyCachedWebhookFromDatabase.updatedAt)
+            val shouldIgnore =
+                shouldIgnoreDueToUnknownChannel || shouldIgnoreDueToMissingPermissions || shouldIgnoreDueToUnknownWebhookPhaseTwo
 
-		var guildWebhookFromDatabase = alreadyCachedWebhookFromDatabase
+            if (shouldIgnore) {
+                logger.warn { "Ignoring webhook retrieval for $channelId because I wasn't able to create a webhook for it before... Webhook State: ${alreadyCachedWebhookFromDatabase.state}" }
+                return false
+            }
+        }
 
-		// Okay, so we don't have any webhooks available OR the last time we tried checking it, it wasn't "SUCCESS"... let's try pulling them from Discord and then register them!
-		if (guildWebhookFromDatabase == null || guildWebhookFromDatabase.state != WebhookState.SUCCESS) {
-			logger.info { "First available webhook of $channelId to send a message is missing, trying to pull webhooks from the channel..." }
+        var guildWebhookFromDatabase = alreadyCachedWebhookFromDatabase
 
-			try {
-				if (!guild.retrieveSelfMember().hasPermission(channel, Permission.ManageWebhooks)) {
-					logger.warn { "Failed to get webhook in channel $channelId due to lack of manage webhooks permission" }
+        // Okay, so we don't have any webhooks available OR the last time we tried checking it, it wasn't "SUCCESS"... let's try pulling them from Discord and then register them!
+        if (guildWebhookFromDatabase == null || guildWebhookFromDatabase.state != WebhookState.SUCCESS) {
+            logger.info { "First available webhook of $channelId to send a message is missing, trying to pull webhooks from the channel..." }
 
-					withContext(Dispatchers.IO) {
-						loritta.pudding.transaction {
-							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
-								it[id] = channelId
-								// We don't replace the webhook token here... there is no pointing in replacing it.
-								it[state] = WebhookState.MISSING_PERMISSION
-								it[updatedAt] = System.currentTimeMillis()
-							}.resultedValues!!.first()
-						}
-					}
-					return false
-				}
+            try {
+                if (!guild.retrieveSelfMember().hasPermission(channel, Permission.ManageWebhooks)) {
+                    logger.warn { "Failed to get webhook in channel $channelId due to lack of manage webhooks permission" }
 
-				// Try pulling the already created webhooks...
-				val webhooks = channel.retrieveWebhooks()
+                    withContext(Dispatchers.IO) {
+                        loritta.pudding.transaction {
+                            CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+                                it[id] = channelId
+                                // We don't replace the webhook token here... there is no pointing in replacing it.
+                                it[state] = WebhookState.MISSING_PERMISSION
+                                it[updatedAt] = System.currentTimeMillis()
+                            }.resultedValues!!.first()
+                        }
+                    }
+                    return false
+                }
 
-				// Webhooks created by users or bots are INCOMING and we only want to get webhooks created by Loritta!
-				// See: https://github.com/discord/discord-api-docs/issues/3056
-				val firstAvailableWebhook = webhooks.firstOrNull { it.type == WebhookType.Incoming && it.ownerAsUser?.idLong == guild.retrieveSelfMember().idLong }
-				var createdWebhook: Webhook? = null
+                // Try pulling the already created webhooks...
+                val webhooks = channel.retrieveWebhooks()
 
-				// Oh no, there isn't any webhooks available, let's create one!
-				if (firstAvailableWebhook == null) {
-					logger.info { "No available webhooks in $channelId to send the message, creating a new webhook..." }
+                // Webhooks created by users or bots are INCOMING and we only want to get webhooks created by Loritta!
+                // See: https://github.com/discord/discord-api-docs/issues/3056
+                val firstAvailableWebhook =
+                    webhooks.firstOrNull { it.type == WebhookType.Incoming && it.ownerAsUser?.idLong == guild.retrieveSelfMember().idLong }
+                var createdWebhook: Webhook? = null
 
-					val jdaWebhook = channel.createWebhook("Loritta (Event Log)")
-						
+                // Oh no, there isn't any webhooks available, let's create one!
+                if (firstAvailableWebhook == null) {
+                    logger.info { "No available webhooks in $channelId to send the message, creating a new webhook..." }
 
-					createdWebhook = jdaWebhook
-				}
+                    val jdaWebhook = channel.createWebhook("Loritta (Event Log)")
 
-				val webhook = createdWebhook ?: firstAvailableWebhook ?: error("No webhook was found!")
 
-				logger.info { "Successfully found webhook in $channelId!" }
+                    createdWebhook = jdaWebhook
+                }
 
-				// Store the newly found webhook in our database!
-				guildWebhookFromDatabase = withContext(Dispatchers.IO) {
-					loritta.pudding.transaction {
-						CachedDiscordWebhook.wrapRow(
-							CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
-								it[id] = channelId
-								it[webhookId] = webhook.idLong
-								it[webhookToken] = webhook.token!! // I doubt that the token can be null so let's just force null, heh
-								it[state] = WebhookState.SUCCESS
-								it[updatedAt] = System.currentTimeMillis()
-							}.resultedValues!!.first()
-						)
-					}
-				}
-			} catch (e: Exception) {
-				logger.warn(e) { "Failed to get webhook in channel $channelId" }
+                val webhook = createdWebhook ?: firstAvailableWebhook ?: error("No webhook was found!")
 
-				withContext(Dispatchers.IO) {
-					loritta.pudding.transaction {
-						CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
-							it[id] = channelId
-							// We don't replace the webhook token here... there is no pointing in replacing it.
-							it[state] = WebhookState.MISSING_PERMISSION
-							it[updatedAt] = System.currentTimeMillis()
-						}.resultedValues!!.first()
-					}
-				}
-				return false
-			}
-		}
+                logger.info { "Successfully found webhook in $channelId!" }
 
-		val webhook = guildWebhookFromDatabase
+                // Store the newly found webhook in our database!
+                guildWebhookFromDatabase = withContext(Dispatchers.IO) {
+                    loritta.pudding.transaction {
+                        CachedDiscordWebhook.wrapRow(
+                            CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+                                it[id] = channelId
+                                it[webhookId] = webhook.idLong
+                                it[webhookToken] =
+                                    webhook.token!! // I doubt that the token can be null so let's just force null, heh
+                                it[state] = WebhookState.SUCCESS
+                                it[updatedAt] = System.currentTimeMillis()
+                            }.resultedValues!!.first()
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                logger.warn(e) { "Failed to get webhook in channel $channelId" }
 
-		logger.info { "Sending $message in $channelId... Using webhook $webhook" }
+                withContext(Dispatchers.IO) {
+                    loritta.pudding.transaction {
+                        CachedDiscordWebhooks.insertOrUpdate(CachedDiscordWebhooks.id) {
+                            it[id] = channelId
+                            // We don't replace the webhook token here... there is no pointing in replacing it.
+                            it[state] = WebhookState.MISSING_PERMISSION
+                            it[updatedAt] = System.currentTimeMillis()
+                        }.resultedValues!!.first()
+                    }
+                }
+                return false
+            }
+        }
 
-		try {
-			withContext(Dispatchers.IO) {
-				WebhookClientBuilder("https://discord.com/api/webhooks/${webhook.webhookId}/${webhook.webhookToken}")
-					.setExecutorService(loritta.webhookExecutor)
-					.setHttpClient(loritta.webhookOkHttpClient)
-					.setWait(true) // We want to wait to check if the webhook still exists!
-					.build()
-					.send(message)
-					.await()
-			}
-		} catch (e: JSONException) {
-			// Workaround for https://github.com/MinnDevelopment/discord-webhooks/issues/34
-			// Please remove this later!
-		} catch (e: HttpException) {
-			val statusCode = e.code
+        val webhook = guildWebhookFromDatabase
 
-			return if (statusCode == 404) {
-				// So, this actually depends on what was the last phase
-				//
-				// Some DUMB people love using bots that automatically delete webhooks to avoid "users abusing them"... well why not manage your permissions correctly then?
-				// So we have two phases: Phase 1 and Phase 2
-				// Phase 1 means that the webhook should be retrieved again without any issues
-				// Phase 2 means that SOMEONE is deleting the bot so it should just be ignored for a few minutes
-				logger.warn(e) { "Webhook $webhook in $channelId does not exist! Current state is ${webhook.state}..." }
-				withContext(Dispatchers.IO) {
-					loritta.pudding.transaction {
-						webhook.state = if (webhook.state == WebhookState.UNKNOWN_WEBHOOK_PHASE_1) WebhookState.UNKNOWN_WEBHOOK_PHASE_2 else WebhookState.UNKNOWN_WEBHOOK_PHASE_1
-						webhook.updatedAt = System.currentTimeMillis()
-					}
-				}
-				logger.warn(e) { "Webhook $webhook in $channelId does not exist and its state was updated to ${webhook.state}!" }
+        logger.info { "Sending $message in $channelId... Using webhook $webhook" }
 
-				_sendMessageInEventLogViaWebhook(loritta, message, guild, channel)
-			} else {
-				logger.warn(e) { "Something went wrong while sending the webhook message $message in $channelId using webhook $webhook!" }
-				false
-			}
-		}
+        try {
+            withContext(Dispatchers.IO) {
+                WebhookClientBuilder("https://discord.com/api/webhooks/${webhook.webhookId}/${webhook.webhookToken}")
+                    .setExecutorService(loritta.webhookExecutor)
+                    .setHttpClient(loritta.webhookOkHttpClient)
+                    .setWait(true) // We want to wait to check if the webhook still exists!
+                    .build()
+                    .send(message)
+                    .await()
+            }
+        } catch (e: JSONException) {
+            // Workaround for https://github.com/MinnDevelopment/discord-webhooks/issues/34
+            // Please remove this later!
+        } catch (e: HttpException) {
+            val statusCode = e.code
 
-		logger.info { "Everything went well when sending $message in $channelId using webhook $webhook, updating last used time..." }
+            return if (statusCode == 404) {
+                // So, this actually depends on what was the last phase
+                //
+                // Some DUMB people love using bots that automatically delete webhooks to avoid "users abusing them"... well why not manage your permissions correctly then?
+                // So we have two phases: Phase 1 and Phase 2
+                // Phase 1 means that the webhook should be retrieved again without any issues
+                // Phase 2 means that SOMEONE is deleting the bot so it should just be ignored for a few minutes
+                logger.warn(e) { "Webhook $webhook in $channelId does not exist! Current state is ${webhook.state}..." }
+                withContext(Dispatchers.IO) {
+                    loritta.pudding.transaction {
+                        webhook.state =
+                            if (webhook.state == WebhookState.UNKNOWN_WEBHOOK_PHASE_1) WebhookState.UNKNOWN_WEBHOOK_PHASE_2 else WebhookState.UNKNOWN_WEBHOOK_PHASE_1
+                        webhook.updatedAt = System.currentTimeMillis()
+                    }
+                }
+                logger.warn(e) { "Webhook $webhook in $channelId does not exist and its state was updated to ${webhook.state}!" }
 
-		withContext(Dispatchers.IO) {
-			loritta.pudding.transaction {
-				webhook.lastSuccessfullyExecutedAt = System.currentTimeMillis()
-			}
-		}
+                _sendMessageInEventLogViaWebhook(loritta, message, guild, channel)
+            } else {
+                logger.warn(e) { "Something went wrong while sending the webhook message $message in $channelId using webhook $webhook!" }
+                false
+            }
+        }
 
-		return true // yay! :smol_gessy:
-	}
+        logger.info { "Everything went well when sending $message in $channelId using webhook $webhook, updating last used time..." }
 
-	suspend fun onMessageReceived(loritta: LorittaBot, serverConfig: ServerConfig, message: Message) {
-		try {
-			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
+        withContext(Dispatchers.IO) {
+            loritta.pudding.transaction {
+                webhook.lastSuccessfullyExecutedAt = System.currentTimeMillis()
+            }
+        }
 
-			if (eventLogConfig.enabled && (eventLogConfig.messageDeleted || eventLogConfig.messageEdited)) {
-				val attachments = mutableListOf<String>()
+        return true // yay! :smol_gessy:
+    }
 
-				message.attachments.forEach {
-					// https://i.imgur.com/VyVlzVe.png
-					attachments.add(it.url.replace("cdn.discordapp.com", "media.discordapp.net"))
-				}
+    suspend fun onMessageReceived(loritta: LorittaBot, serverConfig: ServerConfig, message: Message) {
+        try {
+            val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(
+                loritta,
+                ServerConfig::eventLogConfig
+            ) ?: return
 
-				loritta.newSuspendedTransaction {
-					StoredMessage.new(message.idLong) {
-						authorId = message.author.idLong
-						channelId = message.channel.idLong
-						createdAt = System.currentTimeMillis()
-						storedAttachments = attachments.toTypedArray()
-						this.encryptAndSetContent(loritta, message.contentRaw)
-					}
-				}
-			}
-		} catch (e: Exception) {
-			logger.error(e) { "Erro ao salvar mensagem do event log" }
-		}
-	}
+            if (eventLogConfig.enabled && (eventLogConfig.messageDeleted || eventLogConfig.messageEdited)) {
+                val attachments = mutableListOf<String>()
 
-	suspend fun onMessageUpdate(loritta: LorittaBot, serverConfig: ServerConfig, locale: BaseLocale, message: Message) {
-		try {
-			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
+                message.attachments.forEach {
+                    // https://i.imgur.com/VyVlzVe.png
+                    attachments.add(it.url.replace("cdn.discordapp.com", "media.discordapp.net"))
+                }
 
-			if (eventLogConfig.enabled && (eventLogConfig.messageEdited || eventLogConfig.messageDeleted)) {
-				val textChannel = message.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
+                loritta.newSuspendedTransaction {
+                    StoredMessage.new(message.idLong) {
+                        authorId = message.author.idLong
+                        channelId = message.channel.idLong
+                        createdAt = System.currentTimeMillis()
+                        storedAttachments = attachments.toTypedArray()
+                        this.encryptAndSetContent(loritta, message.contentRaw)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            logger.error(e) { "Erro ao salvar mensagem do event log" }
+        }
+    }
 
-				if (textChannel.canTalk()) {
-					if (!message.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
-						return
-					if (!message.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
-						return
-					if (!message.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
-						return
+    suspend fun onMessageUpdate(loritta: LorittaBot, serverConfig: ServerConfig, locale: BaseLocale, message: Message) {
+        try {
+            val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(
+                loritta,
+                ServerConfig::eventLogConfig
+            ) ?: return
 
-					val storedMessage = loritta.newSuspendedTransaction {
-						StoredMessage.findById(message.idLong)
-					}
+            if (eventLogConfig.enabled && (eventLogConfig.messageEdited || eventLogConfig.messageDeleted)) {
+                val textChannel = message.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
 
-					if (storedMessage != null && storedMessage.decryptContent(loritta) != message.contentRaw && eventLogConfig.messageEdited) {
-						val embed = WebhookEmbedBuilder()
-							.setColor(Color(238, 241, 0).rgb)
-							.setDescription("\uD83D\uDCDD ${locale.getList("modules.eventLog.messageEdited", message.member?.asMention, storedMessage.decryptContent(loritta), message.contentRaw, message.textChannel.asMention).joinToString("\n")}")
-							.setAuthor(WebhookEmbed.EmbedAuthor("${message.member?.user?.name}#${message.member?.user?.discriminator}", null, message.member?.user?.effectiveAvatarUrl))
-							.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", message.member?.user?.id], null))
-							.setTimestamp(Instant.now())
+                if (textChannel.canTalk()) {
+                    if (!message.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
+                        return
+                    if (!message.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
+                        return
+                    if (!message.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
+                        return
 
-						sendMessageInEventLogViaWebhook(
-							loritta,
-							WebhookMessageBuilder()
-								.setUsername(message.guild.retrieveSelfMember().user.name)
-								.setAvatarUrl(message.guild.retrieveSelfMember().user.effectiveAvatarUrl)
-								.setContent(" ")
-								.addEmbeds(embed.build())
-								.build(),
-							message.guild,
-							eventLogConfig
-						)
-					}
+                    val storedMessage = loritta.newSuspendedTransaction {
+                        StoredMessage.findById(message.idLong)
+                    }
 
-					if (storedMessage != null) {
-						loritta.newSuspendedTransaction {
-							storedMessage.encryptAndSetContent(loritta, message.contentRaw)
-						}
-					}
-				}
-			}
-		} catch (e: Exception) {
-			logger.error(e) { "Erro ao atualizar mensagem do event log" }
-		}
-	}
+                    if (storedMessage != null && storedMessage.decryptContent(loritta) != message.contentRaw && eventLogConfig.messageEdited) {
+                        val embed = WebhookEmbedBuilder()
+                            .setColor(Color(238, 241, 0).rgb)
+                            .setDescription(
+                                "\uD83D\uDCDD ${
+                                    locale.getList(
+                                        "modules.eventLog.messageEdited",
+                                        message.member?.asMention,
+                                        storedMessage.decryptContent(loritta),
+                                        message.contentRaw,
+                                        message.textChannel.asMention
+                                    ).joinToString("\n")
+                                }"
+                            )
+                            .setAuthor(
+                                WebhookEmbed.EmbedAuthor(
+                                    "${message.member?.user?.name}#${message.member?.user?.discriminator}",
+                                    null,
+                                    message.member?.user?.effectiveAvatarUrl
+                                )
+                            )
+                            .setFooter(
+                                WebhookEmbed.EmbedFooter(
+                                    locale["modules.eventLog.userID", message.member?.user?.id],
+                                    null
+                                )
+                            )
+                            .setTimestamp(Instant.now())
 
-	suspend fun onVoiceJoin(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelJoined: Channel) {
-		try {
-			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
+                        sendMessageInEventLogViaWebhook(
+                            loritta,
+                            WebhookMessageBuilder()
+                                .setUsername(message.guild.retrieveSelfMember().user.name)
+                                .setAvatarUrl(message.guild.retrieveSelfMember().user.effectiveAvatarUrl)
+                                .setContent(" ")
+                                .addEmbeds(embed.build())
+                                .build(),
+                            message.guild,
+                            eventLogConfig
+                        )
+                    }
 
-			if (eventLogConfig.enabled && eventLogConfig.voiceChannelJoins) {
-				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
-				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+                    if (storedMessage != null) {
+                        loritta.newSuspendedTransaction {
+                            storedMessage.encryptAndSetContent(loritta, message.contentRaw)
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            logger.error(e) { "Erro ao atualizar mensagem do event log" }
+        }
+    }
 
-				if (!textChannel.canTalk())
-					return
-				if (!member.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
-					return
-				if (!member.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
-					return
-				if (!member.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
-					return
+    suspend fun onVoiceJoin(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelJoined: Channel) {
+        try {
+            val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(
+                loritta,
+                ServerConfig::eventLogConfig
+            ) ?: return
 
-				val embed = WebhookEmbedBuilder()
-					.setColor(Color(35, 209, 96).rgb)
-					.setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale["modules.eventLog.joinedVoiceChannel", member.asMention, channelJoined.name]}**")
-					.setAuthor(WebhookEmbed.EmbedAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl))
-					.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", member.user.id], null))
-					.setTimestamp(Instant.now())
+            if (eventLogConfig.enabled && eventLogConfig.voiceChannelJoins) {
+                val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
+                val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-				sendMessageInEventLogViaWebhook(
-					loritta,
-					WebhookMessageBuilder()
-						.setUsername(member.guild.retrieveSelfMember().user.name)
-						.setAvatarUrl(member.guild.retrieveSelfMember().user.effectiveAvatarUrl)
-						.setContent(" ")
-						.addEmbeds(embed.build())
-						.build(),
-					channelJoined.guild,
-					eventLogConfig
-				)
-				return
-			}
-		} catch (e: Exception) {
-			logger.error(e) { "Erro ao entrar no canal de voz do event log" }
-		}
-	}
+                if (!textChannel.canTalk())
+                    return
+                if (!member.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
+                    return
+                if (!member.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
+                    return
+                if (!member.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
+                    return
 
-	suspend fun onVoiceLeave(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelLeft: Channel) {
-		try {
-			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
+                val embed = WebhookEmbedBuilder()
+                    .setColor(Color(35, 209, 96).rgb)
+                    .setDescription("\uD83D\uDC49\uD83C\uDFA4 **${locale["modules.eventLog.joinedVoiceChannel", member.asMention, channelJoined.name]}**")
+                    .setAuthor(
+                        WebhookEmbed.EmbedAuthor(
+                            "${member.user.name}#${member.user.discriminator}",
+                            null,
+                            member.user.effectiveAvatarUrl
+                        )
+                    )
+                    .setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", member.user.id], null))
+                    .setTimestamp(Instant.now())
 
-			if (eventLogConfig.enabled && eventLogConfig.voiceChannelLeaves) {
-				val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
-				val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
-				if (!textChannel.canTalk())
-					return
-				if (!member.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
-					return
-				if (!member.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
-					return
-				if (!member.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
-					return
+                sendMessageInEventLogViaWebhook(
+                    loritta,
+                    WebhookMessageBuilder()
+                        .setUsername(member.guild.retrieveSelfMember().user.name)
+                        .setAvatarUrl(member.guild.retrieveSelfMember().user.effectiveAvatarUrl)
+                        .setContent(" ")
+                        .addEmbeds(embed.build())
+                        .build(),
+                    channelJoined.guild,
+                    eventLogConfig
+                )
+                return
+            }
+        } catch (e: Exception) {
+            logger.error(e) { "Erro ao entrar no canal de voz do event log" }
+        }
+    }
 
-				val embed = WebhookEmbedBuilder()
-					.setColor(Color(35, 209, 96).rgb)
-					.setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale["modules.eventLog.leftVoiceChannel", member.asMention, channelLeft.name]}**")
-					.setAuthor(WebhookEmbed.EmbedAuthor("${member.user.name}#${member.user.discriminator}", null, member.user.effectiveAvatarUrl))
-					.setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", member.user.id], null))
-					.setTimestamp(Instant.now())
+    suspend fun onVoiceLeave(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelLeft: Channel) {
+        try {
+            val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(
+                loritta,
+                ServerConfig::eventLogConfig
+            ) ?: return
 
-				sendMessageInEventLogViaWebhook(
-					loritta,
-					WebhookMessageBuilder()
-						.setUsername(member.guild.retrieveSelfMember().user.name)
-						.setAvatarUrl(member.guild.retrieveSelfMember().user.effectiveAvatarUrl)
-						.setContent(" ")
-						.addEmbeds(embed.build())
-						.build(),
-					channelLeft.guild,
-					eventLogConfig
-				)
-			}
-		} catch (e: Exception) {
-			logger.error(e) { "Erro ao sair do canal de voz do event log" }
-		}
-	}
+            if (eventLogConfig.enabled && eventLogConfig.voiceChannelLeaves) {
+                val textChannel = member.guild.getTextChannelById(eventLogConfig.eventLogChannelId) ?: return
+                val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
+                if (!textChannel.canTalk())
+                    return
+                if (!member.guild.retrieveSelfMember().hasPermission(Permission.EmbedLinks))
+                    return
+                if (!member.guild.retrieveSelfMember().hasPermission(Permission.ViewChannel))
+                    return
+                if (!member.guild.retrieveSelfMember().hasPermission(Permission.ReadMessageHistory))
+                    return
 
-	private fun generateRandomInitVector(loritta: LorittaBot) = ByteArray(16).apply {
-		loritta.random.nextBytes(this)
-	}
+                val embed = WebhookEmbedBuilder()
+                    .setColor(Color(35, 209, 96).rgb)
+                    .setDescription("\uD83D\uDC48\uD83C\uDFA4 **${locale["modules.eventLog.leftVoiceChannel", member.asMention, channelLeft.name]}**")
+                    .setAuthor(
+                        WebhookEmbed.EmbedAuthor(
+                            "${member.user.name}#${member.user.discriminator}",
+                            null,
+                            member.user.effectiveAvatarUrl
+                        )
+                    )
+                    .setFooter(WebhookEmbed.EmbedFooter(locale["modules.eventLog.userID", member.user.id], null))
+                    .setTimestamp(Instant.now())
 
-	fun encryptMessage(loritta: LorittaBot, content: String): EncryptedMessage {
-		val initVector = generateRandomInitVector(loritta)
+                sendMessageInEventLogViaWebhook(
+                    loritta,
+                    WebhookMessageBuilder()
+                        .setUsername(member.guild.retrieveSelfMember().user.name)
+                        .setAvatarUrl(member.guild.retrieveSelfMember().user.effectiveAvatarUrl)
+                        .setContent(" ")
+                        .addEmbeds(embed.build())
+                        .build(),
+                    channelLeft.guild,
+                    eventLogConfig
+                )
+            }
+        } catch (e: Exception) {
+            logger.error(e) { "Erro ao sair do canal de voz do event log" }
+        }
+    }
 
-		val iv = IvParameterSpec(initVector)
-		val skeySpec = SecretKeySpec(loritta.config.loritta.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
+    private fun generateRandomInitVector(loritta: LorittaBot) = ByteArray(16).apply {
+        loritta.random.nextBytes(this)
+    }
 
-		val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
-		cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv)
-		val encrypted = cipher.doFinal(content.toByteArray())
-		return EncryptedMessage(Base64.getEncoder().encodeToString(initVector), Base64.getEncoder().encodeToString(encrypted))
-	}
+    fun encryptMessage(loritta: LorittaBot, content: String): EncryptedMessage {
+        val initVector = generateRandomInitVector(loritta)
 
-	fun decryptMessage(loritta: LorittaBot, initVector: String, encryptedContent: String): String {
-		val iv = IvParameterSpec(Base64.getDecoder().decode(initVector))
-		val skeySpec = SecretKeySpec(loritta.config.loritta.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
+        val iv = IvParameterSpec(initVector)
+        val skeySpec =
+            SecretKeySpec(loritta.config.loritta.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
 
-		val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
-		cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv)
-		val original = cipher.doFinal(Base64.getDecoder().decode(encryptedContent))
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec, iv)
+        val encrypted = cipher.doFinal(content.toByteArray())
+        return EncryptedMessage(
+            Base64.getEncoder().encodeToString(initVector),
+            Base64.getEncoder().encodeToString(encrypted)
+        )
+    }
 
-		return String(original)
-	}
+    fun decryptMessage(loritta: LorittaBot, initVector: String, encryptedContent: String): String {
+        val iv = IvParameterSpec(Base64.getDecoder().decode(initVector))
+        val skeySpec =
+            SecretKeySpec(loritta.config.loritta.messageEncryption.encryptionKey.toByteArray(charset("UTF-8")), "AES")
 
-	data class EncryptedMessage(
-		val initializationVector: String,
-		val encryptedMessage: String
-	)
+        val cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING")
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec, iv)
+        val original = cipher.doFinal(Base64.getDecoder().decode(encryptedContent))
+
+        return String(original)
+    }
+
+    data class EncryptedMessage(
+        val initializationVector: String,
+        val encryptedMessage: String
+    )
 }

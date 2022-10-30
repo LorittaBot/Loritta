@@ -21,62 +21,72 @@ import org.jetbrains.exposed.sql.update
 import kotlin.collections.set
 
 class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/dashboard") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val variables = call.legacyVariables(loritta, locale)
+    override suspend fun onAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification
+    ) {
+        val variables = call.legacyVariables(loritta, locale)
 
-		val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
-		val settings = loritta.newSuspendedTransaction { lorittaProfile.settings }
-		variables["lorittaProfile"] = lorittaProfile
-		variables["settings"] = settings
+        val lorittaProfile = loritta.getOrCreateLorittaProfile(userIdentification.id.toLong())
+        val settings = loritta.newSuspendedTransaction { lorittaProfile.settings }
+        variables["lorittaProfile"] = lorittaProfile
+        variables["settings"] = settings
 
-		val userGuilds = discordAuth.getUserGuilds()
-		val userGuildsIds = userGuilds.map { it.id.toLong() }
+        val userGuilds = discordAuth.getUserGuilds()
+        val userGuildsIds = userGuilds.map { it.id.toLong() }
 
-		// Update if the user is in a guild or not based on the retrieved guilds
-		loritta.newSuspendedTransaction {
-			GuildProfiles.update({ (GuildProfiles.userId eq lorittaProfile.id.value) and (GuildProfiles.guildId inList userGuildsIds) }) {
-				it[GuildProfiles.isInGuild] = true
-			}
+        // Update if the user is in a guild or not based on the retrieved guilds
+        loritta.newSuspendedTransaction {
+            GuildProfiles.update({ (GuildProfiles.userId eq lorittaProfile.id.value) and (GuildProfiles.guildId inList userGuildsIds) }) {
+                it[GuildProfiles.isInGuild] = true
+            }
 
-			GuildProfiles.update({ (GuildProfiles.userId eq lorittaProfile.id.value) and (GuildProfiles.guildId notInList userGuildsIds) }) {
-				it[GuildProfiles.isInGuild] = false
-			}
-		}
+            GuildProfiles.update({ (GuildProfiles.userId eq lorittaProfile.id.value) and (GuildProfiles.guildId notInList userGuildsIds) }) {
+                it[GuildProfiles.isInGuild] = false
+            }
+        }
 
-		val serverConfigs = loritta.newSuspendedTransaction {
-			ServerConfig.find { ServerConfigs.id inList userGuilds.map { it.id.toLong() } }
-					.toList()
-		}
+        val serverConfigs = loritta.newSuspendedTransaction {
+            ServerConfig.find { ServerConfigs.id inList userGuilds.map { it.id.toLong() } }
+                .toList()
+        }
 
-		val guilds = userGuilds.filter {
-			val guild = loritta.lorittaShards.getGuildById(it.id)
-			if (guild != null) {
-				val member = guild.retrieveMemberById(lorittaProfile.userId)
-				val config = serverConfigs.firstOrNull { config -> config.guildId.toString() == it.id }
-				if (member != null && config != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
-					val lorittaUser = GuildLorittaUser(loritta, member, LorittaUser.loadMemberLorittaPermissions(loritta, config, member), lorittaProfile)
-					LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
-				} else {
-					LorittaWebsite.canManageGuild(it)
-				}
-			} else {
-				LorittaWebsite.canManageGuild(it)
-			}
-		}
+        val guilds = userGuilds.filter {
+            val guild = loritta.lorittaShards.getGuildById(it.id)
+            if (guild != null) {
+                val member = guild.retrieveMemberById(lorittaProfile.userId)
+                val config = serverConfigs.firstOrNull { config -> config.guildId.toString() == it.id }
+                if (member != null && config != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
+                    val lorittaUser = GuildLorittaUser(
+                        loritta,
+                        member,
+                        LorittaUser.loadMemberLorittaPermissions(loritta, config, member),
+                        lorittaProfile
+                    )
+                    LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
+                } else {
+                    LorittaWebsite.canManageGuild(it)
+                }
+            } else {
+                LorittaWebsite.canManageGuild(it)
+            }
+        }
 
-		variables["userGuilds"] = guilds
-		val userPermissionLevels = mutableMapOf<TemmieDiscordAuth.Guild, LorittaWebsite.UserPermissionLevel>()
-		val joinedServers = mutableMapOf<TemmieDiscordAuth.Guild, Boolean>()
-		for (guild in guilds) {
-			userPermissionLevels[guild] = LorittaWebsite.getUserPermissionLevel(guild)
-			joinedServers[guild] = loritta.lorittaShards.getGuildById(guild.id) != null
-		}
-		variables["userPermissionLevels"] = userPermissionLevels
-		variables["joinedServers"] = joinedServers
-		variables["saveType"] = "main"
+        variables["userGuilds"] = guilds
+        val userPermissionLevels = mutableMapOf<TemmieDiscordAuth.Guild, LorittaWebsite.UserPermissionLevel>()
+        val joinedServers = mutableMapOf<TemmieDiscordAuth.Guild, Boolean>()
+        for (guild in guilds) {
+            userPermissionLevels[guild] = LorittaWebsite.getUserPermissionLevel(guild)
+            joinedServers[guild] = loritta.lorittaShards.getGuildById(guild.id) != null
+        }
+        variables["userPermissionLevels"] = userPermissionLevels
+        variables["joinedServers"] = joinedServers
+        variables["saveType"] = "main"
 
-		call.respondHtml(
-				evaluate("dashboard.html", variables)
-		)
-	}
+        call.respondHtml(
+            evaluate("dashboard.html", variables)
+        )
+    }
 }

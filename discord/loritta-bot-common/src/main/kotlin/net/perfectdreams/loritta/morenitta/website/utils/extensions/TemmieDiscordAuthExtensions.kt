@@ -7,30 +7,30 @@ import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 fun TemmieDiscordAuth.toJson(): String {
-	return gson.toJson(
-			jsonObject(
-					"authCode" to this.authCode,
-					"redirectUri" to this.redirectUri,
-					"scope" to this.scope.toJsonArray(),
-					"accessToken" to this.accessToken,
-					"refreshToken" to this.refreshToken,
-					"expiresIn" to this.expiresIn,
-					"generatedAt" to this.generatedAt
-			)
-	)
+    return gson.toJson(
+        jsonObject(
+            "authCode" to this.authCode,
+            "redirectUri" to this.redirectUri,
+            "scope" to this.scope.toJsonArray(),
+            "accessToken" to this.accessToken,
+            "refreshToken" to this.refreshToken,
+            "expiresIn" to this.expiresIn,
+            "generatedAt" to this.generatedAt
+        )
+    )
 }
 
 fun TemmieDiscordAuth.UserIdentification.toWebSessionIdentification(): LorittaJsonWebSession.UserIdentification {
-	val now = System.currentTimeMillis()
+    val now = System.currentTimeMillis()
 
-	return LorittaJsonWebSession.UserIdentification(
-			id,
-			username,
-			discriminator,
-			verified,
-			email,
-			avatar,
-			now,
-			now
-	)
+    return LorittaJsonWebSession.UserIdentification(
+        id,
+        username,
+        discriminator,
+        verified,
+        email,
+        avatar,
+        now,
+        now
+    )
 }

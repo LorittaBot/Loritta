@@ -14,51 +14,59 @@ import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import kotlin.collections.set
 
 class ConfigureWelcomerRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/welcomer") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        loritta as LorittaBot
 
-		val welcomerConfig = loritta.newSuspendedTransaction {
-			serverConfig.welcomerConfig
-		}
+        val welcomerConfig = loritta.newSuspendedTransaction {
+            serverConfig.welcomerConfig
+        }
 
-		val variables = call.legacyVariables(loritta, locale)
+        val variables = call.legacyVariables(loritta, locale)
 
-		variables["saveType"] = "welcomer"
-		variables["serverConfig"] = FakeServerConfig(
-				FakeServerConfig.FakeWelcomerConfig(
-						welcomerConfig != null,
-						welcomerConfig?.tellOnJoin ?: false,
-						welcomerConfig?.tellOnRemove ?: false,
-						welcomerConfig?.tellOnBan ?: false,
-						welcomerConfig?.tellOnPrivateJoin ?: false,
-						welcomerConfig?.joinMessage ?: "\uD83D\uDC49 {@user} entrou no servidor!",
-						welcomerConfig?.removeMessage ?: "\uD83D\uDC48 {user.name} saiu do servidor!",
-						welcomerConfig?.joinPrivateMessage ?: "Obrigado por entrar na {guild} {@user}! Espero que você curta o nosso servidor!",
-						welcomerConfig?.bannedMessage ?: "{user} foi banido do servidor!",
-						welcomerConfig?.deleteJoinMessagesAfter ?: 0L,
-						welcomerConfig?.deleteRemoveMessagesAfter ?: 0L
-				)
-		)
+        variables["saveType"] = "welcomer"
+        variables["serverConfig"] = FakeServerConfig(
+            FakeServerConfig.FakeWelcomerConfig(
+                welcomerConfig != null,
+                welcomerConfig?.tellOnJoin ?: false,
+                welcomerConfig?.tellOnRemove ?: false,
+                welcomerConfig?.tellOnBan ?: false,
+                welcomerConfig?.tellOnPrivateJoin ?: false,
+                welcomerConfig?.joinMessage ?: "\uD83D\uDC49 {@user} entrou no servidor!",
+                welcomerConfig?.removeMessage ?: "\uD83D\uDC48 {user.name} saiu do servidor!",
+                welcomerConfig?.joinPrivateMessage
+                    ?: "Obrigado por entrar na {guild} {@user}! Espero que você curta o nosso servidor!",
+                welcomerConfig?.bannedMessage ?: "{user} foi banido do servidor!",
+                welcomerConfig?.deleteJoinMessagesAfter ?: 0L,
+                welcomerConfig?.deleteRemoveMessagesAfter ?: 0L
+            )
+        )
 
-		call.respondHtml(evaluate("welcomer.html", variables))
-	}
+        call.respondHtml(evaluate("welcomer.html", variables))
+    }
 
-	/**
-	 * Fake Server Config for Pebble, in the future this will be removed
-	 */
-	private class FakeServerConfig(val joinLeaveConfig: FakeWelcomerConfig) {
-		class FakeWelcomerConfig(
-				val isEnabled: Boolean,
-				val tellOnJoin: Boolean,
-				val tellOnLeave: Boolean,
-				val tellOnBan: Boolean,
-				val tellOnPrivate: Boolean,
-				val joinMessage: String,
-				val removeMessage: String,
-				val joinPrivateMessage: String,
-				val bannedMessage: String,
-				val deleteJoinMessagesAfter: Long,
-				val deleteRemoveMessagesAfter: Long
-		)
-	}
+    /**
+     * Fake Server Config for Pebble, in the future this will be removed
+     */
+    private class FakeServerConfig(val joinLeaveConfig: FakeWelcomerConfig) {
+        class FakeWelcomerConfig(
+            val isEnabled: Boolean,
+            val tellOnJoin: Boolean,
+            val tellOnLeave: Boolean,
+            val tellOnBan: Boolean,
+            val tellOnPrivate: Boolean,
+            val joinMessage: String,
+            val removeMessage: String,
+            val joinPrivateMessage: String,
+            val bannedMessage: String,
+            val deleteJoinMessagesAfter: Long,
+            val deleteRemoveMessagesAfter: Long
+        )
+    }
 }

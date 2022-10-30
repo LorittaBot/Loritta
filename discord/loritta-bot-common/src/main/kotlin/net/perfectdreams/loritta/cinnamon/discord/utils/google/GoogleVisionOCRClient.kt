@@ -6,10 +6,10 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import kotlinx.serialization.json.*
-import java.util.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.*
+import java.util.*
 
 class GoogleVisionOCRClient(private val apiKey: String) {
     companion object {

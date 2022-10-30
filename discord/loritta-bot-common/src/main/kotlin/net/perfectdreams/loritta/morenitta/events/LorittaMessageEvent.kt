@@ -20,9 +20,9 @@ class LorittaMessageEvent(
     val locale: BaseLocale,
     val lorittaUser: LorittaUser
 ) {
-	val deviousFun: DeviousFun get() = author.deviousFun
+    val deviousFun: DeviousFun get() = author.deviousFun
 
-	fun isFromType(type: ChannelType): Boolean {
-		return this.channel.type == type
-	}
+    fun isFromType(type: ChannelType): Boolean {
+        return this.channel.type == type
+    }
 }

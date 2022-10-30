@@ -6,14 +6,15 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 
 object GenericReplies {
-	suspend fun invalidNumber(context: CommandContext, value: String) {
-		context.reply(
-                LorittaReply(
-                        context.locale["commands.invalidNumber", value.stripCodeMarks()] + " ${Emotes.LORI_CRYING}",
-                        Emotes.LORI_HM
-                )
-		)
-	}
+    suspend fun invalidNumber(context: CommandContext, value: String) {
+        context.reply(
+            LorittaReply(
+                context.locale["commands.invalidNumber", value.stripCodeMarks()] + " ${Emotes.LORI_CRYING}",
+                Emotes.LORI_HM
+            )
+        )
+    }
 
-	fun invalidNumber(context: DiscordCommandContext, value: String): Nothing = context.fail(context.locale["commands.invalidNumber", value] + " ${Emotes.LORI_CRYING}", Emotes.LORI_HM)
+    fun invalidNumber(context: DiscordCommandContext, value: String): Nothing =
+        context.fail(context.locale["commands.invalidNumber", value] + " ${Emotes.LORI_CRYING}", Emotes.LORI_HM)
 }

@@ -17,4 +17,4 @@ import java.awt.Graphics
  * @see [ImageUtils.drawStringWithOutline]
  */
 fun Graphics.drawStringWithOutline(text: String, x: Int, y: Int, outlineColor: Color = Color.BLACK, power: Int = 2) =
-		ImageUtils.drawStringWithOutline(this, text, x, y, outlineColor, power)
+    ImageUtils.drawStringWithOutline(this, text, x, y, outlineColor, power)

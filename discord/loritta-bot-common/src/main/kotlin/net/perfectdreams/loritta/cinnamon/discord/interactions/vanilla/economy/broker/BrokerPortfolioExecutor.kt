@@ -19,7 +19,12 @@ class BrokerPortfolioExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
 
         if (userStockAssets.isEmpty())
             context.fail(
-                context.i18nContext.get(BrokerCommand.I18N_PREFIX.Portfolio.YouDontHaveAnyShares(loritta.commandMentions.brokerInfo, loritta.commandMentions.brokerBuy)),
+                context.i18nContext.get(
+                    BrokerCommand.I18N_PREFIX.Portfolio.YouDontHaveAnyShares(
+                        loritta.commandMentions.brokerInfo,
+                        loritta.commandMentions.brokerBuy
+                    )
+                ),
                 Emotes.LoriSob
             )
 
@@ -105,7 +110,13 @@ class BrokerPortfolioExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecuto
                     if (!LorittaBovespaBrokerUtils.checkIfTickerIsActive(tickerInformation.status)) {
                         field(
                             "$emojiStatus$emojiProfit `${tickerId}` ($tickerName) | ${"%.2f".format(changePercentage)}%",
-                            """${context.i18nContext.get(BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(currentPrice))}
+                            """${
+                                context.i18nContext.get(
+                                    BrokerCommand.I18N_PREFIX.Info.Embed.PriceBeforeMarketClose(
+                                        currentPrice
+                                    )
+                                )
+                            }
                                 |$youHaveSharesInThisTickerMessage
                             """.trimMargin(),
                             true

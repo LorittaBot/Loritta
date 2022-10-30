@@ -17,13 +17,23 @@ class StaffTokenSource(
         Placeholders.STAFF_NAME to user.username,
         Placeholders.STAFF_DISCRIMINATOR to user.discriminator,
         Placeholders.STAFF_ID to user.id.toString(),
-        Placeholders.STAFF_AVATAR_URL to DiscordUserAvatar(kord, user.id, user.discriminator, user.avatar).cdnUrl.toUrl(),
+        Placeholders.STAFF_AVATAR_URL to DiscordUserAvatar(
+            kord,
+            user.id,
+            user.discriminator,
+            user.avatar
+        ).cdnUrl.toUrl(),
         Placeholders.STAFF_TAG to "${user.username}#${user.discriminator}",
 
         Placeholders.STAFF_NICKNAME to (member?.nick?.value ?: user.username),
 
         Placeholders.Deprecated.STAFF_ID to user.id.toString(),
         Placeholders.Deprecated.STAFF_DISCRIMINATOR to user.discriminator,
-        Placeholders.Deprecated.STAFF_AVATAR_URL to DiscordUserAvatar(kord, user.id, user.discriminator, user.avatar).cdnUrl.toUrl()
+        Placeholders.Deprecated.STAFF_AVATAR_URL to DiscordUserAvatar(
+            kord,
+            user.id,
+            user.discriminator,
+            user.avatar
+        ).cdnUrl.toUrl()
     )
 }

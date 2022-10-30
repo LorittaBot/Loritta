@@ -40,7 +40,11 @@ class DonationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
             val base64Image = data.split(",")[1]
             val imageBytes = Base64.getDecoder().decode(base64Image)
             // TODO: Maybe add a dimension check to avoid crashing Loritta when loading the image?
-            val mediaType = try { SimpleImageInfo(imageBytes).mimeType } catch (e: IOException) { null }
+            val mediaType = try {
+                SimpleImageInfo(imageBytes).mimeType
+            } catch (e: IOException) {
+                null
+            }
             val img = readImage(ByteArrayInputStream(imageBytes))
 
             if (img != null && mediaType != null) {

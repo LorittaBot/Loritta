@@ -10,11 +10,16 @@ import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.BanExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.moderation.ban.PredefinedReasonsExecutor
 
-class PredefinedReasonsCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
-    override fun declaration() = slashCommand(I18nKeysData.Commands.Command.Predefinedreasons.Label, CommandCategory.MODERATION, TodoFixThisData) {
+class PredefinedReasonsCommand(languageManager: LanguageManager) :
+    CinnamonSlashCommandDeclarationWrapper(languageManager) {
+    override fun declaration() = slashCommand(
+        I18nKeysData.Commands.Command.Predefinedreasons.Label,
+        CommandCategory.MODERATION,
+        TodoFixThisData
+    ) {
         dmPermission = false
         defaultMemberPermissions = Permissions {
-            + Permission.BanMembers
+            +Permission.BanMembers
         }
 
         executor = { PredefinedReasonsExecutor(it) }

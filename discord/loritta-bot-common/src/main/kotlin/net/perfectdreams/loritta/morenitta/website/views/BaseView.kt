@@ -39,7 +39,8 @@ abstract class BaseView(
                 // Também tem umas coisinhas do Google reCAPTCHA
                 script(type = ScriptType.textJavaScript) {
                     unsafe {
-                        raw("""
+                        raw(
+                            """
 function authenticate(p) { output.net.perfectdreams.spicymorenitta.utils.AuthUtils.handlePostAuth(p); };
 
 document.domain = "loritta.website";
@@ -51,32 +52,65 @@ window.addEventListener('load', function () {
     // ; MSIE == MS Internet Explorer
     // Trident/7.0 == MSIE11
     if (/(?:\b(MS)?IE\s+|\bTrident\/7\.0;.*\s+rv:|\bEdge\/)(\d+)/.test(navigator.userAgent)) {
-        alert("${locale.getList("website.unsupportedBrowser").joinToString("\\n\\n", transform = { java.text.MessageFormat.format(it, supportUrl, firefoxUrl, chromeUrl, edgeUrl); })}")
+        alert("${
+                                locale.getList("website.unsupportedBrowser").joinToString(
+                                    "\\n\\n",
+                                    transform = {
+                                        java.text.MessageFormat.format(
+                                            it,
+                                            supportUrl,
+                                            firefoxUrl,
+                                            chromeUrl,
+                                            edgeUrl
+                                        );
+                                    })
+                            }")
     }
     // Verificar se o SpicyMorenitta foi carregado corretamente
     if (window.spicyMorenittaLoaded === undefined) {
-        alert("${locale.getList("website.failedToLoadScripts").joinToString("\\n\\n", transform = { java.text.MessageFormat.format(it, supportUrl, firefoxUrl, chromeUrl, edgeUrl); })}")
+        alert("${
+                                locale.getList("website.failedToLoadScripts").joinToString(
+                                    "\\n\\n",
+                                    transform = {
+                                        java.text.MessageFormat.format(
+                                            it,
+                                            supportUrl,
+                                            firefoxUrl,
+                                            chromeUrl,
+                                            edgeUrl
+                                        );
+                                    })
+                            }")
     }
 });
-""")
+"""
+                        )
                     }
                 }
 
                 title(getFullTitle())
 
                 unsafe {
-                    raw("""
+                    raw(
+                        """
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 <link rel="manifest" href="/site.webmanifest" />
 <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
 <meta name="msapplication-TileColor" content="#5bbad5" />
-""")
+"""
+                    )
                 }
                 meta(name = "viewport", content = "width=device-width, initial-scale=1")
 
-                styleLink("${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${assetHash("assets/css/style.css")}")
+                styleLink(
+                    "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/css/style.css?hash=${
+                        assetHash(
+                            "assets/css/style.css"
+                        )
+                    }"
+                )
 
                 styleLink("https://use.fontawesome.com/releases/v6.2.0/css/all.css")
 
@@ -104,7 +138,13 @@ window.addEventListener('load', function () {
                 script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/adsbygoogle.js") {}
 
                 // App itself
-                script(src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${assetHash("assets/js/app.js")}") {}
+                script(
+                    src = "${LorittaWebsite.INSTANCE.config.websiteUrl}$versionPrefix/assets/js/app.js?hash=${
+                        assetHash(
+                            "assets/js/app.js"
+                        )
+                    }"
+                ) {}
 
                 // Google AdSense
                 script(src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js") {}
@@ -114,7 +154,8 @@ window.addEventListener('load', function () {
 
                 // NitroPay
                 unsafe {
-                    raw("""
+                    raw(
+                        """
 <script type="text/javascript">
   window["nitroAds"] = window["nitroAds"] || {
     createAd: function() {
@@ -124,10 +165,16 @@ window.addEventListener('load', function () {
   };
 </script>
 <script async src="https://s.nitropay.com/ads-595.js"></script>
-                    """.trimIndent())
+                    """.trimIndent()
+                    )
                 }
 
-                for ((websiteLocaleId, localeName) in listOf("br" to "pt-BR", "us" to "en", "es" to "es", "pt" to "pt")) {
+                for ((websiteLocaleId, localeName) in listOf(
+                    "br" to "pt-BR",
+                    "us" to "en",
+                    "es" to "es",
+                    "pt" to "pt"
+                )) {
                     link {
                         attributes["rel"] = "alternate"
                         attributes["hreflang"] = localeName
@@ -153,10 +200,12 @@ window.addEventListener('load', function () {
         meta(content = locale["website.genericDescription"]) { attributes["property"] = "og:description" }
         meta(content = getTitle()) { attributes["property"] = "og:title" }
         meta(content = "600") { attributes["property"] = "og:ttl" }
-        meta(content = "https://loritta.website/assets/img/loritta_gabizinha_v1.png") { attributes["property"] = "og:image" }
+        meta(content = "https://loritta.website/assets/img/loritta_gabizinha_v1.png") {
+            attributes["property"] = "og:image"
+        }
     }
 
     abstract fun HTML.generateBody()
 
-    fun assetHash(asset: String) =  WebsiteAssetsHashes.getAssetHash(asset)
+    fun assetHash(asset: String) = WebsiteAssetsHashes.getAssetHash(asset)
 }

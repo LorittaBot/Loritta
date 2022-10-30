@@ -10,12 +10,18 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariab
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class BackgroundsListRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/backgrounds") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val variables = call.legacyVariables(loritta, locale)
+class BackgroundsListRoute(loritta: LorittaBot) :
+    RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/backgrounds") {
+    override suspend fun onAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification
+    ) {
+        val variables = call.legacyVariables(loritta, locale)
 
-		variables["saveType"] = "background_list"
+        variables["saveType"] = "background_list"
 
-		call.respondHtml(evaluate("profile_dashboard_backgrounds_list.html", variables))
-	}
+        call.respondHtml(evaluate("profile_dashboard_backgrounds_list.html", variables))
+    }
 }

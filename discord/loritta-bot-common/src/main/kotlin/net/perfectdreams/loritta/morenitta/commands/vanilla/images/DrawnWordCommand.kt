@@ -16,7 +16,11 @@ import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.io.File
 
-class DrawnWordCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("drawnword"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class DrawnWordCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("drawnword"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }
@@ -42,7 +46,15 @@ class DrawnWordCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta
 
             val text = args.joinToString(" ").substringIfNeeded(0..800)
 
-            fun getTextWrapSpacesRequiredHeight(text: String, startX: Int, startY: Int, endX: Int, endY: Int, fontMetrics: FontMetrics, graphics: Graphics): Int {
+            fun getTextWrapSpacesRequiredHeight(
+                text: String,
+                startX: Int,
+                startY: Int,
+                endX: Int,
+                endY: Int,
+                fontMetrics: FontMetrics,
+                graphics: Graphics
+            ): Int {
                 val lineHeight = fontMetrics.height
 
                 var currentX = startX

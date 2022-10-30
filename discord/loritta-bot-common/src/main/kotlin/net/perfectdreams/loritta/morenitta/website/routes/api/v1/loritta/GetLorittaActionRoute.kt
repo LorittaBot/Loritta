@@ -11,26 +11,30 @@ import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuth
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import java.io.File
 
-class GetLorittaActionRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/action/{actionType}") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val actionType = call.parameters["actionType"]
+class GetLorittaActionRoute(loritta: LorittaBot) :
+    RequiresAPIAuthenticationRoute(loritta, "/api/v1/loritta/action/{actionType}") {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
+        val actionType = call.parameters["actionType"]
 
-		when (actionType) {
-			"emotes" -> {
-				Emotes.emoteManager?.loadEmotes()
-			}
-			"locales" -> {
-				loritta.localeManager.loadLocales()
-				loritta.loadLegacyLocales()
-			}
-			"website" -> {
-				LorittaWebsite.ENGINE.templateCache.invalidateAll()
-			}
-			"websitekt" -> {
-				net.perfectdreams.loritta.morenitta.website.LorittaWebsite.INSTANCE.pathCache.clear()
-			}
-		}
+        when (actionType) {
+            "emotes" -> {
+                Emotes.emoteManager?.loadEmotes()
+            }
 
-		call.respondJson(jsonObject())
-	}
+            "locales" -> {
+                loritta.localeManager.loadLocales()
+                loritta.loadLegacyLocales()
+            }
+
+            "website" -> {
+                LorittaWebsite.ENGINE.templateCache.invalidateAll()
+            }
+
+            "websitekt" -> {
+                net.perfectdreams.loritta.morenitta.website.LorittaWebsite.INSTANCE.pathCache.clear()
+            }
+        }
+
+        call.respondJson(jsonObject())
+    }
 }

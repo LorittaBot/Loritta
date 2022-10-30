@@ -1,13 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.base
 
-import net.perfectdreams.discordinteraktions.common.commands.options.ApplicationCommandOptions
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.gabrielaimageserver.client.GabrielaImageServerClient
 import net.perfectdreams.gabrielaimageserver.data.TwoImagesRequest
 import net.perfectdreams.gabrielaimageserver.data.URLImageData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.images.gabrielaimageserver.handleExceptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 open class GabrielaImageServerTwoCommandBase(

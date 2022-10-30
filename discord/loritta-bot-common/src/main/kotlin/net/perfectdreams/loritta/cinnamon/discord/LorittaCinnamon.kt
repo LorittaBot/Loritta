@@ -62,8 +62,6 @@ import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import org.jetbrains.exposed.sql.select
-import redis.clients.jedis.Jedis
-import redis.clients.jedis.JedisPool
 import redis.clients.jedis.Transaction
 import java.awt.image.BufferedImage
 import java.io.File

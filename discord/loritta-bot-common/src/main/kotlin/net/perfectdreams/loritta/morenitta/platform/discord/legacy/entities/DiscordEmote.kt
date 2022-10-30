@@ -34,11 +34,11 @@ open class DiscordEmote(code: String) : LorittaEmote(code) {
         builder.toString()
     }
 
-    override val asMention: String
-        = discordEmoteAsMention
+    override val asMention: String = discordEmoteAsMention
 
     override fun getName() = name
     override fun toString() = asMention
 
-    class DiscordEmoteBackedByJdaEmote(val jdaEmote: Emote) : DiscordEmote("discord:${jdaEmote.asMention.removePrefix("<").removePrefix(":").removeSuffix(">")}")
+    class DiscordEmoteBackedByJdaEmote(val jdaEmote: Emote) :
+        DiscordEmote("discord:${jdaEmote.asMention.removePrefix("<").removePrefix(":").removeSuffix(">")}")
 }

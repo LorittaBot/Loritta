@@ -10,11 +10,15 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class HalloweenBadge(val loritta: LorittaBot) : Badge("halloween2019_badge.png", 100) {
-	override suspend fun checkIfUserDeservesBadge(user: ProfileUserInfoData, profile: Profile, mutualGuilds: Set<Long>): Boolean {
-		return loritta.pudding.transaction {
-			CollectedCandies.select {
-				CollectedCandies.user eq profile.id
-			}.count() >= 400L
-		}
-	}
+    override suspend fun checkIfUserDeservesBadge(
+        user: ProfileUserInfoData,
+        profile: Profile,
+        mutualGuilds: Set<Long>
+    ): Boolean {
+        return loritta.pudding.transaction {
+            CollectedCandies.select {
+                CollectedCandies.user eq profile.id
+            }.count() >= 400L
+        }
+    }
 }

@@ -7,37 +7,32 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.routes.api.v1.RequiresAPIAuthenticationRoute
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 
-class GetMembersWithRolesInGuildRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(loritta, "/api/v1/guilds/{guildId}/users-with-any-role/{roleList}") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
-		val guildId = call.parameters["guildId"] ?: return
+class GetMembersWithRolesInGuildRoute(loritta: LorittaBot) :
+    RequiresAPIAuthenticationRoute(loritta, "/api/v1/guilds/{guildId}/users-with-any-role/{roleList}") {
+    override suspend fun onAuthenticatedRequest(call: ApplicationCall) {
+        val guildId = call.parameters["guildId"] ?: return
 
-		val guild = loritta.lorittaShards.getGuildById(guildId)
+        val guild = loritta.lorittaShards.getGuildById(guildId)
 
-		if (guild == null) {
-			call.respondJson(jsonObject())
-			return
-		}
+        if (guild == null) {
+            call.respondJson(jsonObject())
+            return
+        }
 
-		val roleList = call.parameters["roleList"] ?: return
+        val roleList = call.parameters["roleList"] ?: return
 
-		val roles = roleList.split(",").map { guild.getRoleById(it) }
+        val roles = roleList.split(",").map { guild.getRoleById(it) }
 
-		val membersWithRoles = guild.retrieveMembers().filter { member ->
-			val rolesTheUserHas = roles.filter { role ->
-				member.roles.contains(role)
-			}
+        val membersWithRoles = guild.retrieveMembersWithRoles(*roles.filterNotNull().toTypedArray())
 
-			rolesTheUserHas.isNotEmpty()
-		}
-
-		call.respondJson(
-				jsonObject(
-						"members" to membersWithRoles.map {
-							jsonObject(
-									"id" to it.id
-							)
-						}.toJsonArray()
-				)
-		)
-	}
+        call.respondJson(
+            jsonObject(
+                "members" to membersWithRoles.map {
+                    jsonObject(
+                        "id" to it.id
+                    )
+                }.toJsonArray()
+            )
+        )
+    }
 }

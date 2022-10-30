@@ -9,7 +9,11 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import java.util.regex.Pattern
 
-class RenameEmojiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("renameemoji", "renomearemoji"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class RenameEmojiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("renameemoji", "renomearemoji"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }
@@ -37,12 +41,12 @@ class RenameEmojiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
                 // This will verify if have emotes in the message
                 val emote = context.emote(0)
 
-                if  (emote == null) {
+                if (emote == null) {
                     context.reply(
-                            LorittaReply(
-                                    locale["$LOCALE_PREFIX.renameemoji.emoteNotFound"],
-                                    Constants.ERROR
-                            )
+                        LorittaReply(
+                            locale["$LOCALE_PREFIX.renameemoji.emoteNotFound"],
+                            Constants.ERROR
+                        )
                     )
                     return@executesDiscord
                 }
@@ -51,26 +55,26 @@ class RenameEmojiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
                 val regexMatch = regexPattern.matcher(argumentChangeName)
                 val emoteName = if (argumentChangeName.length >= 32) {
                     context.reply(
-                            LorittaReply(
-                                    locale["$LOCALE_PREFIX.renameemoji.emoteNameLength32Error"],
-                                    Constants.ERROR
-                            )
+                        LorittaReply(
+                            locale["$LOCALE_PREFIX.renameemoji.emoteNameLength32Error"],
+                            Constants.ERROR
+                        )
                     )
                     return@executesDiscord
                 } else if (2 >= argumentChangeName.length) {
                     context.reply(
-                            LorittaReply(
-                                    locale["$LOCALE_PREFIX.renameemoji.emoteNameLength2Error"],
-                                    Constants.ERROR
-                            )
+                        LorittaReply(
+                            locale["$LOCALE_PREFIX.renameemoji.emoteNameLength2Error"],
+                            Constants.ERROR
+                        )
                     )
                     return@executesDiscord
                 } else if (!regexMatch.matches()) {
                     context.reply(
-                            LorittaReply(
-                                    locale["$LOCALE_PREFIX.renameemoji.emoteNameSpecialChar"],
-                                    Constants.ERROR
-                            )
+                        LorittaReply(
+                            locale["$LOCALE_PREFIX.renameemoji.emoteNameSpecialChar"],
+                            Constants.ERROR
+                        )
                     )
                     return@executesDiscord
                 } else {
@@ -80,10 +84,10 @@ class RenameEmojiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
                 if (emote.canInteract(context.guild.retrieveSelfMember())) {
                     emote.setName(emoteName)
                     context.reply(
-                            LorittaReply(
-                                    locale["$LOCALE_PREFIX.renameemoji.renameSucess"],
-                                    emote.asMention
-                            )
+                        LorittaReply(
+                            locale["$LOCALE_PREFIX.renameemoji.renameSucess"],
+                            emote.asMention
+                        )
                     )
                 }
             } else {

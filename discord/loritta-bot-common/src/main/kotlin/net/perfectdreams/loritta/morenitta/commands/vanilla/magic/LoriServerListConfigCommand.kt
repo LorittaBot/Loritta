@@ -35,302 +35,307 @@ import org.jetbrains.exposed.sql.update
 import java.time.Instant
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class LoriServerListConfigCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lslc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
-	override fun getDescription(locale: BaseLocale): String {
-		return "Configura servidores na Lori's Server List"
-	}
+class LoriServerListConfigCommand(loritta: LorittaBot) :
+    AbstractCommand(loritta, "lslc", category = net.perfectdreams.loritta.common.commands.CommandCategory.MAGIC) {
+    override fun getDescription(locale: BaseLocale): String {
+        return "Configura servidores na Lori's Server List"
+    }
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val arg0 = context.rawArgs.getOrNull(0)
-		val arg1 = context.rawArgs.getOrNull(1)
-		val arg2 = context.rawArgs.getOrNull(2)
-		val arg3 = context.rawArgs.getOrNull(3)
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        val arg0 = context.rawArgs.getOrNull(0)
+        val arg1 = context.rawArgs.getOrNull(1)
+        val arg2 = context.rawArgs.getOrNull(2)
+        val arg3 = context.rawArgs.getOrNull(3)
 
-		// Sub-comandos que só o Dono pode usar
-		if (context.loritta.isOwner(context.userHandle.id)) {
-			if (arg0 == "inject_economy") {
-				val config = context.loritta.getOrCreateServerConfig(context.guild.idLong)
+        // Sub-comandos que só o Dono pode usar
+        if (context.loritta.isOwner(context.userHandle.id)) {
+            if (arg0 == "inject_economy") {
+                val config = context.loritta.getOrCreateServerConfig(context.guild.idLong)
 
-				loritta.pudding.transaction {
-					config.economyConfig = EconomyConfig.new {
-						this.enabled = true
-						this.economyName = "LoriCoin"
-						this.economyNamePlural = "LoriCoins"
-						this.sonhosExchangeEnabled = true
-						this.exchangeRate = 1.0
-						this.sonhosExchangeEnabled = true
-						this.realMoneyToEconomyRate = 1.0
-					}
-				}
+                loritta.pudding.transaction {
+                    config.economyConfig = EconomyConfig.new {
+                        this.enabled = true
+                        this.economyName = "LoriCoin"
+                        this.economyNamePlural = "LoriCoins"
+                        this.sonhosExchangeEnabled = true
+                        this.exchangeRate = 1.0
+                        this.sonhosExchangeEnabled = true
+                        this.realMoneyToEconomyRate = 1.0
+                    }
+                }
 
-				context.reply(
-						"Deve ter dado certo, yay"
-				)
-				return
-			}
-			if (arg0 == "set_local_money") {
-				loritta.pudding.transaction {
-					val profile = GuildProfile.find { (GuildProfiles.guildId eq context.guild.idLong) and (GuildProfiles.userId eq arg1!!.toLong()) }.firstOrNull()
-					profile?.money = arg2?.toDouble()?.toBigDecimal() ?: 0.0.toBigDecimal()
-				}
+                context.reply(
+                    "Deve ter dado certo, yay"
+                )
+                return
+            }
+            if (arg0 == "set_local_money") {
+                loritta.pudding.transaction {
+                    val profile =
+                        GuildProfile.find { (GuildProfiles.guildId eq context.guild.idLong) and (GuildProfiles.userId eq arg1!!.toLong()) }
+                            .firstOrNull()
+                    profile?.money = arg2?.toDouble()?.toBigDecimal() ?: 0.0.toBigDecimal()
+                }
 
-				context.reply(
-						"Quantidade alterada com sucesso!!"
-				)
-				return
-			}
-			if (arg0 == "set_update_post") {
-				val shards = context.loritta.config.loritta.clusters.instances
+                context.reply(
+                    "Quantidade alterada com sucesso!!"
+                )
+                return
+            }
+            if (arg0 == "set_update_post") {
+                val shards = context.loritta.config.loritta.clusters.instances
 
-				val jobs = shards.map {
-					GlobalScope.async(context.loritta.coroutineDispatcher) {
-						try {
-							val body = HttpRequest.get("https://${it.getUrl(loritta)}/api/v1/loritta/update")
-									.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
-									.header("Authorization", context.loritta.lorittaInternalApiKey.name)
-									.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
-									.readTimeout(context.loritta.config.loritta.clusterReadTimeout)
-									.send(
-											gson.toJson(
-													jsonObject(
-															"type" to "setPatchNotesPost",
-															"patchNotesPostId" to arg1,
-															"expiresAt" to arg2!!.toLong()
-													)
-											)
-									)
-									.body()
+                val jobs = shards.map {
+                    GlobalScope.async(context.loritta.coroutineDispatcher) {
+                        try {
+                            val body = HttpRequest.get("https://${it.getUrl(loritta)}/api/v1/loritta/update")
+                                .userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
+                                .header("Authorization", context.loritta.lorittaInternalApiKey.name)
+                                .connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
+                                .readTimeout(context.loritta.config.loritta.clusterReadTimeout)
+                                .send(
+                                    gson.toJson(
+                                        jsonObject(
+                                            "type" to "setPatchNotesPost",
+                                            "patchNotesPostId" to arg1,
+                                            "expiresAt" to arg2!!.toLong()
+                                        )
+                                    )
+                                )
+                                .body()
 
-							JsonParser.parseString(
-									body
-							)
-						} catch (e: Exception) {
-							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-							throw ClusterOfflineException(it.id, it.name)
-						}
-					}
-				}
+                            JsonParser.parseString(
+                                body
+                            )
+                        } catch (e: Exception) {
+                            logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+                            throw ClusterOfflineException(it.id, it.name)
+                        }
+                    }
+                }
 
-				jobs.awaitAll()
+                jobs.awaitAll()
 
-				context.reply(
-						"Enviado patch data!"
-				)
-				return
-			}
+                context.reply(
+                    "Enviado patch data!"
+                )
+                return
+            }
 
-			if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
-				val user = context.getUserAt(2)!!
-				loritta.pudding.transaction {
-					Profiles.update({ Profiles.id eq user.idLong }) {
-						it[money] = arg1.toLong()
-					}
-				}
+            if (arg0 == "set_dreams" && arg1 != null && arg2 != null) {
+                val user = context.getUserAt(2)!!
+                loritta.pudding.transaction {
+                    Profiles.update({ Profiles.id eq user.idLong }) {
+                        it[money] = arg1.toLong()
+                    }
+                }
 
-				context.reply(
-                        LorittaReply(
-                                "Sonhos de ${user.asMention} foram editados com sucesso!"
-                        )
-				)
-				return
-			}
+                context.reply(
+                    LorittaReply(
+                        "Sonhos de ${user.asMention} foram editados com sucesso!"
+                    )
+                )
+                return
+            }
 
-			if (arg0 == "add_dreams" && arg1 != null && arg2 != null) {
-				val user = context.getUserAt(2)!!
-				loritta.pudding.transaction {
-					Profiles.update({ Profiles.id eq user.idLong }) {
-						with(SqlExpressionBuilder) {
-							it.update(money, money + arg1.toLong())
-						}
-					}
+            if (arg0 == "add_dreams" && arg1 != null && arg2 != null) {
+                val user = context.getUserAt(2)!!
+                loritta.pudding.transaction {
+                    Profiles.update({ Profiles.id eq user.idLong }) {
+                        with(SqlExpressionBuilder) {
+                            it.update(money, money + arg1.toLong())
+                        }
+                    }
 
-					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-						it[SonhosTransactionsLog.user] = user.idLong
-						it[SonhosTransactionsLog.timestamp] = Instant.now()
-					}
+                    val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+                        it[SonhosTransactionsLog.user] = user.idLong
+                        it[SonhosTransactionsLog.timestamp] = Instant.now()
+                    }
 
-					DivineInterventionSonhosTransactionsLog.insert {
-						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
-						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
-						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.ADDED_SONHOS
-						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
-					}
-				}
+                    DivineInterventionSonhosTransactionsLog.insert {
+                        it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
+                        it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
+                        it[DivineInterventionSonhosTransactionsLog.action] =
+                            DivineInterventionTransactionEntryAction.ADDED_SONHOS
+                        it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
+                    }
+                }
 
-				context.reply(
-                        LorittaReply(
-                                "Sonhos de ${user.asMention} foram editados com sucesso!"
-                        )
-				)
-				return
-			}
+                context.reply(
+                    LorittaReply(
+                        "Sonhos de ${user.asMention} foram editados com sucesso!"
+                    )
+                )
+                return
+            }
 
-			if (arg0 == "remove_dreams" && arg1 != null && arg2 != null) {
-				val user = context.getUserAt(2)!!
-				loritta.pudding.transaction {
-					Profiles.update({ Profiles.id eq user.idLong }) {
-						with(SqlExpressionBuilder) {
-							it.update(money, money - arg1.toLong())
-						}
-					}
+            if (arg0 == "remove_dreams" && arg1 != null && arg2 != null) {
+                val user = context.getUserAt(2)!!
+                loritta.pudding.transaction {
+                    Profiles.update({ Profiles.id eq user.idLong }) {
+                        with(SqlExpressionBuilder) {
+                            it.update(money, money - arg1.toLong())
+                        }
+                    }
 
-					val transactionLogId = SonhosTransactionsLog.insertAndGetId {
-						it[SonhosTransactionsLog.user] = user.idLong
-						it[SonhosTransactionsLog.timestamp] = Instant.now()
-					}
+                    val transactionLogId = SonhosTransactionsLog.insertAndGetId {
+                        it[SonhosTransactionsLog.user] = user.idLong
+                        it[SonhosTransactionsLog.timestamp] = Instant.now()
+                    }
 
-					DivineInterventionSonhosTransactionsLog.insert {
-						it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
-						it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
-						it[DivineInterventionSonhosTransactionsLog.action] = DivineInterventionTransactionEntryAction.REMOVED_SONHOS
-						it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
-					}
-				}
+                    DivineInterventionSonhosTransactionsLog.insert {
+                        it[DivineInterventionSonhosTransactionsLog.timestampLog] = transactionLogId
+                        it[DivineInterventionSonhosTransactionsLog.editedBy] = context.userHandle.idLong
+                        it[DivineInterventionSonhosTransactionsLog.action] =
+                            DivineInterventionTransactionEntryAction.REMOVED_SONHOS
+                        it[DivineInterventionSonhosTransactionsLog.sonhos] = arg1.toLong()
+                    }
+                }
 
-				context.reply(
-                        LorittaReply(
-                                "Sonhos de ${user.asMention} foram editados com sucesso!"
-                        )
-				)
-				return
-			}
+                context.reply(
+                    LorittaReply(
+                        "Sonhos de ${user.asMention} foram editados com sucesso!"
+                    )
+                )
+                return
+            }
 
-			if (arg0 == "generate_payment" && arg1 != null && arg2 != null) {
-				loritta.pudding.transaction {
-					Payment.new {
-						this.createdAt = System.currentTimeMillis()
-						this.discount = 0.0
-						this.paidAt = System.currentTimeMillis()
-						this.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
-						this.userId = arg1.toLong()
-						this.gateway = PaymentGateway.OTHER
-						this.reason = PaymentReason.DONATION
-						this.money = arg2.toBigDecimal()
-					}
-				}
+            if (arg0 == "generate_payment" && arg1 != null && arg2 != null) {
+                loritta.pudding.transaction {
+                    Payment.new {
+                        this.createdAt = System.currentTimeMillis()
+                        this.discount = 0.0
+                        this.paidAt = System.currentTimeMillis()
+                        this.expiresAt = System.currentTimeMillis() + Constants.DONATION_ACTIVE_MILLIS
+                        this.userId = arg1.toLong()
+                        this.gateway = PaymentGateway.OTHER
+                        this.reason = PaymentReason.DONATION
+                        this.money = arg2.toBigDecimal()
+                    }
+                }
 
-				context.reply(
-                        LorittaReply(
-                                "Pagamento criado com sucesso!"
-                        )
-				)
-				return
-			}
+                context.reply(
+                    LorittaReply(
+                        "Pagamento criado com sucesso!"
+                    )
+                )
+                return
+            }
 
-			if (arg0 == "generate_key" && arg1 != null && arg2 != null) {
-				loritta.pudding.transaction {
-					DonationKey.new {
-						this.userId = arg1.toLong()
-						this.expiresAt = System.currentTimeMillis() + 2_764_800_000
-						this.value = arg2.toDouble()
-					}
-				}
+            if (arg0 == "generate_key" && arg1 != null && arg2 != null) {
+                loritta.pudding.transaction {
+                    DonationKey.new {
+                        this.userId = arg1.toLong()
+                        this.expiresAt = System.currentTimeMillis() + 2_764_800_000
+                        this.value = arg2.toDouble()
+                    }
+                }
 
-				context.reply(
-                        LorittaReply(
-                                "Key criada com sucesso!"
-                        )
-				)
-				return
-			}
-		}
+                context.reply(
+                    LorittaReply(
+                        "Key criada com sucesso!"
+                    )
+                )
+                return
+            }
+        }
 
-		// Sub-comandos que o dono e os Supervisores de Lori podem usar
-		if (context.loritta.isOwner(context.userHandle.id) || context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
-			if (arg0 == "guild_ban" && arg1 != null) {
-				val guildId = arg1.toLong()
+        // Sub-comandos que o dono e os Supervisores de Lori podem usar
+        if (context.loritta.isOwner(context.userHandle.id) || context.userHandle.isLorittaSupervisor(context.loritta.lorittaShards)) {
+            if (arg0 == "guild_ban" && arg1 != null) {
+                val guildId = arg1.toLong()
 
-				val rawArgs = context.rawArgs.toMutableList()
-				rawArgs.removeAt(0)
-				rawArgs.removeAt(0)
+                val rawArgs = context.rawArgs.toMutableList()
+                rawArgs.removeAt(0)
+                rawArgs.removeAt(0)
 
-				loritta.pudding.transaction {
-					BlacklistedGuilds.insert {
-						it[BlacklistedGuilds.id] = EntityID(guildId, BlacklistedGuilds)
-						it[BlacklistedGuilds.bannedAt] = System.currentTimeMillis()
-						it[BlacklistedGuilds.reason] = rawArgs.joinToString(" ")
-					}
-				}
+                loritta.pudding.transaction {
+                    BlacklistedGuilds.insert {
+                        it[BlacklistedGuilds.id] = EntityID(guildId, BlacklistedGuilds)
+                        it[BlacklistedGuilds.bannedAt] = System.currentTimeMillis()
+                        it[BlacklistedGuilds.reason] = rawArgs.joinToString(" ")
+                    }
+                }
 
-				context.reply(
-                        LorittaReply(
-                                "Guild banida!"
-                        )
-				)
-			}
+                context.reply(
+                    LorittaReply(
+                        "Guild banida!"
+                    )
+                )
+            }
 
-			if (arg0 == "guild_unban" && arg1 != null) {
-				val guildId = arg1.toLong()
+            if (arg0 == "guild_unban" && arg1 != null) {
+                val guildId = arg1.toLong()
 
-				val rawArgs = context.rawArgs.toMutableList()
-				rawArgs.removeAt(0)
-				rawArgs.removeAt(0)
+                val rawArgs = context.rawArgs.toMutableList()
+                rawArgs.removeAt(0)
+                rawArgs.removeAt(0)
 
-				loritta.pudding.transaction {
-					BlacklistedGuilds.deleteWhere {
-						BlacklistedGuilds.id eq guildId
-					}
-				}
+                loritta.pudding.transaction {
+                    BlacklistedGuilds.deleteWhere {
+                        BlacklistedGuilds.id eq guildId
+                    }
+                }
 
-				context.reply(
-                        LorittaReply(
-                                "Guild desbanida!"
-                        )
-				)
-			}
+                context.reply(
+                    LorittaReply(
+                        "Guild desbanida!"
+                    )
+                )
+            }
 
-			if (arg0 == "economy") {
-				val value = arg1!!.toBoolean()
+            if (arg0 == "economy") {
+                val value = arg1!!.toBoolean()
 
-				val shards = context.loritta.config.loritta.clusters.instances
+                val shards = context.loritta.config.loritta.clusters.instances
 
-				shards.map {
-					GlobalScope.async(context.loritta.coroutineDispatcher) {
-						try {
-							val body = HttpRequest.post("https://${it.getUrl(loritta)}/api/v1/loritta/action/economy")
-									.userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
-									.header("Authorization", context.loritta.lorittaInternalApiKey.name)
-									.connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
-									.readTimeout(context.loritta.config.loritta.clusterReadTimeout)
-									.send(
-											gson.toJson(
-													jsonObject(
-															"enabled" to value
-													)
-											)
-									)
-									.body()
+                shards.map {
+                    GlobalScope.async(context.loritta.coroutineDispatcher) {
+                        try {
+                            val body = HttpRequest.post("https://${it.getUrl(loritta)}/api/v1/loritta/action/economy")
+                                .userAgent(context.loritta.lorittaCluster.getUserAgent(loritta))
+                                .header("Authorization", context.loritta.lorittaInternalApiKey.name)
+                                .connectTimeout(context.loritta.config.loritta.clusterConnectionTimeout)
+                                .readTimeout(context.loritta.config.loritta.clusterReadTimeout)
+                                .send(
+                                    gson.toJson(
+                                        jsonObject(
+                                            "enabled" to value
+                                        )
+                                    )
+                                )
+                                .body()
 
-							JsonParser.parseString(
-									body
-							)
-						} catch (e: Exception) {
-							logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-							throw ClusterOfflineException(it.id, it.name)
-						}
-					}
-				}
+                            JsonParser.parseString(
+                                body
+                            )
+                        } catch (e: Exception) {
+                            logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+                            throw ClusterOfflineException(it.id, it.name)
+                        }
+                    }
+                }
 
-				context.reply(
-                        LorittaReply(
-                                "Alterando status de economia em todos os clusters..."
-                        )
-				)
-				return
-			}
+                context.reply(
+                    LorittaReply(
+                        "Alterando status de economia em todos os clusters..."
+                    )
+                )
+                return
+            }
 
-			if (arg0 == "inspect_donations" && arg1 != null) {
-				val id = arg1.toLong()
+            if (arg0 == "inspect_donations" && arg1 != null) {
+                val id = arg1.toLong()
 
-				val moneyFromDonations = context.loritta.getActiveMoneyFromDonationsAsync(id)
+                val moneyFromDonations = context.loritta.getActiveMoneyFromDonationsAsync(id)
 
-				context.reply(
-					LorittaReply(
-						"<@${id}> possui **R$ ${moneyFromDonations}** ativos"
-					)
-				)
-				return
-			}
-		}
-	}
+                context.reply(
+                    LorittaReply(
+                        "<@${id}> possui **R$ ${moneyFromDonations}** ativos"
+                    )
+                )
+                return
+            }
+        }
+    }
 }

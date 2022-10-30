@@ -10,11 +10,17 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.legacyVariab
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
-class AvailableBundlesRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/bundles") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		val variables = call.legacyVariables(loritta, locale)
-		variables["saveType"] = "bundles"
+class AvailableBundlesRoute(loritta: LorittaBot) :
+    RequiresDiscordLoginLocalizedRoute(loritta, "/user/@me/dashboard/bundles") {
+    override suspend fun onAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification
+    ) {
+        val variables = call.legacyVariables(loritta, locale)
+        variables["saveType"] = "bundles"
 
-		call.respondHtml(evaluate("profile_dashboard_bundles.html", variables))
-	}
+        call.respondHtml(evaluate("profile_dashboard_bundles.html", variables))
+    }
 }

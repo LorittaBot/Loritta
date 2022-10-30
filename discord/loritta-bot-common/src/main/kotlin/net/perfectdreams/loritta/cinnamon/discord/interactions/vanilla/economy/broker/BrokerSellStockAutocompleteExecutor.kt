@@ -17,7 +17,7 @@ class BrokerSellStockAutocompleteExecutor(loritta: LorittaBot) : CinnamonAutocom
             .toSet()
 
         val results = LorittaBovespaBrokerUtils.trackedTickerCodes.filter {
-           it.ticker in userBoughtStocks && it.ticker.startsWith(focusedOption.value, true)
+            it.ticker in userBoughtStocks && it.ticker.startsWith(focusedOption.value, true)
         }
 
         return results.map {

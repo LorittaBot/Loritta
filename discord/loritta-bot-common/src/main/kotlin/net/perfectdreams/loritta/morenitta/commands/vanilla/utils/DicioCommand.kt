@@ -14,109 +14,118 @@ import java.net.URLEncoder
 
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class DicioCommand(loritta: LorittaBot) : AbstractCommand(loritta, "dicio", listOf("dicionário", "dicionario", "definir"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
-	// TODO: Fix Usage
+class DicioCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "dicio",
+    listOf("dicionário", "dicionario", "definir"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.UTILS
+) {
+    // TODO: Fix Usage
 
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.dicio.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.command.dicio.examples")
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.dicio.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.command.dicio.examples")
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "dictionary")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "dictionary")
 
-		if (context.args.size == 1) {
-			val palavra = URLEncoder.encode(context.args[0], "UTF-8")
-			val httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")
-					.userAgent(Constants.USER_AGENT)
-			val response = httpRequest.body()
+        if (context.args.size == 1) {
+            val palavra = URLEncoder.encode(context.args[0], "UTF-8")
+            val httpRequest = HttpRequest.get("https://www.dicio.com.br/pesquisa.php?q=$palavra")
+                .userAgent(Constants.USER_AGENT)
+            val response = httpRequest.body()
 
-			if (httpRequest.code() == 404) {
-				context.reply(
-						"Palavra não encontrada no meu dicionário!",
-						Constants.ERROR
-				)
-				return
-			}
+            if (httpRequest.code() == 404) {
+                context.reply(
+                    "Palavra não encontrada no meu dicionário!",
+                    Constants.ERROR
+                )
+                return
+            }
 
-			var jsoup = Jsoup.parse(response)
+            var jsoup = Jsoup.parse(response)
 
-			// Ao usar pesquisa.php, ele pode retornar uma página de pesquisa ou uma página com a palavra, por isto iremos primeiro descobrir se estamos na página de pesquisa
-			val resultadosClass = jsoup.getElementsByClass("resultados")
-			val resultados = resultadosClass.firstOrNull()
+            // Ao usar pesquisa.php, ele pode retornar uma página de pesquisa ou uma página com a palavra, por isto iremos primeiro descobrir se estamos na página de pesquisa
+            val resultadosClass = jsoup.getElementsByClass("resultados")
+            val resultados = resultadosClass.firstOrNull()
 
-			if (resultados != null) {
-				val resultadosLi = resultados.getElementsByTag("li").firstOrNull()
+            if (resultados != null) {
+                val resultadosLi = resultados.getElementsByTag("li").firstOrNull()
 
-				if (resultadosLi == null) {
-					context.reply(
-							"Palavra não encontrada no meu dicionário!",
-							Constants.ERROR
-					)
-					return
-				}
+                if (resultadosLi == null) {
+                    context.reply(
+                        "Palavra não encontrada no meu dicionário!",
+                        Constants.ERROR
+                    )
+                    return
+                }
 
-				val linkElement = resultadosLi.getElementsByClass("_sugg").first()!!
-				val link = linkElement.attr("href")
+                val linkElement = resultadosLi.getElementsByClass("_sugg").first()!!
+                val link = linkElement.attr("href")
 
-				val httpRequest2 = HttpRequest.get("https://www.dicio.com.br$link")
-						.userAgent(Constants.USER_AGENT)
-				val response2 = httpRequest2.body()
+                val httpRequest2 = HttpRequest.get("https://www.dicio.com.br$link")
+                    .userAgent(Constants.USER_AGENT)
+                val response2 = httpRequest2.body()
 
-				if (httpRequest2.code() == 404) {
-					context.reply(
-							"Palavra não encontrada no meu dicionário!",
-							Constants.ERROR
-					)
-					return
-				}
+                if (httpRequest2.code() == 404) {
+                    context.reply(
+                        "Palavra não encontrada no meu dicionário!",
+                        Constants.ERROR
+                    )
+                    return
+                }
 
-				jsoup = Jsoup.parse(response2)
-			}
+                jsoup = Jsoup.parse(response2)
+            }
 
-			// Se a página não possui uma descrição ou se ela possui uma descrição mas começa com "Ainda não temos o significado de", então é uma palavra inexistente!
-			if (jsoup.select("p[itemprop = description]").isEmpty() || jsoup.select("p[itemprop = description]")[0].text().startsWith("Ainda não temos o significado de")) {
-				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!")
-				return
-			}
+            // Se a página não possui uma descrição ou se ela possui uma descrição mas começa com "Ainda não temos o significado de", então é uma palavra inexistente!
+            if (jsoup.select("p[itemprop = description]")
+                    .isEmpty() || jsoup.select("p[itemprop = description]")[0].text()
+                    .startsWith("Ainda não temos o significado de")
+            ) {
+                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + "Palavra não encontrada no meu dicionário!")
+                return
+            }
 
-			val description = jsoup.select("p[itemprop = description]")[0]
+            val description = jsoup.select("p[itemprop = description]")[0]
 
-			val type = description.getElementsByTag("span")[0]
-			val word = jsoup.select("h1[itemprop = name]")
-			val what = description.getElementsByTag("span").getOrNull(1)
-			val etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim").text() else ""
-			val frase = if (jsoup.getElementsByClass("frase").isNotEmpty()) {
-				jsoup.getElementsByClass("frase")[0]
-			} else {
-				null
-			}
+            val type = description.getElementsByTag("span")[0]
+            val word = jsoup.select("h1[itemprop = name]")
+            val what = description.getElementsByTag("span").getOrNull(1)
+            val etim = if (description.getElementsByClass("etim").size > 0) description.getElementsByClass("etim")
+                .text() else ""
+            val frase = if (jsoup.getElementsByClass("frase").isNotEmpty()) {
+                jsoup.getElementsByClass("frase")[0]
+            } else {
+                null
+            }
 
-			val embed = EmbedBuilder()
-			embed.setColor(Color(25, 89, 132))
-			embed.setFooter(etim, null)
+            val embed = EmbedBuilder()
+            embed.setColor(Color(25, 89, 132))
+            embed.setFooter(etim, null)
 
-			embed.setTitle("📙 Significado de ${word.text()}")
-			embed.setDescription("*${type.text()}*")
-			if (what != null)
-				embed.appendDescription("\n\n**${what.text()}**")
+            embed.setTitle("📙 Significado de ${word.text()}")
+            embed.setDescription("*${type.text()}*")
+            if (what != null)
+                embed.appendDescription("\n\n**${what.text()}**")
 
-			if (jsoup.getElementsByClass("sinonimos").size > 0) {
-				val sinonimos = jsoup.getElementsByClass("sinonimos")[0]
+            if (jsoup.getElementsByClass("sinonimos").size > 0) {
+                val sinonimos = jsoup.getElementsByClass("sinonimos")[0]
 
-				embed.addField("🙂 Sinônimos", sinonimos.text(), false)
-			}
-			if (jsoup.getElementsByClass("sinonimos").size > 1) {
-				val antonimos = jsoup.getElementsByClass("sinonimos")[1]
+                embed.addField("🙂 Sinônimos", sinonimos.text(), false)
+            }
+            if (jsoup.getElementsByClass("sinonimos").size > 1) {
+                val antonimos = jsoup.getElementsByClass("sinonimos")[1]
 
-				embed.addField("🙁 Antônimos", antonimos.text(), false)
-			}
+                embed.addField("🙁 Antônimos", antonimos.text(), false)
+            }
 
-			if (frase != null) {
-				embed.addField("🖋 Frase", frase.text(), false)
-			}
+            if (frase != null) {
+                embed.addField("🖋 Frase", frase.text(), false)
+            }
 
-			context.sendMessage(context.getAsMention(true), embed.build())
-		} else {
-			this.explain(context)
-		}
-	}
+            context.sendMessage(context.getAsMention(true), embed.build())
+        } else {
+            this.explain(context)
+        }
+    }
 }

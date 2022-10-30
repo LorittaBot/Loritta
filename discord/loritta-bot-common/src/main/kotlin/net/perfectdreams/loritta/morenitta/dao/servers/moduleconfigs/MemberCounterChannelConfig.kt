@@ -8,19 +8,19 @@ import org.jetbrains.exposed.dao.EntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 
 class MemberCounterChannelConfig(id: EntityID<Long>) : Entity<Long>(id) {
-	companion object : EntityClass<Long, MemberCounterChannelConfig>(MemberCounterChannelConfigs)
+    companion object : EntityClass<Long, MemberCounterChannelConfig>(MemberCounterChannelConfigs)
 
-	var guild by MemberCounterChannelConfigs.guild
-	var channelId by MemberCounterChannelConfigs.channelId
-	var padding by MemberCounterChannelConfigs.padding
-	var theme by MemberCounterChannelConfigs.theme
-	var topic by MemberCounterChannelConfigs.topic
+    var guild by MemberCounterChannelConfigs.guild
+    var channelId by MemberCounterChannelConfigs.channelId
+    var padding by MemberCounterChannelConfigs.padding
+    var theme by MemberCounterChannelConfigs.theme
+    var topic by MemberCounterChannelConfigs.topic
 
-	fun getFormattedTopic(guild: Guild): String {
-		val emojis = CounterUtils.getEmojis(theme)
+    fun getFormattedTopic(guild: Guild): String {
+        val emojis = CounterUtils.getEmojis(theme)
 
-		return topic.replace("{guildsize}", guild.memberCount.toString())
-				.replace("{guild-size}", guild.memberCount.toString())
-				.replace("{counter}", CounterUtils.generatePrettyCounter(guild.memberCount, emojis, padding))
-	}
+        return topic.replace("{guildsize}", guild.memberCount.toString())
+            .replace("{guild-size}", guild.memberCount.toString())
+            .replace("{counter}", CounterUtils.generatePrettyCounter(guild.memberCount, emojis, padding))
+    }
 }

@@ -12,116 +12,120 @@ import net.perfectdreams.loritta.morenitta.tables.servers.Giveaways
 import net.perfectdreams.loritta.common.utils.Emotes
 import org.jetbrains.exposed.sql.and
 
-class GiveawayRerollCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("giveaway reroll", "sorteio reroll"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
-	companion object {
-		private const val LOCALE_PREFIX = "commands.command"
-	}
+class GiveawayRerollCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("giveaway reroll", "sorteio reroll"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.FUN
+) {
+    companion object {
+        private const val LOCALE_PREFIX = "commands.command"
+    }
 
-	override fun command() = create {
-		userRequiredPermissions = listOf(Permission.ManageMessages)
+    override fun command() = create {
+        userRequiredPermissions = listOf(Permission.ManageMessages)
 
-		canUseInPrivateChannel = false
+        canUseInPrivateChannel = false
 
-		localizedDescription("$LOCALE_PREFIX.giveawayreroll.description")
+        localizedDescription("$LOCALE_PREFIX.giveawayreroll.description")
 
-		executesDiscord {
-			val context = this
+        executesDiscord {
+            val context = this
 
-			val link = context.args.getOrNull(0)
+            val link = context.args.getOrNull(0)
 
-			if (link == null) {
-				context.explain()
-				return@executesDiscord
-			}
+            if (link == null) {
+                context.explain()
+                return@executesDiscord
+            }
 
-			val split = link.split("/")
+            val split = link.split("/")
 
-			var messageId: Long? = null
-			var channelId: Long? = null
+            var messageId: Long? = null
+            var channelId: Long? = null
 
-			if (split.size == 1 && split[0].isValidSnowflake()) {
-				messageId = split[0].toLong()
-			} else {
-				messageId = split.getOrNull(split.size - 1)?.toLongOrNull()
-				channelId = split.getOrNull(split.size - 2)?.toLongOrNull()
-			}
+            if (split.size == 1 && split[0].isValidSnowflake()) {
+                messageId = split[0].toLong()
+            } else {
+                messageId = split.getOrNull(split.size - 1)?.toLongOrNull()
+                channelId = split.getOrNull(split.size - 2)?.toLongOrNull()
+            }
 
-			if (messageId == null) {
-				context.reply(
-						LorittaReply(
-								locale["$LOCALE_PREFIX.giveawayend.giveawayInvalidArguments", "`https://canary.discordapp.com/channels/297732013006389252/297732013006389252/594270558238146603`"],
-								Constants.ERROR
-						)
-				)
-				return@executesDiscord
-			}
+            if (messageId == null) {
+                context.reply(
+                    LorittaReply(
+                        locale["$LOCALE_PREFIX.giveawayend.giveawayInvalidArguments", "`https://canary.discordapp.com/channels/297732013006389252/297732013006389252/594270558238146603`"],
+                        Constants.ERROR
+                    )
+                )
+                return@executesDiscord
+            }
 
-			val giveaway = loritta.newSuspendedTransaction {
-				if (channelId != null) {
-					Giveaway.find {
-						(Giveaways.guildId eq context.guild.idLong) and (Giveaways.messageId eq messageId) and (Giveaways.textChannelId eq channelId)
-					}.firstOrNull()
-				} else {
-					Giveaway.find {
-						(Giveaways.guildId eq context.guild.idLong) and (Giveaways.messageId eq messageId)
-					}.firstOrNull()
-				}
-			}
+            val giveaway = loritta.newSuspendedTransaction {
+                if (channelId != null) {
+                    Giveaway.find {
+                        (Giveaways.guildId eq context.guild.idLong) and (Giveaways.messageId eq messageId) and (Giveaways.textChannelId eq channelId)
+                    }.firstOrNull()
+                } else {
+                    Giveaway.find {
+                        (Giveaways.guildId eq context.guild.idLong) and (Giveaways.messageId eq messageId)
+                    }.firstOrNull()
+                }
+            }
 
-			if (giveaway == null) {
-				context.reply(
-						LorittaReply(
-								locale["$LOCALE_PREFIX.giveawayend.giveawayDoesNotExist"],
-								Emotes.LORI_HM
-						)
-				)
-				return@executesDiscord
-			}
+            if (giveaway == null) {
+                context.reply(
+                    LorittaReply(
+                        locale["$LOCALE_PREFIX.giveawayend.giveawayDoesNotExist"],
+                        Emotes.LORI_HM
+                    )
+                )
+                return@executesDiscord
+            }
 
-			if (!giveaway.finished) {
-				context.reply(
-						LorittaReply(
-								locale[
-										"$LOCALE_PREFIX.giveawayreroll.giveawayStillRunning",
-										"`${locale["$LOCALE_PREFIX.giveawayreroll.giveawayHowToEnd", context.serverConfig.commandPrefix, link.stripCodeMarks()]}`"
-								],
-								Constants.ERROR
-						)
-				)
-				return@executesDiscord
-			}
+            if (!giveaway.finished) {
+                context.reply(
+                    LorittaReply(
+                        locale[
+                                "$LOCALE_PREFIX.giveawayreroll.giveawayStillRunning",
+                                "`${locale["$LOCALE_PREFIX.giveawayreroll.giveawayHowToEnd", context.serverConfig.commandPrefix, link.stripCodeMarks()]}`"
+                        ],
+                        Constants.ERROR
+                    )
+                )
+                return@executesDiscord
+            }
 
-			val textChannel = context.guild.getTextChannelById(giveaway.textChannelId)
+            val textChannel = context.guild.getTextChannelById(giveaway.textChannelId)
 
-			if (textChannel == null) {
-				context.reply(
-						LorittaReply(
-								locale["$LOCALE_PREFIX.giveawayend.channelDoesNotExist"],
-								Constants.ERROR
-						)
-				)
-				return@executesDiscord
-			}
-			val message = textChannel.retrieveMessageById(messageId)
+            if (textChannel == null) {
+                context.reply(
+                    LorittaReply(
+                        locale["$LOCALE_PREFIX.giveawayend.channelDoesNotExist"],
+                        Constants.ERROR
+                    )
+                )
+                return@executesDiscord
+            }
+            val message = textChannel.retrieveMessageById(messageId)
 
-			if (message == null) {
-				context.reply(
-						LorittaReply(
-								locale["$LOCALE_PREFIX.giveawayend.messageDoesNotExist"],
-								Constants.ERROR
-						)
-				)
-				return@executesDiscord
-			}
+            if (message == null) {
+                context.reply(
+                    LorittaReply(
+                        locale["$LOCALE_PREFIX.giveawayend.messageDoesNotExist"],
+                        Constants.ERROR
+                    )
+                )
+                return@executesDiscord
+            }
 
-			loritta.giveawayManager.rollWinners(message, giveaway)
+            loritta.giveawayManager.rollWinners(message, giveaway)
 
-			context.reply(
-					LorittaReply(
-							locale["$LOCALE_PREFIX.giveawayreroll.rerolledGiveaway"],
-							Emotes.LORI_HAPPY
-					)
-			)
-		}
-	}
+            context.reply(
+                LorittaReply(
+                    locale["$LOCALE_PREFIX.giveawayreroll.rerolledGiveaway"],
+                    Emotes.LORI_HAPPY
+                )
+            )
+        }
+    }
 }

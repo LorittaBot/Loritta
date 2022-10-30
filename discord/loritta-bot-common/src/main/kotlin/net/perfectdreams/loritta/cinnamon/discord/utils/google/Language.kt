@@ -119,7 +119,15 @@ enum class Language(val code: String) {
     // It would be better if it was a "when" clause, to avoid any languages missing their translation
     // But alas, that would be too big and too boring to fill up
     val languageNameI18nKey: StringI18nData
-        get() = StringI18nData(StringI18nKey("commands.command.translate.languages.${TextUtils.snakeToLowerCamelCase(this.name.lowercase())}"), emptyMap())
+        get() = StringI18nData(
+            StringI18nKey(
+                "commands.command.translate.languages.${
+                    TextUtils.snakeToLowerCamelCase(
+                        this.name.lowercase()
+                    )
+                }"
+            ), emptyMap()
+        )
 
     companion object {
         fun fromLanguageCode(code: String) = Language.values().first { it.code == code }

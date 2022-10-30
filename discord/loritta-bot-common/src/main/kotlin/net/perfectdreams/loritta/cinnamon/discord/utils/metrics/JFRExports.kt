@@ -27,94 +27,94 @@ object JFRExports {
 
     //jdk.SafepointBegin, jdk.SafepointStateSynchronization, jdk.SafepointEnd
     private val SAFEPOINTS: Histogram = Histogram.build()
-            .name("jvm_safepoint_pauses_seconds")
-            .help("Safepoint pauses by buckets")
-            .labelNames("type") // ttsp, operation
-            .buckets(0.005, 0.010, 0.025, 0.050, 0.100, 0.200, 0.400, 0.800, 1.600, 3.0, 5.0, 10.0)
-            .create()
+        .name("jvm_safepoint_pauses_seconds")
+        .help("Safepoint pauses by buckets")
+        .labelNames("type") // ttsp, operation
+        .buckets(0.005, 0.010, 0.025, 0.050, 0.100, 0.200, 0.400, 0.800, 1.600, 3.0, 5.0, 10.0)
+        .create()
     private val SAFEPOINTS_TTSP: Histogram.Child = SAFEPOINTS.labels("ttsp")
     private val SAFEPOINTS_OPERATION: Histogram.Child = SAFEPOINTS.labels("operation")
 
     //jdk.GarbageCollection
     private val GC_PAUSES: Histogram = Histogram.build()
-            .name("jvm_gc_pauses_seconds")
-            .help("Longest garbage collection pause per collection")
-            .labelNames("name", "cause")
-            .buckets(0.005, 0.010, 0.025, 0.050, 0.100, 0.200, 0.400, 0.800, 1.600, 3.0, 5.0, 10.0)
-            .create()
+        .name("jvm_gc_pauses_seconds")
+        .help("Longest garbage collection pause per collection")
+        .labelNames("name", "cause")
+        .buckets(0.005, 0.010, 0.025, 0.050, 0.100, 0.200, 0.400, 0.800, 1.600, 3.0, 5.0, 10.0)
+        .create()
 
     //jdk.GarbageCollection
     private val GC_PAUSES_SUM: Histogram = Histogram.build()
-            .name("jvm_gc_sum_of_pauses_seconds")
-            .help("Sum of garbage collection pauses per collection")
-            .labelNames("name", "cause")
-            .buckets(0.005, 0.010, 0.025, 0.050, 0.100, 0.200, 0.400, 0.800, 1.600, 3.0, 5.0, 10.0)
-            .create()
+        .name("jvm_gc_sum_of_pauses_seconds")
+        .help("Sum of garbage collection pauses per collection")
+        .labelNames("name", "cause")
+        .buckets(0.005, 0.010, 0.025, 0.050, 0.100, 0.200, 0.400, 0.800, 1.600, 3.0, 5.0, 10.0)
+        .create()
 
     //jdk.GCReferenceStatistics
     private val REFERENCE_STATISTICS: Counter = Counter.build()
-            .name("jvm_reference_statistics")
-            .help("Number of java.lang.ref references by type")
-            .labelNames("type")
-            .create()
+        .name("jvm_reference_statistics")
+        .help("Number of java.lang.ref references by type")
+        .labelNames("type")
+        .create()
 
     //jdk.ExecuteVMOperation
     private val VM_OPERATIONS: Counter = Counter.build()
-            .name("jvm_vm_operations")
-            .help("Executed VM operations")
-            .labelNames("operation", "safepoint")
-            .create()
+        .name("jvm_vm_operations")
+        .help("Executed VM operations")
+        .labelNames("operation", "safepoint")
+        .create()
 
     //jdk.NetworkUtilization
     private val NETWORK_READ = Gauge.build()
-            .name("jvm_network_read")
-            .help("Bits read from the network per second")
-            .labelNames("interface")
-            .create()
+        .name("jvm_network_read")
+        .help("Bits read from the network per second")
+        .labelNames("interface")
+        .create()
 
     //jdk.NetworkUtilization
     private val NETWORK_WRITE = Gauge.build()
-            .name("jvm_network_write")
-            .help("Bits written to the network per second")
-            .labelNames("interface")
-            .create()
+        .name("jvm_network_write")
+        .help("Bits written to the network per second")
+        .labelNames("interface")
+        .create()
 
     //jdk.JavaThreadStatistics
     private val THREADS_CURRENT = Gauge.build()
-            .name("jvm_threads_current")
-            .help("Current thread count of the JVM")
-            .create()
+        .name("jvm_threads_current")
+        .help("Current thread count of the JVM")
+        .create()
 
     //jdk.JavaThreadStatistics
     private val THREADS_DAEMON = Gauge.build()
-            .name("jvm_threads_daemon")
-            .help("Daemon thread count of the JVM")
-            .create()
+        .name("jvm_threads_daemon")
+        .help("Daemon thread count of the JVM")
+        .create()
 
     //jdk.CPULoad
     private val CPU_USER = Gauge.build()
-            .name("jvm_cpu_user")
-            .help("User CPU usage of the JVM")
-            .create()
+        .name("jvm_cpu_user")
+        .help("User CPU usage of the JVM")
+        .create()
 
     //jdk.CPULoad
     private val CPU_SYSTEM = Gauge.build()
-            .name("jvm_cpu_system")
-            .help("System CPU usage of the JVM")
-            .create()
+        .name("jvm_cpu_system")
+        .help("System CPU usage of the JVM")
+        .create()
 
     //jdk.CPULoad
     private val CPU_MACHINE = Gauge.build()
-            .name("jvm_cpu_machine")
-            .help("CPU usage of the machine the JVM is running on")
-            .create()
+        .name("jvm_cpu_machine")
+        .help("CPU usage of the machine the JVM is running on")
+        .create()
 
     //jdk.GCHeapSummary, jdk.MetaspaceSummary
     private val MEMORY_USAGE = Gauge.build() // remove _jfr suffix if we remove the standard exports
-            .name("jvm_memory_bytes_used_jfr")
-            .help("Bytes of memory used by the JVM")
-            .labelNames("area") //heap, nonheap
-            .create()
+        .name("jvm_memory_bytes_used_jfr")
+        .help("Bytes of memory used by the JVM")
+        .labelNames("area") //heap, nonheap
+        .create()
     private val MEMORY_USAGE_HEAP = MEMORY_USAGE.labels("heap")
     private val MEMORY_USAGE_NONHEAP = MEMORY_USAGE.labels("nonheap")
 
@@ -239,9 +239,9 @@ object JFRExports {
          */
         event(rs, "jdk.GarbageCollection", Consumer<RecordedEvent> { e ->
             GC_PAUSES.labels(e.getString("name"), e.getString("cause"))
-                    .observe(e.getDuration("longestPause").toNanos() / NANOSECONDS_PER_SECOND)
+                .observe(e.getDuration("longestPause").toNanos() / NANOSECONDS_PER_SECOND)
             GC_PAUSES_SUM.labels(e.getString("name"), e.getString("cause"))
-                    .observe(e.getDuration("sumOfPauses").toNanos() / NANOSECONDS_PER_SECOND)
+                .observe(e.getDuration("sumOfPauses").toNanos() / NANOSECONDS_PER_SECOND)
         })
 
         /*
@@ -252,7 +252,12 @@ object JFRExports {
          *   count = 91
          * }
          */
-        event(rs, "jdk.GCReferenceStatistics", Consumer<RecordedEvent> { e -> REFERENCE_STATISTICS.labels(e.getString("type")).inc(e.getLong("count").toDouble()) })
+        event(
+            rs,
+            "jdk.GCReferenceStatistics",
+            Consumer<RecordedEvent> { e ->
+                REFERENCE_STATISTICS.labels(e.getString("type")).inc(e.getLong("count").toDouble())
+            })
 
         /*
          * jdk.ExecuteVMOperation {
@@ -265,7 +270,15 @@ object JFRExports {
          *   safepointId = 18
          * }
          */
-        event(rs, "jdk.ExecuteVMOperation", Consumer<RecordedEvent> { e -> VM_OPERATIONS.labels(e.getString("operation"), java.lang.String.valueOf(e.getBoolean("safepoint"))).inc() })
+        event(
+            rs,
+            "jdk.ExecuteVMOperation",
+            Consumer<RecordedEvent> { e ->
+                VM_OPERATIONS.labels(
+                    e.getString("operation"),
+                    java.lang.String.valueOf(e.getBoolean("safepoint"))
+                ).inc()
+            })
 
         /*
          * jdk.NetworkUtilization {
@@ -329,7 +342,10 @@ object JFRExports {
          *   heapUsed = 6,3 MB
          * }
          */
-        event(rs, "jdk.GCHeapSummary", Consumer<RecordedEvent> { e -> MEMORY_USAGE_HEAP.set(e.getLong("heapUsed").toDouble()) })
+        event(
+            rs,
+            "jdk.GCHeapSummary",
+            Consumer<RecordedEvent> { e -> MEMORY_USAGE_HEAP.set(e.getLong("heapUsed").toDouble()) })
 
         /*
          * jdk.MetaspaceSummary {

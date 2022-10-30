@@ -8,7 +8,11 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
-class GuildBannerCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("guildbanner", "serverbanner"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class GuildBannerCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("guildbanner", "serverbanner"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
     override fun command() = create {
         localizedDescription("commands.command.guildbanner.description")
 

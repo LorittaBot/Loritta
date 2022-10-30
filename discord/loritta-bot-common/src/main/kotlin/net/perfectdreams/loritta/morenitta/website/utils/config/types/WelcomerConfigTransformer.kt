@@ -18,18 +18,18 @@ class WelcomerConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
         }
 
         return jsonObject(
-                "enabled" to (welcomerConfig != null),
-                "tellOnJoin" to (welcomerConfig?.tellOnJoin ?: false),
-                "tellOnRemove" to (welcomerConfig?.tellOnRemove ?: false),
-                "joinMessage" to welcomerConfig?.joinMessage,
-                "removeMessage" to welcomerConfig?.removeMessage,
-                "channelJoinId" to welcomerConfig?.channelJoinId,
-                "channelRemoveId" to welcomerConfig?.channelRemoveId,
-                "tellOnPrivateJoin" to (welcomerConfig?.tellOnPrivateJoin ?: false),
-                "tellOnBan" to (welcomerConfig?.tellOnBan ?: false),
-                "bannedMessage" to welcomerConfig?.bannedMessage,
-                "deleteJoinMesagesAfter" to welcomerConfig?.deleteJoinMessagesAfter,
-                "deleteRemoveMessagesAfter" to welcomerConfig?.deleteRemoveMessagesAfter
+            "enabled" to (welcomerConfig != null),
+            "tellOnJoin" to (welcomerConfig?.tellOnJoin ?: false),
+            "tellOnRemove" to (welcomerConfig?.tellOnRemove ?: false),
+            "joinMessage" to welcomerConfig?.joinMessage,
+            "removeMessage" to welcomerConfig?.removeMessage,
+            "channelJoinId" to welcomerConfig?.channelJoinId,
+            "channelRemoveId" to welcomerConfig?.channelRemoveId,
+            "tellOnPrivateJoin" to (welcomerConfig?.tellOnPrivateJoin ?: false),
+            "tellOnBan" to (welcomerConfig?.tellOnBan ?: false),
+            "bannedMessage" to welcomerConfig?.bannedMessage,
+            "deleteJoinMesagesAfter" to welcomerConfig?.deleteJoinMessagesAfter,
+            "deleteRemoveMessagesAfter" to welcomerConfig?.deleteRemoveMessagesAfter
         )
     }
 

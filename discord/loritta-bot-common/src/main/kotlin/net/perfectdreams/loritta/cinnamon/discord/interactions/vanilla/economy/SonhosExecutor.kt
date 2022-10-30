@@ -30,10 +30,11 @@ class SonhosExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta
         val isSelf = context.user.id == user.id
 
         // Needs to be in here because MessageBuilder is not suspendable!
-        val sonhosRankPosition = if (userSonhos != 0L && profile != null) // Only show the ranking position if the user has any sonhos, this avoids querying the db with useless stuff
-            profile.getRankPositionInSonhosRanking()
-        else
-            null
+        val sonhosRankPosition =
+            if (userSonhos != 0L && profile != null) // Only show the ranking position if the user has any sonhos, this avoids querying the db with useless stuff
+                profile.getRankPositionInSonhosRanking()
+            else
+                null
 
         if (isSelf) {
             context.sendMessage {

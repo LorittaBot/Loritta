@@ -6,25 +6,25 @@ import net.perfectdreams.loritta.morenitta.api.commands.CommandBuilder
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 
 open class BasicImageCommand(
-	loritta: LorittaBot,
-	labels: List<String>,
-	val descriptionKey: String,
-	val sourceTemplatePath: String,
-	val builder: CommandBuilder<CommandContext>.() -> (Unit),
-	val slashCommandName: String? = null
+    loritta: LorittaBot,
+    labels: List<String>,
+    val descriptionKey: String,
+    val sourceTemplatePath: String,
+    val builder: CommandBuilder<CommandContext>.() -> (Unit),
+    val slashCommandName: String? = null
 ) : ImageAbstractCommandBase(
-		loritta,
-		labels
+    loritta,
+    labels
 ) {
-	override fun command() = create {
-		localizedDescription(descriptionKey)
+    override fun command() = create {
+        localizedDescription(descriptionKey)
 
-		usage {
-			argument(ArgumentType.IMAGE) {}
-		}
+        usage {
+            argument(ArgumentType.IMAGE) {}
+        }
 
-		needsToUploadFiles = true
+        needsToUploadFiles = true
 
-		builder.invoke(this)
-	}
+        builder.invoke(this)
+    }
 }

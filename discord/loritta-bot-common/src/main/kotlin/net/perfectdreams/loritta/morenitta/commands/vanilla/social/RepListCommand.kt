@@ -21,9 +21,18 @@ import org.jetbrains.exposed.sql.select
 import java.time.Instant
 
 class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
-        m,
-        listOf("rep list", "reps", "reputations", "reputações", "reputacoes", "reputation list", "reputação list", "reputacao list"),
-        net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL
+    m,
+    listOf(
+        "rep list",
+        "reps",
+        "reputations",
+        "reputações",
+        "reputacoes",
+        "reputation list",
+        "reputação list",
+        "reputacao list"
+    ),
+    net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL
 ) {
     companion object {
         private const val ENTRIES_PER_PAGE = 10
@@ -95,7 +104,12 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
         }
     }
 
-    suspend fun sendRepListEmbed(context: DiscordCommandContext, locale: BaseLocale, item: Long?, currentMessage: Message?) {
+    suspend fun sendRepListEmbed(
+        context: DiscordCommandContext,
+        locale: BaseLocale,
+        item: Long?,
+        currentMessage: Message?
+    ) {
         val user = context.user(0)?.handle ?: context.user
 
         var page = item
@@ -136,7 +150,8 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 
                     val receivedReputation = reputation[Reputations.receivedById] == user.idLong
 
-                    val givenAtTime = Instant.ofEpochMilli(reputation[Reputations.receivedAt]).atZone(Constants.LORITTA_TIMEZONE)
+                    val givenAtTime =
+                        Instant.ofEpochMilli(reputation[Reputations.receivedAt]).atZone(Constants.LORITTA_TIMEZONE)
                     val year = givenAtTime.year
                     val month = givenAtTime.monthValue.toString().padStart(2, '0')
                     val day = givenAtTime.dayOfMonth.toString().padStart(2, '0')
@@ -165,7 +180,9 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
                         ?.replace(Regex("[\\r\\n]"), " ")
                         ?.substringIfNeeded(0..250)
 
-                    val receivedByLoritta = reputation[Reputations.givenById] == loritta.config.loritta.discord.applicationId.toString().toLong()
+                    val receivedByLoritta =
+                        reputation[Reputations.givenById] == loritta.config.loritta.discord.applicationId.toString()
+                            .toLong()
                     if (receivedByLoritta) {
                         str.append(locale["$LOCALE_PREFIX.receivedReputationByLoritta", "`${user.name + "#" + user.discriminator}`"])
                     } else {
@@ -207,7 +224,8 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
             .setColor(Constants.LORITTA_AQUA)
             .setDescription(description)
 
-        val message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false) ?: context.sendMessage(context.getUserMention(true), embed.build())
+        val message = currentMessage?.edit(context.getUserMention(true), embed.build(), clearReactions = false)
+            ?: context.sendMessage(context.getUserMention(true), embed.build())
 
         val totalReps = totalReputationGiven + totalReputationReceived
 

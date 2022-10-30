@@ -11,23 +11,24 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class TrumpCommand(loritta: LorittaBot) : AbstractCommand(loritta, "trump", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.trump.description")
-	override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
+class TrumpCommand(loritta: LorittaBot) :
+    AbstractCommand(loritta, "trump", category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.trump.description")
+    override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
 
-	// TODO: Fix Usage
+    // TODO: Fix Usage
 
-	override fun needsToUploadFiles() = true
+    override fun needsToUploadFiles() = true
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "trump")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "trump")
 
-		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val contextImage2 = context.getImageAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+        val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+        val contextImage2 = context.getImageAt(1) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
 
-		val file = TrumpGIF.getGIF(contextImage2, contextImage)
-		loritta.gifsicle.optimizeGIF(file)
-		context.sendFile(file, "trump.gif", context.getAsMention(true))
-		file.delete()
-	}
+        val file = TrumpGIF.getGIF(contextImage2, contextImage)
+        loritta.gifsicle.optimizeGIF(file)
+        context.sendFile(file, "trump.gif", context.getAsMention(true))
+        file.delete()
+    }
 }

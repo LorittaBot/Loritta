@@ -36,8 +36,8 @@ class ModerationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
 
         actions.forEach {
             val obj = jsonObject(
-                    "warnCount" to it.warnCount,
-                    "punishmentAction" to it.punishmentAction.name
+                "warnCount" to it.warnCount,
+                "punishmentAction" to it.punishmentAction.name
             )
 
             val metadata = it.metadata
@@ -55,20 +55,21 @@ class ModerationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
             }.toList()
         }.forEach {
             punishmentMessages.add(
-                    jsonObject(
-                            "action" to it[ModerationPunishmentMessagesConfig.punishmentAction].name,
-                            "message" to it[ModerationPunishmentMessagesConfig.punishLogMessage]
-                    )
+                jsonObject(
+                    "action" to it[ModerationPunishmentMessagesConfig.punishmentAction].name,
+                    "message" to it[ModerationPunishmentMessagesConfig.punishLogMessage]
+                )
             )
         }
 
         return jsonObject(
-                "sendPunishmentViaDm" to (moderationConfig?.sendPunishmentViaDm ?: false),
-                "sendPunishmentToPunishLog" to (moderationConfig?.sendPunishmentToPunishLog ?: false),
-                "punishLogChannelId" to moderationConfig?.punishLogChannelId,
-                "punishLogMessage" to (moderationConfig?.punishLogMessage ?: "**Usuário punido:** {user}#{user-discriminator}\n**Punido por** {@staff}\n**Motivo:** {reason}"),
-                "punishmentActions" to punishmentActions,
-                "punishmentMessages" to punishmentMessages
+            "sendPunishmentViaDm" to (moderationConfig?.sendPunishmentViaDm ?: false),
+            "sendPunishmentToPunishLog" to (moderationConfig?.sendPunishmentToPunishLog ?: false),
+            "punishLogChannelId" to moderationConfig?.punishLogChannelId,
+            "punishLogMessage" to (moderationConfig?.punishLogMessage
+                ?: "**Usuário punido:** {user}#{user-discriminator}\n**Punido por** {@staff}\n**Motivo:** {reason}"),
+            "punishmentActions" to punishmentActions,
+            "punishmentMessages" to punishmentMessages
         )
     }
 
@@ -119,7 +120,7 @@ class ModerationConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                     it[WarnActions.warnCount] = warnCount
                     if (time != null) {
                         it[WarnActions.metadata] = jsonObject(
-                                "time" to time
+                            "time" to time
                         )
                     }
                 }

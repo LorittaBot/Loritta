@@ -4,18 +4,15 @@ import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
-import net.perfectdreams.loritta.common.utils.Rarity
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.data.Rectangle
 import net.perfectdreams.loritta.cinnamon.pudding.tables.BackgroundVariations
 import net.perfectdreams.loritta.cinnamon.pudding.tables.Backgrounds
-import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroupEntries
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ProfileDesignGroups
-import net.perfectdreams.loritta.cinnamon.pudding.tables.Sets
 import net.perfectdreams.loritta.cinnamon.pudding.utils.exposed.selectFirstOrNull
+import net.perfectdreams.loritta.common.utils.Rarity
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.update
 import pw.forst.exposed.insertOrUpdate
@@ -32,6 +29,7 @@ object TrinketsStuff {
      * "Center Right Focus" Profile Group ID, background focus is in the center-right of the profile
      */
     val CENTER_RIGHT_FOCUS_DESIGN = UUID.fromString("d77948dc-0263-49f9-9da0-60b76ca14af8")
+
     /**
      * "Center Top Focus" Profile Group ID, background focus is in the top-center of the profile
      */
@@ -141,13 +139,25 @@ object TrinketsStuff {
         createBackground("cute_black_cat", true, Rarity.UNCOMMON, LocalDate.of(2020, 7, 24)) {
             addDefaultVariant("cute-black-cat", ContentType.Image.JPEG)
         }
-        createBackground("lorittaAndPantufa", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = arrayOf("allouette")) {
+        createBackground(
+            "lorittaAndPantufa",
+            true,
+            Rarity.RARE,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("allouette")
+        ) {
             addDefaultVariant("loritta-and-pantufa", ContentType.Image.PNG, Rectangle(190, 0, 400, 300))
         }
         createBackground("dogeWolf", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("doge-wolf", ContentType.Image.PNG, Rectangle(160, 0, 800, 600))
         }
-        createBackground("dorimeSortros", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = arrayOf("sortrosphoresia")) {
+        createBackground(
+            "dorimeSortros",
+            true,
+            Rarity.RARE,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("sortrosphoresia")
+        ) {
             addDefaultVariant("dorime-sortros", ContentType.Image.PNG, Rectangle(200, 0, 1600, 1200))
         }
         createBackground("dogeAngry", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
@@ -180,7 +190,13 @@ object TrinketsStuff {
         createBackground("emojo", true, Rarity.EPIC, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("emojo", ContentType.Image.JPEG, Rectangle(160, 0, 960, 720))
         }
-        createBackground("cryingLonely", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("delly1000")) {
+        createBackground(
+            "cryingLonely",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("delly1000")
+        ) {
             addDefaultVariant("crying-lonely", ContentType.Image.PNG, Rectangle(200, 0, 1200, 1000))
         }
         createBackground("sadCatTeddyBear", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "sadCats") {
@@ -273,16 +289,43 @@ object TrinketsStuff {
         createBackground("loriSextou", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = arrayOf("inksans")) {
             addDefaultVariant("lori-sextou", ContentType.Image.PNG, Rectangle(100, 0, 1000, 688))
         }
-        createBackground("allouetteLoritta", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("allouette")) {
+        createBackground(
+            "allouetteLoritta",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("allouette")
+        ) {
             addDefaultVariant("allouette-loritta", ContentType.Image.PNG)
         }
-        createBackground("coxinha", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "cuteFoodFaces", createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "coxinha",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            set = "cuteFoodFaces",
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("coxinha", ContentType.Image.PNG)
         }
-        createBackground("kibe", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "cuteFoodFaces", createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "kibe",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            set = "cuteFoodFaces",
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("kibe", ContentType.Image.PNG)
         }
-        createBackground("greenApple", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "cuteFoodFaces", createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "greenApple",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            set = "cuteFoodFaces",
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("green-apple", ContentType.Image.PNG)
         }
         createBackground("hotDog", true, Rarity.RARE, LocalDate.of(0, 1, 1)) {
@@ -297,22 +340,54 @@ object TrinketsStuff {
         createBackground("neekoNeekoNii", true, Rarity.EPIC, LocalDate.of(0, 1, 1), createdBy = arrayOf("vta7991")) {
             addDefaultVariant("neeko-neeko-nii", ContentType.Image.PNG, Rectangle(225, 0, 1440, 1080))
         }
-        createBackground("sortrosFranbow", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = arrayOf("sortrosphoresia")) {
+        createBackground(
+            "sortrosFranbow",
+            true,
+            Rarity.RARE,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("sortrosphoresia")
+        ) {
             addDefaultVariant("sortros-franbow", ContentType.Image.PNG, Rectangle(100, 0, 2000, 1600))
         }
-        createBackground("sortrosMisfortune", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = arrayOf("sortrosphoresia")) {
+        createBackground(
+            "sortrosMisfortune",
+            true,
+            Rarity.RARE,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("sortrosphoresia")
+        ) {
             addDefaultVariant("sortros-misfortune", ContentType.Image.PNG, Rectangle(500, 100, 1600, 1200))
         }
-        createBackground("redApple", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "cuteFoodFaces", createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "redApple",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            set = "cuteFoodFaces",
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("red-apple", ContentType.Image.PNG)
         }
-        createBackground("redAppleEat", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "cuteFoodFaces", createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "redAppleEat",
+            true,
+            Rarity.RARE,
+            LocalDate.of(0, 1, 1),
+            set = "cuteFoodFaces",
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("red-apple-eat", ContentType.Image.PNG)
         }
         createBackground("dokyoSweater", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("dokyotv")) {
             addDefaultVariant("dokyo-sweater", ContentType.Image.PNG, Rectangle(100, 0, 1360, 922))
         }
-        createBackground("hampsterdance", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "hamptonAndTheHampsters") {
+        createBackground(
+            "hampsterdance",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            set = "hamptonAndTheHampsters"
+        ) {
             addDefaultVariant("hampton-and-the-hampsters", ContentType.Image.PNG)
         }
         createBackground("bmwM3Gtr2005", true, Rarity.RARE, LocalDate.of(0, 1, 1)) {
@@ -330,7 +405,14 @@ object TrinketsStuff {
         createBackground("obraDinn", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("obra-dinn", ContentType.Image.PNG, Rectangle(240, 0, 1440, 1080))
         }
-        createBackground("starMabel", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "gravityFalls", createdBy = arrayOf("469709885710270484")) {
+        createBackground(
+            "starMabel",
+            true,
+            Rarity.RARE,
+            LocalDate.of(0, 1, 1),
+            set = "gravityFalls",
+            createdBy = arrayOf("469709885710270484")
+        ) {
             addDefaultVariant("star-mabel", ContentType.Image.PNG, Rectangle(0, 0, 2200, 1600))
         }
         createBackground("celesteTower", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "stevenUniverse") {
@@ -372,10 +454,23 @@ object TrinketsStuff {
         createBackground("loriCorona", true, Rarity.EPIC, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("lori-corona", ContentType.Image.PNG, Rectangle(250, 0, 920, 720))
         }
-        createBackground("lowPolyPlanet", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "lowPoly", createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "lowPolyPlanet",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            set = "lowPoly",
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("low-poly-planet", ContentType.Image.PNG)
         }
-        createBackground("jonatanMoon", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("jonatanfelipe10")) {
+        createBackground(
+            "jonatanMoon",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("jonatanfelipe10")
+        ) {
             addDefaultVariant("jonatan-lua", ContentType.Image.PNG, Rectangle(0, 0, 920, 720))
         }
         createBackground("minecraftWindowFox", true, Rarity.RARE, LocalDate.of(0, 1, 1)) {
@@ -387,7 +482,14 @@ object TrinketsStuff {
         createBackground("bothWorlds", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("both-worlds", ContentType.Image.PNG, Rectangle(160, 0, 1024, 768))
         }
-        createBackground("lowPolyRocket", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "lowPoly", createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "lowPolyRocket",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            set = "lowPoly",
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("low-poly-rocket", ContentType.Image.PNG)
         }
         createBackground("sunsetRiver", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "landscapes") {
@@ -405,16 +507,36 @@ object TrinketsStuff {
         createBackground("grass", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), set = "landscapes") {
             addDefaultVariant("grass", ContentType.Image.PNG)
         }
-        createBackground("mist", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "landscapes", createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "mist",
+            true,
+            Rarity.RARE,
+            LocalDate.of(0, 1, 1),
+            set = "landscapes",
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("mist", ContentType.Image.PNG)
         }
         createBackground("sadCatButter", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "sadCats") {
             addDefaultVariant("sad-cat-butter", ContentType.Image.JPEG, Rectangle(0, 50, 500, 400))
         }
-        createBackground("bunchOfHearts", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "bunchOfHearts",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("bunch-of-hearts", ContentType.Image.PNG)
         }
-        createBackground("wumpusHackweekPeter", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "discord", createdBy = arrayOf("peterstark000")) {
+        createBackground(
+            "wumpusHackweekPeter",
+            true,
+            Rarity.RARE,
+            LocalDate.of(0, 1, 1),
+            set = "discord",
+            createdBy = arrayOf("peterstark000")
+        ) {
             addDefaultVariant("wumpus-hackweek-peter", ContentType.Image.PNG)
         }
         createBackground("wumpusCool", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "discord") {
@@ -438,31 +560,103 @@ object TrinketsStuff {
         createBackground("sadCatDrama", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "sadCats") {
             addDefaultVariant("sad-cat-drama", ContentType.Image.JPEG, Rectangle(0, 0, 1000, 800))
         }
-        createBackground("birthday2020TeamGabriela", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("sortrosphoresia"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020TeamGabriela",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("sortrosphoresia"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-gabriela-teamgabriela", ContentType.Image.PNG)
         }
-        createBackground("birthday2020TeamPantufa", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("sortrosphoresia"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020TeamPantufa",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("sortrosphoresia"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-pantufa-teampantufa", ContentType.Image.PNG)
         }
-        createBackground("birthday2020Brabas", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("sortrosphoresia"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020Brabas",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("sortrosphoresia"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-brabas", ContentType.Image.PNG)
         }
-        createBackground("birthday2020PantufaSonikaSan", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("508651783330070538"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020PantufaSonikaSan",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("508651783330070538"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-pantufa-sonikasan", ContentType.Image.PNG)
         }
-        createBackground("birthday2020PantufaDelly", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("delly1000"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020PantufaDelly",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("delly1000"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-pantufa-delly", ContentType.Image.PNG, Rectangle(0, 300, 2600, 2000))
         }
-        createBackground("birthday2020PantufaAllouette", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("allouette"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020PantufaAllouette",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("allouette"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-pantufa-allouette", ContentType.Image.PNG, Rectangle(100, 0, 2600, 2100))
         }
-        createBackground("birthday2020GabrielaCoffee", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("inksans"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020GabrielaCoffee",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("inksans"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-gabriela-coffee", ContentType.Image.PNG)
         }
-        createBackground("birthday2020GabrielaInnerDesu", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("s2inner"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020GabrielaInnerDesu",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("s2inner"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-gabriela-innerdesu", ContentType.Image.PNG, Rectangle(0, 100, 1000, 800))
         }
-        createBackground("birthday2020GabrielaStar", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("469709885710270484"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020GabrielaStar",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("469709885710270484"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-gabriela-star", ContentType.Image.PNG, Rectangle(360, 0, 1240, 980))
         }
         createBackground("sadCatCoca", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "sadCats") {
@@ -474,7 +668,15 @@ object TrinketsStuff {
         createBackground("sadCatFat", true, Rarity.EPIC, LocalDate.of(0, 1, 1), set = "sadCats") {
             addDefaultVariant("sad-cat-fat", ContentType.Image.PNG, Rectangle(0, 0, 900, 709))
         }
-        createBackground("birthday2020PantufaHugoo", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("hugoo"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020PantufaHugoo",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("hugoo"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-pantufa-hugoo", ContentType.Image.PNG)
         }
         createBackground("sadCatSushi", true, Rarity.RARE, LocalDate.of(0, 1, 1), set = "sadCats") {
@@ -486,28 +688,86 @@ object TrinketsStuff {
         createBackground("londrinaAves", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("londrina-aves", ContentType.Image.JPEG, Rectangle(230, 0, 900, 675))
         }
-        createBackground("birthday2020GabrielaItsGabi", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("its-gabi"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020GabrielaItsGabi",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("its-gabi"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-gabriela-itsgabi", ContentType.Image.PNG)
         }
-        createBackground("sonicSonika", true, Rarity.RARE, LocalDate.of(0, 1, 1), createdBy = arrayOf("508651783330070538")) {
+        createBackground(
+            "sonicSonika",
+            true,
+            Rarity.RARE,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("508651783330070538")
+        ) {
             addDefaultVariant("sonic-sonika", ContentType.Image.PNG)
         }
-        createBackground("loriCrowd", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("brenoplays2")) {
+        createBackground(
+            "loriCrowd",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("brenoplays2")
+        ) {
             addDefaultVariant("lori-crowd", ContentType.Image.PNG, Rectangle(50, 0, 599, 460))
         }
-        createBackground("starAlissa", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("469709885710270484")) {
+        createBackground(
+            "starAlissa",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("469709885710270484")
+        ) {
             addDefaultVariant("star-alissa", ContentType.Image.PNG)
         }
-        createBackground("birthday2020PantufaLaurenha", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("awebnamoradadealguem"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020PantufaLaurenha",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("awebnamoradadealguem"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-pantufa-laurenha", ContentType.Image.PNG, Rectangle(0, 0, 900, 700))
         }
-        createBackground("birthday2020PantufaOusado", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("ousado"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020PantufaOusado",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("ousado"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-pantufa-ousado", ContentType.Image.PNG, Rectangle(0, 0, 1800, 1400))
         }
-        createBackground("birthday2020PantufaDezato", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("yeonjun"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020PantufaDezato",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("yeonjun"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-pantufa-dezato", ContentType.Image.PNG, Rectangle(0, 0, 768, 568))
         }
-        createBackground("birthday2020GabrielaPinotti", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("dnpinotti"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020GabrielaPinotti",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("dnpinotti"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-gabriela-pinotti", ContentType.Image.PNG)
         }
         createBackground("loritta400k", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("inksans")) {
@@ -522,7 +782,15 @@ object TrinketsStuff {
         createBackground("cuteBlushCat", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("cute-blush-cat", ContentType.Image.PNG)
         }
-        createBackground("birthday2020GabrielaCoffee2", true, Rarity.LEGENDARY, LocalDate.of(0, 1, 1), set = "lorittaBirthday2020", createdBy = arrayOf("inksans"), availableToBuyViaSonhos = false) {
+        createBackground(
+            "birthday2020GabrielaCoffee2",
+            true,
+            Rarity.LEGENDARY,
+            LocalDate.of(0, 1, 1),
+            set = "lorittaBirthday2020",
+            createdBy = arrayOf("inksans"),
+            availableToBuyViaSonhos = false
+        ) {
             addDefaultVariant("birthday2020-gabriela-coffee2", ContentType.Image.PNG, Rectangle(200, 0, 1400, 1152))
         }
         createBackground("deathDance", true, Rarity.EPIC, LocalDate.of(0, 1, 1)) {
@@ -540,7 +808,13 @@ object TrinketsStuff {
         createBackground("emeraldHill", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("emerald-hill", ContentType.Image.PNG, Rectangle(250, 0, 1424, 1080))
         }
-        createBackground("starAngryPigeon", true, Rarity.UNCOMMON, LocalDate.of(2020, 7, 24), createdBy = arrayOf("469709885710270484")) {
+        createBackground(
+            "starAngryPigeon",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 7, 24),
+            createdBy = arrayOf("469709885710270484")
+        ) {
             addDefaultVariant("star-angry-pigeon", ContentType.Image.PNG)
         }
         createBackground("chemicalPlant", true, Rarity.RARE, LocalDate.of(0, 1, 1)) {
@@ -564,40 +838,114 @@ object TrinketsStuff {
         createBackground("wumpusMovie", true, Rarity.RARE, LocalDate.of(0, 1, 1)) {
             addDefaultVariant("wumpus-movie", ContentType.Image.PNG)
         }
-        createBackground("easterStar", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("469709885710270484")) {
+        createBackground(
+            "easterStar",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("469709885710270484")
+        ) {
             addDefaultVariant("easter-star", ContentType.Image.PNG)
         }
-        createBackground("stevenUniverseBeach", true, Rarity.UNCOMMON, LocalDate.of(2020, 5, 9), set = "stevenUniverse") {
+        createBackground(
+            "stevenUniverseBeach",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 5, 9),
+            set = "stevenUniverse"
+        ) {
             addDefaultVariant("steven-universe-beach", ContentType.Image.JPEG, Rectangle(150, 0, 1440, 1080))
         }
-        createBackground("stevenUniverseBigDonut", true, Rarity.RARE, LocalDate.of(2020, 5, 9), set = "stevenUniverse") {
+        createBackground(
+            "stevenUniverseBigDonut",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 5, 9),
+            set = "stevenUniverse"
+        ) {
             addDefaultVariant("steven-universe-big-donut", ContentType.Image.JPEG, Rectangle(150, 70, 1440, 1000))
         }
-        createBackground("stevenUniverseOceanTemple", true, Rarity.UNCOMMON, LocalDate.of(2020, 5, 9), set = "stevenUniverse") {
+        createBackground(
+            "stevenUniverseOceanTemple",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 5, 9),
+            set = "stevenUniverse"
+        ) {
             addDefaultVariant("steven-universe-ocean-temple", ContentType.Image.JPEG, Rectangle(255, 80, 1440, 1000))
         }
-        createBackground("stevenUniverseLunarSeaTemple1", true, Rarity.UNCOMMON, LocalDate.of(2020, 5, 9), set = "stevenUniverse") {
-            addDefaultVariant("steven-universe-lunar-sea-temple1", ContentType.Image.JPEG, Rectangle(255, 0, 1440, 1080))
+        createBackground(
+            "stevenUniverseLunarSeaTemple1",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 5, 9),
+            set = "stevenUniverse"
+        ) {
+            addDefaultVariant(
+                "steven-universe-lunar-sea-temple1",
+                ContentType.Image.JPEG,
+                Rectangle(255, 0, 1440, 1080)
+            )
         }
-        createBackground("stevenUniverseLunarSeaTemple2", true, Rarity.RARE, LocalDate.of(2020, 5, 9), set = "stevenUniverse") {
-            addDefaultVariant("steven-universe-lunar-sea-temple2", ContentType.Image.JPEG, Rectangle(255, 0, 1440, 1080))
+        createBackground(
+            "stevenUniverseLunarSeaTemple2",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 5, 9),
+            set = "stevenUniverse"
+        ) {
+            addDefaultVariant(
+                "steven-universe-lunar-sea-temple2",
+                ContentType.Image.JPEG,
+                Rectangle(255, 0, 1440, 1080)
+            )
         }
-        createBackground("stevenUniverseLunarSeaTemple3", true, Rarity.RARE, LocalDate.of(2020, 5, 9), set = "stevenUniverse") {
+        createBackground(
+            "stevenUniverseLunarSeaTemple3",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 5, 9),
+            set = "stevenUniverse"
+        ) {
             addDefaultVariant("steven-universe-lunar-sea-temple3", ContentType.Image.JPEG, Rectangle(0, 0, 1872, 1080))
         }
-        createBackground("stevenUniverseMaskIsland", true, Rarity.UNCOMMON, LocalDate.of(2020, 5, 9), set = "stevenUniverse") {
+        createBackground(
+            "stevenUniverseMaskIsland",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 5, 9),
+            set = "stevenUniverse"
+        ) {
             addDefaultVariant("steven-universe-mask-island", ContentType.Image.JPEG, Rectangle(170, 0, 1440, 1080))
         }
-        createBackground("stevenUniverseSparkles", true, Rarity.RARE, LocalDate.of(2020, 5, 9), set = "stevenUniverse") {
+        createBackground(
+            "stevenUniverseSparkles",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 5, 9),
+            set = "stevenUniverse"
+        ) {
             addDefaultVariant("steven-universe-sparkles", ContentType.Image.JPEG, Rectangle(270, 0, 1440, 1080))
         }
-        createBackground("stevenUniverseFutureEnemies", true, Rarity.UNCOMMON, LocalDate.of(2020, 5, 9), set = "stevenUniverse") {
+        createBackground(
+            "stevenUniverseFutureEnemies",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 5, 9),
+            set = "stevenUniverse"
+        ) {
             addDefaultVariant("steven-universe-future-enemies", ContentType.Image.PNG, Rectangle(200, 0, 800, 600))
         }
         createBackground("dioBrando", true, Rarity.UNCOMMON, LocalDate.of(2020, 5, 9), set = "jojo") {
             addDefaultVariant("dio-brando", ContentType.Image.JPEG, Rectangle(0, 35, 506, 380))
         }
-        createBackground("kesokaBeach", true, Rarity.UNCOMMON, LocalDate.of(0, 1, 1), createdBy = arrayOf("kenkuisan")) {
+        createBackground(
+            "kesokaBeach",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(0, 1, 1),
+            createdBy = arrayOf("kenkuisan")
+        ) {
             addDefaultVariant("kesoka-beach", ContentType.Image.PNG)
         }
         createBackground("alanTriggered", true, Rarity.EPIC, LocalDate.of(2020, 6, 2)) {
@@ -618,7 +966,13 @@ object TrinketsStuff {
         createBackground("rainingForest", true, Rarity.EPIC, LocalDate.of(0, 1, 1), createdBy = arrayOf("kneezmz")) {
             addDefaultVariant("raining", ContentType.Image.PNG)
         }
-        createBackground("laureneaBoom", true, Rarity.EPIC, LocalDate.of(2020, 6, 2), createdBy = arrayOf("awebnamoradadealguem")) {
+        createBackground(
+            "laureneaBoom",
+            true,
+            Rarity.EPIC,
+            LocalDate.of(2020, 6, 2),
+            createdBy = arrayOf("awebnamoradadealguem")
+        ) {
             addDefaultVariant("laurenea-boom", ContentType.Image.PNG, Rectangle(0, 0, 760, 481))
         }
         createBackground("lickOfLove", true, Rarity.EPIC, LocalDate.of(2020, 6, 2), set = "jojo") {
@@ -657,7 +1011,13 @@ object TrinketsStuff {
         createBackground("reais", true, Rarity.EPIC, LocalDate.of(2020, 7, 24)) {
             addDefaultVariant("reais", ContentType.Image.JPEG, Rectangle(120, 17, 800, 600))
         }
-        createBackground("loriDailyShop", true, Rarity.RARE, LocalDate.of(2020, 7, 24), createdBy = arrayOf("inksans")) {
+        createBackground(
+            "loriDailyShop",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 7, 24),
+            createdBy = arrayOf("inksans")
+        ) {
             addDefaultVariant("lori-daily-shop", ContentType.Image.PNG, Rectangle(200, 0, 1520, 1080))
         }
         createBackground("wumpusSummer", true, Rarity.RARE, LocalDate.of(2020, 7, 24), set = "discord") {
@@ -681,7 +1041,13 @@ object TrinketsStuff {
         createBackground("hkDarkAbyss", true, Rarity.RARE, LocalDate.of(2020, 7, 26), set = "hollowKnight") {
             addDefaultVariant("hk-dark-abyss", ContentType.Image.PNG, Rectangle(225, 0, 1381, 1036))
         }
-        createBackground("stevenUniverseStarryNight", true, Rarity.UNCOMMON, LocalDate.of(2020, 7, 27), set = "stevenUniverse") {
+        createBackground(
+            "stevenUniverseStarryNight",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 7, 27),
+            set = "stevenUniverse"
+        ) {
             addDefaultVariant("steven-universe-starry-night", ContentType.Image.PNG, Rectangle(399, 0, 1320, 1018))
         }
         createBackground("transformiceCarnival", true, Rarity.RARE, LocalDate.of(2020, 7, 28), set = "transformice") {
@@ -705,40 +1071,94 @@ object TrinketsStuff {
         createBackground("workingTable", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 2)) {
             addDefaultVariant("working-table", ContentType.Image.PNG, Rectangle(688, 100, 1585, 1412))
         }
-        createBackground("stevenUniverseEmpireCity", true, Rarity.RARE, LocalDate.of(2020, 8, 2), set = "stevenUniverse") {
+        createBackground(
+            "stevenUniverseEmpireCity",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 8, 2),
+            set = "stevenUniverse"
+        ) {
             addDefaultVariant("steven-universe-empire-city", ContentType.Image.JPEG, Rectangle(165, 0, 1440, 1080))
         }
-        createBackground("fluffyPudding", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 3), createdBy = arrayOf("allouette")) {
+        createBackground(
+            "fluffyPudding",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 8, 3),
+            createdBy = arrayOf("allouette")
+        ) {
             addDefaultVariant("fluffy-pudding", ContentType.Image.PNG)
         }
         createBackground("stickLights", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 4)) {
             addDefaultVariant("stick-lights", ContentType.Image.PNG, Rectangle(0, 0, 560, 398))
         }
-        createBackground("adventureTimeDonutsValley", true, Rarity.RARE, LocalDate.of(2020, 8, 4), set = "adventureTime") {
+        createBackground(
+            "adventureTimeDonutsValley",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 8, 4),
+            set = "adventureTime"
+        ) {
             addDefaultVariant("adventure-time-donuts-valley", ContentType.Image.PNG, Rectangle(0, 0, 1600, 1200))
         }
         createBackground("meAndTheBoys", true, Rarity.EPIC, LocalDate.of(2020, 8, 7)) {
             addDefaultVariant("me-and-the-boys", ContentType.Image.PNG, Rectangle(0, 0, 1600, 1200))
         }
-        createBackground("gatinhoDeTouca", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 13), createdBy = arrayOf("469709885710270484")) {
+        createBackground(
+            "gatinhoDeTouca",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 8, 13),
+            createdBy = arrayOf("469709885710270484")
+        ) {
             addDefaultVariant("gatinho-de-touca", ContentType.Image.PNG, Rectangle(0, 0, 541, 406))
         }
         createBackground("sunVaporwave", true, Rarity.RARE, LocalDate.of(2020, 8, 15)) {
             addDefaultVariant("sun-vaporwave", ContentType.Image.JPEG, Rectangle(242, 0, 1200, 1050))
         }
-        createBackground("cafezinho", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 15), createdBy = arrayOf("polar8bits")) {
+        createBackground(
+            "cafezinho",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 8, 15),
+            createdBy = arrayOf("polar8bits")
+        ) {
             addDefaultVariant("cafezinho", ContentType.Image.PNG)
         }
-        createBackground("sorvetinho", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 15), createdBy = arrayOf("polar8bits")) {
+        createBackground(
+            "sorvetinho",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 8, 15),
+            createdBy = arrayOf("polar8bits")
+        ) {
             addDefaultVariant("sorvetinho", ContentType.Image.PNG)
         }
-        createBackground("docinho", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 16), createdBy = arrayOf("polar8bits")) {
+        createBackground(
+            "docinho",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 8, 16),
+            createdBy = arrayOf("polar8bits")
+        ) {
             addDefaultVariant("docinho", ContentType.Image.PNG)
         }
-        createBackground("melancia", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 16), createdBy = arrayOf("polar8bits")) {
+        createBackground(
+            "melancia",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 8, 16),
+            createdBy = arrayOf("polar8bits")
+        ) {
             addDefaultVariant("melancia", ContentType.Image.PNG)
         }
-        createBackground("leagueOfLegendsPopStars", true, Rarity.RARE, LocalDate.of(2020, 8, 17), set = "leagueOfLegends") {
+        createBackground(
+            "leagueOfLegendsPopStars",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 8, 17),
+            set = "leagueOfLegends"
+        ) {
             addDefaultVariant("league-of-legends-pop-stars", ContentType.Image.PNG, Rectangle(0, 0, 1600, 1200))
         }
         createBackground("pizza", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 18), createdBy = arrayOf("polar8bits")) {
@@ -747,25 +1167,55 @@ object TrinketsStuff {
         createBackground("kurama", true, Rarity.RARE, LocalDate.of(2020, 8, 19), createdBy = arrayOf("allouette")) {
             addDefaultVariant("kurama", ContentType.Image.PNG, Rectangle(0, 0, 800, 599))
         }
-        createBackground("laranjaAzeda", true, Rarity.UNCOMMON, LocalDate.of(2020, 8, 19), createdBy = arrayOf("polar8bits")) {
+        createBackground(
+            "laranjaAzeda",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 8, 19),
+            createdBy = arrayOf("polar8bits")
+        ) {
             addDefaultVariant("laranja-azeda", ContentType.Image.PNG)
         }
-        createBackground("leagueOfLegendsStarGuardians", true, Rarity.RARE, LocalDate.of(2020, 8, 20), set = "leagueOfLegends") {
+        createBackground(
+            "leagueOfLegendsStarGuardians",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 8, 20),
+            set = "leagueOfLegends"
+        ) {
             addDefaultVariant("league-of-legends-star-guardians", ContentType.Image.PNG, Rectangle(0, 0, 1600, 1200))
         }
         createBackground("mcLarenSenna", true, Rarity.RARE, LocalDate.of(2020, 8, 22)) {
             addDefaultVariant("mclaren-senna", ContentType.Image.JPEG)
         }
-        createBackground("justMarshmallows", true, Rarity.UNCOMMON, LocalDate.of(2020, 9, 5), createdBy = arrayOf("brigadeirim")) {
+        createBackground(
+            "justMarshmallows",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 9, 5),
+            createdBy = arrayOf("brigadeirim")
+        ) {
             addDefaultVariant("just-marshmallows", ContentType.Image.PNG, Rectangle(0, 0, 561, 421))
         }
-        createBackground("bandanaNinja", true, Rarity.RARE, LocalDate.of(2020, 9, 8), createdBy = arrayOf("polar8bits")) {
+        createBackground(
+            "bandanaNinja",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2020, 9, 8),
+            createdBy = arrayOf("polar8bits")
+        ) {
             addDefaultVariant("bandana-ninja", ContentType.Image.PNG)
         }
         createBackground("brawlStarsVirus", true, Rarity.EPIC, LocalDate.of(2020, 9, 13), set = "brawlStars") {
             addDefaultVariant("brawl-stars-virus", ContentType.Image.PNG, Rectangle(0, 0, 1600, 1200))
         }
-        createBackground("bandageHeart", true, Rarity.UNCOMMON, LocalDate.of(2020, 10, 7), createdBy = arrayOf("polar8bits")) {
+        createBackground(
+            "bandageHeart",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 10, 7),
+            createdBy = arrayOf("polar8bits")
+        ) {
             addDefaultVariant("bandage-heart", ContentType.Image.PNG)
         }
         createBackground("lostSouls", true, Rarity.RARE, LocalDate.of(2020, 10, 8), createdBy = arrayOf("zellbit")) {
@@ -774,7 +1224,13 @@ object TrinketsStuff {
         createBackground("amongUsSkyBridge", true, Rarity.RARE, LocalDate.of(2020, 10, 9), set = "amongUs") {
             addDefaultVariant("among-us-sky-bridge", ContentType.Image.PNG, Rectangle(0, 0, 1600, 1200))
         }
-        createBackground("halloweenIsHere", true, Rarity.UNCOMMON, LocalDate.of(2020, 10, 17), createdBy = arrayOf("polar8bits")) {
+        createBackground(
+            "halloweenIsHere",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2020, 10, 17),
+            createdBy = arrayOf("polar8bits")
+        ) {
             addDefaultVariant("halloween-is-here", ContentType.Image.PNG, Rectangle(0, 0, 1600, 1200))
         }
         createBackground("discordSpookyHalloween", true, Rarity.RARE, LocalDate.of(2020, 10, 31), set = "discord") {
@@ -794,7 +1250,11 @@ object TrinketsStuff {
         }
         createBackground("nostalgicMemories", true, Rarity.RARE, LocalDate.of(2021, 11, 11)) {
             addDefaultVariant("nostalgic-memories", ContentType.Image.PNG)
-            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "nostalgic-memories-center-top", ContentType.Image.PNG)
+            addProfileDesignGroupVariant(
+                CENTER_TOP_FOCUS_DESIGN,
+                "nostalgic-memories-center-top",
+                ContentType.Image.PNG
+            )
         }
         createBackground("imitandoEmojis", true, Rarity.UNCOMMON, LocalDate.of(2021, 11, 11)) {
             addDefaultVariant("imitando-emojis", ContentType.Image.JPEG)
@@ -825,11 +1285,19 @@ object TrinketsStuff {
         }
         createBackground("badAppleMarisaApple", true, Rarity.EPIC, LocalDate.of(2021, 11, 11)) {
             addDefaultVariant("bad-apple-marisa-apple", ContentType.Image.PNG)
-            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "bad-apple-marisa-apple-center-top", ContentType.Image.PNG)
+            addProfileDesignGroupVariant(
+                CENTER_TOP_FOCUS_DESIGN,
+                "bad-apple-marisa-apple-center-top",
+                ContentType.Image.PNG
+            )
         }
         createBackground("metaforandoNamoradoDelaAqui", true, Rarity.EPIC, LocalDate.of(2021, 11, 11)) {
             addDefaultVariant("metaforando-namorado-dela-aqui", ContentType.Image.JPEG)
-            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "metaforando-namorado-dela-aqui-center-top", ContentType.Image.JPEG)
+            addProfileDesignGroupVariant(
+                CENTER_TOP_FOCUS_DESIGN,
+                "metaforando-namorado-dela-aqui-center-top",
+                ContentType.Image.JPEG
+            )
         }
         createBackground("abacat", true, Rarity.UNCOMMON, LocalDate.of(2021, 11, 11)) {
             addDefaultVariant("abacat", ContentType.Image.PNG)
@@ -855,31 +1323,67 @@ object TrinketsStuff {
         createBackground("lorittaCodeDark", true, Rarity.UNCOMMON, LocalDate.of(2021, 11, 11)) {
             addDefaultVariant("loritta-code-dark", ContentType.Image.PNG)
         }
-        createBackground("loriSketchSprites", true, Rarity.UNCOMMON, LocalDate.of(2021, 11, 11), createdBy = arrayOf("its-gabi")) {
+        createBackground(
+            "loriSketchSprites",
+            true,
+            Rarity.UNCOMMON,
+            LocalDate.of(2021, 11, 11),
+            createdBy = arrayOf("its-gabi")
+        ) {
             addDefaultVariant("lori-sketch-sprites", ContentType.Image.PNG)
         }
         createBackground("gamblingLifeLight", true, Rarity.RARE, LocalDate.of(2021, 11, 11)) {
             addDefaultVariant("gambling-life-light", ContentType.Image.PNG)
-            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "gambling-life-light-center-top", ContentType.Image.PNG)
+            addProfileDesignGroupVariant(
+                CENTER_TOP_FOCUS_DESIGN,
+                "gambling-life-light-center-top",
+                ContentType.Image.PNG
+            )
         }
         createBackground("gamblingLifeDark", true, Rarity.RARE, LocalDate.of(2021, 11, 11)) {
             addDefaultVariant("gambling-life-dark", ContentType.Image.PNG)
-            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "gambling-life-dark-center-top", ContentType.Image.PNG)
+            addProfileDesignGroupVariant(
+                CENTER_TOP_FOCUS_DESIGN,
+                "gambling-life-dark-center-top",
+                ContentType.Image.PNG
+            )
         }
-        createBackground("wumpusBuffDark", true, Rarity.RARE, LocalDate.of(2021, 11, 11), createdBy = arrayOf("peterstark000"), set = "discord") {
+        createBackground(
+            "wumpusBuffDark",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2021, 11, 11),
+            createdBy = arrayOf("peterstark000"),
+            set = "discord"
+        ) {
             addDefaultVariant("wumpus-buff-dark", ContentType.Image.PNG)
             addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "wumpus-buff-dark-center-top", ContentType.Image.PNG)
         }
-        createBackground("wumpusBuffBlurple", true, Rarity.RARE, LocalDate.of(2021, 11, 11), createdBy = arrayOf("peterstark000"), set = "discord") {
+        createBackground(
+            "wumpusBuffBlurple",
+            true,
+            Rarity.RARE,
+            LocalDate.of(2021, 11, 11),
+            createdBy = arrayOf("peterstark000"),
+            set = "discord"
+        ) {
             addDefaultVariant("wumpus-buff-blurple", ContentType.Image.PNG)
-            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "wumpus-buff-blurple-center-top", ContentType.Image.PNG)
+            addProfileDesignGroupVariant(
+                CENTER_TOP_FOCUS_DESIGN,
+                "wumpus-buff-blurple-center-top",
+                ContentType.Image.PNG
+            )
         }
         createBackground("wumpusMania", true, Rarity.EPIC, LocalDate.of(2021, 11, 11), set = "discord") {
             addDefaultVariant("wumpus-mania", ContentType.Image.PNG)
         }
         createBackground("fridayLoriFunkin", true, Rarity.EPIC, LocalDate.of(2021, 12, 8)) {
             addDefaultVariant("friday-lori-funkin", ContentType.Image.PNG)
-            addProfileDesignGroupVariant(CENTER_TOP_FOCUS_DESIGN, "friday-lori-funkin-center-top", ContentType.Image.PNG)
+            addProfileDesignGroupVariant(
+                CENTER_TOP_FOCUS_DESIGN,
+                "friday-lori-funkin-center-top",
+                ContentType.Image.PNG
+            )
         }
         createBackground("circuitBoardGreen", true, Rarity.UNCOMMON, LocalDate.of(2021, 12, 8)) {
             addDefaultVariant("circuit-board-green", ContentType.Image.PNG)
@@ -926,7 +1430,8 @@ object TrinketsStuff {
         // Upsert sadly does not work for us here, because upsert does not work with a column that has null values
         // So we will need to check ourselves
         fun addDefaultVariant(file: String, preferredMediaType: ContentType, crop: Rectangle? = null) {
-            val firstResult = BackgroundVariations.selectFirstOrNull { BackgroundVariations.background eq backgroundInternalName and BackgroundVariations.profileDesignGroup.isNull() }
+            val firstResult =
+                BackgroundVariations.selectFirstOrNull { BackgroundVariations.background eq backgroundInternalName and BackgroundVariations.profileDesignGroup.isNull() }
             if (firstResult != null) {
                 BackgroundVariations.update({ BackgroundVariations.id eq firstResult[BackgroundVariations.id] }) {
                     it[BackgroundVariations.file] = file
@@ -945,8 +1450,14 @@ object TrinketsStuff {
             }
         }
 
-        fun addProfileDesignGroupVariant(profileGroupId: UUID, file: String, preferredMediaType: ContentType, crop: Rectangle? = null) {
-            val firstResult = BackgroundVariations.selectFirstOrNull { BackgroundVariations.background eq backgroundInternalName and (BackgroundVariations.profileDesignGroup eq profileGroupId) }
+        fun addProfileDesignGroupVariant(
+            profileGroupId: UUID,
+            file: String,
+            preferredMediaType: ContentType,
+            crop: Rectangle? = null
+        ) {
+            val firstResult =
+                BackgroundVariations.selectFirstOrNull { BackgroundVariations.background eq backgroundInternalName and (BackgroundVariations.profileDesignGroup eq profileGroupId) }
             if (firstResult != null) {
                 BackgroundVariations.update({ BackgroundVariations.id eq firstResult[BackgroundVariations.id] }) {
                     it[BackgroundVariations.file] = file

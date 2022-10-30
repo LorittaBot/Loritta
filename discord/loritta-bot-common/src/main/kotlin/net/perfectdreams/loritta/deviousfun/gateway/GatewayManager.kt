@@ -9,8 +9,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.deviouscache.requests.GetGatewaySessionRequest
+import net.perfectdreams.loritta.deviouscache.responses.GetGatewaySessionResponse
 import net.perfectdreams.loritta.deviousfun.DeviousFun
-import redis.clients.jedis.Response
 import kotlin.time.Duration.Companion.seconds
 
 class GatewayManager(
@@ -56,38 +57,31 @@ class GatewayManager(
     suspend fun start() {
         for ((shardId, gateway) in gateways) {
             scope.launch {
-                lateinit var sessionIdResponse: Response<String>
-                lateinit var resumeGatewayUrlResponse: Response<String>
-                lateinit var sequenceResponse: Response<String>
+                val gatewaySession = deviousFun.rpc.execute(GetGatewaySessionRequest(shardId))
 
-                deviousFun.loritta.redisTransaction("get session data of shard $shardId") {
-                    sessionIdResponse = it.hget(deviousFun.loritta.redisKeys.discordGatewaySessions(shardId), "sessionId")
-                    resumeGatewayUrlResponse = it.hget(deviousFun.loritta.redisKeys.discordGatewaySessions(shardId), "resumeGatewayUrl")
-                    sequenceResponse = it.hget(deviousFun.loritta.redisKeys.discordGatewaySessions(shardId), "sequence")
-                }
-
-                val sessionId = sessionIdResponse.get()
-                val resumeGatewayUrl = resumeGatewayUrlResponse.get()
-                val sequence = sequenceResponse.get()?.toInt()
+                val sessionId = (gatewaySession as? GetGatewaySessionResponse)?.sessionId
+                val resumeGatewayUrl = (gatewaySession as? GetGatewaySessionResponse)?.resumeGatewayUrl
+                val sequence = (gatewaySession as? GetGatewaySessionResponse)?.sequence
 
                 val builder: GatewayConfigurationBuilder.() -> (Unit) = {
                     @OptIn(PrivilegedIntent::class)
                     intents += Intents {
-                        + Intent.GuildMembers
-                        + Intent.MessageContent
-                        + Intent.GuildEmojis
-                        + Intent.GuildBans
-                        + Intent.GuildInvites
-                        + Intent.GuildMessageReactions
-                        + Intent.GuildVoiceStates
-                        + Intent.DirectMessages
-                        + Intent.DirectMessagesReactions
+                        +Intent.GuildMembers
+                        +Intent.MessageContent
+                        +Intent.GuildEmojis
+                        +Intent.GuildBans
+                        +Intent.GuildInvites
+                        +Intent.GuildMessageReactions
+                        +Intent.GuildVoiceStates
+                        +Intent.DirectMessages
+                        +Intent.DirectMessagesReactions
                     }
 
                     presence {
                         this.status = deviousFun.loritta.config.loritta.discord.status
 
-                        val activityText = "${deviousFun.loritta.config.loritta.discord.activity.name} | Cluster ${deviousFun.loritta.lorittaCluster.id} [$shardId]"
+                        val activityText =
+                            "${deviousFun.loritta.config.loritta.discord.activity.name} | Cluster ${deviousFun.loritta.lorittaCluster.id} [$shardId]"
                         when (deviousFun.loritta.config.loritta.discord.activity.type) {
                             "PLAYING" -> this.playing(activityText)
                             "STREAMING" -> this.streaming(activityText, "https://twitch.tv/mrpowergamerbr")
@@ -126,7 +120,8 @@ class GatewayManager(
      * @param guildId the guild's ID
      * @return a proxied gateway connection, or null if this instance does not handle the [guildId]
      */
-    fun getGatewayForGuild(guildId: Snowflake) = getGatewayForGuildOrNull(guildId) ?: error("This instance does not handle guild $guildId!")
+    fun getGatewayForGuild(guildId: Snowflake) =
+        getGatewayForGuildOrNull(guildId) ?: error("This instance does not handle guild $guildId!")
 
     /**
      * Gets a Gateway connection for the [shardId]
@@ -134,7 +129,8 @@ class GatewayManager(
      * @param shardId the shard's ID
      * @return a proxied gateway connection, or null if this instance does not handle the [shardId]
      */
-    fun getGatewayForShardOrNull(shardId: Int) = gateways[shardId] ?: error("This instance does not handle shard $shardId!")
+    fun getGatewayForShardOrNull(shardId: Int) =
+        gateways[shardId] ?: error("This instance does not handle shard $shardId!")
 
     /**
      * Gets a Gateway connection for the [shardId]
@@ -142,7 +138,8 @@ class GatewayManager(
      * @param shardId the shard's ID
      * @return a proxied gateway connection, or null if this instance does not handle the [shardId]
      */
-    fun getGatewayForShard(shardId: Int) = getGatewayForShardOrNull(shardId) ?: error("This instance does not handle shard $shardId!")
+    fun getGatewayForShard(shardId: Int) =
+        getGatewayForShardOrNull(shardId) ?: error("This instance does not handle shard $shardId!")
 
     /**
      * Gets a Discord Shard ID from the provided Guild ID

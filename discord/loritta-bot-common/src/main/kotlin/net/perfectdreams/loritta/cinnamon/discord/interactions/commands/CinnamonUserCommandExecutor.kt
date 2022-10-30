@@ -27,7 +27,11 @@ abstract class CinnamonUserCommandExecutor(val loritta: LorittaBot) : UserComman
     val rest = loritta.rest
     val applicationId = loritta.config.loritta.discord.applicationId
 
-    abstract suspend fun execute(context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext, targetUser: User, targetMember: Member?)
+    abstract suspend fun execute(
+        context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext,
+        targetUser: User,
+        targetMember: Member?
+    )
 
     override suspend fun execute(
         context: ApplicationCommandContext,

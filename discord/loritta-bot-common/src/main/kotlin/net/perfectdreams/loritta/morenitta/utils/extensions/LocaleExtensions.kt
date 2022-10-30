@@ -10,12 +10,12 @@ fun BaseLocale.toJavaLocale(): Locale {
     val localeId = this.id
 
     return Locale(
-            when (localeId) {
-                "default" -> "pt_BR"
-                "pt-pt" -> "pt_PT"
-                "en-us" -> "en_US"
-                "es-es" -> "es_ES"
-                else -> "pt_BR"
-            }
+        when (localeId) {
+            "default" -> "pt_BR"
+            "pt-pt" -> "pt_PT"
+            "en-us" -> "en_US"
+            "es-es" -> "es_ES"
+            else -> "pt_BR"
+        }
     )
 }

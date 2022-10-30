@@ -9,21 +9,27 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.time.Instant
 
 object DonateUtils {
-	/**
-	 * Returns a random message (or null) message, used when an user uses a command
-	 *
-	 * @param locale      the base locale
-	 * @param donatorPaid how much the user donated
-	 * @return A reply, may be null
-	 */
-	fun getRandomDonationMessage(loritta: LorittaBot, locale: BaseLocale, profile: Profile, donatorPaid: Double, guildPaid: Double): LorittaReply? {
-		if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
-			return LorittaReply(
-                    locale["commands.canaryInstanceDoNotUse"],
-                    Emotes.DO_NOT_DISTURB
+    /**
+     * Returns a random message (or null) message, used when an user uses a command
+     *
+     * @param locale      the base locale
+     * @param donatorPaid how much the user donated
+     * @return A reply, may be null
+     */
+    fun getRandomDonationMessage(
+        loritta: LorittaBot,
+        locale: BaseLocale,
+        profile: Profile,
+        donatorPaid: Double,
+        guildPaid: Double
+    ): LorittaReply? {
+        if (loritta.config.loritta.environment == EnvironmentType.CANARY) {
+            return LorittaReply(
+                locale["commands.canaryInstanceDoNotUse"],
+                Emotes.DO_NOT_DISTURB
             )
-		}
+        }
 
-		return null
-	}
+        return null
+    }
 }

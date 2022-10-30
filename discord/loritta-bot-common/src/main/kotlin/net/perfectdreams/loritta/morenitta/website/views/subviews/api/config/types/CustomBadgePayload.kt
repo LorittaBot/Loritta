@@ -15,28 +15,33 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class CustomBadgePayload(val loritta: LorittaBot) : ConfigPayloadType("badge") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
-		runBlocking {
-			loritta.pudding.transaction {
-				val donationConfig = serverConfig.donationConfig ?: DonationConfig.new {
-					this.customBadge = false
-				}
-				donationConfig.customBadge = payload["customBadge"].bool
+    override fun process(
+        payload: JsonObject,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        serverConfig: ServerConfig,
+        guild: Guild
+    ) {
+        runBlocking {
+            loritta.pudding.transaction {
+                val donationConfig = serverConfig.donationConfig ?: DonationConfig.new {
+                    this.customBadge = false
+                }
+                donationConfig.customBadge = payload["customBadge"].bool
 
-				serverConfig.donationConfig = donationConfig
-			}
+                serverConfig.donationConfig = donationConfig
+            }
 
-			val data = payload["badgeImage"].nullString
+            val data = payload["badgeImage"].nullString
 
-			if (data != null) {
-				val base64Image = data.split(",")[1]
-				val imageBytes = Base64.getDecoder().decode(base64Image)
-				val img = ImageIO.read(ByteArrayInputStream(imageBytes))
+            if (data != null) {
+                val base64Image = data.split(",")[1]
+                val imageBytes = Base64.getDecoder().decode(base64Image)
+                val img = ImageIO.read(ByteArrayInputStream(imageBytes))
 
-				if (img != null) {
-					ImageIO.write(img, "png", File(LorittaBot.ASSETS, "badges/custom/${guild.id}.png"))
-				}
-			}
-		}
-	}
+                if (img != null) {
+                    ImageIO.write(img, "png", File(LorittaBot.ASSETS, "badges/custom/${guild.id}.png"))
+                }
+            }
+        }
+    }
 }

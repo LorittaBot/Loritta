@@ -16,39 +16,50 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
 class LorittaTasks(val loritta: LorittaBot) {
-	lateinit var DAILY_TAX_TASK: DailyTaxTask
+    lateinit var DAILY_TAX_TASK: DailyTaxTask
 
-	fun startTasks() {
-		DAILY_TAX_TASK = DailyTaxTask(loritta)
+    fun startTasks() {
+        DAILY_TAX_TASK = DailyTaxTask(loritta)
 
-		scheduleWithFixedDelay(SponsorsSyncTask(loritta), 0L, 1L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
-		scheduleWithFixedDelay(MutedUsersTask(loritta), 0L, 3L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(InternalAnalyticSender(loritta), 0L, 15L, TimeUnit.SECONDS)
-		scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
-		scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
-		scheduleWithFixedDelay(SpawnGiveawayTask(loritta), 0L, 1L, TimeUnit.HOURS)
+        scheduleWithFixedDelay(SponsorsSyncTask(loritta), 0L, 1L, TimeUnit.MINUTES)
+        scheduleWithFixedDelay(OptimizeAssetsTask(), 0L, 5L, TimeUnit.SECONDS)
+        scheduleWithFixedDelay(MutedUsersTask(loritta), 0L, 3L, TimeUnit.MINUTES)
+        scheduleWithFixedDelay(InternalAnalyticSender(loritta), 0L, 15L, TimeUnit.SECONDS)
+        scheduleWithFixedDelay(DAILY_TAX_TASK, 0L, 15L, TimeUnit.SECONDS)
+        scheduleWithFixedDelay(ApplyBansTask(), 0L, 60L, TimeUnit.MINUTES)
+        scheduleWithFixedDelay(SpawnGiveawayTask(loritta), 0L, 1L, TimeUnit.HOURS)
 
-		if (loritta.isMainInstance) {
-			scheduleWithFixedDelay(DeleteOldStoredMessagesTask(loritta), 0L, 1L, TimeUnit.HOURS)
+        if (loritta.isMainInstance) {
+            scheduleWithFixedDelay(DeleteOldStoredMessagesTask(loritta), 0L, 1L, TimeUnit.HOURS)
 
-			val midnight = LocalTime.MIDNIGHT
-			val today = LocalDate.now(ZoneOffset.UTC)
-			val todayMidnight = LocalDateTime.of(today, midnight)
-			val tomorrowMidnight = todayMidnight.plusDays(1)
-			val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
+            val midnight = LocalTime.MIDNIGHT
+            val today = LocalDate.now(ZoneOffset.UTC)
+            val todayMidnight = LocalDateTime.of(today, midnight)
+            val tomorrowMidnight = todayMidnight.plusDays(1)
+            val diff = tomorrowMidnight.toInstant(ZoneOffset.UTC).toEpochMilli() - System.currentTimeMillis()
 
-			scheduleAtFixedRate(LorittaDailyShopUpdateTask(loritta), diff, TimeUnit.DAYS.toMillis(1L), TimeUnit.MILLISECONDS)
+            scheduleAtFixedRate(
+                LorittaDailyShopUpdateTask(loritta),
+                diff,
+                TimeUnit.DAYS.toMillis(1L),
+                TimeUnit.MILLISECONDS
+            )
 
-			scheduleWithFixedDelay(CreateYouTubeWebhooksTask(loritta), 0L, 1L, TimeUnit.MINUTES)
-		}
-	}
+            scheduleWithFixedDelay(CreateYouTubeWebhooksTask(loritta), 0L, 1L, TimeUnit.MINUTES)
+        }
+    }
 
-	fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
-		Executors.newScheduledThreadPool(1, ThreadFactoryBuilder().setNameFormat("${task::class.simpleName} Executor Thread-%d").build()).scheduleWithFixedDelay(task, initialDelay, delay, unit)
-	}
+    fun scheduleWithFixedDelay(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
+        Executors.newScheduledThreadPool(
+            1,
+            ThreadFactoryBuilder().setNameFormat("${task::class.simpleName} Executor Thread-%d").build()
+        ).scheduleWithFixedDelay(task, initialDelay, delay, unit)
+    }
 
-	fun scheduleAtFixedRate(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
-		Executors.newScheduledThreadPool(1, ThreadFactoryBuilder().setNameFormat("${task::class.simpleName} Executor Thread-%d").build()).scheduleAtFixedRate(task, initialDelay, delay, unit)
-	}
+    fun scheduleAtFixedRate(task: Runnable, initialDelay: Long, delay: Long, unit: TimeUnit) {
+        Executors.newScheduledThreadPool(
+            1,
+            ThreadFactoryBuilder().setNameFormat("${task::class.simpleName} Executor Thread-%d").build()
+        ).scheduleAtFixedRate(task, initialDelay, delay, unit)
+    }
 }

@@ -17,11 +17,11 @@ object PaymentUtils {
     var economyEnabled = true
 
     fun addToTransactionLogNested(
-            quantity: Long,
-            reason: SonhosPaymentReason,
-            receivedBy: Long? = null,
-            givenBy: Long? = null,
-            givenAtMillis: Long = System.currentTimeMillis()
+        quantity: Long,
+        reason: SonhosPaymentReason,
+        receivedBy: Long? = null,
+        givenBy: Long? = null,
+        givenAtMillis: Long = System.currentTimeMillis()
     ) {
         if (receivedBy == null && givenBy == null)
             throw IllegalArgumentException("receivedBy and givenBy is null! One of them must NOT be null!")
@@ -54,24 +54,24 @@ object PaymentUtils {
      * @return a map containing all the users and sonhos removals that were done
      */
     suspend fun removeSonhosDueToChargeback(
-            loritta: LorittaBot,
-            userId: Long,
-            quantity: Long,
-            removeSonhos: Boolean,
-            notifyChargebackUser: Boolean,
-            notifyUsers: Boolean
+        loritta: LorittaBot,
+        userId: Long,
+        quantity: Long,
+        removeSonhos: Boolean,
+        notifyChargebackUser: Boolean,
+        notifyUsers: Boolean
     ): Map<Long, MutableList<SonhosRemovalData>> {
         val triggeredSonhos = mutableMapOf<Long, MutableList<SonhosRemovalData>>()
 
         // We lock in a mutex because a lot of times users spam chargebacks, which could cause issues when taking out money
         mutex.withLock {
             retrieveSonhosRemovalDueToChargeback(
-                    loritta,
-                    userId,
-                    quantity,
-                    triggeredSonhos,
-                    listOf(),
-                    "self"
+                loritta,
+                userId,
+                quantity,
+                triggeredSonhos,
+                listOf(),
+                "self"
             )
 
             if (removeSonhos) {
@@ -123,20 +123,20 @@ object PaymentUtils {
                         logger.info { "Notifying ${user.idLong} about $userId chargebacks" }
 
                         user.openPrivateChannel()
-                                .sendMessage(
-                                    MessageBuilder(
-                                        loritta.localeManager.getLocaleById("default")
-                                                .getList(
-                                                        "commands.receivedSonhosFromAChargedbackUser",
-                                                        Emotes.LORI_CRYING,
-                                                        Emotes.LORI_SMILE,
-                                                        userId.toString(),
-                                                        totalQuantity
-                                                ).joinToString("\n")
-                                    ).addFile(builder.toString().toByteArray(Charsets.UTF_8), "transactions.txt")
-                                        .build()
-                                )
-                                
+                            .sendMessage(
+                                MessageBuilder(
+                                    loritta.localeManager.getLocaleById("default")
+                                        .getList(
+                                            "commands.receivedSonhosFromAChargedbackUser",
+                                            Emotes.LORI_CRYING,
+                                            Emotes.LORI_SMILE,
+                                            userId.toString(),
+                                            totalQuantity
+                                        ).joinToString("\n")
+                                ).addFile(builder.toString().toByteArray(Charsets.UTF_8), "transactions.txt")
+                                    .build()
+                            )
+
 
                         logger.info { "Successfully notified ${user.idLong} about $userId chargebacks" }
                     } catch (e: Exception) {
@@ -164,12 +164,12 @@ object PaymentUtils {
      * @return how many sonhos were successfully removed
      */
     suspend fun retrieveSonhosRemovalDueToChargeback(
-            loritta: LorittaBot,
-            userId: Long,
-            quantity: Long,
-            quantityToBeRemovedFromUsers: MutableMap<Long, MutableList<SonhosRemovalData>>,
-            usersThatTriggeredTheCheck: List<Long>,
-            additionalContext: String
+        loritta: LorittaBot,
+        userId: Long,
+        quantity: Long,
+        quantityToBeRemovedFromUsers: MutableMap<Long, MutableList<SonhosRemovalData>>,
+        usersThatTriggeredTheCheck: List<Long>,
+        additionalContext: String
     ): Long {
         // We lock in a mutex because a lot of times users spam chargebacks, which could cause issues when taking out money
         // mutex.withLock {
@@ -189,30 +189,30 @@ object PaymentUtils {
                 // Oh no... we still have a looooong way to go because the user didn't have enough sonhos... sad
                 // We know that the user paid his entire bank account, so we are going to subtract the "userMoney" variable
                 quantityToBeRemovedFromUsers[userId] = (quantityToBeRemovedFromUsers[userId] ?: mutableListOf())
-                        .also {
-                            it.add(
-                                    SonhosRemovalData(
-                                            additionalContext,
-                                            usersThatTriggeredTheCheck,
-                                            userMoney
-                                    )
+                    .also {
+                        it.add(
+                            SonhosRemovalData(
+                                additionalContext,
+                                usersThatTriggeredTheCheck,
+                                userMoney
                             )
-                        }
+                        )
+                    }
 
                 stillNeedsToBeRemovedSonhos -= userMoney
 
                 logger.warn { "Charged back $userId but we are still in debt! We still need to remove $stillNeedsToBeRemovedSonhos sonhos. Users that triggered the check: $usersThatTriggeredTheCheck" }
             } else {
                 quantityToBeRemovedFromUsers[userId] = (quantityToBeRemovedFromUsers[userId] ?: mutableListOf())
-                        .also {
-                            it.add(
-                                    SonhosRemovalData(
-                                            additionalContext,
-                                            usersThatTriggeredTheCheck,
-                                            stillNeedsToBeRemovedSonhos
-                                    )
+                    .also {
+                        it.add(
+                            SonhosRemovalData(
+                                additionalContext,
+                                usersThatTriggeredTheCheck,
+                                stillNeedsToBeRemovedSonhos
                             )
-                        }
+                        )
+                    }
 
                 // The user that bought the sonhos had everything fine and ok! :3
                 stillNeedsToBeRemovedSonhos = 0
@@ -233,7 +233,7 @@ object PaymentUtils {
                     // It wouldn't work!
                     SonhosTransaction.givenBy eq userId and (SonhosTransaction.receivedBy notInList usersThatTriggeredTheCheck) and (SonhosTransaction.receivedBy.isNotNull())
                 }.orderBy(SonhosTransaction.id, SortOrder.DESC)
-                        .toList()
+                    .toList()
             }
 
             for (transaction in transactions) {
@@ -245,19 +245,19 @@ object PaymentUtils {
                 val givenBy = transaction[SonhosTransaction.givenBy] ?: continue
                 val receivedBy = transaction[SonhosTransaction.receivedBy] ?: continue
                 val receivedQuantity = transaction[SonhosTransaction.quantity]
-                        .toLong()
+                    .toLong()
 
                 val howMuchNeedsToBeRemoved = Math.min(receivedQuantity, stillNeedsToBeRemovedSonhos)
 
                 // This is harder than it looks because we don't want to just push the user's debt to someone else, we want to only charge what's needed
                 val howMuchWeWereAbleToGet = retrieveSonhosRemovalDueToChargeback(
-                        loritta,
-                        receivedBy,
-                        howMuchNeedsToBeRemoved,
-                        quantityToBeRemovedFromUsers,
-                        // We are going to clone the current list and add the current "givenBy" user
-                        usersThatTriggeredTheCheck + givenBy,
-                        "Transaction ID: ${transaction[SonhosTransaction.id]}; Reason: ${transaction[SonhosTransaction.reason]}"
+                    loritta,
+                    receivedBy,
+                    howMuchNeedsToBeRemoved,
+                    quantityToBeRemovedFromUsers,
+                    // We are going to clone the current list and add the current "givenBy" user
+                    usersThatTriggeredTheCheck + givenBy,
+                    "Transaction ID: ${transaction[SonhosTransaction.id]}; Reason: ${transaction[SonhosTransaction.reason]}"
                 )
 
                 stillNeedsToBeRemovedSonhos -= (receivedQuantity - howMuchWeWereAbleToGet)
@@ -269,9 +269,9 @@ object PaymentUtils {
     }
 
     data class SonhosRemovalData(
-            val additionalContext: String,
-            val usersThatTriggeredTheCheck: List<Long>,
-            val quantity: Long
+        val additionalContext: String,
+        val usersThatTriggeredTheCheck: List<Long>,
+        val quantity: Long
     )
 
     class EconomyDisabledException : RuntimeException()

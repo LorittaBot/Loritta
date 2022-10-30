@@ -21,7 +21,7 @@ data class LorittaConfig(
     val commands: CommandsConfig,
     val website: WebsiteConfig,
     val pudding: PuddingConfig,
-    val redis: RedisConfig,
+    val deviousCache: DeviousCacheConfig,
     val perfectPayments: PerfectPaymentsConfig,
     val binaries: BinariesConfig,
     val prometheusPush: PrometheusPushConfig,
@@ -127,7 +127,7 @@ data class LorittaConfig(
         val sessionName: String
     ) {
         @Serializable
-        data class AuthenticationKey (
+        data class AuthenticationKey(
             val name: String,
             val description: String,
             val allowed: List<String>
@@ -148,6 +148,9 @@ data class LorittaConfig(
         val address: String,
         val password: String?
     )
+
+    @Serializable
+    data class DeviousCacheConfig(val url: String)
 
     @Serializable
     data class PerfectPaymentsConfig(
@@ -238,6 +241,7 @@ data class LorittaConfig(
                 val reactions: List<String>
             )
         }
+
         @Serializable
         class TioDoPaveConfig(
             val enabled: Boolean,

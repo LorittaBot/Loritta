@@ -50,154 +50,175 @@ import java.util.*
 import javax.imageio.ImageIO
 
 class PatchProfileRoute(loritta: LorittaBot) : RequiresAPIDiscordLoginRoute(loritta, "/api/v1/users/self-profile") {
-	override suspend fun onAuthenticatedRequest(call: ApplicationCall, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification) {
-		loritta as LorittaBot
-		val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
-		val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
+    override suspend fun onAuthenticatedRequest(
+        call: ApplicationCall,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification
+    ) {
+        loritta as LorittaBot
+        val profile = loritta.getOrCreateLorittaProfile(userIdentification.id)
+        val payload = withContext(Dispatchers.IO) { JsonParser.parseString(call.receiveText()).obj }
 
-		val config = payload["config"].obj
+        val config = payload["config"].obj
 
-		val profileSettings = loritta.newSuspendedTransaction {
-			profile.settings
-		}
+        val profileSettings = loritta.newSuspendedTransaction {
+            profile.settings
+        }
 
-		if (config["setActiveBackground"].nullString != null) {
-			val internalName = config["setActiveBackground"].string
+        if (config["setActiveBackground"].nullString != null) {
+            val internalName = config["setActiveBackground"].string
 
-			if (internalName != Background.DEFAULT_BACKGROUND_ID && internalName != Background.RANDOM_BACKGROUND_ID && internalName != Background.CUSTOM_BACKGROUND_ID && loritta.newSuspendedTransaction { BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
-				throw WebsiteAPIException(HttpStatusCode.Forbidden,
-					WebsiteUtils.createErrorPayload(
-						loritta,
-						LoriWebCode.FORBIDDEN
-					)
-				)
-			}
+            if (internalName != Background.DEFAULT_BACKGROUND_ID && internalName != Background.RANDOM_BACKGROUND_ID && internalName != Background.CUSTOM_BACKGROUND_ID && loritta.newSuspendedTransaction {
+                    BackgroundPayments.select { BackgroundPayments.background eq internalName and (BackgroundPayments.userId eq userIdentification.id.toLong()) }
+                        .count()
+                } == 0L) {
+                throw WebsiteAPIException(
+                    HttpStatusCode.Forbidden,
+                    WebsiteUtils.createErrorPayload(
+                        loritta,
+                        LoriWebCode.FORBIDDEN
+                    )
+                )
+            }
 
-			if (internalName == Background.CUSTOM_BACKGROUND_ID) {
-				val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
-				val plan = UserPremiumPlans.getPlanFromValue(donationValue)
+            if (internalName == Background.CUSTOM_BACKGROUND_ID) {
+                val donationValue = loritta.getActiveMoneyFromDonationsAsync(profile.userId)
+                val plan = UserPremiumPlans.getPlanFromValue(donationValue)
 
-				if (!plan.customBackground)
-					throw WebsiteAPIException(HttpStatusCode.Forbidden,
-						WebsiteUtils.createErrorPayload(
-							loritta,
-							LoriWebCode.FORBIDDEN
-						)
-					)
-			}
+                if (!plan.customBackground)
+                    throw WebsiteAPIException(
+                        HttpStatusCode.Forbidden,
+                        WebsiteUtils.createErrorPayload(
+                            loritta,
+                            LoriWebCode.FORBIDDEN
+                        )
+                    )
+            }
 
-			// Se é um background personalizado, vamos pegar a imagem e salvar!
-			// Mas apenas se o usuário enviou um background, altere o bg salvo, yay
-			val data = config["data"].nullString
-			var oldPath: String? = null
-			var newPath: String? = null
-			var preferredMediaType: String? = null
+            // Se é um background personalizado, vamos pegar a imagem e salvar!
+            // Mas apenas se o usuário enviou um background, altere o bg salvo, yay
+            val data = config["data"].nullString
+            var oldPath: String? = null
+            var newPath: String? = null
+            var preferredMediaType: String? = null
 
-			if (internalName == Background.CUSTOM_BACKGROUND_ID && data != null) {
-				val decodedBytes = Base64.getDecoder().decode(data.split(",")[1])
-				// TODO: Maybe add a dimension check to avoid crashing Loritta when loading the image?
-				val mediaType = try { SimpleImageInfo(decodedBytes).mimeType } catch (e: IOException) { null }
-				val decodedImage = readImage(decodedBytes.inputStream())
+            if (internalName == Background.CUSTOM_BACKGROUND_ID && data != null) {
+                val decodedBytes = Base64.getDecoder().decode(data.split(",")[1])
+                // TODO: Maybe add a dimension check to avoid crashing Loritta when loading the image?
+                val mediaType = try {
+                    SimpleImageInfo(decodedBytes).mimeType
+                } catch (e: IOException) {
+                    null
+                }
+                val decodedImage = readImage(decodedBytes.inputStream())
 
-				if (decodedImage != null && mediaType != null) {
-					var writeImage = decodedImage
+                if (decodedImage != null && mediaType != null) {
+                    var writeImage = decodedImage
 
-					if (decodedImage.width != 800 && decodedImage.height != 600)
-						writeImage = decodedImage.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH).toBufferedImage()
+                    if (decodedImage.width != 800 && decodedImage.height != 600)
+                        writeImage =
+                            decodedImage.getScaledInstance(800, 600, BufferedImage.SCALE_SMOOTH).toBufferedImage()
 
-					// This will convert the image to the preferred content type
-					// This is useful for JPEG images because if the image has alpha (TYPE_INT_ARGB), the result file will have 0 bytes
-					// https://stackoverflow.com/a/66954103/7271796
-					val targetContentType = ContentType.parse(mediaType)
-					if (targetContentType == ContentType.Image.JPEG && writeImage.type == BufferedImage.TYPE_INT_ARGB) {
-						val newBufferedImage = BufferedImage(
-							writeImage.width,
-							writeImage.height,
-							BufferedImage.TYPE_INT_RGB
-						)
-						newBufferedImage.graphics.drawImage(writeImage, 0, 0, null)
-						writeImage = newBufferedImage
-					}
+                    // This will convert the image to the preferred content type
+                    // This is useful for JPEG images because if the image has alpha (TYPE_INT_ARGB), the result file will have 0 bytes
+                    // https://stackoverflow.com/a/66954103/7271796
+                    val targetContentType = ContentType.parse(mediaType)
+                    if (targetContentType == ContentType.Image.JPEG && writeImage.type == BufferedImage.TYPE_INT_ARGB) {
+                        val newBufferedImage = BufferedImage(
+                            writeImage.width,
+                            writeImage.height,
+                            BufferedImage.TYPE_INT_RGB
+                        )
+                        newBufferedImage.graphics.drawImage(writeImage, 0, 0, null)
+                        writeImage = newBufferedImage
+                    }
 
-					// DO NOT USE NoCopyByteArrayOutputStream HERE, IT MAY CAUSE ISSUES DUE TO THE BYTEARRAY HAVING MORE BYTES THAN IT SHOULD!!
-					val baos = ByteArrayOutputStream()
-					ImageIO.write(writeImage, MediaTypeUtils.convertContentTypeToExtension(targetContentType), baos)
+                    // DO NOT USE NoCopyByteArrayOutputStream HERE, IT MAY CAUSE ISSUES DUE TO THE BYTEARRAY HAVING MORE BYTES THAN IT SHOULD!!
+                    val baos = ByteArrayOutputStream()
+                    ImageIO.write(writeImage, MediaTypeUtils.convertContentTypeToExtension(targetContentType), baos)
 
-					val (isUnique, imageInfo) = loritta.dreamStorageService.uploadImage(
-						baos.toByteArray(),
-						targetContentType,
-						UploadImageRequest(false)
-					)
+                    val (isUnique, imageInfo) = loritta.dreamStorageService.uploadImage(
+                        baos.toByteArray(),
+                        targetContentType,
+                        UploadImageRequest(false)
+                    )
 
-					val (folder, file) = StoragePaths.CustomBackground(profile.id.value, "%s")
-					val (linkInfo) = loritta.dreamStorageService.createImageLink(
-						CreateImageLinkRequest(
-							imageInfo.imageId,
-							folder,
-							file
-						)
-					)
-					newPath = linkInfo.file
-					preferredMediaType = targetContentType.toString()
-				}
-			}
+                    val (folder, file) = StoragePaths.CustomBackground(profile.id.value, "%s")
+                    val (linkInfo) = loritta.dreamStorageService.createImageLink(
+                        CreateImageLinkRequest(
+                            imageInfo.imageId,
+                            folder,
+                            file
+                        )
+                    )
+                    newPath = linkInfo.file
+                    preferredMediaType = targetContentType.toString()
+                }
+            }
 
-			loritta.newSuspendedTransaction {
-				profileSettings.activeBackgroundInternalName = EntityID(internalName, Backgrounds)
-				oldPath = CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profileSettings.id }.firstOrNull()?.get(CustomBackgroundSettings.file)
+            loritta.newSuspendedTransaction {
+                profileSettings.activeBackgroundInternalName = EntityID(internalName, Backgrounds)
+                oldPath = CustomBackgroundSettings.select { CustomBackgroundSettings.settings eq profileSettings.id }
+                    .firstOrNull()?.get(CustomBackgroundSettings.file)
 
-				if (newPath != null && preferredMediaType != null) {
-					CustomBackgroundSettings.insertOrUpdate(CustomBackgroundSettings.settings) {
-						it[settings] = profileSettings.id
-						it[file] = newPath
-						it[CustomBackgroundSettings.preferredMediaType] = preferredMediaType
-					}
-				}
-			}
+                if (newPath != null && preferredMediaType != null) {
+                    CustomBackgroundSettings.insertOrUpdate(CustomBackgroundSettings.settings) {
+                        it[settings] = profileSettings.id
+                        it[file] = newPath
+                        it[CustomBackgroundSettings.preferredMediaType] = preferredMediaType
+                    }
+                }
+            }
 
-			// Just to avoid adding !! within the DeleteFileLinkRequest call
-			val immutableOldPath = oldPath
-			val immutableNewPath = newPath
+            // Just to avoid adding !! within the DeleteFileLinkRequest call
+            val immutableOldPath = oldPath
+            val immutableNewPath = newPath
 
-			if (immutableOldPath != null && immutableNewPath != immutableOldPath) {
-				// Request deletion of the old profile background
-				val (folder, file) = StoragePaths.CustomBackground(profile.id.value, immutableOldPath)
-				loritta.dreamStorageService.deleteImageLink(
-					DeleteImageLinkRequest(
-						folder,
-						file
-					)
-				)
-			}
+            if (immutableOldPath != null && immutableNewPath != immutableOldPath) {
+                // Request deletion of the old profile background
+                val (folder, file) = StoragePaths.CustomBackground(profile.id.value, immutableOldPath)
+                loritta.dreamStorageService.deleteImageLink(
+                    DeleteImageLinkRequest(
+                        folder,
+                        file
+                    )
+                )
+            }
 
-			call.respondJson(jsonObject())
-			return
-		}
+            call.respondJson(jsonObject())
+            return
+        }
 
-		if (config["setActiveProfileDesign"].nullString != null) {
-			val internalName = config["setActiveProfileDesign"].string
+        if (config["setActiveProfileDesign"].nullString != null) {
+            val internalName = config["setActiveProfileDesign"].string
 
-			if (internalName != ProfileDesign.DEFAULT_PROFILE_DESIGN_ID && internalName != ProfileDesign.RANDOM_PROFILE_DESIGN_ID && loritta.newSuspendedTransaction { ProfileDesignsPayments.select { ProfileDesignsPayments.profile eq internalName and (ProfileDesignsPayments.userId eq userIdentification.id.toLong()) }.count() } == 0L) {
-				throw WebsiteAPIException(HttpStatusCode.Forbidden,
-					WebsiteUtils.createErrorPayload(
-						loritta,
-						LoriWebCode.FORBIDDEN
-					)
-				)
-			}
+            if (internalName != ProfileDesign.DEFAULT_PROFILE_DESIGN_ID && internalName != ProfileDesign.RANDOM_PROFILE_DESIGN_ID && loritta.newSuspendedTransaction {
+                    ProfileDesignsPayments.select { ProfileDesignsPayments.profile eq internalName and (ProfileDesignsPayments.userId eq userIdentification.id.toLong()) }
+                        .count()
+                } == 0L) {
+                throw WebsiteAPIException(
+                    HttpStatusCode.Forbidden,
+                    WebsiteUtils.createErrorPayload(
+                        loritta,
+                        LoriWebCode.FORBIDDEN
+                    )
+                )
+            }
 
-			loritta.newSuspendedTransaction {
-				profileSettings.activeProfileDesignInternalName = ProfileDesigns.select { ProfileDesigns.id eq internalName }.first()[ProfileDesigns.id] // Background.findById(internalName)
-			}
+            loritta.newSuspendedTransaction {
+                profileSettings.activeProfileDesignInternalName =
+                    ProfileDesigns.select { ProfileDesigns.id eq internalName }
+                        .first()[ProfileDesigns.id] // Background.findById(internalName)
+            }
 
-			call.respondJson(jsonObject())
-			return
-		}
+            call.respondJson(jsonObject())
+            return
+        }
 
-		loritta.newSuspendedTransaction {
-			profile.settings.aboutMe = config["aboutMe"].string
-		}
+        loritta.newSuspendedTransaction {
+            profile.settings.aboutMe = config["aboutMe"].string
+        }
 
-		call.respondJson(jsonObject())
-	}
+        call.respondJson(jsonObject())
+    }
 }

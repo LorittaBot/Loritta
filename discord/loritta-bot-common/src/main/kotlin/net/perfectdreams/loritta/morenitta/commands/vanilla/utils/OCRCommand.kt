@@ -20,42 +20,49 @@ import java.util.*
 import javax.imageio.ImageIO
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class OCRCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ocr", listOf("ler", "read"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.ocr.description")
+class OCRCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "ocr",
+    listOf("ler", "read"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.UTILS
+) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.ocr.description")
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val contextImage = context.getImageAt(0, createTextAsImageIfNotFound = false) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        val contextImage = context.getImageAt(0, createTextAsImageIfNotFound = false) ?: run {
+            Constants.INVALID_IMAGE_REPLY.invoke(context); return;
+        }
 
-		ByteArrayOutputStream().use {
-			ImageIO.write(contextImage, "png", it)
+        ByteArrayOutputStream().use {
+            ImageIO.write(contextImage, "png", it)
 
-			val json = jsonObject(
-					"requests" to jsonArray(
-							jsonObject(
-									"features" to jsonArray(
-											jsonObject(
-													"maxResults" to 1,
-													"type" to "TEXT_DETECTION"
-											)
-									),
-									"image" to jsonObject(
-											"content" to Base64.getEncoder().encodeToString(it.toByteArray())
-									)
+            val json = jsonObject(
+                "requests" to jsonArray(
+                    jsonObject(
+                        "features" to jsonArray(
+                            jsonObject(
+                                "maxResults" to 1,
+                                "type" to "TEXT_DETECTION"
+                            )
+                        ),
+                        "image" to jsonObject(
+                            "content" to Base64.getEncoder().encodeToString(it.toByteArray())
+                        )
 
-							)
-					)
-			)
+                    )
+                )
+            )
 
-			val responses = loritta.googleVisionOCRClient.ocr(it.toByteArray())
+            val responses = loritta.googleVisionOCRClient.ocr(it.toByteArray())
 
-			val builder = EmbedBuilder()
-			builder.setTitle("\uD83D\uDCDD\uD83D\uDD0D OCR")
-			try {
-				builder.setDescription("```${responses.responses.first().textAnnotations!!.first().description}```")
-			} catch (e: Exception) {
-				builder.setDescription("**${locale["commands.command.ocr.couldntFind"]}**")
-			}
-			context.sendMessage(context.getAsMention(true), builder.build())
-		}
-	}
+            val builder = EmbedBuilder()
+            builder.setTitle("\uD83D\uDCDD\uD83D\uDD0D OCR")
+            try {
+                builder.setDescription("```${responses.responses.first().textAnnotations!!.first().description}```")
+            } catch (e: Exception) {
+                builder.setDescription("**${locale["commands.command.ocr.couldntFind"]}**")
+            }
+            context.sendMessage(context.getAsMention(true), builder.build())
+        }
+    }
 }

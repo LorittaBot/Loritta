@@ -24,7 +24,12 @@ class ActiveDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer
     override val payloadType: String = "activekeys"
     override val configKey: String = "activeDonationKeys"
 
-    override suspend fun fromJson(userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig, payload: JsonObject) {
+    override suspend fun fromJson(
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig,
+        payload: JsonObject
+    ) {
         val keyIds = payload["keyIds"].array.map { it.long }
         val currentlyActiveKeys = loritta.newSuspendedTransaction {
             DonationKeys.select { DonationKeys.activeIn eq serverConfig.id }
@@ -36,7 +41,8 @@ class ActiveDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer
         for (keyId in keyIds) {
             val donationKey = loritta.newSuspendedTransaction {
                 DonationKey.findById(keyId)
-            } ?: throw WebsiteAPIException(HttpStatusCode.Forbidden,
+            } ?: throw WebsiteAPIException(
+                HttpStatusCode.Forbidden,
                 WebsiteUtils.createErrorPayload(
                     loritta,
                     LoriWebCode.FORBIDDEN,
@@ -45,7 +51,8 @@ class ActiveDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer
             )
 
             if (donationKey.userId != userIdentification.id.toLong() && keyId !in currentlyActiveKeys)
-                throw WebsiteAPIException(HttpStatusCode.Forbidden,
+                throw WebsiteAPIException(
+                    HttpStatusCode.Forbidden,
                     WebsiteUtils.createErrorPayload(
                         loritta,
                         LoriWebCode.FORBIDDEN,

@@ -4,9 +4,9 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 
 object DebugLocales {
     private val doNotChangeThisKeys = listOf(
-            "loritta.inheritsFromLanguageId",
-            "commands.command.shop.localeId",
-            "website.localePath"
+        "loritta.inheritsFromLanguageId",
+        "commands.command.shop.localeId",
+        "website.localePath"
     )
 
     /**

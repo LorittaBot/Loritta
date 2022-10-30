@@ -33,194 +33,207 @@ import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
 class PostPubSubHubbubCallbackRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/callbacks/pubsubhubbub") {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-		private val streamingSince = CacheBuilder.newBuilder()
-			.expireAfterAccess(4, TimeUnit.HOURS)
-			.build<Long, Long>()
-			.asMap()
-	}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+        private val streamingSince = CacheBuilder.newBuilder()
+            .expireAfterAccess(4, TimeUnit.HOURS)
+            .build<Long, Long>()
+            .asMap()
+    }
 
-	override suspend fun onRequest(call: ApplicationCall) {
-		loritta as LorittaBot
-		val response = withContext(Dispatchers.IO) {
-			call.receiveStream().bufferedReader(charset = Charsets.UTF_8).readText()
-		}
+    override suspend fun onRequest(call: ApplicationCall) {
+        loritta as LorittaBot
+        val response = withContext(Dispatchers.IO) {
+            call.receiveStream().bufferedReader(charset = Charsets.UTF_8).readText()
+        }
 
-		logger.info { "Recebi payload do PubSubHubbub!" }
-		logger.trace { response }
+        logger.info { "Recebi payload do PubSubHubbub!" }
+        logger.trace { response }
 
-		val originalSignature = call.request.header("X-Hub-Signature")
-			?: throw WebsiteAPIException(
-				HttpStatusCode.Unauthorized,
-				WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Missing X-Hub-Signature Header from Request")
-			)
+        val originalSignature = call.request.header("X-Hub-Signature")
+            ?: throw WebsiteAPIException(
+                HttpStatusCode.Unauthorized,
+                WebsiteUtils.createErrorPayload(
+                    loritta,
+                    LoriWebCode.UNAUTHORIZED,
+                    "Missing X-Hub-Signature Header from Request"
+                )
+            )
 
-		val output = if (originalSignature.startsWith("sha1=")) {
-			val signingKey = SecretKeySpec(loritta.config.loritta.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
-			val mac = Mac.getInstance("HmacSHA1")
-			mac.init(signingKey)
-			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
-			val output = "sha1=" + doneFinal.bytesToHex()
+        val output = if (originalSignature.startsWith("sha1=")) {
+            val signingKey = SecretKeySpec(loritta.config.loritta.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA1")
+            val mac = Mac.getInstance("HmacSHA1")
+            mac.init(signingKey)
+            val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
+            val output = "sha1=" + doneFinal.bytesToHex()
 
-			logger.debug { "Assinatura Original: ${originalSignature}" }
-			logger.debug { "Nossa Assinatura   : ${output}" }
-			logger.debug { "Sucesso?           : ${originalSignature == output}" }
+            logger.debug { "Assinatura Original: ${originalSignature}" }
+            logger.debug { "Nossa Assinatura   : ${output}" }
+            logger.debug { "Sucesso?           : ${originalSignature == output}" }
 
-			output
-		} else if (originalSignature.startsWith("sha256=")) {
-			val signingKey = SecretKeySpec(loritta.config.loritta.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
-			val mac = Mac.getInstance("HmacSHA256")
-			mac.init(signingKey)
-			val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
-			val output = "sha256=" + doneFinal.bytesToHex()
+            output
+        } else if (originalSignature.startsWith("sha256=")) {
+            val signingKey =
+                SecretKeySpec(loritta.config.loritta.webhookSecret.toByteArray(Charsets.UTF_8), "HmacSHA256")
+            val mac = Mac.getInstance("HmacSHA256")
+            mac.init(signingKey)
+            val doneFinal = mac.doFinal(response.toByteArray(Charsets.UTF_8))
+            val output = "sha256=" + doneFinal.bytesToHex()
 
-			logger.debug { "Assinatura Original: ${originalSignature}" }
-			logger.debug { "Nossa Assinatura   : ${output}" }
-			logger.debug { "Sucesso?           : ${originalSignature == output}" }
+            logger.debug { "Assinatura Original: ${originalSignature}" }
+            logger.debug { "Nossa Assinatura   : ${output}" }
+            logger.debug { "Sucesso?           : ${originalSignature == output}" }
 
-			output
-		} else {
-			throw NotImplementedError("${originalSignature} is not implemented yet!")
-		}
+            output
+        } else {
+            throw NotImplementedError("${originalSignature} is not implemented yet!")
+        }
 
-		if (originalSignature != output)
-			throw WebsiteAPIException(
-				HttpStatusCode.Unauthorized,
-				WebsiteUtils.createErrorPayload(loritta, LoriWebCode.UNAUTHORIZED, "Invalid X-Hub-Signature Header from Request")
-			)
+        if (originalSignature != output)
+            throw WebsiteAPIException(
+                HttpStatusCode.Unauthorized,
+                WebsiteUtils.createErrorPayload(
+                    loritta,
+                    LoriWebCode.UNAUTHORIZED,
+                    "Invalid X-Hub-Signature Header from Request"
+                )
+            )
 
-		val type = call.parameters["type"]
+        val type = call.parameters["type"]
 
-		if (type == "ytvideo") {
-			val payload = Jsoup.parse(response, "", Parser.xmlParser())
+        if (type == "ytvideo") {
+            val payload = Jsoup.parse(response, "", Parser.xmlParser())
 
-			val entries = payload.getElementsByTag("entry")
+            val entries = payload.getElementsByTag("entry")
 
-			val lastVideo = entries.firstOrNull() ?: return
+            val lastVideo = entries.firstOrNull() ?: return
 
-			val videoId = lastVideo.getElementsByTag("yt:videoId").first()!!.html()
-			val lastVideoTitle = lastVideo.getElementsByTag("title").first()!!.html()
-			val published = lastVideo.getElementsByTag("published").first()!!.html()
-			val channelId = lastVideo.getElementsByTag("yt:channelId").first()!!.html()
+            val videoId = lastVideo.getElementsByTag("yt:videoId").first()!!.html()
+            val lastVideoTitle = lastVideo.getElementsByTag("title").first()!!.html()
+            val published = lastVideo.getElementsByTag("published").first()!!.html()
+            val channelId = lastVideo.getElementsByTag("yt:channelId").first()!!.html()
 
-			val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
+            val publishedEpoch = Constants.YOUTUBE_DATE_FORMAT.parse(published).time
 
-			if (loritta.isMainInstance) {
-				val wasAlreadySent = loritta.newSuspendedTransaction {
-					SentYouTubeVideoIds.select {
-						SentYouTubeVideoIds.channelId eq channelId and (SentYouTubeVideoIds.videoId eq videoId)
-					}.count() != 0L
-				}
+            if (loritta.isMainInstance) {
+                val wasAlreadySent = loritta.newSuspendedTransaction {
+                    SentYouTubeVideoIds.select {
+                        SentYouTubeVideoIds.channelId eq channelId and (SentYouTubeVideoIds.videoId eq videoId)
+                    }.count() != 0L
+                }
 
-				if (!wasAlreadySent) {
-					loritta.newSuspendedTransaction {
-						SentYouTubeVideoIds.insert {
-							it[SentYouTubeVideoIds.videoId] = videoId
-							it[SentYouTubeVideoIds.channelId] = channelId
-							it[receivedAt] = System.currentTimeMillis()
-						}
-					}
-					relayPubSubHubbubNotificationToOtherClusters(call, originalSignature, response)
-				} else {
-					logger.warn { "Video $lastVideoTitle ($videoId) from $channelId was already sent, so... bye!" }
-					return
-				}
-			}
+                if (!wasAlreadySent) {
+                    loritta.newSuspendedTransaction {
+                        SentYouTubeVideoIds.insert {
+                            it[SentYouTubeVideoIds.videoId] = videoId
+                            it[SentYouTubeVideoIds.channelId] = channelId
+                            it[receivedAt] = System.currentTimeMillis()
+                        }
+                    }
+                    relayPubSubHubbubNotificationToOtherClusters(call, originalSignature, response)
+                } else {
+                    logger.warn { "Video $lastVideoTitle ($videoId) from $channelId was already sent, so... bye!" }
+                    return
+                }
+            }
 
-			logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
+            logger.info("Recebi notificação de vídeo $lastVideoTitle ($videoId) de $channelId")
 
-			val trackedAccounts = loritta.newSuspendedTransaction {
-				TrackedYouTubeAccounts.select {
-					TrackedYouTubeAccounts.youTubeChannelId eq channelId
-				}.toList()
-			}
+            val trackedAccounts = loritta.newSuspendedTransaction {
+                TrackedYouTubeAccounts.select {
+                    TrackedYouTubeAccounts.youTubeChannelId eq channelId
+                }.toList()
+            }
 
-			val guildIds = mutableListOf<Long>()
-			val canTalkGuildIds = mutableListOf<Long>()
+            val guildIds = mutableListOf<Long>()
+            val canTalkGuildIds = mutableListOf<Long>()
 
-			for (trackedAccount in trackedAccounts) {
-				guildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
+            for (trackedAccount in trackedAccounts) {
+                guildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
 
-				// TODO - DeviousFun: We don't need this, later we can make that only the main instance relays stuff
-				// However, for now, because we aren't running the new version on cluster 1 yet, keep it as is
-				if (!DiscordUtils.isCurrentClusterHandlingGuildId(
-						loritta,
-						trackedAccount[TrackedYouTubeAccounts.guildId]
-					)
-				)
-					continue
+                // TODO - DeviousFun: We don't need this, later we can make that only the main instance relays stuff
+                // However, for now, because we aren't running the new version on cluster 1 yet, keep it as is
+                if (!DiscordUtils.isCurrentClusterHandlingGuildId(
+                        loritta,
+                        trackedAccount[TrackedYouTubeAccounts.guildId]
+                    )
+                )
+                    continue
 
-				val guild =
-					loritta.lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
-				val textChannel = guild.getTextChannelById(trackedAccount[TrackedYouTubeAccounts.channelId]) ?: continue
+                val guild =
+                    loritta.lorittaShards.getGuildById(trackedAccount[TrackedYouTubeAccounts.guildId]) ?: continue
+                val textChannel = guild.getTextChannelById(trackedAccount[TrackedYouTubeAccounts.channelId]) ?: continue
 
-				if (!textChannel.canTalk())
-					continue
+                if (!textChannel.canTalk())
+                    continue
 
-				var message = trackedAccount[TrackedYouTubeAccounts.message]
+                var message = trackedAccount[TrackedYouTubeAccounts.message]
 
-				if (message.isEmpty())
-					message = "{link}"
+                if (message.isEmpty())
+                    message = "{link}"
 
-				val customTokens = mapOf(
-					"título" to lastVideoTitle,
-					"title" to lastVideoTitle,
-					"link" to "https://youtu.be/$videoId",
-					"video-id" to videoId
-				)
+                val customTokens = mapOf(
+                    "título" to lastVideoTitle,
+                    "title" to lastVideoTitle,
+                    "link" to "https://youtu.be/$videoId",
+                    "video-id" to videoId
+                )
 
-				val discordMessage = MessageUtils.generateMessage(
-					message,
-					listOf(guild),
-					guild,
-					customTokens
-				) ?: continue
+                val discordMessage = MessageUtils.generateMessage(
+                    message,
+                    listOf(guild),
+                    guild,
+                    customTokens
+                ) ?: continue
 
-				textChannel.sendMessage(discordMessage)
+                textChannel.sendMessage(discordMessage)
 
-				canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
-			}
+                canTalkGuildIds.add(trackedAccount[TrackedYouTubeAccounts.guildId])
+            }
 
-			// Nós iremos fazer relay de todos os vídeos para o servidor da Lori
-			if (DiscordUtils.isCurrentClusterHandlingGuildId(loritta, Constants.PORTUGUESE_SUPPORT_GUILD_ID.toLong())) {
-				val textChannel = loritta.lorittaShards.getTextChannelById(Constants.RELAY_YOUTUBE_VIDEOS_CHANNEL)
+            // Nós iremos fazer relay de todos os vídeos para o servidor da Lori
+            if (DiscordUtils.isCurrentClusterHandlingGuildId(loritta, Constants.PORTUGUESE_SUPPORT_GUILD_ID.toLong())) {
+                val textChannel = loritta.lorittaShards.getTextChannelById(Constants.RELAY_YOUTUBE_VIDEOS_CHANNEL)
 
-				runCatching {
-					textChannel?.sendMessage(
-						"""${lastVideoTitle.escapeMentions()} — https://youtu.be/$videoId
+                runCatching {
+                    textChannel?.sendMessage(
+                        """${lastVideoTitle.escapeMentions()} — https://youtu.be/$videoId
 						|**Enviado em...**
 						|${guildIds.joinToString("\n", transform = { "`$it`" })}
 					    |""".trimMargin()
-					)
-				}
-			}
-		}
-		call.respondJson(jsonObject())
-	}
+                    )
+                }
+            }
+        }
+        call.respondJson(jsonObject())
+    }
 
-	fun relayPubSubHubbubNotificationToOtherClusters(call: ApplicationCall, originalSignature: String, response: String) {
-		logger.info { "Relaying PubSubHubbub request to other instances, because I'm the master server! :3" }
+    fun relayPubSubHubbubNotificationToOtherClusters(
+        call: ApplicationCall,
+        originalSignature: String,
+        response: String
+    ) {
+        logger.info { "Relaying PubSubHubbub request to other instances, because I'm the master server! :3" }
 
-		val shards = loritta.config.loritta.clusters.instances.filter { it.id != 1 }
+        val shards = loritta.config.loritta.clusters.instances.filter { it.id != 1 }
 
-		shards.map {
-			GlobalScope.launch {
-				try {
-					withTimeout(25_000) {
-						logger.info { "Sending request to ${"https://${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}"}..." }
-						loritta.http.post("https://${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}") {
-							userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-							header("X-Hub-Signature", originalSignature)
+        shards.map {
+            GlobalScope.launch {
+                try {
+                    withTimeout(25_000) {
+                        logger.info { "Sending request to ${"https://${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}"}..." }
+                        loritta.http.post("https://${it.getUrl(loritta)}${call.request.path()}${call.request.urlQueryString}") {
+                            userAgent(loritta.lorittaCluster.getUserAgent(loritta))
+                            header("X-Hub-Signature", originalSignature)
 
-							setBody(response)
-						}
-					}
-				} catch (e: Exception) {
-					logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
-					throw ClusterOfflineException(it.id, it.name)
-				}
-			}
-		}
-	}
+                            setBody(response)
+                        }
+                    }
+                } catch (e: Exception) {
+                    logger.warn(e) { "Shard ${it.name} ${it.id} offline!" }
+                    throw ClusterOfflineException(it.id, it.name)
+                }
+            }
+        }
+    }
 }

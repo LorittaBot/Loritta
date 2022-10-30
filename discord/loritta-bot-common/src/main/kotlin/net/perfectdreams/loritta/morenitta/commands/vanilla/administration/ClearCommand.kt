@@ -20,7 +20,11 @@ import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import java.util.*
 import java.util.concurrent.TimeUnit
 
-class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("clean", "limpar", "clear"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
+class ClearCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("clean", "limpar", "clear"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION
+) {
 
     override fun command(): Command<CommandContext> = create {
         localizedDescription("commands.command.clear.description")
@@ -33,7 +37,7 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
             argument(ArgumentType.NUMBER) {
                 optional = false
             }
-            argument(ArgumentType.TEXT){
+            argument(ArgumentType.TEXT) {
                 optional = true
             }
         }
@@ -67,7 +71,8 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
 
             val messages = channel.history.retrievePast(count)
 
-            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets.filterNotNull().toSet()).minus(discordMessage)
+            val allowedMessages = messages.applyAvailabilityFilterToCollection(text, targets.filterNotNull().toSet())
+                .minus(discordMessage)
             val disallowedMessages = messages.minus(allowedMessages.toSet())
 
             if (allowedMessages.isEmpty()) // If there are no allowed messages, we'll cancel the execution
@@ -105,13 +110,16 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
         (((System.currentTimeMillis() / 1000) - it.timeCreated.toEpochSecond()) < 1209600) // The message can't be older than 2 weeks
                 && (it.isPinned.not()) // The message can't be pinned
                 && (if (targets.isNotEmpty()) targets.contains(it.author.idLong) else true) // If the target isn't null, the message must be from one of the targets
-                && (if (text != null) it.contentStripped.contains(text.trim(), ignoreCase = true) else true) // If the text isn't null, the message must contains the text
+                && (if (text != null) it.contentStripped.contains(
+            text.trim(),
+            ignoreCase = true
+        ) else true) // If the text isn't null, the message must contains the text
     }
 
     /**
-     * This method will retrieve all the 
+     * This method will retrieve all the
      * command options to the user, including the contains and from one
-     * 
+     *
      * @return Command options
      */
     private suspend fun DiscordCommandContext.getOptions(): CommandOptions {
@@ -163,9 +171,9 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
     }
 
     data class CommandOptions(
-            val targets: Set<Long?>,
-            val text: String?,
-            val textInserted: Boolean
+        val targets: Set<Long?>,
+        val text: String?,
+        val textInserted: Boolean
     )
 
     companion object {
@@ -173,7 +181,8 @@ class ClearCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, lis
         const val MAX_RANGE = 1000L
 
         @JvmStatic
-        private val unavailableGuilds = Collections.newSetFromMap(Caffeine.newBuilder()
+        private val unavailableGuilds = Collections.newSetFromMap(
+            Caffeine.newBuilder()
                 .expireAfterWrite(MAX_RANGE / 100, TimeUnit.SECONDS)
                 .build<Long, Boolean>().asMap()
         )

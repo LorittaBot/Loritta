@@ -15,7 +15,9 @@ import javax.imageio.stream.ImageInputStream
 
 suspend fun readImage(file: File) = withContext(Dispatchers.IO) { ImageIO.read(file) }
 suspend fun readImage(url: URL) = withContext(Dispatchers.IO) { ImageIO.read(url) }
-suspend fun readImageFromResources(name: String) = readImage(LorittaBot::class.java.getResourceAsStream(name) ?: error("Resource at \"$name\" does not exist!"))
+suspend fun readImageFromResources(name: String) =
+    readImage(LorittaBot::class.java.getResourceAsStream(name) ?: error("Resource at \"$name\" does not exist!"))
+
 suspend fun readImage(stream: InputStream) = withContext(Dispatchers.IO) { ImageIO.read(stream) }
 suspend fun readImage(stream: ImageInputStream) = withContext(Dispatchers.IO) { ImageIO.read(stream) }
 

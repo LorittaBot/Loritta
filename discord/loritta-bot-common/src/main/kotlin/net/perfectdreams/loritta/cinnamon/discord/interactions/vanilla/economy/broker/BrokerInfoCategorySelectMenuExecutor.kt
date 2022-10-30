@@ -41,7 +41,8 @@ class BrokerInfoCategorySelectMenuExecutor(loritta: LorittaBot) : CinnamonSelect
                 ).joinToString("\n")
 
                 for (stockInformation in stockInformations.sortedBy(BrokerTickerInformation::ticker)) {
-                    val stockData = LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == stockInformation.ticker }
+                    val stockData =
+                        LorittaBovespaBrokerUtils.trackedTickerCodes.first { it.ticker == stockInformation.ticker }
                     if (stockData.category !in categories)
                         continue
 

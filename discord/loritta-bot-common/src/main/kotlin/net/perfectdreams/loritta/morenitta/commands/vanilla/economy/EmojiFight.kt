@@ -120,10 +120,10 @@ class EmojiFight(
         }
 
         message.addReaction("✅")
-           runCatching {   }
+        runCatching { }
 
         message.addReaction("\uD83D\uDC14")
-           runCatching {   }
+        runCatching { }
     }
 
     private fun getEventEmbed(): DeviousEmbed {
@@ -140,7 +140,8 @@ class EmojiFight(
                             context.user.asMention,
                             "✅",
                             maxPlayers
-                        ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
+                        )
+                        .joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
                 } else {
                     context.locale
                         .getList(
@@ -151,7 +152,8 @@ class EmojiFight(
                             context.user.asMention,
                             "✅",
                             maxPlayers
-                        ).joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
+                        )
+                        .joinToString("\n") + "\n\n**" + context.locale["commands.command.emojifight.participants", participatingUsers.size] + "**\n"
                 }
             )
             .setColor(Constants.ROBLOX_RED)
@@ -279,7 +281,8 @@ class EmojiFight(
                 val selfPlan = UserPremiumPlans.getPlanFromValue(selfActiveDonations)
 
                 val winnerProfile = userProfiles[winner.key]!!
-                val taxPercentage = (1.0.toBigDecimal() - selfPlan.totalCoinFlipReward.toBigDecimal()).toDouble() // Avoid rounding errors
+                val taxPercentage =
+                    (1.0.toBigDecimal() - selfPlan.totalCoinFlipReward.toBigDecimal()).toDouble() // Avoid rounding errors
                 val tax = (entryPrice * taxPercentage).toLong()
                 val taxedEntryPrice = entryPrice - tax
 
@@ -287,7 +290,8 @@ class EmojiFight(
                 val realAfterTaxesPrize = taxedEntryPrice * losers.size
 
                 val resultId = EmojiFightMatchmakingResults.insertAndGetId {
-                    it[EmojiFightMatchmakingResults.winner] = databaseParticipatingUserEntries[winner.key] ?: error("Participating user is null! This should never happen!!")
+                    it[EmojiFightMatchmakingResults.winner] = databaseParticipatingUserEntries[winner.key]
+                        ?: error("Participating user is null! This should never happen!!")
                     it[EmojiFightMatchmakingResults.entryPrice] = this@EmojiFight.entryPrice
                     it[EmojiFightMatchmakingResults.entryPriceAfterTax] = taxedEntryPrice
                     if (taxPercentage != 0.0) {
@@ -338,7 +342,8 @@ class EmojiFight(
                 DbResponse(winner, losers, realBeforeTaxesPrize, realAfterTaxesPrize)
             } else {
                 val resultId = EmojiFightMatchmakingResults.insertAndGetId {
-                    it[EmojiFightMatchmakingResults.winner] = databaseParticipatingUserEntries[winner.key] ?: error("Participating user is null! This should never happen!!")
+                    it[EmojiFightMatchmakingResults.winner] = databaseParticipatingUserEntries[winner.key]
+                        ?: error("Participating user is null! This should never happen!!")
                     it[EmojiFightMatchmakingResults.entryPrice] = 0
                     it[EmojiFightMatchmakingResults.entryPriceAfterTax] = 0
                     it[EmojiFightMatchmakingResults.tax] = null

@@ -8,11 +8,11 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.sequins.ktor.BaseRoute
 
 class GetLocaleRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/locale/{localeId}") {
-	override suspend fun onRequest(call: ApplicationCall) {
-		val localeId = call.parameters["localeId"]
+    override suspend fun onRequest(call: ApplicationCall) {
+        val localeId = call.parameters["localeId"]
 
-		val locale = loritta.localeManager.locales[localeId] ?: loritta.localeManager.locales["default"]!!
+        val locale = loritta.localeManager.locales[localeId] ?: loritta.localeManager.locales["default"]!!
 
-		call.respondText(ContentType.Application.Json) { gson.toJson(locale) }
-	}
+        call.respondText(ContentType.Application.Json) { gson.toJson(locale) }
+    }
 }

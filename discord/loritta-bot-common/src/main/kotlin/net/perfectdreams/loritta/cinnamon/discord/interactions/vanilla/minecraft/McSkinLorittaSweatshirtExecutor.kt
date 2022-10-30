@@ -17,36 +17,41 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import java.util.*
 
-class McSkinLorittaSweatshirtExecutor(loritta: LorittaBot, val client: GabrielaImageServerClient, val mojang: MinecraftMojangAPI) : CinnamonSlashCommandExecutor(loritta) {
+class McSkinLorittaSweatshirtExecutor(
+    loritta: LorittaBot,
+    val client: GabrielaImageServerClient,
+    val mojang: MinecraftMojangAPI
+) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
         val skin = string("skin", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.Skin.Text)
 
-        val sweatshirtStyle = string("sweatshirt_style", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Text) {
-            choice(
-                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.Light,
-                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.LIGHT.name.lowercase()
-            )
-            choice(
-                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.Dark,
-                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.DARK.name.lowercase()
-            )
-            choice(
-                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixWavy,
-                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_WAVY.name.lowercase()
-            )
-            choice(
-                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixWavyWithStitches,
-                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_WAVY_WITH_STITCHES.name.lowercase()
-            )
-            choice(
-                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixVertical,
-                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_VERTICAL.name.lowercase()
-            )
-            choice(
-                MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixVerticalWithStitches,
-                MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_VERTICAL_WITH_STITCHES.name.lowercase()
-            )
-        }
+        val sweatshirtStyle =
+            string("sweatshirt_style", MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Text) {
+                choice(
+                    MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.Light,
+                    MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.LIGHT.name.lowercase()
+                )
+                choice(
+                    MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.Dark,
+                    MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.DARK.name.lowercase()
+                )
+                choice(
+                    MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixWavy,
+                    MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_WAVY.name.lowercase()
+                )
+                choice(
+                    MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixWavyWithStitches,
+                    MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_WAVY_WITH_STITCHES.name.lowercase()
+                )
+                choice(
+                    MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixVertical,
+                    MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_VERTICAL.name.lowercase()
+                )
+                choice(
+                    MinecraftCommand.I18N_PREFIX.Sweatshirt.Options.SweatshirtStyle.Choice.MixVerticalWithStitches,
+                    MinecraftSkinLorittaSweatshirtRequest.SweatshirtStyle.MIX_VERTICAL_WITH_STITCHES.name.lowercase()
+                )
+            }
     }
 
     override val options = Options()
@@ -61,7 +66,11 @@ class McSkinLorittaSweatshirtExecutor(loritta: LorittaBot, val client: GabrielaI
             if (!playerNameOrUrl.matches(McSkinExecutor.VALID_NAME_REGEX))
                 context.failEphemerally(
                     prefix = Emotes.Error,
-                    content = context.i18nContext.get(MinecraftCommand.I18N_CATEGORY_PREFIX.InvalidPlayerName(playerNameOrUrl))
+                    content = context.i18nContext.get(
+                        MinecraftCommand.I18N_CATEGORY_PREFIX.InvalidPlayerName(
+                            playerNameOrUrl
+                        )
+                    )
                 )
 
             val profile = mojang.getUserProfileFromName(playerNameOrUrl) ?: context.failEphemerally(
@@ -117,6 +126,11 @@ class McSkinLorittaSweatshirtExecutor(loritta: LorittaBot, val client: GabrielaI
     }
 
     private fun convertNonDashedToUniqueID(id: String): UUID {
-        return UUID.fromString(id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(12, 16) + "-" + id.substring(16, 20) + "-" + id.substring(20, 32))
+        return UUID.fromString(
+            id.substring(0, 8) + "-" + id.substring(8, 12) + "-" + id.substring(
+                12,
+                16
+            ) + "-" + id.substring(16, 20) + "-" + id.substring(20, 32)
+        )
     }
 }

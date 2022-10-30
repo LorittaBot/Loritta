@@ -18,9 +18,14 @@ class BinaryCacheTransformer<T>(
     val dictionary: ZstdDictionaries.Dictionary
 ) {
     fun compressWithZstd(payload: String) = Zstd.compress(payload.toByteArray(Charsets.UTF_8), 2)
-    fun compressWithZstd(payload: String, dictCompress: ZstdDictCompress) = Zstd.compress(payload.toByteArray(Charsets.UTF_8), dictCompress)
-    fun decompressWithZstd(payload: ByteArray): ByteArray = Zstd.decompress(payload, Zstd.decompressedSize(payload).toInt())
-    fun decompressWithZstd(payload: ByteArray, dictDecompress: ZstdDictDecompress): ByteArray = Zstd.decompress(payload, dictDecompress, Zstd.decompressedSize(payload).toInt())
+    fun compressWithZstd(payload: String, dictCompress: ZstdDictCompress) =
+        Zstd.compress(payload.toByteArray(Charsets.UTF_8), dictCompress)
+
+    fun decompressWithZstd(payload: ByteArray): ByteArray =
+        Zstd.decompress(payload, Zstd.decompressedSize(payload).toInt())
+
+    fun decompressWithZstd(payload: ByteArray, dictDecompress: ZstdDictDecompress): ByteArray =
+        Zstd.decompress(payload, dictDecompress, Zstd.decompressedSize(payload).toInt())
 
     fun enumToDict(dictionary: ZstdDictionaries.Dictionary) = when (dictionary) {
         ZstdDictionaries.Dictionary.NO_DICTIONARY -> null

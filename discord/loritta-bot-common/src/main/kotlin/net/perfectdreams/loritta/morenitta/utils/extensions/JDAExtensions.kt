@@ -11,11 +11,16 @@ suspend fun Channel.sendMessageAsync(message: DeviousMessage) = this.sendMessage
 suspend fun Channel.sendMessageAsync(embed: DeviousEmbed) = this.sendMessage(embed)
 
 suspend fun Message.edit(message: String, embed: DeviousEmbed, clearReactions: Boolean = true): Message {
-    return this.edit(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build(), clearReactions)
+    return this.edit(
+        MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build(),
+        clearReactions
+    )
 }
 
 suspend fun Message.edit(content: DeviousMessage, clearReactions: Boolean = true): Message {
-    if (this.isFromType(ChannelType.DM) || !this.guild.retrieveSelfMember().hasPermission(this.textChannel, Permission.ManageMessages)) {
+    if (this.isFromType(ChannelType.DM) || !this.guild.retrieveSelfMember()
+            .hasPermission(this.textChannel, Permission.ManageMessages)
+    ) {
         // Nós não podemos limpar as reações das mensagens caso a gente esteja em uma DM ou se a Lori não tem permissão para gerenciar mensagens
         // Nestes casos, iremos apenas deletar a mensagem e reenviar
         runCatching { this.delete() }

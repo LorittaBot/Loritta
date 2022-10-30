@@ -7,15 +7,15 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.loritta.morenitta.website.views.DailyView
 
 class DailyRoute(loritta: LorittaBot) : LocalizedRoute(loritta, "/daily") {
-	override val isMainClusterOnlyRoute = true
+    override val isMainClusterOnlyRoute = true
 
-	override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
-		call.respondHtml(
-			DailyView(
-				loritta,
-				locale,
-				getPathWithoutLocale(call)
-			).generateHtml()
-		)
-	}
+    override suspend fun onLocalizedRequest(call: ApplicationCall, locale: BaseLocale) {
+        call.respondHtml(
+            DailyView(
+                loritta,
+                locale,
+                getPathWithoutLocale(call)
+            ).generateHtml()
+        )
+    }
 }

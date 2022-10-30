@@ -15,7 +15,12 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
 
-class UndertaleBattleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "utbattle", listOf("undertalebattle"), net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE) {
+class UndertaleBattleCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "utbattle",
+    listOf("undertalebattle"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.UNDERTALE
+) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.utbattle.description")
 
     override fun getExamples(): List<String> {
@@ -24,7 +29,7 @@ class UndertaleBattleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ut
 
     // TODO: Fix Usage
 
-    override suspend fun run(context: CommandContext,locale: BaseLocale) {
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
         if (context.args.size >= 2) {
             // Argumento 1: Monstro
             // Argumento 2...: Mensagem
@@ -53,12 +58,18 @@ class UndertaleBattleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ut
             }
 
             if (valid) {
-                if (!LorittaUtils.canUploadFiles(context)) { return }
+                if (!LorittaUtils.canUploadFiles(context)) {
+                    return
+                }
                 // Sim, é válido!
                 var undertaleMonster = readImage(file!!) // Monstro
                 var undertaleSpeechBox = readImage(File(LorittaBot.ASSETS, "speech_box.png")) // Speech Box
 
-                val blackWhite = BufferedImage(undertaleMonster.width + undertaleSpeechBox.width + 2, undertaleMonster.height, BufferedImage.TYPE_INT_ARGB) // Criar nosso template
+                val blackWhite = BufferedImage(
+                    undertaleMonster.width + undertaleSpeechBox.width + 2,
+                    undertaleMonster.height,
+                    BufferedImage.TYPE_INT_ARGB
+                ) // Criar nosso template
                 val graphics = blackWhite.graphics.enableFontAntiAliasing()
                 graphics.paint = (Color(0, 0, 0)) // Encher de preto
                 graphics.fillRect(0, 0, blackWhite.width, blackWhite.height)
@@ -73,12 +84,29 @@ class UndertaleBattleCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ut
                 // TODO: Fonte do Undertale
 
                 graphics.font = Constants.DOTUMCHE.deriveFont(12F)
-                ImageUtils.drawTextWrap(loritta, text, startX + 18, startY + 15, startX + 90, 9999, graphics.fontMetrics, graphics)
+                ImageUtils.drawTextWrap(
+                    loritta,
+                    text,
+                    startX + 18,
+                    startY + 15,
+                    startX + 90,
+                    9999,
+                    graphics.fontMetrics,
+                    graphics
+                )
 
-                context.sendFile(blackWhite, "undertale_battle.png", context.getAsMention(true)) // E agora envie o arquivo
+                context.sendFile(
+                    blackWhite,
+                    "undertale_battle.png",
+                    context.getAsMention(true)
+                ) // E agora envie o arquivo
             } else {
                 // Não, não é válido!
-                context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.command.utbattle.invalid", monster, validMonsterList.joinToString(", ")])
+                context.sendMessage(
+                    Constants.ERROR + " **|** " + context.getAsMention(true) + locale["commands.command.utbattle.invalid", monster, validMonsterList.joinToString(
+                        ", "
+                    )]
+                )
             }
         } else {
             this.explain(context)

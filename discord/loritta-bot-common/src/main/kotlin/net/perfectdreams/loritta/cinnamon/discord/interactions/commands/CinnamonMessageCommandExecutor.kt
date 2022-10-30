@@ -16,7 +16,8 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.Applicat
 /**
  * Discord InteraKTions' [MessageCommandExecutor] wrapper, used to provide Cinnamon-specific features.
  */
-abstract class CinnamonMessageCommandExecutor(val loritta: LorittaBot) : MessageCommandExecutor(), CommandExecutorWrapper {
+abstract class CinnamonMessageCommandExecutor(val loritta: LorittaBot) : MessageCommandExecutor(),
+    CommandExecutorWrapper {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
@@ -26,7 +27,10 @@ abstract class CinnamonMessageCommandExecutor(val loritta: LorittaBot) : Message
     val rest = loritta.rest
     val applicationId = loritta.config.loritta.discord.applicationId
 
-    abstract suspend fun execute(context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext, targetMessage: Message)
+    abstract suspend fun execute(
+        context: net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext,
+        targetMessage: Message
+    )
 
     override suspend fun execute(
         context: ApplicationCommandContext,

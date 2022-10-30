@@ -6,7 +6,6 @@ import io.ktor.client.statement.*
 import io.ktor.content.*
 import io.ktor.http.*
 import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.entities.CorreiosResponse
 import net.perfectdreams.loritta.cinnamon.discord.utils.correios.exceptions.InvalidTrackingIdException
 import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
@@ -42,7 +41,13 @@ class CorreiosClient : Closeable {
             // Não importa qual é o usuário/senha/token, ele sempre retorna algo válido
             setBody(
                 TextContent(
-                    "<rastroObjeto><usuario>LorittaBot</usuario><senha>LorittaSuperFofa</senha><tipo>L</tipo><resultado>T</resultado>${trackingIds.joinToString(prefix = "<objetos>", postfix = "</objetos>", separator = "")}<lingua>101</lingua><token>Loritta-Discord</token></rastroObjeto>",
+                    "<rastroObjeto><usuario>LorittaBot</usuario><senha>LorittaSuperFofa</senha><tipo>L</tipo><resultado>T</resultado>${
+                        trackingIds.joinToString(
+                            prefix = "<objetos>",
+                            postfix = "</objetos>",
+                            separator = ""
+                        )
+                    }<lingua>101</lingua><token>Loritta-Discord</token></rastroObjeto>",
                     ContentType.Application.Xml
                 )
             )

@@ -20,7 +20,7 @@ class ConfirmBanButtonExecutor(loritta: LorittaBot) : CinnamonButtonExecutor(lor
             return
 
         context.deferChannelMessageEphemerally()
-        
+
         val data = context.decodeDataFromComponentOrFromDatabaseAndRequireUserToMatch<ConfirmBanData>()
 
         AdminUtils.banUsers(loritta, context.i18nContext, data)

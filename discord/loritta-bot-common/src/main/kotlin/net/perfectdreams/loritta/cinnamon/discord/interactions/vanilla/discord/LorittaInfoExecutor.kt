@@ -3,18 +3,18 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord
 import kotlinx.datetime.toKotlinInstant
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.footer
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.LorittaCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.GACampaigns
 import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.LorittaCommand
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
-import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import java.time.Instant
 
 class LorittaInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
@@ -26,8 +26,10 @@ class LorittaInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lo
             .toKotlinInstant()
 
         val guildCount = context.loritta.pudding.stats.getGuildCount()
-        val executedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getExecutedApplicationCommands(since)
-        val uniqueUsersExecutedApplicationCommands = context.loritta.pudding.executedInteractionsLog.getUniqueUsersExecutedApplicationCommands(since)
+        val executedApplicationCommands =
+            context.loritta.pudding.executedInteractionsLog.getExecutedApplicationCommands(since)
+        val uniqueUsersExecutedApplicationCommands =
+            context.loritta.pudding.executedInteractionsLog.getUniqueUsersExecutedApplicationCommands(since)
 
         context.sendMessage {
             embed {
@@ -51,7 +53,14 @@ class LorittaInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lo
 
                 image = "${context.loritta.config.loritta.website.url}v3/assets/img/sonhos/lori-space.gif"
 
-                footer(context.i18nContext.get(LorittaCommand.I18N_PREFIX.Info.Embed.Footer("MrPowerGamerBR#4185", "https://mrpowergamerbr.com")), "https://mrpowergamerbr.com/assets/img/avatar.png")
+                footer(
+                    context.i18nContext.get(
+                        LorittaCommand.I18N_PREFIX.Info.Embed.Footer(
+                            "MrPowerGamerBR#4185",
+                            "https://mrpowergamerbr.com"
+                        )
+                    ), "https://mrpowergamerbr.com/assets/img/avatar.png"
+                )
             }
 
             actionRow {

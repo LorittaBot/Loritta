@@ -135,7 +135,9 @@ class SonhosRankExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lor
 
                 val profilesInTheQuery = Profiles.innerJoin(GuildProfiles, { Profiles.id }, { GuildProfiles.userId })
                     .select {
-                        GuildProfiles.guildId eq guild.id.toLong() and (GuildProfiles.isInGuild eq true) and (GuildProfiles.userId notInSubQuery UsersService.validBannedUsersList(System.currentTimeMillis()))
+                        GuildProfiles.guildId eq guild.id.toLong() and (GuildProfiles.isInGuild eq true) and (GuildProfiles.userId notInSubQuery UsersService.validBannedUsersList(
+                            System.currentTimeMillis()
+                        ))
                     }
                     .orderBy(Profiles.money, SortOrder.DESC)
                     .limit(5, page * 5)

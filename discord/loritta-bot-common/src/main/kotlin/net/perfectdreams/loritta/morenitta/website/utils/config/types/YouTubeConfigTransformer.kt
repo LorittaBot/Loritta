@@ -43,12 +43,12 @@ class YouTubeConfigTransformer(val loritta: LorittaBot) : ConfigTransformer {
                 TrackedYouTubeAccounts.guildId eq guild.idLong
             }.forEach {
                 array.add(
-                        jsonObject(
-                                "channelId" to it[TrackedYouTubeAccounts.channelId],
-                                "youTubeChannelId" to it[TrackedYouTubeAccounts.youTubeChannelId],
-                                "message" to it[TrackedYouTubeAccounts.message],
-                                "webhookUrl" to it[TrackedYouTubeAccounts.webhookUrl]
-                        )
+                    jsonObject(
+                        "channelId" to it[TrackedYouTubeAccounts.channelId],
+                        "youTubeChannelId" to it[TrackedYouTubeAccounts.youTubeChannelId],
+                        "message" to it[TrackedYouTubeAccounts.message],
+                        "webhookUrl" to it[TrackedYouTubeAccounts.webhookUrl]
+                    )
                 )
             }
 

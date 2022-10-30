@@ -10,19 +10,19 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
+import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.common.utils.LorittaColors
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.roblox.declarations.RobloxCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
 import org.jsoup.Jsoup
 
 class RobloxGameExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSlashCommandExecutor(loritta) {
@@ -118,16 +118,40 @@ class RobloxGameExecutor(loritta: LorittaBot, val http: HttpClient) : CinnamonSl
                 title = "${Emotes.Roblox} $gameName"
                 url = "https://www.roblox.com/games/$gameId"
                 description = gameDescription.shortenWithEllipsis(1_000)
-                field("${Emotes.LoriId} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.PlaceId)}", placeId, true)
-                field("\uD83E\uDD29 ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Favorite)}", favoriteCount, true)
-                field("\uD83D\uDC4D ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Likes)}", upvotes.toString(), true)
-                field("\uD83D\uDC4E ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Dislikes)}", downvotes.toString(), true)
+                field(
+                    "${Emotes.LoriId} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.PlaceId)}",
+                    placeId,
+                    true
+                )
+                field(
+                    "\uD83E\uDD29 ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Favorite)}",
+                    favoriteCount,
+                    true
+                )
+                field(
+                    "\uD83D\uDC4D ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Likes)}",
+                    upvotes.toString(),
+                    true
+                )
+                field(
+                    "\uD83D\uDC4E ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Dislikes)}",
+                    downvotes.toString(),
+                    true
+                )
                 field("\uD83C\uDFAE ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Playing)}", playing, true)
                 field("\uD83D\uDC3E ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Visits)}", visits, true)
-                field("\uD83C\uDF1F ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.CreatedAt)}", created, true)
+                field(
+                    "\uD83C\uDF1F ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.CreatedAt)}",
+                    created,
+                    true
+                )
                 field("✨ ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.LastUpdated)}", updated, true)
                 field("⛔ ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.MaxPlayers)}", maxplayers, true)
-                field("${Emotes.LoriGameDie} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Genre)}", genre, true)
+                field(
+                    "${Emotes.LoriGameDie} ${context.i18nContext.get(RobloxCommand.I18N_PREFIX.Game.Genre)}",
+                    genre,
+                    true
+                )
 
                 image = thumbnail
 

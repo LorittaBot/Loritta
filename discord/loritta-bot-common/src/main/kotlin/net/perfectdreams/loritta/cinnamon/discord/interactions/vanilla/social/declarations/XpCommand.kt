@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.declarations
 
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.ViewXpExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.xprank.XpRankExecutor
-import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.common.locale.LanguageManager
 import net.perfectdreams.loritta.common.utils.TodoFixThisData
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 class XpCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {

@@ -13,40 +13,51 @@ import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 
 class ConfigureCommandsRoute(loritta: LorittaBot) : RequiresGuildAuthLocalizedRoute(loritta, "/configure/commands") {
-	override suspend fun onGuildAuthenticatedRequest(call: ApplicationCall, locale: BaseLocale, discordAuth: TemmieDiscordAuth, userIdentification: LorittaJsonWebSession.UserIdentification, guild: Guild, serverConfig: ServerConfig) {
-		loritta as LorittaBot
-		val variables = call.legacyVariables(loritta, locale)
-		variables["saveType"] = "vanilla_commands"
+    override suspend fun onGuildAuthenticatedRequest(
+        call: ApplicationCall,
+        locale: BaseLocale,
+        discordAuth: TemmieDiscordAuth,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ) {
+        loritta as LorittaBot
+        val variables = call.legacyVariables(loritta, locale)
+        variables["saveType"] = "vanilla_commands"
 
-		variables["enabledLegacyCommands"] = loritta.legacyCommandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
-		variables["enabledNewCommands"] = loritta.commandMap.commands.filter { !serverConfig.disabledCommands.contains(it.commandName) }
-				.map {
-					NewCommandWrapper(
-							it.commandName,
-							it.labels.toTypedArray()
-					)
-				}
+        variables["enabledLegacyCommands"] =
+            loritta.legacyCommandManager.commandMap.filter { !serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
+        variables["enabledNewCommands"] =
+            loritta.commandMap.commands.filter { !serverConfig.disabledCommands.contains(it.commandName) }
+                .map {
+                    NewCommandWrapper(
+                        it.commandName,
+                        it.labels.toTypedArray()
+                    )
+                }
 
-		variables["disabledLegacyCommands"] = loritta.legacyCommandManager.commandMap.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
-		variables["disabledNewCommands"] = loritta.commandMap.commands.filter { serverConfig.disabledCommands.contains(it.commandName) }
-				.map {
-					NewCommandWrapper(
-							it.commandName,
-							it.labels.toTypedArray()
-					)
-				}
+        variables["disabledLegacyCommands"] =
+            loritta.legacyCommandManager.commandMap.filter { serverConfig.disabledCommands.contains(it.javaClass.simpleName) }
+        variables["disabledNewCommands"] =
+            loritta.commandMap.commands.filter { serverConfig.disabledCommands.contains(it.commandName) }
+                .map {
+                    NewCommandWrapper(
+                        it.commandName,
+                        it.labels.toTypedArray()
+                    )
+                }
 
-		call.respondHtml(evaluate("configure_commands.html", variables))
-	}
+        call.respondHtml(evaluate("configure_commands.html", variables))
+    }
 
-	/**
-	 * Command Wrapper for the new commands that do use the DSL syntax
-	 *
-	 * We create a wrapper because the frontend still uses Pebble, and Pebble ain't that smart to figure out static methods (sadly), this
-	 * will be removed when this route frontend is migrated to Kotlin/JS
-	 */
-	class NewCommandWrapper(
-			val commandName: String,
-			val labels: Array<String>
-	)
+    /**
+     * Command Wrapper for the new commands that do use the DSL syntax
+     *
+     * We create a wrapper because the frontend still uses Pebble, and Pebble ain't that smart to figure out static methods (sadly), this
+     * will be removed when this route frontend is migrated to Kotlin/JS
+     */
+    class NewCommandWrapper(
+        val commandName: String,
+        val labels: Array<String>
+    )
 }

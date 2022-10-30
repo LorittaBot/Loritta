@@ -8,11 +8,15 @@ import dev.kord.rest.builder.role.RoleCreateBuilder
 import dev.kord.rest.request.KtorRequestException
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
+import net.perfectdreams.loritta.deviouscache.data.DeviousGuildData
+import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
+import net.perfectdreams.loritta.deviouscache.data.DeviousRoleData
+import net.perfectdreams.loritta.deviouscache.requests.GetGuildBoostersRequest
+import net.perfectdreams.loritta.deviouscache.requests.GetGuildMembersRequest
+import net.perfectdreams.loritta.deviouscache.requests.GetGuildMembersWithRolesRequest
+import net.perfectdreams.loritta.deviouscache.responses.GetGuildMembersResponse
+import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
 import net.perfectdreams.loritta.deviousfun.DeviousFun
-import net.perfectdreams.loritta.deviousfun.cache.DeviousGuildData
-import net.perfectdreams.loritta.deviousfun.cache.DeviousGuildEmojiData
-import net.perfectdreams.loritta.deviousfun.cache.DeviousRoleData
-import net.perfectdreams.loritta.morenitta.cache.decode
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import kotlin.time.Duration.Companion.days
 
@@ -73,132 +77,118 @@ class Guild(
     suspend fun isMember(user: User): Boolean = getMember(user) != null
     suspend fun getMember(user: User) = deviousFun.getMemberByUser(this, user)
 
-    suspend fun retrieveSelfMember() = deviousFun.retrieveMemberById(this@Guild, deviousFun.loritta.config.loritta.discord.applicationId)
+    suspend fun retrieveSelfMember() =
+        deviousFun.retrieveMemberById(this@Guild, deviousFun.loritta.config.loritta.discord.applicationId)
 
     fun getRoleById(id: String) = roles.firstOrNull { it.id == id }
     fun getRoleById(id: Long) = roles.firstOrNull { it.idLong == id }
     fun getRolesByName(name: String, ignoreCase: Boolean) = roles.filter { it.name.equals(name, ignoreCase) }
 
     suspend fun selfMemberHasPermission(vararg permissions: Permission): Boolean {
-        return deviousFun.loritta.cache.getLazyCachedPermissions(idSnowflake, deviousFun.loritta.config.loritta.discord.applicationId).hasPermission(*permissions)
+        return deviousFun.loritta.cache.getLazyCachedPermissions(
+            idSnowflake,
+            deviousFun.loritta.config.loritta.discord.applicationId
+        ).hasPermission(*permissions)
     }
 
     suspend fun selfMemberHasPermission(channel: Channel, vararg permissions: Permission): Boolean {
-        return deviousFun.loritta.cache.getLazyCachedPermissions(idSnowflake, channel.idSnowflake, deviousFun.loritta.config.loritta.discord.applicationId).hasPermission(*permissions)
+        return deviousFun.loritta.cache.getLazyCachedPermissions(
+            idSnowflake,
+            channel.idSnowflake,
+            deviousFun.loritta.config.loritta.discord.applicationId
+        ).hasPermission(*permissions)
     }
 
     suspend fun retrieveOwner() = deviousFun.retrieveMemberById(this, ownerIdSnowflake)
 
     suspend fun retrieveMembers(): List<Member> {
-        // TODO - DeviousFun, optimize this
-        return listOf()
-
         logger.info { "Retrieving members of guild ${guild.id}..." }
 
-        // TODO - DeviousFun: Mutex
-        val membersAsString = deviousFun.loritta.redisConnection("retrieving members of guild ${guild.id}") {
-            it.hgetAll(deviousFun.loritta.redisKeys.discordGuildMembers(idSnowflake).toByteArray(Charsets.UTF_8))
-        }.entries // This is required to have a stable key -> value map, if else, things can be shuffled when for eaching over them later on, which won't work!
-
-        logger.info { "Retrieving ${membersAsString.size} users of guild ${guild.id}..." }
-
-        val usersAsString = deviousFun.loritta.redisConnection("retrieving ${membersAsString.size} users of guild ${guild.id}") {
-            it.hmget(deviousFun.loritta.redisKeys.discordUsers().toByteArray(Charsets.UTF_8), *membersAsString.map { it.key }.toTypedArray())
-        }
-
-        val members = mutableListOf<Member>()
-
-        for ((index, data) in membersAsString.withIndex()) {
-            val memberAsString = data.value
-            val userAsString = usersAsString.getOrNull(index)
-            if (userAsString == null) {
-                logger.warn { "Member ${data.key.toString(Charsets.UTF_8)} data is present in guild ${this.guild.id}, but I don't have that user cached! Skipping..." }
-                continue
-            }
-            val memberData = deviousFun.loritta.binaryCacheTransformers.members.decode(memberAsString)
-            val userData = deviousFun.loritta.binaryCacheTransformers.users.decode(userAsString)
-
-            members.add(
-                Member(
-                    deviousFun,
-                    memberData,
-                    this,
-                    User(
+        when (val response = deviousFun.rpc.execute(GetGuildMembersRequest(idSnowflake))) {
+            is GetGuildMembersResponse -> {
+                return response.members.map { (id, data) ->
+                    Member(
                         deviousFun,
-                        Snowflake(data.key.toString(Charsets.UTF_8)),
-                        userData
+                        data.member,
+                        this,
+                        User(
+                            deviousFun,
+                            id,
+                            data.user
+                        )
                     )
-                )
-            )
-        }
+                }
+            }
 
-        return members
+            is NotFoundResponse -> return emptyList()
+            else -> deviousFun.rpc.unknownResponse(response)
+        }
     }
 
-    suspend fun getMembersWithRoles(vararg roles: Role): List<Member> {
-        // TODO - DeviousFun, optimize this
-        return listOf()
-
-        val roleIds = roles.map { it.idSnowflake }
-
+    suspend fun retrieveMembersWithRoles(vararg roles: Role): List<Member> {
         logger.info { "Retrieving members of guild ${guild.id} that have the role ${roles}..." }
 
-        // TODO - DeviousFun: Mutex
-        // Compared to retrieveMembers, this has a smol optimization, where it checks if the role exists before querying users
-        val membersAsString = deviousFun.loritta.redisConnection("retrieving members of guild ${guild.id} with roles ${roles.map { it.idSnowflake }}") {
-            it.hgetAll(deviousFun.loritta.redisKeys.discordGuildMembers(idSnowflake).toByteArray(Charsets.UTF_8))
-        }
-            .mapValues { deviousFun.loritta.binaryCacheTransformers.members.decode(it.value) }
-            .filter { roleIds.all { id -> id in it.value.roles } }
-            .entries // This is required to have a stable key -> value map, if else, things can be shuffled when for eaching over them later on, which won't work!
-
-        logger.info { "Retrieving ${membersAsString.size} users of guild ${guild.id} that have the role ${roles}..." }
-
-        val usersAsString = deviousFun.loritta.redisConnection("retrieving ${membersAsString.size} users of guild ${guild.id} with roles ${roles.map { it.idSnowflake }}") {
-            it.hmget(deviousFun.loritta.redisKeys.discordUsers().toByteArray(Charsets.UTF_8), *membersAsString.map { it.key }.toTypedArray())
-        }
-
-        val members = mutableListOf<Member>()
-
-        for ((index, data) in membersAsString.withIndex()) {
-            val userAsString = usersAsString.getOrNull(index)
-            if (userAsString == null) {
-                logger.warn { "Member ${data.key.toString(Charsets.UTF_8)} data is present in guild ${this.guild.id}, but I don't have that user cached! Skipping..." }
-                continue
-            }
-            val memberData = data.value
-            val userData = deviousFun.loritta.binaryCacheTransformers.users.decode(userAsString)
-
-            members.add(
-                Member(
-                    deviousFun,
-                    memberData,
-                    this,
-                    User(
+        when (val response =
+            deviousFun.rpc.execute(GetGuildMembersWithRolesRequest(idSnowflake, roles.map { it.idSnowflake }))) {
+            is GetGuildMembersResponse -> {
+                return response.members.map { (id, data) ->
+                    Member(
                         deviousFun,
-                        Snowflake(data.key.toString(Charsets.UTF_8)),
-                        userData
+                        data.member,
+                        this,
+                        User(
+                            deviousFun,
+                            id,
+                            data.user
+                        )
                     )
-                )
-            )
-        }
+                }
+            }
 
-        return members
+            is NotFoundResponse -> return emptyList()
+            else -> deviousFun.rpc.unknownResponse(response)
+        }
     }
 
-    suspend fun retrieveBoosters() = retrieveMembers().filter { it.timeBoosted != null }
+    suspend fun retrieveBoosters(): List<Member> {
+        logger.info { "Retrieving boosters of guild ${guild.id}..." }
+
+        when (val response = deviousFun.rpc.execute(GetGuildBoostersRequest(idSnowflake))) {
+            is GetGuildMembersResponse -> {
+                return response.members.map { (id, data) ->
+                    Member(
+                        deviousFun,
+                        data.member,
+                        this,
+                        User(
+                            deviousFun,
+                            id,
+                            data.user
+                        )
+                    )
+                }
+            }
+
+            is NotFoundResponse -> return emptyList()
+            else -> deviousFun.rpc.unknownResponse(response)
+        }
+    }
 
     fun getTextChannelById(id: String) = textChannels.firstOrNull { it.id == id }
     fun getTextChannelById(id: Long) = textChannels.firstOrNull { it.idLong == id }
-    fun getTextChannelsByName(name: String, ignoreCase: Boolean) = textChannels.filter { it.name.equals(name, ignoreCase) }
+    fun getTextChannelsByName(name: String, ignoreCase: Boolean) =
+        textChannels.filter { it.name.equals(name, ignoreCase) }
 
     fun getVoiceChannelById(id: String) = voiceChannels.firstOrNull { it.id == id }
-    fun getVoiceChannelsByName(name: String, ignoreCase: Boolean) = voiceChannels.filter { it.name.equals(name, ignoreCase) }
+    fun getVoiceChannelsByName(name: String, ignoreCase: Boolean) =
+        voiceChannels.filter { it.name.equals(name, ignoreCase) }
 
     // TODO - DeviousFun
     fun getMemberByTag(name: String, discriminator: String): Member? = null
+
     // TODO - DeviousFun
     fun getMembersByEffectiveName(name: String, ignoreCase: Boolean): List<Member> = emptyList()
+
     // TODO - DeviousFun
     fun getMembersByName(name: String, ignoreCase: Boolean): List<Member> = emptyList()
     suspend fun getMemberById(id: String) = deviousFun.getMemberById(this, Snowflake(id))

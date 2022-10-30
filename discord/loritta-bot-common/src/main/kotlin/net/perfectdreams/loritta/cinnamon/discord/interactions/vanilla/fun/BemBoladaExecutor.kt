@@ -1,16 +1,17 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.`fun`
 
 import net.perfectdreams.discordinteraktions.common.builder.message.embed
+import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.author
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 
 class BemBoladaExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     // TODO: Localization
-    private val bemBoladas = listOf("Eu morava em uma ilha e me mudei para outra.\n\nNão é um trocadilho, é uma troca de ilha.",
+    private val bemBoladas = listOf(
+        "Eu morava em uma ilha e me mudei para outra.\n\nNão é um trocadilho, é uma troca de ilha.",
         "Quem é o X-Men que está sempre no trabalho?\n\nNo turno.",
         "Por que dois oculistas estavam brigando?\n\nPorque eles estavam defendendo seu ponto de vista.",
         "Como se faz para piorar?\n\nVocê leva o 3,14 para a igreja.",
@@ -189,7 +190,8 @@ class BemBoladaExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lori
         "O que é um fumo de maconha em cima do jornal?\n\nUm baseado em fatos reais.",
         "Qual a diferença do lago com a padaria?\n\nNo lago há sapinho, na padaria assa pão.",
         "Por que o médico que trabalha de noite usa verde?\n\nÉ porque ele está de plantão.",
-        "O que o tomate foi fazer no banco?\n\nFoi tirar o extrato.")
+        "O que o tomate foi fazer no banco?\n\nFoi tirar o extrato."
+    )
 
     override suspend fun execute(context: ApplicationCommandContext, args: SlashCommandArguments) {
         context.sendMessage {

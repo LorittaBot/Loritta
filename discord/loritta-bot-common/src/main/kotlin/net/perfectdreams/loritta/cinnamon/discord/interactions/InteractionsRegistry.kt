@@ -33,25 +33,28 @@ class InteractionsRegistry(
             xactLockStatement.execute()
 
             if (loritta.config.loritta.interactions.registerGlobally) {
-                val pairData = connection.prepareStatement("SELECT hash, data FROM ${DiscordLorittaApplicationCommandHashes.tableName} WHERE id = 0;")
-                    .executeQuery()
-                    .let {
-                        if (it.next())
-                            Pair(it.getInt("hash"), it.getString("data"))
-                        else
-                            null
-                    }
+                val pairData =
+                    connection.prepareStatement("SELECT hash, data FROM ${DiscordLorittaApplicationCommandHashes.tableName} WHERE id = 0;")
+                        .executeQuery()
+                        .let {
+                            if (it.next())
+                                Pair(it.getInt("hash"), it.getString("data"))
+                            else
+                                null
+                        }
 
                 // Kord uses "JsonPrimitive" on the min_value/max_value, so Pudding's hashEntity fails to serialize it, because JsonPrimitive can only be serialized by the Json encoder.
                 // loritta.cache.hashEntity(manager.interaKTions.createGlobalApplicationCommandCreateRequests())
-                val currentHash = Json.encodeToString(manager.interaKTions.createGlobalApplicationCommandCreateRequests()).hashCode()
+                val currentHash =
+                    Json.encodeToString(manager.interaKTions.createGlobalApplicationCommandCreateRequests()).hashCode()
 
                 if (pairData == null || currentHash != pairData.first) {
                     // Needs to be updated!
                     logger.info { "Updating Loritta global commands... Hash: $currentHash" }
                     val updatedCommands = manager.interaKTions.updateAllGlobalCommands()
 
-                    val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES (0, $currentHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $currentHash, data = ?;")
+                    val updateStatement =
+                        connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES (0, $currentHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $currentHash, data = ?;")
 
                     val pgObject = PGobject()
                     pgObject.type = "jsonb"
@@ -69,25 +72,29 @@ class InteractionsRegistry(
                 }
             } else {
                 for (guildId in loritta.config.loritta.interactions.guildsToBeRegistered) {
-                    val pairData = connection.prepareStatement("SELECT hash, data FROM ${DiscordLorittaApplicationCommandHashes.tableName} WHERE id = $guildId;")
-                        .executeQuery()
-                        .let {
-                            if (it.next())
-                                Pair(it.getInt("hash"), it.getString("data"))
-                            else
-                                null
-                        }
+                    val pairData =
+                        connection.prepareStatement("SELECT hash, data FROM ${DiscordLorittaApplicationCommandHashes.tableName} WHERE id = $guildId;")
+                            .executeQuery()
+                            .let {
+                                if (it.next())
+                                    Pair(it.getInt("hash"), it.getString("data"))
+                                else
+                                    null
+                            }
 
                     // Kord uses "JsonPrimitive" on the min_value/max_value, so Pudding's hashEntity fails to serialize it, because JsonPrimitive can only be serialized by the Json encoder.
                     // loritta.cache.hashEntity(manager.interaKTions.createGuildApplicationCommandCreateRequests())
-                    val currentHash = Json.encodeToString(manager.interaKTions.createGuildApplicationCommandCreateRequests()).hashCode()
+                    val currentHash =
+                        Json.encodeToString(manager.interaKTions.createGuildApplicationCommandCreateRequests())
+                            .hashCode()
 
                     if (pairData == null || currentHash != pairData.first) {
                         // Needs to be updated!
                         logger.info { "Updating Loritta guild commands on $guildId... Hash: $currentHash" }
                         val updatedCommands = manager.interaKTions.updateAllCommandsInGuild(guildId)
 
-                        val updateStatement = connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES ($guildId, $currentHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $currentHash, data = ?;")
+                        val updateStatement =
+                            connection.prepareStatement("INSERT INTO ${DiscordLorittaApplicationCommandHashes.tableName} (id, hash, data) VALUES ($guildId, $currentHash, ?) ON CONFLICT (id) DO UPDATE SET hash = $currentHash, data = ?;")
 
                         val pgObject = PGobject()
                         pgObject.type = "jsonb"
@@ -125,9 +132,10 @@ class InteractionsRegistry(
                 it.subcommands.forEach {
                     sum += it.name.length
                     sum += it.description.length
-                    sum += it.executor?.options?.registeredOptions?.filterIsInstance<NameableCommandOption<*>>()?.sumOf {
-                        it.name.length + it.description.length
-                    } ?: 0
+                    sum += it.executor?.options?.registeredOptions?.filterIsInstance<NameableCommandOption<*>>()
+                        ?.sumOf {
+                            it.name.length + it.description.length
+                        } ?: 0
                 }
 
                 it.subcommandGroups.forEach {
@@ -137,15 +145,19 @@ class InteractionsRegistry(
                     it.subcommands.forEach {
                         sum += it.name.length
                         sum += it.description.length
-                        sum += it.executor?.options?.registeredOptions?.filterIsInstance<NameableCommandOption<*>>()?.sumOf {
-                            it.name.length + it.description.length
-                        } ?: 0
+                        sum += it.executor?.options?.registeredOptions?.filterIsInstance<NameableCommandOption<*>>()
+                            ?.sumOf {
+                                it.name.length + it.description.length
+                            } ?: 0
                     }
                 }
 
                 logger.info { "${it.name}: $sum/4000" }
             }
 
-        loritta.commandMentions = CommandMentions(registeredCommands ?: error("At this point, the registeredCommands should be already initialized... So if you are seeing this, then it means that something went terribly wrong!"))
+        loritta.commandMentions = CommandMentions(
+            registeredCommands
+                ?: error("At this point, the registeredCommands should be already initialized... So if you are seeing this, then it means that something went terribly wrong!")
+        )
     }
 }

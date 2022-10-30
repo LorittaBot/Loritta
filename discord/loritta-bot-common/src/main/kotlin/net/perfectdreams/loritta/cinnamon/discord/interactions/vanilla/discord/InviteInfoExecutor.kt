@@ -1,6 +1,5 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord
 
-import dev.kord.common.Color
 import dev.kord.common.entity.optional.value
 import dev.kord.rest.request.KtorRequestException
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
@@ -8,19 +7,19 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.InviteCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.InviteCommand
+import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.ServerCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.DiscordInviteUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.RawToFormated.toLocalized
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenAndStripCodeBackticks
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class InviteInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
     inner class Options : LocalizedApplicationCommandOptions(loritta) {
@@ -76,7 +75,8 @@ class InviteInfoExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(lor
         }
 
         val extension = if (invite.guild.value?.icon?.startsWith("a_") == true) "gif" else "png"
-        val iconUrl = "https://cdn.discordapp.com/icons/${invite.guild.value!!.id.value}/${invite.guild.value!!.icon}.$extension?size=2048"
+        val iconUrl =
+            "https://cdn.discordapp.com/icons/${invite.guild.value!!.id.value}/${invite.guild.value!!.icon}.$extension?size=2048"
 
         context.sendMessage {
             embed {

@@ -16,70 +16,72 @@ import net.perfectdreams.loritta.deviousfun.entities.DiscordEmote
 import net.perfectdreams.loritta.deviousfun.entities.Emote
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.emoji.description")
+class EmojiCommand(loritta: LorittaBot) :
+    AbstractCommand(loritta, "emoji", category = net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.emoji.description")
 
-	// TODO: Fix Usage
+    // TODO: Fix Usage
 
-	override fun getExamples(): List<String> {
-		return listOf("😏")
-	}
+    override fun getExamples(): List<String> {
+        return listOf("😏")
+    }
 
-	override fun needsToUploadFiles(): Boolean {
-		return true
-	}
+    override fun needsToUploadFiles(): Boolean {
+        return true
+    }
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.args.size == 1) {
-			val arg0 = context.rawArgs[0]
-			val firstEmote = context.message.emotes.firstOrNull()
-			if (firstEmote != null) {
-				// Emoji do Discord (via menção)
-				downloadAndSendDiscordEmote(context, firstEmote)
-				return
-			}
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        if (context.args.size == 1) {
+            val arg0 = context.rawArgs[0]
+            val firstEmote = context.message.emotes.firstOrNull()
+            if (firstEmote != null) {
+                // Emoji do Discord (via menção)
+                downloadAndSendDiscordEmote(context, firstEmote)
+                return
+            }
 
-			val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(arg0).find()
+            val isUnicodeEmoji = Constants.EMOJI_PATTERN.matcher(arg0).find()
 
-			if (isUnicodeEmoji) {
-				val value = ImageUtils.getTwitterEmojiUrlId(arg0)
-				try {
-					if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
-						context.reply(
-                                LorittaReply(
-                                        context.locale["commands.command.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
-                                        Constants.ERROR
-                                )
-						)
-						return
-					}
-					val emojiImage = LorittaUtils.downloadImage(loritta, "https://twemoji.maxcdn.com/2/72x72/$value.png")
-					context.sendFile(emojiImage!!, "emoji.png", MessageBuilder().append(" ").build())
-				} catch (e: Exception) {
-					e.printStackTrace()
-				}
-			} else {
-				context.explain()
-			}
-		} else {
-			context.explain()
-		}
-	}
+            if (isUnicodeEmoji) {
+                val value = ImageUtils.getTwitterEmojiUrlId(arg0)
+                try {
+                    if (HttpRequest.get("https://twemoji.maxcdn.com/2/72x72/$value.png").code() != 200) {
+                        context.reply(
+                            LorittaReply(
+                                context.locale["commands.command.emoji.errorWhileDownloadingEmoji", Emotes.LORI_SHRUG],
+                                Constants.ERROR
+                            )
+                        )
+                        return
+                    }
+                    val emojiImage =
+                        LorittaUtils.downloadImage(loritta, "https://twemoji.maxcdn.com/2/72x72/$value.png")
+                    context.sendFile(emojiImage!!, "emoji.png", MessageBuilder().append(" ").build())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            } else {
+                context.explain()
+            }
+        } else {
+            context.explain()
+        }
+    }
 
-	suspend fun downloadAndSendDiscordEmote(context: CommandContext, emote: DiscordEmote) {
-		val emojiUrl = emote.imageUrl
+    suspend fun downloadAndSendDiscordEmote(context: CommandContext, emote: DiscordEmote) {
+        val emojiUrl = emote.imageUrl
 
-		try {
-			val emojiImage = LorittaUtils.downloadFile(loritta, "$emojiUrl?size=2048", 5000)
-			var fileName = emote.name
-			fileName += if (emote.isAnimated) {
-				".gif"
-			} else {
-				".png"
-			}
-			context.sendFile(emojiImage!!, fileName, MessageBuilder().append(" ").build())
-		} catch (e: Exception) {
-			e.printStackTrace()
-		}
-	}
+        try {
+            val emojiImage = LorittaUtils.downloadFile(loritta, "$emojiUrl?size=2048", 5000)
+            var fileName = emote.name
+            fileName += if (emote.isAnimated) {
+                ".gif"
+            } else {
+                ".png"
+            }
+            context.sendFile(emojiImage!!, fileName, MessageBuilder().append(" ").build())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 }

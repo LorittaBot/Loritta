@@ -69,7 +69,7 @@ class ImageReferenceCommandOption(
 ) : NameableCommandOption<ImageReferenceIntermediaryData> {
     override val description = "User, URL or Emoji"
     override val nameLocalizations: Map<Locale, String> = emptyMap()
-    override val descriptionLocalizations: Map<Locale, String>  = emptyMap()
+    override val descriptionLocalizations: Map<Locale, String> = emptyMap()
 
     override fun register(builder: BaseInputChatBuilder) {
         builder.string(name, description) {

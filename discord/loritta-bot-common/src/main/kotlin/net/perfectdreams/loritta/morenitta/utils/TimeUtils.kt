@@ -14,19 +14,21 @@ object TimeUtils {
     private val SHORT_MINUTE_PATTERN = "([0-9]+) ?(m)".toPattern()
     private val MINUTE_PATTERN = "([0-9]+) ?(min)".toPattern()
     private val SECONDS_PATTERN = "([0-9]+) ?(s)".toPattern()
+
     // TODO: Would be better to not hardcode it
     val TIME_ZONE = Constants.LORITTA_TIMEZONE
 
     fun convertToMillisRelativeToNow(input: String) = convertToLocalDateTimeRelativeToNow(input)
-            .toInstant()
-            .toEpochMilli()
+        .toInstant()
+        .toEpochMilli()
 
-    fun convertToLocalDateTimeRelativeToNow(input: String) = convertToLocalDateTimeRelativeToTime(input, ZonedDateTime.now(TIME_ZONE))
+    fun convertToLocalDateTimeRelativeToNow(input: String) =
+        convertToLocalDateTimeRelativeToTime(input, ZonedDateTime.now(TIME_ZONE))
 
     fun convertToLocalDateTimeRelativeToTime(input: String, relativeTo: ZonedDateTime): ZonedDateTime {
         val content = input.toLowerCase()
         var localDateTime = relativeTo
-                .withNano(0)
+            .withNano(0)
         var foundViaTime = false
 
         if (content.contains(":")) { // horário
@@ -59,8 +61,8 @@ object TimeUtils {
                     localDateTime = localDateTime.withHour(hour)
                 }
                 localDateTime = localDateTime
-                        .withMinute(minute)
-                        .withSecond(seconds)
+                    .withMinute(minute)
+                    .withSecond(seconds)
 
                 foundViaTime = true
             }
@@ -75,21 +77,21 @@ object TimeUtils {
                 val year = matcher.group(3).toIntOrNull() ?: 1999
 
                 localDateTime = localDateTime
-                        .withDayOfMonth(day)
-                        .withMonth(month)
-                        .withYear(year)
+                    .withDayOfMonth(day)
+                    .withMonth(month)
+                    .withYear(year)
             }
         } else if (foundViaTime && localDateTime.isBefore(LocalDateTime.now().atZone(TIME_ZONE))) {
             // If it was found via time but there isn't any day set, we are going to check if it is in the past and, if true, we are going to add one day
             localDateTime = localDateTime
-                    .plusDays(1)
+                .plusDays(1)
         }
 
         val yearsMatcher = YEAR_PATTERN.matcher(content)
         if (yearsMatcher.find()) {
             val addYears = yearsMatcher.group(1).toLongOrNull() ?: 0
             localDateTime = localDateTime
-                    .plusYears(addYears)
+                .plusYears(addYears)
         }
         val monthMatcher = MONTH_PATTERN.matcher(content)
         var foundMonths = false
@@ -97,25 +99,25 @@ object TimeUtils {
             foundMonths = true
             val addMonths = monthMatcher.group(1).toLongOrNull() ?: 0
             localDateTime = localDateTime
-                    .plusMonths(addMonths)
+                .plusMonths(addMonths)
         }
         val weekMatcher = WEEK_PATTERN.matcher(content)
         if (weekMatcher.find()) {
             val addWeeks = weekMatcher.group(1).toLongOrNull() ?: 0
             localDateTime = localDateTime
-                    .plusWeeks(addWeeks)
+                .plusWeeks(addWeeks)
         }
         val dayMatcher = DAY_PATTERN.matcher(content)
         if (dayMatcher.find()) {
             val addDays = dayMatcher.group(1).toLongOrNull() ?: 0
             localDateTime = localDateTime
-                    .plusDays(addDays)
+                .plusDays(addDays)
         }
         val hourMatcher = HOUR_PATTERN.matcher(content)
         if (hourMatcher.find()) {
             val addHours = hourMatcher.group(1).toLongOrNull() ?: 0
             localDateTime = localDateTime
-                    .plusHours(addHours)
+                .plusHours(addHours)
         }
 
         // This check is needed due to the month pattern also checking for "m"
@@ -128,7 +130,7 @@ object TimeUtils {
                 foundMinutes = true
                 val addMinutes = minuteMatcher.group(1).toLongOrNull() ?: 0
                 localDateTime = localDateTime
-                        .plusMinutes(addMinutes)
+                    .plusMinutes(addMinutes)
             }
         }
 
@@ -137,7 +139,7 @@ object TimeUtils {
             if (minuteMatcher.find()) {
                 val addMinutes = minuteMatcher.group(1).toLongOrNull() ?: 0
                 localDateTime = localDateTime
-                        .plusMinutes(addMinutes)
+                    .plusMinutes(addMinutes)
             }
         }
 
@@ -145,7 +147,7 @@ object TimeUtils {
         if (secondsMatcher.find()) {
             val addSeconds = secondsMatcher.group(1).toLongOrNull() ?: 0
             localDateTime = localDateTime
-                    .plusSeconds(addSeconds)
+                .plusSeconds(addSeconds)
         }
 
         return localDateTime

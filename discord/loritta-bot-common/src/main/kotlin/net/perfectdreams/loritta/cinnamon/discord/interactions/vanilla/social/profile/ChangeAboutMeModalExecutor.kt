@@ -1,14 +1,9 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.profile
 
 import dev.kord.common.entity.TextInputStyle
-import io.github.netvl.ecoji.Ecoji
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
 import net.perfectdreams.discordinteraktions.common.builder.message.modify.InteractionOrFollowupMessageModifyBuilder
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalComponents
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.modals.CinnamonModalExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.modals.CinnamonModalExecutorDeclaration
@@ -17,6 +12,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.social.de
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.utils.getOrCreateUserProfile
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class ChangeAboutMeModalExecutor(loritta: LorittaBot) : CinnamonModalExecutor(loritta) {
     companion object : CinnamonModalExecutorDeclaration(ComponentExecutorIds.CHANGE_ABOUT_ME_MODAL_SUBMIT_EXECUTOR) {

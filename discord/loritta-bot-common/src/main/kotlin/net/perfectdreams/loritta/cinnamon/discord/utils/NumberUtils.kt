@@ -15,7 +15,8 @@ object NumberUtils {
      * @param input       the shortened number
      * @return            the number as long or null if it is a non valid (example: text) number
      */
-    fun convertShortenedNumberToLong(i18nContext: I18nContext, input: String) = convertShortenedNumberToLong(Locale.forLanguageTag(i18nContext.language.info.formattingLanguageId), input)
+    fun convertShortenedNumberToLong(i18nContext: I18nContext, input: String) =
+        convertShortenedNumberToLong(Locale.forLanguageTag(i18nContext.language.info.formattingLanguageId), input)
 
     /**
      * Converts a shortened [String] number (1k, 1.5k, 1M, 2.3kk, etc) to a [Long] number
@@ -26,7 +27,8 @@ object NumberUtils {
      * @param input       the shortened number
      * @return            the number as long or null if it is a non valid (example: text) number
      */
-    fun convertShortenedNumberToLong(locale: Locale, input: String) = convertShortenedNumberToLong(NumberFormat.getNumberInstance(locale), input)
+    fun convertShortenedNumberToLong(locale: Locale, input: String) =
+        convertShortenedNumberToLong(NumberFormat.getNumberInstance(locale), input)
 
     /**
      * Converts a shortened [String] number (1k, 1.5k, 1M, 2.3kk, etc) to a [Long] number
@@ -46,15 +48,18 @@ object NumberUtils {
                     numberFormat,
                     inputAsLowerCase.removeSuffix("m")
                 )?.times(1_000_000)?.toLong()
+
                 inputAsLowerCase.endsWith("kk") -> parseStringToDoubleOrNull(
                     numberFormat,
                     inputAsLowerCase.removeSuffix("kk")
                 )?.times(1_000_000)?.toLong()
+
                 inputAsLowerCase.endsWith("k") -> parseStringToDoubleOrNull(
                     numberFormat,
                     inputAsLowerCase.removeSuffix("k")
                 )?.times(1_000)
                     ?.toLong()
+
                 else -> parseStringToLongOrNull(numberFormat, input)
             }
         } catch (e: ParseException) {

@@ -12,7 +12,11 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 
-class RoleInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("roleinfo", "taginfo"), net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
+class RoleInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("roleinfo", "taginfo"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }
@@ -53,29 +57,58 @@ class RoleInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta,
                 } else {
                     locale["loritta.fancyBoolean.false"]
                 }
-                val permissions = role.permissions.values.toLocalized()?.joinToString(", ", transform = { "`${context.i18nContext.get(it)}`" })
+                val permissions = role.permissions.values.toLocalized()
+                    ?.joinToString(", ", transform = { "`${context.i18nContext.get(it)}`" })
 
                 builder.setTitle("\uD83D\uDCBC ${role.name}")
                 if (role.color != null)
                     builder.setColor(role.color)
-                builder.addField("\uD83D\uDC40 ${locale["$LOCALE_PREFIX.roleinfo.roleMention"]}", "`${role.asMention}`", true)
-                builder.addField("\uD83D\uDCC5 ${locale["$LOCALE_PREFIX.roleinfo.roleCreated"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(role.timeCreated, locale), true)
+                builder.addField(
+                    "\uD83D\uDC40 ${locale["$LOCALE_PREFIX.roleinfo.roleMention"]}",
+                    "`${role.asMention}`",
+                    true
+                )
+                builder.addField(
+                    "\uD83D\uDCC5 ${locale["$LOCALE_PREFIX.roleinfo.roleCreated"]}",
+                    DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(role.timeCreated, locale),
+                    true
+                )
                 builder.addField("\uD83D\uDCBB ${locale["$LOCALE_PREFIX.roleinfo.roleID"]}", "`${role.id}`", true)
                 builder.addField(locale["$LOCALE_PREFIX.roleinfo.roleHoisted"], isHoisted, true)
-                builder.addField("<:bot:516314838541008906> ${locale["$LOCALE_PREFIX.roleinfo.roleIntegration"]}", isIntegrationBot, true)
-                builder.addField("\uD83D\uDC40 ${locale["$LOCALE_PREFIX.roleinfo.roleMentionable"]}", isMentionable, true)
-                builder.addField("\uD83D\uDC65 ${locale["$LOCALE_PREFIX.roleinfo.roleMembers"]}", context.guild.getMembersWithRoles(role).size.toString(),true)
+                builder.addField(
+                    "<:bot:516314838541008906> ${locale["$LOCALE_PREFIX.roleinfo.roleIntegration"]}",
+                    isIntegrationBot,
+                    true
+                )
+                builder.addField(
+                    "\uD83D\uDC40 ${locale["$LOCALE_PREFIX.roleinfo.roleMentionable"]}",
+                    isMentionable,
+                    true
+                )
+                builder.addField(
+                    "\uD83D\uDC65 ${locale["$LOCALE_PREFIX.roleinfo.roleMembers"]}",
+                    context.guild.retrieveMembersWithRoles(role).size.toString(),
+                    true
+                )
                 if (role.color != null)
-                    builder.addField("🎨 ${locale["$LOCALE_PREFIX.roleinfo.roleColor"]}", "`#${Integer.toHexString(role.color!!.rgb).substring(2).toUpperCase()}`", true)
-                builder.addField("\uD83D\uDEE1 ${locale["$LOCALE_PREFIX.roleinfo.rolePermissions"]}", permissions ?: "", false)
+                    builder.addField(
+                        "🎨 ${locale["$LOCALE_PREFIX.roleinfo.roleColor"]}",
+                        "`#${Integer.toHexString(role.color!!.rgb).substring(2).toUpperCase()}`",
+                        true
+                    )
+                builder.addField(
+                    "\uD83D\uDEE1 ${locale["$LOCALE_PREFIX.roleinfo.rolePermissions"]}",
+                    permissions ?: "",
+                    false
+                )
 
                 context.sendMessage(context.getUserMention(true), builder.build())
             } else {
                 context.reply(
-                        LorittaReply(
-                                locale["commands.command.roleinfo.roleNotFound"],
-                                Constants.ERROR
-                        )
+                    LorittaReply(
+                        locale["commands.command.roleinfo.roleNotFound"],
+                        Constants.ERROR
+                    )
                 )
             }
         }

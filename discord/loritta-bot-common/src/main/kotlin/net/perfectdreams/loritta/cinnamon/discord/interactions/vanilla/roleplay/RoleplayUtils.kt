@@ -133,7 +133,8 @@ object RoleplayUtils {
                 }
 
                 if (receiver == giver) {
-                    embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseSelf(giverMention) }
+                    embedResponse =
+                        { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Kiss.ResponseSelf(giverMention) }
                 } else {
                     val giverMarriage = loritta.pudding.marriages.getMarriageByUser(UserId(giver))
                     val receiverMarriage = loritta.pudding.marriages.getMarriageByUser(UserId(receiver))
@@ -153,7 +154,8 @@ object RoleplayUtils {
             // ===[ SLAP ]===
             SLAP_ATTRIBUTES -> {
                 if (giver == receiver) {
-                    embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Slap.ResponseSelf(giverMention) }
+                    embedResponse =
+                        { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Slap.ResponseSelf(giverMention) }
                 } else if (receiver == loritta.config.loritta.discord.applicationId) {
                     achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
 
@@ -170,7 +172,8 @@ object RoleplayUtils {
             // ===[ ATTACK ]===
             ATTACK_ATTRIBUTES -> {
                 if (giver == receiver) {
-                    embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Attack.ResponseSelf(giverMention) }
+                    embedResponse =
+                        { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Attack.ResponseSelf(giverMention) }
                 } else if (receiver == loritta.config.loritta.discord.applicationId) {
                     achievements.add(AchievementTarget(giver, AchievementType.TRIED_HURTING_LORITTA))
 
@@ -223,7 +226,8 @@ object RoleplayUtils {
             // ===[ DANCE ]===
             DANCE_ATTRIBUTES -> {
                 if (giver == receiver) {
-                    embedResponse = { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Dance.ResponseSelf(giverMention) }
+                    embedResponse =
+                        { giverMention, _ -> I18nKeysData.Commands.Command.Roleplay.Dance.ResponseSelf(giverMention) }
                 }
             }
         }

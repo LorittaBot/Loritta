@@ -41,236 +41,257 @@ import kotlin.collections.component2
 import kotlin.collections.set
 
 object WebsiteUtils {
-	val variablesKey = AttributeKey<MutableMap<String, Any?>>("variables")
-	val localeKey = AttributeKey<BaseLocale>("locale")
-	val handledStatusBefore = AttributeKey<Boolean>("handledStatusBefore")
+    val variablesKey = AttributeKey<MutableMap<String, Any?>>("variables")
+    val localeKey = AttributeKey<BaseLocale>("locale")
+    val handledStatusBefore = AttributeKey<Boolean>("handledStatusBefore")
 
-	/**
-	 * Creates an JSON object wrapping the error object
-	 *
-	 * @param code    the error code
-	 * @param message the error reason
-	 * @return        the json object containing the error
-	 */
-	fun createErrorPayload(loritta: LorittaBot, code: LoriWebCode, message: String? = null, data: ((JsonObject) -> Unit)? = null): JsonObject {
-		val result = jsonObject("error" to createErrorObject(loritta, code, message))
-		data?.invoke(result)
-		return result
-	}
+    /**
+     * Creates an JSON object wrapping the error object
+     *
+     * @param code    the error code
+     * @param message the error reason
+     * @return        the json object containing the error
+     */
+    fun createErrorPayload(
+        loritta: LorittaBot,
+        code: LoriWebCode,
+        message: String? = null,
+        data: ((JsonObject) -> Unit)? = null
+    ): JsonObject {
+        val result = jsonObject("error" to createErrorObject(loritta, code, message))
+        data?.invoke(result)
+        return result
+    }
 
-	/**
-	 * Creates an JSON object containing the code error
-	 *
-	 * @param code    the error code
-	 * @param message the error reason
-	 * @return        the json object with the error
-	 */
-	fun createErrorObject(loritta: LorittaBot, code: LoriWebCode, message: String? = null): JsonObject {
-		val jsonObject = jsonObject(
-			"code" to code.errorId,
-			"reason" to code.fancyName,
-			"help" to "${loritta.config.loritta.website.url}docs/api"
-		)
+    /**
+     * Creates an JSON object containing the code error
+     *
+     * @param code    the error code
+     * @param message the error reason
+     * @return        the json object with the error
+     */
+    fun createErrorObject(loritta: LorittaBot, code: LoriWebCode, message: String? = null): JsonObject {
+        val jsonObject = jsonObject(
+            "code" to code.errorId,
+            "reason" to code.fancyName,
+            "help" to "${loritta.config.loritta.website.url}docs/api"
+        )
 
-		if (message != null) {
-			jsonObject["message"] = message
-		}
+        if (message != null) {
+            jsonObject["message"] = message
+        }
 
-		return jsonObject
-	}
+        return jsonObject
+    }
 
-	fun transformToJson(user: User): JsonObject {
-		return jsonObject(
-			"id" to user.id,
-			"name" to user.name,
-			"discriminator" to user.discriminator,
-			"effectiveAvatarUrl" to user.effectiveAvatarUrl
-		)
-	}
+    fun transformToJson(user: User): JsonObject {
+        return jsonObject(
+            "id" to user.id,
+            "name" to user.name,
+            "discriminator" to user.discriminator,
+            "effectiveAvatarUrl" to user.effectiveAvatarUrl
+        )
+    }
 
-	fun transformToJson(user: CachedUserInfo): JsonObject {
-		return jsonObject(
-			"id" to user.id,
-			"name" to user.name,
-			"discriminator" to user.discriminator,
-			"effectiveAvatarUrl" to user.effectiveAvatarUrl
-		)
-	}
+    fun transformToJson(user: CachedUserInfo): JsonObject {
+        return jsonObject(
+            "id" to user.id,
+            "name" to user.name,
+            "discriminator" to user.discriminator,
+            "effectiveAvatarUrl" to user.effectiveAvatarUrl
+        )
+    }
 
-	fun getProfileAsJson(profile: Profile): JsonObject {
-		return jsonObject(
-			"id" to profile.id.value,
-			"money" to profile.money
-		)
-	}
+    fun getProfileAsJson(profile: Profile): JsonObject {
+        return jsonObject(
+            "id" to profile.id.value,
+            "money" to profile.money
+        )
+    }
 
-	fun getDiscordCrawlerAuthenticationPage(loritta: LorittaBot): String {
-		return createHTML().html {
-			head {
-				fun setMetaProperty(property: String, content: String) {
-					meta(content = content) { attributes["property"] = property }
-				}
-				title("Login • Loritta")
-				setMetaProperty("og:site_name", "Loritta")
-				setMetaProperty("og:title", "Painel da Loritta")
-				setMetaProperty("og:description", "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!")
-				setMetaProperty("og:image", loritta.config.loritta.website.url + "assets/img/loritta_dashboard.png")
-				setMetaProperty("og:image:width", "320")
-				setMetaProperty("og:ttl", "660")
-				setMetaProperty("og:image:width", "320")
-				setMetaProperty("theme-color", "#7289da")
-				meta("twitter:card", "summary_large_image")
-			}
-			body {
-				p {
-					+ "Parabéns, você encontrou um easter egg!"
-				}
-			}
-		}
-	}
+    fun getDiscordCrawlerAuthenticationPage(loritta: LorittaBot): String {
+        return createHTML().html {
+            head {
+                fun setMetaProperty(property: String, content: String) {
+                    meta(content = content) { attributes["property"] = property }
+                }
+                title("Login • Loritta")
+                setMetaProperty("og:site_name", "Loritta")
+                setMetaProperty("og:title", "Painel da Loritta")
+                setMetaProperty(
+                    "og:description",
+                    "Meu painel de configuração, aonde você pode me configurar para deixar o seu servidor único e incrível!"
+                )
+                setMetaProperty("og:image", loritta.config.loritta.website.url + "assets/img/loritta_dashboard.png")
+                setMetaProperty("og:image:width", "320")
+                setMetaProperty("og:ttl", "660")
+                setMetaProperty("og:image:width", "320")
+                setMetaProperty("theme-color", "#7289da")
+                meta("twitter:card", "summary_large_image")
+            }
+            body {
+                p {
+                    +"Parabéns, você encontrou um easter egg!"
+                }
+            }
+        }
+    }
 
-	fun checkIfAccountHasMFAEnabled(loritta: LorittaBot, userIdentification: TemmieDiscordAuth.UserIdentification): Boolean {
-		// This is a security measure, to avoid "high risk" purchases.
-		// We will require that users need to verify their account + have MFA enabled.
-		if (!userIdentification.verified)
-			throw WebsiteAPIException(
-				HttpStatusCode.Forbidden,
-				WebsiteUtils.createErrorPayload(
-					loritta,
-					LoriWebCode.UNVERIFIED_ACCOUNT
-				)
-			)
+    fun checkIfAccountHasMFAEnabled(
+        loritta: LorittaBot,
+        userIdentification: TemmieDiscordAuth.UserIdentification
+    ): Boolean {
+        // This is a security measure, to avoid "high risk" purchases.
+        // We will require that users need to verify their account + have MFA enabled.
+        if (!userIdentification.verified)
+            throw WebsiteAPIException(
+                HttpStatusCode.Forbidden,
+                WebsiteUtils.createErrorPayload(
+                    loritta,
+                    LoriWebCode.UNVERIFIED_ACCOUNT
+                )
+            )
 
-		if (userIdentification.mfaEnabled == false)
-			throw WebsiteAPIException(
-				HttpStatusCode.Forbidden,
-				WebsiteUtils.createErrorPayload(
-					loritta,
-					LoriWebCode.MFA_DISABLED
-				)
-			)
+        if (userIdentification.mfaEnabled == false)
+            throw WebsiteAPIException(
+                HttpStatusCode.Forbidden,
+                WebsiteUtils.createErrorPayload(
+                    loritta,
+                    LoriWebCode.MFA_DISABLED
+                )
+            )
 
-		return true
-	}
+        return true
+    }
 
-	fun initializeVariables(loritta: LorittaBot, call: ApplicationCall, locale: BaseLocale, legacyLocale: LegacyBaseLocale, languageCode: String?) {
-		val req = call.request
-		val attributes = call.attributes
+    fun initializeVariables(
+        loritta: LorittaBot,
+        call: ApplicationCall,
+        locale: BaseLocale,
+        legacyLocale: LegacyBaseLocale,
+        languageCode: String?
+    ) {
+        val req = call.request
+        val attributes = call.attributes
 
-		val variables = mutableMapOf<String, Any?>(
-			"discordAuth" to null,
-			"userIdentification" to null,
-			"epochMillis" to System.currentTimeMillis(),
-			"path" to req.path(),
-			"clientId" to loritta.config.loritta.discord.applicationId.toString(),
-			"cssAssetVersion" to OptimizeAssets.cssAssetVersion,
-			"environment" to loritta.config.loritta.environment
-		)
+        val variables = mutableMapOf<String, Any?>(
+            "discordAuth" to null,
+            "userIdentification" to null,
+            "epochMillis" to System.currentTimeMillis(),
+            "path" to req.path(),
+            "clientId" to loritta.config.loritta.discord.applicationId.toString(),
+            "cssAssetVersion" to OptimizeAssets.cssAssetVersion,
+            "environment" to loritta.config.loritta.environment
+        )
 
-		attributes.put(variablesKey, variables)
+        attributes.put(variablesKey, variables)
 
-		for ((key, rawMessage) in legacyLocale.strings) {
-			variables[key] = MessageFormat.format(rawMessage)
-		}
+        for ((key, rawMessage) in legacyLocale.strings) {
+            variables[key] = MessageFormat.format(rawMessage)
+        }
 
-		var pathNoLanguageCode = req.path()
-		val split = pathNoLanguageCode.split("/").toMutableList()
-		val languageCode2 = split.getOrNull(1)
+        var pathNoLanguageCode = req.path()
+        val split = pathNoLanguageCode.split("/").toMutableList()
+        val languageCode2 = split.getOrNull(1)
 
-		val hasLangCode = loritta.localeManager.locales.any { it.value["website.localePath"] == languageCode2 }
-		if (hasLangCode) {
-			split.removeAt(0)
-			split.removeAt(0)
-			pathNoLanguageCode = "/" + split.joinToString("/")
-		}
+        val hasLangCode = loritta.localeManager.locales.any { it.value["website.localePath"] == languageCode2 }
+        if (hasLangCode) {
+            split.removeAt(0)
+            split.removeAt(0)
+            pathNoLanguageCode = "/" + split.joinToString("/")
+        }
 
-		variables["pathNL"] = pathNoLanguageCode // path no language code
-		variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
+        variables["pathNL"] = pathNoLanguageCode // path no language code
+        variables["loriUrl"] = LorittaWebsite.WEBSITE_URL + "${languageCode2 ?: "us"}/"
 
-		variables["addBotUrl"] = loritta.config.loritta.discord.addBotUrl
+        variables["addBotUrl"] = loritta.config.loritta.discord.addBotUrl
 
-		val correctUrl = LorittaWebsite.WEBSITE_URL.replace("https://", "https://$languageCode.")
-		variables["currentUrl"] = correctUrl + req.path().substring(1)
+        val correctUrl = LorittaWebsite.WEBSITE_URL.replace("https://", "https://$languageCode.")
+        variables["currentUrl"] = correctUrl + req.path().substring(1)
 
-		variables["localeAsJson"] = LorittaBot.GSON.toJson(legacyLocale.strings)
-		variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
-		variables["locale"] = locale
+        variables["localeAsJson"] = LorittaBot.GSON.toJson(legacyLocale.strings)
+        variables["websiteUrl"] = LorittaWebsite.WEBSITE_URL
+        variables["locale"] = locale
 
-		attributes.put(localeKey, locale)
+        attributes.put(localeKey, locale)
 
-		for ((key, value) in locale.localeStringEntries) {
-			if (value != null)
-				variables[key.replace(".", "_")] = MessageFormat.format(value)
-		}
+        for ((key, value) in locale.localeStringEntries) {
+            if (value != null)
+                variables[key.replace(".", "_")] = MessageFormat.format(value)
+        }
 
-		repeat(10) {
-			val sponsor = loritta.sponsors.getOrNull(it)
+        repeat(10) {
+            val sponsor = loritta.sponsors.getOrNull(it)
 
-			variables["sponsor_${it}_enabled"] = sponsor != null
-			variables["sponsor_${it}_pc_url"] = sponsor?.getRectangularBannerUrl()
-			variables["sponsor_${it}_mobile_url"] = sponsor?.getSquareBannerUrl()
-			variables["sponsor_${it}_name"] = sponsor?.name
-			variables["sponsor_${it}_url"] = sponsor?.link
-			variables["sponsor_${it}_slug"] = sponsor?.slug
-		}
+            variables["sponsor_${it}_enabled"] = sponsor != null
+            variables["sponsor_${it}_pc_url"] = sponsor?.getRectangularBannerUrl()
+            variables["sponsor_${it}_mobile_url"] = sponsor?.getSquareBannerUrl()
+            variables["sponsor_${it}_name"] = sponsor?.name
+            variables["sponsor_${it}_url"] = sponsor?.link
+            variables["sponsor_${it}_slug"] = sponsor?.slug
+        }
 
-		val legacyAssets = listOf(
-			"assets/css/style.css",
-			"assets/js/SpicyMorenitta.js"
-		)
+        val legacyAssets = listOf(
+            "assets/css/style.css",
+            "assets/js/SpicyMorenitta.js"
+        )
 
-		for (asset in legacyAssets) {
-			variables["legacy_asset_hash_${asset.split("/").last().split(".").first()}"] = WebsiteAssetsHashes.getLegacyAssetHash(asset)
-		}
+        for (asset in legacyAssets) {
+            variables["legacy_asset_hash_${asset.split("/").last().split(".").first()}"] =
+                WebsiteAssetsHashes.getLegacyAssetHash(asset)
+        }
 
-		variables["asset_hash_app"] = WebsiteAssetsHashes.getAssetHash("assets/js/app.js")
-	}
+        variables["asset_hash_app"] = WebsiteAssetsHashes.getAssetHash("assets/js/app.js")
+    }
 
-	suspend fun toSerializable(loritta: LorittaBot, profileDesign: ProfileDesign) = loritta.pudding.transaction { fromProfileDesignToSerializable(loritta, profileDesign.readValues) }
-	suspend fun fromProfileDesignToSerializable(loritta: LorittaBot, profileDesign: ResultRow) = loritta.pudding.transaction { ProfileDesign.wrapRow(profileDesign).toSerializable() }
+    suspend fun toSerializable(loritta: LorittaBot, profileDesign: ProfileDesign) =
+        loritta.pudding.transaction { fromProfileDesignToSerializable(loritta, profileDesign.readValues) }
 
-	suspend fun transformToDashboardConfigurationJson(
-		loritta: LorittaBot,
-		transformers: List<ConfigTransformer>,
-		user: LorittaJsonWebSession.UserIdentification,
-		guild: Guild,
-		serverConfig: ServerConfig
-	): JsonObject {
-		val guildJson = jsonObject(
-			"name" to guild.name
-		)
+    suspend fun fromProfileDesignToSerializable(loritta: LorittaBot, profileDesign: ResultRow) =
+        loritta.pudding.transaction { ProfileDesign.wrapRow(profileDesign).toSerializable() }
 
-		val selfMember = transformToJson(loritta.lorittaShards.retrieveUserById(user.id)!!)
+    suspend fun transformToDashboardConfigurationJson(
+        loritta: LorittaBot,
+        transformers: List<ConfigTransformer>,
+        user: LorittaJsonWebSession.UserIdentification,
+        guild: Guild,
+        serverConfig: ServerConfig
+    ): JsonObject {
+        val guildJson = jsonObject(
+            "name" to guild.name
+        )
 
-		guildJson["donationConfig"] = loritta.newSuspendedTransaction {
-			val donationConfig = serverConfig.donationConfig
-			jsonObject(
-				"customBadge" to (donationConfig?.customBadge ?: false),
-				"dailyMultiplier" to (donationConfig?.dailyMultiplier ?: false)
-			)
-		}
+        val selfMember = transformToJson(loritta.lorittaShards.retrieveUserById(user.id)!!)
 
-		guildJson["reactionRoleConfigs"] = loritta.newSuspendedTransaction {
-			val reactionOptions = ReactionOption.find {
-				ReactionOptions.guildId eq guild.idLong
-			}
+        guildJson["donationConfig"] = loritta.newSuspendedTransaction {
+            val donationConfig = serverConfig.donationConfig
+            jsonObject(
+                "customBadge" to (donationConfig?.customBadge ?: false),
+                "dailyMultiplier" to (donationConfig?.dailyMultiplier ?: false)
+            )
+        }
 
-			reactionOptions.map {
-				jsonObject(
-					"textChannelId" to it.textChannelId.toString(),
-					"messageId" to it.messageId.toString(),
-					"reaction" to it.reaction,
-					"locks" to it.locks.toList().toJsonArray(),
-					"roleIds" to it.roleIds.toList().toJsonArray()
-				)
-			}.toJsonArray()
-		}
+        guildJson["reactionRoleConfigs"] = loritta.newSuspendedTransaction {
+            val reactionOptions = ReactionOption.find {
+                ReactionOptions.guildId eq guild.idLong
+            }
 
-		guildJson["selfMember"] = selfMember
+            reactionOptions.map {
+                jsonObject(
+                    "textChannelId" to it.textChannelId.toString(),
+                    "messageId" to it.messageId.toString(),
+                    "reaction" to it.reaction,
+                    "locks" to it.locks.toList().toJsonArray(),
+                    "roleIds" to it.roleIds.toList().toJsonArray()
+                )
+            }.toJsonArray()
+        }
 
-		for (transformer in transformers)
-			guildJson[transformer.configKey] = transformer.toJson(user, guild, serverConfig)
+        guildJson["selfMember"] = selfMember
 
-		return guildJson
-	}
+        for (transformer in transformers)
+            guildJson[transformer.configKey] = transformer.toJson(user, guild, serverConfig)
+
+        return guildJson
+    }
 }

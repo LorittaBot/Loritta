@@ -85,7 +85,10 @@ abstract class GabrielaImageServerCommandBase(
             if (response.status.value in 400..499)
                 fail(locale["commands.noValidImageFound", Emotes.LORI_CRYING], Emotes.LORI_CRYING.toString())
             else if (response.status.value !in 200..299) // This should show the error message because it means that the server had a unknown error
-                fail(locale["commands.errorWhileExecutingCommand", Emotes.LORI_RAGE, Emotes.LORI_CRYING], "\uD83E\uDD37")
+                fail(
+                    locale["commands.errorWhileExecutingCommand", Emotes.LORI_RAGE, Emotes.LORI_CRYING],
+                    "\uD83E\uDD37"
+                )
 
             sendFile(response.readBytes(), fileName)
         }

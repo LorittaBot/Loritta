@@ -11,7 +11,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 class ChangeTransactionFilterSelectMenuExecutor(
     loritta: LorittaBot
 ) : CinnamonSelectMenuExecutor(loritta) {
-    companion object : SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR)
+    companion object :
+        SelectMenuExecutorDeclaration(ComponentExecutorIds.CHANGE_TRANSACTION_FILTER_SELECT_MENU_EXECUTOR)
 
     override suspend fun onSelect(
         user: User,

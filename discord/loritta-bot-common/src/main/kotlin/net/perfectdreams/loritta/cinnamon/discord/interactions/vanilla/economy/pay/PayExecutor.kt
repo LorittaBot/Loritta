@@ -2,27 +2,28 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.
 
 import dev.kord.common.DiscordTimestampStyle
 import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.Snowflake
 import dev.kord.common.toMessageFormat
 import dev.kord.core.entity.User
 import kotlinx.datetime.Clock
 import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
 import net.perfectdreams.loritta.cinnamon.discord.interactions.SlashContextHighLevelEditableMessage
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.mentionUser
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.ShortenedToLongSonhosAutocompleteExecutor
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipfriend.AcceptCoinFlipBetFriendButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
 import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.minutes
@@ -76,7 +77,7 @@ class PayExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
                 context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.CantTransferToSelf),
                 Emotes.Error
             )
-        
+
         if (UserUtils.handleIfUserIsBanned(loritta, context, receiver))
             return
 
@@ -105,7 +106,8 @@ class PayExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
         // TODO: Loritta is grateful easter egg
         // Easter Eggs
         val quirkyMessage = when {
-            howMuch >= 500_000 -> context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.RandomQuirkyRichMessages).random()
+            howMuch >= 500_000 -> context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.RandomQuirkyRichMessages)
+                .random()
             // tellUserLorittaIsGrateful -> context.locale.getList("commands.command.pay.randomLorittaIsGratefulMessages").random()
             else -> null
         }
@@ -127,7 +129,14 @@ class PayExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
         val message = context.sendMessage {
             styled(
                 buildString {
-                    append(context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.YouAreGoingToTransfer(howMuch, mentionUser(receiver))))
+                    append(
+                        context.i18nContext.get(
+                            SonhosCommand.PAY_I18N_PREFIX.YouAreGoingToTransfer(
+                                howMuch,
+                                mentionUser(receiver)
+                            )
+                        )
+                    )
                     if (quirkyMessage != null) {
                         append(" ")
                         append(quirkyMessage)
@@ -137,7 +146,13 @@ class PayExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
             )
 
             styled(
-                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.ConfirmTheTransaction(mentionUser(receiver), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.LongDateTime), nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.RelativeTime))),
+                context.i18nContext.get(
+                    SonhosCommand.PAY_I18N_PREFIX.ConfirmTheTransaction(
+                        mentionUser(receiver),
+                        nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.LongDateTime),
+                        nowPlusTimeToLive.toMessageFormat(DiscordTimestampStyle.RelativeTime)
+                    )
+                ),
                 Emotes.LoriZap
             )
 
@@ -202,7 +217,13 @@ class PayExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
 
         if (allowedAfterTimestamp > now) // 14 dias
             context.failEphemerally(
-                context.i18nContext.get(SonhosCommand.PAY_I18N_PREFIX.SelfAccountIsTooNew(allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.LongDateTime), allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.RelativeTime))),
+                context.i18nContext.get(
+                    SonhosCommand.PAY_I18N_PREFIX.SelfAccountIsTooNew(
+                        allowedAfterTimestamp.toMessageFormat(
+                            DiscordTimestampStyle.LongDateTime
+                        ), allowedAfterTimestamp.toMessageFormat(DiscordTimestampStyle.RelativeTime)
+                    )
+                ),
                 Emotes.LoriSob
             )
     }

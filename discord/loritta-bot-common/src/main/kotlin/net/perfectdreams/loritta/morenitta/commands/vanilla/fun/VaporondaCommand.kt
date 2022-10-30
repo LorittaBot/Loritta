@@ -10,25 +10,30 @@ import net.perfectdreams.loritta.common.utils.text.VaporwaveUtils
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class VaporondaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vaporonda", listOf("vaporwave"), category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.vaporwave.description")
-	override fun getExamplesKey() = LocaleKeyData("commands.command.vaporwave.examples")
+class VaporondaCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "vaporonda",
+    listOf("vaporwave"),
+    category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN
+) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.vaporwave.description")
+    override fun getExamplesKey() = LocaleKeyData("commands.command.vaporwave.examples")
 
-	// TODO: Fix Usage
-	// TODO: Fix Detailed Usage
+    // TODO: Fix Usage
+    // TODO: Fix Detailed Usage
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "text vaporwave")
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "text vaporwave")
 
-		if (context.args.isNotEmpty()) {
-			val vaporwave = VaporwaveUtils.vaporwave(context.args.joinToString(" "))
-					.escapeMentions()
+        if (context.args.isNotEmpty()) {
+            val vaporwave = VaporwaveUtils.vaporwave(context.args.joinToString(" "))
+                .escapeMentions()
 
-			context.reply(
-                    LorittaReply(message = vaporwave, prefix = "✍")
-			)
-		} else {
-			this.explain(context)
-		}
-	}
+            context.reply(
+                LorittaReply(message = vaporwave, prefix = "✍")
+            )
+        } else {
+            this.explain(context)
+        }
+    }
 }

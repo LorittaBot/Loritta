@@ -1,12 +1,12 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations
 
-import net.perfectdreams.loritta.common.locale.LanguageManager
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandDeclarationWrapper
-import net.perfectdreams.loritta.common.commands.CommandCategory
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.UserBannerExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.UserAvatarSlashExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.info.UserInfoSlashExecutor
+import net.perfectdreams.loritta.common.commands.CommandCategory
+import net.perfectdreams.loritta.common.locale.LanguageManager
+import net.perfectdreams.loritta.i18n.I18nKeysData
 
 class UserCommand(languageManager: LanguageManager) : CinnamonSlashCommandDeclarationWrapper(languageManager) {
     companion object {

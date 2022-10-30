@@ -12,7 +12,8 @@ import java.io.File
 class DiscordEmoteManager(val loritta: LorittaBot) : Emotes.EmoteManager {
     override fun loadEmotes() {
         Emotes.resetEmotes()
-        val emoteMap = Constants.HOCON.decodeFromFile<Map<String, String>>(File("${loritta.config.loritta.folders.root}emotes.conf"))
+        val emoteMap =
+            Constants.HOCON.decodeFromFile<Map<String, String>>(File("${loritta.config.loritta.folders.root}emotes.conf"))
         Emotes.emoteMap = emoteMap
     }
 

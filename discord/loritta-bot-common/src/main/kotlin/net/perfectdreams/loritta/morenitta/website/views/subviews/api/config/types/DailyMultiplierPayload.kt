@@ -10,16 +10,21 @@ import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 
 class DailyMultiplierPayload(val loritta: LorittaBot) : ConfigPayloadType("daily_multiplier") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
-		runBlocking {
-			loritta.pudding.transaction {
-				val donationConfig = serverConfig.donationConfig ?: DonationConfig.new {
-					this.dailyMultiplier = false
-				}
-				donationConfig.dailyMultiplier = payload["dailyMultiplier"].bool
+    override fun process(
+        payload: JsonObject,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        serverConfig: ServerConfig,
+        guild: Guild
+    ) {
+        runBlocking {
+            loritta.pudding.transaction {
+                val donationConfig = serverConfig.donationConfig ?: DonationConfig.new {
+                    this.dailyMultiplier = false
+                }
+                donationConfig.dailyMultiplier = payload["dailyMultiplier"].bool
 
-				serverConfig.donationConfig = donationConfig
-			}
-		}
-	}
+                serverConfig.donationConfig = donationConfig
+            }
+        }
+    }
 }

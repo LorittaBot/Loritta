@@ -13,7 +13,13 @@ object GACampaigns {
         medium: String,
         campaignContent: String
     ): String {
-        return "Psiu, está querendo mais sonhos? Então compre na minha lojinha! Nós aceitamos pagamentos via boleto, cartão de crédito e Pix e comprando por lá você me ajuda a ficar online enquanto você se diverte com mais sonhos! Mas não se preocupe, a escolha é sua e você pode continuar a usar a Loritta sem se preocupar em tirar dinheiro do seu bolso. Ficou interessado? Então acesse! ${sonhosBundlesUpsellDiscordMessageUrl(lorittaWebsiteUrl, medium, campaignContent)}"
+        return "Psiu, está querendo mais sonhos? Então compre na minha lojinha! Nós aceitamos pagamentos via boleto, cartão de crédito e Pix e comprando por lá você me ajuda a ficar online enquanto você se diverte com mais sonhos! Mas não se preocupe, a escolha é sua e você pode continuar a usar a Loritta sem se preocupar em tirar dinheiro do seu bolso. Ficou interessado? Então acesse! ${
+            sonhosBundlesUpsellDiscordMessageUrl(
+                lorittaWebsiteUrl,
+                medium,
+                campaignContent
+            )
+        }"
     }
 
     fun sonhosBundlesUpsellDiscordMessageUrl(
@@ -21,7 +27,15 @@ object GACampaigns {
         medium: String,
         campaignContent: String
     ): String {
-        return "<${sonhosBundlesUpsellUrl(lorittaWebsiteUrl, "discord", medium, "sonhos-bundles-upsell", campaignContent)}>"
+        return "<${
+            sonhosBundlesUpsellUrl(
+                lorittaWebsiteUrl,
+                "discord",
+                medium,
+                "sonhos-bundles-upsell",
+                campaignContent
+            )
+        }>"
     }
 
     fun sonhosBundlesUpsellUrl(

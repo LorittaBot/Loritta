@@ -2,11 +2,11 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.
 
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.User
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ButtonExecutorDeclaration
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.CinnamonButtonExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.components.ComponentContext
+import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentExecutorIds
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class SwitchToGlobalAvatarExecutor(loritta: LorittaBot, val lorittaId: Snowflake) : CinnamonButtonExecutor(loritta) {
     companion object : ButtonExecutorDeclaration(
@@ -15,7 +15,8 @@ class SwitchToGlobalAvatarExecutor(loritta: LorittaBot, val lorittaId: Snowflake
     )
 
     override suspend fun onClick(user: User, context: ComponentContext) {
-        val decodedInteractionData = context.decodeDataFromComponentAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>()
+        val decodedInteractionData =
+            context.decodeDataFromComponentAndRequireUserToMatch<UserDataUtils.SwitchAvatarInteractionIdData>()
         val data = UserDataUtils.getInteractionDataOrRetrieveViaRestIfItDoesNotExist(
             loritta,
             decodedInteractionData,
@@ -41,9 +42,11 @@ class SwitchToGlobalAvatarExecutor(loritta: LorittaBot, val lorittaId: Snowflake
             MessageTargetType.SEND_MESSAGE_PUBLIC -> context.sendMessage {
                 message()
             }
+
             MessageTargetType.SEND_MESSAGE_EPHEMERAL -> context.sendEphemeralMessage {
                 message()
             }
+
             MessageTargetType.EDIT_MESSAGE -> context.updateMessage {
                 message()
             }

@@ -21,21 +21,22 @@ class SonhosCommand(languageManager: LanguageManager) : CinnamonSlashCommandDecl
         val TRANSACTIONS_I18N_PREFIX = I18nKeysData.Commands.Command.Transactions
     }
 
-    override fun declaration() = slashCommand(I18N_PREFIX.Label, CommandCategory.ECONOMY, CATEGORY_I18N_PREFIX.RootCommandDescription) {
-        subcommand(SONHOS_I18N_PREFIX.Label, SONHOS_I18N_PREFIX.Description) {
-            executor = { SonhosExecutor(it) }
-        }
+    override fun declaration() =
+        slashCommand(I18N_PREFIX.Label, CommandCategory.ECONOMY, CATEGORY_I18N_PREFIX.RootCommandDescription) {
+            subcommand(SONHOS_I18N_PREFIX.Label, SONHOS_I18N_PREFIX.Description) {
+                executor = { SonhosExecutor(it) }
+            }
 
-        subcommand(PAY_I18N_PREFIX.Label, PAY_I18N_PREFIX.Description) {
-            executor = { PayExecutor(it) }
-        }
+            subcommand(PAY_I18N_PREFIX.Label, PAY_I18N_PREFIX.Description) {
+                executor = { PayExecutor(it) }
+            }
 
-        subcommand(SONHOS_RANK_I18N_PREFIX.Label, SONHOS_RANK_I18N_PREFIX.Description) {
-            executor = { SonhosRankExecutor(it) }
-        }
+            subcommand(SONHOS_RANK_I18N_PREFIX.Label, SONHOS_RANK_I18N_PREFIX.Description) {
+                executor = { SonhosRankExecutor(it) }
+            }
 
-        subcommand(TRANSACTIONS_I18N_PREFIX.Label, TRANSACTIONS_I18N_PREFIX.Description) {
-            executor = { TransactionsExecutor(it) }
+            subcommand(TRANSACTIONS_I18N_PREFIX.Label, TRANSACTIONS_I18N_PREFIX.Description) {
+                executor = { TransactionsExecutor(it) }
+            }
         }
-    }
 }

@@ -12,9 +12,9 @@ import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 
 class GuessNumberCommand(plugin: LorittaBot) : DiscordAbstractCommandBase(
-        plugin,
-        listOf("guessnumber", "adivinharnumero", "adivinharnúmero"),
-        net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
+    plugin,
+    listOf("guessnumber", "adivinharnumero", "adivinharnúmero"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY
 ) {
     companion object {
         const val VICTORY_PRIZE = 1_000L
@@ -37,11 +37,11 @@ class GuessNumberCommand(plugin: LorittaBot) : DiscordAbstractCommandBase(
             // If it is not null, we convert it to a Integer (if it is a invalid number, it will be null)
             // Then, in the ".let" block, we check if it is null and, if it is, we show that the user provided a invalid number!
             val number = (args.getOrNull(0) ?: explainAndExit()).toIntOrNull()
-                    .let {
-                        if (it == null)
-                            GenericReplies.invalidNumber(this, args[0])
-                        it
-                    }
+                .let {
+                    if (it == null)
+                        GenericReplies.invalidNumber(this, args[0])
+                    it
+                }
 
             if (number !in 1..10)
                 fail(locale["commands.command.guessnumber.numberNotInRange", VICTORY_PRIZE])
@@ -88,7 +88,10 @@ class GuessNumberCommand(plugin: LorittaBot) : DiscordAbstractCommandBase(
                     )
                 }
 
-                reply(locale.getList("commands.command.guessnumber.youLose", randomNumber, LOSE_PRIZE).random(), Emotes.LORI_CRYING)
+                reply(
+                    locale.getList("commands.command.guessnumber.youLose", randomNumber, LOSE_PRIZE).random(),
+                    Emotes.LORI_CRYING
+                )
             }
         }
     }

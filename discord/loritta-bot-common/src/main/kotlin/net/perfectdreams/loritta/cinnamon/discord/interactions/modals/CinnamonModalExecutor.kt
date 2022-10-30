@@ -2,18 +2,18 @@ package net.perfectdreams.loritta.cinnamon.discord.interactions.modals
 
 import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
+import net.perfectdreams.discordinteraktions.common.modals.ModalContext
 import net.perfectdreams.discordinteraktions.common.modals.ModalExecutor
 import net.perfectdreams.discordinteraktions.common.modals.components.ModalArguments
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.i18n.I18nKeysData
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CommandExecutorWrapper
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.EphemeralCommandException
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.SilentCommandException
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.InteractionsMetrics
-import net.perfectdreams.discordinteraktions.common.modals.ModalContext
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.i18n.I18nKeysData
+import net.perfectdreams.loritta.morenitta.LorittaBot
 
 abstract class CinnamonModalExecutor(
     val loritta: LorittaBot
@@ -24,7 +24,10 @@ abstract class CinnamonModalExecutor(
 
     val executorClazzName = this::class.simpleName
 
-    abstract suspend fun onSubmit(context: net.perfectdreams.loritta.cinnamon.discord.interactions.modals.ModalContext, args: ModalArguments)
+    abstract suspend fun onSubmit(
+        context: net.perfectdreams.loritta.cinnamon.discord.interactions.modals.ModalContext,
+        args: ModalArguments
+    )
 
     override suspend fun onSubmit(context: ModalContext, args: ModalArguments) {
         val rootDeclarationClazzName = context.modalExecutorDeclaration::class.simpleName ?: "UnknownDeclaration"
@@ -44,7 +47,8 @@ abstract class CinnamonModalExecutor(
         try {
             val serverConfig = if (guildId != null) {
                 // TODO: Fix this workaround, while this does work, it isn't that good
-                loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data ?: CommandExecutorWrapper.NonGuildServerConfigRoot
+                loritta.pudding.serverConfigs.getServerConfigRoot(guildId.value)?.data
+                    ?: CommandExecutorWrapper.NonGuildServerConfigRoot
             } else {
                 // TODO: Should this class *really* be named "ServerConfig"? After all, it isn't always used for guilds
                 CommandExecutorWrapper.NonGuildServerConfigRoot
@@ -99,7 +103,8 @@ abstract class CinnamonModalExecutor(
             logger.warn(e) { "Something went wrong while executing this executor!" } // TODO: Better logs
 
             // If the i18nContext is not present, we will default to the default language provided
-            i18nContext = i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
+            i18nContext =
+                i18nContext ?: loritta.languageManager.getI18nContextById(loritta.languageManager.defaultLanguageId)
 
             // Tell the user that something went *really* wrong
             // While we do have access to the Cinnamon Context, it may be null at this stage, so we will use the Discord InteraKTions context

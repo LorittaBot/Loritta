@@ -19,10 +19,10 @@ class ProfileDesign(id: EntityID<String>) : Entity<String>(id) {
     var set by ProfileDesigns.set
 
     fun toSerializable() = net.perfectdreams.loritta.serializable.ProfileDesign(
-            id.value,
-            enabled,
-            rarity,
-            createdBy.toList(),
-            set?.value
+        id.value,
+        enabled,
+        rarity,
+        createdBy.toList(),
+        set?.value
     )
 }

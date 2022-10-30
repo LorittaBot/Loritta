@@ -62,7 +62,8 @@ class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
 
             val isSelf = viewingTransactionsOfUserId.value == userId.value
 
-            val cachedUserInfo = loritta.getCachedUserInfo(viewingTransactionsOfUserId) ?: error("Missing cached user info!")
+            val cachedUserInfo =
+                loritta.getCachedUserInfo(viewingTransactionsOfUserId) ?: error("Missing cached user info!")
 
             content = i18nContext.get(SonhosCommand.TRANSACTIONS_I18N_PREFIX.NotAllTransactionsAreHere)
 
@@ -207,40 +208,112 @@ class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                 for (transaction in transactions) {
                     val stringBuilderBlock = when (transaction) {
                         // ===[ PAYMENTS ]===
-                        is PaymentSonhosTransaction -> PaymentSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is PaymentSonhosTransaction -> PaymentSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ BROKER ]===
-                        is BrokerSonhosTransaction -> BrokerSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is BrokerSonhosTransaction -> BrokerSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ COIN FLIP BET ]===
-                        is CoinFlipBetSonhosTransaction -> CoinFlipBetSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is CoinFlipBetSonhosTransaction -> CoinFlipBetSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ COIN FLIP BET GLOBAL ]===
-                        is CoinFlipBetGlobalSonhosTransaction -> CoinFlipBetGlobalSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is CoinFlipBetGlobalSonhosTransaction -> CoinFlipBetGlobalSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ EMOJI FIGHT BET ]===
-                        is EmojiFightBetSonhosTransaction -> EmojiFightBetSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is EmojiFightBetSonhosTransaction -> EmojiFightBetSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ SPARKLYPOWER LSX ]===
-                        is SparklyPowerLSXSonhosTransaction -> SparklyPowerLSXSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is SparklyPowerLSXSonhosTransaction -> SparklyPowerLSXSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ SONHOS BUNDLES ]===
-                        is SonhosBundlePurchaseSonhosTransaction -> SonhosBundlePurchaseSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is SonhosBundlePurchaseSonhosTransaction -> SonhosBundlePurchaseSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ DAILY TAX ]===
-                        is DailyTaxSonhosTransaction -> DailyTaxSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is DailyTaxSonhosTransaction -> DailyTaxSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ DIVINE INTERVENTION ]===
-                        is DivineInterventionSonhosTransaction -> DivineInterventionSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is DivineInterventionSonhosTransaction -> DivineInterventionSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ BOT VOTE ]===
-                        is BotVoteSonhosTransaction -> BotVoteTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is BotVoteSonhosTransaction -> BotVoteTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // ===[ SHIP EFFECT ]===
-                        is ShipEffectSonhosTransaction -> ShipEffectSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is ShipEffectSonhosTransaction -> ShipEffectSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
 
                         // This should never happen because we do a left join with a "isNotNull" check
-                        is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer.transform(loritta, i18nContext, cachedUserInfo, cachedUserInfos, transaction)
+                        is UnknownSonhosTransaction -> UnknownSonhosTransactionTransformer.transform(
+                            loritta,
+                            i18nContext,
+                            cachedUserInfo,
+                            cachedUserInfos,
+                            transaction
+                        )
                     }
 
                     append("[<t:${transaction.timestamp.epochSeconds}:d> <t:${transaction.timestamp.epochSeconds}:t> | <t:${transaction.timestamp.epochSeconds}:R>]")
@@ -288,7 +361,8 @@ class TransactionsExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(l
                 color = LorittaColors.LorittaRed.toKordColor()
 
                 // TODO: Host this somewhere else
-                image = "https://cdn.discordapp.com/attachments/513405772911345664/930945637841788958/fon_final_v3_sticker_small.png"
+                image =
+                    "https://cdn.discordapp.com/attachments/513405772911345664/930945637841788958/fon_final_v3_sticker_small.png"
             }
 
             actionRow {

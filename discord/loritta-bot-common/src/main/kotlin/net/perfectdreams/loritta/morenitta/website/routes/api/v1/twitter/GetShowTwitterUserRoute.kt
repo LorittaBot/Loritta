@@ -19,89 +19,92 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.set
 
 class GetShowTwitterUserRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/twitter/users/show") {
-	companion object {
-		private val logger = KotlinLogging.logger {}
-	}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-	val cachedUsersById = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).maximumSize(10_000).build<Long, JsonObject>().asMap()
-	val cachedUsersByScreenName = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).maximumSize(10_000).build<String, JsonObject>().asMap()
+    val cachedUsersById =
+        Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).maximumSize(10_000).build<Long, JsonObject>().asMap()
+    val cachedUsersByScreenName =
+        Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.HOURS).maximumSize(10_000).build<String, JsonObject>()
+            .asMap()
 
-	override suspend fun onRequest(call: ApplicationCall) {
-		val tf = TwitterFactory(buildTwitterConfig())
-		val twitter = tf.instance
+    override suspend fun onRequest(call: ApplicationCall) {
+        val tf = TwitterFactory(buildTwitterConfig())
+        val twitter = tf.instance
 
-		val screenName = call.parameters["screenName"]
+        val screenName = call.parameters["screenName"]
 
-		if (screenName != null) {
-			val cachedResponse = cachedUsersByScreenName[screenName]
-			if (cachedResponse != null) {
-				call.respondJson(cachedResponse)
-				return
-			}
-		}
+        if (screenName != null) {
+            val cachedResponse = cachedUsersByScreenName[screenName]
+            if (cachedResponse != null) {
+                call.respondJson(cachedResponse)
+                return
+            }
+        }
 
-		val accountId = call.parameters["userId"]
+        val accountId = call.parameters["userId"]
 
-		val twitterUser = if (accountId != null) {
-			val accountIdAsLong = accountId.toLong()
-			val cachedResponse = cachedUsersById[accountIdAsLong]
-			if (cachedResponse != null) {
-				call.respondJson(cachedResponse)
-				return
-			}
+        val twitterUser = if (accountId != null) {
+            val accountIdAsLong = accountId.toLong()
+            val cachedResponse = cachedUsersById[accountIdAsLong]
+            if (cachedResponse != null) {
+                call.respondJson(cachedResponse)
+                return
+            }
 
-			twitter.users().showUser(accountId.toLong())
-		} else if (screenName != null) {
-			val cachedResponse = cachedUsersByScreenName[screenName]
-			if (cachedResponse != null) {
-				call.respondJson(cachedResponse)
-				return
-			}
+            twitter.users().showUser(accountId.toLong())
+        } else if (screenName != null) {
+            val cachedResponse = cachedUsersByScreenName[screenName]
+            if (cachedResponse != null) {
+                call.respondJson(cachedResponse)
+                return
+            }
 
-			twitter.users().showUser(screenName)
-		} else {
-			throw WebsiteAPIException(
-					HttpStatusCode.NotFound,
-					WebsiteUtils.createErrorPayload(
-							loritta,
-							LoriWebCode.ITEM_NOT_FOUND,
-							"Unknown Twitter Type"
-					)
-			)
-		}
+            twitter.users().showUser(screenName)
+        } else {
+            throw WebsiteAPIException(
+                HttpStatusCode.NotFound,
+                WebsiteUtils.createErrorPayload(
+                    loritta,
+                    LoriWebCode.ITEM_NOT_FOUND,
+                    "Unknown Twitter Type"
+                )
+            )
+        }
 
-		if (twitterUser == null) {
-			throw WebsiteAPIException(
-					HttpStatusCode.NotFound,
-					WebsiteUtils.createErrorPayload(
-							loritta,
-							LoriWebCode.ITEM_NOT_FOUND,
-							"Unknown Twitter User"
-					)
-			)
-		} else {
-			val payload = jsonObject(
-					"id" to twitterUser.id,
-					"name" to twitterUser.name,
-					"screenName" to twitterUser.screenName,
-					"avatarUrl" to twitterUser.profileImageURLHttps
-			)
+        if (twitterUser == null) {
+            throw WebsiteAPIException(
+                HttpStatusCode.NotFound,
+                WebsiteUtils.createErrorPayload(
+                    loritta,
+                    LoriWebCode.ITEM_NOT_FOUND,
+                    "Unknown Twitter User"
+                )
+            )
+        } else {
+            val payload = jsonObject(
+                "id" to twitterUser.id,
+                "name" to twitterUser.name,
+                "screenName" to twitterUser.screenName,
+                "avatarUrl" to twitterUser.profileImageURLHttps
+            )
 
-			cachedUsersByScreenName[twitterUser.screenName] = payload
-			cachedUsersById[twitterUser.id] = payload
+            cachedUsersByScreenName[twitterUser.screenName] = payload
+            cachedUsersById[twitterUser.id] = payload
 
-			call.respondJson(payload)
-		}
-	}
+            call.respondJson(payload)
+        }
+    }
 
-	fun buildTwitterConfig(): Configuration {
-		val cb = ConfigurationBuilder()
-		cb.setDebugEnabled(true)
-				.setOAuthConsumerKey(loritta.config.loritta.twitter.oAuthConsumerKey)
-				.setOAuthConsumerSecret(loritta.config.loritta.twitter.oAuthConsumerSecret)
-				.setOAuthAccessToken(loritta.config.loritta.twitter.oAuthAccessToken)
-				.setOAuthAccessTokenSecret(loritta.config.loritta.twitter.oAuthAccessTokenSecret)
+    fun buildTwitterConfig(): Configuration {
+        val cb = ConfigurationBuilder()
+        cb.setDebugEnabled(true)
+            .setOAuthConsumerKey(loritta.config.loritta.twitter.oAuthConsumerKey)
+            .setOAuthConsumerSecret(loritta.config.loritta.twitter.oAuthConsumerSecret)
+            .setOAuthAccessToken(loritta.config.loritta.twitter.oAuthAccessToken)
+            .setOAuthAccessTokenSecret(loritta.config.loritta.twitter.oAuthAccessTokenSecret)
 
-		return cb.build()
-	}
+        return cb.build()
+    }
 }

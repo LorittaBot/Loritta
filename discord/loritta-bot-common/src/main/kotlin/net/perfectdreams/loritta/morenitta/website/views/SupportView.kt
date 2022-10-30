@@ -37,13 +37,13 @@ class SupportView(
                         div {
                             style = "text-align: center;"
                             h1 {
-                                + locale["website.support.title"]
+                                +locale["website.support.title"]
                             }
                         }
 
                         for (str in locale.getList("website.support.description")) {
                             p {
-                                + str
+                                +str
                             }
                         }
                     }
@@ -63,12 +63,12 @@ class SupportView(
                                 style = "min-width: 300px; width: 50%;"
 
                                 h2 {
-                                    + locale["website.support.supportServer.title"]
+                                    +locale["website.support.supportServer.title"]
                                 }
 
                                 locale.getList("website.support.supportServer.description").forEach {
                                     p {
-                                        + it
+                                        +it
                                     }
                                 }
 
@@ -83,12 +83,12 @@ class SupportView(
                                 style = "min-width: 300px; width: 50%;"
 
                                 h2 {
-                                    + locale["website.support.communityServer.title"]
+                                    +locale["website.support.communityServer.title"]
                                 }
 
                                 locale.getList("website.support.communityServer.description").forEach {
                                     p {
-                                        + it
+                                        +it
                                     }
                                 }
 

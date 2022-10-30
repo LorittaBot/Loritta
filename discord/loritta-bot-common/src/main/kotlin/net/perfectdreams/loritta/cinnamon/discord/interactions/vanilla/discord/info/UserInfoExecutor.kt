@@ -24,22 +24,22 @@ import net.perfectdreams.discordinteraktions.common.builder.message.embed
 import net.perfectdreams.discordinteraktions.common.utils.author
 import net.perfectdreams.discordinteraktions.common.utils.field
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
-import net.perfectdreams.loritta.common.utils.LorittaColors
-import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.GuildApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.MessageTargetType
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.SwitchToGlobalAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.SwitchToGuildProfileAvatarExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.avatar.UserDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.discord.declarations.UserCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
 import net.perfectdreams.loritta.cinnamon.discord.utils.ComponentDataUtils
 import net.perfectdreams.loritta.cinnamon.discord.utils.StoredGenericInteractionData
 import net.perfectdreams.loritta.cinnamon.discord.utils.effectiveAvatar
 import net.perfectdreams.loritta.cinnamon.discord.utils.toKordColor
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
+import net.perfectdreams.loritta.common.utils.LorittaColors
+import net.perfectdreams.loritta.i18n.I18nKeysData
 import kotlin.time.Duration.Companion.minutes
 
 interface UserInfoExecutor {
@@ -120,9 +120,21 @@ interface UserInfoExecutor {
                 }
                 url = "https://discord.com/users/${user.id}"
 
-                field("${Emotes.LoriId} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordId)}", "`${user.id}`", true)
-                field("${Emotes.LoriLabel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordTag)}", "`${user.username}#${user.discriminator}`", true)
-                field("${Emotes.LoriCalendar} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.AccountCreationDate)}", "<t:${user.id.timestamp.epochSeconds}:f> (<t:${user.id.timestamp.epochSeconds}:R>)", true)
+                field(
+                    "${Emotes.LoriId} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordId)}",
+                    "`${user.id}`",
+                    true
+                )
+                field(
+                    "${Emotes.LoriLabel} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.DiscordTag)}",
+                    "`${user.username}#${user.discriminator}`",
+                    true
+                )
+                field(
+                    "${Emotes.LoriCalendar} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.User.AccountCreationDate)}",
+                    "<t:${user.id.timestamp.epochSeconds}:f> (<t:${user.id.timestamp.epochSeconds}:R>)",
+                    true
+                )
 
                 thumbnailUrl = user.effectiveAvatar.url
                 color = LorittaColors.DiscordBlurple.toKordColor()
@@ -178,7 +190,11 @@ interface UserInfoExecutor {
                     field(
                         "${Emotes.LoriZap} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.InterestingTidbits)}",
                         """${fancify(!member.isPending)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.CompletedMembershipScreening)}
-                                |${fancify(communicationDisabledUntil != null && communicationDisabledUntil >= Clock.System.now())} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Member.IsTimedOut)}
+                                |${fancify(communicationDisabledUntil != null && communicationDisabledUntil >= Clock.System.now())} ${
+                            context.i18nContext.get(
+                                UserCommand.I18N_PREFIX.Info.Member.IsTimedOut
+                            )
+                        }
                             """.trimMargin(),
                         false
                     )
@@ -236,9 +252,21 @@ interface UserInfoExecutor {
                             """${fancify(applicationInfo.botPublic)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.Public)}
                                 |${fancify(applicationInfo.botRequireCodeGrant)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.RequiresOAuth2CodeGrant)}
                                 |${fancify(UserFlag.BotHttpInteractions in flags)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.UsesInteractionsOverHttp)}
-                                |${fancify(hasGatewayPresence || hasGatewayPresenceLimited)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.IntentGatewayPresences)}
-                                |${fancify(hasGuildMembers || hasGuildMembersLimited)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.IntentGuildMembers)}
-                                |${fancify(hasGatewayMessageContent || hasGatewayMessageContentLimited)} ${context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.IntentMessageContent)}
+                                |${fancify(hasGatewayPresence || hasGatewayPresenceLimited)} ${
+                                context.i18nContext.get(
+                                    UserCommand.I18N_PREFIX.Info.Application.IntentGatewayPresences
+                                )
+                            }
+                                |${fancify(hasGuildMembers || hasGuildMembersLimited)} ${
+                                context.i18nContext.get(
+                                    UserCommand.I18N_PREFIX.Info.Application.IntentGuildMembers
+                                )
+                            }
+                                |${fancify(hasGatewayMessageContent || hasGatewayMessageContentLimited)} ${
+                                context.i18nContext.get(
+                                    UserCommand.I18N_PREFIX.Info.Application.IntentMessageContent
+                                )
+                            }
                             """.trimMargin(),
                             false
                         )
@@ -250,12 +278,14 @@ interface UserInfoExecutor {
                         )
 
                         if (applicationInfo.icon != null)
-                            thumbnailUrl = "https://cdn.discordapp.com/app-icons/${applicationInfo.id}/${applicationInfo.icon}.png"
+                            thumbnailUrl =
+                                "https://cdn.discordapp.com/app-icons/${applicationInfo.id}/${applicationInfo.icon}.png"
 
                         color = LorittaColors.DiscordOldBlurple.toKordColor()
                     } else {
                         title = "${Emotes.Error} Whoops"
-                        description = context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.NoMatchingApplicationFound)
+                        description =
+                            context.i18nContext.get(UserCommand.I18N_PREFIX.Info.Application.NoMatchingApplicationFound)
                     }
                 }
             }
@@ -291,7 +321,8 @@ interface UserInfoExecutor {
                         )
                     )
                 ) {
-                    label = context.i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGlobalAvatar)
+                    label =
+                        context.i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGlobalAvatar)
                 }
 
                 // ===[ GUILD AVATAR ]===
@@ -323,7 +354,8 @@ interface UserInfoExecutor {
                             )
                         )
                     ) {
-                        label = context.i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGuildProfileAvatar)
+                        label =
+                            context.i18nContext.get(I18nKeysData.Innercommands.Innercommand.Inneruser.Inneravatar.ViewUserGuildProfileAvatar)
                     }
                 }
             }
@@ -358,7 +390,11 @@ interface UserInfoExecutor {
             }
 
             val inviteUrl = applicationInfo?.customInstallUrl ?: if (applicationInfo?.installParams != null) {
-                "https://discord.com/api/oauth2/authorize?client_id=${applicationInfo.id}&scope=${applicationInfo.installParams.scopes.joinToString("+")}&permissions=${applicationInfo.installParams.permissions.code}"
+                "https://discord.com/api/oauth2/authorize?client_id=${applicationInfo.id}&scope=${
+                    applicationInfo.installParams.scopes.joinToString(
+                        "+"
+                    )
+                }&permissions=${applicationInfo.installParams.permissions.code}"
             } else null
 
             val termsOfServiceUrl = applicationInfo?.termsOfServiceUrl

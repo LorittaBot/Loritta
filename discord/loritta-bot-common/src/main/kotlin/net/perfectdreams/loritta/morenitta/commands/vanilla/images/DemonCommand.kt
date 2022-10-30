@@ -10,20 +10,25 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
-class DemonCommand(loritta: LorittaBot) : AbstractCommand(loritta, "demon", listOf("demônio", "demonio", "demónio"), category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
-	override fun getDescriptionKey() = LocaleKeyData("commands.command.demon.description")
-	override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
+class DemonCommand(loritta: LorittaBot) : AbstractCommand(
+    loritta,
+    "demon",
+    listOf("demônio", "demonio", "demónio"),
+    category = net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES
+) {
+    override fun getDescriptionKey() = LocaleKeyData("commands.command.demon.description")
+    override fun getExamplesKey() = Command.TWO_IMAGES_EXAMPLES_KEY
 
-	// TODO: Fix Usage
+    // TODO: Fix Usage
 
-	override fun needsToUploadFiles() = true
+    override fun needsToUploadFiles() = true
 
-	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
-		val file = DemonGIF.getGIF(contextImage, context.config.localeId)
+    override suspend fun run(context: CommandContext, locale: BaseLocale) {
+        val contextImage = context.getImageAt(0) ?: run { Constants.INVALID_IMAGE_REPLY.invoke(context); return; }
+        val file = DemonGIF.getGIF(contextImage, context.config.localeId)
 
-		loritta.gifsicle.optimizeGIF(file)
-		context.sendFile(file, "demon.gif", context.getAsMention(true))
-		file.delete()
-	}
+        loritta.gifsicle.optimizeGIF(file)
+        context.sendFile(file, "demon.gif", context.getAsMention(true))
+        file.delete()
+    }
 }

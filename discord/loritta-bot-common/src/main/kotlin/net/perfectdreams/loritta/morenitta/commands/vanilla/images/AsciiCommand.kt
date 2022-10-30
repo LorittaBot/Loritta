@@ -7,7 +7,11 @@ import net.perfectdreams.loritta.common.utils.image.JVMImage
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 
-class AsciiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("ascii", "asciiart", "img2ascii", "img2asciiart", "image2ascii"), net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES) {
+class AsciiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(
+    loritta,
+    listOf("ascii", "asciiart", "img2ascii", "img2asciiart", "image2ascii"),
+    net.perfectdreams.loritta.common.commands.CommandCategory.IMAGES
+) {
     companion object {
         private const val LOCALE_PREFIX = "commands.command"
     }

@@ -11,24 +11,29 @@ import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import org.jetbrains.exposed.sql.transactions.transaction
 
 class MiscellaneousPayload(val loritta: LorittaBot) : ConfigPayloadType("miscellaneous") {
-	override fun process(payload: JsonObject, userIdentification: LorittaJsonWebSession.UserIdentification, serverConfig: ServerConfig, guild: Guild) {
-		val enableQuirky = payload["enableQuirky"].bool
-		val enableBomDiaECia = payload["enableBomDiaECia"].bool
+    override fun process(
+        payload: JsonObject,
+        userIdentification: LorittaJsonWebSession.UserIdentification,
+        serverConfig: ServerConfig,
+        guild: Guild
+    ) {
+        val enableQuirky = payload["enableQuirky"].bool
+        val enableBomDiaECia = payload["enableBomDiaECia"].bool
 
-		runBlocking {
-			loritta.pudding.transaction {
-				val miscellaneousConfig = serverConfig.miscellaneousConfig
+        runBlocking {
+            loritta.pudding.transaction {
+                val miscellaneousConfig = serverConfig.miscellaneousConfig
 
-				val newConfig = miscellaneousConfig ?: MiscellaneousConfig.new {
-					this.enableQuirky = enableQuirky
-					this.enableBomDiaECia = enableBomDiaECia
-				}
+                val newConfig = miscellaneousConfig ?: MiscellaneousConfig.new {
+                    this.enableQuirky = enableQuirky
+                    this.enableBomDiaECia = enableBomDiaECia
+                }
 
-				newConfig.enableQuirky = enableQuirky
-				newConfig.enableBomDiaECia = enableBomDiaECia
+                newConfig.enableQuirky = enableQuirky
+                newConfig.enableBomDiaECia = enableBomDiaECia
 
-				serverConfig.miscellaneousConfig = newConfig
-			}
-		}
-	}
+                serverConfig.miscellaneousConfig = newConfig
+            }
+        }
+    }
 }

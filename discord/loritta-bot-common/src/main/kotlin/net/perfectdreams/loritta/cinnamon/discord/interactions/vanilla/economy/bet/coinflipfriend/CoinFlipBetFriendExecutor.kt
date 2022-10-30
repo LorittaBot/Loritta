@@ -1,30 +1,13 @@
 package net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.bet.coinflipfriend
 
-import dev.kord.common.DiscordTimestampStyle
-import dev.kord.common.entity.ButtonStyle
-import dev.kord.common.entity.Snowflake
-import dev.kord.common.toMessageFormat
-import dev.kord.core.entity.User
-import kotlinx.datetime.Clock
-import net.perfectdreams.discordinteraktions.common.builder.message.actionRow
-import net.perfectdreams.loritta.cinnamon.emotes.Emotes
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.discordinteraktions.common.commands.options.SlashCommandArguments
-import net.perfectdreams.loritta.cinnamon.discord.interactions.InteractionContext
-import net.perfectdreams.loritta.cinnamon.discord.interactions.SlashContextHighLevelEditableMessage
-import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.*
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.interactiveButton
-import net.perfectdreams.loritta.cinnamon.discord.interactions.components.loriEmoji
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.ApplicationCommandContext
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.CinnamonSlashCommandExecutor
+import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.options.LocalizedApplicationCommandOptions
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.ShortenedToLongSonhosAutocompleteExecutor
 import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.BetCommand
-import net.perfectdreams.loritta.cinnamon.discord.interactions.vanilla.economy.declarations.SonhosCommand
-import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils
-import net.perfectdreams.loritta.cinnamon.discord.utils.SonhosUtils.appendUserHaventGotDailyTodayOrUpsellSonhosBundles
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserId
-import net.perfectdreams.loritta.cinnamon.discord.utils.UserUtils
-import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import kotlin.time.Duration.Companion.days
+import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import kotlin.time.Duration.Companion.minutes
 
 class CoinFlipBetFriendExecutor(loritta: LorittaBot) : CinnamonSlashCommandExecutor(loritta) {
