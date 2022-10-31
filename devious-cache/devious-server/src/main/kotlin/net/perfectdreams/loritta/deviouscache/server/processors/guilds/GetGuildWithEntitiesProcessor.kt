@@ -24,12 +24,6 @@ class GetGuildWithEntitiesProcessor(val m: DeviousCache) {
             val channels = cachedGuild.channelIds.mapNotNull { m.channels[it] }.associateBy { it.id }
             val emotes = m.emotes[request.id]
 
-            println("Get guild ${request.id}")
-            if (request.id == Snowflake(268353819409252352))
-                channels.forEach {
-                    println(it)
-                }
-
             return GetGuildWithEntitiesResponse(
                 cachedGuildData,
                 roles ?: emptyMap(),

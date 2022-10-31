@@ -205,8 +205,6 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
             logger.info { "Max Memory: ${runtime.maxMemory() / mb}MiB" }
         }
 
-        println(config.persistenceDelay)
-
         scheduleCoroutineAtFixedRate(
             CoroutineScope(Dispatchers.IO),
             config.persistenceDelay.milliseconds,
