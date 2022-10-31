@@ -28,28 +28,28 @@ class PostRpcRoute(val m: DeviousCache) : BaseRoute("/rpc") {
     override suspend fun onRequest(call: ApplicationCall) {
         try {
             val compressionHeader = call.request.header("X-Devious-Cache-Compression")
+            val contentLength = call.request.contentLength()?.toInt() ?: error("Missing Content-Length!")
+
+            // For now, we won't check the dictionary
+            val payload = withContext(Dispatchers.IO) {
+                // We use readAllBytes to avoid allocating multiple ByteArrays when resizing the backed ByteArray
+                // Java does have a readNBytes method on InputStream, but the DEFAULT_BUFFER_SIZE is so small, that it would cause multiple resizes anyhow, so
+                // it is better to use our own readAllBytes method.
+                //
+                // If the Content-Length is known (example: images on Discord's CDN do have Content-Length on the response header)
+                // we can allocate the array with exactly the same size that the Content-Length provides, this way we avoid a lot of unnecessary Arrays.copyOf!
+                // Of course, this could be abused to allocate a gigantic array that causes Loritta to crash, but if the Content-Length is present, Loritta checks the size
+                // before trying to download it, so no worries :)
+                //
+                // While this does not provide a huge *reading* performance boost, it does reduce the amount of allocations required, sweet!
+                call.receiveStream().readAllBytes(contentLength, contentLength)
+            }
+
             val bodyAsJson = if (compressionHeader == null) {
-                withContext(Dispatchers.IO) { call.receiveText() }
+                payload.toString(Charsets.UTF_8)
             } else {
                 val (type, _) = compressionHeader.split(":")
                 require(type == "zstd") { "Only zstd is supported as a compression method!" }
-
-                val contentLength = call.request.contentLength()?.toInt() ?: error("Missing Content-Length!")
-
-                // For now, we won't check the dictionary
-                val payload = withContext(Dispatchers.IO) {
-                    // We use readAllBytes to avoid allocating multiple ByteArrays when resizing the backed ByteArray
-                    // Java does have a readNBytes method on InputStream, but the DEFAULT_BUFFER_SIZE is so small, that it would cause multiple resizes anyhow, so
-                    // it is better to use our own readAllBytes method.
-                    //
-                    // If the Content-Length is known (example: images on Discord's CDN do have Content-Length on the response header)
-                    // we can allocate the array with exactly the same size that the Content-Length provides, this way we avoid a lot of unnecessary Arrays.copyOf!
-                    // Of course, this could be abused to allocate a gigantic array that causes Loritta to crash, but if the Content-Length is present, Loritta checks the size
-                    // before trying to download it, so no worries :)
-                    //
-                    // While this does not provide a huge *reading* performance boost, it does reduce the amount of allocations required, sweet!
-                    call.receiveStream().readAllBytes(contentLength, contentLength)
-                }
 
                 Zstd.decompress(payload, Zstd.decompressedSize(payload).toInt())
                     .toString(Charsets.UTF_8)
