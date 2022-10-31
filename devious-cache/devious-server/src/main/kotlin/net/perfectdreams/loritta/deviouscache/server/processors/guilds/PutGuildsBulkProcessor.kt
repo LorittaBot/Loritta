@@ -23,7 +23,7 @@ class PutGuildsBulkProcessor(val m: DeviousCache) {
         m.withLock(*guildIds.toTypedArray()) {
             m.awaitForEntityPersistenceModificationMutex()
 
-            logger.info { "Received Put Guilds Bulk request for ${request.requests} guilds!" }
+            logger.info { "Received Put Guilds Bulk request for ${request.requests.map { it.id }} guilds!" }
             val newGuilds = mutableSetOf<Snowflake>()
             for (request in request.requests) {
                 if (PutGuildProcessor.processGuild(logger, m, request))
