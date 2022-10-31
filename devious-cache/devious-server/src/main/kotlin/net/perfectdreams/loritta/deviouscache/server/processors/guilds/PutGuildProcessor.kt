@@ -5,6 +5,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.deviouscache.requests.PutGuildRequest
 import net.perfectdreams.loritta.deviouscache.responses.DeviousResponse
 import net.perfectdreams.loritta.deviouscache.responses.OkResponse
+import net.perfectdreams.loritta.deviouscache.responses.PutGuildResponse
 import net.perfectdreams.loritta.deviouscache.server.DeviousCache
 import net.perfectdreams.loritta.deviouscache.server.utils.DeviousGuildDataWrapper
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildAndUserPair
@@ -95,9 +96,9 @@ class PutGuildProcessor(val m: DeviousCache) {
         m.withLock(GuildKey(request.id)) {
             m.awaitForEntityPersistenceModificationMutex()
 
-            processGuild(logger, m, request)
+            val isNewGuild = processGuild(logger, m, request)
 
-            return OkResponse
+            return PutGuildResponse(isNewGuild)
         }
     }
 }
