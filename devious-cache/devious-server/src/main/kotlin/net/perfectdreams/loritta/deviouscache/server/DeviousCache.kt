@@ -2,10 +2,8 @@ package net.perfectdreams.loritta.deviouscache.server
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.Snowflake
-import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
-import io.ktor.server.plugins.compression.*
 import io.ktor.server.routing.*
 import io.ktor.utils.io.core.*
 import kotlinx.coroutines.*
@@ -242,8 +240,6 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
                 }
 
                 module {
-                    install(Compression)
-
                     routing {
                         for (route in routes) {
                             route.register(this)
