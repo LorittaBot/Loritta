@@ -18,6 +18,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("io.ktor:ktor-server-core:${Versions.KTOR}")
     implementation("io.ktor:ktor-server-jetty:${Versions.KTOR}")
+    implementation("io.ktor:ktor-server-compression:${Versions.KTOR}")
     implementation("io.ktor:ktor-websockets:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-core:${Versions.KTOR}")
     implementation("io.ktor:ktor-client-java:${Versions.KTOR}")
