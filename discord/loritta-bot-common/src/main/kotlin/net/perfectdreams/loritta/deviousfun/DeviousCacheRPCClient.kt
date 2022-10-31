@@ -76,7 +76,6 @@ class DeviousCacheRPCClient(val url: String) {
         }.also { logger.debug { "RPC Result: ${it.status}" } }
 
         val compressionHeader = response.headers["X-Devious-Cache-Compression"]
-        println(compressionHeader)
         val bodyAsJson = if (compressionHeader == null) {
             withContext(Dispatchers.IO) { response.bodyAsText() }
         } else {
