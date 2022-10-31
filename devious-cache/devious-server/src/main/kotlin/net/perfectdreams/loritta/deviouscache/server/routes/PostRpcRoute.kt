@@ -1,15 +1,22 @@
 package net.perfectdreams.loritta.deviouscache.server.routes
 
+import com.github.luben.zstd.Zstd
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviouscache.requests.*
+import net.perfectdreams.loritta.deviouscache.responses.DeviousResponse
 import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
 import net.perfectdreams.loritta.deviouscache.server.DeviousCache
 import net.perfectdreams.loritta.deviouscache.server.utils.extensions.respondJson
+import net.perfectdreams.loritta.deviouscache.utils.ZstdDictionaries
 import net.perfectdreams.sequins.ktor.BaseRoute
 
 class PostRpcRoute(val m: DeviousCache) : BaseRoute("/rpc") {
@@ -19,10 +26,24 @@ class PostRpcRoute(val m: DeviousCache) : BaseRoute("/rpc") {
 
     override suspend fun onRequest(call: ApplicationCall) {
         try {
-            val body = call.receiveText()
+            val compressionHeader = call.request.header("X-Devious-Cache-Compression")
+            val bodyAsJson = if (compressionHeader == null) {
+                withContext(Dispatchers.IO) { call.receiveText() }
+            } else {
+                val (type, _) = compressionHeader.split(":")
+                require(type == "zstd") { "Only zstd is supported as a compression method!" }
+
+                // For now, we won't check the dictionary
+                val payload = withContext(Dispatchers.IO) {
+                    call.receiveStream().readAllBytes()
+                }
+
+                Zstd.decompress(payload, Zstd.decompressedSize(payload).toInt())
+                    .toString(Charsets.UTF_8)
+            }
 
             // Check based on type
-            val response = when (val request = Json.decodeFromString<DeviousRequest>(body)) {
+            val response = when (val request = Json.decodeFromString<DeviousRequest>(bodyAsJson)) {
                 is GetUserRequest -> m.processors.getUserProcessor.process(request)
                 is PutUserRequest -> m.processors.putUserProcessor.process(request)
 
@@ -64,8 +85,13 @@ class PostRpcRoute(val m: DeviousCache) : BaseRoute("/rpc") {
                 else -> error("I don't know how to handle ${request::class}!")
             }
 
-            call.respondJson(
-                response,
+            val requestAsJson = Json.encodeToString<DeviousResponse>(response)
+            val compressedBody = Zstd.compress(requestAsJson.toByteArray(Charsets.UTF_8), 2)
+
+            call.response.header("X-Devious-Cache-Compression", "zstd:${ZstdDictionaries.Dictionary.NO_DICTIONARY.name}")
+
+            call.respondBytes(
+                compressedBody,
                 status = if (response is NotFoundResponse)
                     HttpStatusCode.NotFound
                 else

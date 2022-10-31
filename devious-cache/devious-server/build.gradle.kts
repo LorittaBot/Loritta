@@ -29,6 +29,9 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation("net.perfectdreams.exposedpowerutils:exposed-power-utils:1.1.0")
 
+    // zstd
+    implementation("com.github.luben:zstd-jni:1.5.2-4")
+
     implementation("dev.kord:kord-common") {
         version {
             strictly("0.8.x-lori-fork-20221014.000427-14")

@@ -5,12 +5,16 @@ import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import io.ktor.server.request.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviouscache.requests.DeviousRequest
 import net.perfectdreams.loritta.deviouscache.responses.DeviousResponse
+import net.perfectdreams.loritta.deviouscache.utils.ZstdDictionaries
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import java.security.SecureRandom
@@ -62,11 +66,33 @@ class DeviousCacheRPCClient(val url: String) {
     suspend fun execute(request: DeviousRequest): DeviousResponse {
         logger.debug { "Sending ${request::class.simpleName} to DeviousCache" }
 
-        return Json.decodeFromString<DeviousResponse>(
-            http.post("https://$url/rpc") {
-                setBody(Json.encodeToString<DeviousRequest>(request))
-            }.also { logger.debug { "RPC Result: ${it.status}" } }.bodyAsText()
-        )
+        val requestAsJson = Json.encodeToString<DeviousRequest>(request)
+        val compressedBody = Zstd.compress(requestAsJson.toByteArray(Charsets.UTF_8), 2)
+
+        val response = http.post("https://$url/rpc") {
+            header("X-Devious-Cache-Compression", "zstd:${ZstdDictionaries.Dictionary.NO_DICTIONARY.name}")
+
+            setBody(compressedBody)
+        }.also { logger.debug { "RPC Result: ${it.status}" } }
+
+        val compressionHeader = response.headers["X-Devious-Cache-Compression"]
+        println(compressionHeader)
+        val bodyAsJson = if (compressionHeader == null) {
+            withContext(Dispatchers.IO) { response.bodyAsText() }
+        } else {
+            val (type, _) = compressionHeader.split(":")
+            require(type == "zstd") { "Only zstd is supported as a compression method!" }
+
+            // For now, we won't check the dictionary
+            val payload = withContext(Dispatchers.IO) {
+                response.readBytes()
+            }
+
+            Zstd.decompress(payload, Zstd.decompressedSize(payload).toInt())
+                .toString(Charsets.UTF_8)
+        }
+
+        return Json.decodeFromString<DeviousResponse>(bodyAsJson)
     }
 
     fun unknownResponse(response: DeviousResponse): Nothing = error("I don't know how to handle ${response::class}")
