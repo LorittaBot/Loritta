@@ -16,8 +16,9 @@ class PutGuildProcessor(val m: DeviousCache) {
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        fun processGuild(logger: KLogger, m: DeviousCache, request: PutGuildRequest): Boolean {
-            logger.info { "Updating guild with ID ${request.id}" }
+        fun processGuild(logger: KLogger, log: Boolean, m: DeviousCache, request: PutGuildRequest): Boolean {
+            if (log)
+                logger.info { "Updating guild with ID ${request.id}" }
 
             val cachedGuild = m.guilds[request.id]
             val isNewGuild = cachedGuild == null
@@ -96,7 +97,7 @@ class PutGuildProcessor(val m: DeviousCache) {
         m.withLock(GuildKey(request.id)) {
             m.awaitForEntityPersistenceModificationMutex()
 
-            val isNewGuild = processGuild(logger, m, request)
+            val isNewGuild = processGuild(logger, true, m, request)
 
             return PutGuildResponse(isNewGuild)
         }
