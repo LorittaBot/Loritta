@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.deviousfun
 
+import com.github.luben.zstd.Zstd
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*

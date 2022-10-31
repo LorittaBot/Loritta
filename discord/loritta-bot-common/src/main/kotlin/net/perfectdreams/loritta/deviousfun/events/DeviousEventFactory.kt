@@ -137,12 +137,11 @@ class DeviousEventFactory(val m: DeviousFun) {
         )
     }
 
-    suspend fun createGuildJoinEvent(gateway: DeviousGateway, guild: Guild, guildCreate: GuildCreate): GuildJoinEvent {
+    suspend fun createGuildJoinEvent(gateway: DeviousGateway, guild: Guild): GuildJoinEvent {
         return GuildJoinEvent(
             m,
             gateway,
-            guild,
-            guildCreate
+            guild
         )
     }
 

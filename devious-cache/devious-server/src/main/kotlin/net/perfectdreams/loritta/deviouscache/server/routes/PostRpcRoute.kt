@@ -30,6 +30,7 @@ class PostRpcRoute(val m: DeviousCache) : BaseRoute("/rpc") {
                 is GetIfGuildExistsRequest -> m.processors.getIfGuildExistsProcessor.process(request)
                 is GetGuildWithEntitiesRequest -> m.processors.getGuildWithEntitiesProcessor.process(request)
                 is PutGuildRequest -> m.processors.putGuildProcessor.process(request)
+                is PutGuildsBulkRequest -> m.processors.putGuildsBulkProcessor.process(request)
                 is DeleteGuildRequest -> m.processors.deleteGuildProcessor.process(request)
                 is GetGuildCountRequest -> m.processors.getGuildCountProcessor.process(request)
                 is PutGuildMemberRequest -> m.processors.putGuildMemberProcesor.process(request)

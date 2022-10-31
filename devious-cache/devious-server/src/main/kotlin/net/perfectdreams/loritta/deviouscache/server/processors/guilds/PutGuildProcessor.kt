@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.deviouscache.server.processors.guilds
 
+import mu.KLogger
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviouscache.requests.PutGuildRequest
 import net.perfectdreams.loritta.deviouscache.responses.DeviousResponse
@@ -13,15 +14,12 @@ import net.perfectdreams.loritta.deviouscache.server.utils.extensions.runIfDiffe
 class PutGuildProcessor(val m: DeviousCache) {
     companion object {
         private val logger = KotlinLogging.logger {}
-    }
 
-    suspend fun process(request: PutGuildRequest): DeviousResponse {
-        m.withLock(GuildKey(request.id)) {
-            m.awaitForEntityPersistenceModificationMutex()
-
+        fun processGuild(logger: KLogger, m: DeviousCache, request: PutGuildRequest): Boolean {
             logger.info { "Updating guild with ID ${request.id}" }
 
             val cachedGuild = m.guilds[request.id]
+            val isNewGuild = cachedGuild == null
             val wrapper = DeviousGuildDataWrapper(
                 request.data,
                 // TODO: This feels weird
@@ -63,9 +61,9 @@ class PutGuildProcessor(val m: DeviousCache) {
             if (channels != null) {
                 val oldChannelIds = cachedGuild?.channelIds?.toSet()
 
-                // Remove the old channels from the global channel cache
+                // Remove removed channels from the global channel cache
                 if (oldChannelIds != null) {
-                    for (channelId in oldChannelIds) {
+                    for (channelId in (channels.map { it.id } - oldChannelIds)) {
                         m.channels.remove(channelId)
                         m.dirtyChannels.add(channelId)
                     }
@@ -88,6 +86,16 @@ class PutGuildProcessor(val m: DeviousCache) {
                 m.voiceStates[request.id] = it.associateBy { it.userId }
                 m.dirtyVoiceStates.add(request.id)
             }
+
+            return isNewGuild
+        }
+    }
+
+    suspend fun process(request: PutGuildRequest): DeviousResponse {
+        m.withLock(GuildKey(request.id)) {
+            m.awaitForEntityPersistenceModificationMutex()
+
+            processGuild(logger, m, request)
 
             return OkResponse
         }

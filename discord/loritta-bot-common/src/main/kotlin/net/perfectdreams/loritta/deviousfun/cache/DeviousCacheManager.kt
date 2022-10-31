@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
+import net.perfectdreams.loritta.deviousfun.utils.GuildAndJoinStatus
 import java.time.ZoneOffset
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -87,7 +88,7 @@ class DeviousCacheManager(val m: DeviousFun) {
     suspend fun createGuild(
         data: DiscordGuild,
         guildChannels: List<DiscordChannel>?,
-    ): Guild {
+    ): GuildAndJoinStatus {
         m.guildCreateSemaphore.withPermit {
             val deviousGuildData = DeviousGuildData.from(data)
             val guildMembers = data.members.value
@@ -96,7 +97,7 @@ class DeviousCacheManager(val m: DeviousFun) {
             val rolesData = data.roles.map { DeviousRoleData.from(it) }
             val emojisData = data.emojis.map { DeviousGuildEmojiData.from(it) }
 
-            m.rpc.execute(
+            val result = m.rpc.execute(
                 PutGuildRequest(
                     data.id,
                     deviousGuildData,
@@ -106,7 +107,7 @@ class DeviousCacheManager(val m: DeviousFun) {
                     guildChannels?.map { DeviousChannelData.from(data.id, it) },
                     guildVoiceStates?.map { DeviousVoiceStateData.from(it) }
                 )
-            )
+            ) as PutGuildResponse
 
             val cacheWrapper = Guild.CacheWrapper()
             val guild = Guild(
@@ -131,7 +132,67 @@ class DeviousCacheManager(val m: DeviousFun) {
                 )
             }
 
-            return guild
+            return GuildAndJoinStatus(guild, result.isNewGuild)
+        }
+    }
+
+    suspend fun createGuildsBulk(
+        guilds: List<DiscordGuild>
+    ): List<GuildAndJoinStatus> {
+        val requests = mutableListOf<PutGuildRequest>()
+        val deviousGuilds = mutableListOf<Guild>()
+
+        for (guild in guilds) {
+            val deviousGuildData = DeviousGuildData.from(guild)
+            val guildMembers = guild.members.value
+            val guildVoiceStates = guild.voiceStates.value
+
+            val rolesData = guild.roles.map { DeviousRoleData.from(it) }
+            val emojisData = guild.emojis.map { DeviousGuildEmojiData.from(it) }
+            val guildChannels = guild.channels.value!! // Shouldn't be null in a GuildCreate
+
+            val request = PutGuildRequest(
+                guild.id,
+                deviousGuildData,
+                rolesData,
+                emojisData,
+                guildMembers?.associate { it.user.value!!.id to DeviousMemberData.from(it) },
+                guildChannels.map { DeviousChannelData.from(guild.id, it) },
+                guildVoiceStates?.map { DeviousVoiceStateData.from(it) }
+            )
+
+            requests.add(request)
+
+            val cacheWrapper = Guild.CacheWrapper()
+            val guild = Guild(
+                m,
+                deviousGuildData,
+                cacheWrapper
+            )
+
+            for (roleData in rolesData) {
+                cacheWrapper.roles[roleData.id] = Role(
+                    m,
+                    guild,
+                    roleData
+                )
+            }
+
+            for (emojiData in emojisData) {
+                cacheWrapper.emotes[emojiData.id] = DiscordGuildEmote(
+                    m,
+                    guild,
+                    emojiData
+                )
+            }
+
+            deviousGuilds.add(guild)
+        }
+
+        val result = m.rpc.execute(PutGuildsBulkRequest(requests)) as PutGuildsBulkResponse
+
+        return deviousGuilds.map {
+            GuildAndJoinStatus(it, it.guild.id in result.newGuilds)
         }
     }
 

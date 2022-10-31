@@ -144,7 +144,7 @@ class DeviousFun(val loritta: LorittaBot) {
         addContextToException({ "Something went wrong while trying to query guild $id" }) {
             val guild = loritta.rest.guild.getGuild(id, withCounts = true)
             val channels = loritta.rest.guild.getGuildChannels(id)
-            return cacheManager.createGuild(guild, channels)
+            return cacheManager.createGuild(guild, channels).guild
         }
     }
 

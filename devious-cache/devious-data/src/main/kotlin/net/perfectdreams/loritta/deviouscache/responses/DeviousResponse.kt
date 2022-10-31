@@ -48,6 +48,12 @@ data class GetGuildWithEntitiesResponse(
 ) : DeviousResponse()
 
 @Serializable
+data class PutGuildResponse(val isNewGuild: Boolean) : DeviousResponse()
+
+@Serializable
+data class PutGuildsBulkResponse(val newGuilds: Set<Snowflake>) : DeviousResponse()
+
+@Serializable
 data class GetGuildMemberResponse(val member: DeviousMemberData) : DeviousResponse()
 
 @Serializable

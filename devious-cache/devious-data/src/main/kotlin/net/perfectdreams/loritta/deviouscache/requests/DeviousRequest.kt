@@ -2,7 +2,6 @@ package net.perfectdreams.loritta.deviouscache.requests
 
 import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonObject
 import net.perfectdreams.loritta.deviouscache.data.*
 
 @Serializable
@@ -62,6 +61,9 @@ data class PutGuildRequest(
     val channels: List<DeviousChannelData>?,
     val voiceStates: List<DeviousVoiceStateData>?
 ) : DeviousRequest()
+
+@Serializable
+data class PutGuildsBulkRequest(val requests: List<PutGuildRequest>) : DeviousRequest()
 
 @Serializable
 data class PutGuildRoleRequest(

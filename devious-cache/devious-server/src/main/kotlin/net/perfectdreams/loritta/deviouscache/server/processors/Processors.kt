@@ -18,6 +18,7 @@ class Processors(val m: DeviousCache) {
     val getIfGuildExistsProcessor = GetIfGuildExistsProcessor(m)
     val getGuildWithEntitiesProcessor = GetGuildWithEntitiesProcessor(m)
     val putGuildProcessor = PutGuildProcessor(m)
+    val putGuildsBulkProcessor = PutGuildsBulkProcessor(m)
     val deleteGuildProcessor = DeleteGuildProcessor(m)
     val putGuildMemberProcesor = PutGuildMemberProcessor(m)
     val deleteGuildMemberProcessor = DeleteGuildMemberProcessor(m)
