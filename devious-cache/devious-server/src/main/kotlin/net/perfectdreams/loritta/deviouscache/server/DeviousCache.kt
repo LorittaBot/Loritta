@@ -210,7 +210,6 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
             CoroutineScope(Dispatchers.Default),
             5.seconds
         ) {
-            System.gc()
             val mb = 1024 * 1024
             val runtime = Runtime.getRuntime()
 

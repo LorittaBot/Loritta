@@ -140,3 +140,6 @@ data class GetMiscellaneousDataRequest(val key: String) : DeviousRequest()
 
 @Serializable
 data class PutMiscellaneousDataRequest(val key: String, val data: String) : DeviousRequest()
+
+@Serializable
+object InvokeManualGCRequest : DeviousRequest()

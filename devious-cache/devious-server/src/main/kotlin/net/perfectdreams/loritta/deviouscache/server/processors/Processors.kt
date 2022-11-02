@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.deviouscache.server.processors.channels.GetChan
 import net.perfectdreams.loritta.deviouscache.server.processors.channels.PutChannelProcessor
 import net.perfectdreams.loritta.deviouscache.server.processors.guilds.*
 import net.perfectdreams.loritta.deviouscache.server.processors.misc.GetMiscellaneousDataProcessor
+import net.perfectdreams.loritta.deviouscache.server.processors.misc.InvokeManualGCProcessor
 import net.perfectdreams.loritta.deviouscache.server.processors.misc.PutMiscellaneousDataProcessor
 import net.perfectdreams.loritta.deviouscache.server.processors.users.GetUserProcessor
 import net.perfectdreams.loritta.deviouscache.server.processors.users.PutUserProcessor
@@ -48,4 +49,5 @@ class Processors(val m: DeviousCache) {
 
     val getMiscellaneousDataProcessor = GetMiscellaneousDataProcessor(m)
     val putMiscellaneousDataProcessor = PutMiscellaneousDataProcessor(m)
+    val invokeManualGCProcessor = InvokeManualGCProcessor(m)
 }

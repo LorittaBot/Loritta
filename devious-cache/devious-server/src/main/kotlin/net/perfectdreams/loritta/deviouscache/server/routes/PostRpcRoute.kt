@@ -94,6 +94,8 @@ class PostRpcRoute(val m: DeviousCache) : BaseRoute("/rpc") {
 
                 is GetMiscellaneousDataRequest -> m.processors.getMiscellaneousDataProcessor.process(request)
                 is PutMiscellaneousDataRequest -> m.processors.putMiscellaneousDataProcessor.process(request)
+                // This is used for debugging purposes to check how much memory is being used after a GC is executed
+                is InvokeManualGCRequest -> m.processors.invokeManualGCProcessor.process(request)
 
                 else -> error("I don't know how to handle ${request::class}!")
             }
