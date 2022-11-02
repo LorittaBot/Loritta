@@ -501,7 +501,7 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
                 if (nonNullRolesData.isNotEmpty())
                     GuildRoles.batchUpsert(nonNullRolesData.map { it.key to it.value }, GuildRoles.id) { it, data ->
                         it[GuildRoles.id] = data.first.value.toLong()
-                        it[GuildRoles.data] = Json.encodeToString(data.second)
+                        it[GuildRoles.data] = Json.encodeToString(data.second?.toMap())
                     }
 
                 val nullEmojisData = dirtyEmojisData.filterValues { it == null }
@@ -512,7 +512,7 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
                 if (nonNullEmojisData.isNotEmpty())
                     GuildEmojis.batchUpsert(nonNullEmojisData.map { it.key to it.value }, GuildEmojis.id) { it, data ->
                         it[GuildEmojis.id] = data.first.value.toLong()
-                        it[GuildEmojis.data] = Json.encodeToString(data.second)
+                        it[GuildEmojis.data] = Json.encodeToString(data.second?.toMap())
                     }
 
                 val nullVoiceStatesData = dirtyVoiceStatesData.filterValues { it == null }
@@ -523,7 +523,7 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
                 if (nonNullVoiceStatesData.isNotEmpty())
                     GuildVoiceStates.batchUpsert(nonNullVoiceStatesData.map { it.key to it.value }, GuildVoiceStates.id) { it, data ->
                         it[GuildVoiceStates.id] = data.first.value.toLong()
-                        it[GuildVoiceStates.data] = Json.encodeToString(data.second)
+                        it[GuildVoiceStates.data] = Json.encodeToString(data.second?.toMap())
                     }
             }
         }
