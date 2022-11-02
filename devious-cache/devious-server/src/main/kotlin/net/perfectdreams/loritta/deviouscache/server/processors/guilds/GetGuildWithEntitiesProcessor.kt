@@ -26,9 +26,9 @@ class GetGuildWithEntitiesProcessor(val m: DeviousCache) {
 
             return GetGuildWithEntitiesResponse(
                 cachedGuildData,
-                roles ?: emptyMap(),
+                roles?.toMap() ?: emptyMap(),
                 channels,
-                emotes ?: emptyMap()
+                emotes?.toMap() ?: emptyMap()
             )
         }
     }

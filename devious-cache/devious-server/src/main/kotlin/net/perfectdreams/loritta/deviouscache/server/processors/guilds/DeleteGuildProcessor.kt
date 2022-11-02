@@ -35,9 +35,9 @@ class DeleteGuildProcessor(val m: DeviousCache) {
             val members = m.members[request.id]
             if (members != null) {
                 m.members.remove(request.id)
-                for (member in members) {
+                members.forEach { memberId, _ ->
                     // Bust the cache of all the members on this guild
-                    m.dirtyMembers.add(GuildAndUserPair(request.id, member.key))
+                    m.dirtyMembers.add(GuildAndUserPair(request.id, memberId))
                 }
             }
 

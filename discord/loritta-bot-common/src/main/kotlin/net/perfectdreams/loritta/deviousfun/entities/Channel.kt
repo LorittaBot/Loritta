@@ -22,6 +22,7 @@ import net.perfectdreams.discordinteraktions.common.utils.footer
 import net.perfectdreams.discordinteraktions.common.utils.thumbnailUrl
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviouscache.data.DeviousChannelData
+import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
 import net.perfectdreams.loritta.deviousfun.DeviousEmbed
 import net.perfectdreams.loritta.deviousfun.DeviousMessage
 import net.perfectdreams.loritta.deviousfun.DeviousFun
@@ -42,13 +43,13 @@ class Channel(
     }
 
     override val idSnowflake: Snowflake
-        get() = channel.id
+        get() = channel.id.toKordSnowflake()
     val name: String?
         get() = channel.name
     val type: ChannelType
         get() = channel.type
     val guildId: Snowflake?
-        get() = channel.guildId
+        get() = channel.guildId?.toKordSnowflake()
     val position: Int?
         get() = channel.position
     val topic: String?
@@ -60,7 +61,11 @@ class Channel(
     val permissionOverwrites: List<Overwrite>
         get() = channel.permissionOverwrites
             ?.map {
-                Overwrite(deviousFun, this, it)
+                Overwrite(
+                    deviousFun,
+                    this,
+                    it.toKordOverwrite()
+                )
             } ?: listOf()
     val history: MessageHistory
         get() = MessageHistory(this)
@@ -71,14 +76,14 @@ class Channel(
     fun getPermissionOverride(role: Role) = permissionOverwrites.firstOrNull { it.id == role.idSnowflake }
 
     suspend fun createPermissionOverride(role: Role, builder: ChannelPermissionModifyBuilder.() -> Unit) =
-        deviousFun.loritta.rest.channel.editRolePermission(channel.id, role.idSnowflake, builder)
+        deviousFun.loritta.rest.channel.editRolePermission(channel.id.toKordSnowflake(), role.idSnowflake, builder)
 
     suspend fun modifyTextChannel(builder: TextChannelModifyBuilder.() -> (Unit)) {
-        deviousFun.loritta.rest.channel.patchTextChannel(channel.id, builder)
+        deviousFun.loritta.rest.channel.patchTextChannel(channel.id.toKordSnowflake(), builder)
     }
 
     suspend fun modifyVoiceChannel(builder: VoiceChannelModifyBuilder.() -> (Unit)) {
-        deviousFun.loritta.rest.channel.patchVoiceChannel(channel.id, builder)
+        deviousFun.loritta.rest.channel.patchVoiceChannel(channel.id.toKordSnowflake(), builder)
     }
 
     suspend fun sendMessage(content: String) = sendMessage(
@@ -93,7 +98,7 @@ class Channel(
     )
 
     suspend fun sendMessage(message: DeviousMessage): Message {
-        val newMessage = deviousFun.loritta.rest.channel.createMessage(channel.id) {
+        val newMessage = deviousFun.loritta.rest.channel.createMessage(channel.id.toKordSnowflake()) {
             this.content = message.contentRaw
             this.messageReference = message.referenceId
             this.failIfNotExists = false
@@ -148,7 +153,7 @@ class Channel(
 
     suspend fun retrieveMessageById(id: String): Message = retrieveMessageById(id.toLong())
     suspend fun retrieveMessageById(id: Long): Message {
-        val retrievedMessage = deviousFun.loritta.rest.channel.getMessage(channel.id, Snowflake(id))
+        val retrievedMessage = deviousFun.loritta.rest.channel.getMessage(channel.id.toKordSnowflake(), Snowflake(id))
         val user = deviousFun.cacheManager.createUser(
             retrievedMessage.author,
             !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage)
@@ -186,16 +191,16 @@ class Channel(
         val guild = guildOrNull ?: error("Can't check if the bot can talk in a channel that has a null guild!")
 
         val lazyLoadedPermissions =
-            deviousFun.loritta.cache.getLazyCachedPermissions(guild.idSnowflake, channel.id, member.idSnowflake)
+            deviousFun.loritta.cache.getLazyCachedPermissions(guild.idSnowflake, channel.id.toKordSnowflake(), member.idSnowflake)
         return lazyLoadedPermissions.canTalk()
     }
 
     suspend fun deleteMessageById(id: String) {
-        deviousFun.loritta.rest.channel.deleteMessage(channel.id, Snowflake(id))
+        deviousFun.loritta.rest.channel.deleteMessage(channel.id.toKordSnowflake(), Snowflake(id))
     }
 
     suspend fun deleteMessageById(id: Long) {
-        deviousFun.loritta.rest.channel.deleteMessage(channel.id, Snowflake(id))
+        deviousFun.loritta.rest.channel.deleteMessage(channel.id.toKordSnowflake(), Snowflake(id))
     }
 
     suspend fun purgeMessages(messages: List<Message>) = purgeMessagesById(messages.map { it.idLong })
@@ -205,14 +210,14 @@ class Channel(
         val chunkedMessagesToBeDeleted = messageIdsAsSnowflakes.chunked(100)
         for (messagesToBeDeleted in chunkedMessagesToBeDeleted) {
             deviousFun.loritta.rest.channel.bulkDelete(
-                channel.id,
+                channel.id.toKordSnowflake(),
                 BulkDeleteRequest(messagesToBeDeleted)
             )
         }
     }
 
     suspend fun retrieveWebhooks(): List<Webhook> {
-        return deviousFun.loritta.rest.webhook.getChannelWebhooks(channel.id)
+        return deviousFun.loritta.rest.webhook.getChannelWebhooks(channel.id.toKordSnowflake())
             .map {
                 Webhook(
                     deviousFun,
@@ -224,12 +229,12 @@ class Channel(
     }
 
     suspend fun createWebhook(name: String): Webhook {
-        val webhook = deviousFun.loritta.rest.webhook.createWebhook(channel.id, name) {}
+        val webhook = deviousFun.loritta.rest.webhook.createWebhook(channel.id.toKordSnowflake(), name) {}
         return Webhook(
             deviousFun,
             this,
             webhook.user.value?.let { deviousFun.cacheManager.createUser(it, false) },
-            deviousFun.loritta.rest.webhook.createWebhook(channel.id, name) {}
+            deviousFun.loritta.rest.webhook.createWebhook(channel.id.toKordSnowflake(), name) {}
         )
     }
 

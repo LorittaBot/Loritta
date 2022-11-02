@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.deviousfun.utils
 
+import net.perfectdreams.loritta.deviouscache.data.toLightweightSnowflake
 import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.deviousfun.entities.User
 
@@ -66,10 +67,10 @@ object PermissionInteractionUtils {
 
                 // Using "member.roles" is expensive because we would query the role list (which is a Get Guild query) every single time
                 // However we already have the guild object... there! So let's get the roles from there!
-                val issuerRoles = guild.roles.filter { it.idSnowflake in issuerAsMember.roleIds }
+                val issuerRoles = guild.roles.filter { it.idSnowflake.toLightweightSnowflake() in issuerAsMember.roleIds }
                     .toList()
                     .sortedByDescending { it.positionRaw }
-                val targetRoles = guild.roles.filter { it.idSnowflake in targetAsMember.roleIds }
+                val targetRoles = guild.roles.filter { it.idSnowflake.toLightweightSnowflake() in targetAsMember.roleIds }
                     .toList()
                     .sortedByDescending { it.positionRaw }
 

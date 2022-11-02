@@ -35,6 +35,8 @@ import net.perfectdreams.loritta.morenitta.profile.profiles.*
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
+import net.perfectdreams.loritta.deviouscache.data.toLightweightSnowflake
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage

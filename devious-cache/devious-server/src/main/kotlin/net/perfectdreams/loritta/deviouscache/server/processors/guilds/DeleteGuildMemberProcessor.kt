@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.deviouscache.responses.OkResponse
 import net.perfectdreams.loritta.deviouscache.server.DeviousCache
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildAndUserPair
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildKey
+import net.perfectdreams.loritta.deviouscache.server.utils.SnowflakeMap
 import net.perfectdreams.loritta.deviouscache.server.utils.UserKey
 
 class DeleteGuildMemberProcessor(val m: DeviousCache) {
@@ -21,8 +22,7 @@ class DeleteGuildMemberProcessor(val m: DeviousCache) {
             logger.info { "Deleting guild member with ID ${request.userId} on guild ${request.guildId}" }
 
             val currentMembers = m.members[request.guildId]
-            m.members[request.guildId] = (currentMembers ?: emptyMap())
-                .toMutableMap()
+            m.members[request.guildId] = (currentMembers ?: SnowflakeMap(0))
                 .also {
                     it.remove(request.userId)
                 }

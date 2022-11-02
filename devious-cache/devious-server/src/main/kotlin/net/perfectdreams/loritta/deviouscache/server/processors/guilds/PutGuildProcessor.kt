@@ -10,6 +10,7 @@ import net.perfectdreams.loritta.deviouscache.server.DeviousCache
 import net.perfectdreams.loritta.deviouscache.server.utils.DeviousGuildDataWrapper
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildAndUserPair
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildKey
+import net.perfectdreams.loritta.deviouscache.server.utils.SnowflakeMap
 import net.perfectdreams.loritta.deviouscache.server.utils.extensions.runIfDifferentAndNotNull
 
 class PutGuildProcessor(val m: DeviousCache) {
@@ -33,21 +34,20 @@ class PutGuildProcessor(val m: DeviousCache) {
             val currentEmotes = m.emotes[request.id]
 
             runIfDifferentAndNotNull(currentEmotes?.values, request.emojis) {
-                m.emotes[request.id] = it.associateBy { it.id }
+                m.emotes[request.id] = SnowflakeMap(it.associateBy { it.id })
                 m.dirtyEmojis.add(request.id)
             }
 
             val currentRoles = m.roles[request.id]
             runIfDifferentAndNotNull(currentRoles?.values, request.roles) {
-                m.roles[request.id] = it.associateBy { it.id }
+                m.roles[request.id] = SnowflakeMap(it.associateBy { it.id })
                 m.dirtyRoles.add(request.id)
             }
 
             val members = request.members
             if (members != null) {
                 val currentMembers = m.members[request.id]
-                m.members[request.id] = (currentMembers ?: emptyMap())
-                    .toMutableMap()
+                m.members[request.id] = (currentMembers ?: SnowflakeMap(members.size))
                     .also {
                         for ((id, member) in members) {
                             val currentMember = it[id]
@@ -85,7 +85,7 @@ class PutGuildProcessor(val m: DeviousCache) {
 
             val currentVoiceStates = m.voiceStates[request.id]
             runIfDifferentAndNotNull(currentVoiceStates?.values, request.voiceStates) {
-                m.voiceStates[request.id] = it.associateBy { it.userId }
+                m.voiceStates[request.id] = SnowflakeMap(it.associateBy { it.userId })
                 m.dirtyVoiceStates.add(request.id)
             }
 

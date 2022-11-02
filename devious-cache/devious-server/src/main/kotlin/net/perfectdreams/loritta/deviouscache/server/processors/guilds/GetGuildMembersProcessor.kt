@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.deviouscache.server.processors.guilds
 
-import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviouscache.data.DeviousUserAndMember
+import net.perfectdreams.loritta.deviouscache.data.LightweightSnowflake
 import net.perfectdreams.loritta.deviouscache.requests.GetGuildMembersRequest
 import net.perfectdreams.loritta.deviouscache.responses.DeviousResponse
 import net.perfectdreams.loritta.deviouscache.responses.GetGuildMembersResponse
@@ -21,7 +21,7 @@ class GetGuildMembersProcessor(val m: DeviousCache) {
         m.withLock(GuildKey(request.guildId)) {
             val cachedMembers = m.members[request.guildId] ?: return NotFoundResponse
 
-            val map = mutableMapOf<Snowflake, DeviousUserAndMember>()
+            val map = mutableMapOf<LightweightSnowflake, DeviousUserAndMember>()
             for ((id, member) in cachedMembers) {
                 val user = m.users[id] ?: continue
 

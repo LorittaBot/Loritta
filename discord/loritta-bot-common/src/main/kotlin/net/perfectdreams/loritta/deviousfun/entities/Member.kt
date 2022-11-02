@@ -5,6 +5,7 @@ import dev.kord.common.entity.Snowflake
 import kotlinx.datetime.toJavaInstant
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviouscache.data.DeviousMemberData
+import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
 import net.perfectdreams.loritta.deviousfun.utils.PermissionInteractionUtils
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -22,7 +23,7 @@ class Member(val deviousFun: DeviousFun, val member: DeviousMemberData, val guil
     val roleIds by member::roles
     val roles: List<Role>
         get() = guild.roles.filter {
-            it.idSnowflake in member.roles
+            it.idSnowflake in member.roles.map { it.toKordSnowflake() }
         }
     val timeBoosted: OffsetDateTime?
         get() = member.premiumSince?.toJavaInstant()?.atOffset(ZoneOffset.UTC)

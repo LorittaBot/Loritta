@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.deviouscache.responses.PutGuildMemberResponse
 import net.perfectdreams.loritta.deviouscache.server.DeviousCache
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildAndUserPair
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildKey
+import net.perfectdreams.loritta.deviouscache.server.utils.SnowflakeMap
 import net.perfectdreams.loritta.deviouscache.server.utils.UserKey
 
 class PutGuildMemberProcessor(val m: DeviousCache) {
@@ -24,8 +25,8 @@ class PutGuildMemberProcessor(val m: DeviousCache) {
             var oldMember: DeviousMemberData? = null
 
             val currentMembers = m.members[request.guildId]
-            m.members[request.guildId] = (currentMembers ?: emptyMap())
-                .toMutableMap()
+            // Expected 1 because we will insert the new member
+            m.members[request.guildId] = (currentMembers ?: SnowflakeMap(1))
                 .also {
                     oldMember = it[request.userId]
                     it[request.userId] = request.member

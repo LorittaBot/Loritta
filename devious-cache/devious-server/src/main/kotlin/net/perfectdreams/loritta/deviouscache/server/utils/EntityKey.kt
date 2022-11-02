@@ -1,13 +1,13 @@
 package net.perfectdreams.loritta.deviouscache.server.utils
 
-import dev.kord.common.entity.Snowflake
+import net.perfectdreams.loritta.deviouscache.data.LightweightSnowflake
 
 sealed class EntityKey {
-    abstract val id: Snowflake
+    abstract val id: LightweightSnowflake
 }
 
-data class GuildKey(override val id: Snowflake) : EntityKey()
+data class GuildKey(override val id: LightweightSnowflake) : EntityKey()
 
-data class ChannelKey(override val id: Snowflake) : EntityKey()
+data class ChannelKey(override val id: LightweightSnowflake) : EntityKey()
 
-data class UserKey(override val id: Snowflake) : EntityKey()
+data class UserKey(override val id: LightweightSnowflake) : EntityKey()

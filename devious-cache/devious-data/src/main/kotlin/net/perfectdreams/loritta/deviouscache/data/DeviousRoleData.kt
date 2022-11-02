@@ -2,12 +2,11 @@ package net.perfectdreams.loritta.deviouscache.data
 
 import dev.kord.common.entity.DiscordRole
 import dev.kord.common.entity.Permissions
-import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeviousRoleData(
-    val id: Snowflake,
+    val id: LightweightSnowflake,
     val name: String,
     val color: Int,
     val hoist: Boolean,
@@ -21,7 +20,7 @@ data class DeviousRoleData(
     companion object {
         fun from(role: DiscordRole): DeviousRoleData {
             return DeviousRoleData(
-                role.id,
+                role.id.toLightweightSnowflake(),
                 role.name,
                 role.color,
                 role.hoist,

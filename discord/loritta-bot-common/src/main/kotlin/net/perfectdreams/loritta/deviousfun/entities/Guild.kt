@@ -8,9 +8,7 @@ import dev.kord.rest.builder.role.RoleCreateBuilder
 import dev.kord.rest.request.KtorRequestException
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.deviouscache.data.DeviousGuildData
-import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
-import net.perfectdreams.loritta.deviouscache.data.DeviousRoleData
+import net.perfectdreams.loritta.deviouscache.data.*
 import net.perfectdreams.loritta.deviouscache.requests.GetGuildBoostersRequest
 import net.perfectdreams.loritta.deviouscache.requests.GetGuildMembersRequest
 import net.perfectdreams.loritta.deviouscache.requests.GetGuildMembersWithRolesRequest
@@ -30,12 +28,12 @@ class Guild(
     }
 
     override val idSnowflake: Snowflake
-        get() = guild.id
+        get() = guild.id.toKordSnowflake()
 
     val name: String
         get() = guild.name
     val ownerIdSnowflake
-        get() = guild.ownerId
+        get() = guild.ownerId.toKordSnowflake()
     val ownerId: String
         get() = ownerIdSnowflake.toString()
     val ownerIdLong: Long
@@ -104,7 +102,7 @@ class Guild(
     suspend fun retrieveMembers(): List<Member> {
         logger.info { "Retrieving members of guild ${guild.id}..." }
 
-        when (val response = deviousFun.rpc.execute(GetGuildMembersRequest(idSnowflake))) {
+        when (val response = deviousFun.rpc.execute(GetGuildMembersRequest(idSnowflake.toLightweightSnowflake()))) {
             is GetGuildMembersResponse -> {
                 return response.members.map { (id, data) ->
                     Member(
@@ -113,7 +111,7 @@ class Guild(
                         this,
                         User(
                             deviousFun,
-                            id,
+                            id.toKordSnowflake(),
                             data.user
                         )
                     )
@@ -129,7 +127,7 @@ class Guild(
         logger.info { "Retrieving members of guild ${guild.id} that have the role ${roles}..." }
 
         when (val response =
-            deviousFun.rpc.execute(GetGuildMembersWithRolesRequest(idSnowflake, roles.map { it.idSnowflake }))) {
+            deviousFun.rpc.execute(GetGuildMembersWithRolesRequest(idSnowflake.toLightweightSnowflake(), roles.map { it.idSnowflake.toLightweightSnowflake() }))) {
             is GetGuildMembersResponse -> {
                 return response.members.map { (id, data) ->
                     Member(
@@ -138,7 +136,7 @@ class Guild(
                         this,
                         User(
                             deviousFun,
-                            id,
+                            id.toKordSnowflake(),
                             data.user
                         )
                     )
@@ -153,7 +151,7 @@ class Guild(
     suspend fun retrieveBoosters(): List<Member> {
         logger.info { "Retrieving boosters of guild ${guild.id}..." }
 
-        when (val response = deviousFun.rpc.execute(GetGuildBoostersRequest(idSnowflake))) {
+        when (val response = deviousFun.rpc.execute(GetGuildBoostersRequest(idSnowflake.toLightweightSnowflake()))) {
             is GetGuildMembersResponse -> {
                 return response.members.map { (id, data) ->
                     Member(
@@ -162,7 +160,7 @@ class Guild(
                         this,
                         User(
                             deviousFun,
-                            id,
+                            id.toKordSnowflake(),
                             data.user
                         )
                     )
@@ -252,22 +250,22 @@ class Guild(
     }
 
     suspend fun addRoleToMember(member: Member, role: Role, reason: String? = null) {
-        deviousFun.loritta.rest.guild.addRoleToGuildMember(guild.id, member.idSnowflake, role.idSnowflake, reason)
+        deviousFun.loritta.rest.guild.addRoleToGuildMember(guild.id.toKordSnowflake(), member.idSnowflake, role.idSnowflake, reason)
     }
 
     suspend fun removeRoleFromMember(member: Member, role: Role, reason: String? = null) {
-        deviousFun.loritta.rest.guild.deleteRoleFromGuildMember(guild.id, member.idSnowflake, role.idSnowflake, reason)
+        deviousFun.loritta.rest.guild.deleteRoleFromGuildMember(guild.id.toKordSnowflake(), member.idSnowflake, role.idSnowflake, reason)
     }
 
     suspend fun modifyMemberRoles(member: Member, roles: List<Role>, reason: String? = null) {
-        deviousFun.loritta.rest.guild.modifyGuildMember(guild.id, member.idSnowflake) {
+        deviousFun.loritta.rest.guild.modifyGuildMember(guild.id.toKordSnowflake(), member.idSnowflake) {
             this.reason = reason
             this.roles = roles.map { it.idSnowflake }.toMutableSet()
         }
     }
 
     suspend fun modifyNickname(member: Member, newNickname: String?) {
-        deviousFun.loritta.rest.guild.modifyGuildMember(guild.id, member.idSnowflake) {
+        deviousFun.loritta.rest.guild.modifyGuildMember(guild.id.toKordSnowflake(), member.idSnowflake) {
             this.nickname = newNickname
         }
     }

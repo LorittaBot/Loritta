@@ -1,15 +1,14 @@
 package net.perfectdreams.loritta.deviouscache.data
 
 import dev.kord.common.entity.DiscordGuild
-import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.value
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeviousGuildData(
-    val id: Snowflake,
+    val id: LightweightSnowflake,
     val name: String,
-    val ownerId: Snowflake,
+    val ownerId: LightweightSnowflake,
     val icon: String?,
     val vanityUrlCode: String?,
     val premiumSubscriptionCount: Int,
@@ -19,9 +18,9 @@ data class DeviousGuildData(
 ) {
     companion object {
         fun from(data: DiscordGuild) = DeviousGuildData(
-            data.id,
+            data.id.toLightweightSnowflake(),
             data.name,
-            data.ownerId,
+            data.ownerId.toLightweightSnowflake(),
             data.icon,
             data.vanityUrlCode,
             data.premiumSubscriptionCount.value ?: 0,

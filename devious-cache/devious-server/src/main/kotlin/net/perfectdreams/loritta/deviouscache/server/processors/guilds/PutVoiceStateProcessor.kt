@@ -8,6 +8,7 @@ import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
 import net.perfectdreams.loritta.deviouscache.responses.OkResponse
 import net.perfectdreams.loritta.deviouscache.server.DeviousCache
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildKey
+import net.perfectdreams.loritta.deviouscache.server.utils.SnowflakeMap
 import net.perfectdreams.loritta.deviouscache.server.utils.UserKey
 import net.perfectdreams.loritta.deviouscache.server.utils.extensions.runIfDifferentAndNotNull
 
@@ -25,8 +26,8 @@ class PutVoiceStateProcessor(val m: DeviousCache) {
             val channelId = request.channelId
 
             val currentVoiceStates = m.voiceStates[request.guildId]
-            m.voiceStates[request.guildId] = (currentVoiceStates ?: emptyMap())
-                .toMutableMap()
+            // Expected 1 because we will insert the new voice state
+            m.voiceStates[request.guildId] = (currentVoiceStates ?: SnowflakeMap(1))
                 .also {
                     if (channelId != null) {
                         it[request.userId] = DeviousVoiceStateData(

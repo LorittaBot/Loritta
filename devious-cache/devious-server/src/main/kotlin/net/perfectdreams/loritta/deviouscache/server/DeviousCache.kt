@@ -1,7 +1,6 @@
 package net.perfectdreams.loritta.deviouscache.server
 
 import com.github.benmanes.caffeine.cache.Caffeine
-import dev.kord.common.entity.Snowflake
 import io.ktor.server.engine.*
 import io.ktor.server.jetty.*
 import io.ktor.server.routing.*
@@ -41,13 +40,13 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
         private val logger = KotlinLogging.logger {}
     }
 
-    val users = ConcurrentHashMap<Snowflake, DeviousUserData>()
-    val channels = ConcurrentHashMap<Snowflake, DeviousChannelData>()
-    val guilds = ConcurrentHashMap<Snowflake, DeviousGuildDataWrapper>()
-    val emotes = ConcurrentHashMap<Snowflake, Map<Snowflake, DeviousGuildEmojiData>>()
-    val roles = ConcurrentHashMap<Snowflake, Map<Snowflake, DeviousRoleData>>()
-    val members = ConcurrentHashMap<Snowflake, Map<Snowflake, DeviousMemberData>>()
-    val voiceStates = ConcurrentHashMap<Snowflake, Map<Snowflake, DeviousVoiceStateData>>()
+    lateinit var users: SnowflakeMap<DeviousUserData>
+    lateinit var channels: SnowflakeMap<DeviousChannelData>
+    lateinit var guilds: SnowflakeMap<DeviousGuildDataWrapper>
+    lateinit var emotes: SnowflakeMap<SnowflakeMap<DeviousGuildEmojiData>>
+    lateinit var roles: SnowflakeMap<SnowflakeMap<DeviousRoleData>>
+    lateinit var members: SnowflakeMap<SnowflakeMap<DeviousMemberData>>
+    lateinit var voiceStates: SnowflakeMap<SnowflakeMap<DeviousVoiceStateData>>
 
     val gatewaySessions = ConcurrentHashMap<Int, DeviousGatewaySession>()
 
@@ -66,13 +65,13 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
     // Entity specific mutexes
     val mutexes = ConcurrentHashMap<EntityKey, Mutex>()
 
-    internal val dirtyUsers = ConcurrentHashMap.newKeySet<Snowflake>()
-    internal val dirtyGuilds = ConcurrentHashMap.newKeySet<Snowflake>()
-    internal val dirtyChannels = ConcurrentHashMap.newKeySet<Snowflake>()
+    internal val dirtyUsers = ConcurrentHashMap.newKeySet<LightweightSnowflake>()
+    internal val dirtyGuilds = ConcurrentHashMap.newKeySet<LightweightSnowflake>()
+    internal val dirtyChannels = ConcurrentHashMap.newKeySet<LightweightSnowflake>()
     internal val dirtyMembers = ConcurrentHashMap.newKeySet<GuildAndUserPair>()
-    internal val dirtyEmojis = ConcurrentHashMap.newKeySet<Snowflake>()
-    internal val dirtyRoles = ConcurrentHashMap.newKeySet<Snowflake>()
-    internal val dirtyVoiceStates = ConcurrentHashMap.newKeySet<Snowflake>()
+    internal val dirtyEmojis = ConcurrentHashMap.newKeySet<LightweightSnowflake>()
+    internal val dirtyRoles = ConcurrentHashMap.newKeySet<LightweightSnowflake>()
+    internal val dirtyVoiceStates = ConcurrentHashMap.newKeySet<LightweightSnowflake>()
 
     private val routes = listOf(PostRpcRoute(this))
 
@@ -80,6 +79,7 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
 
     @OptIn(ExperimentalTime::class)
     fun start() {
+        // TODO: Should we intern common Strings? Such as "@everyone", bot names, etc
         logger.info { "Creating tables..." }
         runBlocking {
             transaction(Dispatchers.IO, database) {
@@ -104,49 +104,72 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
             val duration = measureTime {
                 transaction(Dispatchers.IO, database) {
                     logger.info { "Loading users..." }
+                    val userCount = Users.selectAll().count()
+                    logger.info { "User Count: $userCount" }
+                    users = SnowflakeMap(userCount.toInt())
+
                     Users.selectAll()
                         .forEach {
-                            users[Snowflake(it[Users.id])] = Json.decodeFromString(it[Users.data])
+                            users[LightweightSnowflake(it[Users.id])] = Json.decodeFromString(it[Users.data])
                         }
 
                     logger.info { "Loading guilds..." }
+                    val guildCount = Guilds.selectAll().count()
+                    logger.info { "Guild Count: $guildCount" }
+                    guilds = SnowflakeMap(guildCount.toInt())
+
                     Guilds.selectAll()
                         .forEach {
-                            guilds[Snowflake(it[Guilds.id])] = Json.decodeFromString(it[Guilds.data])
+                            guilds[LightweightSnowflake(it[Guilds.id])] = Json.decodeFromString(it[Guilds.data])
                         }
 
                     logger.info { "Loading members..." }
-                    val mutableMaps = mutableMapOf<Snowflake, MutableMap<Snowflake, DeviousMemberData>>()
+                    val mutableMaps = SnowflakeMap<SnowflakeMap<DeviousMemberData>>(guildCount.toInt())
                     GuildMembers.selectAll()
                         .forEach {
-                            val guildMap = mutableMaps.getOrPut(Snowflake(it[GuildMembers.guildId])) { mutableMapOf() }
-                            guildMap[Snowflake(it[GuildMembers.userId])] = Json.decodeFromString(it[GuildMembers.data])
+                            val guildMap = mutableMaps.getOrPut(LightweightSnowflake(it[GuildMembers.guildId])) { SnowflakeMap(0) }
+                            guildMap[LightweightSnowflake(it[GuildMembers.userId])] = Json.decodeFromString(it[GuildMembers.data])
                         }
 
-                    members.putAll(mutableMaps)
+                    members = SnowflakeMap(mutableMaps.size)
+                    for (map in mutableMaps.backedMap) {
+                        members.backedMap[map.key] = map.value
+                    }
 
                     logger.info { "Loading channels..." }
+                    val channelCount = Channels.selectAll().count()
+                    logger.info { "Channel Count: $channelCount" }
+                    channels = SnowflakeMap(channelCount.toInt())
                     Channels.selectAll()
                         .forEach {
-                            channels[Snowflake(it[Channels.id])] = Json.decodeFromString(it[Channels.data])
+                            channels[LightweightSnowflake(it[Channels.id])] = Json.decodeFromString(it[Channels.data])
                         }
 
                     logger.info { "Loading roles..." }
+                    val rolesCount = GuildRoles.selectAll().count()
+                    logger.info { "Roles Count: $rolesCount" }
+                    roles = SnowflakeMap(rolesCount.toInt())
                     GuildRoles.selectAll()
                         .forEach {
-                            roles[Snowflake(it[GuildRoles.id])] = Json.decodeFromString(it[GuildRoles.data])
+                            roles[LightweightSnowflake(it[GuildRoles.id])] = SnowflakeMap(Json.decodeFromString<Map<LightweightSnowflake, DeviousRoleData>>(it[GuildRoles.data]))
                         }
 
                     logger.info { "Loading emojis..." }
+                    val emojisCount = GuildEmojis.selectAll().count()
+                    logger.info { "Emojis Count: $rolesCount" }
+                    emotes = SnowflakeMap(emojisCount.toInt())
                     GuildEmojis.selectAll()
                         .forEach {
-                            emotes[Snowflake(it[GuildEmojis.id])] = Json.decodeFromString(it[GuildEmojis.data])
+                            emotes[LightweightSnowflake(it[GuildEmojis.id])] = SnowflakeMap(Json.decodeFromString<Map<LightweightSnowflake, DeviousGuildEmojiData>>(it[GuildEmojis.data]))
                         }
 
                     logger.info { "Loading voice states..." }
+                    val voiceStatesCount = GuildEmojis.selectAll().count()
+                    logger.info { "Voice States Count: $voiceStatesCount" }
+                    voiceStates = SnowflakeMap(voiceStatesCount.toInt())
                     GuildVoiceStates.selectAll()
                         .forEach {
-                            voiceStates[Snowflake(it[GuildVoiceStates.id])] = Json.decodeFromString(it[GuildVoiceStates.data])
+                            voiceStates[LightweightSnowflake(it[GuildVoiceStates.id])] = SnowflakeMap(Json.decodeFromString<Map<LightweightSnowflake, DeviousVoiceStateData>>(it[GuildVoiceStates.data]))
                         }
 
                     logger.info { "Loading gateway sessions..." }
@@ -187,6 +210,7 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
             CoroutineScope(Dispatchers.Default),
             5.seconds
         ) {
+            System.gc()
             val mb = 1024 * 1024
             val runtime = Runtime.getRuntime()
 
@@ -338,13 +362,13 @@ class DeviousCache(val config: BaseConfig, val database: Database) {
             val currentDirtyVoiceStates = dirtyVoiceStates.toSet()
 
             // Get all dirty data
-            val dirtyUsersData = mutableMapOf<Snowflake, DeviousUserData?>()
-            val dirtyGuildsData = mutableMapOf<Snowflake, DeviousGuildDataWrapper?>()
+            val dirtyUsersData = mutableMapOf<LightweightSnowflake, DeviousUserData?>()
+            val dirtyGuildsData = mutableMapOf<LightweightSnowflake, DeviousGuildDataWrapper?>()
             val dirtyMembersData = mutableMapOf<GuildAndUserPair, DeviousMemberData?>()
-            val dirtyChannelsData = mutableMapOf<Snowflake, DeviousChannelData?>()
-            val dirtyEmojisData = mutableMapOf<Snowflake, Map<Snowflake, DeviousGuildEmojiData>?>()
-            val dirtyRolesData = mutableMapOf<Snowflake, Map<Snowflake, DeviousRoleData>?>()
-            val dirtyVoiceStatesData = mutableMapOf<Snowflake, Map<Snowflake, DeviousVoiceStateData>?>()
+            val dirtyChannelsData = mutableMapOf<LightweightSnowflake, DeviousChannelData?>()
+            val dirtyEmojisData = mutableMapOf<LightweightSnowflake, SnowflakeMap<DeviousGuildEmojiData>?>()
+            val dirtyRolesData = mutableMapOf<LightweightSnowflake, SnowflakeMap<DeviousRoleData>?>()
+            val dirtyVoiceStatesData = mutableMapOf<LightweightSnowflake, SnowflakeMap<DeviousVoiceStateData>?>()
 
             withLock(*keys.toTypedArray()) {
                 for (dirtyUserId in currentDirtyUsers) {

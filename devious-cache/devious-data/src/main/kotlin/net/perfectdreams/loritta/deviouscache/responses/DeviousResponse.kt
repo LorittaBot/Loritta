@@ -1,9 +1,7 @@
 package net.perfectdreams.loritta.deviouscache.responses
 
-import dev.kord.common.entity.Snowflake
 import kotlinx.serialization.Serializable
 import net.perfectdreams.loritta.deviouscache.data.*
-import net.perfectdreams.loritta.deviouscache.requests.DeviousRequest
 
 @Serializable
 sealed class DeviousResponse
@@ -42,22 +40,22 @@ data class GetGuildResponse(val data: DeviousGuildData) : DeviousResponse()
 @Serializable
 data class GetGuildWithEntitiesResponse(
     val data: DeviousGuildData,
-    val roles: Map<Snowflake, DeviousRoleData>,
-    val channels: Map<Snowflake, DeviousChannelData>,
-    val emojis: Map<Snowflake, DeviousGuildEmojiData>
+    val roles: Map<LightweightSnowflake, DeviousRoleData>,
+    val channels: Map<LightweightSnowflake, DeviousChannelData>,
+    val emojis: Map<LightweightSnowflake, DeviousGuildEmojiData>
 ) : DeviousResponse()
 
 @Serializable
 data class PutGuildResponse(val isNewGuild: Boolean) : DeviousResponse()
 
 @Serializable
-data class PutGuildsBulkResponse(val newGuilds: Set<Snowflake>) : DeviousResponse()
+data class PutGuildsBulkResponse(val newGuilds: Set<LightweightSnowflake>) : DeviousResponse()
 
 @Serializable
 data class GetGuildMemberResponse(val member: DeviousMemberData) : DeviousResponse()
 
 @Serializable
-data class GetGuildIdsOfShardResponse(val guildIds: List<Snowflake>) : DeviousResponse()
+data class GetGuildIdsOfShardResponse(val guildIds: List<LightweightSnowflake>) : DeviousResponse()
 
 @Serializable
 data class GetGuildCountResponse(val count: Long) : DeviousResponse()
@@ -70,11 +68,11 @@ data class PutGuildMemberResponse(
 
 @Serializable
 data class GetGuildMembersResponse(
-    val members: Map<Snowflake, DeviousUserAndMember>
+    val members: Map<LightweightSnowflake, DeviousUserAndMember>
 ) : DeviousResponse()
 
 @Serializable
-data class GetVoiceStateResponse(val channelId: Snowflake?) : DeviousResponse()
+data class GetVoiceStateResponse(val channelId: LightweightSnowflake?) : DeviousResponse()
 
 @Serializable
 data class GetChannelResponse(val channel: DeviousChannelData) : DeviousResponse()
@@ -83,9 +81,9 @@ data class GetChannelResponse(val channel: DeviousChannelData) : DeviousResponse
 data class GetGuildChannelResponse(
     val channel: DeviousChannelData,
     val data: DeviousGuildData,
-    val roles: Map<Snowflake, DeviousRoleData>,
-    val channels: Map<Snowflake, DeviousChannelData>,
-    val emojis: Map<Snowflake, DeviousGuildEmojiData>
+    val roles: Map<LightweightSnowflake, DeviousRoleData>,
+    val channels: Map<LightweightSnowflake, DeviousChannelData>,
+    val emojis: Map<LightweightSnowflake, DeviousGuildEmojiData>
 ) : DeviousResponse()
 
 // ===[ MISCELLANEOUS ]===

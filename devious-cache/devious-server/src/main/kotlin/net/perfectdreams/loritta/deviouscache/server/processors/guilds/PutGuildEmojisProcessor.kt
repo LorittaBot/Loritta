@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.deviouscache.responses.DeviousResponse
 import net.perfectdreams.loritta.deviouscache.responses.OkResponse
 import net.perfectdreams.loritta.deviouscache.server.DeviousCache
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildKey
+import net.perfectdreams.loritta.deviouscache.server.utils.SnowflakeMap
 
 class PutGuildEmojisProcessor(val m: DeviousCache) {
     companion object {
@@ -18,7 +19,7 @@ class PutGuildEmojisProcessor(val m: DeviousCache) {
 
             logger.info { "Updating guild emojis on guild ${request.guildId}" }
 
-            m.emotes[request.guildId] = request.emojis.associateBy { it.id }
+            m.emotes[request.guildId] = SnowflakeMap(request.emojis.associateBy { it.id })
             m.dirtyEmojis.add(request.guildId)
 
             return OkResponse

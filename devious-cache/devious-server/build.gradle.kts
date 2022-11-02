@@ -29,6 +29,9 @@ dependencies {
     implementation(libs.exposed.jdbc)
     implementation("net.perfectdreams.exposedpowerutils:exposed-power-utils:1.1.0")
 
+    // https://mvnrepository.com/artifact/it.unimi.dsi/fastutil
+    implementation("it.unimi.dsi:fastutil:8.5.9")
+
     // zstd
     implementation("com.github.luben:zstd-jni:1.5.2-4")
 

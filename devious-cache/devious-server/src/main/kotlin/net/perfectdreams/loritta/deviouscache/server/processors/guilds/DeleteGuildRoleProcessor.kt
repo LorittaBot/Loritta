@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.deviouscache.responses.DeviousResponse
 import net.perfectdreams.loritta.deviouscache.responses.OkResponse
 import net.perfectdreams.loritta.deviouscache.server.DeviousCache
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildKey
+import net.perfectdreams.loritta.deviouscache.server.utils.SnowflakeMap
 
 class DeleteGuildRoleProcessor(val m: DeviousCache) {
     companion object {
@@ -19,8 +20,7 @@ class DeleteGuildRoleProcessor(val m: DeviousCache) {
             logger.info { "Deleting guild role with ID ${request.roleId} on guild ${request.guildId}" }
 
             val currentRoles = m.roles[request.guildId]
-            m.roles[request.guildId] = (currentRoles ?: emptyMap())
-                .toMutableMap()
+            m.roles[request.guildId] = (currentRoles ?: SnowflakeMap(0))
                 .also {
                     it.remove(request.roleId)
                 }

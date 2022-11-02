@@ -13,6 +13,8 @@ import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
 import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
+import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
+import net.perfectdreams.loritta.deviouscache.data.toLightweightSnowflake
 import net.perfectdreams.loritta.deviouscache.requests.*
 import net.perfectdreams.loritta.deviouscache.responses.GetGuildIdsOfShardResponse
 import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
@@ -130,7 +132,7 @@ class KordListener(
             when (val response = m.rpc.execute(GetGuildIdsOfShardRequest(shardId, m.loritta.config.loritta.discord.maxShards))) {
                 is GetGuildIdsOfShardResponse -> {
                     for (guildId in response.guildIds) {
-                        val guild = cacheManager.getGuild(guildId)
+                        val guild = cacheManager.getGuild(guildId.toKordSnowflake())
                             ?: continue // Should NOT be null, but if it is, then let's just pretend that it doesn't exist
                         val event = GuildReadyEvent(m, gateway, guild)
                         m.forEachListeners(event, ListenerAdapter::onGuildReady)
@@ -408,7 +410,7 @@ class KordListener(
                 }
             }
 
-            m.rpc.execute(PutVoiceStateRequest(guildId, userId, channelId))
+            m.rpc.execute(PutVoiceStateRequest(guildId.toLightweightSnowflake(), userId.toLightweightSnowflake(), channelId?.toLightweightSnowflake()))
 
             // TODO: Voice events
         }

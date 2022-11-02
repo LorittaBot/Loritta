@@ -19,23 +19,24 @@ class GetChannelProcessor(val m: DeviousCache) {
             logger.info { "Getting channel ${request.channelId}" }
 
             val cachedChannel = m.channels[request.channelId] ?: return NotFoundResponse
-            val cachedGuild = if (cachedChannel.guildId != null)
-                m.guilds[cachedChannel.guildId]
+            val guildId = cachedChannel.guildId
+            val cachedGuild = if (guildId != null)
+                m.guilds[guildId]
             else
                 null
 
-            return if (cachedGuild != null) {
+            return if (cachedGuild != null && guildId != null) {
                 val cachedGuildData = cachedGuild.data
-                val roles = m.roles[cachedChannel.guildId]
+                val roles = m.roles[guildId]
                 val channels = cachedGuild.channelIds.mapNotNull { m.channels[it] }.associateBy { it.id }
-                val emotes = m.emotes[cachedChannel.guildId]
+                val emotes = m.emotes[guildId]
 
                 GetGuildChannelResponse(
                     cachedChannel,
                     cachedGuildData,
-                    roles ?: emptyMap(),
+                    roles?.toMap() ?: emptyMap(),
                     channels,
-                    emotes ?: emptyMap()
+                    emotes?.toMap() ?: emptyMap()
                 )
             } else {
                 GetChannelResponse(cachedChannel)

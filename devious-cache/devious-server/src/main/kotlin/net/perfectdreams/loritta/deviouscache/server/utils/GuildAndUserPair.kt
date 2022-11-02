@@ -1,8 +1,8 @@
 package net.perfectdreams.loritta.deviouscache.server.utils
 
-import dev.kord.common.entity.Snowflake
+import net.perfectdreams.loritta.deviouscache.data.LightweightSnowflake
 
 data class GuildAndUserPair(
-    val guildId: Snowflake,
-    val userId: Snowflake
+    val guildId: LightweightSnowflake,
+    val userId: LightweightSnowflake
 )

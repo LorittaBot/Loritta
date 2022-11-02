@@ -3,12 +3,13 @@ package net.perfectdreams.loritta.deviousfun.entities
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.deviouscache.data.DeviousRoleData
+import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import java.awt.Color
 
 class Role(val deviousFun: DeviousFun, val guild: Guild, val role: DeviousRoleData) : IdentifiableSnowflake {
     override val idSnowflake: Snowflake
-        get() = role.id
+        get() = role.id.toKordSnowflake()
     val name: String
         get() = role.name
     val asMention: String

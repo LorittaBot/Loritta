@@ -69,6 +69,8 @@ class DeviousCacheRPCClient(val url: String) {
         val requestAsJson = Json.encodeToString<DeviousRequest>(request)
         val compressedBody = Zstd.compress(requestAsJson.toByteArray(Charsets.UTF_8), 2)
 
+        println("Compressed Body: ${compressedBody.size}")
+
         val response = http.post("https://$url/rpc") {
             header("X-Devious-Cache-Compression", "zstd:${ZstdDictionaries.Dictionary.NO_DICTIONARY.name}")
 

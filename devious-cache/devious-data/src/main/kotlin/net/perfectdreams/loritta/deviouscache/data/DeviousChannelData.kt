@@ -9,11 +9,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeviousChannelData(
-    val id: Snowflake,
+    val id: LightweightSnowflake,
     val type: ChannelType,
-    val guildId: Snowflake?,
+    val guildId: LightweightSnowflake?,
     val position: Int?,
-    val permissionOverwrites: List<Overwrite>?,
+    val permissionOverwrites: List<DeviousOverwrite>?,
     val name: String?,
     val topic: String?,
     val nsfw: Boolean
@@ -21,11 +21,19 @@ data class DeviousChannelData(
     companion object {
         fun from(guildId: Snowflake?, data: DiscordChannel): DeviousChannelData {
             return DeviousChannelData(
-                data.id,
+                data.id.toLightweightSnowflake(),
                 data.type,
-                guildId,
+                guildId?.toLightweightSnowflake(),
                 data.position.value,
-                data.permissionOverwrites.value,
+                data.permissionOverwrites.value
+                    ?.map {
+                        DeviousOverwrite(
+                            it.id.toLightweightSnowflake(),
+                            it.type,
+                            LightweightPermissions(it.allow),
+                            LightweightPermissions(it.deny)
+                        )
+                    },
                 data.name.value,
                 data.topic.value,
                 data.nsfw.discordBoolean

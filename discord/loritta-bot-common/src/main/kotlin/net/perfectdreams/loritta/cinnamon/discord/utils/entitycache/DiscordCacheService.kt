@@ -3,9 +3,7 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.entitycache
 import dev.kord.common.entity.*
 import kotlinx.serialization.*
 import mu.KotlinLogging
-import net.perfectdreams.loritta.deviouscache.data.DeviousChannelData
-import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
-import net.perfectdreams.loritta.deviouscache.data.DeviousRoleData
+import net.perfectdreams.loritta.deviouscache.data.*
 import net.perfectdreams.loritta.deviouscache.requests.GetGuildMemberRequest
 import net.perfectdreams.loritta.deviouscache.requests.GetVoiceStateRequest
 import net.perfectdreams.loritta.deviouscache.responses.GetGuildMemberResponse
@@ -132,7 +130,7 @@ class DiscordCacheService(
         var permissions = Permissions()
 
         val memberData =
-            (loritta.deviousFun.rpc.execute(GetGuildMemberRequest(guildId, userId)) as? GetGuildMemberResponse)?.member
+            (loritta.deviousFun.rpc.execute(GetGuildMemberRequest(guildId.toLightweightSnowflake(), userId.toLightweightSnowflake())) as? GetGuildMemberResponse)?.member
                 ?: return GuildPermissionsResult(
                     // They aren't in the server, no need to continue then
                     permissions,
@@ -149,13 +147,13 @@ class DiscordCacheService(
             missingRoles = false, // This is actually "Unknown"
         )
 
-        val userRoles = guild.roles.filter { it.idSnowflake in userRoleIds }
+        val userRoles = guild.roles.filter { it.idSnowflake.toLightweightSnowflake() in userRoleIds }
 
         var missingRoles = false
 
         // We are going to validate if there are any missing roles
         for (userRoleId in userRoleIds) {
-            if (!userRoles.any { it.idSnowflake == userRoleId }) {
+            if (!userRoles.any { it.idSnowflake.toLightweightSnowflake() == userRoleId }) {
                 logger.warn { "Missing role $userRoleId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
                 missingRoles = true
             }
@@ -169,7 +167,7 @@ class DiscordCacheService(
             }
 
         val entityIds = mutableSetOf(userId)
-        entityIds.addAll(userRoleIds.map { it })
+        entityIds.addAll(userRoleIds.map { it.toKordSnowflake() })
 
         return GuildPermissionsResult(
             permissions,
@@ -192,7 +190,7 @@ class DiscordCacheService(
         var permissions = Permissions()
 
         val memberData =
-            (loritta.deviousFun.rpc.execute(GetGuildMemberRequest(guildId, userId)) as? GetGuildMemberResponse)?.member
+            (loritta.deviousFun.rpc.execute(GetGuildMemberRequest(guildId.toLightweightSnowflake(), userId.toLightweightSnowflake())) as? GetGuildMemberResponse)?.member
                 ?: return GuildChannelPermissionsResult( // They aren't in the server, no need to continue then
                     permissions,
                     userNotInGuild = true,
@@ -210,7 +208,7 @@ class DiscordCacheService(
                 missingChannels = false // This is actually "Unknown"
             )
 
-        val userRoles = guild.roles.filter { it.idSnowflake in userRoleIds }
+        val userRoles = guild.roles.filter { it.idSnowflake.toLightweightSnowflake() in userRoleIds }
 
         var missingRoles = false
         var missingChannels = false
@@ -219,7 +217,7 @@ class DiscordCacheService(
 
         // We are going to validate if there are any missing roles
         for (userRoleId in userRoleIds) {
-            if (!userRoles.any { it.idSnowflake == userRoleId }) {
+            if (!userRoles.any { it.idSnowflake.toLightweightSnowflake() == userRoleId }) {
                 logger.warn { "Missing role $userRoleId in $guildId! We will pretend that it doesn't exist and hope for the best..." }
                 missingRoles = true
             }
@@ -239,7 +237,7 @@ class DiscordCacheService(
             }
 
         val entityIds = mutableSetOf(userId)
-        entityIds.addAll(userRoleIds.map { it })
+        entityIds.addAll(userRoleIds.map { it.toKordSnowflake() })
 
         // Now we will get permission overwrites
         val permissionOverwrites = guildChannel?.permissionOverwrites
@@ -292,10 +290,10 @@ class DiscordCacheService(
     suspend fun getUserConnectedVoiceChannel(guildId: Snowflake, userId: Snowflake): Snowflake? {
         return (loritta.deviousFun.rpc.execute(
             GetVoiceStateRequest(
-                guildId,
-                userId
+                guildId.toLightweightSnowflake(),
+                userId.toLightweightSnowflake()
             )
-        ) as? GetVoiceStateResponse)?.channelId
+        ) as? GetVoiceStateResponse)?.channelId?.toKordSnowflake()
     }
 
     data class GuildPermissionsResult(

@@ -1,17 +1,12 @@
 package net.perfectdreams.loritta.deviouscache.server.processors.guilds
 
-import dev.kord.common.entity.Snowflake
 import mu.KotlinLogging
-import net.perfectdreams.loritta.deviouscache.requests.PutGuildRequest
+import net.perfectdreams.loritta.deviouscache.data.LightweightSnowflake
 import net.perfectdreams.loritta.deviouscache.requests.PutGuildsBulkRequest
 import net.perfectdreams.loritta.deviouscache.responses.DeviousResponse
-import net.perfectdreams.loritta.deviouscache.responses.OkResponse
 import net.perfectdreams.loritta.deviouscache.responses.PutGuildsBulkResponse
 import net.perfectdreams.loritta.deviouscache.server.DeviousCache
-import net.perfectdreams.loritta.deviouscache.server.utils.DeviousGuildDataWrapper
-import net.perfectdreams.loritta.deviouscache.server.utils.GuildAndUserPair
 import net.perfectdreams.loritta.deviouscache.server.utils.GuildKey
-import net.perfectdreams.loritta.deviouscache.server.utils.extensions.runIfDifferentAndNotNull
 
 class PutGuildsBulkProcessor(val m: DeviousCache) {
     companion object {
@@ -24,7 +19,7 @@ class PutGuildsBulkProcessor(val m: DeviousCache) {
             m.awaitForEntityPersistenceModificationMutex()
 
             logger.info { "Received Put Guilds Bulk request for ${request.requests.size} guilds!" }
-            val newGuilds = mutableSetOf<Snowflake>()
+            val newGuilds = mutableSetOf<LightweightSnowflake>()
             for (request in request.requests) {
                 if (PutGuildProcessor.processGuild(logger, false, m, request))
                     newGuilds.add(request.id)

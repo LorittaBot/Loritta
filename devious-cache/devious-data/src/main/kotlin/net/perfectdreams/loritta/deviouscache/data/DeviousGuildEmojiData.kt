@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeviousGuildEmojiData(
-    val id: Snowflake,
+    val id: LightweightSnowflake,
     val name: String,
-    val roles: List<Snowflake>?,
-    val userId: Snowflake?,
+    val roles: List<LightweightSnowflake>?,
+    val userId: LightweightSnowflake?,
     val managed: Boolean,
     val animated: Boolean,
     val available: Boolean
@@ -17,10 +17,10 @@ data class DeviousGuildEmojiData(
     companion object {
         fun from(emoji: DiscordEmoji): DeviousGuildEmojiData {
             return DeviousGuildEmojiData(
-                emoji.id!!,
+                emoji.id!!.toLightweightSnowflake(),
                 emoji.name!!,
-                emoji.roles.value,
-                emoji.user.value?.id, // This is null, even if you have the "Guild Members" intent (weird)
+                emoji.roles.value?.map { it.toLightweightSnowflake() },
+                emoji.user.value?.id?.toLightweightSnowflake(), // This is null, even if you have the "Guild Members" intent (weird)
                 emoji.managed.discordBoolean,
                 emoji.animated.discordBoolean,
                 emoji.available.discordBoolean

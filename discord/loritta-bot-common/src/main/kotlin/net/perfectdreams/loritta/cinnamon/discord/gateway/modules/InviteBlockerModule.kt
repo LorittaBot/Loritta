@@ -29,6 +29,8 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
+import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
+import net.perfectdreams.loritta.deviouscache.data.toLightweightSnowflake
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.concurrent.TimeUnit
@@ -291,7 +293,7 @@ class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
                                 .asSequence()
                                 .sortedByDescending { it.position }
                                 .filter { !it.managed }
-                                .filter { it.id != guildId } // If it is the role ID == guild ID, then it is the @everyone role!
+                                .filter { it.id.toKordSnowflake() != guildId } // If it is the role ID == guild ID, then it is the @everyone role!
                                 .firstOrNull()
 
                             if (topRole != null) {
@@ -318,7 +320,7 @@ class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
                                             m.encodeDataForComponentOrStoreInDatabase(
                                                 ActivateInviteBlockerData(
                                                     author.id,
-                                                    topRole.id
+                                                    topRole.id.toKordSnowflake()
                                                 )
                                             )
                                         ) {

@@ -2,6 +2,7 @@ package net.perfectdreams.loritta.deviousfun.entities
 
 import dev.kord.common.entity.Permission
 import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
+import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 
 class DiscordGuildEmote(
@@ -9,7 +10,8 @@ class DiscordGuildEmote(
     val guild: Guild,
     val emoji: DeviousGuildEmojiData
 ) : DiscordEmote {
-    override val idSnowflake by emoji::id
+    override val idSnowflake
+        get() = emoji.id.toKordSnowflake()
     override val name by emoji::name
     override val isAnimated by emoji::animated
     override val imageUrl: String
