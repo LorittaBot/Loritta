@@ -1,6 +1,7 @@
 package net.perfectdreams.loritta.cinnamon.discord.utils
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -15,8 +16,8 @@ fun scheduleCoroutineAtFixedRate(
     period: Duration,
     initialDelay: Duration = Duration.ZERO,
     action: RunnableCoroutine
-) {
-    scope.launch {
+): Job {
+    return scope.launch {
         delay(initialDelay)
 
         val mutex = Mutex()

@@ -70,6 +70,7 @@ dependencies {
 
     // Exposed & Databases
     implementation("org.postgresql:postgresql:42.5.0")
+    implementation("org.xerial:sqlite-jdbc:3.39.3.0")
     implementation("com.zaxxer:HikariCP:5.0.1")
     api(libs.exposed.core)
     api(libs.exposed.jdbc)
@@ -132,6 +133,9 @@ dependencies {
 
     // zstd
     implementation("com.github.luben:zstd-jni:1.5.2-4")
+
+    // fastutil
+    implementation("it.unimi.dsi:fastutil:8.5.9")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")

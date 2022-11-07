@@ -377,7 +377,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         }
 
         messageReaction = if (isDiscordEmote) {
-            message.reactions.firstOrNull { (it.reactionEmote.emote as? DiscordEmote)?.id == reactionId }
+            message.reactions.firstOrNull { (it.reactionEmote.emote as? net.perfectdreams.loritta.deviousfun.entities.DiscordEmote)?.id == reactionId }
         } else {
             message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
         }

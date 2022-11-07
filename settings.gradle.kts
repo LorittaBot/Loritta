@@ -83,4 +83,3 @@ include(":shard-controller")
 
 // ===[ DEVIOUS CACHE ]===
 include(":devious-cache:devious-data")
-include(":devious-cache:devious-server")

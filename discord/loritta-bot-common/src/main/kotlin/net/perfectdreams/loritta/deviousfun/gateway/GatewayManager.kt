@@ -55,11 +55,11 @@ class GatewayManager(
     suspend fun start() {
         for ((shardId, gateway) in gateways) {
             scope.launch {
-                val gatewaySession = deviousFun.rpc.execute(GetGatewaySessionRequest(shardId))
+                val gatewaySession = deviousFun.cacheManager.gatewaySessions[shardId]
 
-                val sessionId = (gatewaySession as? GetGatewaySessionResponse)?.sessionId
-                val resumeGatewayUrl = (gatewaySession as? GetGatewaySessionResponse)?.resumeGatewayUrl
-                val sequence = (gatewaySession as? GetGatewaySessionResponse)?.sequence
+                val sessionId = gatewaySession?.sessionId
+                val resumeGatewayUrl = gatewaySession?.resumeGatewayUrl
+                val sequence = gatewaySession?.sequence
 
                 val builder: GatewayConfigurationBuilder.() -> (Unit) = {
                     @OptIn(PrivilegedIntent::class)
@@ -78,8 +78,7 @@ class GatewayManager(
                     presence {
                         this.status = deviousFun.loritta.config.loritta.discord.status
 
-                        val activityText =
-                            "${deviousFun.loritta.config.loritta.discord.activity.name} | Cluster ${deviousFun.loritta.lorittaCluster.id} [$shardId]"
+                        val activityText = "${deviousFun.loritta.config.loritta.discord.activity.name} | Cluster ${deviousFun.loritta.lorittaCluster.id} [$shardId]"
                         when (deviousFun.loritta.config.loritta.discord.activity.type) {
                             "PLAYING" -> this.playing(activityText)
                             "STREAMING" -> this.streaming(activityText, "https://twitch.tv/mrpowergamerbr")

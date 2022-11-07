@@ -3,18 +3,34 @@ package net.perfectdreams.loritta.deviousfun
 import dev.kord.common.entity.Snowflake
 import dev.kord.rest.json.JsonErrorCode
 import dev.kord.rest.request.KtorRequestException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
 import mu.KotlinLogging
+import net.perfectdreams.exposedpowerutils.sql.transaction
+import net.perfectdreams.loritta.deviouscache.data.DeviousUserData
+import net.perfectdreams.loritta.deviouscache.data.LightweightSnowflake
 import net.perfectdreams.loritta.deviouscache.requests.GetGuildCountRequest
 import net.perfectdreams.loritta.deviouscache.responses.GetGuildCountResponse
+import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheDatabase
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.DeviousEventFactory
 import net.perfectdreams.loritta.deviousfun.events.Event
 import net.perfectdreams.loritta.deviousfun.gateway.GatewayManager
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
+import net.perfectdreams.loritta.deviousfun.tables.Guilds
+import net.perfectdreams.loritta.deviousfun.tables.Users
+import net.perfectdreams.loritta.deviousfun.utils.CacheEntityMaps
+import net.perfectdreams.loritta.deviousfun.utils.DeviousGuildDataWrapper
+import net.perfectdreams.loritta.deviousfun.utils.SnowflakeMap
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.reflect.KFunction2
 
@@ -36,16 +52,29 @@ import kotlin.reflect.KFunction2
  * * `get`: Will be retrieved from Redis, null if the entity doesn't exist.
  * * `retrieve`: Will be retrieved from Redis, or from Discord's API if not present. Throws exception if the entity does not exist.
  */
-class DeviousFun(val loritta: LorittaBot) {
+class DeviousFun(
+    val loritta: LorittaBot,
+    cacheDatabase: Database,
+    cacheEntityMaps: CacheEntityMaps
+) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    // TODO: Mutex locking based on the entity ID
     val eventFactory = DeviousEventFactory(this)
     val listeners = mutableListOf<ListenerAdapter>()
-    val cacheManager = DeviousCacheManager(this)
-    val entityLocks = ConcurrentHashMap<Snowflake, Mutex>()
+    val cacheManager = DeviousCacheManager(
+        this,
+        cacheDatabase,
+        cacheEntityMaps.users,
+        cacheEntityMaps.channels,
+        cacheEntityMaps.guilds,
+        cacheEntityMaps.emotes,
+        cacheEntityMaps.roles,
+        cacheEntityMaps.members,
+        cacheEntityMaps.voiceStates,
+        cacheEntityMaps.gatewaySessions
+    )
     val gatewayManager = GatewayManager(
         this,
         loritta.config.loritta.discord.token,
@@ -53,14 +82,6 @@ class DeviousFun(val loritta: LorittaBot) {
         loritta.lorittaCluster.maxShard,
         loritta.config.loritta.discord.maxShards
     )
-    val rpc = DeviousCacheRPCClient(loritta.config.loritta.deviousCache.url)
-
-    /**
-     * To avoid all connections in the connection pool being used by GuildCreate events, we will limit to max `connections in the pool - 5`, with a minimum of one permit GuildCreate in parallel
-     *
-     * This avoids issues where all events stop being processed due to a "explosion" of GuildCreates after a shard restart!
-     */
-    val guildCreateSemaphore = Semaphore((rpc.maxThreads - 5).coerceAtLeast(1))
 
     fun registerListeners(vararg listeners: ListenerAdapter) {
         this.listeners.addAll(listeners)
@@ -185,8 +206,7 @@ class DeviousFun(val loritta: LorittaBot) {
     /**
      * Gets how many guilds are cached
      */
-    suspend fun getGuildCount() = (rpc.execute(GetGuildCountRequest) as? GetGuildCountResponse)?.count
-        ?: error("Received unknown request when getting the guild count!")
+    fun getGuildCount() = cacheManager.guilds.size
 
     /**
      * Invokes every [ListenerAdapter]'s [method] with [event]

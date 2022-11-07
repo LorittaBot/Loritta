@@ -3,11 +3,14 @@ package net.perfectdreams.loritta.cinnamon.discord.utils.entitycache
 import dev.kord.common.entity.*
 import kotlinx.serialization.*
 import mu.KotlinLogging
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviouscache.data.*
 import net.perfectdreams.loritta.deviouscache.requests.GetGuildMemberRequest
 import net.perfectdreams.loritta.deviouscache.requests.GetVoiceStateRequest
 import net.perfectdreams.loritta.deviouscache.responses.GetGuildMemberResponse
 import net.perfectdreams.loritta.deviouscache.responses.GetVoiceStateResponse
+import net.perfectdreams.loritta.deviousfun.utils.GuildKey
+import net.perfectdreams.loritta.deviousfun.utils.UserKey
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.*
 import java.util.*
@@ -129,23 +132,20 @@ class DiscordCacheService(
         // Create an empty permissions object
         var permissions = Permissions()
 
-        val memberData =
-            (loritta.deviousFun.rpc.execute(GetGuildMemberRequest(guildId.toLightweightSnowflake(), userId.toLightweightSnowflake())) as? GetGuildMemberResponse)?.member
-                ?: return GuildPermissionsResult(
-                    // They aren't in the server, no need to continue then
-                    permissions,
-                    userNotInGuild = true,
-                    missingRoles = false, // This is actually "Unknown"
-                )
-
-        val userRoleIds = memberData.roles
-
         val guild = loritta.deviousFun.getGuildById(guildId) ?: return GuildPermissionsResult(
             // The guild doesn't exist
             permissions,
             userNotInGuild = true,
             missingRoles = false, // This is actually "Unknown"
         )
+        val memberData = guild.getMemberById(userId.toLong())?.member ?: return GuildPermissionsResult(
+            // They aren't in the server, no need to continue then
+            permissions,
+            userNotInGuild = true,
+            missingRoles = false, // This is actually "Unknown"
+        )
+
+        val userRoleIds = memberData.roles
 
         val userRoles = guild.roles.filter { it.idSnowflake.toLightweightSnowflake() in userRoleIds }
 
@@ -189,24 +189,22 @@ class DiscordCacheService(
         // Create an empty permissions object
         var permissions = Permissions()
 
-        val memberData =
-            (loritta.deviousFun.rpc.execute(GetGuildMemberRequest(guildId.toLightweightSnowflake(), userId.toLightweightSnowflake())) as? GetGuildMemberResponse)?.member
-                ?: return GuildChannelPermissionsResult( // They aren't in the server, no need to continue then
-                    permissions,
-                    userNotInGuild = true,
-                    missingRoles = false, // This is actually "Unknown"
-                    missingChannels = false // This is actually "Unknown"
-                )
+        val guild = loritta.deviousFun.getGuildById(guildId) ?: return GuildChannelPermissionsResult(
+            // The guild doesn't exist
+            permissions,
+            userNotInGuild = true,
+            missingRoles = false, // This is actually "Unknown"
+            missingChannels = false // This is actually "Unknown"
+        )
+        val memberData = guild.getMemberById(userId.toLong())?.member ?: return GuildChannelPermissionsResult(
+            // They aren't in the server, no need to continue then
+            permissions,
+            userNotInGuild = true,
+            missingRoles = false, // This is actually "Unknown"
+            missingChannels = false // This is actually "Unknown"
+        )
 
         val userRoleIds = memberData.roles
-
-        val guild =
-            loritta.deviousFun.getGuildById(guildId) ?: return GuildChannelPermissionsResult( // The guild doesn't exist
-                permissions,
-                userNotInGuild = true,
-                missingRoles = false, // This is actually "Unknown"
-                missingChannels = false // This is actually "Unknown"
-            )
 
         val userRoles = guild.roles.filter { it.idSnowflake.toLightweightSnowflake() in userRoleIds }
 
@@ -288,12 +286,13 @@ class DiscordCacheService(
      * @return the voice channel ID, if they are connected to a voice channel
      */
     suspend fun getUserConnectedVoiceChannel(guildId: Snowflake, userId: Snowflake): Snowflake? {
-        return (loritta.deviousFun.rpc.execute(
-            GetVoiceStateRequest(
-                guildId.toLightweightSnowflake(),
-                userId.toLightweightSnowflake()
-            )
-        ) as? GetVoiceStateResponse)?.channelId?.toKordSnowflake()
+        val lightweightGuildId = guildId.toLightweightSnowflake()
+        val lightweightUserId = userId.toLightweightSnowflake()
+
+        loritta.deviousFun.cacheManager.withLock(GuildKey(lightweightGuildId)) {
+            val guildVoiceStates = loritta.deviousFun.cacheManager.voiceStates[lightweightGuildId] ?: return null
+            return guildVoiceStates[lightweightUserId]?.channelId?.toKordSnowflake()
+        }
     }
 
     data class GuildPermissionsResult(

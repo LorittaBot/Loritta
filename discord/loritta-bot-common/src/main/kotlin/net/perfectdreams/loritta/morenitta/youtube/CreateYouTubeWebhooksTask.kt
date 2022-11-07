@@ -9,12 +9,16 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.perfectdreams.exposedpowerutils.sql.upsert
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousData
 import net.perfectdreams.loritta.deviouscache.requests.GetMiscellaneousDataRequest
 import net.perfectdreams.loritta.deviouscache.requests.PutMiscellaneousDataRequest
 import net.perfectdreams.loritta.deviouscache.responses.GetMiscellaneousDataResponse
 import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.morenitta.threads.RaffleThread
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -45,10 +49,11 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 
             if (!fileLoaded) {
                 val youTubeWebhooksData = runBlocking {
-                    when (val response = loritta.deviousFun.rpc.execute(GetMiscellaneousDataRequest(DATA_KEY))) {
-                        is GetMiscellaneousDataResponse -> response.data
-                        is NotFoundResponse -> null
-                        else -> loritta.deviousFun.rpc.unknownResponse(response)
+                    loritta.newSuspendedTransaction {
+                        MiscellaneousData.select { MiscellaneousData.data eq DATA_KEY }
+                            .limit(1)
+                            .firstOrNull()
+                            ?.get(MiscellaneousData.data)
                     }
                 }
                 fileLoaded = true
@@ -133,12 +138,12 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
                     if (index % 50 == 0 && index != 0) { // Do not write the file if index == 0, because it would be a *very* unnecessary write
                         logger.info { "Saving YouTube Webhook File... $index channels were processed" }
                         runBlocking {
-                            loritta.deviousFun.rpc.execute(
-                                PutMiscellaneousDataRequest(
-                                    DATA_KEY,
-                                    gson.toJson(youtubeWebhooks)
-                                )
-                            )
+                            loritta.newSuspendedTransaction {
+                                MiscellaneousData.upsert(MiscellaneousData.id) {
+                                    it[MiscellaneousData.id] = DATA_KEY
+                                    it[MiscellaneousData.data] = gson.toJson(youtubeWebhooks)
+                                }
+                            }
                         }
                     }
                 }
@@ -147,12 +152,12 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 
                 if (createdWebhooksCount != 0) {
                     runBlocking {
-                        loritta.deviousFun.rpc.execute(
-                            PutMiscellaneousDataRequest(
-                                DATA_KEY,
-                                gson.toJson(youtubeWebhooks)
-                            )
-                        )
+                        loritta.newSuspendedTransaction {
+                            MiscellaneousData.upsert(MiscellaneousData.id) {
+                                it[MiscellaneousData.id] = DATA_KEY
+                                it[MiscellaneousData.data] = gson.toJson(youtubeWebhooks)
+                            }
+                        }
                     }
 
                     logger.info { "Successfully wrote YouTube Webhook File! ${webhookCount.get()} channels were processed" }

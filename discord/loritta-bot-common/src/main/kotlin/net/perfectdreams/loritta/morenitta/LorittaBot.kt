@@ -115,7 +115,7 @@ import net.perfectdreams.loritta.deviouscache.responses.GetMiscellaneousDataResp
 import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.events.message.create.MessageReceivedEvent
-import net.perfectdreams.loritta.morenitta.cache.BinaryCacheTransformers
+import net.perfectdreams.loritta.deviousfun.utils.CacheEntityMaps
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
@@ -137,10 +137,7 @@ import net.perfectdreams.loritta.morenitta.utils.payments.PaymentReason
 import net.perfectdreams.minecraftmojangapi.MinecraftMojangAPI
 import net.perfectdreams.randomroleplaypictures.client.RandomRoleplayPicturesClient
 import okhttp3.OkHttpClient
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.Transaction
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.*
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.InputStream
@@ -176,7 +173,9 @@ class LorittaBot(
     val config: BaseConfig,
     val languageManager: LanguageManager,
     val localeManager: LocaleManager,
-    val pudding: Pudding
+    val pudding: Pudding,
+    cacheDatabase: Database,
+    cacheEntityMaps: CacheEntityMaps
 ) {
     // ===[ STATIC ]===
     companion object {
@@ -224,9 +223,7 @@ class LorittaBot(
         requestHandler { ktorRequestHandler }
     }
 
-    val zstdDictionaries = ZstdDictionaries()
-    val binaryCacheTransformers = BinaryCacheTransformers(zstdDictionaries)
-    val deviousFun = DeviousFun(this)
+    val deviousFun = DeviousFun(this, cacheDatabase, cacheEntityMaps)
     val gatewayManager = deviousFun.gatewayManager
 
     val cache = DiscordCacheService(this)
@@ -581,10 +578,11 @@ class LorittaBot(
         if (this.isMainInstance) {
             logger.info { "Loading raffle..." }
             val raffleData = runBlocking {
-                when (val response = deviousFun.rpc.execute(GetMiscellaneousDataRequest(RaffleThread.DATA_KEY))) {
-                    is GetMiscellaneousDataResponse -> response.data
-                    is NotFoundResponse -> null
-                    else -> deviousFun.rpc.unknownResponse(response)
+                newSuspendedTransaction {
+                    MiscellaneousData.select { MiscellaneousData.data eq RaffleThread.DATA_KEY }
+                        .limit(1)
+                        .firstOrNull()
+                        ?.get(MiscellaneousData.data)
                 }
             }
 
@@ -1308,7 +1306,6 @@ class LorittaBot(
         val genericInteractionData: StoredGenericInteractionData,
         val data: T?
     )
-
 
     private fun launchEventJob(
         coroutineName: String,

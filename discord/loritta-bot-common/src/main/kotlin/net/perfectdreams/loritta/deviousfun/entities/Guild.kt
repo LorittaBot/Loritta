@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.deviouscache.requests.GetGuildMembersWithRolesR
 import net.perfectdreams.loritta.deviouscache.responses.GetGuildMembersResponse
 import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
 import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.utils.GuildKey
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import kotlin.time.Duration.Companion.days
 
@@ -100,75 +101,98 @@ class Guild(
     suspend fun retrieveOwner() = deviousFun.retrieveMemberById(this, ownerIdSnowflake)
 
     suspend fun retrieveMembers(): List<Member> {
-        logger.info { "Retrieving members of guild ${guild.id}..." }
+        val lightweightSnowflake = idSnowflake.toLightweightSnowflake()
 
-        when (val response = deviousFun.rpc.execute(GetGuildMembersRequest(idSnowflake.toLightweightSnowflake()))) {
-            is GetGuildMembersResponse -> {
-                return response.members.map { (id, data) ->
+        deviousFun.cacheManager.withLock(GuildKey(lightweightSnowflake)) {
+            logger.info { "Retrieving members of guild ${guild.id}..." }
+
+            val cachedMembers = deviousFun.cacheManager.members[lightweightSnowflake] ?: return emptyList()
+            val members = mutableListOf<Member>()
+
+            for ((id, member) in cachedMembers) {
+                val user = deviousFun.cacheManager.users[id] ?: continue
+
+                members.add(
                     Member(
                         deviousFun,
-                        data.member,
+                        member,
                         this,
                         User(
                             deviousFun,
                             id.toKordSnowflake(),
-                            data.user
+                            user
                         )
                     )
-                }
+                )
             }
 
-            is NotFoundResponse -> return emptyList()
-            else -> deviousFun.rpc.unknownResponse(response)
+            return members
         }
     }
 
     suspend fun retrieveMembersWithRoles(vararg roles: Role): List<Member> {
-        logger.info { "Retrieving members of guild ${guild.id} that have the role ${roles}..." }
+        val lightweightSnowflake = idSnowflake.toLightweightSnowflake()
 
-        when (val response =
-            deviousFun.rpc.execute(GetGuildMembersWithRolesRequest(idSnowflake.toLightweightSnowflake(), roles.map { it.idSnowflake.toLightweightSnowflake() }))) {
-            is GetGuildMembersResponse -> {
-                return response.members.map { (id, data) ->
+        deviousFun.cacheManager.withLock(GuildKey(lightweightSnowflake)) {
+            logger.info { "Retrieving members of guild ${guild.id} that have the role ${roles}..." }
+
+            val cachedMembers = deviousFun.cacheManager.members[lightweightSnowflake] ?: return emptyList()
+            val members = mutableListOf<Member>()
+
+            for ((id, member) in cachedMembers) {
+                if (!member.roles.containsAll(roles.map { it.idSnowflake.toLightweightSnowflake() }))
+                    continue
+
+                val user = deviousFun.cacheManager.users[id] ?: continue
+
+                members.add(
                     Member(
                         deviousFun,
-                        data.member,
+                        member,
                         this,
                         User(
                             deviousFun,
                             id.toKordSnowflake(),
-                            data.user
+                            user
                         )
                     )
-                }
+                )
             }
 
-            is NotFoundResponse -> return emptyList()
-            else -> deviousFun.rpc.unknownResponse(response)
+            return members
         }
     }
 
     suspend fun retrieveBoosters(): List<Member> {
-        logger.info { "Retrieving boosters of guild ${guild.id}..." }
+        val lightweightSnowflake = idSnowflake.toLightweightSnowflake()
 
-        when (val response = deviousFun.rpc.execute(GetGuildBoostersRequest(idSnowflake.toLightweightSnowflake()))) {
-            is GetGuildMembersResponse -> {
-                return response.members.map { (id, data) ->
+        deviousFun.cacheManager.withLock(GuildKey(lightweightSnowflake)) {
+            logger.info { "Retrieving boosters of guild ${guild.id}..." }
+
+            val cachedMembers = deviousFun.cacheManager.members[lightweightSnowflake] ?: return emptyList()
+            val members = mutableListOf<Member>()
+
+            for ((id, member) in cachedMembers) {
+                if (member.premiumSince == null)
+                    continue
+
+                val user = deviousFun.cacheManager.users[id] ?: continue
+
+                members.add(
                     Member(
                         deviousFun,
-                        data.member,
+                        member,
                         this,
                         User(
                             deviousFun,
                             id.toKordSnowflake(),
-                            data.user
+                            user
                         )
                     )
-                }
+                )
             }
 
-            is NotFoundResponse -> return emptyList()
-            else -> deviousFun.rpc.unknownResponse(response)
+            return members
         }
     }
 
@@ -194,7 +218,7 @@ class Guild(
 
     fun getEmoteById(id: String) = emotes.firstOrNull { it.id == id }
 
-    suspend fun retrieveMemberOrNull(user: User) = deviousFun.retrieveMemberById(this, user.idSnowflake)
+    suspend fun retrieveMemberOrNull(user: User) = try { deviousFun.retrieveMemberById(this, user.idSnowflake) } catch (e: KtorRequestException) { null }
     suspend fun retrieveMemberById(id: String) = deviousFun.retrieveMemberById(this, Snowflake(id))
     suspend fun retrieveMemberById(id: Long) = deviousFun.retrieveMemberById(this, Snowflake(id))
 

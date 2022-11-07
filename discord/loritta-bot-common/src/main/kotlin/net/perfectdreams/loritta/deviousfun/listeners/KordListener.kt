@@ -3,24 +3,16 @@ package net.perfectdreams.loritta.deviousfun.listeners
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
-import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
-import net.perfectdreams.loritta.deviouscache.data.DeviousGuildEmojiData
-import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
-import net.perfectdreams.loritta.deviouscache.data.toLightweightSnowflake
+import net.perfectdreams.loritta.cinnamon.pudding.tables.ConcurrentLoginBuckets
+import net.perfectdreams.loritta.deviouscache.data.*
 import net.perfectdreams.loritta.deviouscache.requests.*
 import net.perfectdreams.loritta.deviouscache.responses.GetGuildIdsOfShardResponse
-import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
 import net.perfectdreams.loritta.deviouscache.responses.OkResponse
 import net.perfectdreams.loritta.deviouscache.responses.UnlockConflictConcurrentLoginResponse
 import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.cache.DatabaseCacheValue
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
 import net.perfectdreams.loritta.deviousfun.entities.Message
 import net.perfectdreams.loritta.deviousfun.events.guild.GuildReadyEvent
@@ -30,15 +22,9 @@ import net.perfectdreams.loritta.deviousfun.events.message.update.MessageUpdateE
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.gateway.on
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
-import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
-import net.perfectdreams.loritta.deviousfun.utils.GuildAndJoinStatus
-import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.cache.decode
-import net.perfectdreams.loritta.morenitta.cache.encode
-import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.io.path.readText
-import kotlin.time.Duration.Companion.seconds
+import net.perfectdreams.loritta.deviousfun.utils.*
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.deleteWhere
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
@@ -49,53 +35,26 @@ class KordListener(
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val BULK_GUILD_CREATES_DELAY = 5.seconds
     }
 
     private val shardId: Int
         get() = gateway.shardId
     private val cacheManager = m.cacheManager
     private var alreadyTriggeredGuildReadyOnStartup = false
-    private var startedProcessingGuildCreatesInBulk = false
-    // A mutex, kind of
-    private val isProcessingGuildCreatesInBulk = MutableStateFlow(false)
-    private val guildCreates = ConcurrentHashMap<Snowflake, GuildCreate>()
 
     init {
         gateway.on<Ready> {
             // This is used to avoid triggering the onGuildReady spam on subsequent Resumes on full shard login
             alreadyTriggeredGuildReadyOnStartup = true
 
-            logger.info { "Shard $shardId is connected! We will wait $BULK_GUILD_CREATES_DELAY to bulk all guild creates into a single request..." }
-            isProcessingGuildCreatesInBulk.value = true
-
-            GlobalScope.launch {
-                delay(BULK_GUILD_CREATES_DELAY)
-                startedProcessingGuildCreatesInBulk = true
-
-                val (guildsAndJoinStatus, duration) = measureTimedValue {
-                    // Even if it is cached, we will create a guildAndJoinStatus entity here to update the guildAndJoinStatus on the cache
-                    cacheManager.createGuildsBulk(guildCreates.values.map { it.guild })
-                }
-
-                logger.info { "Bulk GuildCreate for ${guildsAndJoinStatus.size} guilds (shard $shardId) took $duration!" }
-
-                for (guild in guildsAndJoinStatus) {
-                    processGuild(guild)
-                }
-                guildCreates.clear()
-                isProcessingGuildCreatesInBulk.value = false
-            }
+            logger.info { "Shard $shardId is connected!" }
 
             val currentRandomKey = gateway.identifyRateLimiter.currentRandomKey
 
-            m.rpc.execute(
-                PutGatewaySessionRequest(
-                    shardId,
-                    this.data.sessionId,
-                    this.data.resumeGatewayUrl,
-                    this.sequence ?: 0
-                )
+            m.cacheManager.gatewaySessions[shardId] = DeviousGatewaySession(
+                this.data.sessionId,
+                this.data.resumeGatewayUrl,
+                this.sequence ?: 0
             )
 
             // After it is ready, we will wait 5000ms to release the lock
@@ -103,13 +62,13 @@ class KordListener(
 
             logger.info { "Trying to release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)..." }
             if (currentRandomKey != null) {
-                val response =
-                    m.rpc.execute(UnlockConcurrentLoginRequest(gateway.identifyRateLimiter.bucketId, currentRandomKey))
+                val deletedBucketsCount = m.loritta.newSuspendedTransaction {
+                    ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq gateway.identifyRateLimiter.bucketId and (ConcurrentLoginBuckets.randomKey eq currentRandomKey) }
+                }
 
-                when (response) {
-                    is UnlockConflictConcurrentLoginResponse -> logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because our random key does not match!" }
-                    is OkResponse -> logger.info { "Successfully released lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)!" }
-                    else -> m.rpc.unknownResponse(response)
+                when (deletedBucketsCount) {
+                    0 -> logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because our random key does not match or the bucket was already released!" }
+                    else -> logger.info { "Successfully released lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)!" }
                 }
             } else {
                 logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because the current random key is null! Bug?" }
@@ -117,7 +76,9 @@ class KordListener(
         }
 
         gateway.on<DispatchEvent> {
-            m.rpc.execute(PutGatewaySequenceRequest(shardId, this.sequence ?: 0))
+            val sequenceId = this.sequence
+            if (sequenceId != null)
+                m.cacheManager.gatewaySessions[shardId]?.sequence = sequenceId
         }
 
         gateway.on<Resumed> {
@@ -129,38 +90,28 @@ class KordListener(
 
             alreadyTriggeredGuildReadyOnStartup = true
 
-            when (val response = m.rpc.execute(GetGuildIdsOfShardRequest(shardId, m.loritta.config.loritta.discord.maxShards))) {
-                is GetGuildIdsOfShardResponse -> {
-                    for (guildId in response.guildIds) {
-                        val guild = cacheManager.getGuild(guildId.toKordSnowflake())
-                            ?: continue // Should NOT be null, but if it is, then let's just pretend that it doesn't exist
-                        val event = GuildReadyEvent(m, gateway, guild)
-                        m.forEachListeners(event, ListenerAdapter::onGuildReady)
-                    }
-                }
+            val guildsOnThisShard = m.cacheManager.guilds.keys.filter {
+                (it shr 22).rem(m.loritta.config.loritta.discord.maxShards).toInt() == shardId
+            }.mapNotNull { cacheManager.getGuild(Snowflake(it)) } // Should NOT be null, but if it is, then let's just pretend that it doesn't exist
 
-                else -> m.rpc.unknownResponse(response)
+            for (guild in guildsOnThisShard) {
+                val event = GuildReadyEvent(m, gateway, guild)
+                m.forEachListeners(event, ListenerAdapter::onGuildReady)
             }
         }
 
         gateway.on<GuildCreate> {
-            if (isProcessingGuildCreatesInBulk.value && !startedProcessingGuildCreatesInBulk) {
-                guildCreates[this.guild.id] = this
-            } else {
-                val (guildAndJoinStatus, duration) = measureTimedValue {
-                    // Even if it is cached, we will create a guildAndJoinStatus entity here to update the guildAndJoinStatus on the cache
-                    cacheManager.createGuild(this.guild, this.guild.channels.value)
-                }
-
-                logger.info { "GuildCreate for ${guildAndJoinStatus.guild.idSnowflake} (shard $shardId) took $duration!" }
-
-                processGuild(guildAndJoinStatus)
+            val (guildAndJoinStatus, duration) = measureTimedValue {
+                // Even if it is cached, we will create a guildAndJoinStatus entity here to update the guildAndJoinStatus on the cache
+                cacheManager.createGuild(this.guild, this.guild.channels.value)
             }
+
+            logger.info { "GuildCreate for ${guildAndJoinStatus.guild.idSnowflake} (shard $shardId) took $duration!" }
+
+            processGuild(guildAndJoinStatus)
         }
 
         gateway.on<GuildUpdate> {
-            awaitForBulkGuildCreatesToFinish()
-
             // Create a guild entity here to update the guild on the cache
             cacheManager.createGuild(this.guild, this.guild.channels.value)
 
@@ -168,8 +119,6 @@ class KordListener(
         }
 
         gateway.on<GuildDelete> {
-            awaitForBulkGuildCreatesToFinish()
-
             logger.info { "Someone removed me @ ${this.guild.id}! :(" }
 
             val guild = cacheManager.getGuild(this.guild.id) ?: return@on
@@ -186,16 +135,12 @@ class KordListener(
         }
 
         gateway.on<MessageCreate> {
-            awaitForBulkGuildCreatesToFinish()
-
             val event = m.eventFactory.createMessageReceived(gateway, this)
 
             m.forEachListeners(event, ListenerAdapter::onMessageReceived)
         }
 
         gateway.on<MessageUpdate> {
-            awaitForBulkGuildCreatesToFinish()
-
             val isWebhook = DeviousUserUtils.isSenderWebhookOrSpecial(this.message)
             val guildId = this.message.guildId.value
 
@@ -242,40 +187,30 @@ class KordListener(
         }
 
         gateway.on<MessageDelete> {
-            awaitForBulkGuildCreatesToFinish()
-
             val event = m.eventFactory.create(gateway, this)
 
             m.forEachListeners(event, ListenerAdapter::onMessageDelete)
         }
 
         gateway.on<MessageReactionAdd> {
-            awaitForBulkGuildCreatesToFinish()
-
             val event = m.eventFactory.create(gateway, this)
 
             m.forEachListeners(event, ListenerAdapter::onGenericMessageReaction)
         }
 
         gateway.on<MessageReactionRemove> {
-            awaitForBulkGuildCreatesToFinish()
-
             val event = m.eventFactory.create(gateway, this)
 
             m.forEachListeners(event, ListenerAdapter::onGenericMessageReaction)
         }
 
         gateway.on<MessageDeleteBulk> {
-            awaitForBulkGuildCreatesToFinish()
-
             val event = m.eventFactory.create(gateway, this)
 
             m.forEachListeners(event, ListenerAdapter::onMessageBulkDelete)
         }
 
         gateway.on<GuildMemberAdd> {
-            awaitForBulkGuildCreatesToFinish()
-
             val guild = cacheManager.getGuild(this.member.guildId) ?: return@on
             val userData = this.member.user.value ?: return@on
 
@@ -291,8 +226,6 @@ class KordListener(
         }
 
         gateway.on<GuildMemberUpdate> {
-            awaitForBulkGuildCreatesToFinish()
-
             val guild = cacheManager.getGuild(this.member.guildId) ?: return@on
             val userData = this.member.user
 
@@ -304,8 +237,6 @@ class KordListener(
         }
 
         gateway.on<GuildMemberRemove> {
-            awaitForBulkGuildCreatesToFinish()
-
             val guild = cacheManager.getGuild(this.member.guildId) ?: return@on
 
             // Create user instance, this will store the user in cache
@@ -320,14 +251,10 @@ class KordListener(
         }
 
         gateway.on<GuildEmojisUpdate> {
-            awaitForBulkGuildCreatesToFinish()
-
             m.cacheManager.storeEmojis(this.emoji.guildId, this.emoji.emojis.map { DeviousGuildEmojiData.from(it) })
         }
 
         gateway.on<GuildRoleCreate> {
-            awaitForBulkGuildCreatesToFinish()
-
             val role = this.role.role
             val guild = cacheManager.getGuild(this.role.guildId) ?: return@on
 
@@ -336,8 +263,6 @@ class KordListener(
         }
 
         gateway.on<GuildRoleUpdate> {
-            awaitForBulkGuildCreatesToFinish()
-
             val role = this.role.role
             val guild = cacheManager.getGuild(this.role.guildId) ?: return@on
 
@@ -346,8 +271,6 @@ class KordListener(
         }
 
         gateway.on<GuildRoleDelete> {
-            awaitForBulkGuildCreatesToFinish()
-
             val roleId = this.role.id
             val guild = cacheManager.getGuild(this.role.guildId) ?: return@on
 
@@ -356,8 +279,6 @@ class KordListener(
         }
 
         gateway.on<ChannelCreate> {
-            awaitForBulkGuildCreatesToFinish()
-
             val guildId = this.channel.guildId.value ?: return@on
             val guild = cacheManager.getGuild(guildId) ?: return@on
 
@@ -366,8 +287,6 @@ class KordListener(
         }
 
         gateway.on<ChannelUpdate> {
-            awaitForBulkGuildCreatesToFinish()
-
             val guildId = this.channel.guildId.value ?: return@on
             val guild = cacheManager.getGuild(guildId) ?: return@on
 
@@ -376,8 +295,6 @@ class KordListener(
         }
 
         gateway.on<ChannelDelete> {
-            awaitForBulkGuildCreatesToFinish()
-
             val guildId = this.channel.guildId.value ?: return@on
             val guild = cacheManager.getGuild(guildId) ?: return@on
 
@@ -386,8 +303,6 @@ class KordListener(
         }
 
         gateway.on<VoiceStateUpdate> {
-            awaitForBulkGuildCreatesToFinish()
-
             val guildId = this.voiceState.guildId.value!! // Shouldn't be null here
             val channelId = this.voiceState.channelId
             val userId = this.voiceState.userId
@@ -410,7 +325,35 @@ class KordListener(
                 }
             }
 
-            m.rpc.execute(PutVoiceStateRequest(guildId.toLightweightSnowflake(), userId.toLightweightSnowflake(), channelId?.toLightweightSnowflake()))
+            val lightweightGuildId = guildId.toLightweightSnowflake()
+            val lightweightChannelId = channelId?.toLightweightSnowflake()
+            val lightweightUserId = userId.toLightweightSnowflake()
+
+            cacheManager.withLock(GuildKey(lightweightGuildId), UserKey(lightweightUserId)) {
+                cacheManager.awaitForEntityPersistenceModificationMutex()
+
+                logger.info { "Updating voice state of user $lightweightUserId on channel $lightweightChannelId on guild $lightweightGuildId" }
+
+                val currentVoiceStates = cacheManager.voiceStates[lightweightGuildId]
+                // Expected 1 because we will insert the new voice state
+                val newVoiceStates = (currentVoiceStates ?: SnowflakeMap(1))
+                    .also {
+                        if (lightweightChannelId != null) {
+                            it[lightweightUserId] = DeviousVoiceStateData(
+                                lightweightUserId,
+                                lightweightChannelId
+                            )
+                        } else {
+                            it.remove(lightweightUserId)
+                        }
+                    }
+
+                cacheManager.voiceStates[lightweightGuildId] = newVoiceStates
+
+                cacheManager.cacheDatabase.queue {
+                    this.voiceStates[lightweightGuildId] = DatabaseCacheValue.Value(newVoiceStates.toMap())
+                }
+            }
 
             // TODO: Voice events
         }
@@ -450,14 +393,5 @@ class KordListener(
         // Guild is ready!
         val event = GuildReadyEvent(m, gateway, guild)
         m.forEachListeners(event, ListenerAdapter::onGuildReady)
-    }
-
-    suspend fun awaitForBulkGuildCreatesToFinish() {
-        // Wait until it is ok before proceeding
-        isProcessingGuildCreatesInBulk
-            .filter {
-                it == false
-            }
-            .first()
     }
 }

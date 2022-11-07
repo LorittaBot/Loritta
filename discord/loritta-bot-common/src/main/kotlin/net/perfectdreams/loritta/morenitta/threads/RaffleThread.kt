@@ -8,12 +8,16 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.perfectdreams.exposedpowerutils.sql.upsert
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousData
 import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.deviouscache.requests.PutMiscellaneousDataRequest
+import net.perfectdreams.loritta.morenitta.utils.gson
+import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
 import java.awt.Color
 import java.io.File
 import java.time.Instant
@@ -68,7 +72,12 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
         logger.info { "Tickets: ${userIds.size}" }
 
         runBlocking {
-            loritta.deviousFun.rpc.execute(PutMiscellaneousDataRequest(DATA_KEY, json.toString()))
+            loritta.newSuspendedTransaction {
+                MiscellaneousData.upsert(MiscellaneousData.id) {
+                    it[MiscellaneousData.id] = DATA_KEY
+                    it[MiscellaneousData.data] = json.toString()
+                }
+            }
         }
     }
 

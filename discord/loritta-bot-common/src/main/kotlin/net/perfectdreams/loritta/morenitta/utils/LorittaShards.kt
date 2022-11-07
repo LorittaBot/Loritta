@@ -49,7 +49,7 @@ class LorittaShards(val loritta: LorittaBot) {
     suspend fun getGuildById(id: String): Guild? = loritta.deviousFun.getGuildById(id)
     suspend fun getGuildById(id: Long): Guild? = loritta.deviousFun.getGuildById(id)
 
-    suspend fun getGuildCount(): Long = loritta.deviousFun.getGuildCount()
+    suspend fun getGuildCount(): Long = loritta.deviousFun.getGuildCount().toLong()
 
     suspend fun getUserById(id: String?) = getUserById(id?.toLong())
 
