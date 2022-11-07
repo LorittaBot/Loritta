@@ -65,6 +65,5 @@ jobs:
           arguments: |
             build
             :discord:loritta-bot-common:jib
-            :devious-cache:devious-server:jib
             :shard-controller:jib
             --scan
