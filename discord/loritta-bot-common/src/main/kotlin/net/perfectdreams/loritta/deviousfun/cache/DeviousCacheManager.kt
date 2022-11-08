@@ -66,7 +66,7 @@ class DeviousCacheManager(
     suspend fun getGuild(id: Snowflake): Guild? {
         val lightweightSnowflake = id.toLightweightSnowflake()
         withLock(GuildKey(lightweightSnowflake)) {
-            logger.info { "Getting guild + entities with ID $id" }
+            logger.debug { "Getting guild + entities with ID $id" }
 
             val cachedGuild = guilds[lightweightSnowflake] ?: return null
             val cachedGuildData = cachedGuild.data
@@ -275,9 +275,8 @@ class DeviousCacheManager(
         withLock(GuildKey(lightweightSnowflake)) {
             awaitForEntityPersistenceModificationMutex()
 
-            logger.info { "Deleting guild with ID $lightweightSnowflake" }
+            logger.debug { "Deleting guild with ID $lightweightSnowflake" }
 
-            val cachedGuild = guilds[lightweightSnowflake] ?: return
             val cachedChannels = guildChannels[lightweightSnowflake]
 
             roles.remove(lightweightSnowflake)
@@ -317,7 +316,7 @@ class DeviousCacheManager(
         withLock(GuildKey(lightweightSnowflake)) {
             awaitForEntityPersistenceModificationMutex()
 
-            logger.info { "Updating guild emojis on guild $lightweightSnowflake" }
+            logger.debug { "Updating guild emojis on guild $lightweightSnowflake" }
 
             val newEmotes = SnowflakeMap(emojis.associateBy { it.id })
             emotes[lightweightSnowflake] = newEmotes
@@ -333,7 +332,7 @@ class DeviousCacheManager(
         val lightweightSnowflake = id.toLightweightSnowflake()
 
         withLock(UserKey(lightweightSnowflake)) {
-            logger.info { "Getting user with ID $lightweightSnowflake" }
+            logger.debug { "Getting user with ID $lightweightSnowflake" }
             val deviousUserData = users[lightweightSnowflake] ?: return null
 
             return User(
@@ -353,7 +352,7 @@ class DeviousCacheManager(
                 withLock(UserKey(lightweightSnowflake)) {
                     awaitForEntityPersistenceModificationMutex()
 
-                    logger.info { "Updating user with ID $lightweightSnowflake" }
+                    logger.debug { "Updating user with ID $lightweightSnowflake" }
                     users[lightweightSnowflake] = deviousUserData
 
                     cacheDatabase.queue {
@@ -371,7 +370,7 @@ class DeviousCacheManager(
         val userId = user.idSnowflake.toLightweightSnowflake()
 
         withLock(GuildKey(guildId), UserKey(userId)) {
-            logger.info { "Getting guild member $userId of guild $guildId" }
+            logger.debug { "Getting guild member $userId of guild $guildId" }
 
             val cachedMembers = members[guildId] ?: return null
             val cachedMember = cachedMembers[userId] ?: return null
@@ -414,7 +413,7 @@ class DeviousCacheManager(
             withLock(GuildKey(guildId), UserKey(userId)) {
                 awaitForEntityPersistenceModificationMutex()
 
-                logger.info { "Updating guild member with ID ${userId} on guild ${guildId}" }
+                logger.debug { "Updating guild member with ID ${userId} on guild ${guildId}" }
 
                 val currentMembers = members[guildId]
                 // Expected 1 because we will insert the new member
@@ -466,7 +465,7 @@ class DeviousCacheManager(
         withLock(GuildKey(guildId), UserKey(userId)) {
             awaitForEntityPersistenceModificationMutex()
 
-            logger.info { "Deleting guild member with ID $userId on guild $guildId" }
+            logger.debug { "Deleting guild member with ID $userId on guild $guildId" }
 
             val currentMembers = members[guildId]
             members[guildId] = (currentMembers ?: SnowflakeMap(0))
@@ -488,7 +487,7 @@ class DeviousCacheManager(
         withLock(GuildKey(guildId)) {
             awaitForEntityPersistenceModificationMutex()
 
-            logger.info { "Updating guild role with ID ${data.id} on guild $guildId" }
+            logger.debug { "Updating guild role with ID ${data.id} on guild $guildId" }
 
             val currentRoles = roles[guildId]
             // Expected 1 because we will insert the new role
@@ -519,7 +518,7 @@ class DeviousCacheManager(
         withLock(GuildKey(guildId)) {
             awaitForEntityPersistenceModificationMutex()
 
-            logger.info { "Deleting guild role with ID ${roleId} on guild ${guildId}" }
+            logger.debug { "Deleting guild role with ID ${roleId} on guild ${guildId}" }
 
             val currentRoles = roles[guildId]
             val newRoles = (currentRoles ?: SnowflakeMap(0))
@@ -538,7 +537,7 @@ class DeviousCacheManager(
     suspend fun getChannel(channelId: Snowflake): Channel? {
         val channelId = channelId.toLightweightSnowflake()
         withLock(ChannelKey(channelId)) {
-            logger.info { "Getting channel $channelId" }
+            logger.debug { "Getting channel $channelId" }
 
             if (!channelsToGuilds.containsKey(channelId.value.toLong()))
                 return null // Unknown channel
@@ -601,7 +600,7 @@ class DeviousCacheManager(
         withLock(GuildKey(guildId), ChannelKey(data.id)) {
             awaitForEntityPersistenceModificationMutex()
 
-            logger.info { "Updating guild role with ID ${data.id} on guild $guildId" }
+            logger.debug { "Updating guild role with ID ${data.id} on guild $guildId" }
 
             val currentChannels = guildChannels[guildId]
             // Expected 1 because we will insert the new role
@@ -632,7 +631,7 @@ class DeviousCacheManager(
         withLock(GuildKey(guildId), ChannelKey(channelId)) {
             awaitForEntityPersistenceModificationMutex()
 
-            logger.info { "Deleting guild channel with ID $channelId on guild $guildId" }
+            logger.debug { "Deleting guild channel with ID $channelId on guild $guildId" }
 
             val currentChannels = guildChannels[guildId]
             val newChannels = (currentChannels ?: SnowflakeMap(0))
