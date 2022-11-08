@@ -221,6 +221,10 @@ class DeviousFun(
      * [Throwable]s are catched and logged, but won't halt subsequent listeners.
      */
     fun <T : Event> forEachListeners(event: T, method: KFunction2<ListenerAdapter, T, Unit>) {
+        // Ignore if it is passive mode
+        if (loritta.passiveMode)
+            return
+
         for (listener in listeners) {
             try {
                 method.invoke(listener, event)

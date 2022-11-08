@@ -206,6 +206,10 @@ class LorittaBot(
         val MESSAGE_EXECUTOR_THREADS = Runtime.getRuntime().availableProcessors() * 8
     }
 
+    // Debug feature: If enabled, Loritta will work in a "passive mode", where she will process events only for DeviousFun caching purposes
+    // Useful to test the cache feature without shutting down another instance that is processing the events.
+    val passiveMode = System.getenv("LORITTA_PASSIVE_MODE").toBoolean()
+
     @OptIn(KordUnsafe::class)
     private val ktorRequestHandler = MetricsKtorRequestHandler(
         KtorRequestHandler(
@@ -524,30 +528,36 @@ class LorittaBot(
         logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
 
         scope.launch {
-            // On every gateway instance present on our gateway manager, collect and process events
-            logger.info { "Preparing gateway event collectors for ${gatewayManager.gateways.size} gateway instances..." }
+            if (!passiveMode) {
+                // On every gateway instance present on our gateway manager, collect and process events
+                logger.info { "Preparing gateway event collectors for ${gatewayManager.gateways.size} gateway instances..." }
 
-            gatewayManager.gateways.forEach { (shardId, gateway) ->
-                gateway.kordGateway.installDiscordInteraKTions(interaKTions)
+                gatewayManager.gateways.forEach { (shardId, gateway) ->
+                    gateway.kordGateway.installDiscordInteraKTions(interaKTions)
 
-                scope.launch {
-                    gateway.events.collect {
-                        DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
-                            .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
-                            .inc()
+                    scope.launch {
+                        gateway.events.collect {
+                            DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
+                                .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
+                                .inc()
 
-                        launchEventProcessorJob(
-                            GatewayEventContext(
-                                it,
-                                shardId,
-                                Clock.System.now()
+                            launchEventProcessorJob(
+                                GatewayEventContext(
+                                    it,
+                                    shardId,
+                                    Clock.System.now()
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
-
             gatewayManager.start()
+        }
+
+        if (passiveMode) {
+            logger.info { "Passive Mode is enabled!" }
+            return
         }
 
         logger.info { "Starting Pudding tasks..." }
