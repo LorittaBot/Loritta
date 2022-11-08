@@ -637,7 +637,7 @@ class LorittaBot(
                 )
             }
         }
-        
+
         if (System.getenv("LORITTA_CREATE_TABLES") != null) {
             runBlocking {
                 pudding.createMissingTablesAndColumns { true }

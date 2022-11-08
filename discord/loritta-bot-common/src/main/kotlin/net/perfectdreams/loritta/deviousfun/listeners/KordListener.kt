@@ -106,7 +106,7 @@ class KordListener(
                 cacheManager.createGuild(this.guild, this.guild.channels.value)
             }
 
-            logger.info { "GuildCreate for ${guildAndJoinStatus.guild.idSnowflake} (shard $shardId) took $duration!" }
+            // logger.info { "GuildCreate for ${guildAndJoinStatus.guild.idSnowflake} (shard $shardId) took $duration!" }
 
             processGuild(guildAndJoinStatus)
         }

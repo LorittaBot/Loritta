@@ -137,7 +137,7 @@ class DeviousCacheManager(
             // We are going to execute everything at the same time
             val cacheActions = mutableListOf<DeviousCacheDatabase.DirtyEntitiesWrapper.() -> (Unit)>()
 
-            logger.info { "Updating guild with ID $lightweightSnowflake" }
+            // logger.info { "Updating guild with ID $lightweightSnowflake" }
 
             val cachedGuild = guilds[lightweightSnowflake]
             val isNewGuild = cachedGuild == null
