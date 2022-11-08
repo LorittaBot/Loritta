@@ -21,7 +21,6 @@ data class LorittaConfig(
     val commands: CommandsConfig,
     val website: WebsiteConfig,
     val pudding: PuddingConfig,
-    val deviousCache: DeviousCacheConfig,
     val perfectPayments: PerfectPaymentsConfig,
     val binaries: BinariesConfig,
     val prometheusPush: PrometheusPushConfig,
@@ -141,16 +140,6 @@ data class LorittaConfig(
         val username: String,
         val password: String
     )
-
-    @Serializable
-    data class RedisConfig(
-        val keyPrefix: String,
-        val address: String,
-        val password: String?
-    )
-
-    @Serializable
-    data class DeviousCacheConfig(val url: String)
 
     @Serializable
     data class PerfectPaymentsConfig(
