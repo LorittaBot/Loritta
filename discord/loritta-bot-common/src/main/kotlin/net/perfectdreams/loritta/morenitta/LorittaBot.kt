@@ -628,6 +628,16 @@ class LorittaBot(
         // Hidden behind a env flag, because FOR SOME REASON Exposed thinks that it is a good idea to
         // "ALTER TABLE serverconfigs ALTER COLUMN prefix TYPE TEXT, ALTER COLUMN prefix SET DEFAULT '+'"
         // And that LOCKS the ServerConfig table, and sometimes that takes a LOOOONG time to complete, which locks up everything
+        // TODO: Remove this
+        runBlocking {
+            pudding.transaction {
+                SchemaUtils.createMissingTablesAndColumns(
+                    MiscellaneousData,
+                    ConcurrentLoginBuckets
+                )
+            }
+        }
+        
         if (System.getenv("LORITTA_CREATE_TABLES") != null) {
             runBlocking {
                 pudding.createMissingTablesAndColumns { true }
