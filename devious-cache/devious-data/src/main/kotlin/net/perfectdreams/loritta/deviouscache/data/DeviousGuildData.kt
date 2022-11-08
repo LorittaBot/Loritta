@@ -24,7 +24,8 @@ data class DeviousGuildData(
             data.icon,
             data.vanityUrlCode,
             data.premiumSubscriptionCount.value ?: 0,
-            data.memberCount.value ?: data.approximateMemberCount.value ?: 0,
+            // This is only available via the gateway GuildCreate event
+            data.memberCount.value ?: 0,
             data.splash.value,
             data.banner,
         )
