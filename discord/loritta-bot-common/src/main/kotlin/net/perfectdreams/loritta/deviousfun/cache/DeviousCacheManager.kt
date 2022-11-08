@@ -170,7 +170,8 @@ class DeviousCacheManager(
 
             if (membersData != null) {
                 val currentMembers = members[lightweightSnowflake]
-                members[lightweightSnowflake] = (currentMembers ?: SnowflakeMap(members.size))
+                // The expected size will be the size of the members data map
+                members[lightweightSnowflake] = (currentMembers ?: SnowflakeMap(membersData.size))
                     .also {
                         for ((id, member) in membersData) {
                             val currentMember = it[id]
