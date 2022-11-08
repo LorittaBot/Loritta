@@ -3,6 +3,8 @@ package net.perfectdreams.loritta.deviousfun.cache
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.*
+import it.unimi.dsi.fastutil.longs.Long2LongMap
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -32,8 +34,9 @@ class DeviousCacheManager(
     val m: DeviousFun,
     val database: Database,
     val users: SnowflakeMap<DeviousUserData>,
-    val channels: SnowflakeMap<DeviousChannelData>,
     val guilds: SnowflakeMap<DeviousGuildDataWrapper>,
+    val guildChannels: SnowflakeMap<SnowflakeMap<DeviousChannelData>>,
+    val channelsToGuilds: Long2LongMap,
     val emotes: SnowflakeMap<SnowflakeMap<DeviousGuildEmojiData>>,
     val roles: SnowflakeMap<SnowflakeMap<DeviousRoleData>>,
     val members: SnowflakeMap<SnowflakeMap<DeviousMemberData>>,
@@ -68,7 +71,7 @@ class DeviousCacheManager(
             val cachedGuild = guilds[lightweightSnowflake] ?: return null
             val cachedGuildData = cachedGuild.data
             val roles = roles[lightweightSnowflake]?.toMap() ?: emptyMap()
-            val channels = cachedGuild.channelIds.mapNotNull { channels[it] }.associateBy { it.id }
+            val channels = guildChannels[lightweightSnowflake]?.toMap() ?: emptyMap()
             val emojis = emotes[lightweightSnowflake]?.toMap() ?: emptyMap()
 
             val cacheWrapper = Guild.CacheWrapper()
@@ -138,11 +141,7 @@ class DeviousCacheManager(
 
             val cachedGuild = guilds[lightweightSnowflake]
             val isNewGuild = cachedGuild == null
-            val wrapper = DeviousGuildDataWrapper(
-                deviousGuildData,
-                // TODO: This feels weird
-                cachedGuild?.channelIds ?: channelsData?.map { it.id }?.toSet() ?: emptySet()
-            )
+            val wrapper = DeviousGuildDataWrapper(deviousGuildData,)
             guilds[lightweightSnowflake] = wrapper
 
             cacheActions.add {
@@ -150,7 +149,6 @@ class DeviousCacheManager(
             }
 
             val currentEmotes = emotes[lightweightSnowflake]
-
             runIfDifferentAndNotNull(currentEmotes?.values, emojisData) {
                 val newEmojis = SnowflakeMap(it.associateBy { it.id })
                 emotes[lightweightSnowflake] = newEmojis
@@ -187,29 +185,34 @@ class DeviousCacheManager(
             }
 
             if (channelsData != null) {
-                val oldChannelIds = cachedGuild?.channelIds?.toSet()
+                val currentChannels = this.guildChannels[lightweightSnowflake]
+                runIfDifferentAndNotNull(currentChannels?.values, channelsData) {
+                    val newChannels = SnowflakeMap(it.associateBy { it.id })
+                    this.guildChannels[lightweightSnowflake] = newChannels
 
-                // Remove removed channels from the global channel cache
+                    cacheActions.add {
+                        this.guildChannels[lightweightSnowflake] = DatabaseCacheValue.Value(newChannels.toMap())
+                    }
+                }
+
+                val oldChannelIds = currentChannels?.keys?.map { LightweightSnowflake(it) }?.toSet()
+
+                // Remove removed channels from the global channel cache and from the fast channel map
                 if (oldChannelIds != null) {
                     for (channelId in (channelsData.map { it.id } - oldChannelIds)) {
-                        channels.remove(channelId)
+                        this.guildChannels.remove(channelId)
+                        this.channelsToGuilds.remove(channelId.value.toLong())
                         cacheActions.add {
-                            this.channels[channelId] = DatabaseCacheValue.Null()
+                            this.guildChannels[channelId] = DatabaseCacheValue.Null()
                         }
                     }
                 }
 
-                // Add all channels to the guild channel cache
+                // Add all channels to the fast channel map cache
                 val channelMappedByIds = channelsData.associateBy { it.id }
 
                 for ((channelId, newChannel) in channelMappedByIds) {
-                    val currentChannel = channels[channelId]
-                    if (newChannel != currentChannel) {
-                        channels[channelId] = newChannel
-                        cacheActions.add {
-                            this.channels[channelId] = DatabaseCacheValue.Value(newChannel)
-                        }
-                    }
+                    this.channelsToGuilds[channelId.value.toLong()] = lightweightSnowflake.value.toLong()
                 }
             }
 
@@ -274,32 +277,32 @@ class DeviousCacheManager(
             logger.info { "Deleting guild with ID $lightweightSnowflake" }
 
             val cachedGuild = guilds[lightweightSnowflake] ?: return
-            cachedGuild.channelIds.forEach {
-                channels.remove(it)
-            }
+            val cachedChannels = guildChannels[lightweightSnowflake]
 
             roles.remove(lightweightSnowflake)
             emotes.remove(lightweightSnowflake)
+            guildChannels.remove(lightweightSnowflake)
             guilds.remove(lightweightSnowflake)
             voiceStates.remove(lightweightSnowflake)
+
+            if (cachedChannels != null) {
+                for (channel in cachedChannels) {
+                    this.channelsToGuilds.remove(channel.first.value.toLong())
+                }
+            }
 
             val members = members[lightweightSnowflake]
             if (members != null)
                 this.members.remove(lightweightSnowflake)
 
-
             cacheDatabase.queue {
                 roles[lightweightSnowflake] = DatabaseCacheValue.Null()
                 emojis[lightweightSnowflake] = DatabaseCacheValue.Null()
+                guildChannels[lightweightSnowflake] = DatabaseCacheValue.Null()
 
                 members?.forEach { memberId, _ ->
                     // Bust the cache of all the members on this guild
                     this.members[GuildAndUserPair(lightweightSnowflake, memberId)] = DatabaseCacheValue.Null()
-                }
-
-                cachedGuild.channelIds.forEach {
-                    // Bust the cache of all the channels on this guild
-                    this.channels[it] = DatabaseCacheValue.Null()
                 }
 
                 this.voiceStates[lightweightSnowflake] = DatabaseCacheValue.Null()
@@ -536,133 +539,110 @@ class DeviousCacheManager(
         withLock(ChannelKey(channelId)) {
             logger.info { "Getting channel $channelId" }
 
-            val cachedChannel = channels[channelId] ?: return null
-            val guildId = cachedChannel.guildId
-            val cachedGuild = if (guildId != null)
-                guilds[guildId]
-            else
-                null
+            if (!channelsToGuilds.containsKey(channelId.value.toLong()))
+                return null // Unknown channel
 
-            return if (cachedGuild != null && guildId != null) {
-                val cachedGuildData = cachedGuild.data
-                val roles = roles[guildId]?.toMap() ?: emptyMap()
-                val channels = cachedGuild.channelIds.mapNotNull { channels[it] }.associateBy { it.id }
-                val emojis = emotes[guildId]?.toMap() ?: emptyMap()
+            val guildId = LightweightSnowflake(channelsToGuilds.get(channelId.value.toLong()))
+            val cachedGuild = guilds[guildId] ?: return null
+            val cachedChannels = guildChannels[guildId] ?: return null
+            val cachedChannel = cachedChannels[channelId] ?: return null
+            val cachedGuildData = cachedGuild.data
+            val roles = roles[guildId]?.toMap() ?: emptyMap()
+            val channels = guildChannels[guildId]?.toMap() ?: emptyMap()
+            val emojis = emotes[guildId]?.toMap() ?: emptyMap()
 
-                val cacheWrapper = Guild.CacheWrapper()
-                val guild = Guild(
-                    m,
-                    cachedGuildData,
-                    cacheWrapper
-                )
+            val cacheWrapper = Guild.CacheWrapper()
+            val guild = Guild(
+                m,
+                cachedGuildData,
+                cacheWrapper
+            )
 
-                cacheWrapper.roles.putAll(
-                    roles.map { (id, data) ->
-                        id.toKordSnowflake() to Role(
-                            m,
-                            guild,
-                            data
-                        )
-                    }
-                )
+            cacheWrapper.roles.putAll(
+                roles.map { (id, data) ->
+                    id.toKordSnowflake() to Role(
+                        m,
+                        guild,
+                        data
+                    )
+                }
+            )
 
-                cacheWrapper.channels.putAll(
-                    channels.map { (id, data) ->
-                        id.toKordSnowflake() to Channel(
-                            m,
-                            guild,
-                            data
-                        )
-                    }
-                )
+            cacheWrapper.channels.putAll(
+                channels.map { (id, data) ->
+                    id.toKordSnowflake() to Channel(
+                        m,
+                        guild,
+                        data
+                    )
+                }
+            )
 
-                cacheWrapper.emotes.putAll(
-                    emojis.map { (id, data) ->
-                        id.toKordSnowflake() to DiscordGuildEmote(
-                            m,
-                            guild,
-                            data
-                        )
-                    }
-                )
+            cacheWrapper.emotes.putAll(
+                emojis.map { (id, data) ->
+                    id.toKordSnowflake() to DiscordGuildEmote(
+                        m,
+                        guild,
+                        data
+                    )
+                }
+            )
 
-                Channel(m, guild, cachedChannel)
-            } else {
-                Channel(m, null, cachedChannel)
-            }
+            return Channel(m, guild, cachedChannel)
         }
     }
 
-    suspend fun createChannel(guild: Guild?, data: DiscordChannel): Channel {
-        val guildId = guild?.idSnowflake?.toLightweightSnowflake()
-        val channelId = data.id.toLightweightSnowflake()
-        val locks = mutableListOf<EntityKey>(ChannelKey(channelId))
-        if (guildId != null)
-            locks.add(GuildKey(guildId))
+    suspend fun createChannel(guild: Guild, data: DiscordChannel): Channel {
+        val data = DeviousChannelData.from(guild.idSnowflake, data)
 
-        withLock(*locks.toTypedArray()) {
-            val deviousChannelData = DeviousChannelData.from(guild?.idSnowflake, data)
-            val currentChannelData = channels[channelId]
+        val guildId = guild.idSnowflake.toLightweightSnowflake()
 
-            if (deviousChannelData != currentChannelData) {
-                awaitForEntityPersistenceModificationMutex()
+        withLock(GuildKey(guildId), ChannelKey(data.id)) {
+            awaitForEntityPersistenceModificationMutex()
 
-                logger.info { "Updating channel with ID ${channelId}" }
-                channels[channelId] = deviousChannelData
-                cacheDatabase.queue {
-                    this.channels[channelId] = DatabaseCacheValue.Value(deviousChannelData)
+            logger.info { "Updating guild role with ID ${data.id} on guild $guildId" }
+
+            val currentChannels = guildChannels[guildId]
+            // Expected 1 because we will insert the new role
+            val newChannels = (currentChannels ?: SnowflakeMap(1))
+                .also {
+                    it[data.id] = data
                 }
-
-                if (guildId != null) {
-                    val cachedGuild = guilds[guildId]
-                    if (cachedGuild != null) {
-                        // Add the channel ID to the cached guild
-                        val newCachedGuild = cachedGuild.copy(channelIds = (cachedGuild.channelIds + deviousChannelData.id))
-                        guilds[guildId] = newCachedGuild
-                        cacheDatabase.queue {
-                            this.guilds[guildId] = DatabaseCacheValue.Value(newCachedGuild)
-                        }
-                    } else {
-                        logger.warn { "Channel $channelId requires guild $guildId, but we don't have it cached!" }
-                    }
-                }
-            } else {
-                logger.info { "Noop operation on $channelId" }
-            }
-
-            return Channel(m, guild, deviousChannelData)
-        }
-    }
-
-    suspend fun deleteChannel(guild: Guild?, channelId: Snowflake) {
-        val guildId = guild?.idSnowflake?.toLightweightSnowflake()
-        val channelId = channelId.toLightweightSnowflake()
-        val locks = mutableListOf<EntityKey>(ChannelKey(channelId))
-        if (guildId != null)
-            locks.add(GuildKey(guildId))
-
-        withLock(*locks.toTypedArray()) {
-            logger.info { "Deleting channel with ID ${channelId}" }
-
-            channels.remove(channelId)
+            val newChannelsCloneAsMap = newChannels.toMap()
+            guildChannels[guildId] = newChannels
+            channelsToGuilds[data.id.value.toLong()] = guild.idLong
 
             cacheDatabase.queue {
-                this.channels[channelId] = DatabaseCacheValue.Null()
+                this.guildChannels[guildId] = DatabaseCacheValue.Value(newChannelsCloneAsMap)
             }
+        }
 
-            if (guildId != null) {
-                val cachedGuild = guilds[guildId]
-                if (cachedGuild != null) {
-                    // Remove the channel ID from the cached guild
-                    val newCachedGuild = cachedGuild.copy(channelIds = (cachedGuild.channelIds - channelId))
-                    guilds[guildId] = newCachedGuild
+        return Channel(
+            m,
+            guild,
+            data
+        )
+    }
 
-                    cacheDatabase.queue {
-                        this.guilds[guildId] = DatabaseCacheValue.Value(newCachedGuild)
-                    }
-                } else {
-                    logger.warn { "Channel $channelId requires guild $guildId, but we don't have it cached!" }
+    suspend fun deleteChannel(guild: Guild, channelId: Snowflake) {
+        val guildId = guild.idSnowflake.toLightweightSnowflake()
+        val channelId = channelId.toLightweightSnowflake()
+
+        withLock(GuildKey(guildId), ChannelKey(channelId)) {
+            awaitForEntityPersistenceModificationMutex()
+
+            logger.info { "Deleting guild channel with ID $channelId on guild $guildId" }
+
+            val currentChannels = guildChannels[guildId]
+            val newChannels = (currentChannels ?: SnowflakeMap(0))
+                .also {
+                    it.remove(channelId)
                 }
+            val newChannelsCloneAsMap = newChannels.toMap()
+            guildChannels[guildId] = newChannels
+
+            cacheDatabase.queue {
+                this.guildChannels[channelId] = DatabaseCacheValue.Value(newChannelsCloneAsMap)
             }
         }
     }

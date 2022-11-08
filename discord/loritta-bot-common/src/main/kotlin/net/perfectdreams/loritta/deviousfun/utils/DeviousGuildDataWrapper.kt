@@ -6,6 +6,5 @@ import net.perfectdreams.loritta.deviouscache.data.LightweightSnowflake
 
 @Serializable
 data class DeviousGuildDataWrapper(
-    val data: DeviousGuildData,
-    val channelIds: Set<LightweightSnowflake>
+    val data: DeviousGuildData
 )

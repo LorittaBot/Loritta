@@ -11,6 +11,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.transaction
+import net.perfectdreams.loritta.deviouscache.data.DeviousChannelData
 import net.perfectdreams.loritta.deviouscache.data.DeviousUserData
 import net.perfectdreams.loritta.deviouscache.data.LightweightSnowflake
 import net.perfectdreams.loritta.deviouscache.requests.GetGuildCountRequest
@@ -67,8 +68,9 @@ class DeviousFun(
         this,
         cacheDatabase,
         cacheEntityMaps.users,
-        cacheEntityMaps.channels,
         cacheEntityMaps.guilds,
+        cacheEntityMaps.guildChannels,
+        cacheEntityMaps.channelsToGuilds,
         cacheEntityMaps.emotes,
         cacheEntityMaps.roles,
         cacheEntityMaps.members,
@@ -187,7 +189,12 @@ class DeviousFun(
 
         addContextToException({ "Something went wrong while trying to query channel $id" }) {
             val channel = loritta.rest.channel.getChannel(id)
+
+            // If the guild is null, fallback to a non cached channel instance
             val guild = channel.guildId.value?.let { retrieveGuildById(it) }
+                ?: return Channel(this, null, DeviousChannelData.from(null, channel))
+
+
             return cacheManager.createChannel(guild, channel)
         }
     }

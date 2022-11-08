@@ -61,7 +61,7 @@ class DeviousCacheDatabase(
         val removedEmojis: Set<LightweightSnowflake>
         val dirtyEmojis: Map<LightweightSnowflake, Map<LightweightSnowflake, DeviousGuildEmojiData>>
         val removedChannels: Set<LightweightSnowflake>
-        val dirtyChannels: Map<LightweightSnowflake, DeviousChannelData>
+        val dirtyChannels: Map<LightweightSnowflake, Map<LightweightSnowflake, DeviousChannelData>>
         val removedGuilds: Set<LightweightSnowflake>
         val dirtyGuilds: Map<LightweightSnowflake, DeviousGuildDataWrapper>
         val removedVoiceStates: Set<LightweightSnowflake>
@@ -79,8 +79,8 @@ class DeviousCacheDatabase(
             removedEmojis = dirtyEntities.filterNull(dirtyEntities.emojis)
             dirtyEmojis = dirtyEntities.filterNotNull(dirtyEntities.emojis)
 
-            removedChannels = dirtyEntities.filterNull(dirtyEntities.channels)
-            dirtyChannels = dirtyEntities.filterNotNull(dirtyEntities.channels)
+            removedChannels = dirtyEntities.filterNull(dirtyEntities.guildChannels)
+            dirtyChannels = dirtyEntities.filterNotNull(dirtyEntities.guildChannels)
 
             removedGuilds = dirtyEntities.filterNull(dirtyEntities.guilds)
             dirtyGuilds = dirtyEntities.filterNotNull(dirtyEntities.guilds)
@@ -92,7 +92,7 @@ class DeviousCacheDatabase(
             dirtyEntities.members.clear()
             dirtyEntities.roles.clear()
             dirtyEntities.emojis.clear()
-            dirtyEntities.channels.clear()
+            dirtyEntities.guildChannels.clear()
             dirtyEntities.guilds.clear()
             dirtyEntities.voiceStates.clear()
         }
@@ -166,13 +166,13 @@ class DeviousCacheDatabase(
                 }
 
                 if (removedChannels.isNotEmpty()) {
-                    Channels.deleteWhere { Channels.id inList removedChannels.map { it.value.toLong() } }
+                    GuildChannels.deleteWhere { GuildChannels.id inList removedChannels.map { it.value.toLong() } }
                 }
 
                 if (dirtyChannels.isNotEmpty()) {
-                    Channels.batchUpsert(dirtyChannels.entries, Channels.id) { it, data ->
-                        it[Channels.id] = data.key.value.toLong()
-                        it[Channels.data] = Json.encodeToString(data.value)
+                    GuildChannels.batchUpsert(dirtyChannels.entries, GuildChannels.id) { it, data ->
+                        it[GuildChannels.id] = data.key.value.toLong()
+                        it[GuildChannels.data] = Json.encodeToString(data.value)
                     }
                 }
 
@@ -235,7 +235,7 @@ class DeviousCacheDatabase(
         val roles = mutableMapOf<LightweightSnowflake, DatabaseCacheValue<Map<LightweightSnowflake, DeviousRoleData>>>()
         val emojis = mutableMapOf<LightweightSnowflake, DatabaseCacheValue<Map<LightweightSnowflake, DeviousGuildEmojiData>>>()
         val voiceStates = mutableMapOf<LightweightSnowflake, DatabaseCacheValue<Map<LightweightSnowflake, DeviousVoiceStateData>>>()
-        val channels = mutableMapOf<LightweightSnowflake, DatabaseCacheValue<DeviousChannelData>>()
+        val guildChannels = mutableMapOf<LightweightSnowflake, DatabaseCacheValue<Map<LightweightSnowflake, DeviousChannelData>>>()
         val guilds = mutableMapOf<LightweightSnowflake, DatabaseCacheValue<DeviousGuildDataWrapper>>()
 
         fun <K, V> filterNull(map: Map<K, DatabaseCacheValue<V>>): Set<K> {

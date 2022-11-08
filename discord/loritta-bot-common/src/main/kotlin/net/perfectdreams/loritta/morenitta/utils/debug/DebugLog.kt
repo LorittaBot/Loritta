@@ -35,7 +35,7 @@ object DebugLog {
         logger.info { "> Cache Stats" }
         logger.info { "Users: ${loritta.deviousFun.cacheManager.users.size} users" }
         logger.info { "Guilds: ${loritta.deviousFun.cacheManager.guilds.size} guilds" }
-        logger.info { "Channels: ${loritta.deviousFun.cacheManager.channels.size} channels" }
+        logger.info { "Guild Channels: ${loritta.deviousFun.cacheManager.guildChannels.size} channels" }
         logger.info { "Guild Members: ${loritta.deviousFun.cacheManager.members.size} members (${loritta.deviousFun.cacheManager.members.values.sumOf { it.size }} total)" }
         logger.info { "Guild Roles: ${loritta.deviousFun.cacheManager.roles.size} guild roles (${loritta.deviousFun.cacheManager.roles.values.sumOf { it.size }} total)" }
         logger.info { "Guild Emojis: ${loritta.deviousFun.cacheManager.emotes.size} guild emojis (${loritta.deviousFun.cacheManager.emotes.values.sumOf { it.size }} total)" }

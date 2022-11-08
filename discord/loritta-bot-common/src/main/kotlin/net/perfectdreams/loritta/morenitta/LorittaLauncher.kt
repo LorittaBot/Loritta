@@ -1,5 +1,7 @@
 package net.perfectdreams.loritta.morenitta
 
+import it.unimi.dsi.fastutil.longs.Long2LongMaps
+import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.debug.DebugProbes
@@ -120,8 +122,8 @@ object LorittaLauncher {
                 transaction(Dispatchers.IO, database) {
                     SchemaUtils.createMissingTablesAndColumns(
                         Users,
-                        Channels,
                         Guilds,
+                        GuildChannels,
                         GuildMembers,
                         GuildRoles,
                         GuildEmojis,
@@ -153,10 +155,8 @@ object LorittaLauncher {
                     val mutableMaps = SnowflakeMap<SnowflakeMap<DeviousMemberData>>(guildCount.toInt())
                     GuildMembers.selectAll()
                         .forEach {
-                            val guildMap =
-                                mutableMaps.getOrPut(LightweightSnowflake(it[GuildMembers.guildId])) { SnowflakeMap(0) }
-                            guildMap[LightweightSnowflake(it[GuildMembers.userId])] =
-                                Json.decodeFromString(it[GuildMembers.data])
+                            val guildMap = mutableMaps.getOrPut(LightweightSnowflake(it[GuildMembers.guildId])) { SnowflakeMap(0) }
+                            guildMap[LightweightSnowflake(it[GuildMembers.userId])] = Json.decodeFromString(it[GuildMembers.data])
                         }
 
                     val members = SnowflakeMap<SnowflakeMap<DeviousMemberData>>(mutableMaps.size)
@@ -165,12 +165,18 @@ object LorittaLauncher {
                     }
 
                     logger.info { "Loading channels..." }
-                    val channelCount = Channels.selectAll().count()
+                    val channelCount = GuildChannels.selectAll().count()
                     logger.info { "Channel Count: $channelCount" }
-                    val channels = SnowflakeMap<DeviousChannelData>(channelCount.toInt())
-                    Channels.selectAll()
+                    val guildChannels = SnowflakeMap<SnowflakeMap<DeviousChannelData>>(channelCount.toInt())
+                    val channelsToGuilds = Long2LongMaps.synchronize(Long2LongOpenHashMap(0))
+
+                    GuildChannels.selectAll()
                         .forEach {
-                            channels[LightweightSnowflake(it[Channels.id])] = Json.decodeFromString(it[Channels.data])
+                            val listOfChannels = Json.decodeFromString<Map<LightweightSnowflake, DeviousChannelData>>(it[GuildChannels.data])
+                            guildChannels[LightweightSnowflake(it[GuildChannels.id])] = SnowflakeMap(Json.decodeFromString<Map<LightweightSnowflake, DeviousChannelData>>(it[GuildChannels.data]))
+                            for ((channelId, _) in listOfChannels) {
+                                channelsToGuilds[channelId.value.toLong()] = it[GuildChannels.id]
+                            }
                         }
 
                     logger.info { "Loading roles..." }
@@ -179,8 +185,7 @@ object LorittaLauncher {
                     val roles = SnowflakeMap<SnowflakeMap<DeviousRoleData>>(rolesCount.toInt())
                     GuildRoles.selectAll()
                         .forEach {
-                            roles[LightweightSnowflake(it[GuildRoles.id])] =
-                                SnowflakeMap(Json.decodeFromString<Map<LightweightSnowflake, DeviousRoleData>>(it[GuildRoles.data]))
+                            roles[LightweightSnowflake(it[GuildRoles.id])] = SnowflakeMap(Json.decodeFromString<Map<LightweightSnowflake, DeviousRoleData>>(it[GuildRoles.data]))
                         }
 
                     logger.info { "Loading emojis..." }
@@ -216,8 +221,9 @@ object LorittaLauncher {
 
                     CacheEntityMaps(
                         users,
-                        channels,
                         guilds,
+                        guildChannels,
+                        channelsToGuilds,
                         emotes,
                         roles,
                         members,
