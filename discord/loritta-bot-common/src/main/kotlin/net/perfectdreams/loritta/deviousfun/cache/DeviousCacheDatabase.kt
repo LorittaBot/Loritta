@@ -150,7 +150,7 @@ class DeviousCacheDatabase(
                 if (dirtyRoles.isNotEmpty()) {
                     GuildRoles.batchUpsert(dirtyRoles.entries, GuildRoles.id) { it, data ->
                         it[GuildRoles.id] = data.key.value.toLong()
-                        it[GuildRoles.data] = Json.encodeToString(data.value)
+                        it[GuildRoles.data] = Json.encodeToString(data.value.values)
                     }
                 }
 
@@ -161,7 +161,7 @@ class DeviousCacheDatabase(
                 if (dirtyEmojis.isNotEmpty()) {
                     GuildEmojis.batchUpsert(dirtyEmojis.entries, GuildEmojis.id) { it, data ->
                         it[GuildEmojis.id] = data.key.value.toLong()
-                        it[GuildEmojis.data] = Json.encodeToString(data.value)
+                        it[GuildEmojis.data] = Json.encodeToString(data.value.values)
                     }
                 }
 
@@ -172,7 +172,7 @@ class DeviousCacheDatabase(
                 if (dirtyChannels.isNotEmpty()) {
                     GuildChannels.batchUpsert(dirtyChannels.entries, GuildChannels.id) { it, data ->
                         it[GuildChannels.id] = data.key.value.toLong()
-                        it[GuildChannels.data] = Json.encodeToString(data.value)
+                        it[GuildChannels.data] = Json.encodeToString(data.value.values)
                     }
                 }
 
@@ -194,7 +194,7 @@ class DeviousCacheDatabase(
                 if (dirtyVoiceStates.isNotEmpty()) {
                     GuildVoiceStates.batchUpsert(dirtyVoiceStates.entries, GuildVoiceStates.id) { it, data ->
                         it[GuildVoiceStates.id] = data.key.value.toLong()
-                        it[GuildVoiceStates.data] = Json.encodeToString(data.value)
+                        it[GuildVoiceStates.data] = Json.encodeToString(data.value.values)
                     }
                 }
             }
