@@ -214,6 +214,20 @@ class KordListener(
             val guild = cacheManager.getGuild(this.member.guildId) ?: return@on
             val userData = this.member.user.value ?: return@on
 
+            val lightweightGuildId = guild.idSnowflake.toLightweightSnowflake()
+            m.cacheManager.withLock(GuildKey(lightweightGuildId)) {
+                // Update member count
+                val newData = DeviousGuildDataWrapper(
+                    guild.guild.copy(
+                        memberCount = guild.guild.memberCount + 1
+                    )
+                )
+                m.cacheManager.guilds[lightweightGuildId] = newData
+                m.cacheManager.cacheDatabase.queue {
+                    this.guilds[lightweightGuildId] = DatabaseCacheValue.Value(newData)
+                }
+            }
+
             // Create user instance, this will store the user in cache
             val user = cacheManager.createUser(userData, true)
 
@@ -238,6 +252,20 @@ class KordListener(
 
         gateway.on<GuildMemberRemove> {
             val guild = cacheManager.getGuild(this.member.guildId) ?: return@on
+
+            val lightweightGuildId = guild.idSnowflake.toLightweightSnowflake()
+            m.cacheManager.withLock(GuildKey(lightweightGuildId)) {
+                // Update member count
+                val newData = DeviousGuildDataWrapper(
+                    guild.guild.copy(
+                        memberCount = guild.guild.memberCount - 1
+                    )
+                )
+                m.cacheManager.guilds[lightweightGuildId] = newData
+                m.cacheManager.cacheDatabase.queue {
+                    this.guilds[lightweightGuildId] = DatabaseCacheValue.Value(newData)
+                }
+            }
 
             // Create user instance, this will store the user in cache
             val user = cacheManager.createUser(this.member.user, true)

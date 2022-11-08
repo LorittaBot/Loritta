@@ -72,7 +72,7 @@ class ServerInfoCommand(loritta: LorittaBot) : AbstractCommand(
         val voiceChannelCount = guild.channels.count { it.type == ChannelType.GuildVoice }
         val timeCreated = guild.timeCreated
         val timeJoined = guild.retrieveSelfMember().timeJoined
-        val memberCount: Int? = null // guild["count"]["members"].int // TODO - DeviousFun
+        val memberCount = guild.memberCount
 
         // Baseado no comando ?serverinfo do Dyno
         embed.setThumbnail(iconUrl) // Ícone da Guild
