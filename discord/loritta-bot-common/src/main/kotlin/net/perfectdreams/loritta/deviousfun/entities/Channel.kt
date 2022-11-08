@@ -259,7 +259,7 @@ class Channel(
                 val messages = channel.deviousFun.loritta.rest.channel.getMessages(
                     channel.idSnowflake,
                     position = position,
-                    limit = search
+                    limit = 100
                 )
 
                 if (messages.isEmpty())
