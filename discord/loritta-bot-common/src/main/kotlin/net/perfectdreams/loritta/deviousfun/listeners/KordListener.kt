@@ -49,6 +49,21 @@ class KordListener(
 
             logger.info { "Shard $shardId is connected!" }
 
+            // We know what guilds are present in this shard
+            val guildsOnThisShard = this.data.guilds.map { it.id }.toSet()
+            val cachedGuildsOnThisShard = m.cacheManager.guilds.keys.filter {
+                (it shr 22).rem(m.loritta.config.loritta.discord.maxShards).toInt() == shardId
+            }.mapNotNull { Snowflake(it) }.toSet()
+
+            // If Loritta was offline when a GuildDelete event was sent, then it means that we have guilds that should be removed from cache, but we don't know about them
+            // In this case, we will get all IDs that we have in cache but AREN'T in the Ready event, and then remove them from our cache
+            val removedGuilds = cachedGuildsOnThisShard - guildsOnThisShard
+            if (removedGuilds.isNotEmpty()) {
+                logger.info { "Removing $removedGuilds because they aren't present in $shardId, but we have them cached" }
+                for (guildId in removedGuilds)
+                    m.cacheManager.deleteGuild(guildId)
+            }
+
             val currentRandomKey = gateway.identifyRateLimiter.currentRandomKey
 
             m.cacheManager.gatewaySessions[shardId] = DeviousGatewaySession(
