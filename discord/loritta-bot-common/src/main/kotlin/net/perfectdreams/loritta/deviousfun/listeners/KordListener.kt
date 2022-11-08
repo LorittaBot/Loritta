@@ -59,7 +59,7 @@ class KordListener(
             // In this case, we will get all IDs that we have in cache but AREN'T in the Ready event, and then remove them from our cache
             val removedGuilds = cachedGuildsOnThisShard - guildsOnThisShard
             if (removedGuilds.isNotEmpty()) {
-                logger.info { "Removing $removedGuilds because they aren't present in $shardId, but we have them cached" }
+                logger.info { "Removing ${removedGuilds.size} $removedGuilds guilds because they aren't present in $shardId's ready event, but we have them cached" }
                 for (guildId in removedGuilds)
                     m.cacheManager.deleteGuild(guildId)
             }
