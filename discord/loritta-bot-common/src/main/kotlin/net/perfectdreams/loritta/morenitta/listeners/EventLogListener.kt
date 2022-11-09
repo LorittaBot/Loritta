@@ -22,6 +22,8 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogCon
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.EventLogConfigs
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.common.utils.DateUtils
+import net.perfectdreams.loritta.deviousfun.events.guild.GuildBanEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.GuildUnbanEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateNicknameEvent
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageBulkDeleteEvent
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageDeleteEvent
@@ -365,8 +367,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
         }
     }
 
-    // TODO - DeviousFun
-    /* override fun onGuildBan(event: GuildBanEvent) {
+    override fun onGuildBan(event: GuildBanEvent) {
         if (DebugLog.cancelAllEvents)
             return
 
@@ -426,18 +427,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
             return
 
         GlobalScope.launch(loritta.coroutineDispatcher) {
-            // Fazer relay de unbans
-            if (event.guild.id == Constants.PORTUGUESE_SUPPORT_GUILD_ID) {
-                val relayTo = loritta.lorittaShards.getGuildById(Constants.ENGLISH_SUPPORT_GUILD_ID)
-
-                runCatching { relayTo?.unban(event.user)? }
-            }
-            if (event.guild.id == Constants.ENGLISH_SUPPORT_GUILD_ID) {
-                val relayTo = loritta.lorittaShards.getGuildById(Constants.PORTUGUESE_SUPPORT_GUILD_ID)
-
-                runCatching { relayTo?.unban(event.user)? }
-            }
-
             val serverConfig = loritta.getOrCreateServerConfig(event.guild.idLong)
             val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return@launch
 
@@ -477,7 +466,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
                 return@launch
             }
         }
-    } */
+    }
 
     override fun onGuildMemberUpdateNickname(event: GuildMemberUpdateNicknameEvent) {
         if (DebugLog.cancelAllEvents)

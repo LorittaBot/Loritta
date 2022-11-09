@@ -15,7 +15,9 @@ import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.cache.DatabaseCacheValue
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
 import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.events.guild.GuildBanEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.GuildReadyEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.GuildUnbanEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberJoinEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberRemoveEvent
 import net.perfectdreams.loritta.deviousfun.events.message.update.MessageUpdateEvent
@@ -225,6 +227,52 @@ class KordListener(
             m.forEachListeners(event, ListenerAdapter::onMessageBulkDelete)
         }
 
+        gateway.on<MessageUpdate> {
+            val isWebhook = DeviousUserUtils.isSenderWebhookOrSpecial(this.message)
+            val guildId = this.message.guildId.value
+
+            val channel = m.retrieveChannelById(this.message.channelId)
+            val guild = guildId?.let { m.retrieveGuildById(it) }
+
+            // The author may be null, but in this case we will ignore it
+            // (The author can be null if it was an "embed update", example: When pasting a URL in chat)
+            val authorData = this.message.author.value ?: return@on
+            val author = cacheManager.createUser(authorData, !isWebhook)
+
+            // Webhooks do exist as a user (sort of)
+            val member = if (isWebhook)
+                null
+            else
+                guild?.let {
+                    m.retrieveMemberById(
+                        guild,
+                        author.idSnowflake
+                    )
+                } // The member data is not present when updating a message
+
+            val message = Message(
+                m,
+                channel,
+                author,
+                member,
+                guild,
+                DeviousMessageFragmentData.from(this.message)
+            )
+
+            val event = MessageUpdateEvent(
+                m,
+                gateway,
+                author,
+                message,
+                channel,
+                guild,
+                member,
+                this
+            )
+
+            m.forEachListeners(event, ListenerAdapter::onMessageUpdate)
+        }
+
         gateway.on<GuildMemberAdd> {
             val guild = cacheManager.getGuild(this.member.guildId) ?: return@on
             val userData = this.member.user.value ?: return@on
@@ -291,6 +339,28 @@ class KordListener(
             val event = GuildMemberRemoveEvent(m, gateway, guild, user)
 
             m.forEachListeners(event, ListenerAdapter::onGuildMemberRemove)
+        }
+
+        gateway.on<GuildBanAdd> {
+            val guild = cacheManager.getGuild(this.ban.guildId) ?: return@on
+
+            // Create user instance, this will store the user in cache
+            val user = cacheManager.createUser(this.ban.user, true)
+
+            val event = GuildBanEvent(m, gateway, guild, user)
+
+            m.forEachListeners(event, ListenerAdapter::onGuildBan)
+        }
+
+        gateway.on<GuildBanRemove> {
+            val guild = cacheManager.getGuild(this.ban.guildId) ?: return@on
+
+            // Create user instance, this will store the user in cache
+            val user = cacheManager.createUser(this.ban.user, true)
+
+            val event = GuildUnbanEvent(m, gateway, guild, user)
+
+            m.forEachListeners(event, ListenerAdapter::onGuildUnban)
         }
 
         gateway.on<GuildEmojisUpdate> {

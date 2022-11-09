@@ -1,8 +1,6 @@
 package net.perfectdreams.loritta.deviousfun.hooks
 
-import net.perfectdreams.loritta.deviousfun.events.guild.GuildJoinEvent
-import net.perfectdreams.loritta.deviousfun.events.guild.GuildLeaveEvent
-import net.perfectdreams.loritta.deviousfun.events.guild.GuildReadyEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.*
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberJoinEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberRemoveEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent
@@ -25,6 +23,8 @@ open class ListenerAdapter {
     open fun onGuildMemberRemove(event: GuildMemberRemoveEvent) {}
     open fun onGuildMemberUpdateBoostTime(event: GuildMemberUpdateBoostTimeEvent) {}
     open fun onGuildMemberUpdateNickname(event: GuildMemberUpdateNicknameEvent) {}
+    open fun onGuildBan(event: GuildBanEvent) {}
+    open fun onGuildUnban(event: GuildUnbanEvent) {}
 
     open fun onGuildReady(event: GuildReadyEvent) {}
 
