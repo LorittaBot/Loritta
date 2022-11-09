@@ -45,9 +45,15 @@ class KordListener(
     private var alreadyTriggeredGuildReadyOnStartup = false
 
     init {
+        gateway.on<Close> {
+            gateway.status.value = DeviousGateway.Status.DISCONNECTED
+        }
+
         gateway.on<Ready> {
             // This is used to avoid triggering the onGuildReady spam on subsequent Resumes on full shard login
             alreadyTriggeredGuildReadyOnStartup = true
+
+            gateway.status.value = DeviousGateway.Status.CONNECTED
 
             logger.info { "Shard $shardId is connected!" }
 
@@ -81,6 +87,8 @@ class KordListener(
 
         gateway.on<Resumed> {
             logger.info { "Shard $shardId resumed! alreadyTriggeredGuildReadyOnStartup? $alreadyTriggeredGuildReadyOnStartup" }
+
+            gateway.status.value = DeviousGateway.Status.CONNECTED
 
             // If we already triggered the guild ready on this instance, then we wouldn't trigger it again
             if (alreadyTriggeredGuildReadyOnStartup)

@@ -20,6 +20,16 @@ class DeviousGateway(
     val identifyRateLimiter: ParallelIdentifyRateLimiter,
     val shardId: Int
 ) {
+    enum class Status {
+        INITIALIZING,
+        WAITING_TO_CONNECT,
+        WAITING_FOR_BUCKET,
+        IDENTIFYING,
+        RESUMING,
+        CONNECTED,
+        RECONNECTING
+    }
+
     val logger = KotlinLogging.logger {}
 
     val events: SharedFlow<Event>
@@ -27,6 +37,8 @@ class DeviousGateway(
 
     val ping: StateFlow<Duration?>
         get() = kordGateway.ping
+
+    val status: MutableStateFlow<Status> = MutableStateFlow(Status.INITIALIZING)
 
     init {
         // Register the JDA-like event and cache listener

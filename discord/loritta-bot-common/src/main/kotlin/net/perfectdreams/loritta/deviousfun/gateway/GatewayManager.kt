@@ -94,9 +94,11 @@ class GatewayManager(
 
                 if (sessionId != null && resumeGatewayUrl != null && sequence != null) {
                     logger.info { "Resuming shard $shardId... Hang tight!" }
+                    gateway.status.value = DeviousGateway.Status.RESUMING
                     gateway.kordGateway.resume(token, GatewaySession(sessionId, resumeGatewayUrl, sequence), builder)
                 } else {
                     logger.info { "Starting shard $shardId... Hang tight!" }
+                    gateway.status.value = DeviousGateway.Status.WAITING_TO_CONNECT
                     gateway.kordGateway.start(token, builder)
                 }
             }

@@ -16,6 +16,7 @@ import io.ktor.http.userAgent
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
+import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.morenitta.utils.ClusterOfflineException
 import net.perfectdreams.loritta.morenitta.utils.extensions.build
 import java.util.concurrent.TimeUnit
@@ -92,8 +93,8 @@ class PingCommand(loritta: LorittaBot) :
                     row4.add("$pendingMessages")
 
                     // TODO - DeviousFun
-                    /* val unstableShards = json["shards"].array.filter {
-                        it["status"].string != JDA.Status.CONNECTED.toString() || it["ping"].int == -1 || it["ping"].int >= 250
+                    val unstableShards = json["shards"].array.filter {
+                        it["status"].string != DeviousGateway.Status.CONNECTED.toString() || it["ping"].int == -1 || it["ping"].int >= 250
                     }
 
                     if (unstableShards.isNotEmpty()) {
@@ -102,17 +103,15 @@ class PingCommand(loritta: LorittaBot) :
                         row2.add("---")
                         row3.add("---")
                         row4.add("---")
-                        row5.add("---")
 
                         unstableShards.forEach {
                             row0.add("> Shard ${it["id"].long}")
                             row1.add("${it["ping"].int}ms")
                             row2.add("---")
                             row3.add(it["status"].string)
-                            row4.add("${it["guildCount"].long}")
-                            row5.add("---")
+                            row4.add("---")
                         }
-                    } */
+                    }
                 } catch (e: ClusterOfflineException) {
                     row0.add("X Cluster ${e.id} (${e.name})")
                     row1.add("---")

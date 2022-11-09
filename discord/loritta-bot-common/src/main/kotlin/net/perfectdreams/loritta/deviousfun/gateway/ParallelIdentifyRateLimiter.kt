@@ -71,6 +71,9 @@ class ParallelIdentifyRateLimiter(
         if (randomKey != null) {
             // We need to create a new coroutine to let the gateway login
             GlobalScope.launch {
+                val gateway = loritta.gatewayManager.getGatewayForShard(shardId)
+                gateway.status.value = DeviousGateway.Status.IDENTIFYING
+
                 // Acquired lock! We can login, yay!! :3
                 logger.info { "Successfully acquired lock for bucket $bucketId (shard $shardId)!" }
 
@@ -101,6 +104,8 @@ class ParallelIdentifyRateLimiter(
         } else {
             // Couldn't acquire lock, let's wait...
             logger.info { "Couldn't acquire lock for bucket $bucketId (shard $shardId), let's wait and try again later..." }
+            val gateway = loritta.gatewayManager.getGatewayForShard(shardId)
+            gateway.status.value = DeviousGateway.Status.WAITING_FOR_BUCKET
             delay(1_000)
             // And try again!
             return consume(shardId, events)
