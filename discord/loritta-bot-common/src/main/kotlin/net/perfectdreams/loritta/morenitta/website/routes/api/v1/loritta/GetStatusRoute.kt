@@ -50,7 +50,7 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
             array.add(
                 jsonObject(
                     "id" to shard.shardId,
-                    "ping" to shard.ping.value?.inWholeMilliseconds,
+                    "ping" to (shard.ping.value?.inWholeMilliseconds ?: -1L),
                     "status" to shard.status.value.toString(),
                     // "guildCount" to shard.guildCache.size(),
                     // "userCount" to shard.userCache.size()
