@@ -48,25 +48,25 @@ dependencies {
     // We want to use Kord on our project too!
     implementation("dev.kord:kord-common") {
         version {
-            strictly("0.8.x-lori-fork-20221014.000427-14")
+            strictly("0.8.x-lori-fork-20221109.172532-16")
         }
     }
     implementation("dev.kord:kord-rest") {
         version {
-            strictly("0.8.x-lori-fork-20221014.000427-13")
+            strictly("0.8.x-lori-fork-20221109.172532-14")
         }
     }
     implementation("dev.kord:kord-gateway") {
         version {
-            strictly("0.8.x-lori-fork-20221014.000427-14")
+            strictly("0.8.x-lori-fork-20221109.172532-15")
         }
     }
     implementation("dev.kord:kord-core") {
         version {
-            strictly("0.8.x-lori-fork-20221014.000427-13")
+            strictly("0.8.x-lori-fork-20221109.172532-14")
         }
     }
-    implementation("dev.kord:kord-voice:0.8.x-20220720.101712-210")
+    implementation("dev.kord:kord-voice:0.8.x-lori-fork-20221109.172532-15")
 
     // Exposed & Databases
     implementation("org.postgresql:postgresql:42.5.0")

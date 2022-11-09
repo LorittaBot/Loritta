@@ -66,30 +66,11 @@ class KordListener(
                     m.cacheManager.deleteGuild(guildId)
             }
 
-            val currentRandomKey = gateway.identifyRateLimiter.currentRandomKey
-
             m.cacheManager.gatewaySessions[shardId] = DeviousGatewaySession(
                 this.data.sessionId,
                 this.data.resumeGatewayUrl,
                 this.sequence ?: 0
             )
-
-            // After it is ready, we will wait 5000ms to release the lock
-            delay(5_000)
-
-            logger.info { "Trying to release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)..." }
-            if (currentRandomKey != null) {
-                val deletedBucketsCount = m.loritta.newSuspendedTransaction {
-                    ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq gateway.identifyRateLimiter.bucketId and (ConcurrentLoginBuckets.randomKey eq currentRandomKey) }
-                }
-
-                when (deletedBucketsCount) {
-                    0 -> logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because our random key does not match or the bucket was already released!" }
-                    else -> logger.info { "Successfully released lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId)!" }
-                }
-            } else {
-                logger.warn { "Couldn't release lock for bucket ${gateway.identifyRateLimiter.bucketId} (shard $shardId) because the current random key is null! Bug?" }
-            }
         }
 
         gateway.on<DispatchEvent> {

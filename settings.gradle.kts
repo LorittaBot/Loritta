@@ -73,9 +73,10 @@ include(":web:showtime:web-common")
 include(":web:showtime:showtime-frontend")
 
 // ===[ DASHBOARD ]===
-include(":web:dashboard:dashboard-common")
-include(":web:dashboard:backend")
-include(":web:dashboard:spicy-frontend")
+// TODO: Disabled for now, reenable it when Jetpack Compose Web supports Kotlin 1.7.21
+// include(":web:dashboard:dashboard-common")
+// include(":web:dashboard:backend")
+// include(":web:dashboard:spicy-frontend")
 
 // ===[ MISC ]===
 include(":temmie-discord-auth")

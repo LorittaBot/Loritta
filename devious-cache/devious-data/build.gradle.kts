@@ -15,7 +15,7 @@ dependencies {
 
     implementation("dev.kord:kord-common") {
         version {
-            strictly("0.8.x-lori-fork-20221014.000427-14")
+            strictly("0.8.x-lori-fork-20221109.172532-16")
         }
     }
 }
