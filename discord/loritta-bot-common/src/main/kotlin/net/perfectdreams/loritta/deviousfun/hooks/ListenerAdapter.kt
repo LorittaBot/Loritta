@@ -14,9 +14,12 @@ import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageDeleteE
 import net.perfectdreams.loritta.deviousfun.events.message.react.GenericMessageReactionEvent
 import net.perfectdreams.loritta.deviousfun.events.message.react.MessageReactionAddEvent
 import net.perfectdreams.loritta.deviousfun.events.message.update.MessageUpdateEvent
+import net.perfectdreams.loritta.deviousfun.events.user.UserUpdateAvatarEvent
 
 open class ListenerAdapter {
     open fun onGenericMessageReaction(event: GenericMessageReactionEvent) {}
+
+    open fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {}
 
     open fun onGuildMessageReactionAdd(event: MessageReactionAddEvent) {}
     open fun onGuildMemberJoin(event: GuildMemberJoinEvent) {}

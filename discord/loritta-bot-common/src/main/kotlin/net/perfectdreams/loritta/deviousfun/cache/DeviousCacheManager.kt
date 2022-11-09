@@ -20,6 +20,7 @@ import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateNicknameEvent
+import net.perfectdreams.loritta.deviousfun.events.user.UserUpdateAvatarEvent
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.deviousfun.utils.*
 import org.jetbrains.exposed.sql.Database
@@ -347,23 +348,53 @@ class DeviousCacheManager(
     suspend fun createUser(user: DiscordUser, addToCache: Boolean): User {
         val deviousUserData = DeviousUserData.from(user)
 
+        val deviousUser = User(m, user.id, deviousUserData)
         if (addToCache) {
             doIfNotMatch(cachedUserHashes, user.id, user) {
                 val lightweightSnowflake = user.id.toLightweightSnowflake()
+                var oldUser: DeviousUserData? = null
+
                 withLock(UserKey(lightweightSnowflake)) {
                     awaitForEntityPersistenceModificationMutex()
 
                     logger.debug { "Updating user with ID $lightweightSnowflake" }
+                    oldUser = users[lightweightSnowflake]
                     users[lightweightSnowflake] = deviousUserData
 
                     cacheDatabase.queue {
                         this.users[lightweightSnowflake] = DatabaseCacheValue.Value(deviousUserData)
                     }
                 }
+
+                // Let's compare the old member x new member data to trigger events
+                val oldUserData = oldUser
+                val newUserData = deviousUserData
+
+                if (oldUserData != null) {
+                    val oldAvatarId = oldUserData.avatar
+                    val newAvatarId = newUserData.avatar
+
+                    if (oldAvatarId != newAvatarId) {
+                        m.forEachListeners(
+                            UserUpdateAvatarEvent(
+                                m,
+                                // Because we don't have access to the gateway instance here, let's get the gateway manually
+                                // This needs to be refactored later, because some events (example: user update) may not have a specific gateway bound to it
+                                // For now, we will pick the first available gateway
+                                // Loritta's avatar update event log code already handles this correctly, we don't need to trigger the event for each gateway instance (yay!)
+                                m.gatewayManager.gateways[0]!!,
+                                deviousUser,
+                                oldAvatarId,
+                                newAvatarId
+                            ),
+                            ListenerAdapter::onUserUpdateAvatar
+                        )
+                    }
+                }
             }
         }
 
-        return User(m, user.id, deviousUserData)
+        return deviousUser
     }
 
     suspend fun getMember(user: User, guild: Guild): Member? {

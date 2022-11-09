@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.deviousfun.events.guild.GuildUnbanEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateNicknameEvent
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageBulkDeleteEvent
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageDeleteEvent
+import net.perfectdreams.loritta.deviousfun.events.user.UserUpdateAvatarEvent
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import org.apache.commons.io.IOUtils
@@ -55,7 +56,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
     }
 
     // TODO - DeviousFun
-    /* override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
+    override fun onUserUpdateAvatar(event: UserUpdateAvatarEvent) {
         if (DebugLog.cancelAllEvents)
             return
 
@@ -70,22 +71,22 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
         // Primeiro iremos baixar o avatar em uma task
         // Para não precisar baixar (número de shards) vezes (na pior das hipóteses), vamos criar uma task separada que irá baixar apenas uma vez
         // A task, ao finalizar, irá propagar para o resto dos servidores
-        if (downloadedAvatarJobs[event.entity.id] != null) // Se já temos uma task ativa, vamos ignorar!
+        if (downloadedAvatarJobs[event.user.id] != null) // Se já temos uma task ativa, vamos ignorar!
             return
 
-        downloadedAvatarJobs[event.entity.id] = GlobalScope.launch(loritta.coroutineDispatcher) {
+        downloadedAvatarJobs[event.user.id] = GlobalScope.launch(loritta.coroutineDispatcher) {
             try {
-                logger.info("Baixando avatar de ${event.entity.id} para enviar no event log...")
+                logger.info("Baixando avatar de ${event.user.id} para enviar no event log...")
 
                 val oldAvatarUrl = event.oldAvatarUrl
-                        ?.replace("gif", "png")
-                        ?: event.user.defaultAvatarUrl
+                    ?.replace("gif", "png")
+                    ?: event.user.defaultAvatarUrl
 
                 val rawOldAvatar = LorittaUtils.downloadImage(loritta, oldAvatarUrl)
                 val rawNewAvatar = LorittaUtils.downloadImage(loritta, event.user.getEffectiveAvatarUrl(ImageFormat.PNG))
 
                 if (rawOldAvatar == null || rawNewAvatar == null) { // As vezes o avatar pode ser null
-                    downloadedAvatarJobs.remove(event.entity.id)
+                    downloadedAvatarJobs.remove(event.user.id)
                     return@launch
                 }
 
@@ -102,16 +103,16 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
                     ByteArrayInputStream(baos.toByteArray()).use { bais ->
                         // E agora nós iremos anunciar a troca para todos os servidores
-                        val guilds = event.jda.guilds.filter { it.isMember(event.user) }
+                        val guilds = event.deviousFun.getMutualGuilds(event.user)
 
                         loritta.newSuspendedTransaction {
                             (ServerConfigs innerJoin EventLogConfigs)
-                                    .select {
-                                        EventLogConfigs.enabled eq true and
-                                                (EventLogConfigs.avatarChanges eq true) and
-                                                (ServerConfigs.id inList guilds.map { it.idLong })
-                                    }
-                                    .toList()
+                                .select {
+                                    EventLogConfigs.enabled eq true and
+                                            (EventLogConfigs.avatarChanges eq true) and
+                                            (ServerConfigs.id inList guilds.map { it.idLong })
+                                }
+                                .toList()
                         }.forEach {
                             val guildId = it[ServerConfigs.id].value
                             val eventLogChannelId = it[EventLogConfigs.eventLogChannelId]
@@ -157,13 +158,13 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
                         }
                     }
                 }
-                downloadedAvatarJobs.remove(event.entity.id)
+                downloadedAvatarJobs.remove(event.user.id)
             } catch (e: Exception) {
-                logger.error(e) { "Erro ao fazer download do avatar de ${event.entity.id} (Antigo: ${event.oldAvatarId} / Novo: ${event.newAvatarId})" }
-                downloadedAvatarJobs.remove(event.entity.id)
+                logger.error(e) { "Erro ao fazer download do avatar de ${event.user.id} (Antigo: ${event.oldAvatarId} / Novo: ${event.newAvatarId})" }
+                downloadedAvatarJobs.remove(event.user.id)
             }
         }
-    } */
+    }
 
     // Mensagens
     override fun onMessageDelete(event: MessageDeleteEvent) {

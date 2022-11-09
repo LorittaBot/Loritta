@@ -11,9 +11,7 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.transaction
-import net.perfectdreams.loritta.deviouscache.data.DeviousChannelData
-import net.perfectdreams.loritta.deviouscache.data.DeviousUserData
-import net.perfectdreams.loritta.deviouscache.data.LightweightSnowflake
+import net.perfectdreams.loritta.deviouscache.data.*
 import net.perfectdreams.loritta.deviouscache.requests.GetGuildCountRequest
 import net.perfectdreams.loritta.deviouscache.responses.GetGuildCountResponse
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheDatabase
@@ -208,6 +206,17 @@ class DeviousFun(
             val channel = loritta.rest.channel.getChannel(id)
             return cacheManager.createChannel(guild, channel)
         }
+    }
+
+    suspend fun getMutualGuilds(user: User): List<Guild> {
+        val lightweightSnowflake = user.idSnowflake.toLightweightSnowflake()
+        val mutualGuildIds = mutableSetOf<LightweightSnowflake>()
+        cacheManager.members.forEach { guildId, members ->
+            if (members.containsKey(lightweightSnowflake))
+                mutualGuildIds.add(guildId)
+        }
+
+        return mutualGuildIds.mapNotNull { getGuildById(it.toKordSnowflake()) }
     }
 
     /**
