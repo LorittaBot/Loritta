@@ -692,6 +692,7 @@ class DeviousCacheManager(
                 }
             val newChannelsCloneAsMap = newChannels.toMap()
             guildChannels[guildId] = newChannels
+            this.channelsToGuilds.remove(channelId.value.toLong())
 
             cacheDatabase.queue {
                 this.guildChannels[channelId] = DatabaseCacheValue.Value(newChannelsCloneAsMap)
