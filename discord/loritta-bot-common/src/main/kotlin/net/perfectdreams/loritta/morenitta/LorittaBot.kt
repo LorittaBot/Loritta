@@ -561,7 +561,6 @@ class LorittaBot(
         }
 
         logger.info { "Starting Pudding tasks..." }
-        // TODO: Fix this
         pudding.startPuddingTasks()
         NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation)
 
