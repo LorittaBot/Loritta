@@ -118,8 +118,7 @@ class GatewayManager(
      * @param shardId the shard's ID
      * @return a proxied gateway connection, or null if this instance does not handle the [shardId]
      */
-    fun getGatewayForShardOrNull(shardId: Int) =
-        gateways[shardId] ?: error("This instance does not handle shard $shardId!")
+    fun getGatewayForShardOrNull(shardId: Int) = gateways[shardId]
 
     /**
      * Gets a Gateway connection for the [shardId]
@@ -127,8 +126,7 @@ class GatewayManager(
      * @param shardId the shard's ID
      * @return a proxied gateway connection, or null if this instance does not handle the [shardId]
      */
-    fun getGatewayForShard(shardId: Int) =
-        getGatewayForShardOrNull(shardId) ?: error("This instance does not handle shard $shardId!")
+    fun getGatewayForShard(shardId: Int) = getGatewayForShardOrNull(shardId) ?: error("This instance does not handle shard $shardId!")
 
     /**
      * Gets a Discord Shard ID from the provided Guild ID
