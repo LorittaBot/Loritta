@@ -47,6 +47,8 @@ class KordListener(
     init {
         gateway.on<Close> {
             gateway.status.value = DeviousGateway.Status.DISCONNECTED
+
+            logger.info { "Received close event for $shardId - $this" }
         }
 
         gateway.on<Ready> {
