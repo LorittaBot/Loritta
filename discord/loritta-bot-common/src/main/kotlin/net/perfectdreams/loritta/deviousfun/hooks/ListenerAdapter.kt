@@ -6,6 +6,7 @@ import net.perfectdreams.loritta.deviousfun.events.guild.GuildReadyEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberJoinEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberRemoveEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateNicknameEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.voice.GuildVoiceJoinEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.voice.GuildVoiceLeaveEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.voice.GuildVoiceMoveEvent
@@ -23,6 +24,7 @@ open class ListenerAdapter {
     open fun onGuildMemberJoin(event: GuildMemberJoinEvent) {}
     open fun onGuildMemberRemove(event: GuildMemberRemoveEvent) {}
     open fun onGuildMemberUpdateBoostTime(event: GuildMemberUpdateBoostTimeEvent) {}
+    open fun onGuildMemberUpdateNickname(event: GuildMemberUpdateNicknameEvent) {}
 
     open fun onGuildReady(event: GuildReadyEvent) {}
 

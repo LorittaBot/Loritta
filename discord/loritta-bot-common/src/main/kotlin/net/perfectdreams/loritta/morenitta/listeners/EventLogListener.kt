@@ -22,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogCon
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.EventLogConfigs
 import net.perfectdreams.loritta.morenitta.utils.CachedUserInfo
 import net.perfectdreams.loritta.common.utils.DateUtils
+import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateNicknameEvent
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageBulkDeleteEvent
 import net.perfectdreams.loritta.deviousfun.events.message.delete.MessageDeleteEvent
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
@@ -476,7 +477,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
                 return@launch
             }
         }
-    }
+    } */
 
     override fun onGuildMemberUpdateNickname(event: GuildMemberUpdateNicknameEvent) {
         if (DebugLog.cancelAllEvents)
@@ -527,5 +528,5 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
                 return@launch
             }
         }
-    } */
+    }
 }

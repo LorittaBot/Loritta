@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.deviouscache.responses.*
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent
+import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateNicknameEvent
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.deviousfun.utils.*
 import org.jetbrains.exposed.sql.Database
@@ -450,6 +451,26 @@ class DeviousCacheManager(
                             newTimeBoosted?.toJavaInstant()?.atOffset(ZoneOffset.UTC)
                         ),
                         ListenerAdapter::onGuildMemberUpdateBoostTime
+                    )
+                }
+
+                val oldNickname = oldMemberData.nick
+                val newNickname = newMemberData.nick
+
+                if (oldNickname != newNickname) {
+                    m.forEachListeners(
+                        GuildMemberUpdateNicknameEvent(
+                            m,
+                            // Because we don't have access to the gateway instance here, let's get the gateway manually
+                            // This needs to be refactored later, because some events (example: user update) may not have a specific gateway bound to it
+                            m.gatewayManager.getGatewayForGuild(guild.idSnowflake),
+                            guild,
+                            user,
+                            member,
+                            oldNickname,
+                            newNickname
+                        ),
+                        ListenerAdapter::onGuildMemberUpdateNickname
                     )
                 }
             }
