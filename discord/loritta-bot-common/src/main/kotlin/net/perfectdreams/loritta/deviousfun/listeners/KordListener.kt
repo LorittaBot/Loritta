@@ -1,9 +1,11 @@
 package net.perfectdreams.loritta.deviousfun.listeners
 
+import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.value
 import dev.kord.gateway.*
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ConcurrentLoginBuckets
 import net.perfectdreams.loritta.deviouscache.data.*
@@ -27,6 +29,7 @@ import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.deviousfun.utils.*
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
+import kotlin.concurrent.thread
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
 
@@ -58,6 +61,10 @@ class KordListener(
             gateway.status.value = DeviousGateway.Status.CONNECTED
 
             logger.info { "Shard $shardId is connected!" }
+
+            gateway.kordGateway.editPresence {
+                m.createDefaultPresence(shardId).invoke(this)
+            }
 
             // We know what guilds are present in this shard
             val guildsOnThisShard = this.data.guilds.map { it.id }.toSet()
@@ -91,6 +98,10 @@ class KordListener(
             logger.info { "Shard $shardId resumed! alreadyTriggeredGuildReadyOnStartup? $alreadyTriggeredGuildReadyOnStartup" }
 
             gateway.status.value = DeviousGateway.Status.CONNECTED
+
+            gateway.kordGateway.editPresence {
+                m.createDefaultPresence(shardId).invoke(this)
+            }
 
             // If we already triggered the guild ready on this instance, then we wouldn't trigger it again
             if (alreadyTriggeredGuildReadyOnStartup)

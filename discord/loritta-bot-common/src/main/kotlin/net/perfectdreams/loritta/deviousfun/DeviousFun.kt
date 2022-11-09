@@ -1,9 +1,14 @@
 package net.perfectdreams.loritta.deviousfun
 
+import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
+import dev.kord.gateway.builder.PresenceBuilder
+import dev.kord.gateway.editPresence
 import dev.kord.rest.json.JsonErrorCode
 import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.Semaphore
@@ -31,6 +36,7 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.concurrent.ConcurrentHashMap
+import kotlin.concurrent.thread
 import kotlin.reflect.KFunction2
 
 /**
@@ -253,6 +259,41 @@ class DeviousFun(
         }
     }
 
+    fun createDefaultPresence(shardId: Int) = createPresence(loritta.config.loritta.discord.activity.name, shardId)
+
+    fun createPresence(activityText: String, shardId: Int): PresenceBuilder.() -> (Unit) = {
+        this.status = loritta.config.loritta.discord.status
+
+        val activityTextWithClusterAndShard = "$activityText | Cluster ${loritta.lorittaCluster.id} [$shardId]"
+        when (loritta.config.loritta.discord.activity.type) {
+            "PLAYING" -> this.playing(activityTextWithClusterAndShard)
+            "STREAMING" -> this.streaming(activityTextWithClusterAndShard, "https://twitch.tv/mrpowergamerbr")
+            "LISTENING" -> this.listening(activityTextWithClusterAndShard)
+            "WATCHING" -> this.watching(activityTextWithClusterAndShard)
+            "COMPETING" -> this.competing(activityTextWithClusterAndShard)
+            else -> error("I don't know how to handle ${loritta.config.loritta.discord.activity.type}!")
+        }
+    }
+
+    private fun createActivityTextWithShardAndClusterId(activityText: String, shardId: Int) = "$activityText | Cluster ${loritta.lorittaCluster.id} [$shardId]"
+
+    init {
+        Runtime.getRuntime().addShutdownHook(thread(false) {
+            runBlocking {
+                logger.info { "Changing all gateway statuses to indicate that we are restarting..." }
+                val jobs = gatewayManager.gateways.values.map {
+                    launch {
+                        it.kordGateway.editPresence {
+                            this.status = PresenceStatus.DoNotDisturb
+                            this.playing(createActivityTextWithShardAndClusterId("\uD83D\uDCAB Loritta is restarting...", it.shardId))
+                        }
+                    }
+                }
+                jobs.joinAll()
+                logger.info { "All gateway statuses were successfully changed!" }
+            }
+        })
+    }
 
     private class FakeExceptionForContextException(override val message: String) : Exception()
 }

@@ -76,17 +76,7 @@ class GatewayManager(
                     }
 
                     presence {
-                        this.status = deviousFun.loritta.config.loritta.discord.status
-
-                        val activityText = "${deviousFun.loritta.config.loritta.discord.activity.name} | Cluster ${deviousFun.loritta.lorittaCluster.id} [$shardId]"
-                        when (deviousFun.loritta.config.loritta.discord.activity.type) {
-                            "PLAYING" -> this.playing(activityText)
-                            "STREAMING" -> this.streaming(activityText, "https://twitch.tv/mrpowergamerbr")
-                            "LISTENING" -> this.listening(activityText)
-                            "WATCHING" -> this.watching(activityText)
-                            "COMPETING" -> this.competing(activityText)
-                            else -> error("I don't know how to handle ${deviousFun.loritta.config.loritta.discord.activity.type}!")
-                        }
+                        deviousFun.createDefaultPresence(shardId).invoke(this)
                     }
 
                     shard = DiscordShard(shardId, totalShards)
