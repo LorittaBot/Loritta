@@ -382,7 +382,7 @@ class DeviousCacheManager(
                                 // This needs to be refactored later, because some events (example: user update) may not have a specific gateway bound to it
                                 // For now, we will pick the first available gateway
                                 // Loritta's avatar update event log code already handles this correctly, we don't need to trigger the event for each gateway instance (yay!)
-                                m.gatewayManager.gateways[0]!!,
+                                m.gatewayManager.gateways.values.first(),
                                 deviousUser,
                                 oldAvatarId,
                                 newAvatarId
