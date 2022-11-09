@@ -27,7 +27,8 @@ class DeviousGateway(
         IDENTIFYING,
         RESUMING,
         CONNECTED,
-        RECONNECTING
+        RECONNECTING,
+        DISCONNECTED
     }
 
     val logger = KotlinLogging.logger {}
