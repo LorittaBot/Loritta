@@ -46,13 +46,3 @@ class DeviousGateway(
         KordListener(deviousFun, this)
     }
 }
-
-public inline fun <reified T : Event> DeviousGateway.on(
-    scope: CoroutineScope = this.kordGateway,
-    crossinline consumer: suspend T.() -> Unit
-) = kordGateway.events.buffer(Channel.UNLIMITED).filterIsInstance<T>().onEach {
-    scope.launch {
-        it.runCatching { it.consumer() }
-            .onFailure { logger.warn(it) { "Something went wrong while processing event ${T::class}" } }
-    }
-}.launchIn(scope)
