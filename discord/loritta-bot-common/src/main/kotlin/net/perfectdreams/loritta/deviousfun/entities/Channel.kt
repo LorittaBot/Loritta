@@ -281,12 +281,13 @@ class Channel(
                     messages.map {
                         val guild = channel.guildOrNull
                         val authorId = it.author.id
-                        val member = guild?.retrieveMemberOrNullById(authorId.toLong())
+                        val author = channel.deviousFun.cacheManager.createUser(it.author, false)
+                        val member = guild?.getMemberById(authorId.toLong())
 
                         Message(
                             channel.deviousFun,
                             channel,
-                            channel.deviousFun.retrieveUserById(it.author.id),
+                            author,
                             member,
                             guild,
                             DeviousMessageFragmentData.from(it)
