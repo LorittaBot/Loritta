@@ -256,15 +256,22 @@ class Channel(
         var position = Position.Before(Snowflake.max)
 
         suspend fun retrievePast(search: Int): List<Message> {
-            val howManySearchesShouldBeDone = ceil(search / 100.0).toInt()
-
             val messagesFound = mutableListOf<Message>()
 
-            for (i in 0 until howManySearchesShouldBeDone) {
+            val searchesToBeMade = mutableListOf<Int>()
+            var temp = search
+            while (temp > 100) {
+                searchesToBeMade.add(100)
+                temp -= 100
+            }
+            if (temp != 0)
+                searchesToBeMade.add(temp)
+
+            for (searchLimit in searchesToBeMade) {
                 val messages = channel.deviousFun.loritta.rest.channel.getMessages(
                     channel.idSnowflake,
                     position = position,
-                    limit = 100
+                    limit = searchLimit
                 )
 
                 if (messages.isEmpty())
