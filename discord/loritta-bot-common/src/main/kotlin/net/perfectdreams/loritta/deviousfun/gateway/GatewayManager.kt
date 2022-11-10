@@ -62,6 +62,7 @@ class GatewayManager(
                 val builder: GatewayConfigurationBuilder.() -> (Unit) = {
                     @OptIn(PrivilegedIntent::class)
                     intents = Intents {
+                        +Intent.Guilds
                         +Intent.GuildMembers
                         +Intent.MessageContent
                         +Intent.GuildEmojis
