@@ -56,7 +56,7 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
         val guilds = userGuilds.filter {
             val guild = loritta.lorittaShards.getGuildById(it.id)
             if (guild != null) {
-                val member = guild.retrieveMemberById(lorittaProfile.userId)
+                val member = guild.retrieveMemberOrNullById(lorittaProfile.userId)
                 val config = serverConfigs.firstOrNull { config -> config.guildId.toString() == it.id }
                 if (member != null && config != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
                     val lorittaUser = GuildLorittaUser(
