@@ -115,6 +115,22 @@ class DeviousCacheManager(
         }
     }
 
+    suspend fun getGuildFailIfSnowflakeIsNotNullButGuildIsNotPresent(id: Snowflake?): GuildResult {
+        if (id == null)
+            return GuildResult.NullSnowflake
+
+        val guild = getGuild(id)
+        if (guild != null)
+            return GuildResult.GuildPresent(guild)
+        return GuildResult.GuildNotPresent
+    }
+
+    sealed class GuildResult {
+        class GuildPresent(val guild: Guild) : GuildResult()
+        object NullSnowflake : GuildResult()
+        object GuildNotPresent : GuildResult()
+    }
+
     suspend fun createGuild(
         data: DiscordGuild,
         guildChannels: List<DiscordChannel>?,

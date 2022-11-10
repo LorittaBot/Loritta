@@ -8,8 +8,10 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.deviouscache.data.*
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.cache.DatabaseCacheValue
+import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
 import net.perfectdreams.loritta.deviousfun.entities.Message
+import net.perfectdreams.loritta.deviousfun.events.DeviousEventFactory
 import net.perfectdreams.loritta.deviousfun.events.guild.GuildBanEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.GuildReadyEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.GuildUnbanEvent
@@ -145,7 +147,7 @@ class KordListener(
                             m.cacheManager.deleteGuild(guild.idSnowflake)
                         }
                         is MessageCreate -> {
-                            val event = m.eventFactory.createMessageReceived(gateway, it)
+                            val event = m.eventFactory.createMessageReceived(gateway, it) ?: return@collect
 
                             m.forEachListeners(event, ListenerAdapter::onMessageReceived)
                         }
@@ -153,8 +155,17 @@ class KordListener(
                             val isWebhook = DeviousUserUtils.isSenderWebhookOrSpecial(it.message)
                             val guildId = it.message.guildId.value
 
-                            val channel = m.retrieveChannelById(it.message.channelId)
-                            val guild = guildId?.let { m.retrieveGuildById(it) }
+                            val channel = m.getChannelById(it.message.channelId)
+                            if (channel == null) {
+                                logger.warn { "Received message update for a channel that we don't have in our cache! Channel ID: ${it.message.channelId}; Guild ID: $guildId" }
+                                return@collect
+                            }
+                            val guildResult = cacheManager.getGuildFailIfSnowflakeIsNotNullButGuildIsNotPresent(guildId)
+                            if (guildResult is DeviousCacheManager.GuildResult.GuildNotPresent) {
+                                logger.warn { "Received message update for a guild that we don't have in our cache! Channel ID: ${it.message.channelId}; Guild ID: $guildId" }
+                                return@collect
+                            }
+                            val guild = (guildResult as? DeviousCacheManager.GuildResult.GuildPresent)?.guild
 
                             // The author may be null, but in this case we will ignore it
                             // (The author can be null if it was an "embed update", example: When pasting a URL in chat)
@@ -166,7 +177,7 @@ class KordListener(
                                 null
                             else
                                 guild?.let {
-                                    m.retrieveMemberById(
+                                    m.getMemberById(
                                         guild,
                                         author.idSnowflake
                                     )
@@ -195,27 +206,31 @@ class KordListener(
                             m.forEachListeners(event, ListenerAdapter::onMessageUpdate)
                         }
                         is MessageDelete -> {
-                            val event = m.eventFactory.create(gateway, it)
+                            val event = m.eventFactory.create(gateway, it) ?: return@collect
 
                             m.forEachListeners(event, ListenerAdapter::onMessageDelete)
                         }
                         is MessageDeleteBulk -> {
-                            val event = m.eventFactory.create(gateway, it)
+                            val event = m.eventFactory.create(gateway, it) ?: return@collect
 
                             m.forEachListeners(event, ListenerAdapter::onMessageBulkDelete)
                         }
                         is MessageReactionAdd -> {
-                            val event = m.eventFactory.create(gateway, it)
+                            val event = m.eventFactory.create(gateway, it) ?: return@collect
 
                             m.forEachListeners(event, ListenerAdapter::onGenericMessageReaction)
                         }
                         is MessageReactionRemove -> {
-                            val event = m.eventFactory.create(gateway, it)
+                            val event = m.eventFactory.create(gateway, it) ?: return@collect
 
                             m.forEachListeners(event, ListenerAdapter::onGenericMessageReaction)
                         }
                         is GuildMemberAdd -> {
-                            val guild = cacheManager.getGuild(it.member.guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(it.member.guildId)
+                            if (guild == null) {
+                                logger.warn { "Received guild member add for a guild that we don't have in our cache! Guild ID: ${it.member.guildId}" }
+                                return@collect
+                            }
                             val userData = it.member.user.value ?: return@collect
 
                             val lightweightGuildId = guild.idSnowflake.toLightweightSnowflake()
@@ -243,7 +258,11 @@ class KordListener(
                             m.forEachListeners(event, ListenerAdapter::onGuildMemberJoin)
                         }
                         is GuildMemberUpdate -> {
-                            val guild = cacheManager.getGuild(it.member.guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(it.member.guildId)
+                            if (guild == null) {
+                                logger.warn { "Received guild member update for a guild that we don't have in our cache! Guild ID: ${it.member.guildId}" }
+                                return@collect
+                            }
                             val userData = it.member.user
 
                             // Create user instance, this will store the user in cache
@@ -253,7 +272,11 @@ class KordListener(
                             val member = cacheManager.createMember(user, guild, it.member)
                         }
                         is GuildMemberRemove -> {
-                            val guild = cacheManager.getGuild(it.member.guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(it.member.guildId)
+                            if (guild == null) {
+                                logger.warn { "Received guild member remove for a guild that we don't have in our cache! Guild ID: ${it.member.guildId}" }
+                                return@collect
+                            }
 
                             val lightweightGuildId = guild.idSnowflake.toLightweightSnowflake()
                             m.cacheManager.withLock(GuildKey(lightweightGuildId)) {
@@ -280,7 +303,11 @@ class KordListener(
                             m.forEachListeners(event, ListenerAdapter::onGuildMemberRemove)
                         }
                         is GuildBanAdd -> {
-                            val guild = cacheManager.getGuild(it.ban.guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(it.ban.guildId)
+                            if (guild == null) {
+                                logger.warn { "Received guild ban add for a guild that we don't have in our cache! Guild ID: ${it.ban.guildId}" }
+                                return@collect
+                            }
 
                             // Create user instance, this will store the user in cache
                             val user = cacheManager.createUser(it.ban.user, true)
@@ -290,7 +317,11 @@ class KordListener(
                             m.forEachListeners(event, ListenerAdapter::onGuildBan)
                         }
                         is GuildBanRemove -> {
-                            val guild = cacheManager.getGuild(it.ban.guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(it.ban.guildId)
+                            if (guild == null) {
+                                logger.warn { "Received guild ban remove for a guild that we don't have in our cache! Guild ID: ${it.ban.guildId}" }
+                                return@collect
+                            }
 
                             // Create user instance, this will store the user in cache
                             val user = cacheManager.createUser(it.ban.user, true)
@@ -304,42 +335,66 @@ class KordListener(
                         }
                         is GuildRoleCreate -> {
                             val role = it.role.role
-                            val guild = cacheManager.getGuild(it.role.guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(it.role.guildId)
+                            if (guild == null) {
+                                logger.warn { "Received guild role create for a guild that we don't have in our cache! Guild ID: ${it.role.guildId}" }
+                                return@collect
+                            }
 
                             // Create role instance, this will store the role in cache
                             cacheManager.createRole(guild, role)
                         }
                         is GuildRoleUpdate -> {
                             val role = it.role.role
-                            val guild = cacheManager.getGuild(it.role.guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(it.role.guildId)
+                            if (guild == null) {
+                                logger.warn { "Received guild role update for a guild that we don't have in our cache! Guild ID: ${it.role.guildId}" }
+                                return@collect
+                            }
 
                             // Create role instance, this will store the role in cache
                             cacheManager.createRole(guild, role)
                         }
                         is GuildRoleDelete -> {
                             val roleId = it.role.id
-                            val guild = cacheManager.getGuild(it.role.guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(it.role.guildId)
+                            if (guild == null) {
+                                logger.warn { "Received guild role delete for a guild that we don't have in our cache! Guild ID: ${it.role.guildId}" }
+                                return@collect
+                            }
 
                             // Delete role instance from cache
                             cacheManager.deleteRole(guild, roleId)
                         }
                         is ChannelCreate -> {
                             val guildId = it.channel.guildId.value ?: return@collect
-                            val guild = cacheManager.getGuild(guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(guildId)
+                            if (guild == null) {
+                                logger.warn { "Received channel create for a guild that we don't have in our cache! Guild ID: ${it.channel.guildId}; Channel ID: ${it.channel.id}" }
+                                return@collect
+                            }
 
                             // Create channel instance, this will store the channel in cache
                             cacheManager.createChannel(guild, it.channel)
                         }
                         is ChannelUpdate -> {
                             val guildId = it.channel.guildId.value ?: return@collect
-                            val guild = cacheManager.getGuild(guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(guildId)
+                            if (guild == null) {
+                                logger.warn { "Received channel update for a guild that we don't have in our cache! Guild ID: ${it.channel.guildId}; Channel ID: ${it.channel.id}" }
+                                return@collect
+                            }
 
                             // Create channel instance, this will store the channel in cache
                             cacheManager.createChannel(guild, it.channel)
                         }
                         is ChannelDelete -> {
                             val guildId = it.channel.guildId.value ?: return@collect
-                            val guild = cacheManager.getGuild(guildId) ?: return@collect
+                            val guild = cacheManager.getGuild(guildId)
+                            if (guild == null) {
+                                logger.warn { "Received channel delete for a guild that we don't have in our cache! Guild ID: ${it.channel.guildId}; Channel ID: ${it.channel.id}" }
+                                return@collect
+                            }
 
                             // Delete channel, this will delete the channel from cache
                             cacheManager.deleteChannel(guild, it.channel.id)
