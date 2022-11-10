@@ -589,7 +589,7 @@ class LorittaBot(
             logger.info { "Loading raffle..." }
             val raffleData = runBlocking {
                 newSuspendedTransaction {
-                    MiscellaneousData.select { MiscellaneousData.data eq RaffleThread.DATA_KEY }
+                    MiscellaneousData.select { MiscellaneousData.id eq RaffleThread.DATA_KEY }
                         .limit(1)
                         .firstOrNull()
                         ?.get(MiscellaneousData.data)

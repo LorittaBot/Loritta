@@ -50,7 +50,7 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
             if (!fileLoaded) {
                 val youTubeWebhooksData = runBlocking {
                     loritta.newSuspendedTransaction {
-                        MiscellaneousData.select { MiscellaneousData.data eq DATA_KEY }
+                        MiscellaneousData.select { MiscellaneousData.id eq DATA_KEY }
                             .limit(1)
                             .firstOrNull()
                             ?.get(MiscellaneousData.data)
