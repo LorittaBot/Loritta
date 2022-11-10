@@ -22,12 +22,7 @@ import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.website.session.LorittaJsonWebSession
 import net.perfectdreams.loritta.morenitta.website.utils.WebsiteUtils
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.hostFromHeader
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.redirect
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondHtml
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.toJson
-import net.perfectdreams.loritta.morenitta.website.utils.extensions.toWebSessionIdentification
+import net.perfectdreams.loritta.morenitta.website.utils.extensions.*
 import net.perfectdreams.loritta.morenitta.website.views.UserBannedView
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
 import org.jetbrains.exposed.sql.select
@@ -60,10 +55,13 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                 call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
             val discordAuth = session.getDiscordAuthFromJson(loritta)
 
+            logger.info { "Session for ${call.request.trueIp} is $session, and the Discord Auth instance is $discordAuth" }
+
             // Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
             // Se o parâmetro exista, vamos redirecionar!
             if (code == null) {
                 if (discordAuth == null) {
+                    logger.info { "Because the code AND the discordAuth instance are null for ${call.request.trueIp}, we will ask them to autenticate!" }
                     if (call.request.header("User-Agent") == Constants.DISCORD_CRAWLER_USER_AGENT) {
                         call.respondHtml(WebsiteUtils.getDiscordCrawlerAuthenticationPage(loritta))
                     } else {
@@ -77,10 +75,11 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                     }
                 }
             } else {
+                logger.info { "Getting user identification for ${call.request.trueIp} from the stored user identification instance..." }
                 val storedUserIdentification = session.getUserIdentification(loritta, call)
 
                 val userIdentification = if (code == "from_master") {
-                    logger.info { "Received OAuth2 code redirected from the main instance!" }
+                    logger.info { "Received OAuth2 code redirected from the main instance, sent by ${call.request.trueIp}" }
                     // Veio do master cluster, vamos apenas tentar autenticar com os dados existentes!
                     storedUserIdentification ?: run {
                         // Okay... mas e se for nulo? Veio do master mas não tem session cache? Como pode??
@@ -94,7 +93,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                         )
                     }
                 } else {
-                    logger.info { "Received OAuth2 code!" }
+                    logger.info { "Received OAuth2 code from ${call.request.trueIp}!" }
                     val auth = TemmieDiscordAuth(
                         loritta.config.loritta.discord.applicationId.toString(),
                         loritta.config.loritta.discord.clientSecret,
@@ -103,11 +102,11 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                         listOf("identify", "guilds", "email")
                     )
 
-                    logger.info { "Doing OAuth2 token exchange..." }
+                    logger.info { "Doing OAuth2 token exchange for ${call.request.trueIp}..." }
                     auth.doTokenExchange()
-                    logger.info { "Getting user identification via OAuth2..." }
+                    logger.info { "Getting ${call.request.trueIp} user identification via OAuth2..." }
                     val userIdentification = auth.getUserIdentification()
-                    logger.info { "User ${userIdentification.id} successfully logged in! Storing it on the session data..." }
+                    logger.info { "User ${userIdentification.id} (${call.request.trueIp}) successfully logged in! Storing it on the session data..." }
                     val forCache = userIdentification.toWebSessionIdentification()
                     call.sessions.set(
                         session.copy(
@@ -138,7 +137,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                     logger.warn { "User ${userIdentification.id} has banned accounts in ${trueIp}! IDs: ${bannedProfiles.joinToString(transform = { it[Profiles.id].toString() })}" } */
 
                 if (state != null) {
-                    logger.info { "Received custom state on ${userIdentification.id} OAuth2 request!" }
+                    logger.info { "Received custom state on ${userIdentification.id} (${call.request.trueIp}) OAuth2 request!" }
                     // state = base 64 encoded JSON
                     val decodedState = Base64.getDecoder().decode(state).toString(Charsets.UTF_8)
                     val jsonState = JsonParser.parseString(decodedState).obj
@@ -151,7 +150,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                         val redirectDomain = loritta.connectionManager.getDomainFromUrl(redirectUrl)
 
                         if (lorittaDomain == redirectDomain) {
-                            logger.info { "Redirecting ${userIdentification.id} to $redirectUrl... Bye bye!" }
+                            logger.info { "Redirecting ${userIdentification.id} (${call.request.trueIp}) to $redirectUrl... Bye bye!" }
                             redirect(redirectUrl, false)
                         } else
                             logger.warn { "Someone tried to make me redirect to somewhere that isn't my website domain! Tried to redirect to $redirectDomain" }
