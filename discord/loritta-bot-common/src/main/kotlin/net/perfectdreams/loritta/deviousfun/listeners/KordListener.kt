@@ -225,52 +225,6 @@ class KordListener(
             m.forEachListeners(event, ListenerAdapter::onMessageBulkDelete)
         }
 
-        gateway.on<MessageUpdate> {
-            val isWebhook = DeviousUserUtils.isSenderWebhookOrSpecial(this.message)
-            val guildId = this.message.guildId.value
-
-            val channel = m.retrieveChannelById(this.message.channelId)
-            val guild = guildId?.let { m.retrieveGuildById(it) }
-
-            // The author may be null, but in this case we will ignore it
-            // (The author can be null if it was an "embed update", example: When pasting a URL in chat)
-            val authorData = this.message.author.value ?: return@on
-            val author = cacheManager.createUser(authorData, !isWebhook)
-
-            // Webhooks do exist as a user (sort of)
-            val member = if (isWebhook)
-                null
-            else
-                guild?.let {
-                    m.retrieveMemberById(
-                        guild,
-                        author.idSnowflake
-                    )
-                } // The member data is not present when updating a message
-
-            val message = Message(
-                m,
-                channel,
-                author,
-                member,
-                guild,
-                DeviousMessageFragmentData.from(this.message)
-            )
-
-            val event = MessageUpdateEvent(
-                m,
-                gateway,
-                author,
-                message,
-                channel,
-                guild,
-                member,
-                this
-            )
-
-            m.forEachListeners(event, ListenerAdapter::onMessageUpdate)
-        }
-
         gateway.on<GuildMemberAdd> {
             val guild = cacheManager.getGuild(this.member.guildId) ?: return@on
             val userData = this.member.user.value ?: return@on
