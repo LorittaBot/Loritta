@@ -238,7 +238,7 @@ class TemmieDiscordAuth(val clientId: String,
 		return response.bodyAsText()
 	}
 
-	class TokenUnauthorizedException(status: HttpStatusCode) : RuntimeException()
+	class TokenUnauthorizedException(val status: HttpStatusCode) : RuntimeException()
 	class TokenExchangeException(message: String) : RuntimeException(message)
 
 	class UserIdentification constructor(
