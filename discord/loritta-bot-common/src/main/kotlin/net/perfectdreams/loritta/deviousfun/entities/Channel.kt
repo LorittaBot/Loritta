@@ -37,8 +37,13 @@ class Channel(
     val channel: DeviousChannelData
 ) : IdentifiableSnowflake {
     companion object {
-        private val ALWAYS_CAN_TALK_CHANNEL_TYPES = setOf(
+        val ALWAYS_CAN_TALK_CHANNEL_TYPES = setOf(
             ChannelType.DM
+        )
+
+        val TEXT_CHANNEL_LIKE_CHANNEL_TYPES = setOf(
+            ChannelType.GuildText,
+            ChannelType.GuildNews
         )
     }
 

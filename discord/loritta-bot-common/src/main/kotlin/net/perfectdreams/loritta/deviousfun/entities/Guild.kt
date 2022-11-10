@@ -52,7 +52,7 @@ class Guild(
     val channels: List<Channel>
         get() = cacheWrapper.channels.values.toList()
     val textChannels: List<Channel>
-        get() = channels.filter { it.type == ChannelType.GuildText }
+        get() = channels.filter { it.type in Channel.TEXT_CHANNEL_LIKE_CHANNEL_TYPES }
     val voiceChannels: List<Channel>
         get() = channels.filter { it.type == ChannelType.GuildVoice }
     val emotes: List<DiscordGuildEmote>
