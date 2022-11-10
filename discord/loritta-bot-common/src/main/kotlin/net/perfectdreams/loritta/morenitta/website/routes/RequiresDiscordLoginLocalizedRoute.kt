@@ -51,11 +51,11 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
             val guildId = call.parameters["guild_id"]
             val code = call.parameters["code"]
 
-            val session: LorittaJsonWebSession =
-                call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
+            val rawCookieHeader = call.request.cookies.get("LORITTA_WEB_SESSION")
+            val session = call.lorittaSession
             val discordAuth = session.getDiscordAuthFromJson(loritta)
 
-            logger.info { "Session for ${call.request.trueIp} is $session, and the Discord Auth instance is $discordAuth" }
+            logger.info { "Session for ${call.request.trueIp} is $session, and the Discord Auth instance is $discordAuth, raw cookie header is $rawCookieHeader" }
 
             // Caso o usuário utilizou o invite link que adiciona a Lori no servidor, terá o parâmetro "guild_id" na URL
             // Se o parâmetro exista, vamos redirecionar!
