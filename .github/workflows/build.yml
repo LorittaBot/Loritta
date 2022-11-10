@@ -66,5 +66,6 @@ jobs:
             build
             :discord:loritta-bot-common:jib
             :shard-controller:jib
+            :web:dashboard:backend:jib
             -Dcommit.hash=${{ github.sha }}
             --scan
