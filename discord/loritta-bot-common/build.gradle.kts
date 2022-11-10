@@ -156,7 +156,9 @@ tasks {
 jib {
     container {
         mainClass = "net.perfectdreams.loritta.morenitta.LorittaLauncher"
-        environment["COMMIT_SHA"] = System.getProperty("GITHUB_SHA", null)
+        environment = environment.toMutableMap().apply {
+            this["COMMIT_SHA"] = System.getProperty("GITHUB_SHA", null)
+        }
     }
 
     to {
