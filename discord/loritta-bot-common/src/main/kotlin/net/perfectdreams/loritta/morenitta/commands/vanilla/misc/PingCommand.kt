@@ -65,7 +65,10 @@ class PingCommand(loritta: LorittaBot) :
 
                     val shardId = json["id"].long
                     val name = json["name"].string
+                    val commitHash = json["build"]["commitHash"].nullString
                     val pendingMessages = json["pendingMessages"].long
+
+                    val commitHashOrUnknown = commitHash?.take(10) ?: "Unknown"
 
                     var jvmUpTime = json["uptime"].long
                     val days = TimeUnit.MILLISECONDS.toDays(jvmUpTime)
@@ -86,7 +89,7 @@ class PingCommand(loritta: LorittaBot) :
                         else -> "!"
                     }
 
-                    row0.add("$pendingMessagesStatus Cluster $shardId ($name)")
+                    row0.add("$pendingMessagesStatus Cluster $shardId ($name) [$commitHashOrUnknown]")
                     row1.add("~${pingAverage}ms")
                     row2.add("~${time}ms")
                     row3.add("${days}d ${hours}h ${minutes}m ${seconds}s")
