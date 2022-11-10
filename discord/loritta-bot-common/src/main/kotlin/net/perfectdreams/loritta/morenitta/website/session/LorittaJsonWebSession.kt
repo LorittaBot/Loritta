@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.lorittaSession
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.toWebSessionIdentification
 import net.perfectdreams.temmiediscordauth.TemmieDiscordAuth
+import java.util.*
 
 data class LorittaJsonWebSession(
     val cachedIdentification: String?,
@@ -31,7 +32,7 @@ data class LorittaJsonWebSession(
         if (loadFromCache) {
             try {
                 cachedIdentification?.let {
-                    return gson.fromJson(it)
+                    return gson.fromJson(Base64.getDecoder().decode(it).toString(Charsets.UTF_8))
                 }
             } catch (e: Throwable) {
                 logger.error(e) { "Error while loading cached identification for $call" }
@@ -45,7 +46,7 @@ data class LorittaJsonWebSession(
             val forCache = userIdentification.toWebSessionIdentification()
 
             call.lorittaSession = this.copy(
-                cachedIdentification = forCache.toJson()
+                cachedIdentification = forCache.toJsonBase64()
             )
 
             return forCache
@@ -58,7 +59,7 @@ data class LorittaJsonWebSession(
         if (storedDiscordAuthTokens == null)
             return null
 
-        val json = JsonParser.parseString(storedDiscordAuthTokens)
+        val json = JsonParser.parseString(Base64.getDecoder().decode(storedDiscordAuthTokens).toString(Charsets.UTF_8))
 
         return TemmieDiscordAuth(
             loritta.config.loritta.discord.applicationId.toString(),
@@ -83,6 +84,6 @@ data class LorittaJsonWebSession(
         val createdAt: Long,
         val updatedAt: Long
     ) {
-        fun toJson() = gson.toJson(this)
+        fun toJsonBase64() = Base64.getEncoder().encodeToString(gson.toJson(this).toByteArray())
     }
 }
