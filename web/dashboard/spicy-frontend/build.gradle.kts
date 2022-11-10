@@ -1,6 +1,6 @@
 plugins {
     kotlin("multiplatform")
-    id("org.jetbrains.compose") version "1.2.0-alpha01-dev750"
+    id("org.jetbrains.compose") version "1.2.1"
     id("io.github.turansky.kfc.latest-webpack")
 }
 

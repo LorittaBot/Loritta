@@ -7,6 +7,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.dashboard.backend.LorittaDashboardBackend
+import java.util.*
 
 class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: LorittaJsonWebSession) {
     companion object {
@@ -17,7 +18,7 @@ class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: Lori
         if (loadFromCache) {
             try {
                 jsonWebSession.cachedIdentification?.let {
-                    return Json.decodeFromString(it)
+                    return Json.decodeFromString(Base64.getDecoder().decode(it).toString(Charsets.UTF_8))
                 }
             } catch (e: Throwable) {
                 logger.warn(e) { "Failed to load cached identification! Ignoring cached identification..." }
@@ -45,19 +46,26 @@ class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: Lori
         if (jsonWebSession.storedDiscordAuthTokens == null)
             return null
 
-        val json = Json.decodeFromString<LorittaJsonWebSession.StoredDiscordAuthTokens>(jsonWebSession.storedDiscordAuthTokens)
+        try {
+            val json = Json.decodeFromString<LorittaJsonWebSession.StoredDiscordAuthTokens>(
+                Base64.getDecoder().decode(jsonWebSession.storedDiscordAuthTokens).toString(Charsets.UTF_8)
+            )
 
-        return TemmieDiscordAuth(
-            "x",
-            "y",
-            json.authCode,
-            json.redirectUri,
-            json.scope,
-            json.accessToken,
-            json.refreshToken,
-            json.expiresIn,
-            json.generatedAt
-        )
+            return TemmieDiscordAuth(
+                "x",
+                "y",
+                json.authCode,
+                json.redirectUri,
+                json.scope,
+                json.accessToken,
+                json.refreshToken,
+                json.expiresIn,
+                json.generatedAt
+            )
+        } catch (e: Throwable) {
+            logger.error(e) { "Error while loading cached discord auth" }
+            return null
+        }
     }
 
     private fun convertToWebSessionIdentification(discordUser: DiscordUser): LorittaJsonWebSession.UserIdentification {
@@ -76,16 +84,18 @@ class LorittaWebSession(val m: LorittaDashboardBackend, val jsonWebSession: Lori
     }
 
     private fun convertToJson(discordAuth: TemmieDiscordAuth): String {
-        return Json.encodeToString(
-            LorittaJsonWebSession.StoredDiscordAuthTokens(
-                discordAuth.authCode,
-                discordAuth.redirectUri,
-                discordAuth.scope,
-                discordAuth.accessToken,
-                discordAuth.refreshToken,
-                discordAuth.expiresIn,
-                discordAuth.generatedAt
-            )
+        return Base64.getEncoder().encodeToString(
+            Json.encodeToString(
+                LorittaJsonWebSession.StoredDiscordAuthTokens(
+                    discordAuth.authCode,
+                    discordAuth.redirectUri,
+                    discordAuth.scope,
+                    discordAuth.accessToken,
+                    discordAuth.refreshToken,
+                    discordAuth.expiresIn,
+                    discordAuth.generatedAt
+                )
+            ).toByteArray(Charsets.UTF_8)
         )
     }
 }

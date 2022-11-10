@@ -10,9 +10,9 @@ pluginManagement {
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            val kotlin = version("kotlin", "1.7.10")
+            val kotlin = version("kotlin", "1.7.20")
             val kotlinXSerialization = version("kotlinx-serialization", "1.4.0-RC")
-            val ktor = version("ktor", "2.0.3")
+            val ktor = version("ktor", "2.1.3")
             val jib = version("jib", "3.2.1")
             val exposed = version("exposed", "0.38.2")
             val i18nHelper = version("i18nhelper", "0.0.5-SNAPSHOT")
@@ -73,10 +73,9 @@ include(":web:showtime:web-common")
 include(":web:showtime:showtime-frontend")
 
 // ===[ DASHBOARD ]===
-// TODO: Disabled for now, reenable it when Jetpack Compose Web supports Kotlin 1.7.21
-// include(":web:dashboard:dashboard-common")
-// include(":web:dashboard:backend")
-// include(":web:dashboard:spicy-frontend")
+include(":web:dashboard:dashboard-common")
+include(":web:dashboard:backend")
+include(":web:dashboard:spicy-frontend")
 
 // ===[ MISC ]===
 include(":temmie-discord-auth")
