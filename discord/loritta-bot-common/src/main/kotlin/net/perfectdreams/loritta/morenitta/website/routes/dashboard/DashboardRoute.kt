@@ -48,31 +48,7 @@ class DashboardRoute(loritta: LorittaBot) : RequiresDiscordLoginLocalizedRoute(l
             }
         }
 
-        val serverConfigs = loritta.newSuspendedTransaction {
-            ServerConfig.find { ServerConfigs.id inList userGuilds.map { it.id.toLong() } }
-                .toList()
-        }
-
-        val guilds = userGuilds.filter {
-            val guild = loritta.lorittaShards.getGuildById(it.id)
-            if (guild != null) {
-                val member = guild.retrieveMemberOrNullById(lorittaProfile.userId)
-                val config = serverConfigs.firstOrNull { config -> config.guildId.toString() == it.id }
-                if (member != null && config != null) { // As vezes member == null, então vamos verificar se não é null antes de verificar as permissões
-                    val lorittaUser = GuildLorittaUser(
-                        loritta,
-                        member,
-                        LorittaUser.loadMemberLorittaPermissions(loritta, config, member),
-                        lorittaProfile
-                    )
-                    LorittaWebsite.canManageGuild(it) || lorittaUser.hasPermission(LorittaPermission.ALLOW_ACCESS_TO_DASHBOARD)
-                } else {
-                    LorittaWebsite.canManageGuild(it)
-                }
-            } else {
-                LorittaWebsite.canManageGuild(it)
-            }
-        }
+        val guilds = userGuilds.filter { LorittaWebsite.canManageGuild(it) }
 
         variables["userGuilds"] = guilds
         val userPermissionLevels = mutableMapOf<TemmieDiscordAuth.Guild, LorittaWebsite.UserPermissionLevel>()
