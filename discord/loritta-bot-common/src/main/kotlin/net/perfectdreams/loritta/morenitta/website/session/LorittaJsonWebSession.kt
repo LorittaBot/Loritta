@@ -59,19 +59,24 @@ data class LorittaJsonWebSession(
         if (storedDiscordAuthTokens == null)
             return null
 
-        val json = JsonParser.parseString(Base64.getDecoder().decode(storedDiscordAuthTokens).toString(Charsets.UTF_8))
+        try {
+            val json = JsonParser.parseString(Base64.getDecoder().decode(storedDiscordAuthTokens).toString(Charsets.UTF_8))
 
-        return TemmieDiscordAuth(
-            loritta.config.loritta.discord.applicationId.toString(),
-            loritta.config.loritta.discord.clientSecret,
-            json["authCode"].string,
-            json["redirectUri"].string,
-            json["scope"].array.map { it.string },
-            json["accessToken"].string,
-            json["refreshToken"].string,
-            json["expiresIn"].long,
-            json["generatedAt"].long
-        )
+            return TemmieDiscordAuth(
+                loritta.config.loritta.discord.applicationId.toString(),
+                loritta.config.loritta.discord.clientSecret,
+                json["authCode"].string,
+                json["redirectUri"].string,
+                json["scope"].array.map { it.string },
+                json["accessToken"].string,
+                json["refreshToken"].string,
+                json["expiresIn"].long,
+                json["generatedAt"].long
+            )
+        } catch (e: Throwable) {
+            logger.error(e) { "Error while loading cached discord auth" }
+            return null
+        }
     }
 
     data class UserIdentification(
