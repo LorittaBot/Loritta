@@ -69,6 +69,7 @@ class GatewayManager(
                         +Intent.GuildInvites
                         +Intent.GuildMessageReactions
                         +Intent.GuildVoiceStates
+                        +Intent.GuildMessages
                         +Intent.DirectMessages
                         +Intent.DirectMessagesReactions
                     }
