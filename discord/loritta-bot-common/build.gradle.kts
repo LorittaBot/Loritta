@@ -157,7 +157,10 @@ jib {
     container {
         mainClass = "net.perfectdreams.loritta.morenitta.LorittaLauncher"
         environment = environment.toMutableMap().apply {
-            this["COMMIT_SHA"] = System.getProperty("GITHUB_SHA", null)
+            val githubSha = System.getProperty("GITHUB_SHA", null)
+            // Only set if it is not null, because if it is, Jib complains
+            if (githubSha != null)
+                this["COMMIT_SHA"] = githubSha
         }
     }
 
