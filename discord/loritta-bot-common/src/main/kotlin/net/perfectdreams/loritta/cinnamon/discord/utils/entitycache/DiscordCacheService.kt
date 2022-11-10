@@ -5,10 +5,6 @@ import kotlinx.serialization.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviouscache.data.*
-import net.perfectdreams.loritta.deviouscache.requests.GetGuildMemberRequest
-import net.perfectdreams.loritta.deviouscache.requests.GetVoiceStateRequest
-import net.perfectdreams.loritta.deviouscache.responses.GetGuildMemberResponse
-import net.perfectdreams.loritta.deviouscache.responses.GetVoiceStateResponse
 import net.perfectdreams.loritta.deviousfun.utils.GuildKey
 import net.perfectdreams.loritta.deviousfun.utils.UserKey
 import net.perfectdreams.loritta.morenitta.LorittaBot

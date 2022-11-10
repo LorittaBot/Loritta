@@ -7,8 +7,6 @@ import dev.kord.gateway.retry.LinearRetry
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
-import net.perfectdreams.loritta.deviouscache.requests.GetGatewaySessionRequest
-import net.perfectdreams.loritta.deviouscache.responses.GetGatewaySessionResponse
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import kotlin.time.Duration.Companion.seconds
 

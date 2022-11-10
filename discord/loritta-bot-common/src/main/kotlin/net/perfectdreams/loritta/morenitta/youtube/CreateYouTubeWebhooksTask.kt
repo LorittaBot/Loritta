@@ -11,10 +11,6 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousData
-import net.perfectdreams.loritta.deviouscache.requests.GetMiscellaneousDataRequest
-import net.perfectdreams.loritta.deviouscache.requests.PutMiscellaneousDataRequest
-import net.perfectdreams.loritta.deviouscache.responses.GetMiscellaneousDataResponse
-import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
 import net.perfectdreams.loritta.morenitta.threads.RaffleThread
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

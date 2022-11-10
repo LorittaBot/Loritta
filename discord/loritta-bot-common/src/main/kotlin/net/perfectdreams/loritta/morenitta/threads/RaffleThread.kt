@@ -15,7 +15,6 @@ import net.perfectdreams.loritta.deviousfun.MessageBuilder
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
-import net.perfectdreams.loritta.deviouscache.requests.PutMiscellaneousDataRequest
 import net.perfectdreams.loritta.morenitta.utils.gson
 import net.perfectdreams.loritta.morenitta.youtube.CreateYouTubeWebhooksTask
 import java.awt.Color

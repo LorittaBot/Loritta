@@ -14,8 +14,6 @@ import kotlinx.serialization.serializer
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
 import net.perfectdreams.loritta.deviouscache.data.*
-import net.perfectdreams.loritta.deviouscache.requests.*
-import net.perfectdreams.loritta.deviouscache.responses.*
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent

@@ -9,11 +9,6 @@ import dev.kord.rest.request.KtorRequestException
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviouscache.data.*
-import net.perfectdreams.loritta.deviouscache.requests.GetGuildBoostersRequest
-import net.perfectdreams.loritta.deviouscache.requests.GetGuildMembersRequest
-import net.perfectdreams.loritta.deviouscache.requests.GetGuildMembersWithRolesRequest
-import net.perfectdreams.loritta.deviouscache.responses.GetGuildMembersResponse
-import net.perfectdreams.loritta.deviouscache.responses.NotFoundResponse
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.utils.GuildKey
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo

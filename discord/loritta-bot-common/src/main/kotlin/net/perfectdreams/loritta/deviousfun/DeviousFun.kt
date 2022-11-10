@@ -17,8 +17,6 @@ import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.transaction
 import net.perfectdreams.loritta.deviouscache.data.*
-import net.perfectdreams.loritta.deviouscache.requests.GetGuildCountRequest
-import net.perfectdreams.loritta.deviouscache.responses.GetGuildCountResponse
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheDatabase
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.entities.*

@@ -9,10 +9,6 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ConcurrentLoginBuckets
 import net.perfectdreams.loritta.deviouscache.data.*
-import net.perfectdreams.loritta.deviouscache.requests.*
-import net.perfectdreams.loritta.deviouscache.responses.GetGuildIdsOfShardResponse
-import net.perfectdreams.loritta.deviouscache.responses.OkResponse
-import net.perfectdreams.loritta.deviouscache.responses.UnlockConflictConcurrentLoginResponse
 import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviousfun.cache.DatabaseCacheValue
 import net.perfectdreams.loritta.deviousfun.cache.DeviousMessageFragmentData
