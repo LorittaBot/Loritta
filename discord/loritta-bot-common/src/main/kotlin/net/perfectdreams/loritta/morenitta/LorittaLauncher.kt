@@ -117,7 +117,7 @@ object LorittaLauncher {
         // synchronous = We don't care about data loss
         // temp_store = We don't want to store indexes in memory, we already have the data stored in memory
         // locking_mode = reduces the number of syscalls required, only one process (the Loritta instance) will access the database
-        val database = Database.connect("jdbc:sqlite:cache/lori_devious.db?journal_mode=wal&synchronous=off&mmap_size=30000000000&temp_store=0&page_size=32768&locking_mode=exclusive")
+        val database = Database.connect("jdbc:sqlite:cache/lori_devious.db?journal_mode=wal&synchronous=off&mmap_size=30000000000&temp_store=0&locking_mode=exclusive")
 
         val cacheEntityMaps = runBlocking {
             val (cacheEntityMaps, duration) = measureTimedValue {
