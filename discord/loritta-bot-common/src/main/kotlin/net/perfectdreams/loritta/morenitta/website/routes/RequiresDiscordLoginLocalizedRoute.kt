@@ -56,7 +56,6 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
             val guildId = call.parameters["guild_id"]
             val code = call.parameters["code"]
 
-            println("Dashboard Auth Route")
             val session: LorittaJsonWebSession =
                 call.sessions.get<LorittaJsonWebSession>() ?: LorittaJsonWebSession.empty()
             val discordAuth = session.getDiscordAuthFromJson(loritta)
@@ -81,6 +80,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                 val storedUserIdentification = session.getUserIdentification(loritta, call)
 
                 val userIdentification = if (code == "from_master") {
+                    logger.info { "Received OAuth2 code redirected from the main instance!" }
                     // Veio do master cluster, vamos apenas tentar autenticar com os dados existentes!
                     storedUserIdentification ?: run {
                         // Okay... mas e se for nulo? Veio do master mas não tem session cache? Como pode??
@@ -94,6 +94,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                         )
                     }
                 } else {
+                    logger.info { "Received OAuth2 code!" }
                     val auth = TemmieDiscordAuth(
                         loritta.config.loritta.discord.applicationId.toString(),
                         loritta.config.loritta.discord.clientSecret,
@@ -102,8 +103,11 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                         listOf("identify", "guilds", "email")
                     )
 
+                    logger.info { "Doing OAuth2 token exchange..." }
                     auth.doTokenExchange()
+                    logger.info { "Getting user identification via OAuth2..." }
                     val userIdentification = auth.getUserIdentification()
+                    logger.info { "User ${userIdentification.id} successfully logged in! Storing it on the session data..." }
                     val forCache = userIdentification.toWebSessionIdentification()
                     call.sessions.set(
                         session.copy(
@@ -134,6 +138,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                     logger.warn { "User ${userIdentification.id} has banned accounts in ${trueIp}! IDs: ${bannedProfiles.joinToString(transform = { it[Profiles.id].toString() })}" } */
 
                 if (state != null) {
+                    logger.info { "Received custom state on ${userIdentification.id} OAuth2 request!" }
                     // state = base 64 encoded JSON
                     val decodedState = Base64.getDecoder().decode(state).toString(Charsets.UTF_8)
                     val jsonState = JsonParser.parseString(decodedState).obj
@@ -145,9 +150,10 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                             loritta.connectionManager.getDomainFromUrl(loritta.config.loritta.website.url)
                         val redirectDomain = loritta.connectionManager.getDomainFromUrl(redirectUrl)
 
-                        if (lorittaDomain == redirectDomain)
+                        if (lorittaDomain == redirectDomain) {
+                            logger.info { "Redirecting ${userIdentification.id} to $redirectUrl... Bye bye!" }
                             redirect(redirectUrl, false)
-                        else
+                        } else
                             logger.warn { "Someone tried to make me redirect to somewhere that isn't my website domain! Tried to redirect to $redirectDomain" }
                     }
                 }
@@ -167,7 +173,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                         }
                     }
 
-                    logger.info { "Received guild $guildId via OAuth2 scope, sending DM to the guild owner..." }
+                    logger.info { "Received guild $guildId via OAuth2 scope, sending DM to ${userIdentification.id}..." }
                     var guildFound = false
                     var tries = 0
                     val maxGuildTries = loritta.config.loritta.website.maxGuildTries
@@ -176,7 +182,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                         val guild = loritta.lorittaShards.getGuildById(guildId)
 
                         if (guild != null) {
-                            logger.info { "Guild ${guild} was successfully found after $tries tries! Yay!!" }
+                            logger.info { "Guild $guild was successfully found after $tries tries! Yay!!" }
 
                             val serverConfig = loritta.getOrCreateServerConfig(guild.idLong)
 
