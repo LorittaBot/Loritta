@@ -163,7 +163,7 @@ abstract class RequiresDiscordLoginLocalizedRoute(loritta: LorittaBot, path: Str
                         val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, guildId.toLong())
 
                         if (cluster.getUrl(loritta) != hostHeader) {
-                            logger.info { "Received guild $guildId via OAuth2 scope, but the guild isn't in this cluster! Redirecting to where the user should be... $cluster" }
+                            logger.info { "Received guild $guildId via OAuth2 scope, but the guild isn't in this cluster! Redirecting to where the user should be... ${cluster.getUrl(loritta)}" }
 
                             // Vamos redirecionar!
                             redirect(
