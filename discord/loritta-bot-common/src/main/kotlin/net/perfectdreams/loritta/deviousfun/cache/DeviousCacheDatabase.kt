@@ -130,7 +130,7 @@ class DeviousCacheDatabase(
 
         val time = measureTime {
             transaction(Dispatchers.IO, database) {
-                logger.info { "On shard ${dirtyUsers.size} dirty users" }
+                logger.info { "${dirtyUsers.size} dirty users" }
                 logger.info { "${removedMembers.size} removed members" }
                 logger.info { "${dirtyMembers.size} dirty members" }
                 logger.info { "${removedRoles.size} removed roles" }
