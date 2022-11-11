@@ -15,8 +15,7 @@ import net.perfectdreams.loritta.deviousfun.tables.*
 import net.perfectdreams.loritta.deviousfun.utils.DeviousGuildDataWrapper
 import net.perfectdreams.loritta.deviousfun.utils.GuildAndUserPair
 import org.jetbrains.exposed.sql.*
-import java.util.concurrent.ConcurrentHashMap
-import java.util.concurrent.ConcurrentLinkedQueue
+import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.util.concurrent.LinkedBlockingQueue
 import kotlin.concurrent.thread
 import kotlin.time.Duration.Companion.seconds
@@ -29,6 +28,28 @@ class DeviousCacheDatabase(
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
+
+        val cacheTables = listOf(
+            Users,
+            Guilds,
+            GuildChannels,
+            GuildMembers,
+            GuildRoles,
+            GuildEmojis,
+            GuildVoiceStates,
+            GatewaySessions
+        )
+
+        /**
+         * Creates a database for entity persistence
+         *
+         * The parameters are used to improve throughput
+         * * journal_mode = WAL improves performance
+         * * synchronous = We don't care about data loss
+         * * temp_store = We don't want to store indexes in memory, we already have the data stored in memory
+         * * locking_mode = reduces the number of syscalls required, only one process (the Loritta instance) will access the database
+         */
+        fun createCacheDatabase(shardId: Int) = Database.connect("jdbc:sqlite:cache/lori_devious_shard_$shardId.db?journal_mode=wal&synchronous=off&mmap_size=30000000000&temp_store=0&locking_mode=exclusive")
     }
 
     private val dirtyEntities = DirtyEntitiesWrapper()
@@ -37,9 +58,19 @@ class DeviousCacheDatabase(
     private val queuedActions = LinkedBlockingQueue<Job>()
 
     /**
+     * Checks if this DeviousCacheManager instance is active
+     *
+     * If this is false, all cache requests should fail
+     */
+    var isActive = true
+
+    /**
      * Queues an action to be added to the [DirtyEntitiesWrapper], access synchronized via [mutex].
      */
     fun queue(action: DirtyEntitiesWrapper.() -> (Unit)) {
+        if (!isActive)
+            return
+
         val job = scope.launch {
             mutex.withLock {
                 action.invoke(dirtyEntities)
@@ -99,7 +130,7 @@ class DeviousCacheDatabase(
 
         val time = measureTime {
             transaction(Dispatchers.IO, database) {
-                logger.info { "${dirtyUsers.size} dirty users" }
+                logger.info { "On shard ${dirtyUsers.size} dirty users" }
                 logger.info { "${removedMembers.size} removed members" }
                 logger.info { "${dirtyMembers.size} dirty members" }
                 logger.info { "${removedRoles.size} removed roles" }
@@ -112,15 +143,19 @@ class DeviousCacheDatabase(
                 logger.info { "${dirtyGuilds.size} dirty guilds" }
                 logger.info { "${removedVoiceStates.size} removed voice states" }
                 logger.info { "${dirtyVoiceStates.size} dirty voice states" }
-                val gatewaySessions = cacheManager.gatewaySessions.toMap()
-                logger.info { "${gatewaySessions.size} gateway sessions" }
+                val gatewaySession = cacheManager.gatewaySession?.copy()
+                if (gatewaySession != null) {
+                    logger.info { "Persisting gateway session with sequence ${gatewaySession.sequence}" }
+                } else {
+                    logger.info { "Not persisting gateway session because it is null" }
+                }
 
-                if (gatewaySessions.isNotEmpty()) {
-                    GatewaySessions.batchUpsert(gatewaySessions.entries, GatewaySessions.id) { it, data ->
-                        it[GatewaySessions.id] = data.key
-                        it[GatewaySessions.sessionId] = data.value.sessionId
-                        it[GatewaySessions.resumeGatewayUrl] = data.value.resumeGatewayUrl
-                        it[GatewaySessions.sequence] = data.value.sequence
+                if (gatewaySession != null) {
+                    GatewaySessions.upsert(GatewaySessions.id) {
+                        it[GatewaySessions.id] = cacheManager.deviousGateway.shardId
+                        it[GatewaySessions.sessionId] = gatewaySession.sessionId
+                        it[GatewaySessions.resumeGatewayUrl] = gatewaySession.resumeGatewayUrl
+                        it[GatewaySessions.sequence] = gatewaySession.sequence
                     }
                 }
 
@@ -210,6 +245,9 @@ class DeviousCacheDatabase(
 
         Runtime.getRuntime().addShutdownHook(
             thread(false) {
+                if (!isActive)
+                    return@thread
+
                 logger.info { "Shutting down DeviousCacheDatabase..." }
                 logger.info { "Stopping pending queue recurring job..." }
                 pendingQueues.cancel()
@@ -226,6 +264,25 @@ class DeviousCacheDatabase(
                 logger.info { "Successfully persisted all data during shutdown! :3" }
             }
         )
+    }
+
+    suspend fun stop() {
+        if (!isActive)
+            return
+
+        isActive = false
+
+        // Shutdown
+        scope.cancel()
+        dirtyEntities.users.clear()
+        dirtyEntities.members.clear()
+        dirtyEntities.roles.clear()
+        dirtyEntities.emojis.clear()
+        dirtyEntities.voiceStates.clear()
+        dirtyEntities.guildChannels.clear()
+        dirtyEntities.guilds.clear()
+
+        TransactionManager.closeAndUnregister(database)
     }
 
     class DirtyEntitiesWrapper {

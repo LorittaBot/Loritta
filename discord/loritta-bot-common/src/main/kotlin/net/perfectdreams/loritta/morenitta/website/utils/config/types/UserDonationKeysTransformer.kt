@@ -3,7 +3,6 @@ package net.perfectdreams.loritta.morenitta.website.utils.config.types
 import com.github.salomonbrys.kotson.jsonObject
 import com.github.salomonbrys.kotson.toJsonArray
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.dao.DonationKey
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
@@ -39,9 +38,10 @@ class UserDonationKeysTransformer(val loritta: LorittaBot) : ConfigTransformer {
             }.distinct()
         }
 
+        // TODO: This needs to query other clusters
         val jobs = guildIdsToBeQueried.map {
             GlobalScope.async {
-                serverInfo[it] = loritta.deviousFun.retrieveGuildById(Snowflake(it))
+                serverInfo[it] = loritta.deviousShards.getGuildById(Snowflake(it))
             }
         }
 

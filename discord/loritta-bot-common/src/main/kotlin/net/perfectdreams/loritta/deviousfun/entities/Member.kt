@@ -3,14 +3,15 @@ package net.perfectdreams.loritta.deviousfun.entities
 import dev.kord.common.entity.Permission
 import dev.kord.common.entity.Snowflake
 import kotlinx.datetime.toJavaInstant
-import net.perfectdreams.loritta.deviousfun.DeviousFun
 import net.perfectdreams.loritta.deviouscache.data.DeviousMemberData
 import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
+import net.perfectdreams.loritta.deviousfun.DeviousShard
+import net.perfectdreams.loritta.deviousfun.PermissionsWrapper
 import net.perfectdreams.loritta.deviousfun.utils.PermissionInteractionUtils
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
 
-class Member(val deviousFun: DeviousFun, val member: DeviousMemberData, val guild: Guild, val user: User) : Mentionable,
+class Member(val deviousShard: DeviousShard, val member: DeviousMemberData, val guild: Guild, val user: User) : Mentionable,
     IdentifiableSnowflake {
     override val idSnowflake: Snowflake
         get() = user.idSnowflake
@@ -33,24 +34,33 @@ class Member(val deviousFun: DeviousFun, val member: DeviousMemberData, val guil
         get() = "<@${idSnowflake}>"
 
     suspend fun hasPermission(vararg permissions: Permission): Boolean {
-        return deviousFun.loritta.cache.getLazyCachedPermissions(guild.idSnowflake, user.idSnowflake)
-            .hasPermission(*permissions)
+        // Yes.
+        // *refuses to elaborate*
+        if (guild.ownerIdSnowflake == idSnowflake)
+            return true
+
+        return getPermissions().hasPermission(*permissions)
     }
 
     suspend fun hasPermission(channel: Channel, vararg permissions: Permission): Boolean {
-        return deviousFun.loritta.cache.getLazyCachedPermissions(
-            guild.idSnowflake,
-            channel.idSnowflake,
-            user.idSnowflake
-        ).hasPermission(*permissions)
+        // Yes.
+        // *refuses to elaborate*
+        if (guild.ownerIdSnowflake == idSnowflake)
+            return true
+
+        return getPermissions(channel).hasPermission(*permissions)
     }
 
     suspend fun hasPermission(channel: Channel, permissions: List<Permission>) =
         hasPermission(channel, *permissions.toTypedArray())
 
-    suspend fun getPermissions(channel: Channel) =
-        deviousFun.loritta.cache.getLazyCachedPermissions(guild.idSnowflake, channel.idSnowflake, user.idSnowflake)
-            .retrievePermissions()
+    suspend fun getPermissions(): PermissionsWrapper {
+        return PermissionsWrapper(deviousShard.loritta.cache.getPermissions(guild.idSnowflake, user.idSnowflake).permissions)
+    }
+
+    suspend fun getPermissions(channel: Channel): PermissionsWrapper {
+        return PermissionsWrapper(deviousShard.loritta.cache.getPermissions(guild.idSnowflake, user.idSnowflake, channel.idSnowflake).permissions)
+    }
 
     suspend fun canInteract(member: Member): Boolean {
         return PermissionInteractionUtils.canInteract(guild, listOf(this.user), listOf(member.user))

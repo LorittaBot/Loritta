@@ -19,7 +19,7 @@ import net.perfectdreams.loritta.deviousfun.utils.DeviousUserUtils
 import net.perfectdreams.loritta.morenitta.utils.MarkdownSanitizer
 
 class Message(
-    val deviousFun: DeviousFun,
+    val deviousShard: DeviousShard,
     val channel: Channel,
     val author: User,
     val memberOrNull: Member?,
@@ -39,7 +39,7 @@ class Message(
         get() = memberOrNull ?: error("This message was not sent in a guild!")
     val attachments: List<Attachment>
         get() = message.attachments.map {
-            Attachment(deviousFun, it)
+            Attachment(deviousShard, it)
         }
     val contentRaw: String
         get() = message.content
@@ -56,7 +56,7 @@ class Message(
         get() = DISCORD_EMOJI_REGEX.findAll(contentRaw)
             .map {
                 GuildEmoteFromMessage(
-                    deviousFun,
+                    deviousShard,
                     Snowflake(it.groupValues[3]),
                     it.groupValues[2],
                     it.groupValues[1] == "a"
@@ -68,7 +68,7 @@ class Message(
         get() = emptyList()
     val mentionedUsers: List<User>
         get() = message.mentions.map {
-            User(deviousFun, it.id, DeviousUserData.from(it))
+            User(deviousShard, it.id, DeviousUserData.from(it))
         }
     val mentionedMembers: List<Member>
         get() = message.mentions
@@ -76,10 +76,10 @@ class Message(
                 val memberData = it.member.value ?: return@mapNotNull null
 
                 Member(
-                    deviousFun,
+                    deviousShard,
                     DeviousMemberData.from(memberData),
                     guild,
-                    User(deviousFun, it.id, DeviousUserData.from(it))
+                    User(deviousShard, it.id, DeviousUserData.from(it))
                 )
             }
     val mentionedRoles: List<Role>
@@ -90,7 +90,7 @@ class Message(
     val reactions: List<MessageReaction>
         get() = message.reactions.map {
             MessageReaction(
-                deviousFun,
+                deviousShard,
                 message.channelId,
                 message.id,
                 it.emoji.let {
@@ -125,16 +125,16 @@ class Message(
     suspend fun retrieveReferencedMessage(): Message? {
         val fragmentData = message.referencedMessage ?: return null
 
-        val retrievedMessage = deviousFun.loritta.rest.channel.getMessage(channel.idSnowflake, Snowflake(id))
-        val user = deviousFun.cacheManager.createUser(
+        val retrievedMessage = deviousShard.loritta.rest.channel.getMessage(channel.idSnowflake, Snowflake(id))
+        val user = deviousShard.getCacheManager().createUser(
             retrievedMessage.author,
             !DeviousUserUtils.isSenderWebhookOrSpecial(retrievedMessage)
         )
         // The member seems to be null in a message reference
-        val member = guildOrNull?.let { deviousFun.retrieveMemberById(it, retrievedMessage.author.id) }
+        val member = guildOrNull?.let { deviousShard.retrieveMemberById(it, retrievedMessage.author.id) }
 
         return Message(
-            deviousFun,
+            deviousShard,
             channel,
             user,
             member,
@@ -144,11 +144,11 @@ class Message(
     }
 
     suspend fun editMessage(content: String): Message {
-        val newMessage = deviousFun.loritta.rest.channel.editMessage(channel.idSnowflake, idSnowflake) {
+        val newMessage = deviousShard.loritta.rest.channel.editMessage(channel.idSnowflake, idSnowflake) {
             this.content = content
         }
         return Message(
-            deviousFun,
+            deviousShard,
             channel,
             author,
             memberOrNull,
@@ -158,7 +158,7 @@ class Message(
     }
 
     suspend fun editMessage(message: DeviousMessage): Message {
-        val newMessage = deviousFun.loritta.rest.channel.editMessage(channel.idSnowflake, idSnowflake) {
+        val newMessage = deviousShard.loritta.rest.channel.editMessage(channel.idSnowflake, idSnowflake) {
             this.content = message.contentRaw
             this.allowedMentions = message.allowedMentionsBuilder
 
@@ -196,9 +196,9 @@ class Message(
         val member = guild?.retrieveMemberById(authorId.toLong())
 
         return Message(
-            deviousFun,
+            deviousShard,
             channel,
-            deviousFun.retrieveUserById(newMessage.author.id),
+            deviousShard.retrieveUserById(newMessage.author.id),
             member,
             guildOrNull,
             DeviousMessageFragmentData.from(newMessage)
@@ -212,28 +212,28 @@ class Message(
     )
 
     suspend fun addReaction(reaction: String) {
-        deviousFun.loritta.rest.channel.createReaction(channel.idSnowflake, idSnowflake, reaction)
+        deviousShard.loritta.rest.channel.createReaction(channel.idSnowflake, idSnowflake, reaction)
     }
 
     suspend fun clearReactions() {
-        deviousFun.loritta.rest.channel.deleteAllReactions(channel.idSnowflake, idSnowflake)
+        deviousShard.loritta.rest.channel.deleteAllReactions(channel.idSnowflake, idSnowflake)
     }
 
     suspend fun delete() {
-        deviousFun.loritta.rest.channel.deleteMessage(channel.idSnowflake, idSnowflake)
+        deviousShard.loritta.rest.channel.deleteMessage(channel.idSnowflake, idSnowflake)
     }
 
     fun isFromType(type: ChannelType) = channelType == type
 
     suspend fun refresh(): Message {
         return Message(
-            deviousFun,
+            deviousShard,
             channel,
             author,
             memberOrNull,
             guildOrNull,
             DeviousMessageFragmentData.from(
-                deviousFun.loritta.rest.channel.getMessage(
+                deviousShard.loritta.rest.channel.getMessage(
                     channel.idSnowflake,
                     idSnowflake
                 )

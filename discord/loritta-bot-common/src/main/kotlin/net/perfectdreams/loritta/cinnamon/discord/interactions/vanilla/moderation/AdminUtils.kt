@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.common.utils.Placeholders
 import net.perfectdreams.loritta.common.utils.PunishmentAction
 import net.perfectdreams.loritta.common.utils.text.TextUtils.shortenWithEllipsis
+import net.perfectdreams.loritta.deviousfun.PermissionsWrapper
 
 object AdminUtils {
     private val USER_MENTION_REGEX = Regex("<@!?(\\d+)>")
@@ -153,8 +154,7 @@ object AdminUtils {
 
             if (sendPunishmentToPunishmentLog && punishmentLogChannelId != null && punishmentMessageForType != null) {
                 if (canTalkInPunishmentLogChannel == null) {
-                    val cachedLorittaPermissions =
-                        loritta.cache.getLazyCachedLorittaPermissions(guild.id, punishmentLogChannelId)
+                    val cachedLorittaPermissions = PermissionsWrapper(loritta.cache.getLorittaPermissions(guild.id, punishmentLogChannelId).permissions)
                     canTalkInPunishmentLogChannel = cachedLorittaPermissions.canTalk()
                 }
 

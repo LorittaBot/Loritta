@@ -136,7 +136,7 @@ class InviteInfoCommand(loritta: LorittaBot) : AbstractCommand(
                     )
                 }
 
-                val discordGuild = loritta.deviousFun.getGuildById(id)
+                val discordGuild = loritta.deviousShards.getGuildById(id)
 
                 if (discordGuild != null) {
                     embed.setFooter("\uD83D\uDE0A ${context.locale["commands.command.inviteinfo.inThisServer"]}")

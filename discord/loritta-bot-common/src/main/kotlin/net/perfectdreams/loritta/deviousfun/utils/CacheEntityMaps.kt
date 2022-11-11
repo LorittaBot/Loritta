@@ -12,6 +12,5 @@ data class CacheEntityMaps(
     val emotes: SnowflakeMap<SnowflakeMap<DeviousGuildEmojiData>>,
     val roles: SnowflakeMap<SnowflakeMap<DeviousRoleData>>,
     val members: SnowflakeMap<SnowflakeMap<DeviousMemberData>>,
-    val voiceStates: SnowflakeMap<SnowflakeMap<DeviousVoiceStateData>>,
-    val gatewaySessions: ConcurrentHashMap<Int, DeviousGatewaySession>
+    val voiceStates: SnowflakeMap<SnowflakeMap<DeviousVoiceStateData>>
 )

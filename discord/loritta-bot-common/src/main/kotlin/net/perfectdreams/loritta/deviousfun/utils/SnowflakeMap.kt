@@ -35,6 +35,8 @@ class SnowflakeMap<T>(val expected: Int) {
 
     fun getOrPut(id: LightweightSnowflake, defaultValue: () -> T) = backedMap.getOrPut(id.value.toLong(), defaultValue)
 
+    fun clear() = backedMap.clear()
+
     fun toMap() = backedMap.toMap().mapKeys { LightweightSnowflake(it.key) }
 
     class SnowflakeMapIterator<T>(val snowflakeMap: SnowflakeMap<T>) : Iterator<Pair<LightweightSnowflake, T>> {

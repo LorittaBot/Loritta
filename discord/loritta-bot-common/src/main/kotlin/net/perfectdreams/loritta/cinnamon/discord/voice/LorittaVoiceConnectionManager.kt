@@ -37,7 +37,7 @@ class LorittaVoiceConnectionManager(val loritta: LorittaBot) {
         guildId: Snowflake,
         channelId: Snowflake
     ): LorittaVoiceConnection =
-        getOrCreateVoiceConnection(loritta.gatewayManager.getGatewayForGuild(guildId), guildId, channelId)
+        getOrCreateVoiceConnection(loritta.deviousShards.getGatewayForGuild(guildId), guildId, channelId)
 
     /**
      * Gets or creates a [LorittaVoiceConnection] on the [guildId] and [channelId]

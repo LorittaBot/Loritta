@@ -190,7 +190,7 @@ class UserInfoCommand(loritta: LorittaBot) : AbstractCommand(
                 )
 
                 // TODO - DeviousFun
-                val permissions = member.getPermissions(context.message.textChannel).values.toLocalized()
+                val permissions = member.getPermissions(context.message.textChannel).permissions.values.toLocalized()
                     ?.joinToString(", ", transform = { "`${context.i18nContext.get(it)}`" })
                 addField("\uD83D\uDEE1 Permissões", permissions ?: "", false)
             }

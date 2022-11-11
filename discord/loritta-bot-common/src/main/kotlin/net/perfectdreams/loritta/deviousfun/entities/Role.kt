@@ -4,10 +4,10 @@ import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.deviouscache.data.DeviousRoleData
 import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
-import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.DeviousShard
 import java.awt.Color
 
-class Role(val deviousFun: DeviousFun, val guild: Guild, val role: DeviousRoleData) : IdentifiableSnowflake {
+class Role(val deviousShard: DeviousShard, val guild: Guild, val role: DeviousRoleData) : IdentifiableSnowflake {
     override val idSnowflake: Snowflake
         get() = role.id.toKordSnowflake()
     val name: String

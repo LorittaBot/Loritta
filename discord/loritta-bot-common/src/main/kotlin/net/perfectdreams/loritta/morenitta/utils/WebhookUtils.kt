@@ -26,7 +26,7 @@ object WebhookUtils {
         if (!textChannel.guild.retrieveSelfMember().hasPermission(Permission.ManageWebhooks))
             return null
 
-        val selfUser = channel.deviousFun.retrieveSelfUser()
+        val selfUser = channel.deviousShard.retrieveSelfUser()
         val webhookList = textChannel.guild.retrieveWebhooks()
             .filter {
                 // Webhooks created by users or bots are INCOMING and we only want to get webhooks created by Loritta!

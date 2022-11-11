@@ -31,6 +31,7 @@ import net.perfectdreams.loritta.common.utils.LorittaPermission
 import net.perfectdreams.loritta.common.utils.text.TextUtils.stripCodeBackticks
 import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
 import net.perfectdreams.loritta.deviouscache.data.toLightweightSnowflake
+import net.perfectdreams.loritta.deviousfun.PermissionsWrapper
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import java.util.concurrent.TimeUnit
@@ -184,7 +185,7 @@ class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
 
         // Para evitar que use a API do Discord para pegar os invites do servidor toda hora, nós iremos *apenas* pegar caso seja realmente
         // necessário, e, ao pegar, vamos guardar no cache de invites
-        val lorittaPermissions = m.cache.getLazyCachedLorittaPermissions(guildId, channelId)
+        val lorittaPermissions = PermissionsWrapper(m.cache.getLorittaPermissions(guildId, channelId).permissions)
 
         val allowedInviteCodes = mutableSetOf<String>()
         if (inviteBlockerConfig.whitelistServerInvites) {

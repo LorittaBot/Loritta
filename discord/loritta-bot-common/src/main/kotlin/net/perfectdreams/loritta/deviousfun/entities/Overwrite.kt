@@ -4,9 +4,9 @@ import dev.kord.common.entity.Overwrite
 import dev.kord.common.entity.OverwriteType
 import dev.kord.rest.builder.channel.ChannelPermissionModifyBuilder
 import dev.kord.rest.service.editRolePermission
-import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.DeviousShard
 
-class Overwrite(val deviousFun: DeviousFun, val channel: Channel, val overwrite: Overwrite) {
+class Overwrite(val deviousShard: DeviousShard, val channel: Channel, val overwrite: Overwrite) {
     val id by overwrite::id
     val deny by overwrite::deny
     val allow by overwrite::allow
@@ -15,7 +15,7 @@ class Overwrite(val deviousFun: DeviousFun, val channel: Channel, val overwrite:
     suspend fun edit(builder: ChannelPermissionModifyBuilder.() -> (Unit)) {
         when (overwrite.type) {
             OverwriteType.Member -> TODO()
-            OverwriteType.Role -> deviousFun.loritta.rest.channel.editRolePermission(
+            OverwriteType.Role -> deviousShard.loritta.rest.channel.editRolePermission(
                 channel.idSnowflake,
                 overwrite.id,
                 builder

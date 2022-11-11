@@ -7,16 +7,15 @@ import dev.kord.gateway.Ready
 import dev.kord.gateway.ratelimit.IdentifyRateLimiter
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onSubscription
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withTimeoutOrNull
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.upsert
+import net.perfectdreams.loritta.cinnamon.pudding.Pudding
 import net.perfectdreams.loritta.cinnamon.pudding.tables.ConcurrentLoginBuckets
-import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.select
@@ -32,29 +31,33 @@ import kotlin.time.Duration.Companion.seconds
  * https://discord.com/developers/docs/topics/gateway#sharding-for-large-bots
  */
 class ParallelIdentifyRateLimiter(
-    private val loritta: LorittaBot,
     private val shardId: Int,
-    val bucketId: Int
+    private val bucketId: Int,
+    override val maxConcurrency: Int,
+    private val pudding: Pudding,
+    private val gatewayStatus: MutableStateFlow<DeviousGateway.Status>,
+    private val identifyLock: Mutex
 ) : IdentifyRateLimiter {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     private val random = Random.Default
-    override val maxConcurrency: Int
-        get() = loritta.config.loritta.discord.maxConcurrency
 
     override suspend fun consume(shardId: Int, events: SharedFlow<Event>) {
+        // This is used to lock idenitfies until Loritta is fully booted
+        identifyLock.withLock {}
+
         // PostgreSQL should handle conflicts by itself, so if two instances try to edit the same column at the same time, a concurrent modification exception will happen
         // If randomKey == null, then this bucket is already being used
         // If randomKey != null, then this bucket isn't being used
-        val randomKey = loritta.newSuspendedTransaction {
+        val randomKey = pudding.transaction {
             val currentStatus = ConcurrentLoginBuckets.select {
                 ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.lockedAt greaterEq Instant.now().minusSeconds(60))
             }.firstOrNull()
 
             if (currentStatus != null) {
-                return@newSuspendedTransaction null
+                return@transaction null
             } else {
                 val newRandomKey = Base64.getEncoder().encodeToString(random.nextBytes(20))
 
@@ -64,15 +67,14 @@ class ParallelIdentifyRateLimiter(
                     it[ConcurrentLoginBuckets.lockedAt] = Instant.now()
                 }
 
-                return@newSuspendedTransaction newRandomKey
+                return@transaction newRandomKey
             }
         }
 
         if (randomKey != null) {
             // We need to create a new coroutine to let the gateway login
             GlobalScope.launch {
-                val gateway = loritta.gatewayManager.getGatewayForShard(shardId)
-                gateway.status.value = DeviousGateway.Status.IDENTIFYING
+                gatewayStatus.value = DeviousGateway.Status.IDENTIFYING
 
                 // Acquired lock! We can login, yay!! :3
                 logger.info { "Successfully acquired lock for bucket $bucketId (shard $shardId)!" }
@@ -92,7 +94,7 @@ class ParallelIdentifyRateLimiter(
 
                 logger.info { "Trying to release lock for bucket $bucketId (shard $shardId)... - Successfully logged in? ${result is Ready}" }
 
-                val deletedBucketsCount = loritta.newSuspendedTransaction {
+                val deletedBucketsCount = pudding.transaction {
                     ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.randomKey eq randomKey) }
                 }
 
@@ -104,8 +106,7 @@ class ParallelIdentifyRateLimiter(
         } else {
             // Couldn't acquire lock, let's wait...
             logger.info { "Couldn't acquire lock for bucket $bucketId (shard $shardId), let's wait and try again later..." }
-            val gateway = loritta.gatewayManager.getGatewayForShard(shardId)
-            gateway.status.value = DeviousGateway.Status.WAITING_FOR_BUCKET
+            gatewayStatus.value = DeviousGateway.Status.WAITING_FOR_BUCKET
             delay(1_000)
             // And try again!
             return consume(shardId, events)

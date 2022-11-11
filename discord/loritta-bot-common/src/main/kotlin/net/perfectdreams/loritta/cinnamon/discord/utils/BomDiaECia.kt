@@ -5,6 +5,7 @@ import dev.kord.common.entity.Snowflake
 import kotlinx.coroutines.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.tables.bomdiaecia.BomDiaECiaMatches
+import net.perfectdreams.loritta.deviousfun.PermissionsWrapper
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.insert
 import java.time.Instant
@@ -316,7 +317,7 @@ class BomDiaECia(private val m: LorittaBot) {
         activeTextChannels.forEach { (channelId, info) ->
             // We need to get the information from the database
             // TODO: Application ID is not *actually* Loritta's User ID! Some bots do not have the same app ID for the bot ID
-            val permissions = m.cache.getLazyCachedLorittaPermissions(info.guildId, channelId)
+            val permissions = PermissionsWrapper(m.cache.getLorittaPermissions(info.guildId, channelId).permissions)
 
             logger.info { "Permissions for ${channelId}: $permissions" }
 

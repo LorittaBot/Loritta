@@ -1,15 +1,9 @@
 package net.perfectdreams.loritta.morenitta.utils.debug
 
 import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
-import kotlinx.coroutines.debug.DebugProbes
-import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import java.io.File
-import java.io.PrintStream
-import java.lang.management.ManagementFactory
 import java.util.concurrent.ThreadPoolExecutor
-import kotlin.concurrent.thread
 
 object DebugLog {
     private val logger = KotlinLogging.logger {}
@@ -33,14 +27,15 @@ object DebugLog {
         // TODO - DeviousFun
         // logger.info("Global Rate Limit Hits in the last 10m: ${loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute()} / ${loritta.config.loritta.discord.requestLimiter.maxRequestsPer10Minutes}")
         logger.info { "> Cache Stats" }
-        logger.info { "Users: ${loritta.deviousFun.cacheManager.users.size} users" }
-        logger.info { "Guilds: ${loritta.deviousFun.cacheManager.guilds.size} guilds" }
-        logger.info { "Guild Channels: ${loritta.deviousFun.cacheManager.guildChannels.size} channels (${loritta.deviousFun.cacheManager.guildChannels.values.sumOf { it.size }} total)" }
-        logger.info { "Channels to Guilds: ${loritta.deviousFun.cacheManager.channelsToGuilds.size}"}
-        logger.info { "Guild Members: ${loritta.deviousFun.cacheManager.members.size} members (${loritta.deviousFun.cacheManager.members.values.sumOf { it.size }} total)" }
-        logger.info { "Guild Roles: ${loritta.deviousFun.cacheManager.roles.size} guild roles (${loritta.deviousFun.cacheManager.roles.values.sumOf { it.size }} total)" }
-        logger.info { "Guild Emojis: ${loritta.deviousFun.cacheManager.emotes.size} guild emojis (${loritta.deviousFun.cacheManager.emotes.values.sumOf { it.size }} total)" }
-        logger.info { "Guild Voice States: ${loritta.deviousFun.cacheManager.voiceStates.size} guild voice states (${loritta.deviousFun.cacheManager.voiceStates.values.sumOf { it.size }} total)" }
+        // TODO: Fix this
+        /* logger.info { "Users: ${loritta.deviousShard.cacheManager.users.size} users" }
+        logger.info { "Guilds: ${loritta.deviousShard.cacheManager.guilds.size} guilds" }
+        logger.info { "Guild Channels: ${loritta.deviousShard.cacheManager.guildChannels.size} channels (${loritta.deviousShard.cacheManager.guildChannels.values.sumOf { it.size }} total)" }
+        logger.info { "Channels to Guilds: ${loritta.deviousShard.cacheManager.channelsToGuilds.size}"}
+        logger.info { "Guild Members: ${loritta.deviousShard.cacheManager.members.size} members (${loritta.deviousShard.cacheManager.members.values.sumOf { it.size }} total)" }
+        logger.info { "Guild Roles: ${loritta.deviousShard.cacheManager.roles.size} guild roles (${loritta.deviousShard.cacheManager.roles.values.sumOf { it.size }} total)" }
+        logger.info { "Guild Emojis: ${loritta.deviousShard.cacheManager.emotes.size} guild emojis (${loritta.deviousShard.cacheManager.emotes.values.sumOf { it.size }} total)" }
+        logger.info { "Guild Voice States: ${loritta.deviousShard.cacheManager.voiceStates.size} guild voice states (${loritta.deviousShard.cacheManager.voiceStates.values.sumOf { it.size }} total)" } */
         logger.info("> Command Stuff")
         logger.info("commandManager.commandMap.size: ${loritta.legacyCommandManager.commandMap.size}")
         logger.info("messageInteractionCache.size: ${loritta.messageInteractionCache.size}")

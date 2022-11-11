@@ -275,6 +275,27 @@ class LorittaWebsite(
                     file(it.name, it)
                 }
 
+                // This is a workaround to redirect to the proper path if this is a path that we don't know about
+                // Example: /support to /br/support
+                get("/{stuff}") {
+                    val acceptLanguage = call.request.header("Accept-Language") ?: "en-US"
+                    val ranges = Locale.LanguageRange.parse(acceptLanguage).reversed()
+                    var localeId = "en-us"
+                    for (range in ranges) {
+                        localeId = range.range.toLowerCase()
+                        if (localeId == "pt-br" || localeId == "pt") {
+                            localeId = "default"
+                        }
+                        if (localeId == "en") {
+                            localeId = "en-us"
+                        }
+                    }
+
+                    val locale = loritta.localeManager.getLocaleById(localeId)
+
+                    redirect("/${locale.path}${call.request.path()}")
+                }
+
                 for (route in routes) {
                     if (route is LocalizedRoute) {
                         val originalPath = route.originalPath

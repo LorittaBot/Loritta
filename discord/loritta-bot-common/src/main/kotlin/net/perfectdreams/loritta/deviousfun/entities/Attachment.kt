@@ -2,9 +2,9 @@ package net.perfectdreams.loritta.deviousfun.entities
 
 import dev.kord.common.entity.DiscordAttachment
 import dev.kord.common.entity.optional.value
-import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.DeviousShard
 
-class Attachment(val deviousFun: DeviousFun, val attachment: DiscordAttachment) {
+class Attachment(val deviousShard: DeviousShard, val attachment: DiscordAttachment) {
     val url: String
         get() = attachment.url
 

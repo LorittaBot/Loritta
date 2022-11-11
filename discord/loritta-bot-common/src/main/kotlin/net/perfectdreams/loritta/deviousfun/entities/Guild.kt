@@ -9,13 +9,13 @@ import dev.kord.rest.request.KtorRequestException
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviouscache.data.*
-import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.DeviousShard
 import net.perfectdreams.loritta.deviousfun.utils.GuildKey
 import net.perfectdreams.loritta.morenitta.utils.SimpleImageInfo
 import kotlin.time.Duration.Companion.days
 
 class Guild(
-    val deviousFun: DeviousFun,
+    val deviousShard: DeviousShard,
     val guild: DeviousGuildData,
     private val cacheWrapper: CacheWrapper
 ) : IdentifiableSnowflake {
@@ -65,55 +65,44 @@ class Guild(
         get() = bannerId?.let { "https://cdn.discordapp.com/banners/$idSnowflake/$it.png" }
 
     suspend fun leave() {
-        deviousFun.loritta.rest.user.leaveGuild(idSnowflake)
+        deviousShard.loritta.rest.user.leaveGuild(idSnowflake)
     }
 
     suspend fun isMember(user: User): Boolean = getMember(user) != null
-    suspend fun getMember(user: User) = deviousFun.getMemberByUser(this, user)
+    suspend fun getMember(user: User) = deviousShard.getMemberByUser(this, user)
 
     suspend fun retrieveSelfMember() =
-        deviousFun.retrieveMemberById(this@Guild, deviousFun.loritta.config.loritta.discord.applicationId)
+        deviousShard.retrieveMemberById(this@Guild, deviousShard.loritta.config.loritta.discord.applicationId)
 
     fun getRoleById(id: String) = roles.firstOrNull { it.id == id }
     fun getRoleById(id: Long) = roles.firstOrNull { it.idLong == id }
     fun getRolesByName(name: String, ignoreCase: Boolean) = roles.filter { it.name.equals(name, ignoreCase) }
 
-    suspend fun selfMemberHasPermission(vararg permissions: Permission): Boolean {
-        return deviousFun.loritta.cache.getLazyCachedPermissions(
-            idSnowflake,
-            deviousFun.loritta.config.loritta.discord.applicationId
-        ).hasPermission(*permissions)
-    }
+    suspend fun selfMemberHasPermission(vararg permissions: Permission) = retrieveSelfMember().hasPermission(*permissions)
 
-    suspend fun selfMemberHasPermission(channel: Channel, vararg permissions: Permission): Boolean {
-        return deviousFun.loritta.cache.getLazyCachedPermissions(
-            idSnowflake,
-            channel.idSnowflake,
-            deviousFun.loritta.config.loritta.discord.applicationId
-        ).hasPermission(*permissions)
-    }
+    suspend fun selfMemberHasPermission(channel: Channel, vararg permissions: Permission) = retrieveSelfMember().hasPermission(channel, *permissions)
 
-    suspend fun retrieveOwner() = deviousFun.retrieveMemberById(this, ownerIdSnowflake)
+    suspend fun retrieveOwner() = deviousShard.retrieveMemberById(this, ownerIdSnowflake)
 
     suspend fun retrieveMembers(): List<Member> {
         val lightweightSnowflake = idSnowflake.toLightweightSnowflake()
 
-        deviousFun.cacheManager.withLock(GuildKey(lightweightSnowflake)) {
+        deviousShard.getCacheManager().withLock(GuildKey(lightweightSnowflake)) {
             logger.info { "Retrieving members of guild ${guild.id}..." }
 
-            val cachedMembers = deviousFun.cacheManager.members[lightweightSnowflake] ?: return emptyList()
+            val cachedMembers = deviousShard.getCacheManager().members[lightweightSnowflake] ?: return emptyList()
             val members = mutableListOf<Member>()
 
             for ((id, member) in cachedMembers) {
-                val user = deviousFun.cacheManager.users[id] ?: continue
+                val user = deviousShard.getCacheManager().users[id] ?: continue
 
                 members.add(
                     Member(
-                        deviousFun,
+                        deviousShard,
                         member,
                         this,
                         User(
-                            deviousFun,
+                            deviousShard,
                             id.toKordSnowflake(),
                             user
                         )
@@ -128,25 +117,25 @@ class Guild(
     suspend fun retrieveMembersWithRoles(vararg roles: Role): List<Member> {
         val lightweightSnowflake = idSnowflake.toLightweightSnowflake()
 
-        deviousFun.cacheManager.withLock(GuildKey(lightweightSnowflake)) {
+        deviousShard.getCacheManager().withLock(GuildKey(lightweightSnowflake)) {
             logger.info { "Retrieving members of guild ${guild.id} that have the role ${roles}..." }
 
-            val cachedMembers = deviousFun.cacheManager.members[lightweightSnowflake] ?: return emptyList()
+            val cachedMembers = deviousShard.getCacheManager().members[lightweightSnowflake] ?: return emptyList()
             val members = mutableListOf<Member>()
 
             for ((id, member) in cachedMembers) {
                 if (!member.roles.containsAll(roles.map { it.idSnowflake.toLightweightSnowflake() }))
                     continue
 
-                val user = deviousFun.cacheManager.users[id] ?: continue
+                val user = deviousShard.getCacheManager().users[id] ?: continue
 
                 members.add(
                     Member(
-                        deviousFun,
+                        deviousShard,
                         member,
                         this,
                         User(
-                            deviousFun,
+                            deviousShard,
                             id.toKordSnowflake(),
                             user
                         )
@@ -161,25 +150,25 @@ class Guild(
     suspend fun retrieveBoosters(): List<Member> {
         val lightweightSnowflake = idSnowflake.toLightweightSnowflake()
 
-        deviousFun.cacheManager.withLock(GuildKey(lightweightSnowflake)) {
+        deviousShard.getCacheManager().withLock(GuildKey(lightweightSnowflake)) {
             logger.info { "Retrieving boosters of guild ${guild.id}..." }
 
-            val cachedMembers = deviousFun.cacheManager.members[lightweightSnowflake] ?: return emptyList()
+            val cachedMembers = deviousShard.getCacheManager().members[lightweightSnowflake] ?: return emptyList()
             val members = mutableListOf<Member>()
 
             for ((id, member) in cachedMembers) {
                 if (member.premiumSince == null)
                     continue
 
-                val user = deviousFun.cacheManager.users[id] ?: continue
+                val user = deviousShard.getCacheManager().users[id] ?: continue
 
                 members.add(
                     Member(
-                        deviousFun,
+                        deviousShard,
                         member,
                         this,
                         User(
-                            deviousFun,
+                            deviousShard,
                             id.toKordSnowflake(),
                             user
                         )
@@ -208,29 +197,29 @@ class Guild(
 
     // TODO - DeviousFun
     fun getMembersByName(name: String, ignoreCase: Boolean): List<Member> = emptyList()
-    suspend fun getMemberById(id: String) = deviousFun.getMemberById(this, Snowflake(id))
-    suspend fun getMemberById(id: Long) = deviousFun.getMemberById(this, Snowflake(id))
+    suspend fun getMemberById(id: String) = deviousShard.getMemberById(this, Snowflake(id))
+    suspend fun getMemberById(id: Long) = deviousShard.getMemberById(this, Snowflake(id))
 
     fun getEmoteById(id: String) = emotes.firstOrNull { it.id == id }
 
-    suspend fun retrieveMemberOrNull(user: User) = try { deviousFun.retrieveMemberById(this, user.idSnowflake) } catch (e: KtorRequestException) { null }
-    suspend fun retrieveMemberById(id: String) = deviousFun.retrieveMemberById(this, Snowflake(id))
-    suspend fun retrieveMemberById(id: Long) = deviousFun.retrieveMemberById(this, Snowflake(id))
+    suspend fun retrieveMemberOrNull(user: User) = try { deviousShard.retrieveMemberById(this, user.idSnowflake) } catch (e: KtorRequestException) { null }
+    suspend fun retrieveMemberById(id: String) = deviousShard.retrieveMemberById(this, Snowflake(id))
+    suspend fun retrieveMemberById(id: Long) = deviousShard.retrieveMemberById(this, Snowflake(id))
 
     suspend fun retrieveMemberOrNullById(id: String) = try {
-        deviousFun.retrieveMemberById(this, Snowflake(id))
+        deviousShard.retrieveMemberById(this, Snowflake(id))
     } catch (e: KtorRequestException) {
         null
     }
 
     suspend fun retrieveMemberOrNullById(id: Long) = try {
-        deviousFun.retrieveMemberById(this, Snowflake(id))
+        deviousShard.retrieveMemberById(this, Snowflake(id))
     } catch (e: KtorRequestException) {
         null
     }
 
     suspend fun createEmote(emoteName: String, byteArray: ByteArray): Emote {
-        val emoji = deviousFun.loritta.rest.emoji.createEmoji(
+        val emoji = deviousShard.loritta.rest.emoji.createEmoji(
             idSnowflake,
             emoteName,
             Image.raw(
@@ -244,66 +233,66 @@ class Guild(
 
         // We don't need to cache it, it will be cached after Discord sends a emoji updated event
         return DiscordGuildEmote(
-            deviousFun,
+            deviousShard,
             this,
             DeviousGuildEmojiData.from(emoji)
         )
     }
 
     suspend fun createRole(builder: RoleCreateBuilder.() -> (Unit)): Role {
-        val response = deviousFun.loritta.rest.guild.createGuildRole(idSnowflake, builder)
+        val response = deviousShard.loritta.rest.guild.createGuildRole(idSnowflake, builder)
 
         // We don't need to cache it, it will be cached after Discord sends a role created event
         return Role(
-            deviousFun,
+            deviousShard,
             this,
             DeviousRoleData.from(response)
         )
     }
 
     suspend fun retrieveInvites(): List<Invite> {
-        return deviousFun.loritta.rest.guild.getGuildInvites(idSnowflake)
+        return deviousShard.loritta.rest.guild.getGuildInvites(idSnowflake)
             .map {
-                Invite(deviousFun, it.inviter.value?.let { deviousFun.cacheManager.createUser(it, true) }, it)
+                Invite(deviousShard, it.inviter.value?.let { deviousShard.getCacheManager().createUser(it, true) }, it)
             }
     }
 
     suspend fun addRoleToMember(member: Member, role: Role, reason: String? = null) {
-        deviousFun.loritta.rest.guild.addRoleToGuildMember(guild.id.toKordSnowflake(), member.idSnowflake, role.idSnowflake, reason)
+        deviousShard.loritta.rest.guild.addRoleToGuildMember(guild.id.toKordSnowflake(), member.idSnowflake, role.idSnowflake, reason)
     }
 
     suspend fun removeRoleFromMember(member: Member, role: Role, reason: String? = null) {
-        deviousFun.loritta.rest.guild.deleteRoleFromGuildMember(guild.id.toKordSnowflake(), member.idSnowflake, role.idSnowflake, reason)
+        deviousShard.loritta.rest.guild.deleteRoleFromGuildMember(guild.id.toKordSnowflake(), member.idSnowflake, role.idSnowflake, reason)
     }
 
     suspend fun modifyMemberRoles(member: Member, roles: List<Role>, reason: String? = null) {
-        deviousFun.loritta.rest.guild.modifyGuildMember(guild.id.toKordSnowflake(), member.idSnowflake) {
+        deviousShard.loritta.rest.guild.modifyGuildMember(guild.id.toKordSnowflake(), member.idSnowflake) {
             this.reason = reason
             this.roles = roles.map { it.idSnowflake }.toMutableSet()
         }
     }
 
     suspend fun modifyNickname(member: Member, newNickname: String?) {
-        deviousFun.loritta.rest.guild.modifyGuildMember(guild.id.toKordSnowflake(), member.idSnowflake) {
+        deviousShard.loritta.rest.guild.modifyGuildMember(guild.id.toKordSnowflake(), member.idSnowflake) {
             this.nickname = newNickname
         }
     }
 
     suspend fun retrieveWebhooks(): List<Webhook> {
         // TODO - DeviousFun: Instead of getting every channel individually, get it in bulk
-        return deviousFun.loritta.rest.webhook.getGuildWebhooks(idSnowflake)
+        return deviousShard.loritta.rest.webhook.getGuildWebhooks(idSnowflake)
             .map {
                 Webhook(
-                    deviousFun,
-                    deviousFun.retrieveChannelById(this@Guild, it.channelId),
-                    it.user.value?.let { deviousFun.cacheManager.createUser(it, true) },
+                    deviousShard,
+                    deviousShard.retrieveChannelById(this@Guild, it.channelId),
+                    it.user.value?.let { deviousShard.getCacheManager().createUser(it, true) },
                     it
                 )
             }
     }
 
     suspend fun ban(user: User, delDays: Int, reason: String? = null) {
-        deviousFun.loritta.rest.guild.addGuildBan(Snowflake(id), Snowflake(user.idLong)) {
+        deviousShard.loritta.rest.guild.addGuildBan(Snowflake(id), Snowflake(user.idLong)) {
             this.deleteMessageDuration = delDays.days
             this.reason = reason
         }
@@ -312,23 +301,23 @@ class Guild(
     suspend fun unban(user: User, reason: String? = null) = unban(user.id, reason)
 
     suspend fun unban(userId: String, reason: String? = null) {
-        deviousFun.loritta.rest.guild.deleteGuildBan(Snowflake(id), Snowflake(userId), reason)
+        deviousShard.loritta.rest.guild.deleteGuildBan(Snowflake(id), Snowflake(userId), reason)
     }
 
     suspend fun kick(member: Member, reason: String? = null) {
-        deviousFun.loritta.rest.guild.deleteGuildMember(Snowflake(id), Snowflake(member.idLong), reason)
+        deviousShard.loritta.rest.guild.deleteGuildMember(Snowflake(id), Snowflake(member.idLong), reason)
     }
 
     suspend fun kick(user: User, reason: String) {
-        deviousFun.loritta.rest.guild.deleteGuildMember(Snowflake(id), Snowflake(user.idLong), reason)
+        deviousShard.loritta.rest.guild.deleteGuildMember(Snowflake(id), Snowflake(user.idLong), reason)
     }
 
     suspend fun retrieveBanById(id: Long): Ban {
-        val banResponse = deviousFun.loritta.rest.guild.getGuildBan(Snowflake(idLong), Snowflake(id))
-        val user = deviousFun.cacheManager.createUser(banResponse.user, true)
+        val banResponse = deviousShard.loritta.rest.guild.getGuildBan(Snowflake(idLong), Snowflake(id))
+        val user = deviousShard.getCacheManager().createUser(banResponse.user, true)
 
         return Ban(
-            deviousFun,
+            deviousShard,
             user,
             banResponse
         )

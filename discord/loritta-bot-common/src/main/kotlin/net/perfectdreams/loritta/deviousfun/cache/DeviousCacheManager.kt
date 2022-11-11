@@ -4,7 +4,6 @@ import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.*
 import it.unimi.dsi.fastutil.longs.Long2LongMap
-import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
@@ -14,11 +13,12 @@ import kotlinx.serialization.serializer
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.pudding.utils.HashEncoder
 import net.perfectdreams.loritta.deviouscache.data.*
-import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.DeviousShard
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateBoostTimeEvent
 import net.perfectdreams.loritta.deviousfun.events.guild.member.GuildMemberUpdateNicknameEvent
 import net.perfectdreams.loritta.deviousfun.events.user.UserUpdateAvatarEvent
+import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.deviousfun.utils.*
 import org.jetbrains.exposed.sql.Database
@@ -31,8 +31,9 @@ import java.util.concurrent.TimeUnit
  * Manages cache
  */
 class DeviousCacheManager(
-    val m: DeviousFun,
+    val m: DeviousShard,
     val database: Database,
+    val triggeredEventsDueToCacheUpdate: kotlinx.coroutines.channels.Channel<(DeviousShard) -> (Unit)>,
     val users: SnowflakeMap<DeviousUserData>,
     val guilds: SnowflakeMap<DeviousGuildDataWrapper>,
     val guildChannels: SnowflakeMap<SnowflakeMap<DeviousChannelData>>,
@@ -41,11 +42,21 @@ class DeviousCacheManager(
     val roles: SnowflakeMap<SnowflakeMap<DeviousRoleData>>,
     val members: SnowflakeMap<SnowflakeMap<DeviousMemberData>>,
     val voiceStates: SnowflakeMap<SnowflakeMap<DeviousVoiceStateData>>,
-    val gatewaySessions: ConcurrentHashMap<Int, DeviousGatewaySession>
+    var gatewaySession: DeviousGatewaySession?,
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
+
+    val deviousGateway: DeviousGateway
+        get() = m.deviousGateway
+
+    /**
+     * Checks if this DeviousCacheManager instance is active
+     *
+     * If this is false, all cache requests should be ignored and new data shouldn't be added to the maps
+     */
+    var isActive = true
 
     val cacheDatabase = DeviousCacheDatabase(this, database)
 
@@ -389,20 +400,18 @@ class DeviousCacheManager(
                     val newAvatarId = newUserData.avatar
 
                     if (oldAvatarId != newAvatarId) {
-                        m.forEachListeners(
-                            UserUpdateAvatarEvent(
-                                m,
-                                // Because we don't have access to the gateway instance here, let's get the gateway manually
-                                // This needs to be refactored later, because some events (example: user update) may not have a specific gateway bound to it
-                                // For now, we will pick the first available gateway
-                                // Loritta's avatar update event log code already handles this correctly, we don't need to trigger the event for each gateway instance (yay!)
-                                m.gatewayManager.gateways.values.first(),
-                                deviousUser,
-                                oldAvatarId,
-                                newAvatarId
-                            ),
-                            ListenerAdapter::onUserUpdateAvatar
-                        )
+                        triggeredEventsDueToCacheUpdate.send {
+                            m.forEachListeners(
+                                UserUpdateAvatarEvent(
+                                    m,
+                                    m.deviousGateway,
+                                    deviousUser,
+                                    oldAvatarId,
+                                    newAvatarId
+                                ),
+                                ListenerAdapter::onUserUpdateAvatar
+                            )
+                        }
                     }
                 }
             }
@@ -483,40 +492,40 @@ class DeviousCacheManager(
                 val newTimeBoosted = newMemberData.premiumSince
 
                 if (oldTimeBoosted != newTimeBoosted) {
-                    m.forEachListeners(
-                        GuildMemberUpdateBoostTimeEvent(
-                            m,
-                            // Because we don't have access to the gateway instance here, let's get the gateway manually
-                            // This needs to be refactored later, because some events (example: user update) may not have a specific gateway bound to it
-                            m.gatewayManager.getGatewayForGuild(guild.idSnowflake),
-                            guild,
-                            user,
-                            member,
-                            oldTimeBoosted?.toJavaInstant()?.atOffset(ZoneOffset.UTC),
-                            newTimeBoosted?.toJavaInstant()?.atOffset(ZoneOffset.UTC)
-                        ),
-                        ListenerAdapter::onGuildMemberUpdateBoostTime
-                    )
+                    triggeredEventsDueToCacheUpdate.send {
+                        m.forEachListeners(
+                            GuildMemberUpdateBoostTimeEvent(
+                                m,
+                                m.deviousGateway,
+                                guild,
+                                user,
+                                member,
+                                oldTimeBoosted?.toJavaInstant()?.atOffset(ZoneOffset.UTC),
+                                newTimeBoosted?.toJavaInstant()?.atOffset(ZoneOffset.UTC)
+                            ),
+                            ListenerAdapter::onGuildMemberUpdateBoostTime
+                        )
+                    }
                 }
 
                 val oldNickname = oldMemberData.nick
                 val newNickname = newMemberData.nick
 
                 if (oldNickname != newNickname) {
-                    m.forEachListeners(
-                        GuildMemberUpdateNicknameEvent(
-                            m,
-                            // Because we don't have access to the gateway instance here, let's get the gateway manually
-                            // This needs to be refactored later, because some events (example: user update) may not have a specific gateway bound to it
-                            m.gatewayManager.getGatewayForGuild(guild.idSnowflake),
-                            guild,
-                            user,
-                            member,
-                            oldNickname,
-                            newNickname
-                        ),
-                        ListenerAdapter::onGuildMemberUpdateNickname
-                    )
+                    triggeredEventsDueToCacheUpdate.send {
+                        m.forEachListeners(
+                            GuildMemberUpdateNicknameEvent(
+                                m,
+                                m.deviousGateway,
+                                guild,
+                                user,
+                                member,
+                                oldNickname,
+                                newNickname
+                            ),
+                            ListenerAdapter::onGuildMemberUpdateNickname
+                        )
+                    }
                 }
             }
         }
@@ -791,5 +800,24 @@ class DeviousCacheManager(
                 it == CacheEntityStatus.OK
             }
             .first()
+    }
+
+    suspend fun stop() {
+        if (!isActive)
+            return
+
+        isActive = false
+
+        // Shutdown
+        cacheDatabase.stop()
+        users.clear()
+        guilds.clear()
+        guildChannels.clear()
+        channelsToGuilds.clear()
+        emotes.clear()
+        roles.clear()
+        members.clear()
+        voiceStates.clear()
+        gatewaySession = null
     }
 }

@@ -5,8 +5,8 @@ import kotlinx.serialization.*
 import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.deviouscache.data.*
+import net.perfectdreams.loritta.deviousfun.PermissionsWrapper
 import net.perfectdreams.loritta.deviousfun.utils.GuildKey
-import net.perfectdreams.loritta.deviousfun.utils.UserKey
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.*
 import java.util.*
@@ -26,7 +26,7 @@ class DiscordCacheService(
     private val pudding = loritta.pudding
 
     suspend fun getDiscordEntitiesOfGuild(guildId: Snowflake): GuildEntities {
-        val guild = loritta.deviousFun.getGuildById(guildId)
+        val guild = loritta.deviousShards.getGuildById(guildId)
 
         return GuildEntities(
             guild?.roles?.map { it.role } ?: emptyList(),
@@ -44,72 +44,18 @@ class DiscordCacheService(
      * Gets role informations of the following [roleIds] in [guildId]
      */
     suspend fun getRoles(guildId: Snowflake, roleIds: Collection<Snowflake>): List<DeviousRoleData> {
-        return loritta.deviousFun.getGuildById(guildId)?.roles?.map { it.role } ?: emptyList()
+        return loritta.deviousShards.getGuildById(guildId)?.roles?.map { it.role } ?: emptyList()
     }
 
-    /**
-     * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and with Loritta's user ID.
-     *
-     * It is lazy because the permission bitset is only retrieved after a [LazyCachedPermissions.hasPermission] check is triggered.
-     *
-     * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
-     */
-    fun getLazyCachedLorittaPermissions(guildId: Snowflake): LazyCachedPermissions =
-        GuildLazyCachedPermissions(rest, loritta, this, guildId, lorittaDiscordConfig.applicationId)
-
-    /**
-     * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
-     *
-     * It is lazy because the permission bitset is only retrieved after a [LazyCachedPermissions.hasPermission] check is triggered.
-     *
-     * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
-     */
-    fun getLazyCachedPermissions(guildId: Snowflake, userId: Snowflake): LazyCachedPermissions =
-        GuildLazyCachedPermissions(rest, loritta, this, guildId, userId)
-
-    /**
-     * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and with Loritta's user ID.
-     *
-     * It is lazy because the permission bitset is only retrieved after a [LazyCachedPermissions.hasPermission] check is triggered.
-     *
-     * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
-     */
-    fun getLazyCachedLorittaPermissions(guildId: Snowflake, channelId: Snowflake): LazyCachedPermissions =
-        GuildChannelLazyCachedPermissions(rest, loritta, this, guildId, channelId, lorittaDiscordConfig.applicationId)
-
-    /**
-     * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
-     *
-     * It is lazy because the permission bitset is only retrieved after a [LazyCachedPermissions.hasPermission] check is triggered.
-     *
-     * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
-     */
-    fun getLazyCachedPermissions(guildId: Snowflake, channelId: Snowflake, userId: Snowflake): LazyCachedPermissions =
-        GuildChannelLazyCachedPermissions(rest, loritta, this, guildId, channelId, userId)
-
-    /**
-     * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
-     *
-     * It is lazy because the permission bitset is only retrieved after a [LazyCachedPermissions.hasPermission] check is triggered.
-     *
-     * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
-     */
     suspend fun lorittaHasPermission(guildId: Snowflake, channelId: Snowflake, vararg permissions: Permission) =
-        getLazyCachedLorittaPermissions(guildId, channelId).hasPermission(*permissions)
+        PermissionsWrapper(getPermissions(guildId, channelId).permissions).hasPermission(*permissions)
 
-    /**
-     * Creates a [LazyCachedPermissions] class with the [guildId], [channelId] and [userId].
-     *
-     * It is lazy because the permission bitset is only retrieved after a [LazyCachedPermissions.hasPermission] check is triggered.
-     *
-     * It is cached because the permission bitset is cached, so after the permission bitset is already retrieved, it won't be retrieved again.
-     */
     suspend fun hasPermission(
         guildId: Snowflake,
         channelId: Snowflake,
         userId: Snowflake,
         vararg permissions: Permission
-    ) = getLazyCachedPermissions(guildId, channelId, userId).hasPermission(*permissions)
+    ) = PermissionsWrapper(getPermissions(guildId, channelId, userId).permissions).hasPermission(*permissions)
 
     /**
      * Gets Loritta's permissions in [channelId] on [guildId].
@@ -128,7 +74,7 @@ class DiscordCacheService(
         // Create an empty permissions object
         var permissions = Permissions()
 
-        val guild = loritta.deviousFun.getGuildById(guildId) ?: return GuildPermissionsResult(
+        val guild = loritta.deviousShards.getGuildById(guildId) ?: return GuildPermissionsResult(
             // The guild doesn't exist
             permissions,
             userNotInGuild = true,
@@ -185,7 +131,7 @@ class DiscordCacheService(
         // Create an empty permissions object
         var permissions = Permissions()
 
-        val guild = loritta.deviousFun.getGuildById(guildId) ?: return GuildChannelPermissionsResult(
+        val guild = loritta.deviousShards.getGuildById(guildId) ?: return GuildChannelPermissionsResult(
             // The guild doesn't exist
             permissions,
             userNotInGuild = true,
@@ -285,10 +231,12 @@ class DiscordCacheService(
         val lightweightGuildId = guildId.toLightweightSnowflake()
         val lightweightUserId = userId.toLightweightSnowflake()
 
-        loritta.deviousFun.cacheManager.withLock(GuildKey(lightweightGuildId)) {
-            val guildVoiceStates = loritta.deviousFun.cacheManager.voiceStates[lightweightGuildId] ?: return null
+        // TODO: Fix this, maybe expose the voice states in the guild instances
+        return null
+        /* loritta.deviousShards.cacheManager.withLock(GuildKey(lightweightGuildId)) {
+            val guildVoiceStates = loritta.deviousShard.cacheManager.voiceStates[lightweightGuildId] ?: return null
             return guildVoiceStates[lightweightUserId]?.channelId?.toKordSnowflake()
-        }
+        } */
     }
 
     data class GuildPermissionsResult(

@@ -7,6 +7,7 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.common.utils.HostnameUtils
+import net.perfectdreams.loritta.deviousfun.PermissionsWrapper
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class DebugGatewayModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
@@ -40,7 +41,7 @@ class DebugGatewayModule(private val m: LorittaBot) : ProcessDiscordEventsModule
         if (!isMessage)
             return
 
-        val canTalk = m.cache.getLazyCachedLorittaPermissions(guildId, messageCreate.message.channelId).canTalk()
+        val canTalk = PermissionsWrapper(m.cache.getLorittaPermissions(guildId, messageCreate.message.channelId).permissions).canTalk()
         if (!canTalk)
             return
 

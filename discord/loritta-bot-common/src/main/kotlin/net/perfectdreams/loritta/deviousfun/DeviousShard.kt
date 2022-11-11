@@ -3,38 +3,21 @@ package net.perfectdreams.loritta.deviousfun
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import dev.kord.gateway.builder.PresenceBuilder
-import dev.kord.gateway.editPresence
 import dev.kord.rest.json.JsonErrorCode
 import dev.kord.rest.request.KtorRequestException
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.serialization.decodeFromString
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import mu.KotlinLogging
-import net.perfectdreams.exposedpowerutils.sql.transaction
 import net.perfectdreams.loritta.deviouscache.data.*
-import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheDatabase
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.entities.*
 import net.perfectdreams.loritta.deviousfun.events.DeviousEventFactory
 import net.perfectdreams.loritta.deviousfun.events.Event
-import net.perfectdreams.loritta.deviousfun.gateway.GatewayManager
+import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
-import net.perfectdreams.loritta.deviousfun.tables.Guilds
-import net.perfectdreams.loritta.deviousfun.tables.Users
-import net.perfectdreams.loritta.deviousfun.utils.CacheEntityMaps
-import net.perfectdreams.loritta.deviousfun.utils.DeviousGuildDataWrapper
-import net.perfectdreams.loritta.deviousfun.utils.SnowflakeMap
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
-import java.util.concurrent.ConcurrentHashMap
-import kotlin.concurrent.thread
+import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import kotlin.reflect.KFunction2
 
 /**
@@ -45,47 +28,43 @@ import kotlin.reflect.KFunction2
  * Devious Fun has classes that mimicks JDA classes to give sort-of source compatibility, because rewriting Loritta would take
  * too much time and would be too much work.
  *
- * The issue with JDA is that it is VERY good for smol bots, but for big bots it falls short because you can't use...
- * * Cache in Redis
+ * The issue with JDA is that it is VERY good for smol bots, but for big bots it falls short because you can't...
+ * * Cache on disk (for gateway resumes)
  * * Resuming gateway connections after a restart (because JDA requires everything to be in cache)
+ * * Can't filter what fields are cached
  * So on and so forth...
  *
  * **Method conventions:**
  * * Properties: Cached in the class itself
- * * `get`: Will be retrieved from Redis, null if the entity doesn't exist.
- * * `retrieve`: Will be retrieved from Redis, or from Discord's API if not present. Throws exception if the entity does not exist.
+ * * `get`: Will be retrieved from memory, null if the entity doesn't exist.
+ * * `retrieve`: Will be retrieved from memory, or from Discord's API if not present. Throws exception if the entity does not exist.
  */
-class DeviousFun(
+class DeviousShard(
     val loritta: LorittaBot,
-    cacheDatabase: Database,
-    cacheEntityMaps: CacheEntityMaps
+    val deviousGateway: DeviousGateway,
+    val triggeredEventsDueToCacheUpdate: kotlinx.coroutines.channels.Channel<(DeviousShard) -> (Unit)>
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
+
+        fun createActivityTextWithShardAndClusterId(activityText: String, lorittaCluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig, shardId: Int) = "$activityText | Cluster ${lorittaCluster.id} [$shardId]"
     }
 
+    val shardId
+        get() = deviousGateway.shardId
+
+
+    val cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing: MutableStateFlow<DeviousCacheManager?> = MutableStateFlow(null)
+    val cacheManagerOrNull
+        get() = cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing.value
     val eventFactory = DeviousEventFactory(this)
     val listeners = mutableListOf<ListenerAdapter>()
-    val cacheManager = DeviousCacheManager(
-        this,
-        cacheDatabase,
-        cacheEntityMaps.users,
-        cacheEntityMaps.guilds,
-        cacheEntityMaps.guildChannels,
-        cacheEntityMaps.channelsToGuilds,
-        cacheEntityMaps.emotes,
-        cacheEntityMaps.roles,
-        cacheEntityMaps.members,
-        cacheEntityMaps.voiceStates,
-        cacheEntityMaps.gatewaySessions
-    )
-    val gatewayManager = GatewayManager(
-        this,
-        loritta.config.loritta.discord.token,
-        loritta.lorittaCluster.minShard,
-        loritta.lorittaCluster.maxShard,
-        loritta.config.loritta.discord.maxShards
-    )
+
+    /**
+     * Gets the [DeviousCacheManager], and suspends if the [DeviousCacheManager] is not set yet
+     */
+    suspend fun getCacheManager() = cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing
+        .filterNotNull().first()
 
     fun registerListeners(vararg listeners: ListenerAdapter) {
         this.listeners.addAll(listeners)
@@ -94,50 +73,50 @@ class DeviousFun(
     suspend fun getChannelById(id: Long) = getChannelById(Snowflake(id))
 
     suspend fun getChannelById(id: Snowflake): Channel? {
-        return cacheManager.getChannel(id)
+        return getCacheManager().getChannel(id)
     }
 
     suspend fun retrieveSelfUser() = retrieveUserById(loritta.config.loritta.discord.applicationId)
 
     suspend fun getUserById(id: Snowflake): User? {
-        return cacheManager.getUser(id)
+        return getCacheManager().getUser(id)
     }
 
     suspend fun getMemberById(guild: Guild, id: Snowflake): Member? {
         // Unknown user, bail out
-        val user = cacheManager.getUser(id) ?: return null
+        val user = getCacheManager().getUser(id) ?: return null
 
         return getMemberByUser(guild, user)
     }
 
     suspend fun getMemberByUser(guild: Guild, user: User): Member? {
-        return cacheManager.getMember(user, guild)
+        return getCacheManager().getMember(user, guild)
     }
 
-    suspend fun getGuildById(id: String) = cacheManager.getGuild(Snowflake(id))
-    suspend fun getGuildById(id: Long) = cacheManager.getGuild(Snowflake(id))
+    suspend fun getGuildById(id: String) = getCacheManager().getGuild(Snowflake(id))
+    suspend fun getGuildById(id: Long) = getCacheManager().getGuild(Snowflake(id))
 
     suspend fun getGuildById(id: Snowflake): Guild? {
-        return cacheManager.getGuild(id)
+        return getCacheManager().getGuild(id)
     }
 
     suspend fun retrieveUserById(id: Snowflake): User {
-        val cachedUser = cacheManager.getUser(id)
+        val cachedUser = getCacheManager().getUser(id)
         if (cachedUser != null)
             return cachedUser
 
         addContextToException({ "Something went wrong while trying to query user $id" }) {
-            return cacheManager.createUser(loritta.rest.user.getUser(id), true)
+            return getCacheManager().createUser(loritta.rest.user.getUser(id), true)
         }
     }
 
     suspend fun retrieveUserOrNullById(id: Snowflake): User? {
-        val cachedUser = cacheManager.getUser(id)
+        val cachedUser = getCacheManager().getUser(id)
         if (cachedUser != null)
             return cachedUser
 
         return try {
-            cacheManager.createUser(loritta.rest.user.getUser(id), true)
+            getCacheManager().createUser(loritta.rest.user.getUser(id), true)
         } catch (e: KtorRequestException) {
             return null
         }
@@ -153,7 +132,7 @@ class DeviousFun(
         addContextToException({ "Something went wrong while trying to query member $id in guild ${guild.idSnowflake}" }) {
             val member = loritta.rest.guild.getGuildMember(guild.idSnowflake, id)
 
-            return cacheManager.createMember(
+            return getCacheManager().createMember(
                 cachedUser,
                 guild,
                 member
@@ -169,7 +148,7 @@ class DeviousFun(
         addContextToException({ "Something went wrong while trying to query guild $id" }) {
             val guild = loritta.rest.guild.getGuild(id, withCounts = true)
             val channels = loritta.rest.guild.getGuildChannels(id)
-            return cacheManager.createGuild(guild, channels).guild
+            return getCacheManager().createGuild(guild, channels).guild
         }
     }
 
@@ -197,7 +176,7 @@ class DeviousFun(
                 ?: return Channel(this, null, DeviousChannelData.from(null, channel))
 
 
-            return cacheManager.createChannel(guild, channel)
+            return getCacheManager().createChannel(guild, channel)
         }
     }
 
@@ -208,14 +187,14 @@ class DeviousFun(
 
         addContextToException({ "Something went wrong while trying to query channel $id in guild ${guild.idSnowflake}" }) {
             val channel = loritta.rest.channel.getChannel(id)
-            return cacheManager.createChannel(guild, channel)
+            return getCacheManager().createChannel(guild, channel)
         }
     }
 
     suspend fun getMutualGuilds(user: User): List<Guild> {
         val lightweightSnowflake = user.idSnowflake.toLightweightSnowflake()
         val mutualGuildIds = mutableSetOf<LightweightSnowflake>()
-        cacheManager.members.forEach { guildId, members ->
+        getCacheManager().members.forEach { guildId, members ->
             if (members.containsKey(lightweightSnowflake))
                 mutualGuildIds.add(guildId)
         }
@@ -226,7 +205,7 @@ class DeviousFun(
     /**
      * Gets how many guilds are cached
      */
-    fun getGuildCount() = cacheManager.guilds.size
+    suspend fun getGuildCount() = getCacheManager().guilds.size
 
     /**
      * Invokes every [ListenerAdapter]'s [method] with [event]
@@ -257,41 +236,7 @@ class DeviousFun(
         }
     }
 
-    fun createDefaultPresence(shardId: Int) = createPresence(loritta.config.loritta.discord.activity.name, shardId)
-
-    fun createPresence(activityText: String, shardId: Int): PresenceBuilder.() -> (Unit) = {
-        this.status = loritta.config.loritta.discord.status
-
-        val activityTextWithClusterAndShard = "$activityText | Cluster ${loritta.lorittaCluster.id} [$shardId]"
-        when (loritta.config.loritta.discord.activity.type) {
-            "PLAYING" -> this.playing(activityTextWithClusterAndShard)
-            "STREAMING" -> this.streaming(activityTextWithClusterAndShard, "https://twitch.tv/mrpowergamerbr")
-            "LISTENING" -> this.listening(activityTextWithClusterAndShard)
-            "WATCHING" -> this.watching(activityTextWithClusterAndShard)
-            "COMPETING" -> this.competing(activityTextWithClusterAndShard)
-            else -> error("I don't know how to handle ${loritta.config.loritta.discord.activity.type}!")
-        }
-    }
-
-    private fun createActivityTextWithShardAndClusterId(activityText: String, shardId: Int) = "$activityText | Cluster ${loritta.lorittaCluster.id} [$shardId]"
-
-    init {
-        Runtime.getRuntime().addShutdownHook(thread(false) {
-            runBlocking {
-                logger.info { "Changing all gateway statuses to indicate that we are restarting..." }
-                val jobs = gatewayManager.gateways.values.map {
-                    launch {
-                        it.kordGateway.editPresence {
-                            this.status = PresenceStatus.DoNotDisturb
-                            this.playing(createActivityTextWithShardAndClusterId("\uD83D\uDCAB Loritta is restarting...", it.shardId))
-                        }
-                    }
-                }
-                jobs.joinAll()
-                logger.info { "All gateway statuses were successfully changed!" }
-            }
-        })
-    }
+    fun createActivityTextWithShardAndClusterId(activityText: String) = "$activityText | Cluster ${loritta.lorittaCluster.id} [$shardId]"
 
     private class FakeExceptionForContextException(override val message: String) : Exception()
 }

@@ -1,11 +1,5 @@
 package net.perfectdreams.loritta.morenitta.commands.vanilla.discord
 
-import com.github.salomonbrys.kotson.get
-import com.github.salomonbrys.kotson.int
-import com.github.salomonbrys.kotson.long
-import com.github.salomonbrys.kotson.nullString
-import com.github.salomonbrys.kotson.string
-import com.google.gson.JsonObject
 import dev.kord.common.entity.ChannelType
 import dev.kord.common.entity.Snowflake
 import net.perfectdreams.loritta.morenitta.commands.AbstractCommand
@@ -42,10 +36,11 @@ class ServerInfoCommand(loritta: LorittaBot) : AbstractCommand(
         if (context.rawArgs.isNotEmpty()) {
             val id = context.rawArgs.first()
             if (id.isValidSnowflake()) {
-                guild = loritta.deviousFun.retrieveGuildOrNullById(Snowflake(context.args[0]))
+                // TODO: This must retrieve from other clusters... Maybe readd the get guild endpoint?
+                guild = loritta.deviousShards.getGuildById(Snowflake(context.args[0]))
             }
         } else {
-            guild = loritta.deviousFun.retrieveGuildOrNullById(context.guild.idSnowflake)
+            guild = loritta.deviousShards.getGuildById(context.guild.idSnowflake)
         }
 
         if (guild == null) {

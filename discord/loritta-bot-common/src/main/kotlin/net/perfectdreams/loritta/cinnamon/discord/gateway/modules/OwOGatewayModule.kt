@@ -4,6 +4,7 @@ import dev.kord.gateway.MessageCreate
 import net.perfectdreams.loritta.cinnamon.discord.gateway.GatewayEventContext
 import net.perfectdreams.loritta.cinnamon.discord.utils.metrics.DiscordGatewayEventsProcessorMetrics
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
+import net.perfectdreams.loritta.deviousfun.PermissionsWrapper
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 class OwOGatewayModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
@@ -30,7 +31,7 @@ class OwOGatewayModule(private val m: LorittaBot) : ProcessDiscordEventsModule()
         if (!isMessage)
             return
 
-        val canTalk = m.cache.getLazyCachedLorittaPermissions(guildId, messageCreate.message.channelId).canTalk()
+        val canTalk = PermissionsWrapper(m.cache.getLorittaPermissions(guildId, messageCreate.message.channelId).permissions).canTalk()
         if (!canTalk)
             return
 

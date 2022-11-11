@@ -35,8 +35,6 @@ import net.perfectdreams.loritta.morenitta.profile.profiles.*
 import net.perfectdreams.loritta.morenitta.utils.*
 import net.perfectdreams.loritta.morenitta.utils.extensions.readImage
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
-import net.perfectdreams.loritta.deviouscache.data.toKordSnowflake
-import net.perfectdreams.loritta.deviouscache.data.toLightweightSnowflake
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
@@ -165,7 +163,7 @@ class ProfileDesignManager(val loritta: LorittaBot) {
         else {
             // If the user does not have the custom emojis in about me feature, let's allow them to use specific guild's emojis
             FREE_EMOJIS_GUILDS.mapNotNull { snowflake ->
-                loritta.deviousFun.getGuildById(snowflake)
+                loritta.deviousShards.getGuildById(snowflake)
             }.flatMap { it.emotes.map { it.idSnowflake } }
         }
 

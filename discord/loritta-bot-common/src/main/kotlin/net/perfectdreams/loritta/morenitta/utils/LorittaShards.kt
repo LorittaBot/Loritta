@@ -46,10 +46,10 @@ class LorittaShards(val loritta: LorittaBot) {
     val cachedRetrievedUsers = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES)
         .build<Long, Optional<User>>()
 
-    suspend fun getGuildById(id: String): Guild? = loritta.deviousFun.getGuildById(id)
-    suspend fun getGuildById(id: Long): Guild? = loritta.deviousFun.getGuildById(id)
+    suspend fun getGuildById(id: String): Guild? = loritta.deviousShards.getGuildById(id)
+    suspend fun getGuildById(id: Long): Guild? = loritta.deviousShards.getGuildById(id)
 
-    suspend fun getGuildCount(): Long = loritta.deviousFun.getGuildCount().toLong()
+    suspend fun getGuildCount(): Long = loritta.deviousShards.getGuildCount().toLong()
 
     suspend fun getUserById(id: String?) = getUserById(id?.toLong())
 
@@ -57,7 +57,7 @@ class LorittaShards(val loritta: LorittaBot) {
         if (id == null)
             return null
 
-        return loritta.deviousFun.getUserById(Snowflake(id))
+        return loritta.deviousShards.getUserById(Snowflake(id))
     }
 
     suspend fun retrieveUserById(id: String?) = retrieveUserById(id?.toLongOrNull())
@@ -107,7 +107,7 @@ class LorittaShards(val loritta: LorittaBot) {
         if (cachedUser != null)
             return cachedUser.getOrNull()
 
-        val user = loritta.deviousFun.retrieveUserOrNullById(Snowflake(id))
+        val user = loritta.deviousShards.retrieveUserOrNullById(Snowflake(id))
 
         if (user != null)
             updateCachedUserData(user)
@@ -157,14 +157,14 @@ class LorittaShards(val loritta: LorittaBot) {
         if (id == null)
             return null
 
-        val cachedChannel = loritta.deviousFun.getChannelById(id) ?: return null
+        val cachedChannel = loritta.deviousShards.getChannelById(id) ?: return null
         if (cachedChannel.type != ChannelType.GuildText)
             return null
 
         return cachedChannel
     }
 
-    fun getShards(): List<DeviousGateway> = loritta.deviousFun.gatewayManager.gateways.values.toList()
+    fun getShards(): List<DeviousGateway> = loritta.deviousShards.shards.values.map { it.deviousGateway }
 
     fun queryMasterLorittaCluster(path: String): Deferred<JsonElement> {
         val shard = loritta.config.loritta.clusters.instances.first { it.id == 1 }

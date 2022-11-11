@@ -3,10 +3,10 @@ package net.perfectdreams.loritta.deviousfun.entities
 import dev.kord.common.entity.DiscordWebhook
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.WebhookType
-import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.DeviousShard
 
 class Webhook(
-    val deviousFun: DeviousFun,
+    val deviousShard: DeviousShard,
     val channel: Channel,
     val ownerAsUser: User?,
     val webhook: DiscordWebhook

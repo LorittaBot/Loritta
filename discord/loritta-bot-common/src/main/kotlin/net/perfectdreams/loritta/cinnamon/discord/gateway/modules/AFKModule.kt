@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.cinnamon.discord.interactions.cleanUpForOutput
 import net.perfectdreams.loritta.cinnamon.discord.interactions.commands.styled
 import net.perfectdreams.loritta.cinnamon.emotes.Emotes
 import net.perfectdreams.loritta.cinnamon.pudding.data.UserId
+import net.perfectdreams.loritta.deviousfun.PermissionsWrapper
 import net.perfectdreams.loritta.i18n.I18nKeysData
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
@@ -61,7 +62,7 @@ class AFKModule(private val m: LorittaBot) : ProcessDiscordEventsModule() {
         }
 
         if (afkMembers.isNotEmpty()) {
-            val lorittaPermissions = m.cache.getLazyCachedLorittaPermissions(guildId, channelId)
+            val lorittaPermissions = PermissionsWrapper(m.cache.getLorittaPermissions(guildId, channelId).permissions)
 
             // I can't talk here! Bye!!
             if (!lorittaPermissions.canTalk())

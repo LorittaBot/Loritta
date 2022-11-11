@@ -103,7 +103,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 
                     ByteArrayInputStream(baos.toByteArray()).use { bais ->
                         // E agora nós iremos anunciar a troca para todos os servidores
-                        val guilds = event.deviousFun.getMutualGuilds(event.user)
+                        val guilds = event.deviousShard.getMutualGuilds(event.user)
 
                         loritta.newSuspendedTransaction {
                             (ServerConfigs innerJoin EventLogConfigs)

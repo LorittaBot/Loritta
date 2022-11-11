@@ -384,7 +384,7 @@ class DiscordCommandContext(
             .setAuthor(
                 locale["commands.explain.clickHereToSeeAllMyCommands"],
                 "${loritta.config.loritta.website.url}commands",
-                discordMessage.deviousFun.retrieveSelfUser().effectiveAvatarUrl
+                discordMessage.deviousShard.retrieveSelfUser().effectiveAvatarUrl
             )
             .setTitle("${Emotes.LORI_HM} `${serverConfig.commandPrefix}${executedCommandLabel}`")
             .setFooter(

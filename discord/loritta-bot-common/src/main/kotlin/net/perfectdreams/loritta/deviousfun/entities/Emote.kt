@@ -1,9 +1,9 @@
 package net.perfectdreams.loritta.deviousfun.entities
 
-import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.DeviousShard
 
 interface Emote {
-    val deviousFun: DeviousFun
+    val deviousShard: DeviousShard
     val name: String
     val asMention: String
 }

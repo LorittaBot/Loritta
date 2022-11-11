@@ -10,6 +10,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import dev.kord.common.annotation.KordExperimental
 import dev.kord.common.annotation.KordUnsafe
+import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.entity.User
@@ -18,7 +19,6 @@ import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.ratelimit.ParallelRequestRateLimiter
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.request.KtorRequestHandler
-import dev.kord.rest.request.StackTraceRecoveringKtorRequestHandler
 import dev.kord.rest.request.withStackTraceRecovery
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
@@ -29,8 +29,9 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.*
-import kotlinx.coroutines.sync.Semaphore
-import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.datetime.Clock
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
@@ -49,7 +50,6 @@ import net.perfectdreams.loritta.morenitta.tables.UserSettings
 import net.perfectdreams.loritta.morenitta.threads.RaffleThread
 import net.perfectdreams.loritta.morenitta.threads.RemindersThread
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.events.Event
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
@@ -69,7 +69,6 @@ import net.perfectdreams.loritta.cinnamon.discord.utils.dailytax.DailyTaxWarner
 import net.perfectdreams.loritta.cinnamon.discord.utils.directmessageprocessor.PendingImportantNotificationsProcessor
 import net.perfectdreams.loritta.morenitta.utils.ecb.ECBManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.DiscordCacheService
-import net.perfectdreams.loritta.cinnamon.discord.utils.entitycache.ZstdDictionaries
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.Falatron
 import net.perfectdreams.loritta.cinnamon.discord.utils.falatron.FalatronModelsManager
 import net.perfectdreams.loritta.cinnamon.discord.utils.google.GoogleVisionOCRClient
@@ -110,9 +109,12 @@ import net.perfectdreams.loritta.common.utils.MediaTypeUtils
 import net.perfectdreams.loritta.common.utils.StoragePaths
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
 import net.perfectdreams.loritta.common.utils.extensions.getPathFromResources
-import net.perfectdreams.loritta.deviousfun.DeviousFun
+import net.perfectdreams.loritta.deviousfun.DeviousShard
+import net.perfectdreams.loritta.deviousfun.DeviousShards
+import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.events.message.create.MessageReceivedEvent
-import net.perfectdreams.loritta.deviousfun.utils.CacheEntityMaps
+import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
+import net.perfectdreams.loritta.deviousfun.listeners.KordListener
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
@@ -151,6 +153,7 @@ import kotlin.concurrent.thread
 import kotlin.io.path.*
 import kotlin.math.ceil
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction2
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.milliseconds
@@ -171,8 +174,8 @@ class LorittaBot(
     val languageManager: LanguageManager,
     val localeManager: LocaleManager,
     val pudding: Pudding,
-    cacheDatabase: Database,
-    cacheEntityMaps: CacheEntityMaps
+    val upgradedDeviousGateways: List<LorittaLauncher.UpgradedGatewayResult>,
+    val identifyLock: Mutex
 ) {
     // ===[ STATIC ]===
     companion object {
@@ -224,8 +227,45 @@ class LorittaBot(
         requestHandler { ktorRequestHandler }
     }
 
-    val deviousFun = DeviousFun(this, cacheDatabase, cacheEntityMaps)
-    val gatewayManager = deviousFun.gatewayManager
+    val deviousShards = DeviousShards(
+        config.loritta.discord.maxShards,
+        upgradedDeviousGateways.map {
+            val channel = Channel<(DeviousShard) -> (Unit)>(Channel.UNLIMITED)
+
+            when (it) {
+                is LorittaLauncher.UpgradedGatewayResult.FreshGateway -> {
+                    DeviousShard(
+                        this,
+                        it.deviousGateway,
+                        channel
+                    )
+                }
+                is LorittaLauncher.UpgradedGatewayResult.ResumedGateway -> {
+                    val shard = DeviousShard(
+                        this,
+                        it.deviousGateway,
+                        channel
+                    )
+                    // We need to initialize the manager later since we need a DeviousShard reference in the constructor
+                    shard.cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing.value = DeviousCacheManager(
+                        shard,
+                        it.cacheDatabase,
+                        channel,
+                        it.cacheEntityMaps.users,
+                        it.cacheEntityMaps.guilds,
+                        it.cacheEntityMaps.guildChannels,
+                        it.cacheEntityMaps.channelsToGuilds,
+                        it.cacheEntityMaps.emotes,
+                        it.cacheEntityMaps.roles,
+                        it.cacheEntityMaps.members,
+                        it.cacheEntityMaps.voiceStates,
+                        it.gatewaySession
+                    )
+                    shard
+                }
+            }
+        }
+    )
 
     val cache = DiscordCacheService(this)
 
@@ -438,7 +478,7 @@ class LorittaBot(
                 addReactionFurryAminoPtListener,
                 boostGuildListener
             ) */
-        deviousFun.registerListeners(
+        deviousShards.registerListeners(
             discordListener,
             eventLogListener,
             messageListener,
@@ -521,37 +561,6 @@ class LorittaBot(
             logger.info(e) { "Failed to start Loritta's webserver" }
         }
 
-        // Vamos criar todas as instâncias necessárias do JDA para nossas shards
-        logger.info { "Sucesso! Iniciando Loritta (Discord Bot)..." }
-
-        scope.launch {
-            if (!passiveMode) {
-                // On every gateway instance present on our gateway manager, collect and process events
-                logger.info { "Preparing gateway event collectors for ${gatewayManager.gateways.size} gateway instances..." }
-
-                gatewayManager.gateways.forEach { (shardId, gateway) ->
-                    gateway.kordGateway.installDiscordInteraKTions(interaKTions)
-
-                    scope.launch {
-                        gateway.events.collect {
-                            DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
-                                .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
-                                .inc()
-
-                            launchEventProcessorJob(
-                                GatewayEventContext(
-                                    it,
-                                    shardId,
-                                    Clock.System.now()
-                                )
-                            )
-                        }
-                    }
-                }
-            }
-            gatewayManager.start()
-        }
-
         if (passiveMode) {
             logger.info { "Passive Mode is enabled!" }
             return
@@ -559,7 +568,7 @@ class LorittaBot(
 
         logger.info { "Starting Pudding tasks..." }
         pudding.startPuddingTasks()
-        NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation)
+        GlobalScope.launch(block = NitroBoostUtils.createBoostTask(this, config.loritta.donatorsOstentation))
 
         logger.info { "Registering interactions features..." }
         runBlocking {
@@ -617,6 +626,83 @@ class LorittaBot(
             raffleThread = RaffleThread(this)
             raffleThread.start()
         }
+
+        // Let's now register all required stuff for our DeviousShards
+        logger.info { "Success! Finalizing bootstrap process for shards..." }
+
+        scope.launch {
+            if (!passiveMode) {
+                // On every gateway instance present on our gateway manager, collect and process events
+                logger.info { "Preparing gateway event collectors for ${deviousShards.shards.size} shards..." }
+
+                deviousShards.shards.forEach { (shardId, shard) ->
+                    val gateway = shard.deviousGateway
+
+                    gateway.kordGateway.installDiscordInteraKTions(interaKTions)
+
+                    scope.launch {
+                        gateway.events.collect {
+                            DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
+                                .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
+                                .inc()
+
+                            launchEventProcessorJob(
+                                GatewayEventContext(
+                                    it,
+                                    shardId,
+                                    Clock.System.now()
+                                )
+                            )
+                        }
+                    }
+
+                    // Start "handover" process for resumed shards, where the previous collector is cancelled, events are replayed and the proper listener is registered
+                    val upgradedResumedGateway = upgradedDeviousGateways.asSequence()
+                        .filterIsInstance<LorittaLauncher.UpgradedGatewayResult.ResumedGateway>()
+                        .firstOrNull { it.deviousGateway.shardId == shardId }
+
+                    val kordListener = KordListener(shard)
+                    if (upgradedResumedGateway != null) {
+                        val pendingReceivedEvents = upgradedResumedGateway.receivedEvents
+
+                        kordListener.replayingEventsLock.withLock {
+                            kordListener.registerCollect()
+
+                            upgradedResumedGateway.receivedEventsJob.cancel()
+
+                            logger.info { "Replaying ${pendingReceivedEvents.size} events for shard $shardId" }
+                            while (pendingReceivedEvents.isNotEmpty()) {
+                                val event = pendingReceivedEvents.pop()
+                                kordListener.processEvent(event)
+                            }
+                        }
+                    } else {
+                        // Register the collect job as is, we don't need to do anything else (yay)
+                        // We don't need to worry about events because we have a identify lock set up
+                        kordListener.registerCollect()
+                    }
+                }
+            }
+        }
+
+        logger.info { "Releasing identify lock, this will allow fresh started shards to identify..." }
+        identifyLock.unlock()
+
+        Runtime.getRuntime().addShutdownHook(thread(false) {
+            runBlocking {
+                logger.info { "Changing all shard statuses to indicate that we are restarting..." }
+                val jobs = deviousShards.shards.values.map {
+                    launch {
+                        it.deviousGateway.kordGateway.editPresence {
+                            this.status = PresenceStatus.Idle
+                            this.playing(it.createActivityTextWithShardAndClusterId("\uD83D\uDCAB Loritta is restarting..."))
+                        }
+                    }
+                }
+                jobs.joinAll()
+                logger.info { "All gateway statuses were successfully changed!" }
+            }
+        })
     }
 
     fun initPostgreSql() {
