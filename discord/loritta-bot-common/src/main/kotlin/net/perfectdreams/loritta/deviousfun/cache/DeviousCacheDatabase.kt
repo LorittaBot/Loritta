@@ -130,24 +130,37 @@ class DeviousCacheDatabase(
 
         val time = measureTime {
             transaction(Dispatchers.IO, database) {
-                logger.info { "${dirtyUsers.size} dirty users" }
-                logger.info { "${removedMembers.size} removed members" }
-                logger.info { "${dirtyMembers.size} dirty members" }
-                logger.info { "${removedRoles.size} removed roles" }
-                logger.info { "${dirtyRoles.size} dirty roles" }
-                logger.info { "${removedEmojis.size} removed emojis" }
-                logger.info { "${dirtyEmojis.size} dirty emojis" }
-                logger.info { "${removedChannels.size} removed channels" }
-                logger.info { "${dirtyChannels.size} dirty channels" }
-                logger.info { "${removedGuilds.size} removed guilds" }
-                logger.info { "${dirtyGuilds.size} dirty guilds" }
-                logger.info { "${removedVoiceStates.size} removed voice states" }
-                logger.info { "${dirtyVoiceStates.size} dirty voice states" }
+                if (dirtyUsers.isNotEmpty())
+                    logger.info { "Trying to persist ${dirtyUsers.size} dirty users of shard ${cacheManager.deviousGateway.shardId}" }
+                if (removedMembers.isNotEmpty())
+                    logger.info { "${removedMembers.size} removed members of shard ${cacheManager.deviousGateway.shardId}" }
+                if (dirtyMembers.isNotEmpty())
+                    logger.info { "${dirtyMembers.size} dirty members of shard ${cacheManager.deviousGateway.shardId}" }
+                if (removedRoles.isNotEmpty())
+                    logger.info { "${removedRoles.size} removed roles of shard ${cacheManager.deviousGateway.shardId}" }
+                if (dirtyRoles.isNotEmpty())
+                    logger.info { "${dirtyRoles.size} dirty roles of shard ${cacheManager.deviousGateway.shardId}" }
+                if (removedEmojis.isNotEmpty())
+                    logger.info { "${removedEmojis.size} removed emojis of shard ${cacheManager.deviousGateway.shardId}" }
+                if (dirtyEmojis.isNotEmpty())
+                    logger.info { "${dirtyEmojis.size} dirty emojis of shard ${cacheManager.deviousGateway.shardId}" }
+                if (removedChannels.isNotEmpty())
+                    logger.info { "${removedChannels.size} removed channels of shard ${cacheManager.deviousGateway.shardId}" }
+                if (dirtyChannels.isNotEmpty())
+                    logger.info { "${dirtyChannels.size} dirty channels of shard ${cacheManager.deviousGateway.shardId}" }
+                if (removedGuilds.isNotEmpty())
+                    logger.info { "${removedGuilds.size} removed guilds of shard ${cacheManager.deviousGateway.shardId}" }
+                if (dirtyGuilds.isNotEmpty())
+                    logger.info { "${dirtyGuilds.size} dirty guilds of shard ${cacheManager.deviousGateway.shardId}" }
+                if (removedVoiceStates.isNotEmpty())
+                    logger.info { "${removedVoiceStates.size} removed voice states of shard ${cacheManager.deviousGateway.shardId}" }
+                if (dirtyVoiceStates.isNotEmpty())
+                    logger.info { "${dirtyVoiceStates.size} dirty voice states of shard ${cacheManager.deviousGateway.shardId}" }
                 val gatewaySession = cacheManager.gatewaySession?.copy()
                 if (gatewaySession != null) {
-                    logger.info { "Persisting gateway session with sequence ${gatewaySession.sequence}" }
+                    logger.info { "Persisting gateway session with sequence ${gatewaySession.sequence} of shard ${cacheManager.deviousGateway.shardId}" }
                 } else {
-                    logger.info { "Not persisting gateway session because it is null" }
+                    logger.info { "Not persisting gateway session of shard ${cacheManager.deviousGateway.shardId} because it is null" }
                 }
 
                 if (gatewaySession != null) {
@@ -234,7 +247,7 @@ class DeviousCacheDatabase(
                 }
             }
         }
-        logger.info { "Persisted cache data to database! Took $time" }
+        logger.info { "Persisted shard ${cacheManager.deviousGateway.shardId} cache data to database! Took $time" }
     }
 
     init {
@@ -248,20 +261,20 @@ class DeviousCacheDatabase(
                 if (!isActive)
                     return@thread
 
-                logger.info { "Shutting down DeviousCacheDatabase..." }
-                logger.info { "Stopping pending queue recurring job..." }
+                logger.info { "Shutting down DeviousCacheDatabase of shard ${cacheManager.deviousGateway.shardId}.." }
+                logger.info { "Stopping pending queue recurring job of shard ${cacheManager.deviousGateway.shardId}..." }
                 pendingQueues.cancel()
-                logger.info { "Waiting for all queued actions to be processed..." }
+                logger.info { "Waiting for all queued actions to be processed of shard ${cacheManager.deviousGateway.shardId}..." }
                 val pendingQueuedActions = mutableListOf<Job>()
                 queuedActions.drainTo(pendingQueuedActions)
                 runBlocking {
                     pendingQueuedActions.joinAll()
                 }
-                logger.info { "Waiting for all pending queries to be processed..." }
+                logger.info { "Waiting for all pending queries to be processed of shard ${cacheManager.deviousGateway.shardId}..." }
                 runBlocking {
                     runPendingQueries()
                 }
-                logger.info { "Successfully persisted all data during shutdown! :3" }
+                logger.info { "Successfully persisted all data during shutdown of shard ${cacheManager.deviousGateway.shardId}! :3" }
             }
         )
     }
