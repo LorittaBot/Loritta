@@ -551,7 +551,7 @@ class KordListener(val m: DeviousShard) {
                     getCacheManager().deleteChannel(guild, it.channel.id)
                 }
                 is VoiceStateUpdate -> {
-                    if (queueEventIfGuildIsUnavailable(it, it.voiceState.channelId))
+                    if (queueEventIfGuildIsUnavailable(it, it.voiceState.guildId.value))
                         return
 
                     val guildId = it.voiceState.guildId.value!! // Shouldn't be null here
