@@ -145,7 +145,7 @@ class DeviousCacheManager(
     suspend fun createGuild(
         data: DiscordGuild,
         guildChannels: List<DiscordChannel>?,
-    ): GuildAndJoinStatus {
+    ): Guild {
         val lightweightSnowflake = data.id.toLightweightSnowflake()
 
         withLock(GuildKey(lightweightSnowflake)) {
@@ -293,7 +293,7 @@ class DeviousCacheManager(
                 )
             }
 
-            return GuildAndJoinStatus(guild, isNewGuild)
+            return guild
         }
     }
 

@@ -192,14 +192,49 @@ class KordListener(val m: DeviousShard) {
                 is GuildCreate -> {
                     m.unavailableGuilds.remove(it.guild.id)
 
-                    val (guildAndJoinStatus, duration) = measureTimedValue {
+                    // The guild join status should be validated by checking the "guildsOnThisShard" list
+                    val isNewGuild = m.guildsOnThisShard.contains(it.guild.id)
+
+                    m.guildsOnThisShard.add(it.guild.id)
+
+                    val (guild, duration) = measureTimedValue {
                         // Even if it is cached, we will create a guildAndJoinStatus entity here to update the guildAndJoinStatus on the cache
                         getCacheManager().createGuild(it.guild, it.guild.channels.value)
                     }
 
                     // logger.info { "GuildCreate for ${guildAndJoinStatus.guild.idSnowflake} (shard $shardId) took $duration!" }
 
-                    processGuild(guildAndJoinStatus)
+                    if (isNewGuild) {
+                        val event = m.eventFactory.createGuildJoinEvent(gateway, guild)
+
+                        m.forEachListeners(event, ListenerAdapter::onGuildJoin)
+                    }
+
+                    /* val lorittaVoiceState = this.guild.voiceStates.value?.firstOrNull { it.userId == m.loritta.config.loritta.discord.applicationId }
+                    if (lorittaVoiceState != null) {
+                        // Wait... that's us! omg omg omg
+                        val lorittaVoiceConnection = m.loritta.voiceConnectionsManager.voiceConnections[this.guild.id]
+
+                        if (lorittaVoiceConnection == null) {
+                            // B-but... we shouldn't be here!? Uhhh, meow? Time to disconnect maybe??
+                            logger.warn { "Looks like we are connected @ ${this.guild.id} but we don't have any active voice connections here! We will disconnect from the voice channel to avoid issues..." }
+                            val gatewayProxy = m.gatewayManager.getGatewayForGuild(this.guild.id)
+                            gatewayProxy.kordGateway.send(
+                                UpdateVoiceStatus(
+                                    this.guild.id,
+                                    null,
+                                    selfMute = false,
+                                    selfDeaf = false
+                                )
+                            )
+                        }
+                    } */
+
+                    // logger.info { "GuildCreate for ${guild.idSnowflake} (shard $shardId) took $duration!" }
+
+                    // Guild is ready!
+                    val event = GuildReadyEvent(m, gateway, guild)
+                    m.forEachListeners(event, ListenerAdapter::onGuildReady)
 
                     // After relaying, we will run a replay of all events that we received related to this guild
                     val queuedEvents =  m.queuedGuildEvents[it.guild.id]
@@ -634,41 +669,5 @@ class KordListener(val m: DeviousShard) {
             return true
         }
         return false
-    }
-
-    private suspend fun processGuild(guildAndJoinStatus: GuildAndJoinStatus) {
-        val (guild, isNewGuild) = guildAndJoinStatus
-
-        if (isNewGuild) {
-            val event = m.eventFactory.createGuildJoinEvent(gateway, guild)
-
-            m.forEachListeners(event, ListenerAdapter::onGuildJoin)
-        }
-
-        /* val lorittaVoiceState = this.guild.voiceStates.value?.firstOrNull { it.userId == m.loritta.config.loritta.discord.applicationId }
-        if (lorittaVoiceState != null) {
-            // Wait... that's us! omg omg omg
-            val lorittaVoiceConnection = m.loritta.voiceConnectionsManager.voiceConnections[this.guild.id]
-
-            if (lorittaVoiceConnection == null) {
-                // B-but... we shouldn't be here!? Uhhh, meow? Time to disconnect maybe??
-                logger.warn { "Looks like we are connected @ ${this.guild.id} but we don't have any active voice connections here! We will disconnect from the voice channel to avoid issues..." }
-                val gatewayProxy = m.gatewayManager.getGatewayForGuild(this.guild.id)
-                gatewayProxy.kordGateway.send(
-                    UpdateVoiceStatus(
-                        this.guild.id,
-                        null,
-                        selfMute = false,
-                        selfDeaf = false
-                    )
-                )
-            }
-        } */
-
-        // logger.info { "GuildCreate for ${guild.idSnowflake} (shard $shardId) took $duration!" }
-
-        // Guild is ready!
-        val event = GuildReadyEvent(m, gateway, guild)
-        m.forEachListeners(event, ListenerAdapter::onGuildReady)
     }
 }

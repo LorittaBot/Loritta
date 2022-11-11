@@ -81,12 +81,12 @@ class DeviousEventFactory(val m: DeviousShard) {
 
         val channel = m.getChannelById(event.message.channelId)
         if (channel == null) {
-            logger.warn { "Received message delete for a channel that we don't have in our cache! Channel ID: ${event.message.channelId}; Guild ID: $guildId;" }
+            logger.warn { "Received message delete for a channel that we don't have in our cache! Guild ID: $guildId; Channel ID: ${event.message.channelId};" }
             return null
         }
         val guildResult = m.getCacheManager().getGuildFailIfSnowflakeIsNotNullButGuildIsNotPresent(guildId)
         if (guildResult is DeviousCacheManager.GuildResult.GuildNotPresent) {
-            logger.warn { "Received message delete for a guild that we don't have in our cache! Guild ID: $guildId; Channel ID: ${event.message.channelId}" }
+            logger.warn { "Received message delete for a guild that we don't have in our cache! Channel ID: ${event.message.channelId}; Guild ID: $guildId;" }
             return null
         }
         val guild = (guildResult as? DeviousCacheManager.GuildResult.GuildPresent)?.guild
