@@ -167,8 +167,7 @@ class DeviousCacheManager(
             // logger.info { "Updating guild with ID $lightweightSnowflake" }
 
             val cachedGuild = guilds[lightweightSnowflake]
-            val isNewGuild = cachedGuild == null
-            val wrapper = DeviousGuildDataWrapper(deviousGuildData,)
+            val wrapper = DeviousGuildDataWrapper(deviousGuildData)
             guilds[lightweightSnowflake] = wrapper
 
             cacheActions.add {
