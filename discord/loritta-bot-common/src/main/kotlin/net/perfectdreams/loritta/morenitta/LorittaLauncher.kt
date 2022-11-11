@@ -404,12 +404,14 @@ object LorittaLauncher {
 
             // To avoid a lot of GC pressure, we will initialize the "from scratch" gateway connections AFTER all gateways are successfully resumed
             // This should return after all resumed gateway connections are up and running
-            val gatewayResults = jobs.awaitAll()
+            val (gatewayResults, gatewayResultsDuration) = measureTimedValue {
+                jobs.awaitAll()
+            }
 
             // idk what this should return tbh
             // TODO: Upgrade these to a DeviousGateway instance
             // TODO: Upgrade these to a DeviousShard instance? The DeviousShard requires a Loritta reference so it may be out of scope
-            logger.info { "Gateway Results: ${gatewayResults.count { it is GatewayBootstrapResult.ResumedGateway }} shards were resumed, ${gatewayResults.count { it is GatewayBootstrapResult.FailedToResume }} shards needs to start from scratch" }
+            logger.info { "Gateway Results (Took $gatewayResultsDuration): ${gatewayResults.count { it is GatewayBootstrapResult.ResumedGateway }} shards were resumed, ${gatewayResults.count { it is GatewayBootstrapResult.FailedToResume }} shards needs to start from scratch" }
             if (gatewayResults.count { it is GatewayBootstrapResult.ResumedGateway } == (maxShard + 1) - minShard) {
                 // Is this a Splatoon™ reference??
                 logger.info { "Booyah! All shards were successfully resumed and no connection needs to be started from scratch!" }
