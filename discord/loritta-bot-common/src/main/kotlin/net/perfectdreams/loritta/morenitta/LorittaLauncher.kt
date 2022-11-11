@@ -30,6 +30,7 @@ import net.perfectdreams.loritta.deviousfun.utils.CacheEntityMaps
 import net.perfectdreams.loritta.deviousfun.utils.DeviousGuildDataWrapper
 import net.perfectdreams.loritta.deviousfun.utils.SnowflakeMap
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
+import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
@@ -208,7 +209,7 @@ object LorittaLauncher {
                                     gatewaySession.resumeGatewayUrl,
                                     gatewaySession.sequence
                                 ),
-                                createGatewayConfiguration(shardId, config.loritta.discord.maxShards)
+                                createGatewayConfiguration(config.loritta.discord.activity.name, lorittaCluster, shardId, config.loritta.discord.maxShards)
                             )
                         }
 
@@ -448,7 +449,7 @@ object LorittaLauncher {
 
                         val gatewayJob = gatewayScope.launch {
                             it.status.value = DeviousGateway.Status.WAITING_TO_CONNECT
-                            gateway.start(config.loritta.discord.token, createGatewayConfiguration(it.shardId, config.loritta.discord.maxShards))
+                            gateway.start(config.loritta.discord.token, createGatewayConfiguration(config.loritta.discord.activity.name, lorittaCluster, it.shardId, config.loritta.discord.maxShards))
                         }
 
                         UpgradedGatewayResult.FreshGateway(
@@ -489,7 +490,7 @@ object LorittaLauncher {
         DebugProbes.install()
     }
 
-    private fun createGatewayConfiguration(shardId: Int, totalShards: Int): GatewayConfigurationBuilder.() -> (Unit) = {
+    private fun createGatewayConfiguration(activityText: String, lorittaCluster: LorittaConfig.LorittaClustersConfig.LorittaClusterConfig, shardId: Int, totalShards: Int): GatewayConfigurationBuilder.() -> (Unit) = {
         @OptIn(PrivilegedIntent::class)
         intents = Intents {
             +Intent.Guilds
@@ -506,9 +507,8 @@ object LorittaLauncher {
         }
 
         presence {
-            // TODO: Fix this
-            // deviousShard.createDefaultPresence(shardId).invoke(this)
-            this.playing("TODO: Fix this!")
+            status = PresenceStatus.Online
+            playing(DeviousShard.createActivityTextWithShardAndClusterId(activityText, lorittaCluster, shardId))
         }
 
         shard = DiscordShard(shardId, totalShards)

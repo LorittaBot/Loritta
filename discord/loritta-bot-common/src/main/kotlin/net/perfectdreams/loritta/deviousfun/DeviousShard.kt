@@ -236,7 +236,7 @@ class DeviousShard(
         }
     }
 
-    fun createActivityTextWithShardAndClusterId(activityText: String) = "$activityText | Cluster ${loritta.lorittaCluster.id} [$shardId]"
+    fun createActivityTextWithShardAndClusterId(activityText: String) = createActivityTextWithShardAndClusterId(activityText, loritta.lorittaCluster, shardId)
 
     private class FakeExceptionForContextException(override val message: String) : Exception()
 }
