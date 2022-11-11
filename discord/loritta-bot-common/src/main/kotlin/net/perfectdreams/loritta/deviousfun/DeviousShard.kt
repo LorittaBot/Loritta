@@ -157,7 +157,7 @@ class DeviousShard(
         addContextToException({ "Something went wrong while trying to query guild $id" }) {
             val guild = loritta.rest.guild.getGuild(id, withCounts = true)
             val channels = loritta.rest.guild.getGuildChannels(id)
-            return getCacheManager().createGuild(guild, channels).guild
+            return getCacheManager().createGuild(guild, channels)
         }
     }
 
