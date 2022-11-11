@@ -132,13 +132,13 @@ class KordListener(
                             // We won't trigger a guild create or a guild ready, because that would be too much hassle (Example: How would we check if we already fired a GuildReady?)
                         }
                         is GuildDelete -> {
-                            logger.info { "Someone removed me @ ${it.guild.id}! :(" }
-
-                            val guild = cacheManager.getGuild(it.guild.id) ?: return@collect
-
                             // Ignore if it is an availability issue
                             if (it.guild.unavailable.value != null)
                                 return@collect
+                            
+                            logger.info { "Someone removed me @ ${it.guild.id}! :(" }
+
+                            val guild = cacheManager.getGuild(it.guild.id) ?: return@collect
 
                             val event = m.eventFactory.createGuildLeaveEvent(gateway, guild, it)
 
