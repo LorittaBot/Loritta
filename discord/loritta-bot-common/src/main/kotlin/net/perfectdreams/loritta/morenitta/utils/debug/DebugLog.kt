@@ -27,6 +27,10 @@ object DebugLog {
         // TODO - DeviousFun
         // logger.info("Global Rate Limit Hits in the last 10m: ${loritta.bucketedController?.getGlobalRateLimitHitsInTheLastMinute()} / ${loritta.config.loritta.discord.requestLimiter.maxRequestsPer10Minutes}")
         logger.info { "> Cache Stats" }
+        for (shard in loritta.deviousShards.shards) {
+            logger.info { "Shard ${shard.key} (${shard.value.deviousGateway.status.value}): Unavailable Guilds: ${shard.value.unavailableGuilds.size}; Guilds on this Shard: ${shard.value.guildsOnThisShard.size}; Pending Guilds Queues: ${shard.value.queuedGuildEvents.size}" }
+        }
+
         // TODO: Fix this
         /* logger.info { "Users: ${loritta.deviousShard.cacheManager.users.size} users" }
         logger.info { "Guilds: ${loritta.deviousShard.cacheManager.guilds.size} guilds" }

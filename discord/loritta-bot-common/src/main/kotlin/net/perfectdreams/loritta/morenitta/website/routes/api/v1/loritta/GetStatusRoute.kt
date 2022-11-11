@@ -50,13 +50,16 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
         val array = jsonArray()
 
         // TODO - DeviousFun
-        for (shard in loritta.lorittaShards.getShards()) {
+        for ((shardId, shard) in loritta.deviousShards.shards) {
             array.add(
                 jsonObject(
                     "id" to shard.shardId,
-                    "ping" to (shard.ping.value?.inWholeMilliseconds ?: -1L),
-                    "status" to shard.status.value.toString(),
-                    // "guildCount" to shard.guildCache.size(),
+                    "ping" to (shard.deviousGateway.ping.value?.inWholeMilliseconds ?: -1L),
+                    "status" to shard.deviousGateway.status.value.toString(),
+                    "guilds" to shard.guildsOnThisShard.size,
+                    "unavailableGuilds" to shard.unavailableGuilds.size,
+                    "totalGuildEventsQueues" to shard.queuedGuildEvents.size,
+                    "cachedGuilds" to shard.cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing.value?.guilds?.size,
                     // "userCount" to shard.userCache.size()
                 )
             )

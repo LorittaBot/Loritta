@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.utils.config.LorittaConfig
+import java.util.*
 import kotlin.reflect.KFunction2
 
 /**
@@ -59,6 +60,14 @@ class DeviousShard(
         get() = cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing.value
     val eventFactory = DeviousEventFactory(this)
     val listeners = mutableListOf<ListenerAdapter>()
+
+    /**
+     * Queued guild events that must be executed after the guild is up
+     */
+    val queuedGuildEvents = mutableMapOf<Snowflake, LinkedList<dev.kord.gateway.Event>>()
+
+    val guildsOnThisShard = mutableSetOf<Snowflake>()
+    val unavailableGuilds = mutableSetOf<Snowflake>()
 
     /**
      * Gets the [DeviousCacheManager], and suspends if the [DeviousCacheManager] is not set yet

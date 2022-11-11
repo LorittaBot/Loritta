@@ -47,14 +47,6 @@ class KordListener(val m: DeviousShard) {
 
     private suspend fun getCacheManager() = m.getCacheManager()
 
-    /**
-     * Queued guild events that must be executed after the guild is up
-     */
-    private val queuedGuildEvents = mutableMapOf<Snowflake, LinkedList<Event>>()
-
-    private val guildsOnThisShard = mutableSetOf<Snowflake>()
-    private val unavailableGuilds = mutableSetOf<Snowflake>()
-
     fun registerCollect() {
         gateway.kordGateway.launch {
             for (cacheTriggerEvent in m.triggeredEventsDueToCacheUpdate) {
@@ -105,13 +97,13 @@ class KordListener(val m: DeviousShard) {
 
                     logger.info { "Shard $shardId is connected! - Guilds: $guildCount" }
 
-                    queuedGuildEvents.clear()
-                    guildsOnThisShard.clear()
-                    unavailableGuilds.clear()
+                    m.queuedGuildEvents.clear()
+                    m.guildsOnThisShard.clear()
+                    m.unavailableGuilds.clear()
 
                     val guildIds = it.data.guilds.map { it.id }
-                    guildsOnThisShard.addAll(guildIds)
-                    unavailableGuilds.addAll(guildIds)
+                    m.guildsOnThisShard.addAll(guildIds)
+                    m.unavailableGuilds.addAll(guildIds)
 
                     // Because this is a full Ready reconnect, our cache is considered "stale"
                     // To avoid issues, we will scrap our entire cache and begin from scratch
@@ -180,7 +172,7 @@ class KordListener(val m: DeviousShard) {
 
                     // Add all guilds from the cache on the "guildsOnThisShard" map
                     // The unavailable list won't be filled, but I don't think that's a huge deal?
-                    guildsOnThisShard.addAll(getCacheManager().guilds.keys.map { Snowflake(it) })
+                    m.guildsOnThisShard.addAll(getCacheManager().guilds.keys.map { Snowflake(it) })
 
                     // If we already triggered the guild ready on this instance, then we wouldn't trigger it again
                     if (alreadyTriggeredGuildReadyOnStartup)
@@ -198,7 +190,7 @@ class KordListener(val m: DeviousShard) {
                     }
                 }
                 is GuildCreate -> {
-                    unavailableGuilds.remove(it.guild.id)
+                    m.unavailableGuilds.remove(it.guild.id)
 
                     val (guildAndJoinStatus, duration) = measureTimedValue {
                         // Even if it is cached, we will create a guildAndJoinStatus entity here to update the guildAndJoinStatus on the cache
@@ -210,10 +202,10 @@ class KordListener(val m: DeviousShard) {
                     processGuild(guildAndJoinStatus)
 
                     // After relaying, we will run a replay of all events that we received related to this guild
-                    val queuedEvents = queuedGuildEvents[it.guild.id]
+                    val queuedEvents =  m.queuedGuildEvents[it.guild.id]
                     if (queuedEvents != null) {
                         logger.info { "Replaying ${queuedEvents.size} events for guild ${it.guild.id} on shard $shardId because those events were received before the GuildCreate event" }
-                        queuedGuildEvents.remove(it.guild.id)
+                        m.queuedGuildEvents.remove(it.guild.id)
                         while (queuedEvents.isNotEmpty()) {
                             val event = queuedEvents.pop()
                             processEvent(event)
@@ -234,8 +226,8 @@ class KordListener(val m: DeviousShard) {
                     // If the unavailable field is not set, the user was removed from the guild.
                     val unavailable = it.guild.unavailable.value
 
-                    guildsOnThisShard.remove(it.guild.id)
-                    queuedGuildEvents.remove(it.guild.id)
+                    m.guildsOnThisShard.remove(it.guild.id)
+                    m.queuedGuildEvents.remove(it.guild.id)
 
                     val guild = getCacheManager().getGuild(it.guild.id) ?: return
 
@@ -628,16 +620,16 @@ class KordListener(val m: DeviousShard) {
         if (guildId == null)
             return false
 
-        if (!guildsOnThisShard.contains(guildId)) {
+        if (!m.guildsOnThisShard.contains(guildId)) {
             // This should never happen, but...
             logger.warn { "Event ${event::class.simpleName} depends on guild $guildId, but guild $guildId is not present on this shard! Queueing..." }
-            queuedGuildEvents.getOrPut(guildId) { LinkedList<Event>() }
+            m.queuedGuildEvents.getOrPut(guildId) { LinkedList<Event>() }
                 .also { it.add(event) }
             return true
         }
-        if (unavailableGuilds.contains(guildId)) {
+        if (m.unavailableGuilds.contains(guildId)) {
             logger.warn { "Event ${event::class.simpleName} depends on guild $guildId, but guild $guildId is unavailable! Queueing..." }
-            queuedGuildEvents.getOrPut(guildId) { LinkedList<Event>() }
+            m.queuedGuildEvents.getOrPut(guildId) { LinkedList<Event>() }
                 .also { it.add(event) }
             return true
         }
