@@ -12,6 +12,8 @@ import mu.KotlinLogging
 import net.perfectdreams.loritta.deviousfun.EmbedBuilder
 import net.perfectdreams.loritta.deviousfun.MessageBuilder
 import dev.kord.common.entity.Permission
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.perfectdreams.loritta.deviousfun.entities.Guild
 import net.perfectdreams.loritta.deviousfun.entities.User
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
@@ -177,6 +179,8 @@ class BomDiaECia(val loritta: LorittaBot) {
         "${loritta.config.loritta.website.url}assets/img/bom-dia-cia-4.jpg"
     )
 
+    val mutex = Mutex()
+
     init {
         thread.start()
     }
@@ -242,8 +246,7 @@ class BomDiaECia(val loritta: LorittaBot) {
             thread.start()
     }
 
-    @Synchronized
-    fun announceWinner(channel: Channel, guild: Guild, user: User) {
+    suspend fun announceWinner(channel: Channel, guild: Guild, user: User) = mutex.withLock {
         activeTextChannels.clear()
 
         val validTextChannels = this.validTextChannels
