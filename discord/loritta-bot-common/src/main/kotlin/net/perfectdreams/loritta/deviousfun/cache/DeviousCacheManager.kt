@@ -3,6 +3,7 @@ package net.perfectdreams.loritta.deviousfun.cache
 import com.github.benmanes.caffeine.cache.Cache
 import com.github.benmanes.caffeine.cache.Caffeine
 import dev.kord.common.entity.*
+import dev.kord.common.entity.optional.value
 import it.unimi.dsi.fastutil.longs.Long2LongMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filter
@@ -149,7 +150,12 @@ class DeviousCacheManager(
         val lightweightSnowflake = data.id.toLightweightSnowflake()
 
         withLock(GuildKey(lightweightSnowflake)) {
-            val deviousGuildData = DeviousGuildData.from(data)
+            val cachedGuild = guilds[lightweightSnowflake]
+            val deviousGuildData = DeviousGuildData.from(
+                data,
+                data.premiumSubscriptionCount.value ?: cachedGuild?.data?.premiumSubscriptionCount ?: error("Could not get the premiumSubscriptionCount for ${data.id}! Cached Guild Data: $cachedGuild"),
+                data.memberCount.value ?: cachedGuild?.data?.memberCount ?: error("Could not get the memberCount for ${data.id}! Cached Guild Data: $cachedGuild")
+            )
             val guildMembers = data.members.value
             val guildVoiceStates = data.voiceStates.value
 
@@ -179,7 +185,6 @@ class DeviousCacheManager(
 
             // logger.info { "Updating guild with ID $lightweightSnowflake" }
 
-            val cachedGuild = guilds[lightweightSnowflake]
             val wrapper = DeviousGuildDataWrapper(deviousGuildData)
             guilds[lightweightSnowflake] = wrapper
 
