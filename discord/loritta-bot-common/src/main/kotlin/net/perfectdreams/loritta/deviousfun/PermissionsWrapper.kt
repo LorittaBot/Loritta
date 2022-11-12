@@ -10,10 +10,10 @@ value class PermissionsWrapper(val permissions: Permissions) {
      */
     suspend fun canTalk() = hasPermission(Permission.SendMessages)
 
-    fun hasPermission(vararg permissions: Permission, adminPermissionsBypassesCheck: Boolean = true): Boolean {
-        if (adminPermissionsBypassesCheck && Permission.Administrator in permissions)
+    fun hasPermission(vararg permissionsToBeChecked: Permission, adminPermissionsBypassesCheck: Boolean = true): Boolean {
+        if (adminPermissionsBypassesCheck && Permission.Administrator in permissionsToBeChecked)
             return true
 
-        return permissions.all { it in permissions }
+        return this.permissions.values.all { it in permissionsToBeChecked }
     }
 }
