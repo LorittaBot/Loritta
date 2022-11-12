@@ -45,6 +45,8 @@ class ParallelIdentifyRateLimiter(
     private val random = Random.Default
 
     override suspend fun consume(shardId: Int, events: SharedFlow<Event>) {
+        gatewayStatus.value = DeviousGateway.Status.WAITING_FOR_IDENTIFY_LOCK
+
         // This is used to lock idenitfies until Loritta is fully booted
         identifyLock.withLock {}
 
@@ -52,6 +54,8 @@ class ParallelIdentifyRateLimiter(
         // If randomKey == null, then this bucket is already being used
         // If randomKey != null, then this bucket isn't being used
         try {
+            gatewayStatus.value = DeviousGateway.Status.WAITING_FOR_BUCKET
+
             val randomKey = pudding.transaction {
                 val currentStatus = ConcurrentLoginBuckets.select {
                     ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.lockedAt greaterEq Instant.now()
@@ -108,7 +112,6 @@ class ParallelIdentifyRateLimiter(
             } else {
                 // Couldn't acquire lock, let's wait...
                 logger.info { "Couldn't acquire lock for bucket $bucketId (shard $shardId), let's wait and try again later..." }
-                gatewayStatus.value = DeviousGateway.Status.WAITING_FOR_BUCKET
                 delay(1_000)
                 // And try again!
                 return consume(shardId, events)
