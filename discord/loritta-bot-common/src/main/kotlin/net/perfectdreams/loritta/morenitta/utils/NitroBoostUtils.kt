@@ -146,7 +146,7 @@ object NitroBoostUtils {
                         if (isFromThisGuild) {
                             val member = guild.retrieveMemberOrNullById(nitroBoostPayment.userId)
 
-                            if (member == null || member.timeBoosted == null) {
+                            if (member?.timeBoosted == null) {
                                 logger.warn { "Deleting Nitro Boost payment by ${nitroBoostPayment.userId} because user is not boosting the guild anymore! (is member null? ${member != null})" }
                                 invalidNitroPayments.add(nitroBoostPayment.userId)
 
