@@ -145,7 +145,7 @@ class DeviousCacheManager(
 
     suspend fun createGuild(
         data: DiscordGuild,
-        guildChannels: List<DiscordChannel>?,
+        guildChannelsAndThreads: List<DiscordChannel>?,
     ): Guild {
         val lightweightSnowflake = data.id.toLightweightSnowflake()
 
@@ -161,7 +161,7 @@ class DeviousCacheManager(
 
             val rolesData = data.roles.map { DeviousRoleData.from(it) }
             val emojisData = data.emojis.map { DeviousGuildEmojiData.from(it) }
-            val channelsData = guildChannels?.map { DeviousChannelData.from(data.id, it) }
+            val channelsData = guildChannelsAndThreads?.map { DeviousChannelData.from(data.id, it) }
             val membersData = guildMembers?.associate { it.user.value!!.id.toLightweightSnowflake() to DeviousMemberData.from(it) }
             val voiceStatesData = guildVoiceStates?.map { DeviousVoiceStateData.from(it) }
 

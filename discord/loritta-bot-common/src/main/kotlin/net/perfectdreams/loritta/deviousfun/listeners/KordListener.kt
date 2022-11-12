@@ -1,5 +1,6 @@
 package net.perfectdreams.loritta.deviousfun.listeners
 
+import dev.kord.common.entity.DiscordChannel
 import dev.kord.common.entity.PresenceStatus
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.optional.value
@@ -200,7 +201,19 @@ class KordListener(val m: DeviousShard) {
 
                     val (guild, duration) = measureTimedValue {
                         // Even if it is cached, we will create a guildAndJoinStatus entity here to update the guildAndJoinStatus on the cache
-                        getCacheManager().createGuild(it.guild, it.guild.channels.value)
+                        val channels = mutableListOf<DiscordChannel>()
+                        val channelsFromGuildCreate = it.guild.channels.value
+                        val threadsFromGuildCreate = it.guild.threads.value
+
+                        if (channelsFromGuildCreate != null) {
+                            channels.addAll(channelsFromGuildCreate)
+                        }
+
+                        if (threadsFromGuildCreate != null) {
+                            channels.addAll(threadsFromGuildCreate)
+                        }
+
+                        getCacheManager().createGuild(it.guild, channels)
                     }
 
                     // logger.info { "GuildCreate for ${guildAndJoinStatus.guild.idSnowflake} (shard $shardId) took $duration!" }
@@ -253,7 +266,8 @@ class KordListener(val m: DeviousShard) {
                         return
 
                     // Create a guild entity here to update the guild on the cache
-                    getCacheManager().createGuild(it.guild, it.guild.channels.value)
+                    // Channels are always null on a GuildUpdate
+                    getCacheManager().createGuild(it.guild, null)
 
                     // We won't trigger a guild create or a guild ready, because that would be too much hassle (Example: How would we check if we already fired a GuildReady?)
                 }
