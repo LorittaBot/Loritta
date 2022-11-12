@@ -59,6 +59,7 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
                     "guilds" to shard.guildsOnThisShard.size,
                     "unavailableGuilds" to shard.unavailableGuilds.size,
                     "totalGuildEventsQueues" to shard.queuedGuildEvents.size,
+                    "pendingReceivedEventsOnQueue" to shard.deviousGateway.receivedEvents.size,
                     "cachedGuilds" to shard.cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing.value?.guilds?.size,
                     // "userCount" to shard.userCache.size()
                 )
