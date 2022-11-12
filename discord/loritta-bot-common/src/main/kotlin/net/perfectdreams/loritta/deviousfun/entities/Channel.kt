@@ -193,8 +193,6 @@ class Channel(
         if (type in ALWAYS_CAN_TALK_CHANNEL_TYPES)
             return true
 
-        val guild = guildOrNull ?: error("Can't check if the bot can talk in a channel that has a null guild!")
-
         return member.hasPermission(Permission.SendMessages)
     }
 
