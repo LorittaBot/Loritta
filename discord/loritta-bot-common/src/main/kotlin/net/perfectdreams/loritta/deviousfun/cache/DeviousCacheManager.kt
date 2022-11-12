@@ -504,27 +504,29 @@ class DeviousCacheManager(
             val oldMemberData = oldMember
             val newMemberData = deviousMemberData
 
-            if (oldMemberData != null) {
-                val oldTimeBoosted = oldMemberData.premiumSince
-                val newTimeBoosted = newMemberData.premiumSince
+            // Yes, I know, this isn't within the != null check
+            // JDA also handles update boost time in the same way
+            val oldTimeBoosted = oldMemberData?.premiumSince
+            val newTimeBoosted = newMemberData.premiumSince
 
-                if (oldTimeBoosted != newTimeBoosted) {
-                    triggeredEventsDueToCacheUpdate.send {
-                        m.forEachListeners(
-                            GuildMemberUpdateBoostTimeEvent(
-                                m,
-                                m.deviousGateway,
-                                guild,
-                                user,
-                                member,
-                                oldTimeBoosted?.toJavaInstant()?.atOffset(ZoneOffset.UTC),
-                                newTimeBoosted?.toJavaInstant()?.atOffset(ZoneOffset.UTC)
-                            ),
-                            ListenerAdapter::onGuildMemberUpdateBoostTime
-                        )
-                    }
+            if (oldTimeBoosted != newTimeBoosted) {
+                triggeredEventsDueToCacheUpdate.send {
+                    m.forEachListeners(
+                        GuildMemberUpdateBoostTimeEvent(
+                            m,
+                            m.deviousGateway,
+                            guild,
+                            user,
+                            member,
+                            oldTimeBoosted?.toJavaInstant()?.atOffset(ZoneOffset.UTC),
+                            newTimeBoosted?.toJavaInstant()?.atOffset(ZoneOffset.UTC)
+                        ),
+                        ListenerAdapter::onGuildMemberUpdateBoostTime
+                    )
                 }
+            }
 
+            if (oldMemberData != null) {
                 val oldNickname = oldMemberData.nick
                 val newNickname = newMemberData.nick
 
