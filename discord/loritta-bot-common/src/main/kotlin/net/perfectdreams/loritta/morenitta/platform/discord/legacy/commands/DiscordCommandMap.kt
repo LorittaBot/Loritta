@@ -76,6 +76,7 @@ class DiscordCommandMap(val loritta: LorittaBot) : CommandMap<Command<CommandCon
             ScratchCardCommand(loritta),
             ScratchCardTopCommand(loritta),
             CoinFlipBetCommand(loritta),
+            CoinFlipBetStatsCommand(loritta),
             EmojiFightCommand(loritta),
             EmojiFightBetCommand(loritta),
 
