@@ -86,7 +86,7 @@ class PatchServerConfigRoute(
             if (payloadHandlerClass != null) {
                 val guildId = guild.idLong
 
-                val payloadHandler = payloadHandlerClass.getDeclaredConstructor().newInstance()
+                val payloadHandler = payloadHandlerClass.getDeclaredConstructor(LorittaBot::class.java).newInstance(loritta)
                 payloadHandler.process(config, userIdentification, serverConfig, guild)
 
                 val actionType = WebAuditLogUtils.fromTargetType(type)
