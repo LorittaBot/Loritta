@@ -193,7 +193,7 @@ class Channel(
         if (type in ALWAYS_CAN_TALK_CHANNEL_TYPES)
             return true
 
-        return member.hasPermission(Permission.SendMessages)
+        return member.hasPermission(this, Permission.SendMessages)
     }
 
     suspend fun deleteMessageById(id: String) {
