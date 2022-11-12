@@ -641,7 +641,7 @@ class LorittaBot(
                     gateway.kordGateway.installDiscordInteraKTions(interaKTions)
 
                     scope.launch {
-                        gateway.events.collect {
+                        gateway.kordGateway.events.collect {
                             DiscordGatewayEventsProcessorMetrics.gatewayEventsReceived
                                 .labels(shardId.toString(), it::class.simpleName ?: "Unknown")
                                 .inc()
@@ -656,31 +656,11 @@ class LorittaBot(
                         }
                     }
 
-                    // Start "handover" process for resumed shards, where the previous collector is cancelled, events are replayed and the proper listener is registered
-                    val upgradedResumedGateway = upgradedDeviousGateways.asSequence()
-                        .filterIsInstance<LorittaLauncher.UpgradedGatewayResult.ResumedGateway>()
-                        .firstOrNull { it.deviousGateway.shardId == shardId }
-
+                    // Start "handover" process for resumed shards
                     val kordListener = KordListener(shard)
-                    if (upgradedResumedGateway != null) {
-                        val pendingReceivedEvents = upgradedResumedGateway.receivedEvents
-
-                        kordListener.m.replayingEventsLock.withLock {
-                            kordListener.registerCollect()
-
-                            upgradedResumedGateway.receivedEventsJob.cancel()
-
-                            logger.info { "Replaying ${pendingReceivedEvents.size} events for shard $shardId" }
-                            while (pendingReceivedEvents.isNotEmpty()) {
-                                val event = pendingReceivedEvents.pop()
-                                kordListener.processEvent(event)
-                            }
-                        }
-                    } else {
-                        // Register the collect job as is, we don't need to do anything else (yay)
-                        // We don't need to worry about events because we have a identify lock set up
-                        kordListener.registerCollect()
-                    }
+                    // Register the collect job, events on the channel will be automatically replayed in order
+                    // We don't need to worry about events because we have a identify lock set up
+                    kordListener.registerCollect()
                 }
             }
         }

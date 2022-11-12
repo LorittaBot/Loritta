@@ -25,6 +25,7 @@ import net.perfectdreams.loritta.deviousfun.events.message.update.MessageUpdateE
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.deviousfun.utils.*
+import net.perfectdreams.loritta.morenitta.LorittaBot
 import org.jetbrains.exposed.sql.SchemaUtils
 import java.io.File
 import java.util.*
@@ -53,12 +54,11 @@ class KordListener(val m: DeviousShard) {
             }
         }
 
+        logger.info { "Replaying ${gateway.receivedEvents.size} events for shard $shardId" }
+
         gateway.kordGateway.launch {
-            gateway.events.collect {
-                // This is used to avoid processing events while we are replaying events
-                m.replayingEventsLock.withLock {
-                    processEvent(it)
-                }
+            for (event in gateway.receivedEvents) {
+                processEvent(event)
             }
         }
     }
@@ -75,7 +75,7 @@ class KordListener(val m: DeviousShard) {
             // Debug
             if (shardId == 597 || shardId == 586 || shardId == 606)
                 logger.info { "Event ${it::class.simpleName} on Shard $shardId: $it" }
-            
+
             if (it is DispatchEvent) {
                 // Update sequence ID
                 val sequenceId = it.sequence

@@ -69,7 +69,6 @@ class DeviousShard(
 
     val guildsOnThisShard = mutableSetOf<Snowflake>()
     val unavailableGuilds = mutableSetOf<Snowflake>()
-    val replayingEventsLock = Mutex()
 
     /**
      * Gets the [DeviousCacheManager], and suspends if the [DeviousCacheManager] is not set yet

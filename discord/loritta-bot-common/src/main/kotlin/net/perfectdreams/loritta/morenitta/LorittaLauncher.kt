@@ -10,7 +10,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
@@ -25,6 +24,7 @@ import net.perfectdreams.loritta.deviouscache.data.*
 import net.perfectdreams.loritta.deviousfun.DeviousShard
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheDatabase
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
+import net.perfectdreams.loritta.deviousfun.gateway.EventsChannel
 import net.perfectdreams.loritta.deviousfun.gateway.ParallelIdentifyRateLimiter
 import net.perfectdreams.loritta.deviousfun.tables.*
 import net.perfectdreams.loritta.deviousfun.utils.CacheEntityMaps
@@ -37,9 +37,7 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import java.io.File
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
 import javax.imageio.ImageIO
-import kotlin.system.exitProcess
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.measureTimedValue
@@ -188,12 +186,13 @@ object LorittaLauncher {
                         logger.info { "Resuming shard $shardId... Hang tight!" }
 
                         val result = Channel<Boolean>()
-                        val receivedEvents = LinkedList<Event>()
 
+                        val receivedEvents = EventsChannel()
                         val receivedEventsJob = gateway.launch {
                             gateway.events.collect {
-                                // Cache events, they will be replayed after the cache has finished loading
-                                receivedEvents.push(it)
+                                // Collect events to our channel
+                                // This job should NOT be cancelled!
+                                receivedEvents.send(it)
                             }
                         }
 
@@ -399,7 +398,7 @@ object LorittaLauncher {
                             // Detaching the gateway cancel the coroutine scope automatically, so we don't need to cancel the jobs manually
                             gateway.detach()
                             result.cancel()
-                            receivedEvents.clear()
+                            receivedEvents.close()
 
                             // Close the open database
                             TransactionManager.closeAndUnregister(database)
@@ -416,9 +415,6 @@ object LorittaLauncher {
                 jobs.awaitAll()
             }
 
-            // idk what this should return tbh
-            // TODO: Upgrade these to a DeviousGateway instance
-            // TODO: Upgrade these to a DeviousShard instance? The DeviousShard requires a Loritta reference so it may be out of scope
             logger.info { "Gateway Results (Took $gatewayResultsDuration): ${gatewayResults.count { it is GatewayBootstrapResult.ResumedGateway }} shards were resumed, ${gatewayResults.count { it is GatewayBootstrapResult.FailedToResume }} shards needs to start from scratch" }
             if (gatewayResults.count { it is GatewayBootstrapResult.ResumedGateway } == (maxShard + 1) - minShard) {
                 // Is this a Splatoon™ reference??
@@ -435,13 +431,13 @@ object LorittaLauncher {
                             DeviousGateway(
                                 it.gateway,
                                 it.shardId,
-                                it.status
+                                it.status,
+                                it.receivedEventsJob,
+                                it.receivedEvents
                             ),
                             it.database,
                             it.cacheEntityMaps,
-                            it.gatewaySession,
-                            it.receivedEventsJob,
-                            it.receivedEvents
+                            it.gatewaySession
                         )
                     }
 
@@ -454,6 +450,15 @@ object LorittaLauncher {
                             this.identifyRateLimiter = it.parallelIdentifyRateLimiter
                         }
 
+                        val receivedEvents = EventsChannel()
+                        val receivedEventsJob = gateway.launch {
+                            gateway.events.collect {
+                                // Collect events to our channel
+                                // This job should NOT be cancelled!
+                                receivedEvents.send(it)
+                            }
+                        }
+
                         val gatewayJob = gatewayScope.launch {
                             it.status.value = DeviousGateway.Status.WAITING_TO_CONNECT
                             gateway.start(config.loritta.discord.token, createGatewayConfiguration(config.loritta.discord.activity.name, lorittaCluster, it.shardId, config.loritta.discord.maxShards))
@@ -463,7 +468,9 @@ object LorittaLauncher {
                             DeviousGateway(
                                 gateway,
                                 it.shardId,
-                                it.status
+                                it.status,
+                                receivedEventsJob,
+                                receivedEvents
                             )
                         )
                     }
@@ -531,7 +538,7 @@ object LorittaLauncher {
             val parallelIdentifyRateLimiter: ParallelIdentifyRateLimiter,
             val status: MutableStateFlow<DeviousGateway.Status>,
             val receivedEventsJob: Job,
-            val receivedEvents: LinkedList<Event>
+            val receivedEvents: EventsChannel
         ) : GatewayBootstrapResult(shardId)
 
         class FailedToResume(
@@ -546,9 +553,7 @@ object LorittaLauncher {
             val deviousGateway: DeviousGateway,
             val cacheDatabase: Database,
             val cacheEntityMaps: CacheEntityMaps,
-            val gatewaySession: DeviousGatewaySession,
-            val receivedEventsJob: Job,
-            val receivedEvents: LinkedList<Event>
+            val gatewaySession: DeviousGatewaySession
         ) : UpgradedGatewayResult()
 
         class FreshGateway(
