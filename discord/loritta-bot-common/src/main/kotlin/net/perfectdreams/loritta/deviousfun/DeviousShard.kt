@@ -8,6 +8,7 @@ import dev.kord.rest.request.KtorRequestException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
 import mu.KotlinLogging
 import net.perfectdreams.loritta.deviouscache.data.*
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
@@ -68,6 +69,7 @@ class DeviousShard(
 
     val guildsOnThisShard = mutableSetOf<Snowflake>()
     val unavailableGuilds = mutableSetOf<Snowflake>()
+    val replayingEventsLock = Mutex()
 
     /**
      * Gets the [DeviousCacheManager], and suspends if the [DeviousCacheManager] is not set yet

@@ -38,7 +38,6 @@ class KordListener(val m: DeviousShard) {
         private val logger = KotlinLogging.logger {}
     }
 
-    val replayingEventsLock = Mutex()
     private val gateway: DeviousGateway
         get() = m.deviousGateway
     private val shardId: Int
@@ -57,7 +56,7 @@ class KordListener(val m: DeviousShard) {
         gateway.kordGateway.launch {
             gateway.events.collect {
                 // This is used to avoid processing events while we are replaying events
-                replayingEventsLock.withLock {
+                m.replayingEventsLock.withLock {
                     processEvent(it)
                 }
             }
