@@ -16,7 +16,8 @@ class DeviousShards(
 
     // To avoid suspending while there are shards with a null cache manager, we will only get shards that have a non-null cache manager
     // However, this may still suspend due to race conditions
-    val connectedShards = shards.filter { it.cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing.value != null }
+    val connectedShards
+        get() = shards.values.filter { it.cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing.value != null }
 
     fun registerListeners(vararg listeners: ListenerAdapter) = shards.values.forEach {
         it.registerListeners(*listeners)
