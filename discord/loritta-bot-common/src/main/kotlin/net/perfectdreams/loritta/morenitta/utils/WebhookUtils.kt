@@ -34,7 +34,7 @@ object WebhookUtils {
                 it.type == WebhookType.Incoming && it.ownerAsUser?.idLong == selfUser.idLong
             }
 
-        val webhooks = webhookList.filter { it.channel == textChannel }
+        val webhooks = webhookList.filter { it.channelId == textChannel.idSnowflake }
         val webhook = if (webhooks.isEmpty()) {
             try { // try catch, já que pelo visto a verificação acima falha as vezes
                 textChannel.createWebhook(name)

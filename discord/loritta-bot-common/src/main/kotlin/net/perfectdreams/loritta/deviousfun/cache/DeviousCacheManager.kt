@@ -164,6 +164,19 @@ class DeviousCacheManager(
             // We are going to execute everything at the same time
             val cacheActions = mutableListOf<DeviousCacheDatabase.DirtyEntitiesWrapper.() -> (Unit)>()
 
+            if (guildMembers != null) {
+                for (member in guildMembers) {
+                    val userData = member.user.value!!
+                    val deviousUserData = DeviousUserData.from(userData)
+                    val lightweightUserId = userData.id.toLightweightSnowflake()
+                    users[lightweightUserId] = deviousUserData
+
+                    cacheActions.add {
+                        this.users[lightweightUserId] = DatabaseCacheValue.Value(deviousUserData)
+                    }
+                }
+            }
+
             // logger.info { "Updating guild with ID $lightweightSnowflake" }
 
             val cachedGuild = guilds[lightweightSnowflake]

@@ -180,6 +180,8 @@ class Guild(
         }
     }
 
+    fun getChannelById(id: String) = channels.firstOrNull { it.id == id }
+    fun getChannelById(id: Long) = channels.firstOrNull { it.idLong == id }
     fun getTextChannelById(id: String) = textChannels.firstOrNull { it.id == id }
     fun getTextChannelById(id: Long) = textChannels.firstOrNull { it.idLong == id }
     fun getTextChannelsByName(name: String, ignoreCase: Boolean) =
@@ -284,7 +286,8 @@ class Guild(
             .map {
                 Webhook(
                     deviousShard,
-                    deviousShard.retrieveChannelById(this@Guild, it.channelId),
+                    it.channelId,
+                    getChannelById(it.channelId.toLong()),
                     it.user.value?.let { deviousShard.getCacheManager().createUser(it, true) },
                     it
                 )

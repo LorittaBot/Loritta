@@ -149,57 +149,6 @@ class DeviousShard(
         }
     }
 
-    suspend fun retrieveGuildById(id: Snowflake): Guild {
-        val cachedGuild = getGuildById(id)
-        if (cachedGuild != null)
-            return cachedGuild
-
-        addContextToException({ "Something went wrong while trying to query guild $id" }) {
-            val guild = loritta.rest.guild.getGuild(id, withCounts = true)
-            val channels = loritta.rest.guild.getGuildChannels(id)
-            return getCacheManager().createGuild(guild, channels)
-        }
-    }
-
-    suspend fun retrieveGuildOrNullById(id: Snowflake): Guild? {
-        try {
-            return retrieveGuildById(id)
-        } catch (e: KtorRequestException) {
-            if (e.error?.code == JsonErrorCode.MissingAccess)
-                return null
-
-            throw e
-        }
-    }
-
-    suspend fun retrieveChannelById(id: Snowflake): Channel {
-        val cachedChannel = getChannelById(id)
-        if (cachedChannel != null)
-            return cachedChannel
-
-        addContextToException({ "Something went wrong while trying to query channel $id" }) {
-            val channel = loritta.rest.channel.getChannel(id)
-
-            // If the guild is null, fallback to a non cached channel instance
-            val guild = channel.guildId.value?.let { retrieveGuildById(it) }
-                ?: return Channel(this, null, DeviousChannelData.from(null, channel))
-
-
-            return getCacheManager().createChannel(guild, channel)
-        }
-    }
-
-    suspend fun retrieveChannelById(guild: Guild, id: Snowflake): Channel {
-        val cachedChannel = getChannelById(id)
-        if (cachedChannel != null)
-            return cachedChannel
-
-        addContextToException({ "Something went wrong while trying to query channel $id in guild ${guild.idSnowflake}" }) {
-            val channel = loritta.rest.channel.getChannel(id)
-            return getCacheManager().createChannel(guild, channel)
-        }
-    }
-
     suspend fun getMutualGuilds(user: User): List<Guild> {
         val lightweightSnowflake = user.idSnowflake.toLightweightSnowflake()
         val mutualGuildIds = mutableSetOf<LightweightSnowflake>()

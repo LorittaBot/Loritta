@@ -7,7 +7,8 @@ import net.perfectdreams.loritta.deviousfun.DeviousShard
 
 class Webhook(
     val deviousShard: DeviousShard,
-    val channel: Channel,
+    val channelId: Snowflake,
+    val channel: Channel?,
     val ownerAsUser: User?,
     val webhook: DiscordWebhook
 ) : IdentifiableSnowflake {

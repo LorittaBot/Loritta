@@ -224,7 +224,8 @@ class Channel(
             .map {
                 Webhook(
                     deviousShard,
-                    deviousShard.retrieveChannelById(guild, it.channelId),
+                    it.channelId,
+                    this,
                     it.user.value?.let { deviousShard.getCacheManager().createUser(it, false) },
                     it
                 )
@@ -235,6 +236,7 @@ class Channel(
         val webhook = deviousShard.loritta.rest.webhook.createWebhook(channel.id.toKordSnowflake(), name) {}
         return Webhook(
             deviousShard,
+            this.idSnowflake,
             this,
             webhook.user.value?.let { deviousShard.getCacheManager().createUser(it, false) },
             deviousShard.loritta.rest.webhook.createWebhook(channel.id.toKordSnowflake(), name) {}
