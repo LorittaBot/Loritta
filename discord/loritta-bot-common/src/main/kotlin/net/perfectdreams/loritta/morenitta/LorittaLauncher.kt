@@ -10,6 +10,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.debug.DebugProbes
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.*
@@ -137,6 +138,12 @@ object LorittaLauncher {
             val jobs = (minShard..maxShard).map { shardId ->
                 async(Dispatchers.IO) {
                     val status: MutableStateFlow<DeviousGateway.Status> = MutableStateFlow(DeviousGateway.Status.UNKNOWN)
+
+                    gatewayScope.launch {
+                        status.collect {
+                            logger.info { "Shard $shardId new status is $it" }
+                        }
+                    }
 
                     val identifyRateLimiter = ParallelIdentifyRateLimiter(
                         shardId,
