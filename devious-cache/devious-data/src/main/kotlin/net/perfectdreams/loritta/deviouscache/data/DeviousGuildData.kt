@@ -17,15 +17,19 @@ data class DeviousGuildData(
     val bannerId: String?
 ) {
     companion object {
-        fun from(data: DiscordGuild) = DeviousGuildData(
+        // Member Count is only available via the GuildCreate gateway event
+        fun from(
+            data: DiscordGuild,
+            premiumSubscriptionCount: Int,
+            memberCount: Int
+        ) = DeviousGuildData(
             data.id.toLightweightSnowflake(),
             data.name,
             data.ownerId.toLightweightSnowflake(),
             data.icon,
             data.vanityUrlCode,
-            data.premiumSubscriptionCount.value ?: 0,
-            // This is only available via the gateway GuildCreate event
-            data.memberCount.value ?: 0,
+            premiumSubscriptionCount,
+            memberCount,
             data.splash.value,
             data.banner,
         )
