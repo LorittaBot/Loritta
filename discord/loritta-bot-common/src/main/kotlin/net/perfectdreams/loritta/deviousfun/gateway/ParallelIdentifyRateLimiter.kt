@@ -51,64 +51,72 @@ class ParallelIdentifyRateLimiter(
         // PostgreSQL should handle conflicts by itself, so if two instances try to edit the same column at the same time, a concurrent modification exception will happen
         // If randomKey == null, then this bucket is already being used
         // If randomKey != null, then this bucket isn't being used
-        val randomKey = pudding.transaction {
-            val currentStatus = ConcurrentLoginBuckets.select {
-                ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.lockedAt greaterEq Instant.now().minusSeconds(60))
-            }.firstOrNull()
+        try {
+            val randomKey = pudding.transaction {
+                val currentStatus = ConcurrentLoginBuckets.select {
+                    ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.lockedAt greaterEq Instant.now()
+                        .minusSeconds(60))
+                }.firstOrNull()
 
-            if (currentStatus != null) {
-                return@transaction null
-            } else {
-                val newRandomKey = Base64.getEncoder().encodeToString(random.nextBytes(20))
+                if (currentStatus != null) {
+                    return@transaction null
+                } else {
+                    val newRandomKey = Base64.getEncoder().encodeToString(random.nextBytes(20))
 
-                ConcurrentLoginBuckets.upsert(ConcurrentLoginBuckets.id) {
-                    it[ConcurrentLoginBuckets.id] = bucketId
-                    it[ConcurrentLoginBuckets.randomKey] = newRandomKey
-                    it[ConcurrentLoginBuckets.lockedAt] = Instant.now()
+                    ConcurrentLoginBuckets.upsert(ConcurrentLoginBuckets.id) {
+                        it[ConcurrentLoginBuckets.id] = bucketId
+                        it[ConcurrentLoginBuckets.randomKey] = newRandomKey
+                        it[ConcurrentLoginBuckets.lockedAt] = Instant.now()
+                    }
+
+                    return@transaction newRandomKey
                 }
-
-                return@transaction newRandomKey
             }
-        }
 
-        if (randomKey != null) {
-            // We need to create a new coroutine to let the gateway login
-            GlobalScope.launch {
-                gatewayStatus.value = DeviousGateway.Status.IDENTIFYING
+            if (randomKey != null) {
+                // We need to create a new coroutine to let the gateway login
+                GlobalScope.launch {
+                    gatewayStatus.value = DeviousGateway.Status.IDENTIFYING
 
-                // Acquired lock! We can login, yay!! :3
-                logger.info { "Successfully acquired lock for bucket $bucketId (shard $shardId)!" }
+                    // Acquired lock! We can login, yay!! :3
+                    logger.info { "Successfully acquired lock for bucket $bucketId (shard $shardId)!" }
 
-                val result = withTimeoutOrNull(15.seconds) {
-                    events.first {
-                        it is Ready || it is InvalidSession || it is Close
+                    val result = withTimeoutOrNull(15.seconds) {
+                        events.first {
+                            it is Ready || it is InvalidSession || it is Close
+                        }
+                    }
+
+                    if (result is Ready) {
+                        logger.info { "Bucket $bucketId (shard $shardId) successfully logged in!" }
+
+                        // After it is ready, we will wait 5000ms to release the lock
+                        delay(5.seconds)
+                    }
+
+                    logger.info { "Trying to release lock for bucket $bucketId (shard $shardId)... - Successfully logged in? ${result is Ready}" }
+
+                    val deletedBucketsCount = pudding.transaction {
+                        ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.randomKey eq randomKey) }
+                    }
+
+                    when (deletedBucketsCount) {
+                        0 -> logger.warn { "Couldn't release lock for bucket $bucketId (shard $shardId) because our random key does not match or the bucket was already released!" }
+                        else -> logger.info { "Successfully released lock for bucket $bucketId (shard $shardId)!" }
                     }
                 }
-
-                if (result is Ready) {
-                    logger.info { "Bucket $bucketId (shard $shardId) successfully logged in!" }
-
-                    // After it is ready, we will wait 5000ms to release the lock
-                    delay(5.seconds)
-                }
-
-                logger.info { "Trying to release lock for bucket $bucketId (shard $shardId)... - Successfully logged in? ${result is Ready}" }
-
-                val deletedBucketsCount = pudding.transaction {
-                    ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.randomKey eq randomKey) }
-                }
-
-                when (deletedBucketsCount) {
-                    0 -> logger.warn { "Couldn't release lock for bucket $bucketId (shard $shardId) because our random key does not match or the bucket was already released!" }
-                    else -> logger.info { "Successfully released lock for bucket $bucketId (shard $shardId)!" }
-                }
+            } else {
+                // Couldn't acquire lock, let's wait...
+                logger.info { "Couldn't acquire lock for bucket $bucketId (shard $shardId), let's wait and try again later..." }
+                gatewayStatus.value = DeviousGateway.Status.WAITING_FOR_BUCKET
+                delay(1_000)
+                // And try again!
+                return consume(shardId, events)
             }
-        } else {
-            // Couldn't acquire lock, let's wait...
-            logger.info { "Couldn't acquire lock for bucket $bucketId (shard $shardId), let's wait and try again later..." }
-            gatewayStatus.value = DeviousGateway.Status.WAITING_FOR_BUCKET
-            delay(1_000)
-            // And try again!
+        } catch (e: Exception) {
+            logger.warn { "Something went wrong while trying to acquire lock for bucket $bucketId (shard $shardId), let's wait and try again later..." }
+
+            delay(15_000)
             return consume(shardId, events)
         }
     }
