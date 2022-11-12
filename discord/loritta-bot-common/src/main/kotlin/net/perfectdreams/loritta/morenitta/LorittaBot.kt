@@ -19,7 +19,7 @@ import dev.kord.rest.builder.message.create.UserMessageCreateBuilder
 import dev.kord.rest.ratelimit.ParallelRequestRateLimiter
 import dev.kord.rest.request.KtorRequestException
 import dev.kord.rest.request.KtorRequestHandler
-import dev.kord.rest.request.withStackTraceRecovery
+import dev.kord.rest.request.StackTraceRecoveringKtorRequestHandler
 import dev.kord.rest.service.RestClient
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
@@ -116,6 +116,7 @@ import net.perfectdreams.loritta.deviousfun.events.message.create.MessageReceive
 import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.deviousfun.listeners.KordListener
+import net.perfectdreams.loritta.deviousfun.requests.DeviousKtorRequestHandler
 import net.perfectdreams.loritta.morenitta.dao.*
 import net.perfectdreams.loritta.morenitta.modules.WelcomeModule
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandMap
@@ -213,12 +214,7 @@ class LorittaBot(
 
     @OptIn(KordUnsafe::class)
     private val ktorRequestHandler = MetricsKtorRequestHandler(
-        KtorRequestHandler(
-            config.loritta.discord.token,
-            // By default, Kord uses ExclusionRequestRateLimiter, and that suspends all coroutines if a request is ratelimited
-            // So we need to use the ParallelRequestRateLimiter
-            requestRateLimiter = ParallelRequestRateLimiter()
-        ).withStackTraceRecovery()
+        DeviousKtorRequestHandler(config.loritta.discord.token)
     )
 
     val rest = RestClient(ktorRequestHandler)
