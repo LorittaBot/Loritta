@@ -2,8 +2,10 @@ package net.perfectdreams.loritta.morenitta.website.routes.api.v1.loritta
 
 import com.github.salomonbrys.kotson.jsonArray
 import com.github.salomonbrys.kotson.jsonObject
+import com.github.salomonbrys.kotson.put
 import com.github.salomonbrys.kotson.set
 import io.ktor.server.application.*
+import net.perfectdreams.loritta.cinnamon.discord.utils.toLong
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.website.utils.extensions.respondJson
 import net.perfectdreams.sequins.ktor.BaseRoute
@@ -51,6 +53,7 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
 
         // TODO - DeviousFun
         for ((shardId, shard) in loritta.deviousShards.shards) {
+            val guildEventsQueues = jsonArray()
             array.add(
                 jsonObject(
                     "id" to shard.shardId,
@@ -59,6 +62,11 @@ class GetStatusRoute(val loritta: LorittaBot) : BaseRoute("/api/v1/loritta/statu
                     "guilds" to shard.guildsOnThisShard.size,
                     "unavailableGuilds" to shard.unavailableGuilds.size,
                     "totalGuildEventsQueues" to shard.queuedGuildEvents.size,
+                    "guildEventsQueues" to jsonObject().apply {
+                        for (x in shard.queuedGuildEvents) {
+                            this[x.key.toString()] = x.value.size
+                        }
+                    },
                     "pendingReceivedEventsOnQueue" to shard.deviousGateway.receivedEvents.size,
                     "cachedGuilds" to shard.cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing.value?.guilds?.size,
                     // "userCount" to shard.userCache.size()
