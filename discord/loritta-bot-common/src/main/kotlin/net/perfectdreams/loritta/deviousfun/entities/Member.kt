@@ -59,7 +59,7 @@ class Member(val deviousShard: DeviousShard, val member: DeviousMemberData, val 
     }
 
     suspend fun getPermissions(channel: Channel): PermissionsWrapper {
-        return PermissionsWrapper(deviousShard.loritta.cache.getPermissions(guild.idSnowflake, user.idSnowflake, channel.idSnowflake).permissions)
+        return PermissionsWrapper(deviousShard.loritta.cache.getPermissions(guild.idSnowflake, channel.idSnowflake, user.idSnowflake).also { println(it) } .permissions)
     }
 
     suspend fun canInteract(member: Member): Boolean {
