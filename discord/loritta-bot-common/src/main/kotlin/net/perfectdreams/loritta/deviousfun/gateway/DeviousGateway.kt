@@ -5,6 +5,7 @@ import dev.kord.gateway.Event
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import mu.KotlinLogging
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.time.Duration
 
 /**
