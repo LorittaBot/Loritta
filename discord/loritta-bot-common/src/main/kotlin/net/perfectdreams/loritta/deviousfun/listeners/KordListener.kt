@@ -84,7 +84,7 @@ class KordListener(val m: DeviousShard) {
                 is Close -> {
                     gateway.status.value = DeviousGateway.Status.DISCONNECTED
 
-                    logger.info { "Received close event for $shardId - $this" }
+                    logger.info { "Received close event for shard $shardId - $this" }
                 }
                 is Ready -> {
                     // This is used to avoid triggering the onGuildReady spam on subsequent Resumes on full shard login
