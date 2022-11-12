@@ -72,6 +72,10 @@ class KordListener(val m: DeviousShard) {
         // that can trigger a cache manager change is a Ready event
         // TODO: Maybe synchronize cache changes to this call? This way, even if other threads modify the cache, it would still be executed sequentially (sort of)
         try {
+            // Debug
+            if (shardId == 597 || shardId == 586 || shardId == 606)
+                logger.info { "Event ${it::class.simpleName} on Shard $shardId: $it" }
+            
             if (it is DispatchEvent) {
                 // Update sequence ID
                 val sequenceId = it.sequence
