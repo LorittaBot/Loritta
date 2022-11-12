@@ -665,7 +665,7 @@ class LorittaBot(
                     if (upgradedResumedGateway != null) {
                         val pendingReceivedEvents = upgradedResumedGateway.receivedEvents
 
-                        kordListener.replayingEventsLock.withLock {
+                        kordListener.m.replayingEventsLock.withLock {
                             kordListener.registerCollect()
 
                             upgradedResumedGateway.receivedEventsJob.cancel()
