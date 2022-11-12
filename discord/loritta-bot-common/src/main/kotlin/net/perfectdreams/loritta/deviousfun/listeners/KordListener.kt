@@ -586,6 +586,48 @@ class KordListener(val m: DeviousShard) {
                     // Delete channel, this will delete the channel from cache
                     getCacheManager().deleteChannel(guild, it.channel.id)
                 }
+                is ThreadCreate -> {
+                    if (queueEventIfGuildIsUnavailable(it, it.channel.guildId.value))
+                        return
+
+                    val guildId = it.channel.guildId.value ?: return
+                    val guild = getCacheManager().getGuild(guildId)
+                    if (guild == null) {
+                        logger.warn { "Received thread create for a guild that we don't have in our cache! Guild ID: ${it.channel.guildId}; Channel ID: ${it.channel.id}" }
+                        return
+                    }
+
+                    // Create channel instance, this will store the channel in cache
+                    getCacheManager().createChannel(guild, it.channel)
+                }
+                is ThreadUpdate -> {
+                    if (queueEventIfGuildIsUnavailable(it, it.channel.guildId.value))
+                        return
+
+                    val guildId = it.channel.guildId.value ?: return
+                    val guild = getCacheManager().getGuild(guildId)
+                    if (guild == null) {
+                        logger.warn { "Received thread update for a guild that we don't have in our cache! Guild ID: ${it.channel.guildId}; Channel ID: ${it.channel.id}" }
+                        return
+                    }
+
+                    // Create channel instance, this will store the channel in cache
+                    getCacheManager().createChannel(guild, it.channel)
+                }
+                is ThreadDelete -> {
+                    if (queueEventIfGuildIsUnavailable(it, it.channel.guildId.value))
+                        return
+
+                    val guildId = it.channel.guildId.value ?: return
+                    val guild = getCacheManager().getGuild(guildId)
+                    if (guild == null) {
+                        logger.warn { "Received thread delete for a guild that we don't have in our cache! Guild ID: ${it.channel.guildId}; Channel ID: ${it.channel.id}" }
+                        return
+                    }
+
+                    // Delete channel, this will delete the channel from cache
+                    getCacheManager().deleteChannel(guild, it.channel.id)
+                }
                 is VoiceStateUpdate -> {
                     if (queueEventIfGuildIsUnavailable(it, it.voiceState.guildId.value))
                         return
