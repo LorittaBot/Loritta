@@ -113,6 +113,7 @@ import net.perfectdreams.loritta.deviousfun.DeviousShard
 import net.perfectdreams.loritta.deviousfun.DeviousShards
 import net.perfectdreams.loritta.deviousfun.cache.DeviousCacheManager
 import net.perfectdreams.loritta.deviousfun.events.message.create.MessageReceivedEvent
+import net.perfectdreams.loritta.deviousfun.gateway.DeviousGateway
 import net.perfectdreams.loritta.deviousfun.hooks.ListenerAdapter
 import net.perfectdreams.loritta.deviousfun.listeners.KordListener
 import net.perfectdreams.loritta.morenitta.dao.*
@@ -246,6 +247,14 @@ class LorittaBot(
                         it.deviousGateway,
                         channel
                     )
+
+                    // Add all guilds from the cache on the "guildsOnThisShard" map
+                    // This must be done BEFORE registering KordListener's collect, to avoid events going into the event queue even tho the guild is cached and does exist
+                    // (before we were doing this process on Resume, however the Resume event is only sent AFTER all the replayed events are received)
+                    //
+                    // The unavailable list won't be filled, but I don't think that's a huge deal?
+                    shard.guildsOnThisShard.addAll(it.cacheEntityMaps.guilds.keys.map { Snowflake(it) })
+
                     // We need to initialize the manager later since we need a DeviousShard reference in the constructor
                     shard.cacheManagerDoNotUseThisUnlessIfYouKnowWhatYouAreDoing.value = DeviousCacheManager(
                         shard,
@@ -656,8 +665,9 @@ class LorittaBot(
                         }
                     }
 
-                    // Start "handover" process for resumed shards
+                    // Start "handover" process
                     val kordListener = KordListener(shard)
+
                     // Register the collect job, events on the channel will be automatically replayed in order
                     // We don't need to worry about events because we have a identify lock set up
                     kordListener.registerCollect()

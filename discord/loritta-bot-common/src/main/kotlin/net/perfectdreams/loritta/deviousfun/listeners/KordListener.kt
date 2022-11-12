@@ -169,10 +169,6 @@ class KordListener(val m: DeviousShard) {
                         playing(m.createActivityTextWithShardAndClusterId(m.loritta.config.loritta.discord.activity.name))
                     }
 
-                    // Add all guilds from the cache on the "guildsOnThisShard" map
-                    // The unavailable list won't be filled, but I don't think that's a huge deal?
-                    m.guildsOnThisShard.addAll(getCacheManager().guilds.keys.map { Snowflake(it) })
-
                     // If we already triggered the guild ready on this instance, then we wouldn't trigger it again
                     if (alreadyTriggeredGuildReadyOnStartup)
                         return
