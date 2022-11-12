@@ -188,17 +188,13 @@ class DeviousRateLimiter(val clock: Clock) {
             val rateLimit = rateLimitWithReset?.rateLimit
             val reset = rateLimitWithReset?.reset
 
-            // Is the rate limit null (can be null if the response doesn't have a key, example: emojis) or are we exausted?
-            if (rateLimit == null || rateLimit.isExhausted) {
+            // Are we exausted?
+            if (rateLimit?.isExhausted == true && reset != null) {
                 // Yes, we are, so we need to wait for the rate limit reset!
-                if (reset != null) {
-                    val duration = reset.value - clock.now()
-                    if (!duration.isNegative()) {
-                        logger.info { "Bucket $bucketId waiting until ${reset.value} ($duration)" }
-                        delay(duration)
-                    }
-                } else {
-                    logger.warn { "Bucket $bucketId is exausted, however we don't have any information about the reset timer" }
+                val duration = reset.value - clock.now()
+                if (!duration.isNegative()) {
+                    logger.info { "Bucket $bucketId waiting until ${reset.value} ($duration)" }
+                    delay(duration)
                 }
             }
         }
