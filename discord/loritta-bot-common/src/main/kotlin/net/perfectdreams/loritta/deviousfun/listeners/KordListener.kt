@@ -189,10 +189,16 @@ class KordListener(val m: DeviousShard) {
                     }
                 }
                 is GuildCreate -> {
-                    m.unavailableGuilds.remove(it.guild.id)
+                    if (it.guild.unavailable.value == true) {
+                        m.unavailableGuilds.add(it.guild.id)
+                    } else {
+                        m.unavailableGuilds.remove(it.guild.id)
+                    }
 
                     // The guild join status should be validated by checking the "guildsOnThisShard" list
                     val isNewGuild = m.guildsOnThisShard.contains(it.guild.id)
+
+                    logger.info { "Received GuildCreate for ${it.guild.id}, is new guild? $isNewGuild; is unavailable? ${it.guild.unavailable.value}" }
 
                     m.guildsOnThisShard.add(it.guild.id)
 
