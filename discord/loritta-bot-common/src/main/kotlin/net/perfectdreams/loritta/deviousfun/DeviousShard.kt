@@ -116,6 +116,7 @@ class DeviousShard(
             return cachedUser
 
         addContextToException({ "Something went wrong while trying to query user $id" }) {
+            logger.info { "Retrieving user $id from Discord" }
             return getCacheManager().createUser(loritta.rest.user.getUser(id), true)
         }
     }
@@ -126,7 +127,7 @@ class DeviousShard(
             return cachedUser
 
         return try {
-            getCacheManager().createUser(loritta.rest.user.getUser(id), true)
+            retrieveUserById(id)
         } catch (e: KtorRequestException) {
             return null
         }
@@ -140,6 +141,7 @@ class DeviousShard(
             return cachedMember
 
         addContextToException({ "Something went wrong while trying to query member $id in guild ${guild.idSnowflake}" }) {
+            logger.info { "Retrieving member $id of guild ${guild.idSnowflake} from Discord" }
             val member = loritta.rest.guild.getGuildMember(guild.idSnowflake, id)
 
             return getCacheManager().createMember(
@@ -186,10 +188,10 @@ class DeviousShard(
     }
 
     private inline fun <T> addContextToException(message: () -> (String), action: () -> (T)): T {
+        val exception = FakeExceptionForContextException(message.invoke())
         try {
             return action.invoke()
         } catch (e: KtorRequestException) {
-            val exception = FakeExceptionForContextException(message.invoke())
             e.addSuppressed(exception)
             throw e
         }
