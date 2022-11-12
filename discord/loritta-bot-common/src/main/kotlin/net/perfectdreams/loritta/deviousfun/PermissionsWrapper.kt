@@ -14,6 +14,6 @@ value class PermissionsWrapper(val permissions: Permissions) {
         if (adminPermissionsBypassesCheck && Permission.Administrator in permissionsToBeChecked)
             return true
 
-        return this.permissions.values.all { it in permissionsToBeChecked }
+        return permissionsToBeChecked.all { it in this.permissions.values }
     }
 }
