@@ -16,7 +16,7 @@ class EventsChannel {
         backedChannel.send(event)
     }
 
-    operator fun iterator() = backedChannel.iterator()
+    operator fun iterator() = EventsChannelIterator(this, backedChannel.iterator())
 
     fun close() = backedChannel.close()
 
