@@ -27,9 +27,8 @@ class DeviousShards(
         it.getUserById(id)
     }
 
-    suspend fun retrieveUserOrNullById(id: Snowflake) = connectedShards.firstNotNullOfOrNull {
-        it.getUserById(id)
-    }
+    suspend fun retrieveUserOrNullById(id: Snowflake) = getUserById(id) ?: shards.values.first()
+        .retrieveUserOrNullById(id)
 
     suspend fun getGuildById(id: String) = connectedShards.firstNotNullOfOrNull {
         it.getGuildById(id)
