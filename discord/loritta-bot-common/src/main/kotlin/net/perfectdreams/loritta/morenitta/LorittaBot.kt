@@ -535,6 +535,13 @@ class LorittaBot(
 
     // Inicia a Loritta
     fun start() {
+        if (true) {
+            runBlocking {
+                val user = lorittaShards.retrieveUserById(1025978114624467064)!!
+            }
+            return
+        }
+
         logger.info { "Starting Debug Web Server..." }
         debugWebServer.start()
 

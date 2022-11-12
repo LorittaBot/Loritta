@@ -43,9 +43,6 @@ class LorittaShards(val loritta: LorittaBot) {
         internal val logger = KotlinLogging.logger {}
     }
 
-    val cachedRetrievedUsers = CacheBuilder.newBuilder().expireAfterWrite(15, TimeUnit.MINUTES)
-        .build<Long, Optional<User>>()
-
     suspend fun getGuildById(id: String): Guild? = loritta.deviousShards.getGuildById(id)
     suspend fun getGuildById(id: Long): Guild? = loritta.deviousShards.getGuildById(id)
 
@@ -70,11 +67,6 @@ class LorittaShards(val loritta: LorittaBot) {
         val userInJdaCache = loritta.lorittaShards.getUserById(id)
         if (userInJdaCache != null)
             return transformUserToCachedUserInfo(userInJdaCache)
-
-        // Se não tiver, vamos verificar no cache local de retrieved users
-        val cachedRetrievedUser = cachedRetrievedUsers.getIfPresent(id)
-        if (cachedRetrievedUser != null)
-            return transformUserToCachedUserInfo(cachedRetrievedUser.get())
 
         // Se não tiver, iremos verificar na database externa
         val cachedUser = loritta.newSuspendedTransaction {
@@ -102,10 +94,6 @@ class LorittaShards(val loritta: LorittaBot) {
     suspend fun retrieveUserById(id: Long?): User? {
         if (id == null)
             return null
-
-        val cachedUser = cachedRetrievedUsers.getIfPresent(id)
-        if (cachedUser != null)
-            return cachedUser.getOrNull()
 
         val user = loritta.deviousShards.retrieveUserOrNullById(Snowflake(id))
 
