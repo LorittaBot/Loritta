@@ -5,13 +5,10 @@ import dev.kord.gateway.Event
 import dev.kord.gateway.InvalidSession
 import dev.kord.gateway.Ready
 import dev.kord.gateway.ratelimit.IdentifyRateLimiter
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withTimeoutOrNull
 import mu.KotlinLogging
 import net.perfectdreams.exposedpowerutils.sql.upsert
 import net.perfectdreams.loritta.cinnamon.pudding.Pudding
@@ -43,12 +40,16 @@ class ParallelIdentifyRateLimiter(
     }
 
     private val random = Random.Default
+    private var job: Job? = null
 
     override suspend fun consume(shardId: Int, events: SharedFlow<Event>) {
         gatewayStatus.value = DeviousGateway.Status.WAITING_FOR_IDENTIFY_LOCK
 
         // This is used to lock idenitfies until Loritta is fully booted
         identifyLock.withLock {}
+
+        gatewayStatus.value = DeviousGateway.Status.WAITING_FOR_IDENTIFY_JOB
+        job?.join()
 
         // PostgreSQL should handle conflicts by itself, so if two instances try to edit the same column at the same time, a concurrent modification exception will happen
         // If randomKey == null, then this bucket is already being used
@@ -79,34 +80,45 @@ class ParallelIdentifyRateLimiter(
 
             if (randomKey != null) {
                 // We need to create a new coroutine to let the gateway login
-                GlobalScope.launch {
-                    gatewayStatus.value = DeviousGateway.Status.IDENTIFYING
+                gatewayStatus.value = DeviousGateway.Status.IDENTIFYING
 
-                    // Acquired lock! We can login, yay!! :3
-                    logger.info { "Successfully acquired lock for bucket $bucketId (shard $shardId)!" }
+                // Acquired lock! We can login, yay!! :3
+                logger.info { "Successfully acquired lock for bucket $bucketId (shard $shardId)! Dispatching on a new scope..." }
 
-                    val result = withTimeoutOrNull(15.seconds) {
-                        events.first {
-                            it is Ready || it is InvalidSession || it is Close
+                job?.cancel()
+
+                job = GlobalScope.launch {
+                    try {
+                        val result = withTimeoutOrNull(15.seconds) {
+                            events.first {
+                                it is Ready || it is InvalidSession || it is Close
+                            }
                         }
-                    }
 
-                    if (result is Ready) {
-                        logger.info { "Bucket $bucketId (shard $shardId) successfully logged in!" }
+                        if (result is Ready) {
+                            logger.info { "Bucket $bucketId (shard $shardId) successfully logged in!" }
 
-                        // After it is ready, we will wait 5000ms to release the lock
-                        delay(5.seconds)
-                    }
+                            // After it is ready, we will wait 5000ms to release the lock
+                            delay(5.seconds)
+                        }
 
-                    logger.info { "Trying to release lock for bucket $bucketId (shard $shardId)... - Successfully logged in? ${result is Ready}" }
+                        logger.info { "Trying to release lock for bucket $bucketId (shard $shardId)... - Successfully logged in? ${result is Ready}" }
 
-                    val deletedBucketsCount = pudding.transaction {
-                        ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.randomKey eq randomKey) }
-                    }
+                        if (!this.isActive) {
+                            logger.info { "Not releasing lock for bucket $bucketId (shard $shardId) because the job has been cancelled!" }
+                            return@launch
+                        }
 
-                    when (deletedBucketsCount) {
-                        0 -> logger.warn { "Couldn't release lock for bucket $bucketId (shard $shardId) because our random key does not match or the bucket was already released!" }
-                        else -> logger.info { "Successfully released lock for bucket $bucketId (shard $shardId)!" }
+                        val deletedBucketsCount = pudding.transaction {
+                            ConcurrentLoginBuckets.deleteWhere { ConcurrentLoginBuckets.id eq bucketId and (ConcurrentLoginBuckets.randomKey eq randomKey) }
+                        }
+
+                        when (deletedBucketsCount) {
+                            0 -> logger.warn { "Couldn't release lock for bucket $bucketId (shard $shardId) because our random key does not match or the bucket was already released!" }
+                            else -> logger.info { "Successfully released lock for bucket $bucketId (shard $shardId)!" }
+                        }
+                    } catch (e: CancellationException) {
+                        logger.info(e) { "Shard $shardId identify job has been cancelled!" }
                     }
                 }
             } else {

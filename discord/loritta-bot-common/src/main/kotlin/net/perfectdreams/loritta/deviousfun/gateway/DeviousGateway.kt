@@ -22,6 +22,7 @@ class DeviousGateway(
         INITIALIZING,
         WAITING_TO_CONNECT,
         WAITING_FOR_IDENTIFY_LOCK,
+        WAITING_FOR_IDENTIFY_JOB,
         WAITING_FOR_BUCKET,
         IDENTIFYING,
         RESUMING,
