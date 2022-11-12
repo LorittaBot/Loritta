@@ -694,7 +694,7 @@ class DeviousCacheManager(
         withLock(GuildKey(guildId), ChannelKey(data.id)) {
             awaitForEntityPersistenceModificationMutex()
 
-            logger.debug { "Updating guild role with ID ${data.id} on guild $guildId" }
+            logger.debug { "Updating guild channel with ID ${data.id} on guild $guildId" }
 
             val currentChannels = guildChannels[guildId]
             // Expected 1 because we will insert the new role
