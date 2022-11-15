@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.deleteWhere
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", listOf("desmutar", "desilenciar", "desilenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.unmute.description")
@@ -76,8 +77,8 @@ class UnmuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unmute", li
 			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "unmute")
 
 			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-					banCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
+				if (it.emoji.isEmote("✅") || it.emoji.isEmote("\uD83D\uDE4A")) {
+					banCallback.invoke(message, it.emoji.isEmote("\uD83D\uDE4A"))
 				}
 				return@onReactionAddByAuthor
 			}

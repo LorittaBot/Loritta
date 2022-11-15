@@ -251,7 +251,7 @@ class BomDiaECia(private val m: LorittaBot) {
                 embed.setImage(randomImages.random())
                 embed.setColor(Color(74, 39, 138))
 
-                textChannel.sendMessage(embed.build()).queue()
+                textChannel.sendMessageEmbeds(embed.build()).queue()
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -300,7 +300,7 @@ class BomDiaECia(private val m: LorittaBot) {
                 channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
                     if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
                         message.onReactionAddByAuthor(user.idLong) {
-                            if (it.reactionEmote.isEmote("⁉")) {
+                            if (it.emoji.isEmote("⁉")) {
                                 loritta.messageInteractionCache.remove(it.messageIdLong)
 
                                 val triedToCall = triedToCall.mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it) }

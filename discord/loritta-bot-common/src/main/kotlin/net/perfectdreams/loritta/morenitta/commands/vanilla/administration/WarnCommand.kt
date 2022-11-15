@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf("aviso"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	companion object {
@@ -67,7 +68,7 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 								val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.warn.punishAction"], reason)
 
 								user.openPrivateChannel().queue {
-									it.sendMessage(embed).queue()
+									it.sendMessageEmbeds(embed).queue()
 								}
 							} catch (e: Exception) {
 								e.printStackTrace()
@@ -148,8 +149,8 @@ class WarnCommand(loritta: LorittaBot) : AbstractCommand(loritta, "warn", listOf
 			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "warn")
 
 			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-					warnCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
+				if (it.emoji.isEmote("✅") || it.emoji.isEmote("\uD83D\uDE4A")) {
+					warnCallback.invoke(message, it.emoji.isEmote("\uD83D\uDE4A"))
 				}
 				return@onReactionAddByAuthor
 			}

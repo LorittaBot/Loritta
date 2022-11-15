@@ -23,6 +23,8 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.jda.
 import net.perfectdreams.loritta.morenitta.tables.servers.ServerRolePermissions
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.TimeUnit
 import java.util.regex.Matcher
@@ -171,7 +173,7 @@ class InviteLinkModule(val loritta: LorittaBot) : MessageReceivedModule {
 							)
 
 							enableBypassMessage.onReactionAddByAuthor(loritta, event.author.idLong) {
-								if (it.reactionEmote.id == (Emotes.LORI_PAT as DiscordEmote).id) {
+								if (it.emoji.asCustom().id == (Emotes.LORI_PAT as DiscordEmote).id) {
 									enableBypassMessage.removeAllFunctions(loritta)
 
 									loritta.newSuspendedTransaction {

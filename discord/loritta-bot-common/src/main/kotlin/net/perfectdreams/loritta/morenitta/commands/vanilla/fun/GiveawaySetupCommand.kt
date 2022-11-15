@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Role
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.perfectdreams.loritta.common.entities.LorittaEmote
 import net.perfectdreams.loritta.common.entities.UnicodeEmote
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.giveaway.GiveawayManager
 
 class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(loritta, listOf("giveaway setup", "sorteio setup", "giveaway criar", "sorteio criar", "giveaway create", "sorteio create"), net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
@@ -140,7 +141,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
             // This way we can use any emote as long as the user has Nitro and Loritta shares a server.
             //
             // Before we were extracting using a RegEx pattern,
-            val emoteInTheMessage = it.message.emotes.firstOrNull()
+            val emoteInTheMessage = it.message.mentions.customEmojis.firstOrNull()
 
             builder.reaction = if (emoteInTheMessage != null)
                 DiscordEmote.DiscordEmoteBackedByJdaEmote(emoteInTheMessage)
@@ -264,7 +265,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
         message.onReactionAddByAuthor(context) {
             message.delete().await()
 
-            if (it.reactionEmote.name == "✅") {
+            if (it.emoji.name == "✅") {
                 val message = context.discordMessage.channel.sendMessage(
                         LorittaReply(
                                 message = locale["$LOCALE_PREFIX.giveaway.giveawayMentionRoles"],
@@ -277,7 +278,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
                 message.onResponseByAuthor(context) {
                     val roles = mutableSetOf<Role>()
 
-                    it.message.mentionedRoles.forEach {
+                    it.message.mentions.roles.forEach {
                         roles.add(it) // Vamos adicionar os cargos marcados, quick and easy
                     }
 
@@ -401,7 +402,7 @@ class GiveawaySetupCommand(loritta: LorittaBot): DiscordAbstractCommandBase(lori
 
     fun addCancelOption(context: DiscordCommandContext, message: net.dv8tion.jda.api.entities.Message) {
         message.onReactionAddByAuthor(context) {
-            if (it.reactionEmote.idLong == 412585701054611458L) {
+            if (it.emoji.asCustom().idLong == 412585701054611458L) {
                 message.delete().await()
                 context.reply(
                         LorittaReply(

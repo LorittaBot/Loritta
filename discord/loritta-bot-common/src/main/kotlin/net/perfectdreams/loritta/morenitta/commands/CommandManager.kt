@@ -26,7 +26,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.localized
 import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -38,6 +38,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.morenitta.tables.servers.CustomGuildCommands
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select

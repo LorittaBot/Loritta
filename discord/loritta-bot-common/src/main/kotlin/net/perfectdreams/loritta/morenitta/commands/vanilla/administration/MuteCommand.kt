@@ -9,10 +9,6 @@ import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.DateUtils
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.TimeUtils
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNull
-import net.perfectdreams.loritta.morenitta.utils.extensions.retrieveMemberOrNullById
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
@@ -25,7 +21,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.GuildChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Role
 import net.dv8tion.jda.api.entities.User
@@ -42,6 +38,7 @@ import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.*
 
 class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf("mutar", "silenciar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.mute.description")
@@ -112,8 +109,8 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 				val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "mute")
 
 				message.onReactionAddByAuthor(context) {
-					if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-						val isSilent = it.reactionEmote.isEmote("\uD83D\uDE4A")
+					if (it.emoji.isEmote("✅") || it.emoji.isEmote("\uD83D\uDE4A")) {
+						val isSilent = it.emoji.isEmote("\uD83D\uDE4A")
 
 						message.delete().queue()
 
@@ -146,7 +143,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 			}
 
 			setHour.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
+				if (it.emoji.isEmote("\uD83D\uDD04")) {
 					setHour.delete().queue()
 					punishUser(null)
 				}
@@ -204,7 +201,7 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 							false
 						)
 
-						user.openPrivateChannel().await().sendMessage(embed.build()).queue()
+						user.openPrivateChannel().await().sendMessageEmbeds(embed.build()).queue()
 					} catch (e: Exception) {
 						e.printStackTrace()
 					}
@@ -266,21 +263,21 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 					try {
 						if (context.guild.selfMember.hasPermission(
 								textChannel,
-								Permission.MESSAGE_WRITE,
+								Permission.MESSAGE_SEND,
 								Permission.MANAGE_CHANNEL,
 								Permission.MANAGE_PERMISSIONS
 							)
 						) {
 							val permissionOverride = textChannel.getPermissionOverride(mutedRole)
 							if (permissionOverride == null) { // Se é null...
-								textChannel.createPermissionOverride(mutedRole)
-									.setDeny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
+								textChannel.permissionContainer.upsertPermissionOverride(mutedRole)
+									.deny(Permission.MESSAGE_SEND) // kk eae men, daora ficar mutado né
 									.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
 								processedRequests++
 							} else {
-								if (!permissionOverride.denied.contains(Permission.MESSAGE_WRITE)) {
+								if (!permissionOverride.denied.contains(Permission.MESSAGE_SEND)) {
 									permissionOverride.manager
-										.deny(Permission.MESSAGE_WRITE) // kk eae men, daora ficar mutado né
+										.deny(Permission.MESSAGE_SEND) // kk eae men, daora ficar mutado né
 										.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
 									processedRequests++
 								}
@@ -303,8 +300,8 @@ class MuteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "mute", listOf
 						if (context.guild.selfMember.hasPermission(voiceChannel, Permission.VOICE_SPEAK, Permission.MANAGE_CHANNEL, Permission.MANAGE_PERMISSIONS)) {
 							val permissionOverride = voiceChannel.getPermissionOverride(mutedRole)
 							if (permissionOverride == null) { // Se é null...
-								voiceChannel.createPermissionOverride(mutedRole)
-									.setDeny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
+								voiceChannel.permissionContainer.upsertPermissionOverride(mutedRole)
+									.deny(Permission.VOICE_SPEAK) // kk eae men, daora ficar mutado né
 									.queueAfter(processedRequests * 2L, TimeUnit.SECONDS)
 								processedRequests++
 							} else {

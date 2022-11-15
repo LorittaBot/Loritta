@@ -48,8 +48,7 @@ import net.perfectdreams.loritta.morenitta.utils.debug.DebugLog
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Activity
 import net.dv8tion.jda.api.events.Event
-import net.dv8tion.jda.api.events.message.guild.GuildMessageReceivedEvent
-import net.dv8tion.jda.api.events.message.priv.PrivateMessageReceivedEvent
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent
 import net.dv8tion.jda.api.requests.GatewayIntent
 import net.dv8tion.jda.api.sharding.DefaultShardManagerBuilder
 import net.dv8tion.jda.api.utils.ChunkingFilter
@@ -279,7 +278,6 @@ class LorittaBot(
 	var eventLogListener = EventLogListener(this) // Vamos usar a mesma instância para todas as shards
 	var messageListener = MessageListener(this)
 	var voiceChannelListener = VoiceChannelListener(this)
-	var discordMetricsListener = DiscordMetricsListener(this)
 	val gatewayRelayerListener = GatewayEventRelayerListener(this)
 	val addReactionFurryAminoPtListener = AddReactionFurryAminoPtListener(this)
 	val boostGuildListener = BoostGuildListener(this)
@@ -402,9 +400,8 @@ class LorittaBot(
 		builder = DefaultShardManagerBuilder.create(
 			config.loritta.discord.token,
 			GatewayIntent.GUILD_MEMBERS,
-			GatewayIntent.GUILD_EMOJIS,
+			GatewayIntent.GUILD_EMOJIS_AND_STICKERS,
 			GatewayIntent.GUILD_BANS,
-			GatewayIntent.GUILD_EMOJIS,
 			GatewayIntent.GUILD_INVITES,
 			GatewayIntent.GUILD_MESSAGES,
 			GatewayIntent.GUILD_MESSAGE_REACTIONS,
@@ -416,7 +413,8 @@ class LorittaBot(
 			.disableCache(CacheFlag.values().toList())
 			// ...we enable all the flags again
 			.enableCache(
-				CacheFlag.EMOTE,
+				CacheFlag.EMOJI,
+				CacheFlag.STICKER,
 				CacheFlag.MEMBER_OVERRIDES,
 				CacheFlag.VOICE_STATE
 			)
@@ -425,7 +423,7 @@ class LorittaBot(
 			.apply {
 				if (config.loritta.discord.shardController.enabled) {
 					logger.info { "Using shard controller (for bots with \"sharding for very large bots\" to manage shards!" }
-					bucketedController = BucketedController(this@LorittaBot, config.loritta.discord.shardController.buckets, config.loritta.discord.shardController.gatewayUrl)
+					bucketedController = BucketedController(this@LorittaBot, config.loritta.discord.shardController.buckets)
 					this.setSessionController(bucketedController)
 				}
 			}
@@ -454,7 +452,6 @@ class LorittaBot(
 				eventLogListener,
 				messageListener,
 				voiceChannelListener,
-				discordMetricsListener,
 				gatewayRelayerListener,
 				addReactionFurryAminoPtListener,
 				boostGuildListener
@@ -1134,12 +1131,7 @@ class LorittaBot(
 
 	fun launchMessageJob(event: Event, block: suspend CoroutineScope.() -> Unit) {
 		val coroutineName = when (event) {
-			is GuildMessageReceivedEvent -> {
-				"Message ${event.message} by user ${event.author} in ${event.channel} on ${event.guild}"
-			}
-			is PrivateMessageReceivedEvent -> {
-				"Message ${event.message} by user ${event.author} in ${event.channel}"
-			}
+			is MessageReceivedEvent -> "Message ${event.message} by user ${event.author} in ${event.channel} on ${if (event.isFromGuild) event.guild else null}"
 			else -> throw IllegalArgumentException("You can't dispatch a $event in a launchMessageJob!")
 		}
 

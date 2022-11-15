@@ -30,7 +30,7 @@ class RoleIdCommand(loritta: LorittaBot) : AbstractCommand(loritta, "roleid", li
 		if (context.rawArgs.isNotEmpty()) {
 			var argument = context.rawArgs.joinToString(" ")
 
-			val mentionedRoles = context.message.mentionedRoles // Se o usuário mencionar o cargo, vamos mostrar o ID dos cargos mencionados
+			val mentionedRoles = context.message.mentions.roles // Se o usuário mencionar o cargo, vamos mostrar o ID dos cargos mencionados
 
 			val list = mutableListOf<LorittaReply>()
 

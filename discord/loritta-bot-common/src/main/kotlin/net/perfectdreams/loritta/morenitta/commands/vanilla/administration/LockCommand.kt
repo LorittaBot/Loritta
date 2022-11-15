@@ -6,7 +6,7 @@ import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -33,9 +33,9 @@ class LockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lock", listOf
 		val override = channel.getPermissionOverride(publicRole)
 		
 		if (override != null) {
-			if (Permission.MESSAGE_WRITE !in override.denied) {
+			if (Permission.MESSAGE_SEND !in override.denied) {
 				override.manager
-						.deny(Permission.MESSAGE_WRITE)
+						.deny(Permission.MESSAGE_SEND)
 						.queue()
 
 				context.reply(
@@ -53,8 +53,8 @@ class LockCommand(loritta: LorittaBot) : AbstractCommand(loritta, "lock", listOf
 				)
 			}
 		} else {
-			channel.createPermissionOverride(publicRole)
-					.setDeny(Permission.MESSAGE_WRITE)
+			channel.permissionContainer.upsertPermissionOverride(publicRole)
+					.deny(Permission.MESSAGE_SEND)
 					.queue()
 
 			context.reply(

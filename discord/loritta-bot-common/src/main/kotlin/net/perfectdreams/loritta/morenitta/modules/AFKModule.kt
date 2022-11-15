@@ -9,7 +9,7 @@ import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.stripZeroWidthSpace
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -24,7 +24,7 @@ class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
 		val afkMembers = mutableListOf<Pair<Member, String?>>()
 
-		for (mention in event.message.mentionedMembers) {
+		for (mention in event.message.mentions.members) {
 			val lorittaProfile = loritta.getLorittaProfileAsync(mention.user.idLong)
 
 			if (lorittaProfile != null && lorittaProfile.isAfk) {

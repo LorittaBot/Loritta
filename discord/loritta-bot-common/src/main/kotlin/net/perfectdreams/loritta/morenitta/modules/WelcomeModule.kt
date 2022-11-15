@@ -7,11 +7,12 @@ import net.perfectdreams.loritta.morenitta.listeners.EventLogListener
 import net.perfectdreams.loritta.morenitta.utils.MessageUtils
 import net.perfectdreams.loritta.morenitta.utils.extensions.humanize
 import mu.KotlinLogging
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.User
 import net.dv8tion.jda.api.events.guild.member.GuildMemberJoinEvent
 import net.dv8tion.jda.api.events.guild.member.GuildMemberRemoveEvent
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.WelcomerConfig
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -57,7 +58,12 @@ class WelcomeModule(val loritta: LorittaBot) {
 
 											val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-											textChannel.sendMessage(MessageBuilder().setContent(locale["modules.welcomer.tooManyUsersJoining", Emotes.LORI_OWO]).build()).addFile(targetStream, "join-users.log").queue()
+											textChannel.sendMessage(
+												MessageCreateBuilder()
+													.setContent(locale["modules.welcomer.tooManyUsersJoining", Emotes.LORI_OWO])
+													.addFiles(FileUpload.fromData(targetStream, "join-users.log"))
+													.build()
+											).queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que entraram, yay!")
 										}
 									}
@@ -102,7 +108,8 @@ class WelcomeModule(val loritta: LorittaBot) {
 
 											val locale = loritta.localeManager.getLocaleById(serverConfig.localeId)
 
-											textChannel.sendMessage(MessageBuilder().setContent(locale["modules.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFile(targetStream, "left-users.log").queue()
+											textChannel.sendMessage(MessageCreateBuilder().setContent(locale["modules.welcomer.tooManyUsersLeaving", Emotes.LORI_OWO]).build()).addFiles(
+												FileUpload.fromData(targetStream, "left-users.log")).queue()
 											logger.info("Enviado arquivo de texto em $k1 com todas as pessoas que sairam, yay!")
 										}
 									}

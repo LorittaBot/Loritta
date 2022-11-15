@@ -17,7 +17,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
-import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.utils.MarkdownSanitizer
 import net.perfectdreams.i18nhelper.core.I18nContext
@@ -50,6 +50,7 @@ import net.perfectdreams.loritta.morenitta.utils.CommandCooldownManager
 import net.perfectdreams.loritta.morenitta.utils.CommandUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.morenitta.utils.metrics.Prometheus
 import java.sql.Connection
 import java.util.concurrent.CancellationException

@@ -92,16 +92,16 @@ class FanArtsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
         val allowForward = list.size > item + 1
         val allowBack = item != 0
 
-        if ((!allowForward && message.reactions.any { it.reactionEmote.isEmote("⏩") }) || (!allowBack && message.reactions.any { it.reactionEmote.isEmote("⏪") })) { // Remover todas as reações caso seja necessário
+        if ((!allowForward && message.reactions.any { it.emoji.isEmote("⏩") }) || (!allowBack && message.reactions.any { it.emoji.isEmote("⏪") })) { // Remover todas as reações caso seja necessário
             message.clearReactions().await()
             message = message.refresh().await() // Precisamos "refrescar", já que o JDA não limpa a lista de reações
         }
 
         message.onReactionAddByAuthor(context) {
-            if (allowForward && it.reactionEmote.isEmote("⏩")) {
+            if (allowForward && it.emoji.isEmote("⏩")) {
                 sendFanArtEmbed(context, locale, list, item + 1, message)
             }
-            if (allowBack && it.reactionEmote.isEmote("⏪")) {
+            if (allowBack && it.emoji.isEmote("⏪")) {
                 sendFanArtEmbed(context, locale, list, item - 1, message)
             }
         }

@@ -79,7 +79,7 @@ class CortesFlowCommand(
                     )
                 }
 
-                sendMessage(
+                sendMessageEmbeds(
                     embed.build()
                 )
                 return@executesDiscord

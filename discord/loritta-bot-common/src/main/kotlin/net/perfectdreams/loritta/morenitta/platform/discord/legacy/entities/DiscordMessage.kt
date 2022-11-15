@@ -9,7 +9,7 @@ class DiscordMessage(val handle: net.dv8tion.jda.api.entities.Message) : Message
 	override val author = JDAUser(handle.author)
 	override val content = handle.contentRaw
 	override val mentionedUsers: List<User>
-		get() = handle.mentionedUsers.map { JDAUser(it) }
+		get() = handle.mentions.users.map { JDAUser(it) }
 	override val channel = DiscordMessageChannel(handle.channel)
 
 	override suspend fun delete() {

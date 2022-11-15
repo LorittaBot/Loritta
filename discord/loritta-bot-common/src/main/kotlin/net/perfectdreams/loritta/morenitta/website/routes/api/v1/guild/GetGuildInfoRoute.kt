@@ -27,7 +27,6 @@ class GetGuildInfoRoute(loritta: LorittaBot) : RequiresAPIAuthenticationRoute(lo
 						"iconUrl" to guild.iconUrl,
 						"shardId" to guild.jda.shardInfo.shardId,
 						"ownerId" to guild.ownerId,
-						"region" to guild.region.name,
 						"count" to jsonObject(
 								"textChannels" to guild.textChannelCache.size(),
 								"voiceChannels" to guild.voiceChannelCache.size(),

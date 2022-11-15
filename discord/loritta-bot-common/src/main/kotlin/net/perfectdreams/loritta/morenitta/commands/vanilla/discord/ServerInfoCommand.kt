@@ -58,7 +58,6 @@ class ServerInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "serveri
 		val shardId = guild["shardId"].int
 		val cluster = DiscordUtils.getLorittaClusterForGuildId(loritta, id.toLong())
 		val ownerId = guild["ownerId"].string
-		val region = Region.valueOf(guild["region"].string)
 		val owner = loritta.lorittaShards.retrieveUserInfoById(ownerId.toLong())
 		val ownerProfile = loritta.getLorittaProfileAsync(ownerId.toLong())
 		val ownerGender = loritta.newSuspendedTransaction { ownerProfile?.settings?.gender ?: Gender.UNKNOWN }
@@ -76,7 +75,6 @@ class ServerInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "serveri
 		embed.addField("💻 ID", id, true) // ID da Guild
 		embed.addField("\uD83D\uDCBB Shard ID", "$shardId — Loritta Cluster ${cluster.id} (`${cluster.name}`)", true)
 		embed.addField("👑 ${if (ownerGender != Gender.FEMALE) context.locale["commands.command.serverinfo.owner"] else context.locale["commands.command.serverinfo.ownerFemale"]}", "`${owner?.name}#${owner?.discriminator}` (${ownerId})", true) // Dono da Guild
-		embed.addField("🌎 ${context.locale["commands.command.serverinfo.region"]}", region.getName(), true) // Região da Guild
 		embed.addField("\uD83D\uDCAC ${context.locale["commands.command.serverinfo.channels"]} (${textChannelCount + voiceChannelCount})", "\uD83D\uDCDD **${locale["commands.command.serverinfo.textChannels"]}:** ${textChannelCount}\n\uD83D\uDDE3 **${locale["commands.command.serverinfo.voiceChannels"]}:** $voiceChannelCount", true) // Canais da Guild
 		embed.addField("\uD83D\uDCC5 ${context.locale["commands.command.serverinfo.createdAt"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(timeCreated, locale), true)
 		embed.addField("\uD83C\uDF1F ${context.locale["commands.command.serverinfo.joinedAt"]}", DateUtils.formatDateWithRelativeFromNowAndAbsoluteDifference(timeJoined, locale), true)

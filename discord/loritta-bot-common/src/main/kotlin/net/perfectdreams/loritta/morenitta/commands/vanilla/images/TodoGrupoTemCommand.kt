@@ -37,7 +37,7 @@ class TodoGrupoTemCommand(loritta: LorittaBot) : AbstractCommand(loritta, "every
 		val users = ArrayList<User>()
 		val members = context.guild.members.filter { it.onlineStatus != OnlineStatus.OFFLINE && it.user.avatarUrl != null && !it.user.isBot }.toMutableList()
 
-		users.addAll(context.message.mentionedUsers)
+		users.addAll(context.message.mentions.users)
 
 		while (6 > users.size) {
 			val member = if (members.isEmpty()) {

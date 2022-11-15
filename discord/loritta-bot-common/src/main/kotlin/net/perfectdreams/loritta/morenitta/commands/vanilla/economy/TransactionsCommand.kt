@@ -232,7 +232,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 		val allowBack = page != 0L
 
 		message.onReactionByAuthor(context) {
-			if (allowForward && it.reactionEmote.isEmote("⏩")) {
+			if (allowForward && it.emoji.isEmote("⏩")) {
 				sendTransactionEmbed(
 							context,
 							locale,
@@ -240,7 +240,7 @@ class TransactionsCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lori
 							message,
 				)
 			}
-			if (allowBack && it.reactionEmote.isEmote("⏪")) {
+			if (allowBack && it.emoji.isEmote("⏪")) {
 				sendTransactionEmbed(
 							context,
 							locale,

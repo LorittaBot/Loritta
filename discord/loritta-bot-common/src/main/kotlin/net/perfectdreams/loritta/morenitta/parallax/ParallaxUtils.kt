@@ -4,9 +4,9 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.MessageChannel
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import org.apache.commons.lang3.exception.ExceptionUtils
 import java.awt.Color
 import java.util.concurrent.ExecutionException
@@ -22,8 +22,8 @@ object ParallaxUtils {
 	suspend fun sendThrowableToChannel(throwable: Throwable, channel: MessageChannel, message: String? = null): Message {
 		logger.warn(throwable) { "Error while evaluating code" }
 
-		val messageBuilder = MessageBuilder()
-		messageBuilder.append(message ?: " ")
+		val messageBuilder = MessageCreateBuilder()
+		messageBuilder.addContent(message ?: " ")
 
 		val cause = throwable.cause
 
@@ -49,7 +49,7 @@ object ParallaxUtils {
 		embedBuilder.setFooter("Aprender a programar seria bom antes de me forçar a executar códigos que não funcionam 😢", null)
 		embedBuilder.setColor(Color.RED)
 
-		messageBuilder.setEmbed(embedBuilder.build())
+		messageBuilder.setEmbeds(embedBuilder.build())
 
 		return channel.sendMessage(messageBuilder.build()).await()
 	}

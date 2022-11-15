@@ -32,20 +32,20 @@ class AddEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "addemoji"
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.addemoji.description")
 
 	override fun getDiscordPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_EMOTES)
+		return listOf(Permission.MANAGE_EMOJIS_AND_STICKERS)
 	}
 
 	override fun getBotPermissions(): List<Permission> {
-		return listOf(Permission.MANAGE_EMOTES)
+		return listOf(Permission.MANAGE_EMOJIS_AND_STICKERS)
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		var imageArgument = 1
 		var emoteName: String? = null
 
-		if (context.message.emotes.isNotEmpty()) {
+		if (context.message.mentions.customEmojis.isNotEmpty()) {
 			imageArgument = 0
-			emoteName = context.message.emotes[0].name
+			emoteName = context.message.mentions.customEmojis[0].name
 		}
 
 		if (imageArgument > context.rawArgs.size) {
@@ -63,7 +63,7 @@ class AddEmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "addemoji"
 
 			if (os != null) {
 				os.use { inputStream ->
-					val emote = context.guild.createEmote(emoteName, Icon.from(inputStream)).await()
+					val emote = context.guild.createEmoji(emoteName, Icon.from(inputStream)).await()
 					context.reply(
                             LorittaReply(
                                     context.locale["commands.command.addemoji.success"],

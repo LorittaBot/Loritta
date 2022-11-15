@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.tables.ExecutedCommandsLog
 import net.perfectdreams.loritta.morenitta.tables.Payments
 import net.perfectdreams.loritta.morenitta.utils.Constants
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.isEmote
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import org.jetbrains.exposed.sql.select
@@ -108,7 +109,7 @@ class BotInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "botinfo", 
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.isEmote("loritta")) {
+			if (it.emoji.isEmote("loritta")) {
 				message.delete().queue()
 
 				showExtendedInfo(context, locale)

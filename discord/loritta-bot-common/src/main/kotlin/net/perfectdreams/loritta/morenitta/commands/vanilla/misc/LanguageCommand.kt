@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import java.awt.Color
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language", listOf("linguagem", "speak", "lang"), category = net.perfectdreams.loritta.common.commands.CommandCategory.MISC) {
     private val resetPersonalLanguageEmote = "\uD83D\uDE45"
@@ -122,7 +123,7 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
         )
 
         message.onReactionAddByAuthor(context) {
-            if (it.reactionEmote.isEmote("426183783008698391")) {
+            if (it.emoji.isEmote("426183783008698391")) {
                 message.edit(
                         " ",
                         buildLanguageEmbed(
@@ -142,7 +143,7 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
             }
 
             // This removes/resets user's personal language (when you choose a language in DM)
-            if (it.reactionEmote.isEmote(resetPersonalLanguageEmote) && hasPersonalLanguage) {
+            if (it.emoji.isEmote(resetPersonalLanguageEmote) && hasPersonalLanguage) {
                 loritta.newSuspendedTransaction {
                     profile.settings.language = null
                 }
@@ -156,9 +157,9 @@ class LanguageCommand(loritta: LorittaBot) : AbstractCommand(loritta, "language"
 
             val newLanguage = validLanguages.firstOrNull { language ->
                 if (language.emoteName.startsWith("<")) {
-                    it.reactionEmote.isEmote(language.emoteName.split(":")[2].removeSuffix(">"))
+                    it.emoji.isEmote(language.emoteName.split(":")[2].removeSuffix(">"))
                 } else {
-                    it.reactionEmote.isEmote(language.emoteName)
+                    it.emoji.isEmote(language.emoteName)
                 }
             }
 

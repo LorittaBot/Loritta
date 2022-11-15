@@ -1,6 +1,8 @@
 package net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities
 
-import net.dv8tion.jda.api.entities.Emote
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.perfectdreams.loritta.common.entities.LorittaEmote
 
 open class DiscordEmote(code: String) : LorittaEmote(code) {
@@ -40,5 +42,5 @@ open class DiscordEmote(code: String) : LorittaEmote(code) {
     override fun getName() = name
     override fun toString() = asMention
 
-    class DiscordEmoteBackedByJdaEmote(val jdaEmote: Emote) : DiscordEmote("discord:${jdaEmote.asMention.removePrefix("<").removePrefix(":").removeSuffix(">")}")
+    class DiscordEmoteBackedByJdaEmote(val jdaEmote: CustomEmoji) : DiscordEmote("discord:${jdaEmote.asMention.removePrefix("<").removePrefix(":").removeSuffix(">")}")
 }

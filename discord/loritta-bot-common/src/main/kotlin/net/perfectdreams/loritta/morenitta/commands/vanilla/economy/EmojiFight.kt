@@ -27,6 +27,7 @@ import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.insertAndGetId
 import java.time.Instant
@@ -64,7 +65,7 @@ class EmojiFight(
 
         val baseEmbed = getEventEmbed()
 
-        val message = context.sendMessage(baseEmbed)
+        val message = context.sendMessageEmbeds(baseEmbed)
 
         GlobalScope.launch(loritta.coroutineDispatcher) {
             updatingMessageMutex.withLock {
@@ -91,7 +92,7 @@ class EmojiFight(
         message.onReactionAdd(context) {
             val reactedUser = it.user ?: return@onReactionAdd
 
-            if (it.reactionEmote.name == "\uD83D\uDC14" && !participatingUsers.containsKey(reactedUser)) {
+            if (it.emoji.name == "\uD83D\uDC14" && !participatingUsers.containsKey(reactedUser)) {
                 if (addToFightEvent(reactedUser)) {
                     updateEventMessage(message)
 
@@ -108,7 +109,7 @@ class EmojiFight(
         }
 
         message.onReactionAddByAuthor(context) {
-            if (it.reactionEmote.name == "✅") {
+            if (it.emoji.name == "✅") {
                 finishingEventMutex.withLock {
                     if (!eventFinished) {
                         message.removeAllFunctions(loritta)
@@ -171,7 +172,7 @@ class EmojiFight(
         val shouldUpdateAgain = updatingMessageMutex.withLock {
             val onStartCount = participatingUsers.size
 
-            message.editMessage(getEventEmbed()).await()
+            message.editMessageEmbeds(getEventEmbed()).await()
 
             val onEndCount = participatingUsers.size
 

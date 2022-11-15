@@ -79,7 +79,7 @@ class WikipediaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "wikipedi
 							.setColor(Color.BLACK)
 							.setDescription(if (pageExtract.length > 512) pageExtract.substring(0, 509) + "..." else pageExtract)
 
-					context.sendMessage(embed.build()) // Envie a mensagem!
+					context.sendMessageEmbeds(embed.build()) // Envie a mensagem!
 				}
 
 			} catch (e: Exception) {

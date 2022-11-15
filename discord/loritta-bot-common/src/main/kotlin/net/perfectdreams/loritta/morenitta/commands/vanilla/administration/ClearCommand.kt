@@ -8,7 +8,7 @@ import kotlinx.coroutines.joinAll
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -16,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import java.util.*
 import java.util.concurrent.TimeUnit

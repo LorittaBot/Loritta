@@ -13,8 +13,8 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.escapeMentions
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -217,10 +217,10 @@ class ShipCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ship", listOf
 			text += "`]"
 			embed.setDescription("**$percentage%** $text")
 			embed.setImage("attachment://ships.png")
-			val msgBuilder = MessageBuilder()
-				.append(texto)
-				.allowMentions(Message.MentionType.EMOTE)
-			msgBuilder.setEmbed(embed.build())
+			val msgBuilder = MessageCreateBuilder()
+				.setContent(texto)
+				.setAllowedMentions(listOf(Message.MentionType.EMOJI))
+			msgBuilder.setEmbeds(embed.build())
 			context.sendFile(image, "ships.png", msgBuilder.build())
 		} else {
 			this.explain(context)

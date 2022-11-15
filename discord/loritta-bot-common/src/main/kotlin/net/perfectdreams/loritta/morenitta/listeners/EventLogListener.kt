@@ -22,7 +22,7 @@ import net.dv8tion.jda.api.events.guild.GuildBanEvent
 import net.dv8tion.jda.api.events.guild.GuildUnbanEvent
 import net.dv8tion.jda.api.events.guild.member.update.GuildMemberUpdateNicknameEvent
 import net.dv8tion.jda.api.events.message.MessageBulkDeleteEvent
-import net.dv8tion.jda.api.events.message.guild.GuildMessageDeleteEvent
+import net.dv8tion.jda.api.events.message.MessageDeleteEvent
 import net.dv8tion.jda.api.events.user.update.UserUpdateAvatarEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
@@ -131,8 +131,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 									return@forEach
 								if (!guild.selfMember.hasPermission(textChannel, Permission.VIEW_CHANNEL))
 									return@forEach
-								if (!guild.selfMember.hasPermission(textChannel, Permission.MESSAGE_READ))
-									return@forEach
 
 								val embed = WebhookEmbedBuilder()
 								embed.setTimestamp(Instant.now())
@@ -167,7 +165,7 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 	}
 
 	// Mensagens
-	override fun onGuildMessageDelete(event: GuildMessageDeleteEvent) {
+	override fun onMessageDelete(event: MessageDeleteEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
 
@@ -184,8 +182,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
 				if (textChannel != null && textChannel.canTalk()) {
@@ -250,8 +246,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
 				if (textChannel != null && textChannel.canTalk()) {
@@ -341,8 +335,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-					return@launch
 
 				val embed = WebhookEmbedBuilder()
 				embed.setTimestamp(Instant.now())
@@ -402,8 +394,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
 					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-					return@launch
 
 				val embed = WebhookEmbedBuilder()
 				embed.setTimestamp(Instant.now())
@@ -456,8 +446,6 @@ class EventLogListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return@launch
 				if (!event.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return@launch
-				if (!event.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return@launch
 
 				val oldNickname = if (event.oldNickname == null) "\uD83E\uDD37 ${locale["modules.eventLog.noNickname"]}" else event.oldNickname

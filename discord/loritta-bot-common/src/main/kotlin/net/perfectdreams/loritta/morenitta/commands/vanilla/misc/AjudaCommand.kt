@@ -52,6 +52,6 @@ class AjudaCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ajuda", list
 				.setThumbnail("https://loritta.website/assets/img/lori_help_short.png")
 				.setColor(Constants.LORITTA_AQUA)
 
-		context.sendMessage(embed.build())
+		context.sendMessageEmbeds(embed.build())
 	}
 }

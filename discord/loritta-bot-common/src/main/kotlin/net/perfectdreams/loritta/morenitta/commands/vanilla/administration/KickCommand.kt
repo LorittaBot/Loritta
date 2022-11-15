@@ -18,6 +18,7 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf("expulsar", "kickar"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.kick.description")
@@ -81,8 +82,8 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "kick")
 
 			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-					kickCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
+				if (it.emoji.isEmote("✅") || it.emoji.isEmote("\uD83D\uDE4A")) {
+					kickCallback.invoke(message, it.emoji.isEmote("\uD83D\uDE4A"))
 				}
 				return@onReactionAddByAuthor
 			}
@@ -106,7 +107,7 @@ class KickCommand(loritta: LorittaBot) : AbstractCommand(loritta, "kick", listOf
 						val embed = AdminUtils.createPunishmentMessageSentViaDirectMessage(context.guild, locale, context.userHandle, locale["commands.command.kick.punishAction"], reason)
 
 						user.openPrivateChannel().queue {
-							it.sendMessage(embed).queue()
+							it.sendMessageEmbeds(embed).queue()
 						}
 					} catch (e: Exception) {
 						e.printStackTrace()

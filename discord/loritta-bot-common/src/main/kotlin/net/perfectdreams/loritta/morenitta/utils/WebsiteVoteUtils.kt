@@ -97,7 +97,7 @@ object WebsiteVoteUtils {
 				}
 
 				try {
-					user?.openPrivateChannel()?.await()?.sendMessage(
+					user?.openPrivateChannel()?.await()?.sendMessageEmbeds(
 						EmbedBuilder()
 							.setColor(Constants.LORITTA_AQUA)
 							.setThumbnail("https://loritta.website/assets/img/fanarts/Loritta_Presents_-_Gabizinha.png")
@@ -109,7 +109,7 @@ object WebsiteVoteUtils {
 				}
 			} else {
 				try {
-					user?.openPrivateChannel()?.await()?.sendMessage(
+					user?.openPrivateChannel()?.await()?.sendMessageEmbeds(
 						EmbedBuilder()
 							.setColor(Constants.LORITTA_AQUA)
 							.setThumbnail("https://loritta.website/assets/img/fanarts/l7.png")

@@ -12,15 +12,17 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
@@ -232,7 +234,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 				embed.setImage(randomImages.random())
 				embed.setColor(Color(74, 39, 138))
 
-				textChannel.sendMessage(embed.build()).queue()
+				textChannel.sendMessage(MessageCreateBuilder().setEmbeds(embed.build()).build()).queue()
 			} catch (e: Exception) {
 				e.printStackTrace()
 			}
@@ -249,10 +251,10 @@ class BomDiaECia(val loritta: LorittaBot) {
 		val validTextChannels = this.validTextChannels
 			?: return // If there isn't any valid active channels, we don't need to announce the winner
 
-		val messageForLocales = mutableMapOf<String, Message>()
+		val messageForLocales = mutableMapOf<String, MessageCreateData>()
 
 		loritta.legacyLocales.forEach { localeId, locale ->
-			val message = MessageBuilder().append("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks().stripLinks()}#${user.discriminator}` (`${user.id}`) por ter ligado primeiro em `${guild.name.stripCodeMarks().stripLinks()}` (`${guild.id}`)!")
+			val message = MessageCreateBuilder().addContent("<:yudi:446394608256024597> **|** Parabéns `${user.name.stripCodeMarks().stripLinks()}#${user.discriminator}` (`${user.id}`) por ter ligado primeiro em `${guild.name.stripCodeMarks().stripLinks()}` (`${guild.id}`)!")
 
 			messageForLocales[localeId] = message.build()
 		}
@@ -274,7 +276,7 @@ class BomDiaECia(val loritta: LorittaBot) {
 				channel.sendMessage("<:yudi:446394608256024597> **|** Sabia que ${user.asMention} foi $pronoun primeir$pronoun de **${triedToCall.size} usuários** a conseguir ligar no Bom Dia & Cia? ${Emotes.LORI_OWO}").queue { message ->
 					if (message.guild.selfMember.hasPermission(Permission.MESSAGE_ADD_REACTION)) {
 						message.onReactionAddByAuthor(loritta, user.idLong) {
-							if (it.reactionEmote.isEmote("⁉")) {
+							if (it.emoji.isEmote("⁉")) {
 								loritta.messageInteractionCache.remove(it.messageIdLong)
 
 								val triedToCall = triedToCall.mapNotNull { loritta.lorittaShards.retrieveUserInfoById(it) }

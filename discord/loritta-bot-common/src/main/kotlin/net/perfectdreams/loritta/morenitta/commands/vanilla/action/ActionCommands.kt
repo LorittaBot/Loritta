@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.awt.Color
@@ -165,7 +166,7 @@ private fun DiscordCommandContext.addReactionButton(loritta: LorittaBot, dsl: Ac
     message.onReactionAdd(this) {
         val user = it.user ?: return@onReactionAdd
 
-        if (it.reactionEmote.name == "\uD83D\uDD01" && user.id == receiver.id) {
+        if (it.emoji.name == "\uD83D\uDD01" && user.id == receiver.id) {
             message.removeAllFunctions(loritta)
             dsl.handle(this, receiver, sender,true)
         }

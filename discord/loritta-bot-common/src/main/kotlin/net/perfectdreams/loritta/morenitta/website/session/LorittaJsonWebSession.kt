@@ -54,7 +54,12 @@ data class LorittaJsonWebSession(
 		if (storedDiscordAuthTokens == null)
 			return null
 
-		val json = JsonParser.parseString(storedDiscordAuthTokens)
+		val json = try {
+			JsonParser.parseString(storedDiscordAuthTokens)
+		} catch (e: Exception) {
+			logger.error(e) { "Error while loading cached discord auth" }
+			return null
+		}
 
 		return TemmieDiscordAuth(
 				loritta.config.loritta.discord.applicationId.toString(),

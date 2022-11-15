@@ -25,7 +25,7 @@ object OutdatedCommandUtils {
         alwaysSendOutdatedCommandWarning: Boolean = false
     ) {
         if (alwaysSendOutdatedCommandWarning || shouldSendOutdatedCommandWarning())
-            context.sendMessage(buildEmbed(locale, slashCommandName))
+            context.sendMessageEmbeds(buildEmbed(locale, slashCommandName))
     }
 
     suspend fun sendOutdatedCommandMessage(
@@ -36,7 +36,7 @@ object OutdatedCommandUtils {
     ) {
         context as DiscordCommandContext
         if (alwaysSendOutdatedCommandWarning || shouldSendOutdatedCommandWarning())
-            context.sendMessage(buildEmbed(locale, slashCommandName))
+            context.sendMessageEmbeds(buildEmbed(locale, slashCommandName))
     }
 
     /**

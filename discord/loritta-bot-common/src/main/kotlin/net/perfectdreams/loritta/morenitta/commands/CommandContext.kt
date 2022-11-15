@@ -3,24 +3,22 @@ package net.perfectdreams.loritta.morenitta.commands
 import club.minnced.discord.webhook.WebhookClient
 import club.minnced.discord.webhook.send.WebhookMessage
 import com.github.kevinsawicki.http.HttpRequest
-import net.perfectdreams.loritta.morenitta.dao.ServerConfig
-import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
-import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
-import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
-import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
-import net.perfectdreams.loritta.morenitta.utils.ImageFormat
-import net.perfectdreams.loritta.morenitta.utils.extensions.build
-import net.perfectdreams.loritta.morenitta.utils.extensions.getEffectiveAvatarUrl
+import net.perfectdreams.loritta.morenitta.dao.ServerConfig
+import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
+import net.perfectdreams.loritta.morenitta.messages.LorittaReply
+import net.perfectdreams.loritta.morenitta.utils.*
+import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import org.jsoup.Jsoup
 import java.awt.image.BufferedImage
 import java.io.ByteArrayInputStream
@@ -124,44 +122,46 @@ class CommandContext(
 	}
 
 	suspend fun sendMessage(message: String, addInlineReply: Boolean = true): Message {
-		return sendMessage(MessageBuilder()
-			.denyMentions(
-				Message.MentionType.EVERYONE,
-				Message.MentionType.HERE
-			)
-			.append(if (message.isEmpty()) " " else message)
-			.build(),
+		return sendMessage(
+			MessageCreateBuilder()
+				.denyMentions(
+					Message.MentionType.EVERYONE,
+					Message.MentionType.HERE
+				)
+				.addContent(if (message.isEmpty()) " " else message)
+				.build(),
 			addInlineReply = addInlineReply
 		)
 	}
 
 	suspend fun sendMessage(message: String, embed: MessageEmbed, addInlineReply: Boolean = true): Message {
-		return sendMessage(MessageBuilder()
+		return sendMessage(MessageCreateBuilder()
 			.denyMentions(
 				Message.MentionType.EVERYONE,
 				Message.MentionType.HERE
 			)
-			.setEmbed(embed)
-			.append(if (message.isEmpty()) " " else message)
+			.addEmbeds(embed)
+			.addContent(if (message.isEmpty()) " " else message)
 			.build(),
 			addInlineReply = addInlineReply
 		)
 	}
 
-	suspend fun sendMessage(embed: MessageEmbed, addInlineReply: Boolean = true): Message {
+	suspend fun sendMessageEmbeds(embed: MessageEmbed, addInlineReply: Boolean = true): Message {
 		return sendMessage(
-			MessageBuilder()
+			MessageCreateBuilder()
 				.denyMentions(
 					Message.MentionType.EVERYONE,
 					Message.MentionType.HERE
 				)
-				.append(getAsMention(true))
-				.setEmbed(embed)
+				.addContent(getAsMention(true))
+				.addEmbeds(embed)
 				.build(),
-			addInlineReply = addInlineReply)
+			addInlineReply = addInlineReply
+		)
 	}
 
-	suspend fun sendMessage(message: Message, addInlineReply: Boolean = true): Message {
+	suspend fun sendMessage(message: MessageCreateData, addInlineReply: Boolean = true): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
 			return event.channel.sendMessage(message)
 				.referenceIfPossible(event.message, config, addInlineReply)
@@ -180,24 +180,24 @@ class CommandContext(
 			builder.setDescription(message.content)
 			builder.setFooter("Não consigo usar as permissões de webhook aqui... então estou usando o modo de pobre!", null)
 
-			sendMessage(builder.build(), addInlineReply = addInlineReply)
+			sendMessageEmbeds(builder.build(), addInlineReply = addInlineReply)
 		}
 	}
 
 	suspend fun sendFile(file: File, name: String, message: String, embed: MessageEmbed? = null): Message {
 		// Corrigir erro ao construir uma mensagem vazia
-		val builder = MessageBuilder()
+		val builder = MessageCreateBuilder()
 			.denyMentions(
 				Message.MentionType.EVERYONE,
 				Message.MentionType.HERE
 			)
-		builder.append(if (message.isEmpty()) " " else message)
+		builder.addContent(if (message.isEmpty()) " " else message)
 		if (embed != null)
-			builder.setEmbed(embed)
+			builder.addEmbeds(embed)
 		return sendFile(file, name, builder.build())
 	}
 
-	suspend fun sendFile(file: File, name: String, message: Message): Message {
+	suspend fun sendFile(file: File, name: String, message: MessageCreateData): Message {
 		val inputStream = file.inputStream()
 		return sendFile(inputStream, name, message)
 	}
@@ -207,15 +207,15 @@ class CommandContext(
 	}
 
 	suspend fun sendFile(image: BufferedImage, name: String, message: String, embed: MessageEmbed? = null): Message {
-		val builder = MessageBuilder()
-		builder.append(if (message.isEmpty()) " " else message)
+		val builder = MessageCreateBuilder()
+		builder.addContent(if (message.isEmpty()) " " else message)
 		if (embed != null)
-			builder.setEmbed(embed)
+			builder.addEmbeds(embed)
 
 		return sendFile(image, name, builder.build())
 	}
 
-	suspend fun sendFile(image: BufferedImage, name: String, message: Message): Message {
+	suspend fun sendFile(image: BufferedImage, name: String, message: MessageCreateData): Message {
 		val output = ByteArrayOutputStream()
 
 		ImageIO.write(image, "png", output)
@@ -227,8 +227,8 @@ class CommandContext(
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: String): Message {
 		// Corrigir erro ao construir uma mensagem vazia
-		val builder = MessageBuilder()
-		builder.append(if (message.isEmpty()) " " else message)
+		val builder = MessageCreateBuilder()
+		builder.addContent(if (message.isEmpty()) " " else message)
 		return sendFile(inputStream, name, builder.build())
 	}
 
@@ -238,21 +238,24 @@ class CommandContext(
 
 	suspend fun sendFile(inputStream: InputStream, name: String, message: String, embed: MessageEmbed? = null): Message {
 		// Corrigir erro ao construir uma mensagem vazia
-		val builder = MessageBuilder()
+		val builder = MessageCreateBuilder()
 			.denyMentions(
 				Message.MentionType.EVERYONE,
 				Message.MentionType.HERE
 			)
-		builder.append(if (message.isEmpty()) " " else message)
+		builder.addContent(if (message.isEmpty()) " " else message)
 		if (embed != null)
-			builder.setEmbed(embed)
+			builder.addEmbeds(embed)
 		return sendFile(inputStream, name, builder.build())
 	}
 
-	suspend fun sendFile(inputStream: InputStream, name: String, message: Message): Message {
+	suspend fun sendFile(inputStream: InputStream, name: String, message: MessageCreateData): Message {
 		if (isPrivateChannel || event.textChannel!!.canTalk()) {
-			val sentMessage = event.channel.sendMessage(message)
-				.addFile(inputStream, name)
+			val sentMessage = event.channel.sendMessage(
+				MessageCreateBuilder.from(message)
+					.addFiles(FileUpload.fromData(inputStream, name))
+					.build()
+			)
 				.referenceIfPossible(event.message, config, true)
 				.await()
 			return sentMessage
@@ -273,7 +276,7 @@ class CommandContext(
 			DiscordUtils.extractUserFromString(
 				loritta,
 				it,
-				message.mentionedUsers,
+				message.mentions.users,
 				if (isPrivateChannel) null else guild
 			)
 		}
@@ -300,7 +303,7 @@ class CommandContext(
 
 			// Ainda não?!? Vamos verificar se é um emoji.
 			// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
-			for (emote in this.message.emotes) {
+			for (emote in this.message.mentions.customEmojis) {
 				if (link.equals(emote.asMention, ignoreCase = true)) {
 					return emote.imageUrl
 				}

@@ -19,6 +19,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import java.awt.Color
 import java.net.URLEncoder
 import java.time.Instant
@@ -78,15 +79,15 @@ class SpigotMcCommand(loritta: LorittaBot) : AbstractCommand(loritta, "spigotmc"
 					mensagem.onReactionAddByAuthor(context) {
 						val resourceId: String
 						when {
-							it.reactionEmote.name == "1⃣" -> resourceId = context.metadata.get("0") as String
-							it.reactionEmote.name == "2⃣" -> resourceId = context.metadata.get("1") as String
-							it.reactionEmote.name == "3⃣" -> resourceId = context.metadata.get("2") as String
-							it.reactionEmote.name == "4⃣" -> resourceId = context.metadata.get("3") as String
+							it.emoji.name == "1⃣" -> resourceId = context.metadata.get("0") as String
+							it.emoji.name == "2⃣" -> resourceId = context.metadata.get("1") as String
+							it.emoji.name == "3⃣" -> resourceId = context.metadata.get("2") as String
+							it.emoji.name == "4⃣" -> resourceId = context.metadata.get("3") as String
 							else -> resourceId = context.metadata.get("4") as String
 						}
 
 						// Criar novo embed!
-						mensagem.editMessage(createResourceEmbed(context, resourceId, context.locale).build()).queue()
+						mensagem.editMessageEmbeds(createResourceEmbed(context, resourceId, context.locale).build()).queue()
 
 						// Remover todos os reactions
 						mensagem.clearReactions().queue()

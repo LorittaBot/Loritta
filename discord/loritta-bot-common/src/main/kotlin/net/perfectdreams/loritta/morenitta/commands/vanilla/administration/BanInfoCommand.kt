@@ -7,6 +7,7 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionAddByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.Permission
+import net.dv8tion.jda.api.entities.UserSnowflake
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.perfectdreams.loritta.common.commands.ArgumentType
@@ -15,6 +16,7 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordAbstractCommandBase
 import net.perfectdreams.loritta.common.utils.Emotes
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, listOf("baninfo", "infoban", "checkban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
     override fun command() = create {
@@ -37,7 +39,7 @@ class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
                 fail(locale["commands.userDoesNotExist", userId.stripCodeMarks()])
             
             try {
-                val banInformation = userId.let { guild.retrieveBanById(it.toLong()).await() }
+                val banInformation = userId.let { guild.retrieveBan(UserSnowflake.fromId(it.toLong())).await() }
                 val banReason = banInformation.reason ?: locale["commands.command.baninfo.noReasonSpecified"]
                 val embed = EmbedBuilder()
                         .setTitle("${Emotes.LORI_COFFEE} ${locale["commands.command.baninfo.title"]}")
@@ -46,11 +48,11 @@ class BanInfoCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(loritta, 
                         .addField("${Emotes.LORI_BAN_HAMMER} ${locale["commands.command.baninfo.reason"]}", "`${banReason}`", false)
                         .setColor(Constants.DISCORD_BLURPLE)
                         .setFooter("Se você deseja desbanir este usuário, aperte no ⚒️!")
-                discordMessage.channel.sendMessage(embed.build()).await().also {
+                discordMessage.channel.sendMessageEmbeds(embed.build()).await().also {
                     it.addReaction("⚒").queue()
                 }.onReactionAddByAuthor(this) {
-                    if (it.reactionEmote.name == "⚒") {
-                        guild.unban(userId).queue()
+                    if (it.emoji.name == "⚒") {
+                        guild.unban(UserSnowflake.fromId(userId)).queue()
                         reply(
                                 LorittaReply(
                                         locale["commands.command.unban.successfullyUnbanned"],

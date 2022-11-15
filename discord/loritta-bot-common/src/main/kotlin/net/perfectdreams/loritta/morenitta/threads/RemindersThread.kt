@@ -12,10 +12,11 @@ import net.perfectdreams.loritta.morenitta.utils.onResponseByAuthor
 import net.perfectdreams.loritta.morenitta.utils.stripCodeMarks
 import net.perfectdreams.loritta.morenitta.utils.substringIfNeeded
 import mu.KotlinLogging
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import org.jetbrains.exposed.sql.deleteWhere
 import java.util.*
 
@@ -68,8 +69,9 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
 
                         if (channel != null && channel.canTalk()) {
                             channel.sendMessage(
-                                MessageBuilder(reminderText)
-                                    .allowMentions(Message.MentionType.USER, Message.MentionType.EMOTE)
+                                MessageCreateBuilder()
+                                    .setContent(reminderText)
+                                    .setAllowedMentions(setOf(Message.MentionType.USER, Message.MentionType.EMOJI))
                                     .build()
                             ).queue {
                                 addSnoozeListener(it, reminder)
@@ -106,7 +108,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
             return
 
         message.onReactionAddByAuthor(loritta, reminder.userId) {
-            if (it.reactionEmote.isEmote(SNOOZE_EMOTE)) {
+            if (it.emoji.isEmote(SNOOZE_EMOTE)) {
                 loritta.messageInteractionCache.remove(message.idLong)
 
                 val newReminderTime = Calendar.getInstance(TimeZone.getTimeZone(Constants.LORITTA_TIMEZONE)).timeInMillis + (Constants.ONE_MINUTE_IN_MILLISECONDS * DEFAULT_SNOOZE_MINUTES)
@@ -132,7 +134,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
                 message.clearReactions().queue()
             }
 
-            if (it.reactionEmote.isEmote(SCHEDULE_EMOTE)) {
+            if (it.emoji.isEmote(SCHEDULE_EMOTE)) {
                 val remindStr = "$SCHEDULE_EMOTE | <@${reminder.userId}> When do you want me to remind you again? (`1 hour`, `5 minutes`, `12:00 11/08/2018`, etc)"
                 message.channel.sendMessage(remindStr).queue { reply ->
                     awaitSchedule(reply, message, reminder)
@@ -176,7 +178,7 @@ class RemindersThread(val loritta: LorittaBot) : Thread("Reminders Thread") {
         }
 
         reply.onReactionAddByAuthor(loritta, reminder.userId) {
-            if (it.reactionEmote.isEmote(CANCEL_EMOTE)) {
+            if (it.emoji.isEmote(CANCEL_EMOTE)) {
                 loritta.messageInteractionCache.remove(reply.idLong)
                 reply.delete().queue()
                 reply.channel.sendMessage("\uD83D\uDDD1️| <@${reminder.userId}> Reminder cancelled!").queue()

@@ -17,6 +17,7 @@ import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", listOf("desbanir"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.unban.description")
@@ -79,8 +80,8 @@ class UnbanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "unban", list
 			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "unban")
 
 			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-					banCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
+				if (it.emoji.isEmote("✅") || it.emoji.isEmote("\uD83D\uDE4A")) {
+					banCallback.invoke(message, it.emoji.isEmote("\uD83D\uDE4A"))
 				}
 				return@onReactionAddByAuthor
 			}

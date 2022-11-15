@@ -4,6 +4,7 @@ import net.perfectdreams.loritta.morenitta.utils.extensions.await
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
+import net.dv8tion.jda.api.utils.FileUpload
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.tables.SonhosTransaction
@@ -133,7 +134,7 @@ object PaymentUtils {
                                                         totalQuantity
                                                 ).joinToString("\n")
                                 )
-                                .addFile(builder.toString().toByteArray(Charsets.UTF_8), "transactions.txt")
+                                .addFiles(FileUpload.fromData(builder.toString().toByteArray(Charsets.UTF_8), "transactions.txt"))
                                 .await()
 
                         logger.info { "Successfully notified ${user.idLong} about $userId chargebacks" }

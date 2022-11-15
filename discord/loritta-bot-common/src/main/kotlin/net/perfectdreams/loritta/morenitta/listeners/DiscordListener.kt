@@ -21,7 +21,7 @@ import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.events.guild.GuildJoinEvent
 import net.dv8tion.jda.api.events.guild.GuildLeaveEvent
 import net.dv8tion.jda.api.events.guild.GuildReadyEvent
@@ -172,16 +172,16 @@ class DiscordListener(internal val loritta: LorittaBot) : ListenerAdapter() {
 	override fun onHttpRequest(event: HttpRequestEvent) {
 		val copy = event.requestRaw?.newBuilder()?.build()
 
-		val body = copy?.body()
+		val body = copy?.body
 		val originalMediaType = body?.contentType()
-		val mediaType = "${originalMediaType?.type()}/${originalMediaType?.subtype()}"
+		val mediaType = "${originalMediaType?.type}/${originalMediaType?.subtype}"
 
 		if (mediaType == "application/json") {
 			// We will only write the content if the input is "application/json"
 			//
 			// Because if we write every body, this also includes images... And that causes Humongous Allocations (a lot of memory used)! And that's bad!!
 			val buffer = Buffer()
-			copy?.body()?.writeTo(buffer)
+			copy?.body?.writeTo(buffer)
 
 			val input = buffer.readUtf8()
 			val length = body?.contentLength()

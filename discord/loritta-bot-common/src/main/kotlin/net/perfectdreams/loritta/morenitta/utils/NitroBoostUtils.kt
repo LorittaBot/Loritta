@@ -279,7 +279,7 @@ object NitroBoostUtils {
 
 		// Fim!
 		try {
-			member.user.openPrivateChannel().await().sendMessage(
+			member.user.openPrivateChannel().await().sendMessageEmbeds(
 				EmbedBuilder()
 					.setTitle("Obrigada por ativar o seu boost! ${Emotes.LORI_HAPPY}")
 					.setDescription(

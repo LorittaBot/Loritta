@@ -99,7 +99,7 @@ object AdminUtils {
 			val matchedUser = DiscordUtils.extractUserFromString(
 				context.loritta,
 				input,
-				context.message.mentionedUsers,
+				context.message.mentions.users,
 				context.guild,
 				extractUserViaEffectiveName = shouldUseExtensiveMatching,
 				extractUserViaUsername = shouldUseExtensiveMatching

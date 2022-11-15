@@ -23,10 +23,11 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.withTimeout
 import mu.KotlinLogging
 import net.dv8tion.jda.api.JDA
-import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.api.sharding.ShardManager
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.gateway.JDAToKordDiscordGatewayManager
@@ -64,9 +65,9 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 
 	fun getCachedUserCount(): Long = shardManager.userCache.size()
 
-	fun getEmoteCount(): Int = shardManager.emotes.size
+	fun getEmoteCount(): Int = shardManager.emojis.size
 
-	fun getCachedEmoteCount(): Long = shardManager.emoteCache.size()
+	fun getCachedEmoteCount(): Long = shardManager.emojiCache.size()
 
 	fun getChannelCount(): Int = shardManager.textChannels.size + shardManager.voiceChannels.size
 
@@ -236,11 +237,11 @@ class LorittaShards(val loritta: LorittaBot, val shardManager: ShardManager) {
 
 	fun getMutualGuilds(user: User): List<Guild> = shardManager.getMutualGuilds(user)
 
-	fun getEmoteById(id: String?): Emote? {
+	fun getEmoteById(id: String?): RichCustomEmoji? {
 		if (id == null)
 			return null
 
-		return shardManager.getEmoteById(id)
+		return shardManager.getEmojiById(id)
 	}
 
 	fun getTextChannelById(id: String?): TextChannel? {

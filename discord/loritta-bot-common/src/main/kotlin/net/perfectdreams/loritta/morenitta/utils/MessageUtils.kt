@@ -10,17 +10,18 @@ import net.perfectdreams.loritta.morenitta.events.LorittaMessageEvent
 import net.perfectdreams.loritta.morenitta.parallax.wrappers.ParallaxEmbed
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import mu.KotlinLogging
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.entities.ChannelType
+import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.Guild
-import net.dv8tion.jda.api.entities.GuildChannel
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.User
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.events.message.react.GenericMessageReactionEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.loritta.common.utils.format
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.common.utils.Emotes
@@ -117,7 +118,7 @@ object MessageUtils {
 		return jsonObject.toString()
 	}
 
-	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): Message? {
+	fun generateMessage(message: String, sources: List<Any>?, guild: Guild?, customTokens: Map<String, String> = mutableMapOf(), safe: Boolean = true): MessageCreateData? {
 		val jsonObject = try {
 			JsonParser.parseString(message).obj
 		} catch (ex: Exception) {
@@ -178,7 +179,7 @@ object MessageUtils {
 			}
 		}
 
-		val messageBuilder = MessageBuilder()
+		val messageBuilder = MessageCreateBuilder()
 		if (jsonObject != null) {
 			// alterar tokens
 			handleJsonTokenReplacer(jsonObject, sources, guild, tokens)
@@ -186,15 +187,15 @@ object MessageUtils {
 			if (jsonEmbed != null) {
 				try {
 					val parallaxEmbed = LorittaBot.GSON.fromJson<ParallaxEmbed>(jsonObject["embed"])
-					messageBuilder.setEmbed(parallaxEmbed.toDiscordEmbed(safe))
+					messageBuilder.setEmbeds(parallaxEmbed.toDiscordEmbed(safe))
 				} catch (e: Exception) {
 					// Creating a empty embed can cause errors, so we just wrap it in a try .. catch block and hope
 					// for the best!
 				}
 			}
-			messageBuilder.append(jsonObject.obj["content"].nullString ?: " ")
+			messageBuilder.addContent(jsonObject.obj["content"].nullString ?: " ")
 		} else {
-			messageBuilder.append(replaceTokens(message, sources, guild, tokens).substringIfNeeded())
+			messageBuilder.addContent(replaceTokens(message, sources, guild, tokens).substringIfNeeded())
 		}
 		if (messageBuilder.isEmpty)
 			return null
@@ -237,7 +238,7 @@ object MessageUtils {
 		// para que elas simplesmente "funcionem:tm:"
 		// Ou seja, se no chat do Discord aparece corretamente, é melhor que na própria Loritta também apareça, não é mesmo?
 		if (guild != null) {
-			for (emote in guild.emotes) {
+			for (emote in guild.emojis) {
 				var index = 0
 				var overflow = 0
 				while (message.indexOf(":${emote.name}:", index) != -1) {

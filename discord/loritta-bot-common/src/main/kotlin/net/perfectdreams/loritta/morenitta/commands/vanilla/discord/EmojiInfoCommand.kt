@@ -9,8 +9,9 @@ import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.entities.Emote
 import net.dv8tion.jda.api.entities.MessageEmbed
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.CommandArguments
 import net.perfectdreams.loritta.common.commands.arguments
@@ -33,7 +34,7 @@ class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinf
 			OutdatedCommandUtils.sendOutdatedCommandMessage(context, locale, "emoji info")
 
 			val arg0 = context.rawArgs[0]
-			val firstEmote = context.message.emotes.firstOrNull()
+			val firstEmote = context.message.mentions.customEmojis.firstOrNull()
 			if (arg0 == firstEmote?.asMention) {
 				// Emoji do Discord (via menção)
 				showDiscordEmoteInfo(context, firstEmote)
@@ -58,7 +59,7 @@ class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinf
 			}
 
 			val guild = context.guild
-			val foundEmote = guild.getEmotesByName(arg0, true).firstOrNull()
+			val foundEmote = guild.getEmojisByName(arg0, true).firstOrNull()
 			if (foundEmote != null) {
 				// Emoji do Discord (via nome)
 				showDiscordEmoteInfo(context, foundEmote)
@@ -101,12 +102,12 @@ class EmojiInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emojiinf
 		}
 	}
 
-	suspend fun showDiscordEmoteInfo(context: CommandContext, emote: Emote) {
+	suspend fun showDiscordEmoteInfo(context: CommandContext, emote: CustomEmoji) {
 		context.sendMessage(context.getAsMention(true), getDiscordEmoteInfoEmbed(context, emote))
 	}
 
 	companion object {
-		fun getDiscordEmoteInfoEmbed(context: CommandContext, emote: Emote): MessageEmbed {
+		fun getDiscordEmoteInfoEmbed(context: CommandContext, emote: CustomEmoji): MessageEmbed {
 			// Se o usuário usar um emoji de um servidor que a Lori NÃO compartilha, então ela não vai conseguir usar!
 			// Por isto, iremos pegar se ela conhece o emoji a partir das shards
 			val cachedEmote = context.loritta.lorittaShards.getEmoteById(emote.id)

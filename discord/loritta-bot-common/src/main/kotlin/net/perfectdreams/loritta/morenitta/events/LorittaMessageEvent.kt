@@ -5,6 +5,9 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.dv8tion.jda.api.JDA
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
 
 class LorittaMessageEvent(
     val author: User,

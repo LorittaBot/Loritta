@@ -11,14 +11,18 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.future.await
 import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.emoji.Emoji
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.exceptions.InsufficientPermissionException
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.loritta.morenitta.dao.servers.Giveaway
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.entities.DiscordEmote
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.sequins.text.StringUtils
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -44,7 +48,7 @@ class GiveawayManager(val loritta: LorittaBot) {
         return reaction
     }
 
-    fun createGiveawayMessage(locale: BaseLocale, reason: String, description: String, reaction: String, epoch: Long, guild: Guild, customMessage: String?): Message {
+    fun createGiveawayMessage(locale: BaseLocale, reason: String, description: String, reaction: String, epoch: Long, guild: Guild, customMessage: String?): MessageCreateData {
         val diff = epoch - System.currentTimeMillis()
         val diffSeconds = diff / 1000 % 60
         val diffMinutes = diff / (60 * 1000) % 60
@@ -59,8 +63,8 @@ class GiveawayManager(val loritta: LorittaBot) {
             else -> "Alguns millissegundos!"
         }
 
-        val builder = MessageBuilder()
-                .setContent(" ")
+        val builder = MessageCreateBuilder()
+                .addContent(" ")
 
         val customResult = customMessage?.let {
             MessageUtils.generateMessage(
@@ -72,13 +76,13 @@ class GiveawayManager(val loritta: LorittaBot) {
             )
         }
 
-        if (customResult?.contentRaw?.isNotBlank() == true)
-            builder.setContent(customResult.contentRaw)
+        if (customResult?.content?.isNotBlank() == true)
+            builder.setContent(customResult.content)
 
         if (customResult?.embeds?.isNotEmpty() == true)
-            builder.setEmbed(customResult.embeds.first())
+            builder.setEmbeds(customResult.embeds.first())
         else
-            builder.setEmbed(
+            builder.setEmbeds(
                     EmbedBuilder().apply {
                         setTitle("\uD83C\uDF81 ${reason.substringIfNeeded(0 until 200)}")
                         setDescription("$description\n\nUse ${getReactionMention(reaction)} para entrar!")
@@ -346,9 +350,9 @@ class GiveawayManager(val loritta: LorittaBot) {
         }
 
         messageReaction = if (isDiscordEmote) {
-            message.reactions.firstOrNull { it.reactionEmote.isEmote && it.reactionEmote.emote.id == reactionId }
+            message.reactions.firstOrNull { it.emoji.type == Emoji.Type.CUSTOM && it.emoji.asCustom().id == reactionId }
         } else {
-            message.reactions.firstOrNull { it.reactionEmote.name == giveaway.reaction }
+            message.reactions.firstOrNull { it.emoji.name == giveaway.reaction }
         }
 
         val serverConfig = loritta.getOrCreateServerConfig(message.guild.idLong)
@@ -389,12 +393,12 @@ class GiveawayManager(val loritta: LorittaBot) {
                     reactedUsers.remove(user)
                 }
                 
-                val messageBuilder = MessageBuilder()
+                val messageBuilder = MessageCreateBuilder()
 
                 if (winners.size == 1) { // Apenas um ganhador
                     val winner = winners.first()
                     messageBuilder
-                        .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+                        .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOJI))
                         .setContent("\uD83C\uDF89 **|** ${locale["commands.command.giveaway.oneWinner", winner.asMention, "**${giveaway.reason}**"]} ${Emotes.LORI_HAPPY}")
                     message.channel.sendMessageAsync(messageBuilder.build())
                 } else { // Mais de um ganhador
@@ -421,7 +425,7 @@ class GiveawayManager(val loritta: LorittaBot) {
                     val chunkedResponse = StringUtils.chunkedLines(fullString, 1_000, forceSplit = true, forceSplitOnSpaces = true)
                     chunkedResponse.forEach {
                         messageBuilder
-                                .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOTE))
+                                .setAllowedMentions(listOf(Message.MentionType.USER, Message.MentionType.CHANNEL, Message.MentionType.EMOJI))
                                 .setContent(it)
                         message.channel.sendMessageAsync(messageBuilder.build())
                     }
@@ -451,7 +455,7 @@ class GiveawayManager(val loritta: LorittaBot) {
             setFooter(locale["commands.command.giveaway.giveawayEnded"], null)
         }
 
-        message.editMessage(embed.build()).await()
+        message.editMessageEmbeds(embed.build()).await()
     }
 
     suspend fun finishGiveaway(message: Message, giveaway: Giveaway) {

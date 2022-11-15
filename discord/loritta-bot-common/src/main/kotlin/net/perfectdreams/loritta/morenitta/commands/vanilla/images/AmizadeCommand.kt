@@ -35,10 +35,10 @@ class AmizadeCommand(loritta: LorittaBot) : AbstractCommand(loritta, "friendship
 	}
 
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
-		if (context.message.mentionedUsers.size == 2) {
+		if (context.message.mentions.users.size == 2) {
 			// Não podemos usar context...
-			val user = context.message.mentionedUsers[0]
-			val user2 = context.message.mentionedUsers[1]
+			val user = context.message.mentions.users[0]
+			val user2 = context.message.mentions.users[1]
 
 			val avatar = LorittaUtils.downloadImage(loritta, context.userHandle.getEffectiveAvatarUrl(ImageFormat.PNG, 128))
 			val avatar2 = LorittaUtils.downloadImage(loritta, user.getEffectiveAvatarUrl(ImageFormat.PNG, 128))

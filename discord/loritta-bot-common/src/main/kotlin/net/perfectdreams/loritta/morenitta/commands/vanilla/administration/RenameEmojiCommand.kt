@@ -27,8 +27,8 @@ class RenameEmojiCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 
         canUseInPrivateChannel = false
 
-        botRequiredPermissions = listOf(Permission.MANAGE_EMOTES)
-        userRequiredPermissions = listOf(Permission.MANAGE_EMOTES)
+        botRequiredPermissions = listOf(Permission.MANAGE_EMOJIS_AND_STICKERS)
+        userRequiredPermissions = listOf(Permission.MANAGE_EMOJIS_AND_STICKERS)
 
         executesDiscord {
             val context = this

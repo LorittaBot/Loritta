@@ -14,6 +14,7 @@ import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class VemDeZapCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vemdezap", category = net.perfectdreams.loritta.common.commands.CommandCategory.FUN) {
 	companion object {
@@ -391,7 +392,7 @@ class VemDeZapCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vemdezap"
 			)
 
 			message.onReactionAddByAuthor(context) {
-				val mood = when (it.reactionEmote.name) {
+				val mood = when (it.emoji.name) {
 					"\uD83D\uDE0A" -> ZapZapMood.HAPPY
 					"\uD83D\uDE21" -> ZapZapMood.ANGRY
 					"\uD83D\uDE0F" -> ZapZapMood.SASSY
@@ -435,7 +436,7 @@ class VemDeZapCommand(loritta: LorittaBot) : AbstractCommand(loritta, "vemdezap"
 				)
 
 				levelMessage.onReactionAddByAuthor(context) {
-					val level = Constants.INDEXES.indexOf(it.reactionEmote.name)
+					val level = Constants.INDEXES.indexOf(it.emoji.name)
 
 					if (level == -1) {
 						return@onReactionAddByAuthor

@@ -11,6 +11,7 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionAdd
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class MarryCommand(loritta: LorittaBot) : AbstractCommand(loritta, "marry", listOf("casar"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	companion object {
@@ -112,7 +113,7 @@ class MarryCommand(loritta: LorittaBot) : AbstractCommand(loritta, "marry", list
 			val message = context.sendMessage(response)
 
 			message.onReactionAdd(context) {
-				if (it.reactionEmote.isEmote("\uD83D\uDC8D") && it.member?.user?.id == proposeTo.id) {
+				if (it.emoji.isEmote("\uD83D\uDC8D") && it.member?.user?.id == proposeTo.id) {
 					message.delete().queue()
 
 					val profile = loritta.getOrCreateLorittaProfile(context.userHandle.id)

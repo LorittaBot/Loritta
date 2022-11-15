@@ -69,7 +69,7 @@ class PostPerfectPaymentsCallbackRoute(val loritta: LorittaBot) : BaseRoute("/ap
 						.setTimestamp(Instant.now())
 						.build()
 
-				it.sendMessage(embed).queue()
+				it.sendMessageEmbeds(embed).queue()
 			}
 		}
 

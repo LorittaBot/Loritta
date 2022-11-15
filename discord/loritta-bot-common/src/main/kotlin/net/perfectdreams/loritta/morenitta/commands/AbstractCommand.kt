@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.common.locale.LocaleStringData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import java.awt.Color
 import java.time.Instant
 
@@ -245,7 +246,7 @@ abstract class AbstractCommand(val loritta: LorittaBot, open val label: String, 
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 		message.addReaction("❓").queue()
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.isEmote("❓")) {
+			if (it.emoji.isEmote("❓")) {
 				message.delete().queue()
 				explainArguments(context)
 			}
@@ -283,7 +284,7 @@ abstract class AbstractCommand(val loritta: LorittaBot, open val label: String, 
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 		message.addReaction("❓").queue()
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.isEmote("❓")) {
+			if (it.emoji.isEmote("❓")) {
 				message.delete().queue()
 				explain(context)
 			}

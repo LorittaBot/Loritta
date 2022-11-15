@@ -23,6 +23,8 @@ import java.awt.Color
 import java.time.Instant
 import java.time.ZonedDateTime
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 
 class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme", listOf("lembre", "remind", "lembrar", "lembrete", "reminder"), net.perfectdreams.loritta.common.commands.CommandCategory.UTILS) {
 	override fun getBotPermissions() = listOf(Permission.MESSAGE_MANAGE)
@@ -128,18 +130,18 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 		val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.isEmote("➡")) {
+			if (it.emoji.isEmote("➡")) {
 				message.delete().queue()
 				handleReminderList(context, page + 1, locale)
 				return@onReactionAddByAuthor
 			}
-			if (it.reactionEmote.isEmote("⬅")) {
+			if (it.emoji.isEmote("⬅")) {
 				message.delete().queue()
 				handleReminderList(context, page - 1, locale)
 				return@onReactionAddByAuthor
 			}
 
-			val idx = Constants.INDEXES.indexOf(it.reactionEmote.name)
+			val idx = Constants.INDEXES.indexOf(it.emoji.name)
 
 			if (idx == -1) // derp
 				return@onReactionAddByAuthor
@@ -162,12 +164,12 @@ class LembrarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "remindme",
 			embedBuilder.setColor(Color(255, 179, 43))
 
 			message.clearReactions().queue()
-			message.editMessage(embedBuilder.build()).queue()
+			message.editMessageEmbeds(embedBuilder.build()).queue()
 			message.addReaction("⬅️").queue()
 
 			message.onReactionAddByAuthor(context) {
 
-				if (it.reactionEmote.isEmote("⬅️")) {
+				if (it.emoji.isEmote("⬅️")) {
 
 					message.delete().queue()
 					handleReminderList(context, page, locale)

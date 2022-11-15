@@ -23,6 +23,8 @@ import net.perfectdreams.loritta.morenitta.platform.discord.utils.UserFlagBadgeE
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 
 class UserInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "userinfo", listOf("memberinfo"), net.perfectdreams.loritta.common.commands.CommandCategory.DISCORD) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.userinfo.description")

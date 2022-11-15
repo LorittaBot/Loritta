@@ -9,8 +9,8 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUtils
 import net.perfectdreams.loritta.morenitta.utils.isValidSnowflake
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.locale.LocaleKeyData
-import net.dv8tion.jda.api.MessageBuilder
-import net.dv8tion.jda.api.entities.Emote
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.LorittaBot
@@ -31,7 +31,7 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 	override suspend fun run(context: CommandContext,locale: BaseLocale) {
 		if (context.args.size == 1) {
 			val arg0 = context.rawArgs[0]
-			val firstEmote = context.message.emotes.firstOrNull()
+			val firstEmote = context.message.mentions.customEmojis.firstOrNull()
 			if (arg0 == firstEmote?.asMention) {
 				// Emoji do Discord (via menção)
 				downloadAndSendDiscordEmote(context, firstEmote)
@@ -56,7 +56,7 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 			}
 
 			val guild = context.guild
-			val foundEmote = guild.getEmotesByName(arg0, true).firstOrNull()
+			val foundEmote = guild.getEmojisByName(arg0, true).firstOrNull()
 			if (foundEmote != null) {
 				// Emoji do Discord (via nome)
 				downloadAndSendDiscordEmote(context, foundEmote)
@@ -78,7 +78,7 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 						return
 					}
 					val emojiImage = LorittaUtils.downloadImage(loritta, "https://twemoji.maxcdn.com/2/72x72/$value.png")
-					context.sendFile(emojiImage!!, "emoji.png", MessageBuilder().append(" ").build())
+					context.sendFile(emojiImage!!, "emoji.png", MessageCreateBuilder().addContent(" ").build())
 				} catch (e: Exception) {
 					e.printStackTrace()
 				}
@@ -90,7 +90,7 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 		}
 	}
 
-	suspend fun downloadAndSendDiscordEmote(context: CommandContext, emote: Emote) {
+	suspend fun downloadAndSendDiscordEmote(context: CommandContext, emote: CustomEmoji) {
 		val emojiUrl = emote.imageUrl
 
 		try {
@@ -101,7 +101,7 @@ class EmojiCommand(loritta: LorittaBot) : AbstractCommand(loritta, "emoji", cate
 			} else {
 				fileName += ".png"
 			}
-			context.sendFile(emojiImage!!, fileName, MessageBuilder().append(" ").build())
+			context.sendFile(emojiImage!!, fileName, MessageCreateBuilder().addContent(" ").build())
 		} catch (e: Exception) {
 			e.printStackTrace()
 		}

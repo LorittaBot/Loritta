@@ -3,16 +3,20 @@ package net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands
 import com.github.kevinsawicki.http.HttpRequest
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import net.perfectdreams.loritta.morenitta.utils.*
-import net.perfectdreams.loritta.morenitta.utils.extensions.await
-import net.perfectdreams.loritta.morenitta.utils.extensions.localized
-import net.perfectdreams.loritta.morenitta.utils.extensions.referenceIfPossible
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.dv8tion.jda.api.EmbedBuilder
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
+import net.dv8tion.jda.api.entities.emoji.CustomEmoji
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.api.exceptions.PermissionException
+import net.dv8tion.jda.api.utils.FileUpload
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.perfectdreams.i18nhelper.core.I18nContext
 import net.perfectdreams.loritta.morenitta.api.commands.Command
 import net.perfectdreams.loritta.morenitta.messages.LorittaMessage
@@ -28,6 +32,7 @@ import net.perfectdreams.loritta.morenitta.utils.DiscordUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.api.commands.CommandContext
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
+import net.perfectdreams.loritta.morenitta.utils.extensions.*
 import org.jsoup.Jsoup
 import java.io.File
 import java.io.InputStream
@@ -51,30 +56,30 @@ class DiscordCommandContext(
 	val member = discordMessage.member
 
 	suspend fun sendMessage(message: String, embed: MessageEmbed): Message {
-		return sendMessage(MessageBuilder()
+		return sendMessage(MessageCreateBuilder()
 			.denyMentions(
 				Message.MentionType.EVERYONE,
 				Message.MentionType.HERE
 			)
-			.setEmbed(embed)
-			.append(if (message.isEmpty()) " " else message)
+			.setEmbeds(embed)
+			.addContent(if (message.isEmpty()) " " else message)
 			.build()
 		)
 	}
 
-	suspend fun sendMessage(embed: MessageEmbed): Message {
-		return sendMessage(MessageBuilder()
+	suspend fun sendMessageEmbeds(embed: MessageEmbed): Message {
+		return sendMessage(MessageCreateBuilder()
 			.denyMentions(
 				Message.MentionType.EVERYONE,
 				Message.MentionType.HERE
 			)
-			.append(getUserMention(true))
-			.setEmbed(embed)
+			.addContent(getUserMention(true))
+			.setEmbeds(embed)
 			.build()
 		)
 	}
 
-	suspend fun sendMessage(message: Message): Message {
+	suspend fun sendMessage(message: MessageCreateData): Message {
 		if (isPrivateChannel || discordMessage.textChannel.canTalk()) {
 			return discordMessage.channel.sendMessage(message)
 				.referenceIfPossible(discordMessage, serverConfig, true)
@@ -87,7 +92,7 @@ class DiscordCommandContext(
 	override suspend fun sendImage(image: Image, fileName: String, content: String): net.perfectdreams.loritta.morenitta.api.entities.Message {
 		return DiscordMessage(
 			discordMessage.channel.sendMessage(LorittaMessage(content).content)
-				.addFile(image.toByteArray(), fileName)
+				.addFiles(FileUpload.fromData(image.toByteArray(), fileName))
 				.referenceIfPossible(discordMessage, serverConfig, true)
 				.await()
 		)
@@ -96,7 +101,7 @@ class DiscordCommandContext(
 	override suspend fun sendFile(byteArray: ByteArray, fileName: String, content: String): net.perfectdreams.loritta.morenitta.api.entities.Message {
 		return DiscordMessage(
 			discordMessage.channel.sendMessage(LorittaMessage(content).content)
-				.addFile(byteArray, fileName)
+				.addFiles(FileUpload.fromData(byteArray, fileName))
 				.referenceIfPossible(discordMessage, serverConfig, true)
 				.await()
 		)
@@ -105,16 +110,16 @@ class DiscordCommandContext(
 	suspend fun sendFile(file: File, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
 		return DiscordMessage(
 			discordMessage.channel.sendMessage(
-				MessageBuilder()
+				MessageCreateBuilder()
 					.denyMentions(
 						Message.MentionType.EVERYONE,
 						Message.MentionType.HERE
 					)
-					.append(content)
-					.setEmbed(embed)
+					.addContent(content)
+					.setEmbeds(embed)
 					.build()
 			)
-				.addFile(file, fileName)
+				.addFiles(FileUpload.fromData(file, fileName))
 				.referenceIfPossible(discordMessage, serverConfig, true)
 				.await()
 		)
@@ -122,16 +127,16 @@ class DiscordCommandContext(
 
 	suspend fun sendFile(inputStream: InputStream, fileName: String, content: String = this.getUserMention(true), embed: MessageEmbed? = null): DiscordMessage {
 		return DiscordMessage(discordMessage.channel.sendMessage(
-			MessageBuilder()
+			MessageCreateBuilder()
 				.denyMentions(
 					Message.MentionType.EVERYONE,
 					Message.MentionType.HERE
 				)
-				.append(content)
-				.setEmbed(embed)
+				.addContent(content)
+				.setEmbeds(embed)
 				.build()
 		)
-			.addFile(inputStream, fileName)
+			.addFiles(FileUpload.fromData(inputStream, fileName))
 			.referenceIfPossible(discordMessage, serverConfig, true)
 			.await()
 		)
@@ -142,7 +147,7 @@ class DiscordCommandContext(
 			DiscordUtils.extractUserFromString(
 				loritta,
 				it,
-				discordMessage.mentionedUsers,
+				discordMessage.mentions.users,
 				if (isPrivateChannel) null else discordMessage.guild
 			)?.let { JDAUser(it) }
 		}
@@ -171,7 +176,7 @@ class DiscordCommandContext(
 
 			// Ainda não?!? Vamos verificar se é um emoji.
 			// Um emoji custom do Discord é + ou - assim: <:loritta:324931508542504973>
-			for (emote in this.discordMessage.emotes) {
+			for (emote in this.discordMessage.mentions.customEmojis) {
 				if (link.equals(emote.asMention, ignoreCase = true)) {
 					return emote.imageUrl
 				}
@@ -324,20 +329,20 @@ class DiscordCommandContext(
 		}
 	}
 
-	fun emote(argument: Int): Emote? {
+	fun emote(argument: Int): RichCustomEmoji? {
 		val regexEmote = Regex("(<)|[a-z]|(_)|(:)|(>)")
 		val emoteId = args.getOrNull(argument)?.let { regexEmote.replace(it, "") }
 
 		return if (emoteId?.isValidSnowflake()!!) {
-			guild.getEmoteById(emoteId)
+			guild.getEmojiById(emoteId)
 		} else {
 			null
-		} ?: if (guild.getEmotesByName(args[0], true).isNotEmpty()) {
-			guild.getEmotesByName(args[0], true).first()
+		} ?: if (guild.getEmojisByName(args[0], true).isNotEmpty()) {
+			guild.getEmojisByName(args[0], true).first()
 		} else {
 			null
-		} ?: if (guild.emotes.filter { it.name == args[0] }.isNotEmpty()) {
-			guild.emotes.filter { it.name == args[0] }.first()
+		} ?: if (guild.emojis.filter { it.name == args[0] }.isNotEmpty()) {
+			guild.emojis.filter { it.name == args[0] }.first()
 		} else {
 			null
 		}
@@ -492,13 +497,13 @@ class DiscordCommandContext(
 			)
 		}
 
-		val messageBuilder = MessageBuilder()
+		val messageBuilder = MessageCreateBuilder()
 			.denyMentions(
 				Message.MentionType.EVERYONE,
 				Message.MentionType.HERE
 			)
-			.append(getUserMention(true))
-			.setEmbed(embed.build())
+			.addContent(getUserMention(true))
+			.setEmbeds(embed.build())
 
 		discordMessage.channel.sendMessage(messageBuilder.build())
 			.referenceIfPossible(discordMessage, serverConfig, true)

@@ -29,6 +29,7 @@ import net.perfectdreams.loritta.morenitta.utils.NumberUtils
 import net.perfectdreams.loritta.morenitta.utils.PaymentUtils
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.refreshInDeferredTransaction
 import net.perfectdreams.loritta.morenitta.utils.extensions.toJDA
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
@@ -214,7 +215,7 @@ class CoinFlipBetCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
 			).toJDA()
 
 			message.onReactionAdd(this) {
-				if (it.reactionEmote.name == "✅") {
+				if (it.emoji.name == "✅") {
 					mutex.withLock {
 						if (loritta.messageInteractionCache.containsKey(it.messageIdLong)) {
 							val usersThatReactedToTheMessage = it.reaction.retrieveUsers().await()

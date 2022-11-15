@@ -10,10 +10,9 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
 import net.dv8tion.jda.api.entities.Member
-import net.dv8tion.jda.api.entities.VoiceChannel
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceJoinEvent
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceLeaveEvent
-import net.dv8tion.jda.api.events.guild.voice.GuildVoiceMoveEvent
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
+import net.dv8tion.jda.api.events.guild.voice.GuildVoiceUpdateEvent
 import net.dv8tion.jda.api.hooks.ListenerAdapter
 import java.util.concurrent.TimeUnit
 
@@ -21,43 +20,28 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 	companion object {
 		private val logger = KotlinLogging.logger {}
 		private val mutexes = Caffeine.newBuilder()
-				.expireAfterAccess(60, TimeUnit.SECONDS)
-				.build<Long, Mutex>()
-				.asMap()
+			.expireAfterAccess(60, TimeUnit.SECONDS)
+			.build<Long, Mutex>()
+			.asMap()
 	}
 
-	override fun onGuildVoiceJoin(event: GuildVoiceJoinEvent) {
+	override fun onGuildVoiceUpdate(event: GuildVoiceUpdateEvent) {
 		if (DebugLog.cancelAllEvents)
 			return
 
 		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
 			return
 
-		onVoiceChannelConnect(event.member, event.channelJoined)
+		val channelLeft = event.channelLeft
+		if (channelLeft != null)
+			onVoiceChannelLeave(event.member, channelLeft)
+
+		val channelJoined = event.channelJoined
+		if (channelJoined != null)
+			onVoiceChannelConnect(event.member, channelJoined)
 	}
 
-	override fun onGuildVoiceMove(event: GuildVoiceMoveEvent) {
-		if (DebugLog.cancelAllEvents)
-			return
-
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
-		onVoiceChannelLeave(event.member, event.channelLeft)
-		onVoiceChannelConnect(event.member, event.channelJoined)
-	}
-
-	override fun onGuildVoiceLeave(event: GuildVoiceLeaveEvent) {
-		if (DebugLog.cancelAllEvents)
-			return
-
-		if (loritta.rateLimitChecker.checkIfRequestShouldBeIgnored())
-			return
-
-		onVoiceChannelLeave(event.member, event.channelLeft)
-	}
-
-	fun onVoiceChannelConnect(member: Member, channelJoined: VoiceChannel) {
+	fun onVoiceChannelConnect(member: Member, channelJoined: AudioChannelUnion) {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val mutex = mutexes.getOrPut(channelJoined.idLong) { Mutex() }
 
@@ -69,7 +53,7 @@ class VoiceChannelListener(val loritta: LorittaBot) : ListenerAdapter() {
 		}
 	}
 
-	fun onVoiceChannelLeave(member: Member, channelLeft: VoiceChannel) {
+	fun onVoiceChannelLeave(member: Member, channelLeft: AudioChannelUnion) {
 		GlobalScope.launch(loritta.coroutineDispatcher) {
 			val mutex = mutexes.getOrPut(channelLeft.idLong) { Mutex() }
 

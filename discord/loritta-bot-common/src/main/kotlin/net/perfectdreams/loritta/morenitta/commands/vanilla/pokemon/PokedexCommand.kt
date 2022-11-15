@@ -105,7 +105,7 @@ class PokedexCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pokedex", 
 
 			embed.addField("${locale["commands.command.pokedex.evolutions"]}", strEvolutions, true)
 
-			context.sendMessage(embed.build())
+			context.sendMessageEmbeds(embed.build())
 
         } else {
             this.explain(context)

@@ -11,6 +11,7 @@ import net.dv8tion.jda.api.EmbedBuilder
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", listOf("gênero", "genero"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
     override fun getDescriptionKey() = LocaleKeyData("commands.command.gender.description")
@@ -24,7 +25,7 @@ class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", li
                 .build()
 
 
-        val message = context.sendMessage(embed)
+        val message = context.sendMessageEmbeds(embed)
 
         message.addReaction("male:384048518853296128").queue()
         message.addReaction("female:384048518337265665").queue()
@@ -33,7 +34,7 @@ class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", li
         message.onReactionAddByAuthor(context) {
             message.delete().queue()
 
-            if (it.reactionEmote.id == "384048518853296128") {
+            if (it.emoji.asCustom().id == "384048518853296128") {
                 loritta.newSuspendedTransaction {
                     context.lorittaUser.profile.settings.gender = Gender.MALE
                 }
@@ -47,7 +48,7 @@ class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", li
             }
 
 
-            if (it.reactionEmote.id == "384048518337265665") {
+            if (it.emoji.asCustom().id == "384048518337265665") {
                 loritta.newSuspendedTransaction {
                     context.lorittaUser.profile.settings.gender = Gender.FEMALE
                 }
@@ -60,7 +61,7 @@ class GenderCommand(loritta: LorittaBot) : AbstractCommand(loritta, "gender", li
 				)
             }
 
-            if (it.reactionEmote.isEmote("❓")) {
+            if (it.emoji.isEmote("❓")) {
                 loritta.newSuspendedTransaction {
                     context.lorittaUser.profile.settings.gender = Gender.UNKNOWN
                 }

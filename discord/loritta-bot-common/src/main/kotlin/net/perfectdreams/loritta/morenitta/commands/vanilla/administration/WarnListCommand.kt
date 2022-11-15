@@ -93,7 +93,7 @@ class WarnListCommand(loritta: LorittaBot) : AbstractCommand(loritta, "punishmen
 			val message = context.sendMessage(context.getAsMention(true), embed.build())
 
 			/* message.onReactionAddByAuthor(context) {
-				val idx = Constants.INDEXES.indexOf(it.reactionEmote.name)
+				val idx = Constants.INDEXES.indexOf(it.emoji.name)
 
 				val warn = warns.getOrNull(idx)
 

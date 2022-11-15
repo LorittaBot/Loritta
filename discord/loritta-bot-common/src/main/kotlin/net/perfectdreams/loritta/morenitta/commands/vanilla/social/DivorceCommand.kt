@@ -15,6 +15,7 @@ import net.perfectdreams.loritta.morenitta.profile.ProfileUtils
 import net.perfectdreams.loritta.common.utils.Emotes
 import org.jetbrains.exposed.sql.update
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class DivorceCommand(loritta: LorittaBot) : AbstractCommand(loritta, "divorce", listOf("divorciar"), net.perfectdreams.loritta.common.commands.CommandCategory.SOCIAL) {
 	companion object {
@@ -63,7 +64,7 @@ class DivorceCommand(loritta: LorittaBot) : AbstractCommand(loritta, "divorce", 
 		)
 
 		message.onReactionAddByAuthor(context) {
-			if (it.reactionEmote.isEmote(DIVORCE_REACTION_EMOJI)) {
+			if (it.emoji.isEmote(DIVORCE_REACTION_EMOJI)) {
 				// depois
 				loritta.newSuspendedTransaction {
 					Profiles.update({ Profiles.marriage eq userMarriage.id }) {
@@ -86,7 +87,7 @@ class DivorceCommand(loritta: LorittaBot) : AbstractCommand(loritta, "divorce", 
 
 					val userPrivateChannel = partner.openPrivateChannel().await()
 
-					userPrivateChannel.sendMessage(
+					userPrivateChannel.sendMessageEmbeds(
 							EmbedBuilder()
 									.setTitle(locale["$LOCALE_PREFIX.divorcedTitle"])
 									.setDescription(locale["$LOCALE_PREFIX.divorcedDescription", context.userHandle.name])

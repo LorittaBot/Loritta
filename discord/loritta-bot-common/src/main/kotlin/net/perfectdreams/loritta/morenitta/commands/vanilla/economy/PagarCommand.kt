@@ -24,6 +24,7 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.*
 import java.math.BigDecimal
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 
 class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf("pagar"), net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {
@@ -213,7 +214,7 @@ class PagarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "pay", listOf
 				)
 
 				message.onReactionAdd(context) {
-					if (it.reactionEmote.name == "✅") {
+					if (it.emoji.name == "✅") {
 						mutex.withLock {
 							// Multiple users can click on the message at the same time, so inside the mutex we need to check if the
 							// message is still in the interaction cache.

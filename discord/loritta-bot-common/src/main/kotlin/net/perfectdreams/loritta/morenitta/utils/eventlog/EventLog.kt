@@ -20,16 +20,18 @@ import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Guild
 import net.dv8tion.jda.api.entities.Member
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
-import net.dv8tion.jda.api.entities.VoiceChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
 import net.dv8tion.jda.api.entities.Webhook
 import net.dv8tion.jda.api.entities.WebhookType
+import net.dv8tion.jda.api.entities.channel.unions.AudioChannelUnion
 import net.perfectdreams.loritta.common.exposed.dao.CachedDiscordWebhook
 import net.perfectdreams.loritta.common.exposed.tables.CachedDiscordWebhooks
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.common.utils.webhooks.WebhookState
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.EventLogConfig
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 import org.json.JSONException
 import pw.forst.exposed.insertOrUpdate
 import java.awt.Color
@@ -281,8 +283,6 @@ object EventLog {
 						return
 					if (!message.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
 						return
-					if (!message.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
-						return
 
 					val storedMessage = loritta.newSuspendedTransaction {
 						StoredMessage.findById(message.idLong)
@@ -321,7 +321,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onVoiceJoin(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelJoined: VoiceChannel) {
+	suspend fun onVoiceJoin(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelJoined: AudioChannelUnion) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -334,8 +334,6 @@ object EventLog {
 				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return
 				if (!member.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return
-				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return
 
 				val embed = WebhookEmbedBuilder()
@@ -363,7 +361,7 @@ object EventLog {
 		}
 	}
 
-	suspend fun onVoiceLeave(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelLeft: VoiceChannel) {
+	suspend fun onVoiceLeave(loritta: LorittaBot, serverConfig: ServerConfig, member: Member, channelLeft: AudioChannelUnion) {
 		try {
 			val eventLogConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<EventLogConfig?>(loritta, ServerConfig::eventLogConfig) ?: return
 
@@ -375,8 +373,6 @@ object EventLog {
 				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_EMBED_LINKS))
 					return
 				if (!member.guild.selfMember.hasPermission(Permission.VIEW_CHANNEL))
-					return
-				if (!member.guild.selfMember.hasPermission(Permission.MESSAGE_READ))
 					return
 
 				val embed = WebhookEmbedBuilder()

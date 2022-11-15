@@ -12,7 +12,9 @@ import net.perfectdreams.loritta.common.locale.LocaleKeyData
 import net.perfectdreams.loritta.morenitta.utils.remove
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
-import net.dv8tion.jda.api.entities.TextChannel
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -147,7 +149,7 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 			if (discordMessage != null)
 				(
 						if (isEditMode)
-							editMessage!!.editMessage(discordMessage)
+							editMessage!!.editMessage(MessageEditData.fromCreateData(discordMessage))
 						else
 							channel.sendMessage(discordMessage)
 						).queue()

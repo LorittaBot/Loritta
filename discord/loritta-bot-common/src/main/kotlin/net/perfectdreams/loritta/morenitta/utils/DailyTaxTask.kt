@@ -120,7 +120,7 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 						}
 
 						user.openPrivateChannel().queue {
-							it.sendMessage(embed.build()).queue()
+							it.sendMessageEmbeds(embed.build()).queue()
 						}
 
 						alreadyPaymentNotifiedUsers.add(user.idLong)
@@ -184,7 +184,7 @@ class DailyTaxTask(val loritta: LorittaBot) : Runnable {
 						}
 
 						user.openPrivateChannel().queueAfter(index.toLong(), TimeUnit.SECONDS) {
-							it.sendMessage(embed.build()).queue()
+							it.sendMessageEmbeds(embed.build()).queue()
 						}
 					}
 

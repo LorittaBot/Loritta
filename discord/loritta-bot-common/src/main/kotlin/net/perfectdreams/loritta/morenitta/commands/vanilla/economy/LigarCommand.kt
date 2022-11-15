@@ -18,6 +18,7 @@ import org.jetbrains.exposed.sql.insert
 import java.util.concurrent.Executors
 import kotlin.math.roundToInt
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.textChannel
 
 class LigarCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ligar", category = net.perfectdreams.loritta.common.commands.CommandCategory.ECONOMY) {
 	companion object {

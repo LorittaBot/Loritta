@@ -153,7 +153,10 @@ class ParallaxEmbed {
 
 		if (fields != null) {
 			fields!!.forEach {
-				embed.addField(it.name, it.value, it.inline)
+				val fieldName = it.name
+				val fieldValue = it.value
+				if (fieldName != null && fieldValue != null)
+					embed.addField(fieldName, fieldValue, it.inline)
 			}
 		}
 
@@ -161,25 +164,25 @@ class ParallaxEmbed {
 	}
 
 	class ParallaxEmbedAuthor(
-			var name: String?,
-			var url: String?,
-			@SerializedName("icon_url")
-			var iconUrl: String?
+		var name: String?,
+		var url: String?,
+		@SerializedName("icon_url")
+		var iconUrl: String?
 	)
 
 	class ParallaxEmbedImage(
-			var url: String?
+		var url: String?
 	)
 
 	class ParallaxEmbedFooter(
-			var text: String?,
-			@SerializedName("icon_url")
-			var iconUrl: String?
+		var text: String?,
+		@SerializedName("icon_url")
+		var iconUrl: String?
 	)
 
 	class ParallaxEmbedField(
-			var name: String?,
-			var value: String?,
-			var inline: Boolean = false
+		var name: String?,
+		var value: String?,
+		var inline: Boolean = false
 	)
 }

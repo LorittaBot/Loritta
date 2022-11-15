@@ -80,7 +80,7 @@ class TempoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "weather", li
 				embed.addField("🌬 ${context.locale["commands.command.weather.windSpeed"]}", "$windSpeed km/h", true)
 				embed.addField("🏋 ${context.locale["commands.command.weather.airPressure"]}", "$pressure kPA", true)
 
-				context.sendMessage(embed.build())
+				context.sendMessageEmbeds(embed.build())
 			} else {
 				// Cidade inexistente!
 				context.sendMessage(Constants.ERROR + " **|** " + context.getAsMention(true) + context.locale["commands.command.weather.couldntFind", cidade])

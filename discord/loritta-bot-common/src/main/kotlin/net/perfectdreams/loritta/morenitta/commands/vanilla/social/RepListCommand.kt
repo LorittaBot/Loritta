@@ -217,7 +217,7 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
         val allowBack = page != 0L
 
         message.onReactionByAuthor(context) {
-            if (allowForward && it.reactionEmote.isEmote("⏩")) {
+            if (allowForward && it.emoji.isEmote("⏩")) {
                 sendRepListEmbed(
                     context,
                     locale,
@@ -225,7 +225,7 @@ class RepListCommand(val m: LorittaBot) : DiscordAbstractCommandBase(
                     message,
                 )
             }
-            if (allowBack && it.reactionEmote.isEmote("⏪")) {
+            if (allowBack && it.emoji.isEmote("⏪")) {
                 sendRepListEmbed(
                     context,
                     locale,

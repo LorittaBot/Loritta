@@ -3,28 +3,37 @@ package net.perfectdreams.loritta.morenitta.utils.extensions
 import net.perfectdreams.loritta.morenitta.utils.ImageFormat
 import net.perfectdreams.loritta.morenitta.dao.ServerConfig
 import kotlinx.coroutines.future.await
-import net.dv8tion.jda.api.MessageBuilder
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.Permission.*
 import net.dv8tion.jda.api.entities.*
+import net.dv8tion.jda.api.entities.Message.MentionType
+import net.dv8tion.jda.api.entities.channel.ChannelType
+import net.dv8tion.jda.api.entities.channel.middleman.MessageChannel
+import net.dv8tion.jda.api.entities.channel.unions.MessageChannelUnion
+import net.dv8tion.jda.api.entities.emoji.Emoji
+import net.dv8tion.jda.api.entities.emoji.EmojiUnion
 import net.dv8tion.jda.api.exceptions.ErrorResponseException
 import net.dv8tion.jda.api.requests.ErrorResponse
 import net.dv8tion.jda.api.requests.RestAction
-import net.dv8tion.jda.api.requests.restaction.MessageAction
+import net.dv8tion.jda.api.requests.restaction.MessageCreateAction
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.dv8tion.jda.api.utils.messages.MessageCreateData
+import net.dv8tion.jda.api.utils.messages.MessageEditBuilder
+import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 
 suspend fun <T> RestAction<T>.await() : T = this.submit().await()
 
 suspend fun MessageChannel.sendMessageAsync(text: String) = this.sendMessage(text).await()
-suspend fun MessageChannel.sendMessageAsync(message: Message) = this.sendMessage(message).await()
-suspend fun MessageChannel.sendMessageAsync(embed: MessageEmbed) = this.sendMessage(embed).await()
+suspend fun MessageChannel.sendMessageAsync(message: MessageCreateData) = this.sendMessage(message).await()
+suspend fun MessageChannel.sendMessageAsync(embed: MessageEmbed) = this.sendMessageEmbeds(embed).await()
 
 suspend fun Message.edit(message: String, embed: MessageEmbed, clearReactions: Boolean = true): Message {
-    return this.edit(MessageBuilder().setEmbed(embed).append(if (message.isEmpty()) " " else message).build(), clearReactions)
+    return this.edit(MessageCreateBuilder().setEmbeds(embed).setContent(if (message.isEmpty()) " " else message).build(), clearReactions)
 }
 
-suspend fun Message.edit(content: Message, clearReactions: Boolean = true): Message {
+suspend fun Message.edit(content: MessageCreateData, clearReactions: Boolean = true): Message {
     if (this.isFromType(ChannelType.PRIVATE) || !this.guild.selfMember.hasPermission(this.textChannel, Permission.MESSAGE_MANAGE)) {
         // Nós não podemos limpar as reações das mensagens caso a gente esteja em uma DM ou se a Lori não tem permissão para gerenciar mensagens
         // Nestes casos, iremos apenas deletar a mensagem e reenviar
@@ -35,7 +44,7 @@ suspend fun Message.edit(content: Message, clearReactions: Boolean = true): Mess
     // Se não, vamos apagar as reações e editar a mensagem atual!
     if (clearReactions)
         this.clearReactions().await()
-    return this.editMessage(content).await()
+    return this.editMessage(MessageEditData.fromCreateData(content)).await()
 }
 
 suspend fun MessageHistory.retrievePastChunked(quantity: Int): List<Message> {
@@ -124,10 +133,10 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
     val emoteOnlyIds = emotes.map { str -> str.split(":").getOrNull(1) }.filterNotNull()
 
     val invalidReactions = this.reactions.filterNot {
-        if (it.reactionEmote.isEmote)
-            emoteOnlyIds.contains(it.reactionEmote.id)
+        if (it.emoji.type == Emoji.Type.CUSTOM)
+            emoteOnlyIds.contains(it.emoji.asCustom().id)
         else
-            emotes.contains(it.reactionEmote.name)
+            emotes.contains(it.emoji.name)
     }
 
     if (invalidReactions.isNotEmpty())
@@ -150,13 +159,48 @@ suspend fun Message.doReactions(vararg emotes: String): Message {
 }
 
 /**
- * Hacky workaround for JDA v4 support
+ * Hacky workaround for JDA v4 (and JDA v5 lol) support
  */
-fun MessageReaction.ReactionEmote.isEmote(id: String): Boolean {
-    return if (this.isEmote)
-        this.id == id || this.name == id
+fun EmojiUnion.isEmote(id: String): Boolean {
+    return if (this.type == Emoji.Type.CUSTOM)
+        this.asCustom().id == id || this.asCustom().name == id
     else
         this.name == id
+}
+
+/**
+ * Hacky workaround for JDA v5 support
+ */
+val MessageChannelUnion.textChannel
+    get() = this.asTextChannel()
+
+/**
+ * Hacky workaround for JDA v5 support
+ */
+val Message.textChannel
+    get() = this.channel.textChannel
+
+/**
+ * Hacky workaround for JDA v5 support
+ */
+fun MessageCreateBuilder.denyMentions(vararg mentions: MentionType): MessageCreateBuilder {
+    this.setAllowedMentions(
+        MentionType.values().toMutableSet().apply {
+            this.removeAll(mentions)
+        }
+    )
+    return this
+}
+
+/**
+ * Hacky workaround for JDA v5 support
+ */
+fun Message.addReaction(reaction: String): RestAction<Void> {
+    val emoji = if (reaction.contains(":"))
+        Emoji.fromFormatted(reaction)
+    else Emoji.fromUnicode(reaction)
+
+    return this.addReaction(emoji)
 }
 
 fun Message.refresh(): RestAction<Message> {
@@ -257,10 +301,10 @@ fun RestAction<Message>.queueAfterWithMessagePerSecondTargetAndClusterLoadBalanc
  *
  * @return Updated MessageAction for chaining convenience
  */
-fun MessageAction.referenceIfPossible(message: Message): MessageAction {
+fun MessageCreateAction.referenceIfPossible(message: Message): MessageCreateAction {
     if (message.isFromGuild && !message.guild.selfMember.hasPermission(message.textChannel, MESSAGE_HISTORY))
         return this
-    return this.reference(message)
+    return this.setMessageReference(message)
 }
 
 /**
@@ -272,7 +316,7 @@ fun MessageAction.referenceIfPossible(message: Message): MessageAction {
  *
  * @return Updated MessageAction for chaining convenience
  */
-fun MessageAction.referenceIfPossible(message: Message, serverConfig: ServerConfig, addInlineReply: Boolean = true): MessageAction {
+fun MessageCreateAction.referenceIfPossible(message: Message, serverConfig: ServerConfig, addInlineReply: Boolean = true): MessageCreateAction {
     // We check if deleteMessageAfterCommand is true because it doesn't matter trying to reply to a message that's going to be deleted.
     if (!addInlineReply || serverConfig.deleteMessageAfterCommand)
         return this
@@ -291,8 +335,7 @@ fun Permission.localized(locale: BaseLocale): String {
         VIEW_AUDIT_LOGS -> locale["discord.permissions.viewAuditLogs"]
         PRIORITY_SPEAKER -> locale["discord.permissions.prioritySpeaker"]
         VIEW_CHANNEL -> locale["discord.permissions.viewChannel"]
-        MESSAGE_READ -> locale["discord.permissions.messageRead"]
-        MESSAGE_WRITE -> locale["discord.permissions.messageWrite"]
+        MESSAGE_SEND -> locale["discord.permissions.messageWrite"]
         MESSAGE_TTS -> locale["discord.permissions.messageTTS"]
         MESSAGE_MANAGE -> locale["discord.permissions.messageManage"]
         MESSAGE_EMBED_LINKS -> locale["discord.permissions.messageEmbedLinks"]
@@ -311,16 +354,19 @@ fun Permission.localized(locale: BaseLocale): String {
         MANAGE_ROLES -> locale["discord.permissions.manageRoles"]
         MANAGE_PERMISSIONS -> locale["discord.permissions.managePermissions"]
         MANAGE_WEBHOOKS -> locale["discord.permissions.manageWebhooks"]
-        MANAGE_EMOTES -> locale["discord.permissions.manageEmotes"]
+        MANAGE_EMOJIS_AND_STICKERS -> locale["discord.permissions.manageEmotes"]
         VOICE_STREAM -> locale["discord.permissions.voiceStream"]
         VIEW_GUILD_INSIGHTS -> locale["discord.permissions.viewGuildInsights"]
-        USE_SLASH_COMMANDS -> locale["discord.permissions.useSlashCommands"]
+        USE_APPLICATION_COMMANDS -> locale["discord.permissions.useSlashCommands"]
         MESSAGE_EXT_STICKER -> locale["discord.permissions.messageExtSticker"]
         MANAGE_THREADS -> locale["discord.permissions.manageThreads"]
-        USE_PUBLIC_THREADS -> locale["discord.permissions.usePublicThreads"]
-        USE_PRIVATE_THREADS -> locale["discord.permissions.usePrivateThreads"]
         REQUEST_TO_SPEAK -> locale["discord.permissions.requestToSpeak"]
         VOICE_START_ACTIVITIES -> locale["discord.permissions.voiceStartActivities"]
+        MANAGE_EVENTS -> locale["discord.permissions.manageEvents"]
+        MODERATE_MEMBERS -> locale["discord.permissions.moderateMembers"]
+        CREATE_PUBLIC_THREADS ->  locale["discord.permissions.usePublicThreads"]
+        CREATE_PRIVATE_THREADS -> locale["discord.permissions.usePrivateThreads"]
+        MESSAGE_SEND_IN_THREADS -> locale["discord.permissions.messageSendInThreads"]
         UNKNOWN -> "This should never, ever happen!"
     }
 }

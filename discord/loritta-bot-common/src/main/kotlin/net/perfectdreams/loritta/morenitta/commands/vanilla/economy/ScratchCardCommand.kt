@@ -10,8 +10,9 @@ import net.perfectdreams.loritta.morenitta.utils.onReactionByAuthor
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import mu.KotlinLogging
-import net.dv8tion.jda.api.MessageBuilder
+
 import net.dv8tion.jda.api.entities.Message
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
 import net.perfectdreams.loritta.common.commands.ArgumentType
 import net.perfectdreams.loritta.common.commands.arguments
 import net.perfectdreams.loritta.morenitta.messages.LorittaReply
@@ -21,6 +22,7 @@ import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.Disc
 import net.perfectdreams.loritta.morenitta.platform.discord.legacy.commands.DiscordCommandContext
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.GACampaigns
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
 import net.perfectdreams.loritta.morenitta.utils.sendStyledReply
 import org.jetbrains.exposed.sql.insertAndGetId
 import org.jetbrains.exposed.sql.select
@@ -232,19 +234,19 @@ class ScratchCardCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
 			var contentWithInvisibleSpoilers = "$invisibleSpoilers$content"
 			if (contentWithInvisibleSpoilers.length >= 2000 && message != null) {
 				// Se a mensagem está ficando grande demais por causa dos spoilers, vamos editar para que seja vazia para "liberar" os spoilers usados
-				message.edit(MessageBuilder().append("...").build(), clearReactions = false)
+				message.edit(MessageCreateBuilder().setContent("...").build(), clearReactions = false)
 				contentWithInvisibleSpoilers = content
 				boughtScratchCardsInThisMessage = 0
 			}
 
-			val theMessage = message?.edit(MessageBuilder().append(contentWithInvisibleSpoilers).build(), clearReactions = false) ?: context.discordMessage.channel.sendMessage(contentWithInvisibleSpoilers).await()
+			val theMessage = message?.edit(MessageCreateBuilder().setContent(contentWithInvisibleSpoilers).build(), clearReactions = false) ?: context.discordMessage.channel.sendMessage(contentWithInvisibleSpoilers).await()
 
 			theMessage?.onReactionByAuthor(context) {
-				if (it.reactionEmote.isEmote("\uD83D\uDD04")) {
+				if (it.emoji.isEmote("\uD83D\uDD04")) {
 					buyRaspadinha(context, loritta.getOrCreateLorittaProfile(context.user.idLong), theMessage, boughtScratchCardsInThisMessage + 1)
 				}
 
-				if (it.reactionEmote.isEmote("593979718919913474")) {
+				if (it.emoji.isEmote("593979718919913474")) {
 					checkRaspadinha(context, loritta.getOrCreateLorittaProfile(context.user.idLong), id.value)
 				}
 			}

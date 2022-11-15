@@ -16,6 +16,8 @@ import net.dv8tion.jda.api.entities.User
 import net.perfectdreams.loritta.morenitta.utils.OutdatedCommandUtils
 import net.perfectdreams.loritta.morenitta.utils.PunishmentAction
 import net.perfectdreams.loritta.morenitta.LorittaBot
+import net.perfectdreams.loritta.morenitta.utils.extensions.addReaction
+import java.util.concurrent.TimeUnit
 
 class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("banir", "hackban", "forceban"), net.perfectdreams.loritta.common.commands.CommandCategory.MODERATION) {
 	override fun getDescriptionKey() = LocaleKeyData("commands.command.ban.description")
@@ -71,8 +73,8 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 			val message = AdminUtils.sendConfirmationMessage(context, users, hasSilent, "ban")
 
 			message.onReactionAddByAuthor(context) {
-				if (it.reactionEmote.isEmote("✅") || it.reactionEmote.isEmote("\uD83D\uDE4A")) {
-					banCallback.invoke(message, it.reactionEmote.isEmote("\uD83D\uDE4A"))
+				if (it.emoji.isEmote("✅") || it.emoji.isEmote("\uD83D\uDE4A")) {
+					banCallback.invoke(message, it.emoji.isEmote("\uD83D\uDE4A"))
 				}
 				return@onReactionAddByAuthor
 			}
@@ -96,7 +98,7 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 						val embed =  AdminUtils.createPunishmentMessageSentViaDirectMessage(guild, locale, punisher, locale["$LOCALE_PREFIX.ban.punishAction"], reason)
 
 						user.openPrivateChannel().queue {
-							it.sendMessage(embed).queue()
+							it.sendMessageEmbeds(embed).queue()
 						}
 					} catch (e: Exception) {
 						e.printStackTrace()
@@ -117,13 +119,13 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 
 					if (textChannel != null && textChannel.canTalk()) {
 						val message = MessageUtils.generateMessage(
-								punishLogMessage,
-								listOf(user, guild),
-								guild,
-								mutableMapOf(
-										"duration" to locale["$LOCALE_PREFIX.mute.forever"]
-								) + AdminUtils.getStaffCustomTokens(punisher)
-										+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.ban")
+							punishLogMessage,
+							listOf(user, guild),
+							guild,
+							mutableMapOf(
+								"duration" to locale["$LOCALE_PREFIX.mute.forever"]
+							) + AdminUtils.getStaffCustomTokens(punisher)
+									+ AdminUtils.getPunishmentCustomTokens(locale, reason, "$LOCALE_PREFIX.ban")
 						)
 
 						message?.let {
@@ -133,8 +135,9 @@ class BanCommand(loritta: LorittaBot) : AbstractCommand(loritta, "ban", listOf("
 				}
 			}
 
-			guild.ban(user, delDays, AdminUtils.generateAuditLogMessage(locale, punisher, reason))
-					.queue()
+			guild.ban(user, delDays, TimeUnit.DAYS)
+				.reason(AdminUtils.generateAuditLogMessage(locale, punisher, reason))
+				.queue()
 		}
 	}
 }

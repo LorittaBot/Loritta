@@ -18,6 +18,6 @@ class InviteCommand(loritta: LorittaBot) : AbstractCommand(loritta, "invite", li
                 .setColor(Constants.LORITTA_AQUA)
                 .build()
 
-        context.sendMessage(embed)
+        context.sendMessageEmbeds(embed)
     }
 }

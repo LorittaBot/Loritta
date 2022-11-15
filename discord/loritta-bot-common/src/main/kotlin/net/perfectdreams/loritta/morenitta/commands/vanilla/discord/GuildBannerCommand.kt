@@ -35,7 +35,7 @@ class GuildBannerCommand(loritta: LorittaBot) : DiscordAbstractCommandBase(lorit
             embed.setDescription(locale["loritta.clickHere", "$guildBanner?size=2048"])
             embed.setImage("$guildBanner?size=2048")
 
-            sendMessage(embed.build())
+            sendMessageEmbeds(embed.build())
         }
     }
 }
