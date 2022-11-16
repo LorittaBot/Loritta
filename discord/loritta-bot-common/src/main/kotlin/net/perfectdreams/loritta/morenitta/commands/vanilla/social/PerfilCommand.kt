@@ -71,8 +71,8 @@ class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", l
 			loritta,
 			context.i18nContext,
 			context.locale,
-			loritta.profileDesignManager.transformUserToProfileUserInfoData(user),
 			loritta.profileDesignManager.transformUserToProfileUserInfoData(context.userHandle),
+			loritta.profileDesignManager.transformUserToProfileUserInfoData(user),
 			context.guildOrNull?.let { loritta.profileDesignManager.transformGuildToProfileGuildInfoData(it) }
 		)
 
