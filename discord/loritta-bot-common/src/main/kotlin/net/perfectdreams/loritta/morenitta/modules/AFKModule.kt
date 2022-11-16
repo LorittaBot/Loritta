@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 
 class AFKModule(val loritta: LorittaBot) : MessageReceivedModule {
 	override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
-		return (event.channel as TextChannel).canTalk()
+		return event.textChannel?.canTalk() == true
 	}
 
 	override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {

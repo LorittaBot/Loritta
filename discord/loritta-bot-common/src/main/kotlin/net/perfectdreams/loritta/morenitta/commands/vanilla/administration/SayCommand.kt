@@ -13,6 +13,7 @@ import net.perfectdreams.loritta.morenitta.utils.remove
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.Message
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.dv8tion.jda.api.utils.messages.MessageCreateData
 import net.dv8tion.jda.api.utils.messages.MessageEditData
 import net.perfectdreams.loritta.common.commands.ArgumentType
@@ -118,7 +119,7 @@ class SayCommand(loritta: LorittaBot) : AbstractCommand(loritta, "say", listOf("
 
 			var message = args.joinToString(" ")
 
-			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as TextChannel, Permission.MESSAGE_MENTION_EVERYONE))
+			if (!context.isPrivateChannel && !context.handle.hasPermission(channel as GuildChannel, Permission.MESSAGE_MENTION_EVERYONE))
 				message = message.escapeMentions()
 
 			// Watermarks the message to "deanonymise" the message, to avoid users reporting Loritta for ToS breaking stuff, even tho it was

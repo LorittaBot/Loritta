@@ -11,7 +11,6 @@ import net.dv8tion.jda.api.entities.*
 import net.dv8tion.jda.api.entities.channel.ChannelType
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel
-import net.dv8tion.jda.api.entities.emoji.CustomEmoji
 import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.dv8tion.jda.api.exceptions.PermissionException
 import net.dv8tion.jda.api.utils.FileUpload
@@ -220,10 +219,10 @@ class DiscordCommandContext(
 		}
 
 		// Still nothing valid? You know what? I give up! Let's search old messages from this server & embeds to find attachments...
-		if (searchPreviousMessages > 0 && !this.isPrivateChannel && guild.selfMember.hasPermission(discordMessage.channel as TextChannel, Permission.MESSAGE_HISTORY)) {
-			val textChannel = discordMessage.channel as TextChannel
+		if (searchPreviousMessages > 0 && !this.isPrivateChannel && guild.selfMember.hasPermission(discordMessage.channel.asGuildMessageChannel(), Permission.MESSAGE_HISTORY)) {
+			val messageChannel = discordMessage.channel.asGuildMessageChannel()
 			try {
-				val message = textChannel.history.retrievePast(searchPreviousMessages).await()
+				val message = messageChannel.history.retrievePast(searchPreviousMessages).await()
 
 				attach@ for (msg in message) {
 					for (embed in msg.embeds) {

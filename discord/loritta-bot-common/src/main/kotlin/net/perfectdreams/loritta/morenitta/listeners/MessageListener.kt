@@ -253,7 +253,7 @@ class MessageListener(val loritta: LorittaBot) : ListenerAdapter() {
 						event.messageId,
 						event.guild,
 						event.channel,
-						event.channel.asTextChannel(),
+						if (event.channel.type == ChannelType.TEXT) event.channel.asTextChannel() else null,
 						serverConfig,
 						locale,
 						lorittaUser
