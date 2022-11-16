@@ -52,21 +52,6 @@ class PerfilCommand(loritta: LorittaBot) : AbstractCommand(loritta, "profile", l
 			return
 		}
 
-		// We need the mutual guilds to retrieve the user's guild badges.
-		// However because bots can be in a LOT of guilds (causing GC pressure), so we will just return a empty array.
-		// Bots could also cause a lot of badges to be downloaded, because they are in a lot of guilds.
-		//
-		// After all, does it *really* matter that bots won't have any badges? ¯\_(ツ)_/¯
-		val mutualGuildsInAllClusters = if (user.isBot)
-			setOf()
-		else
-			loritta.newSuspendedTransaction {
-				GuildProfiles.slice(GuildProfiles.guildId)
-					.select { GuildProfiles.userId eq user.idLong and (GuildProfiles.isInGuild eq true) }
-					.map { it[GuildProfiles.guildId] }
-					.toSet()
-			}
-
 		val result = loritta.profileDesignManager.createProfile(
 			loritta,
 			context.i18nContext,
