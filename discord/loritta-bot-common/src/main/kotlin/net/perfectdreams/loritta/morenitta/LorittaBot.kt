@@ -669,7 +669,7 @@ class LorittaBot(
 				File(cacheFolder, "version").writeText(connectionVersion.toString())
 
 				// A semaphore to avoid processing everything at once, causing a OOM
-				val semaphore = Semaphore(1)
+				val semaphore = Semaphore(4)
 
 				shardManager.shards.forEach { jda ->
 					// Indicate on our presence that we are restarting

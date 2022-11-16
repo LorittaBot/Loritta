@@ -39,8 +39,8 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 	 * delay (in milliseconds) to wait between starting sessions
 	 */
 	private inner class QueueWorker(
-			/** Delay (in milliseconds) to sleep between connecting sessions  */
-			protected val delay: Long
+		/** Delay (in milliseconds) to sleep between connecting sessions  */
+		protected val delay: Long
 	) : Thread("SessionControllerAdapter-Worker") {
 		/**
 		 * Creates a QueueWorker
@@ -76,71 +76,89 @@ class LoriMasterShardControllerSessionControllerAdapter(val loritta: LorittaBot)
 				val node = connectQueue.poll()
 
 				// We will only start identifying new connections when all pre login states are FINISHED, to avoid using too much memory
-				runBlocking {
-					loritta.preLoginStates.values.forEach {
-						it.first { it == PreStartGatewayEventReplayListener.ProcessorState.FINISHED }
+				// This function is called when the gateway is resuming, that's why we skip all identify checks if the state is WAITING_FOR_WEBSOCKET_CONNECTION (because that would mean that there is a initial session)
+				if (loritta.preLoginStates[node.shardInfo.shardId]?.value != PreStartGatewayEventReplayListener.ProcessorState.WAITING_FOR_WEBSOCKET_CONNECTION) {
+					runBlocking {
+						loritta.preLoginStates.values.forEach {
+							it.first { it == PreStartGatewayEventReplayListener.ProcessorState.FINISHED }
+						}
 					}
-				}
 
-				fun setLoginPoolLockToShardController(): ControllerResponseType {
-					return runBlocking {
-						try {
-							val status = loritta.http.put("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
-								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
-							}.status
 
-							if (status == HttpStatusCode.OK)
-								ControllerResponseType.OK
-							else if (status == HttpStatusCode.Conflict)
-								ControllerResponseType.CONFLICT
-							else {
-								log.error("Weird status code while fetching shard ${node.shardInfo.shardId} login pool status, status code: ${status}")
+					fun setLoginPoolLockToShardController(): ControllerResponseType {
+						return runBlocking {
+							try {
+								val status = loritta.http.put("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
+									userAgent(loritta.lorittaCluster.getUserAgent(loritta))
+								}.status
+
+								if (status == HttpStatusCode.OK)
+									ControllerResponseType.OK
+								else if (status == HttpStatusCode.Conflict)
+									ControllerResponseType.CONFLICT
+								else {
+									log.error("Weird status code while fetching shard ${node.shardInfo.shardId} login pool status, status code: ${status}")
+									ControllerResponseType.OFFLINE
+								}
+							} catch (e: Exception) {
+								log.error("Exception while checking if shard ${node.shardInfo.shardId} can login", e)
 								ControllerResponseType.OFFLINE
 							}
-						} catch (e: Exception) {
-							log.error("Exception while checking if shard ${node.shardInfo.shardId} can login", e)
-							ControllerResponseType.OFFLINE
 						}
 					}
-				}
 
-				fun removeLoginPoolLockFromShardController() {
-					runBlocking {
-						try {
-							loritta.http.delete("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
-								userAgent(loritta.lorittaCluster.getUserAgent(loritta))
+					fun removeLoginPoolLockFromShardController() {
+						runBlocking {
+							try {
+								loritta.http.delete("http://${NetAddressUtils.fixIp(loritta, loritta.config.loritta.discord.shardController.url)}/api/v1/shard/${node.shardInfo.shardId}") {
+									userAgent(loritta.lorittaCluster.getUserAgent(loritta))
+								}
+							} catch (e: Exception) {
+								log.error("Exception while telling master shard controller that shard ${node.shardInfo.shardId} already logged in! Other clusters may have temporary issues while logging in...", e)
 							}
-						} catch (e: Exception) {
-							log.error("Exception while telling master shard controller that shard ${node.shardInfo.shardId} already logged in! Other clusters may have temporary issues while logging in...", e)
 						}
 					}
-				}
 
-				val canLogin = setLoginPoolLockToShardController()
+					val canLogin = setLoginPoolLockToShardController()
 
-				if (canLogin == ControllerResponseType.CONFLICT) {
-					log.info("Shard ${node.shardInfo.shardId} (login pool: ${node.shardInfo.shardId % 16}) can't login! Another cluster is logging in that shard, delaying login...")
-					if (delay > 0) sleep(delay)
-					appendSession(node)
-					continue
-				}
+					if (canLogin == ControllerResponseType.CONFLICT) {
+						log.info("Shard ${node.shardInfo.shardId} (login pool: ${node.shardInfo.shardId % 16}) can't login! Another cluster is logging in that shard, delaying login...")
+						if (delay > 0) sleep(delay)
+						appendSession(node)
+						continue
+					}
 
-				try {
-					node.run(false)
+					try {
+						node.run(false)
 
-					lastConnect = System.currentTimeMillis()
-					if (delay > 0) sleep(delay)
-					removeLoginPoolLockFromShardController()
-				} catch (e: IllegalStateException) {
-					val t = e.cause
-					if (t is OpeningHandshakeException) log.error("Failed opening handshake, appending to queue. Message: {}", e.message) else log.error("Failed to establish connection for a node, appending to queue", e)
-					appendSession(node)
-					removeLoginPoolLockFromShardController()
-				} catch (e: InterruptedException) {
-					log.error("Failed to run node", e)
-					appendSession(node)
-					removeLoginPoolLockFromShardController()
-					return  // caller should start a new thread
+						lastConnect = System.currentTimeMillis()
+						if (delay > 0) sleep(delay)
+						removeLoginPoolLockFromShardController()
+					} catch (e: IllegalStateException) {
+						val t = e.cause
+						if (t is OpeningHandshakeException) log.error("Failed opening handshake, appending to queue. Message: {}", e.message) else log.error("Failed to establish connection for a node, appending to queue", e)
+						appendSession(node)
+						removeLoginPoolLockFromShardController()
+					} catch (e: InterruptedException) {
+						log.error("Failed to run node", e)
+						appendSession(node)
+						removeLoginPoolLockFromShardController()
+						return  // caller should start a new thread
+					}
+				} else {
+					// Just a initial resume
+					try {
+						node.run(false)
+						lastConnect = System.currentTimeMillis()
+					} catch (e: IllegalStateException) {
+						val t = e.cause
+						if (t is OpeningHandshakeException) log.error("Failed opening handshake, appending to queue. Message: {}", e.message) else log.error("Failed to establish connection for a node, appending to queue", e)
+						appendSession(node)
+					} catch (e: InterruptedException) {
+						log.error("Failed to run node", e)
+						appendSession(node)
+						return  // caller should start a new thread
+					}
 				}
 			}
 		}

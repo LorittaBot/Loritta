@@ -38,7 +38,7 @@ object DebugLog {
 		logger.info("Shards Pre Login states that aren't finished:")
 		for ((shardId, state) in loritta.preLoginStates) {
 			if (state.value != PreStartGatewayEventReplayListener.ProcessorState.FINISHED) {
-				logger.info("Shard $shardId: $state")
+				logger.info("Shard $shardId: ${state.value}")
 			}
 		}
 		logger.info("> Command Stuff")
