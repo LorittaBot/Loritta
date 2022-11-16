@@ -418,6 +418,8 @@ class LorittaBot(
 					PreStartGatewayEventReplayListener.ProcessorState.FINISHED
 				}
 			)
+			logger.info { "Shard $shardId status: ${state.value}" }
+
 			preLoginStates[shardId] = state
 		}
 
