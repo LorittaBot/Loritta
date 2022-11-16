@@ -127,7 +127,7 @@ class BotInfoCommand(loritta: LorittaBot) : AbstractCommand(loritta, "botinfo", 
 		val maxMemory = runtime.maxMemory() / mb
 		val totalMemory = runtime.totalMemory() / mb
 
-		val buildNumber = System.getenv("BUIILD_ID")
+		val buildNumber = System.getenv("BUILD_ID")
 		val commitHash = System.getenv("COMMIT_HASH")
 
 		context.reply(

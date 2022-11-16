@@ -139,7 +139,7 @@ jib {
             }
 
             setIfPresent("commit.hash", "COMMIT_SHA")
-            setIfPresent("build.id", "BUIILD_ID")
+            setIfPresent("build.id", "BUILD_ID")
         }
     }
 
