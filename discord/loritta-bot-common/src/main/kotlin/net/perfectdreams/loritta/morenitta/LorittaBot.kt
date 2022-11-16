@@ -61,6 +61,7 @@ import net.dv8tion.jda.api.utils.ChunkingFilter
 import net.dv8tion.jda.api.utils.MemberCachePolicy
 import net.dv8tion.jda.api.utils.cache.CacheFlag
 import net.dv8tion.jda.internal.JDAImpl
+import net.dv8tion.jda.internal.entities.GuildImpl
 import net.perfectdreams.discordinteraktions.common.DiscordInteraKTions
 import net.perfectdreams.discordinteraktions.platforms.kord.installDiscordInteraKTions
 import net.perfectdreams.dreamstorageservice.client.DreamStorageServiceClient
@@ -390,6 +391,7 @@ class LorittaBot(
 	private val debugWebServer = DebugWebServer()
 
 	val preLoginStates = mutableMapOf<Int, MutableStateFlow<PreStartGatewayEventReplayListener.ProcessorState>>()
+	var isActive = true
 
 	init {
 		FOLDER = config.loritta.folders.root
@@ -654,13 +656,21 @@ class LorittaBot(
 		// Ou seja, agora a Loritta está funcionando, Yay!
 		Runtime.getRuntime().addShutdownHook(
 			thread(false) {
+				// Mark this as shutdown to avoid dispatching jobs
+				isActive = false
+
+				// Remove all event listeners to make Loritta not process new events while restarting
+				shardManager.shards.forEach {
+					it.removeEventListener(it)
+				}
+
 				// This is used to validate if our cache was successfully written or not
 				val connectionVersion = UUID.randomUUID()
 
 				File(cacheFolder, "version").writeText(connectionVersion.toString())
 
 				// A semaphore to avoid processing everything at once, causing a OOM
-				val semaphore = Semaphore(8)
+				val semaphore = Semaphore(1)
 
 				val jobs = shardManager.shards.map { shard ->
 					GlobalScope.async(Dispatchers.IO) {
@@ -672,10 +682,13 @@ class LorittaBot(
 
 								// Only get connected shards, invalidate everything else
 								if (shard.status != JDA.Status.CONNECTED || sessionId == null || resumeUrl == null) {
+									logger.info { "Fully shutting down shard ${shard.shardInfo.shardId}..." }
 									// Not connected, shut down and invalidate our cached data
 									shard.shutdownNow(1000) // We don't care about persisting our gateway session
 									File(cacheFolder, shard.shardInfo.shardId.toString()).deleteRecursively()
 								} else {
+									logger.info { "Shutting down shard ${shard.shardInfo.shardId} to be resumed later..." }
+
 									// Indicate on our presence that we are restarting
 									jdaImpl.presence.setPresence(
 										OnlineStatus.IDLE,
@@ -716,21 +729,27 @@ class LorittaBot(
 									// We use a LinkedBlockingQueue because, if we remove the element from the queue, then it means that it can be GC'd (yay)
 									val byteArrays = LinkedBlockingQueue<ByteArray>(guildCount.toInt())
 
+									var i = 0
 									for (guild in jdaImpl.guildsView) {
+										guild as GuildImpl
+
+										logger.info { "Processed $i/$guildCount guilds for shard ${jdaImpl.shardInfo.shardId}... ${(i/guildCount.toDouble() * 100)}%" }
 										byteArrays.add(
 											DeviousConverter.toJson(guild).toString().toByteArray(Charsets.UTF_8)
 										)
 
 										// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
-										jdaImpl.guildsView.remove(guild.idLong)
+										guild.invalidate()
+										
+										i++
 									}
 
+									logger.info { "Writing cache file for shard ${jdaImpl.shardInfo.shardId}..." }
 									// We + the guild count because we need to add new lines
 									val fileSize = byteArrays.sumOf { it.size } + guildCount.toInt()
 									RandomAccessFile(guildsCacheFile, "rw").channel.use {
 										val newLineUtf8 = "\n".toByteArray(Charsets.UTF_8)
-										val wrBuf: ByteBuffer =
-											it.map(FileChannel.MapMode.READ_WRITE, 0, fileSize.toLong())
+										val wrBuf: ByteBuffer = it.map(FileChannel.MapMode.READ_WRITE, 0, fileSize.toLong())
 										while (byteArrays.isNotEmpty()) {
 											wrBuf.put(byteArrays.poll())
 											wrBuf.put(newLineUtf8)
