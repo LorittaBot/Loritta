@@ -59,7 +59,6 @@ dependencies {
     api(libs.exposed.dao)
     implementation("net.perfectdreams.exposedpowerutils:postgres-java-time:1.1.0")
     implementation("pw.forst:exposed-upsert:1.1.0")
-    implementation("redis.clients:jedis:4.3.0-m1")
 
     // DreamStorageService
     implementation("net.perfectdreams.dreamstorageservice:client:2.0.2")
@@ -111,9 +110,6 @@ dependencies {
 
     implementation("net.perfectdreams.randomroleplaypictures:client:1.0.1")
     implementation("org.gagravarr:vorbis-java-core:0.8")
-
-    // zstd
-    implementation("com.github.luben:zstd-jni:1.5.2-4")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.0-M1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.0-M1")

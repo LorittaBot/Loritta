@@ -11,8 +11,6 @@ import net.perfectdreams.loritta.common.locale.LorittaLanguageManager
 import net.perfectdreams.loritta.common.utils.HostnameUtils
 import net.perfectdreams.loritta.morenitta.utils.config.BaseConfig
 import net.perfectdreams.loritta.morenitta.utils.readConfigurationFromFile
-import redis.clients.jedis.JedisPool
-import redis.clients.jedis.JedisPoolConfig
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
@@ -85,22 +83,11 @@ object LorittaLauncher {
 
 		logger.info { "Started Pudding client!" }
 
-		val jedisPoolConfig = JedisPoolConfig()
-		jedisPoolConfig.maxTotal = 10
-
-		val jedisPool = JedisPool(
-			jedisPoolConfig,
-			config.loritta.redis.address.substringBefore(":"),
-			config.loritta.redis.address.substringAfter(":").toIntOrNull() ?: 6379,
-			null,
-			config.loritta.redis.password
-		)
-
 		// Used for Logback
 		System.setProperty("cluster.name", config.loritta.clusters.instances.first { it.id == clusterId }.getUserAgent(config.loritta.environment))
 
 		// Iniciar instância da Loritta
-		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services, jedisPool, RedisKeys(config.loritta.redis.keyPrefix))
+		val loritta = LorittaBot(clusterId, config, languageManager, localeManager, services)
 		loritta.start()
 	}
 

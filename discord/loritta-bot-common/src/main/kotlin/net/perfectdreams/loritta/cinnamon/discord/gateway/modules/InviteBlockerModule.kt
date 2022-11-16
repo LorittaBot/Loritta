@@ -282,8 +282,8 @@ class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
                             val topRole = m.cache.getRoles(guildId, member)
                                 .asSequence()
                                 .sortedByDescending { it.position }
-                                .filter { !it.managed }
-                                .filter { it.id != guildId } // If it is the role ID == guild ID, then it is the @everyone role!
+                                .filter { !it.isManaged }
+                                .filter { it.idLong != guildId.value.toLong() } // If it is the role ID == guild ID, then it is the @everyone role!
                                 .firstOrNull()
 
                             if (topRole != null) {
@@ -310,7 +310,7 @@ class InviteBlockerModule(val m: LorittaBot) : ProcessDiscordEventsModule() {
                                             m.encodeDataForComponentOrStoreInDatabase(
                                                 ActivateInviteBlockerData(
                                                     author.id,
-                                                    topRole.id
+                                                    Snowflake(topRole.id)
                                                 )
                                             )
                                         ) {

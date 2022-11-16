@@ -6,6 +6,7 @@ import dev.kord.common.entity.ButtonStyle
 import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
 import dev.kord.common.entity.UserFlag
+import dev.kord.common.kColor
 import dev.kord.core.entity.Member
 import dev.kord.core.entity.User
 import io.ktor.client.*
@@ -91,7 +92,7 @@ interface UserInfoExecutor {
 
         val topRole = roles?.maxByOrNull { it.position }
         // Did you know that you can't have a fully black role on Discord? The color "0" is used for "not set"!
-        val topRoleForColor = roles?.filter { it.color != 0 }?.maxByOrNull { it.position }
+        val topRoleForColor = roles?.filter { it.color != null }?.maxByOrNull { it.position }
 
         val message: suspend MessageBuilder.() -> (Unit) = {
             embed {
@@ -172,7 +173,7 @@ interface UserInfoExecutor {
                             true
                         )
 
-                        color = topRoleForColor?.let { Color(it.color) }
+                        color = topRoleForColor?.color?.kColor
                     }
 
                     field(
@@ -335,7 +336,7 @@ interface UserInfoExecutor {
                             GuildMemberPermissionsData(
                                 member.roleIds,
                                 member.getPermissions(), // TODO: FIX THIS! GET THE PERMISSIONS FROM THE INTERACTION THEMSELVES!! However Kord Core doesn't expose this field... yet
-                                topRoleForColor?.color
+                                topRoleForColor?.color?.rgb
                             )
                         ).jsonObject,
                         now,

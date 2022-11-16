@@ -11,6 +11,8 @@ import mu.KotlinLogging
 import net.dv8tion.jda.api.EmbedBuilder
 import net.dv8tion.jda.api.utils.FileUpload
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder
+import net.perfectdreams.exposedpowerutils.sql.upsert
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousData
 import net.perfectdreams.loritta.common.utils.Emotes
 import net.perfectdreams.loritta.morenitta.utils.SonhosPaymentReason
 import net.perfectdreams.loritta.common.utils.UserPremiumPlans
@@ -33,6 +35,7 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 		val logger = KotlinLogging.logger {}
 		val buyingOrGivingRewardsMutex = Mutex()
 		var raffleRandomUniqueId = UUID.randomUUID()
+		const val DATA_KEY = "raffle_legacy"
 	}
 
 	override fun run() {
@@ -67,8 +70,11 @@ class RaffleThread(val loritta: LorittaBot) : Thread("Raffle Thread") {
 		logger.info { "Tickets: ${userIds.size}" }
 
 		runBlocking {
-			loritta.redisConnection {
-				it.set(loritta.redisKeys.lorittaRaffle("legacy"), json.toString())
+			loritta.newSuspendedTransaction {
+				MiscellaneousData.upsert(MiscellaneousData.id) {
+					it[MiscellaneousData.id] = DATA_KEY
+					it[MiscellaneousData.data] = json.toString()
+				}
 			}
 		}
 	}

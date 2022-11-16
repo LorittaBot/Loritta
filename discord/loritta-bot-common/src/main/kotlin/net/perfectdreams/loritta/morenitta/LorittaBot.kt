@@ -139,8 +139,6 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
-import redis.clients.jedis.Jedis
-import redis.clients.jedis.JedisPool
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.InputStream
@@ -176,9 +174,7 @@ class LorittaBot(
 	val config: BaseConfig,
 	val languageManager: LanguageManager,
 	val localeManager: LocaleManager,
-	val pudding: Pudding,
-	val jedisPool: JedisPool,
-	val redisKeys: RedisKeys,
+	val pudding: Pudding
 ) {
 	// ===[ STATIC ]===
 	companion object {
@@ -481,7 +477,6 @@ class LorittaBot(
 
 	private val starboardModule = StarboardModule(this)
 	private val addFirstToNewChannelsModule = AddFirstToNewChannelsModule(this)
-	private val discordCacheModule = DiscordCacheModule(this)
 	private val bomDiaECiaModule = BomDiaECiaModule(this)
 	private val debugGatewayModule = DebugGatewayModule(this)
 	private val owoGatewayModule = OwOGatewayModule(this)
@@ -490,7 +485,6 @@ class LorittaBot(
 
 	// This is executed sequentially!
 	val modules = listOf(
-		discordCacheModule,
 		inviteBlockerModule,
 		afkModule,
 		addFirstToNewChannelsModule,
@@ -591,8 +585,11 @@ class LorittaBot(
 		if (this.isMainInstance) {
 			logger.info { "Loading raffle..." }
 			val raffleData = runBlocking {
-				redisConnection {
-					it.get(redisKeys.lorittaRaffle("legacy"))
+				newSuspendedTransaction {
+					MiscellaneousData.select { MiscellaneousData.id eq RaffleThread.DATA_KEY }
+						.limit(1)
+						.firstOrNull()
+						?.get(MiscellaneousData.data)
 				}
 			}
 
@@ -1462,23 +1459,5 @@ class LorittaBot(
 		val bytes = response.readBytes()
 
 		return net.perfectdreams.loritta.cinnamon.discord.utils.images.readImage(bytes.inputStream())
-	}
-
-	suspend fun <T> redisConnection(action: (Jedis) -> (T)) = withContext(Dispatchers.IO) {
-		jedisPool.resource.use {
-			action.invoke(it)
-		}
-	}
-
-	suspend fun <T> redisTransaction(action: (redis.clients.jedis.Transaction) -> (T)) = redisConnection {
-		val t = it.multi()
-		try {
-			action.invoke(t)
-			t.exec()
-		} catch (e: Throwable) {
-			e.printStackTrace()
-			t.discard()
-			throw e
-		}
 	}
 }

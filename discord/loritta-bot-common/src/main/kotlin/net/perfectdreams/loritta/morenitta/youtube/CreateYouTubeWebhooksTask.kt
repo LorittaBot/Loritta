@@ -9,13 +9,18 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import net.perfectdreams.exposedpowerutils.sql.upsert
+import net.perfectdreams.loritta.cinnamon.pudding.tables.MiscellaneousData
 import net.perfectdreams.loritta.morenitta.tables.servers.moduleconfigs.TrackedYouTubeAccounts
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import java.util.concurrent.atomic.AtomicInteger
 
 class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 	companion object {
 		private val logger = KotlinLogging.logger {}
+		const val DATA_KEY = "youtube_webhooks"
 	}
 
 	var youtubeWebhooks = mutableMapOf<String, YouTubeWebhook>()
@@ -39,8 +44,11 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 
 			if (!fileLoaded) {
 				val youTubeWebhooksData = runBlocking {
-					loritta.redisConnection {
-						it.get(loritta.redisKeys.youTubeWebhooks())
+					loritta.newSuspendedTransaction {
+						MiscellaneousData.select { MiscellaneousData.id eq DATA_KEY }
+							.limit(1)
+							.firstOrNull()
+							?.get(MiscellaneousData.data)
 					}
 				}
 				fileLoaded = true
@@ -74,21 +82,23 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 
 			val webhookCount = AtomicInteger()
 
-			val tasks = notCreatedYetChannels.map {channelId ->
+			val tasks = notCreatedYetChannels.map { channelId ->
 				GlobalScope.async(loritta.coroutineDispatcher, start = CoroutineStart.LAZY) {
 					try {
 						// Vamos criar!
 						val code = HttpRequest.post("https://pubsubhubbub.appspot.com/subscribe")
-								.form(mapOf(
-										"hub.callback" to "${loritta.config.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
-										"hub.lease_seconds" to "",
-										"hub.mode" to "subscribe",
-										"hub.secret" to loritta.config.loritta.webhookSecret,
-										"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
-										"hub.verify" to "async",
-										"hub.verify_token" to loritta.config.loritta.webhookSecret
-								))
-								.code()
+							.form(
+								mapOf(
+									"hub.callback" to "${loritta.config.loritta.website.url}api/v1/callbacks/pubsubhubbub?type=ytvideo",
+									"hub.lease_seconds" to "",
+									"hub.mode" to "subscribe",
+									"hub.secret" to loritta.config.loritta.webhookSecret,
+									"hub.topic" to "https://www.youtube.com/xml/feeds/videos.xml?channel_id=$channelId",
+									"hub.verify" to "async",
+									"hub.verify_token" to loritta.config.loritta.webhookSecret
+								)
+							)
+							.code()
 
 						if (code != 204 && code != 202) { // code 204 = noop, 202 = accepted (porque pelo visto o PubSubHubbub usa os dois
 							logger.error { "Something went wrong while creating ${channelId}'s webhook! Status Code: ${code}" }
@@ -100,11 +110,11 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 						logger.debug { "$channelId's webhook was sucessfully created! Currently there is $incrementAndGet/${webhooksToBeCreatedCount} created webhooks!" }
 
 						return@async Pair(
-								channelId,
-								YouTubeWebhook(
-										System.currentTimeMillis(),
-										432000
-								)
+							channelId,
+							YouTubeWebhook(
+								System.currentTimeMillis(),
+								432000
+							)
 						)
 					} catch (e: Exception) {
 						logger.error(e) { "Something went wrong when creating a YouTube subscription" }
@@ -123,8 +133,11 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 					if (index % 50 == 0 && index != 0) { // Do not write the file if index == 0, because it would be a *very* unnecessary write
 						logger.info { "Saving YouTube Webhook File... $index channels were processed" }
 						runBlocking {
-							loritta.redisConnection {
-								it.set(loritta.redisKeys.youTubeWebhooks(), gson.toJson(youtubeWebhooks))
+							loritta.newSuspendedTransaction {
+								MiscellaneousData.upsert(MiscellaneousData.id) {
+									it[MiscellaneousData.id] = DATA_KEY
+									it[MiscellaneousData.data] = gson.toJson(youtubeWebhooks)
+								}
 							}
 						}
 					}
@@ -134,8 +147,11 @@ class CreateYouTubeWebhooksTask(val loritta: LorittaBot) : Runnable {
 
 				if (createdWebhooksCount != 0) {
 					runBlocking {
-						loritta.redisConnection {
-							it.set(loritta.redisKeys.youTubeWebhooks(), gson.toJson(youtubeWebhooks))
+						loritta.newSuspendedTransaction {
+							MiscellaneousData.upsert(MiscellaneousData.id) {
+								it[MiscellaneousData.id] = DATA_KEY
+								it[MiscellaneousData.data] = gson.toJson(youtubeWebhooks)
+							}
 						}
 					}
 

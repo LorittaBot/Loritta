@@ -9,6 +9,9 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.buildJsonArray
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.json.jsonObject
+import net.dv8tion.jda.api.entities.Role
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
+import net.dv8tion.jda.api.entities.emoji.RichCustomEmoji
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.common.utils.JsonIgnoreUnknownKeys
 import net.perfectdreams.loritta.cinnamon.discord.utils.parallax.ParallaxMessage
@@ -43,9 +46,9 @@ object MessageUtils {
         message: String,
         sources: List<TokenSource>,
         tokens: Map<String, String?>,
-        roles: List<DiscordRole>,
-        channels: List<DiscordChannel>,
-        emojis: List<DiscordEmoji>
+        roles: List<Role>,
+        channels: List<GuildChannel>,
+        emojis: List<RichCustomEmoji>
     ): ParallaxMessage {
         // TODO: Proper message validation?
 
@@ -123,24 +126,24 @@ object MessageUtils {
     private fun replaceTokensIfNotNull(
         text: String?,
         tokens: Map<String, String?>,
-        roles: List<DiscordRole>,
-        channels: List<DiscordChannel>,
-        emojis: List<DiscordEmoji>
+        roles: List<Role>,
+        channels: List<GuildChannel>,
+        emojis: List<RichCustomEmoji>
     ) = text?.let { replaceTokens(text, tokens, roles, channels, emojis) }
 
     private fun replaceTokens(
         text: String,
         tokens: Map<String, String?>,
-        roles: List<DiscordRole>,
-        channels: List<DiscordChannel>,
-        emojis: List<DiscordEmoji>
+        roles: List<Role>,
+        channels: List<GuildChannel>,
+        emojis: List<RichCustomEmoji>
     ) = replaceLorittaTokens(replaceDiscordEntities(text, roles, channels, emojis), tokens) // First the Discord Entities, then our user tokens
 
     private fun replaceDiscordEntities(
         text: String,
-        roles: List<DiscordRole>,
-        channels: List<DiscordChannel>,
-        emojis: List<DiscordEmoji>
+        roles: List<Role>,
+        channels: List<GuildChannel>,
+        emojis: List<RichCustomEmoji>
     ): String {
         var message = text
 
@@ -149,7 +152,7 @@ object MessageUtils {
         }
 
         for (channel in channels) {
-            val name = channel.name.value ?: continue
+            val name = channel.name
             if (name.isBlank())
                 continue
             message = text.replace("#$name", "<#${channel.id}>")
@@ -168,7 +171,7 @@ object MessageUtils {
             if (guildEmoji != null) {
                 buildString {
                     append("<")
-                    if (guildEmoji.animated.discordBoolean)
+                    if (guildEmoji.isAnimated)
                         append("a")
                     append(":")
                     append(guildEmoji.name)

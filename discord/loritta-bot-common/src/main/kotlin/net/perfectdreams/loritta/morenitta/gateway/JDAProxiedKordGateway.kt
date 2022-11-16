@@ -13,9 +13,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import net.dv8tion.jda.api.utils.data.DataObject
 import net.dv8tion.jda.internal.JDAImpl
-import net.perfectdreams.loritta.cinnamon.discord.utils.RedisKeys
-import redis.clients.jedis.JedisPool
-import kotlin.coroutines.CoroutineContext
 import kotlin.time.Duration
 
 /**
