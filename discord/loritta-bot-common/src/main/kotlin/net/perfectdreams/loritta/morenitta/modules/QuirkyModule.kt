@@ -9,6 +9,7 @@ import net.perfectdreams.loritta.morenitta.utils.LorittaUser
 import net.perfectdreams.loritta.morenitta.utils.chance
 import net.dv8tion.jda.api.Permission
 import net.dv8tion.jda.api.entities.MessageType
+import net.dv8tion.jda.api.entities.channel.middleman.GuildChannel
 import net.perfectdreams.loritta.common.locale.BaseLocale
 import net.perfectdreams.loritta.morenitta.LorittaBot
 import net.perfectdreams.loritta.morenitta.dao.servers.moduleconfigs.MiscellaneousConfig
@@ -20,7 +21,7 @@ class QuirkyModule(val loritta: LorittaBot) : MessageReceivedModule {
     override suspend fun matches(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
         val miscellaneousConfig = serverConfig.getCachedOrRetreiveFromDatabaseAsync<MiscellaneousConfig?>(loritta, ServerConfig::miscellaneousConfig)
 
-        return miscellaneousConfig?.enableQuirky == true && event.guild?.selfMember?.hasPermission(event.textChannel!!, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_HISTORY, Permission.MESSAGE_SEND) == true && event.message.type == MessageType.DEFAULT
+        return miscellaneousConfig?.enableQuirky == true && event.guild?.selfMember?.hasPermission(event.channel as GuildChannel, Permission.MESSAGE_ADD_REACTION, Permission.MESSAGE_EXT_EMOJI, Permission.MESSAGE_HISTORY, Permission.MESSAGE_SEND) == true && event.message.type == MessageType.DEFAULT
     }
 
     override suspend fun handle(event: LorittaMessageEvent, lorittaUser: LorittaUser, lorittaProfile: Profile?, serverConfig: ServerConfig, locale: BaseLocale): Boolean {
