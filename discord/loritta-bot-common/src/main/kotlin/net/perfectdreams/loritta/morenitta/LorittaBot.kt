@@ -30,12 +30,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.datetime.Clock
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.decodeFromJsonElement
-import kotlinx.serialization.json.encodeToJsonElement
-import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.*
 import net.perfectdreams.loritta.morenitta.commands.CommandManager
 import net.perfectdreams.loritta.morenitta.listeners.*
 import net.perfectdreams.loritta.morenitta.tables.*
@@ -150,6 +148,7 @@ import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.InputStream
 import java.io.RandomAccessFile
@@ -529,7 +528,9 @@ class LorittaBot(
 	)
 
 	// Inicia a Loritta
-	@OptIn(ExperimentalTime::class)
+	@OptIn(ExperimentalTime::class, ExperimentalSerializationApi::class, ExperimentalSerializationApi::class,
+		ExperimentalSerializationApi::class
+	)
 	fun start() {
 		logger.info { "Starting Debug Web Server..." }
 		debugWebServer.start()
@@ -726,12 +727,15 @@ class LorittaBot(
 									GlobalScope.async(Dispatchers.IO) {
 										guild as GuildImpl
 
-										val byteArray = DeviousConverter.toJson(guild).toString().toByteArray(Charsets.UTF_8)
+										// We want to minimize resizes of the backed stream, to make it go zooooom
+										// So what I did was calculating the 75th percentile of the guild data, and used it as the size
+										val baos = ByteArrayOutputStream(16_384)
+										Json.encodeToStream(DeviousConverter.toJson(guild), baos)
 
 										// Remove the guild from memory, which avoids the bot crashing due to Out Of Memory
 										guild.invalidate()
 
-										byteArray
+										baos.toByteArray()
 									}
 								}
 
